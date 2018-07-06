@@ -1,0 +1,22 @@
+module energysavings {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:energysavings";
+    prefix "energysavings";
+
+    revision "2015-01-05" {
+        description "Initial revision of energysavings model";
+    }
+    
+    rpc payload {
+    	input {
+    		leaf payload {
+    			type string;
+    		}
+    	}
+    	output {
+    		leaf result {
+    			type string;
+    		}
+    	}
+    }
+}
