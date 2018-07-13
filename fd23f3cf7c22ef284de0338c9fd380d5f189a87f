@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_e4d0b0f9",
+        "filename": "LICENSE.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1517
+      },
+      "writtenOn": "2018-07-13T17:31:45Z",
+      "side": 1,
+      "message": "Ideally we would get rid of these spaces on lines 36, 37 and 39 to keep the source clean.  Wouldn\u0027t hold it from getting merged over minor formatting though...",
+      "range": {
+        "startLine": 36,
+        "startChar": 1,
+        "endLine": 36,
+        "endChar": 2
+      },
+      "revId": "fd23f3cf7c22ef284de0338c9fd380d5f189a87f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
