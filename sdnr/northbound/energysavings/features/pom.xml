@@ -42,12 +42,13 @@
       <classifier>features</classifier>
     </dependency>
     <dependency>
-      <groupId>org.onap.sdnc.northbound.sdnr</groupId>
+
+      <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
       <artifactId>energysavings-model</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.onap.sdnc.northbound.sdnr</groupId>
+      <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
       <artifactId>energysavings-provider</artifactId>
       <version>${project.version}</version>
     </dependency>

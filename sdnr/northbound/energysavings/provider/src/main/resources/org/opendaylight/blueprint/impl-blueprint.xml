@@ -16,7 +16,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     odl:type="default" />
 
   <bean id="provider"
+<<<<<<< HEAD
     class="org.onap.sdnc.northbound.sdnr.impl.EnergysavingsProvider"
+=======
+    class="org.onap.ccsdk.features.sdnr.northbound.EnergysavingsProvider"
+>>>>>>> 4a0fb45... Rename package to new ccsdk/features repo
     init-method="init" destroy-method="close">
     <argument ref="dataBroker" />
   </bean>
