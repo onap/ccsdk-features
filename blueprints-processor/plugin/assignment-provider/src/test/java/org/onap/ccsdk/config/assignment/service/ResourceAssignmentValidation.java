@@ -1,15 +1,18 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
+ * Modifications Copyright © 2018 IBM.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.onap.ccsdk.config.assignment.service;
@@ -31,10 +34,10 @@ import com.att.eelf.configuration.EELFManager;
 
 public class ResourceAssignmentValidation {
     private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceAssignmentValidation.class);
-    
+
     @Rule
     public final ExpectedException exception = ExpectedException.none();
-    
+
     @Test
     public void testValidateSuccess() {
         try {
@@ -42,12 +45,12 @@ public class ResourceAssignmentValidation {
             String resourceMapping = IOUtils.toString(
                     TopologicalSortingTest.class.getClassLoader().getResourceAsStream("validation/success.json"),
                     Charset.defaultCharset());
-            
+
             List<ResourceAssignment> assignments =
                     TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
             if (assignments != null) {
                 ResourceAssignmentValidator resourceAssignmentValidator = new ResourceAssignmentValidator(assignments);
-                
+
                 boolean result = resourceAssignmentValidator.validateResourceAssignment();
                 Assert.assertTrue("Failed to Validate", result);
             }
@@ -55,37 +58,37 @@ public class ResourceAssignmentValidation {
             e.printStackTrace();
         }
     }
-    
+
     @Test(expected = ConfigModelException.class)
     public void testValidateDuplicate() throws IOException, ConfigModelException {
         logger.info(" **************** testValidateDuplicate *****************");
         String resourceMapping = IOUtils.toString(
                 TopologicalSortingTest.class.getClassLoader().getResourceAsStream("validation/duplicate.json"),
                 Charset.defaultCharset());
-        
+
         List<ResourceAssignment> assignments =
                 TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
         if (assignments != null) {
             ResourceAssignmentValidator resourceAssignmentValidator = new ResourceAssignmentValidator(assignments);
             resourceAssignmentValidator.validateResourceAssignment();
         }
-        
+
     }
-    
+
     @Test(expected = ConfigModelException.class)
     public void testValidateCyclic() throws IOException, ConfigModelException {
         logger.info(" ****************  testValidateCyclic *****************");
         String resourceMapping = IOUtils.toString(
                 TopologicalSortingTest.class.getClassLoader().getResourceAsStream("validation/cyclic.json"),
                 Charset.defaultCharset());
-        
+
         List<ResourceAssignment> assignments =
                 TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
         if (assignments != null) {
             ResourceAssignmentValidator resourceAssignmentValidator = new ResourceAssignmentValidator(assignments);
-            
+
             resourceAssignmentValidator.validateResourceAssignment();
         }
-        
+
     }
 }

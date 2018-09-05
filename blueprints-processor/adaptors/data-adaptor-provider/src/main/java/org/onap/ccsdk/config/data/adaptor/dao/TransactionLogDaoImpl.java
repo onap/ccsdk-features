@@ -1,15 +1,18 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
+ * Modifications Copyright © 2018 IBM.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.onap.ccsdk.config.data.adaptor.dao;
@@ -26,15 +29,15 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class TransactionLogDaoImpl implements TransactionLogDao {
-    
+
     private static EELFLogger logger = EELFManager.getInstance().getLogger(TransactionLogDaoImpl.class);
-    
+
     private JdbcTemplate jdbcTemplate;
-    
+
     public TransactionLogDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    
+
     @Override
     public void save(TransactionLog transactionLog) throws SvcLogicException {
         if (transactionLog != null && StringUtils.isNotBlank(transactionLog.getRequestId())) {
@@ -44,9 +47,9 @@ public class TransactionLogDaoImpl implements TransactionLogDao {
                     transactionLog.getMessageType(), transactionLog.getMessage());
             logger.trace("TransactionLog Updated Successfully for message_type {}", transactionLog.getMessageType());
         }
-        
+
     }
-    
+
     @Override
     public List<TransactionLog> getTransactionsByRequestId(String requestId) throws SvcLogicException {
         if (StringUtils.isNotBlank(requestId)) {
@@ -57,7 +60,7 @@ public class TransactionLogDaoImpl implements TransactionLogDao {
             throw new SvcLogicException("TransactionLog Request id  (" + requestId + ")is missing ");
         }
     }
-    
+
     @Override
     public List<TransactionLog> getTransactionsByRequestId(String requestId, String messageType)
             throws SvcLogicException {
@@ -70,7 +73,7 @@ public class TransactionLogDaoImpl implements TransactionLogDao {
             throw new SvcLogicException("TransactionLog Request id  (" + requestId + ")is missing ");
         }
     }
-    
+
     private static final class TransactionLogMapper implements RowMapper<TransactionLog> {
         @Override
         public TransactionLog mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -83,5 +86,5 @@ public class TransactionLogDaoImpl implements TransactionLogDao {
             return transactionLog;
         }
     }
-    
+
 }

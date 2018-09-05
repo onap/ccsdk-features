@@ -1,15 +1,18 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
+ * Modifications Copyright © 2018 IBM.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.onap.ccsdk.config.rest.adaptor.service;
@@ -31,16 +34,16 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class ConfigRestAdaptorServiceImpl implements ConfigRestAdaptorService {
-    
+
     private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigRestAdaptorServiceImpl.class);
     private Map<String, String> restProperties = new ConcurrentHashMap<>();
-    
+
     public ConfigRestAdaptorServiceImpl(String propertyPath) {
         initializeProperties(propertyPath);
         try {
             String envType = restProperties.get(ConfigRestAdaptorConstants.REST_ADAPTOR_BASE_PROPERTY
                     + ConfigRestAdaptorConstants.REST_ADAPTOR_ENV_TYPE);
-            
+
             if (!(ConfigRestAdaptorConstants.PROPERTY_ENV_PROD.equalsIgnoreCase(envType)
                     || ConfigRestAdaptorConstants.PROPERTY_ENV_SOLO.equalsIgnoreCase(envType))) {
                 ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
@@ -53,72 +56,72 @@ public class ConfigRestAdaptorServiceImpl implements ConfigRestAdaptorService {
             logger.error(e.getMessage(), e);
         }
     }
-    
+
     private void initializeProperties(String propertyPath) {
         logger.trace("Initialising Config rest adaptor Service with property directory ({})", propertyPath);
         try {
             if (StringUtils.isBlank(propertyPath)) {
                 propertyPath = System.getProperty(ConfigRestAdaptorConstants.SDNC_ROOT_DIR_ENV_VAR_KEY);
             }
-            
+
             if (StringUtils.isBlank(propertyPath)) {
                 throw new ConfigRestAdaptorException(
                         String.format("Failed to get the property directory (%s)", propertyPath));
             }
-            
+
             // Loading Default config-rest-adaptor.properties
             String propertyFile =
                     propertyPath + File.separator + ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME;
-            
+
             Properties properties = new Properties();
             properties.load(new FileInputStream(propertyFile));
-            
+
             logger.trace("Initializing properties details for property file ({}) properties ({})", propertyFile,
                     properties);
             restProperties.putAll(properties.entrySet().stream()
                     .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString())));
-            
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }
-    
+
     @Override
     public <T> T getResource(String serviceSelector, String path, Class<T> responseType)
             throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).getResource(path, responseType);
     }
-    
+
     @Override
     public <T> T postResource(String serviceSelector, String path, Object request, Class<T> responseType)
             throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).postResource(path, request, responseType);
     }
-    
+
     @Override
     public <T> T exchangeResource(String serviceSelector, String path, Object request, Class<T> responseType,
             String method) throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).exchangeResource(path, request, responseType,
                 method);
     }
-    
+
     @Override
     public RestResponse getResource(String serviceSelector, String path) throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).getResource(path);
     }
-    
+
     @Override
     public RestResponse postResource(String serviceSelector, String path, Object request)
             throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).postResource(path, request);
     }
-    
+
     @Override
     public RestResponse exchangeResource(String serviceSelector, String path, Object request, String method)
             throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).exchangeResource(path, request, method);
     }
-    
+
     private ConfigRestClientServiceAdapter getRestClientAdapterBySelectorName(String serviceSelector)
             throws ConfigRestAdaptorException {
         String adoptorType = restProperties.get(ConfigRestAdaptorConstants.REST_ADAPTOR_BASE_PROPERTY + serviceSelector
@@ -138,5 +141,5 @@ public class ConfigRestAdaptorServiceImpl implements ConfigRestAdaptorService {
                     String.format("couldn't get rest adoptor type for the selector (%s)", serviceSelector));
         }
     }
-    
+
 }

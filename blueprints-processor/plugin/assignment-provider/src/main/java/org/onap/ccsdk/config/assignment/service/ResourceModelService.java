@@ -1,15 +1,18 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
+ * Modifications Copyright © 2018 IBM.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.onap.ccsdk.config.assignment.service;
@@ -30,13 +33,13 @@ import com.att.eelf.configuration.EELFManager;
 
 public class ResourceModelService {
     private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceModelService.class);
-    
+
     private ConfigModelService configModelService;
-    
+
     public ResourceModelService(ConfigModelService configModelService) {
         this.configModelService = configModelService;
     }
-    
+
     public Map<String, String> getTemplatesContents(SvcLogicContext ctx, List<String> templateNames)
             throws SvcLogicException {
         Map<String, String> templatesContents = new HashMap<>();
@@ -53,7 +56,7 @@ public class ResourceModelService {
         }
         return templatesContents;
     }
-    
+
     public Map<String, List<ResourceAssignment>> getTemplatesResourceAssignments(SvcLogicContext ctx,
             List<String> templateNames) throws SvcLogicException {
         Map<String, List<ResourceAssignment>> templatesResourceAssignments = new HashMap<>();
@@ -63,12 +66,12 @@ public class ResourceModelService {
                     String resourceMappingContent = this.configModelService.getNodeTemplateMapping(ctx, templateName);
                     logger.info("Processing template ({}) with resource assignment content : {}", templateName,
                             resourceMappingContent);
-                    
+
                     if (StringUtils.isNotBlank(resourceMappingContent)) {
-                        
+
                         List<ResourceAssignment> resourceAssignments =
                                 TransformationUtils.getListfromJson(resourceMappingContent, ResourceAssignment.class);
-                        
+
                         if (resourceAssignments != null) {
                             ResourceAssignmentValidator resourceAssignmentValidator =
                                     new ResourceAssignmentValidator(resourceAssignments);
@@ -88,7 +91,7 @@ public class ResourceModelService {
         } catch (Exception e) {
             throw new SvcLogicException(e.getMessage());
         }
-        
+
         return templatesResourceAssignments;
     }
 }

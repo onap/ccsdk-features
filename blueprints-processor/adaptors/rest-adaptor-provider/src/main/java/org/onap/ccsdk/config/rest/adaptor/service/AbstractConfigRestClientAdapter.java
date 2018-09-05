@@ -53,24 +53,24 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServiceAdapter {
-    
+
     private static EELFLogger logger = EELFManager.getInstance().getLogger(AbstractConfigRestClientAdapter.class);
     private static final String MS_INIT_FAIL = "Failed to initialise microservice client restTemplate.";
-    
+
     protected boolean isRestClientServiceAdapaterEnabled = false;
     protected boolean isSSLServiceAdapaterEnabled = true;
-    
+
     protected Map<String, String> properties = new ConcurrentHashMap<>();
     protected String serviceSelector;
-    
+
     protected RestTemplate restTemplate;
-    
+
     protected AbstractConfigRestClientAdapter(Map<String, String> properties, String serviceSelector) {
         this.properties = properties;
         this.serviceSelector = serviceSelector;
         setRestClientServiceAdapaterEnabled();
     }
-    
+
     private void setRestClientServiceAdapaterEnabled() {
         String isEnabledProperty = ConfigRestAdaptorConstants.REST_ADAPTOR_BASE_PROPERTY + serviceSelector
                 + ConfigRestAdaptorConstants.SERVICE_EANABLED_PROPERTY;
@@ -82,7 +82,7 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
             isRestClientServiceAdapaterEnabled = true;
         }
     }
-    
+
     private List<HttpMessageConverter<?>> getMessageConverters() {
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(new ByteArrayHttpMessageConverter());
@@ -92,85 +92,85 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
         converters.add(new MappingJackson2HttpMessageConverter());
         return converters;
     }
-    
+
     public void initialise(String user, String pass) {
         logger.trace("Config rest template factory user ({}) ", user);
-        
+
         CloseableHttpClient httpClient =
                 HttpClients.custom().setSSLHostnameVerifier(new NoopHostnameVerifier()).build();
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         requestFactory.setHttpClient(httpClient);
-        
+
         restTemplate = new RestTemplate(getMessageConverters());
         restTemplate.setRequestFactory(requestFactory);
         if (StringUtils.isNotBlank(user) && StringUtils.isNotBlank(pass)) {
             restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(user, pass));
         }
     }
-    
+
     public void initialiseSSL(String keyStorePath, String trustStorePath, String keyPass, String trustPass)
             throws ConfigRestAdaptorException {
         logger.trace("SSL rest template factory");
-        
+
         TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
         SSLContext sslContext = null;
-        
+
         try (InputStream keyInput = new FileInputStream(keyStorePath)) {
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(keyInput, keyPass.toCharArray());
-            
+
             logger.info("key loaded successfully");
             sslContext = SSLContextBuilder.create().loadKeyMaterial(keyStore, keyPass.toCharArray()).loadTrustMaterial(
                     ResourceUtils.getFile(trustStorePath), trustPass.toCharArray(), acceptingTrustStrategy).build();
         } catch (Exception e) {
             throw new ConfigRestAdaptorException(e.getMessage());
         }
-        
+
         SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
         CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        
+
         restTemplate = new RestTemplate(getMessageConverters());
         restTemplate.setRequestFactory(requestFactory);
     }
-    
+
     public <T> T getResource(HttpHeaders headers, String url, Class<T> responseType) throws ConfigRestAdaptorException {
         ResponseEntity<T> response = exchangeForEntity(headers, url, HttpMethod.GET, null, responseType);
         return processResponse(response, url, HttpMethod.GET);
     }
-    
+
     public <T> T postResource(HttpHeaders headers, String url, Object request, Class<T> responseType)
             throws ConfigRestAdaptorException {
         ResponseEntity<T> response = exchangeForEntity(headers, url, HttpMethod.POST, request, responseType);
         return processResponse(response, url, HttpMethod.POST);
     }
-    
+
     public <T> T exchangeResource(HttpHeaders headers, String url, Object request, Class<T> responseType, String method)
             throws ConfigRestAdaptorException {
         ResponseEntity<T> response = exchangeForEntity(headers, url, HttpMethod.resolve(method), request, responseType);
         return processResponse(response, url, HttpMethod.resolve(method));
     }
-    
+
     public RestResponse getResource(HttpHeaders headers, String url) throws ConfigRestAdaptorException {
         return exchangeForEntity(headers, url, HttpMethod.GET, null);
     }
-    
+
     public RestResponse postResource(HttpHeaders headers, String url, Object request)
             throws ConfigRestAdaptorException {
         return exchangeForEntity(headers, url, HttpMethod.POST, request);
     }
-    
+
     public RestResponse exchangeResource(HttpHeaders headers, String url, Object request, String method)
             throws ConfigRestAdaptorException {
         return exchangeForEntity(headers, url, HttpMethod.resolve(method), request);
     }
-    
+
     private RestResponse exchangeForEntity(HttpHeaders headers, String url, HttpMethod httpMethod, Object request)
             throws ConfigRestAdaptorException {
         RestResponse restResponse = new RestResponse();
         restResponse.setRequestHeaders(headers.toSingleValueMap());
         ResponseEntity<String> response = null;
-        
+
         try {
             if (restTemplate == null) {
                 logger.error(MS_INIT_FAIL);
@@ -179,7 +179,7 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
                 logger.debug("url    : ({})", url);
                 logger.debug("headers: ({})", headers);
                 logger.debug("request: ({})", request);
-                
+
                 if (HttpMethod.GET == httpMethod) {
                     HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
                     response = restTemplate.exchange(url, httpMethod, entity, String.class);
@@ -188,7 +188,7 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
                     response = restTemplate.exchange(url, httpMethod, entity, String.class);
                 }
                 logger.debug("response: ({})", response);
-                
+
                 if (response != null) {
                     logger.debug("response status code: ({})", response.getStatusCode());
                     restResponse.setBody(response.getBody());
@@ -210,11 +210,11 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
         }
         return restResponse;
     }
-    
+
     private <T> ResponseEntity<T> exchangeForEntity(HttpHeaders headers, String url, HttpMethod httpMethod,
             Object request, Class<T> responseType) throws ConfigRestAdaptorException {
         ResponseEntity<T> response = null;
-        
+
         try {
             if (restTemplate == null) {
                 logger.error(MS_INIT_FAIL);
@@ -223,7 +223,7 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
                 logger.debug("url    : ({})", url);
                 logger.debug("headers: ({})", headers);
                 logger.debug("request: ({})", request);
-                
+
                 if (HttpMethod.GET == httpMethod) {
                     HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
                     response = restTemplate.exchange(url, httpMethod, entity, responseType);
@@ -232,7 +232,7 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
                     response = restTemplate.exchange(url, httpMethod, entity, responseType);
                 }
                 logger.debug("response: ({})", response);
-                
+
                 if (response != null) {
                     logger.debug("response status code: ({})", response.getStatusCode());
                 } else {
@@ -245,7 +245,7 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
         }
         return response;
     }
-    
+
     protected synchronized <T> T processResponse(ResponseEntity<T> response, String url, HttpMethod httpMethod)
             throws ConfigRestAdaptorException {
         if (response != null) {
@@ -262,7 +262,7 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
         }
         throw new ConfigRestAdaptorException(String.format("Rest Operation is failed for the URL (%s)", url));
     }
-    
+
     protected synchronized String constructUrl(String baseUrl, String path) {
         if (StringUtils.isNotBlank(path)) {
             return baseUrl + path;
@@ -270,5 +270,5 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
             return baseUrl;
         }
     }
-    
+
 }

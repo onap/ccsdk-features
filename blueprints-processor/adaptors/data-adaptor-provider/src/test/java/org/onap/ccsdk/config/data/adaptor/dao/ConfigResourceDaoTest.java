@@ -1,15 +1,18 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
+ * Modifications Copyright © 2018 IBM.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.onap.ccsdk.config.data.adaptor.dao;
@@ -37,24 +40,24 @@ import com.att.eelf.configuration.EELFManager;
 @ContextConfiguration(locations = {"classpath:test-context-h2db.xml"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ConfigResourceDaoTest {
-    
+
     private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigResourceDaoTest.class);
-    
+
     @Autowired
     private ConfigResourceDao configResourceDao;
-    
+
     @Before
     public void initialise() {
-        
+
     }
-    
+
     @Test
     public void testAssignmentResourceData() throws Exception {
         ConfigResource configResource = new ConfigResource();
         String resourceData = IOUtils.toString(
                 ConfigResourceDaoTest.class.getClassLoader().getResourceAsStream("reference/resource_data.json"),
                 Charset.defaultCharset());
-        
+
         logger.trace("resourceData = " + resourceData);
         configResource.setResourceData(resourceData);
         configResource.setServiceTemplateName("sample-name");
@@ -68,7 +71,7 @@ public class ConfigResourceDaoTest {
         configResource.setStatus("success");
         configResource.setCreatedDate(new Date(System.currentTimeMillis()));
         configResource.setUpdatedBy("an188a");
-        
+
         List<ResourceAssignmentData> resourceAssignments = new ArrayList<>();
         ResourceAssignmentData resourceAssignmentData = new ResourceAssignmentData();
         resourceAssignmentData.setDataType("string");
@@ -80,7 +83,7 @@ public class ConfigResourceDaoTest {
         resourceAssignmentData.setSource("input");
         resourceAssignments.add(resourceAssignmentData);
         configResource.setResourceAssignments(resourceAssignments);
-        
+
         ConfigResource dbConfigResource = configResourceDao.save(configResource);
         logger.info("Saved sucessfully : " + dbConfigResource.toString());
         Assert.assertNotNull("ConfigResource is null", dbConfigResource);
@@ -88,7 +91,7 @@ public class ConfigResourceDaoTest {
         Assert.assertEquals("Resource Assignment Data count missmatch", true,
                 dbConfigResource.getResourceAssignments().size() > 0);
     }
-    
+
     @Test
     public void testConfigResourcesData() throws Exception {
         ConfigResource configResourceInput = new ConfigResource();
@@ -96,7 +99,7 @@ public class ConfigResourceDaoTest {
         List<ConfigResource> dbConfigResources = configResourceDao.findByConfigResource(configResourceInput);
         Assert.assertNotNull("ConfigResources is null", dbConfigResources);
         Assert.assertEquals("ConfigResources size missmatch", true, dbConfigResources.size() > 0);
-        
+
         for (ConfigResource configResource : dbConfigResources) {
             Assert.assertNotNull("ConfigResources Assignments is null", configResource.getResourceAssignments());
             Assert.assertTrue("ConfigResources Assignments size miss mathch ",
@@ -104,18 +107,18 @@ public class ConfigResourceDaoTest {
             logger.trace("ResourceAssignments = " + configResource.getResourceAssignments());
         }
     }
-    
+
     @Test
     public void testDeleteByConfigResource() throws Exception {
         ConfigResource configResourceInput = new ConfigResource();
         configResourceInput.setResourceId("123456");
-        
+
         List<ConfigResource> dbConfigResources = configResourceDao.findByConfigResource(configResourceInput);
         Assert.assertTrue("ConfigResources is null", !dbConfigResources.isEmpty());
-        
+
         configResourceInput.setConfigResourceId(dbConfigResources.get(0).getConfigResourceId());
         configResourceDao.deleteByConfigResource(configResourceInput);
-        
+
         dbConfigResources = configResourceDao.findByConfigResource(configResourceInput);
         Assert.assertTrue("ConfigResources is not null", dbConfigResources.isEmpty());
     }

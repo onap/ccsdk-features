@@ -1,15 +1,18 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
+ * Modifications Copyright © 2018 IBM.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.onap.ccsdk.config.data.adaptor.service;
@@ -42,30 +45,30 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:test-context-h2db.xml"})
 public class ConfigResourceServiceTest {
-    
+
     ConfigResourceService configResourceService;
-    
+
     @Autowired
     TransactionLogDao transactionLogDao;
-    
+
     @Autowired
     ConfigResourceDao configResourceDao;
-    
+
     @Autowired
     QueryExecutorDao queryExecutorDao;
-    
+
     @Autowired
     NamedQueryExecutorDao namedQueryExecutorDao;
-    
+
     @Autowired
     ConfigPropertyMapDao configPropertyMapDao;
-    
+
     @Before
     public void before() {
         configResourceService = new ConfigResourceServiceImpl(transactionLogDao, configResourceDao, queryExecutorDao,
                 namedQueryExecutorDao, configPropertyMapDao);
     }
-    
+
     @Test
     public void testUpdate() throws Exception {
         String sql = "INSERT INTO CONFIG_RESOURCE"
@@ -76,20 +79,20 @@ public class ConfigResourceServiceTest {
                         "resource-data", "mask-data", null, new Date(System.currentTimeMillis()), "ab1234"};
         int result = configResourceService.update(sql, data);
         Assert.assertTrue(result == 1);
-        
+
         sql = "SELECT * FROM CONFIG_RESOURCE WHERE config_resource_id = ?";
         data = new Object[] {"54321"};
         List<Map<String, Object>> queryResult = configResourceService.query(sql, data);
         Assert.assertTrue(queryResult.size() == 1);
     }
-    
+
     @Test
     public void testSaveAndGetConfigResource() throws Exception {
         ConfigResource configResource = new ConfigResource();
         String resourceData = IOUtils.toString(
                 ConfigResourceDaoTest.class.getClassLoader().getResourceAsStream("reference/resource_data.json"),
                 Charset.defaultCharset());
-        
+
         configResource.setResourceData(resourceData);
         configResource.setServiceTemplateName("sample-name");
         configResource.setServiceTemplateVersion("1.0.0");
@@ -102,7 +105,7 @@ public class ConfigResourceServiceTest {
         configResource.setStatus("success");
         configResource.setCreatedDate(new Date(System.currentTimeMillis()));
         configResource.setUpdatedBy("an188a");
-        
+
         List<ResourceAssignmentData> resourceAssignments = new ArrayList<>();
         ResourceAssignmentData resourceAssignmentData = new ResourceAssignmentData();
         resourceAssignmentData.setDataType("string");
@@ -114,7 +117,7 @@ public class ConfigResourceServiceTest {
         resourceAssignmentData.setSource("input");
         resourceAssignments.add(resourceAssignmentData);
         configResource.setResourceAssignments(resourceAssignments);
-        
+
         // save
         ConfigResource dbConfigResource = configResourceService.saveConfigResource(configResource);
         Assert.assertNotNull("ConfigResource is null", dbConfigResource);
@@ -122,7 +125,7 @@ public class ConfigResourceServiceTest {
         Assert.assertEquals("Resource Assignment Data count missmatch", true,
                 dbConfigResource.getResourceAssignments().size() > 0);
         Assert.assertEquals(configResource.getServiceTemplateVersion(), dbConfigResource.getServiceTemplateVersion());
-        
+
         // update
         configResource.setServiceTemplateVersion("1.0.1");
         dbConfigResource = configResourceService.saveConfigResource(configResource);
@@ -131,7 +134,7 @@ public class ConfigResourceServiceTest {
         Assert.assertEquals("Resource Assignment Data count missmatch", true,
                 dbConfigResource.getResourceAssignments().size() > 0);
         Assert.assertEquals(configResource.getServiceTemplateVersion(), dbConfigResource.getServiceTemplateVersion());
-        
+
         // find
         ConfigResource configResourceInput = new ConfigResource();
         configResourceInput.setResourceId(configResource.getResourceId());
@@ -144,23 +147,23 @@ public class ConfigResourceServiceTest {
         List<ConfigResource> dbConfigResources = configResourceService.getConfigResource(configResourceInput);
         Assert.assertNotNull("ConfigResources is null", dbConfigResources);
         Assert.assertEquals("ConfigResources size missmatch", true, dbConfigResources.size() > 0);
-        
+
         for (ConfigResource dbConfigResouce : dbConfigResources) {
             Assert.assertNotNull("ConfigResources Assignments is null", dbConfigResouce.getResourceAssignments());
             Assert.assertTrue("ConfigResources Assignments size miss mathch ",
                     dbConfigResouce.getResourceAssignments().size() > 0);
         }
     }
-    
+
     @Test
     public void testSaveAndGetTransactionLog() throws Exception {
         TransactionLog transactionLog = new TransactionLog();
         transactionLog.setMessage("message");
         transactionLog.setMessageType("messageType");
         transactionLog.setRequestId("requestId");
-        
+
         configResourceService.save(transactionLog);
-        
+
         List<TransactionLog> transactions =
                 configResourceService.getTransactionsByRequestId(transactionLog.getRequestId());
         Assert.assertTrue(transactions.size() == 1);
@@ -168,7 +171,7 @@ public class ConfigResourceServiceTest {
                 transactionLog.getMessageType());
         Assert.assertTrue(transactions.size() == 1);
     }
-    
+
     @Test
     public void testNamedQueryExecutorUpdateNQuery() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
@@ -179,10 +182,10 @@ public class ConfigResourceServiceTest {
         configResourceService.update(
                 "INSERT INTO CONFIG_TRANSACTION_LOG ( config_transaction_log_id, request_id, message_type, message ) VALUES (:config_transaction_log_id, :request_id, :message_type, :message) ",
                 parameters);
-        
+
         List<Map<String, Object>> result = configResourceService
                 .query("SELECT * FROM CONFIG_TRANSACTION_LOG WHERE request_id = :request_id", parameters);
-        
+
         Assert.assertTrue(!result.isEmpty());
         Assert.assertNotNull(configResourceService.getNamedParameterJdbcTemplate());
     }

@@ -1,15 +1,18 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
+ * Modifications Copyright © 2018 IBM.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.onap.ccsdk.config.assignment.service;
@@ -31,16 +34,16 @@ import com.att.eelf.configuration.EELFManager;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ResourceAssignmentGenerationTest {
-    
+
     private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceAssignmentGenerationTest.class);
-    
+
     @Test
     public void testResourceDataSetting() {
         try {
             logger.info(" **************** testResourceDataSetting *****************");
             String resourceAssignmentContents = IOUtils.toString(TopologicalSortingTest.class.getClassLoader()
                     .getResourceAsStream("assignments/alltype-empty-value-mapping.json"), Charset.defaultCharset());
-            
+
             List<ResourceAssignment> assignments =
                     TransformationUtils.getListfromJson(resourceAssignmentContents, ResourceAssignment.class);
             if (assignments != null) {
@@ -75,33 +78,33 @@ public class ResourceAssignmentGenerationTest {
                 }
                 String generatedData = ResourceAssignmentUtils.generateResourceDataForAssignments(assignments);
                 logger.trace("Generated Data " + generatedData);
-                
+
                 Assert.assertNotNull("Failed to generate resource data", generatedData);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     @Test
     public void testGenerateResourceData() {
         try {
             logger.info(" **************** testGenerateResourceData *****************");
             String resourceAssignmentContents = IOUtils.toString(TopologicalSortingTest.class.getClassLoader()
                     .getResourceAsStream("assignments/alltype-mapping.json"), Charset.defaultCharset());
-            
+
             List<ResourceAssignment> assignments =
                     TransformationUtils.getListfromJson(resourceAssignmentContents, ResourceAssignment.class);
             if (assignments != null) {
-                
+
                 String generatedData = ResourceAssignmentUtils.generateResourceDataForAssignments(assignments);
                 logger.trace("Generated Data " + generatedData);
-                
+
                 Assert.assertNotNull("Failed to generate resource data", generatedData);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
 }

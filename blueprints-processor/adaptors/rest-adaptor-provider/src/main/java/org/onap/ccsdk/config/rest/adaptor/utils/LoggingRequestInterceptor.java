@@ -1,15 +1,18 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
+ * Modifications Copyright © 2018 IBM.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.onap.ccsdk.config.rest.adaptor.utils;
@@ -25,9 +28,9 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
-    
+
     private static EELFLogger logger = EELFManager.getInstance().getLogger(LoggingRequestInterceptor.class);
-    
+
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
             throws IOException {
@@ -36,7 +39,7 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
         traceResponse(response);
         return response;
     }
-    
+
     @SuppressWarnings({"squid:S2629", "squid:S3457"})
     private void traceRequest(HttpRequest request, byte[] body) throws IOException {
         logger.info("===========================request begin================================================");
@@ -46,7 +49,7 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
         logger.info("Request body: {}", new String(body, "UTF-8"));
         logger.debug("==========================request end================================================");
     }
-    
+
     @SuppressWarnings({"squid:S2629", "squid:S3457"})
     private void traceResponse(ClientHttpResponse response) throws IOException {
         StringBuilder inputStringBuilder = new StringBuilder();
@@ -64,5 +67,5 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
         logger.debug("Response body: {}", inputStringBuilder.toString());
         logger.debug("=======================response end=================================================");
     }
-    
+
 }

@@ -1,15 +1,18 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
+ * Modifications Copyright © 2018 IBM.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.onap.ccsdk.config.assignment.service;
@@ -44,13 +47,13 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ConfigAssignmentUtils {
-    
+
     private ConfigAssignmentUtils() {
-        
+
     }
-    
+
     private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigAssignmentUtils.class);
-    
+
     public static synchronized Object getContextKeyValue(SvcLogicContext context, String key) {
         Object value = null;
         if (context != null && key != null) {
@@ -65,7 +68,7 @@ public class ConfigAssignmentUtils {
         }
         return value;
     }
-    
+
     /*
      * Populate the Field property type for the Data type
      */
@@ -98,7 +101,7 @@ public class ConfigAssignmentUtils {
         }
         return type;
     }
-    
+
     /*
      * Populate the Field property type for the Data type
      */
@@ -126,7 +129,7 @@ public class ConfigAssignmentUtils {
         }
         return propertyDefinition;
     }
-    
+
     public static synchronized ResourceDefinition getDictionaryDefinition(Map<String, ResourceDictionary> dictionaries,
             String dictionaryName) {
         ResourceDefinition resourceDefinition = null;
@@ -139,7 +142,7 @@ public class ConfigAssignmentUtils {
         }
         return resourceDefinition;
     }
-    
+
     @SuppressWarnings("squid:S3776")
     public static synchronized void populateValueForOutputMapping(SvcLogicContext ctx,
             Map<String, Object> componentContext, ResourceAssignment resourceAssignment,
@@ -148,19 +151,19 @@ public class ConfigAssignmentUtils {
         if (resourceAssignment == null) {
             throw new SvcLogicException("resourceAssignment is null.");
         }
-        
+
         if (ctx == null) {
             throw new SvcLogicException("service logic context is null.");
         }
-        
+
         if (componentContext == null) {
             throw new SvcLogicException("component context is null.");
         }
-        
+
         logger.info("populating value for output mapping ({}), from json ({})", outputKeyMapping, responseNode);
         String dictionaryName = resourceAssignment.getDictionaryName();
         String type = resourceAssignment.getProperty().getType();
-        
+
         String entrySchema = null;
         if (ValidTypes.getPrimitivePropertType().contains(type)) {
             ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, responseNode);
@@ -169,7 +172,7 @@ public class ConfigAssignmentUtils {
             if (resourceAssignment.getProperty().getEntrySchema() != null) {
                 entrySchema = resourceAssignment.getProperty().getEntrySchema().getType();
             }
-            
+
             if (StringUtils.isNotBlank(entrySchema)) {
                 ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
                 if (ValidTypes.getPrimitivePropertType().contains(entrySchema)) {
@@ -181,7 +184,7 @@ public class ConfigAssignmentUtils {
                             ObjectNode arrayChildNode = JsonNodeFactory.instance.objectNode();
                             for (Map.Entry<String, String> mapping : outputKeyMapping.entrySet()) {
                                 JsonNode responseKeyValue = responseSingleJsonNode.get(mapping.getKey());
-                                
+
                                 String propertyTypeForDataType =
                                         ConfigAssignmentUtils.getPropertyType(ctx, entrySchema, mapping.getKey());
                                 logger.info("For List Type Resource: key ({}), value ({}), type  ({})",
@@ -221,7 +224,7 @@ public class ConfigAssignmentUtils {
             ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, objectNode);
         }
     }
-    
+
     @SuppressWarnings("squid:S3776")
     public static synchronized List<ResourceAssignment> convertResoureAssignmentDataList(
             List<ResourceAssignmentData> resourceAssignmentDataList) {
@@ -240,7 +243,7 @@ public class ConfigAssignmentUtils {
                     resourceAssignment.setMessage(resourceAssignmentData.getMessage());
                     PropertyDefinition property = new PropertyDefinition();
                     property.setType(resourceAssignmentData.getDataType());
-                    
+
                     if (StringUtils.isNotBlank(resourceAssignmentData.getResourceValue())) {
                         if (ValidTypes.getPrimitivePropertType().contains(resourceAssignmentData.getDataType())) {
                             property.setValue(resourceAssignmentData.getResourceValue());
@@ -261,11 +264,11 @@ public class ConfigAssignmentUtils {
                     assignments.add(resourceAssignment);
                 }
             }
-            
+
         }
         return assignments;
     }
-    
+
     @SuppressWarnings("squid:S3776")
     public static synchronized List<ResourceAssignmentData> convertResoureAssignmentList(
             List<ResourceAssignment> assignments) {
@@ -298,5 +301,5 @@ public class ConfigAssignmentUtils {
         }
         return resourceAssignmentDataList;
     }
-    
+
 }
