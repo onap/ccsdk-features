@@ -45,12 +45,9 @@ public class ServiceTemplateCreateUtils {
 
                 String formattedServiceTemplateContent = TransformationUtils.getJson(serviceTemplate, true);
 
-                FileUtils.writeStringToFile(new File("src/test/resources/service_templates/_default.json"),
+                FileUtils.writeStringToFile(new File("src/test/resources/service_templates/default.json"),
                         formattedServiceTemplateContent, Charset.defaultCharset());
 
-                createNetconfdownloadNodeTemplate(serviceTemplate);
-                createRestconfdownloadNodeTemplate(serviceTemplate);
-                // createResourceAssignmentNodeTemplate(serviceTemplate);
                 createVrrNodeTemplate(serviceTemplate);
                 createDictionarySchema();
 
@@ -86,105 +83,6 @@ public class ServiceTemplateCreateUtils {
                 }
                 System.out.println("NodeTypeCreateUtils.createNodeTypes()" + nodeTypeKey);
             });
-        }
-
-    }
-
-    public void createNetconfdownloadNodeTemplate(ServiceTemplate serviceTemplate) throws IOException {
-        if (serviceTemplate != null) {
-            ServiceTemplate workingServiceTemplate = new ServiceTemplate();
-            workingServiceTemplate.setMetadata(serviceTemplate.getMetadata());
-
-            Map<String, DataType> data_types = new HashMap<String, DataType>();
-            data_types.put("datatype-property", serviceTemplate.getDataTypes().get("datatype-property"));
-            data_types.put("datatype-resource-assignment",
-                    serviceTemplate.getDataTypes().get("datatype-resource-assignment"));
-            workingServiceTemplate.setDataTypes(data_types);
-
-            TopologyTemplate topology_template = new TopologyTemplate();
-            Map<String, NodeTemplate> node_templates = new HashMap<String, NodeTemplate>();
-
-            Map<String, NodeTemplate> node_Templates = serviceTemplate.getTopologyTemplate().getNodeTemplates();
-
-            node_templates.put("activate-action", node_Templates.get("activate-action"));
-            node_templates.put("base-config-template", node_Templates.get("base-config-template"));
-            node_templates.put("vrr-netconf-device", node_Templates.get("vrr-netconf-device"));
-            node_templates.put("get-netconf-config", node_Templates.get("get-netconf-config"));
-            node_templates.put("edit-netconf-config", node_Templates.get("edit-netconf-config"));
-            node_templates.put("transaction-netconf-baseconfig", node_Templates.get("transaction-netconf-baseconfig"));
-
-            topology_template.setNodeTemplates(node_templates);
-            topology_template.setInputs(serviceTemplate.getTopologyTemplate().getInputs());
-
-            Map<String, NodeType> node_types = new HashMap<String, NodeType>();
-            node_types.put("dg-activate-netconf", serviceTemplate.getNodeTypes().get("dg-activate-netconf"));
-            node_types.put("artifact-config-template", serviceTemplate.getNodeTypes().get("artifact-config-template"));
-            node_types.put("component-transaction-netconf",
-                    serviceTemplate.getNodeTypes().get("component-transaction-netconf"));
-            node_types.put("component-netconf-edit", serviceTemplate.getNodeTypes().get("component-netconf-edit"));
-            node_types.put("component-netconf-get", serviceTemplate.getNodeTypes().get("component-netconf-get"));
-            node_types.put("vnf-netconf-device", serviceTemplate.getNodeTypes().get("vnf-netconf-device"));
-
-            workingServiceTemplate.setNodeTypes(node_types);
-            workingServiceTemplate.setTopologyTemplate(topology_template);
-
-            String workingServiceTemplateContent = TransformationUtils.getJson(workingServiceTemplate, true);
-
-            FileUtils.writeStringToFile(new File("src/test/resources/service_templates/download_config.json"),
-                    workingServiceTemplateContent, Charset.defaultCharset());
-
-            File lcmFile = new File(
-                    "../../../adaptors/netconf-adaptor/provider/src/test/resources/service_templates/download_config.json");
-            FileUtils.writeStringToFile(lcmFile, workingServiceTemplateContent, Charset.defaultCharset());
-
-        }
-    }
-
-    public void createRestconfdownloadNodeTemplate(ServiceTemplate serviceTemplate) throws IOException {
-        if (serviceTemplate != null) {
-            ServiceTemplate workingServiceTemplate = new ServiceTemplate();
-            workingServiceTemplate.setMetadata(serviceTemplate.getMetadata());
-
-            Map<String, DataType> data_types = new HashMap<String, DataType>();
-            data_types.put("datatype-property", serviceTemplate.getDataTypes().get("datatype-property"));
-            data_types.put("datatype-resource-assignment",
-                    serviceTemplate.getDataTypes().get("datatype-resource-assignment"));
-            workingServiceTemplate.setDataTypes(data_types);
-
-            TopologyTemplate topology_template = new TopologyTemplate();
-            Map<String, NodeTemplate> node_templates = new HashMap<String, NodeTemplate>();
-
-            Map<String, NodeTemplate> node_Templates = serviceTemplate.getTopologyTemplate().getNodeTemplates();
-            node_templates.put("activate-restconf-action", node_Templates.get("activate-restconf-action"));
-            node_templates.put("base-config-template", node_Templates.get("base-config-template"));
-            node_templates.put("vrr-restconf-device", node_Templates.get("vrr-restconf-device"));
-            node_templates.put("edit-restconf-config", node_Templates.get("edit-restconf-config"));
-            node_templates.put("transaction-restconf-baseconfig",
-                    node_Templates.get("transaction-restconf-baseconfig"));
-
-            topology_template.setNodeTemplates(node_templates);
-            topology_template.setInputs(serviceTemplate.getTopologyTemplate().getInputs());
-
-            Map<String, NodeType> node_types = new HashMap<String, NodeType>();
-            node_types.put("dg-activate-restconf", serviceTemplate.getNodeTypes().get("dg-activate-restconf"));
-            node_types.put("artifact-config-template", serviceTemplate.getNodeTypes().get("artifact-config-template"));
-            node_types.put("component-transaction-restconf",
-                    serviceTemplate.getNodeTypes().get("component-transaction-restconf"));
-            node_types.put("component-restconf", serviceTemplate.getNodeTypes().get("component-restconf"));
-            node_types.put("vnf-restconf-device", serviceTemplate.getNodeTypes().get("vnf-restconf-device"));
-
-            workingServiceTemplate.setNodeTypes(node_types);
-            workingServiceTemplate.setTopologyTemplate(topology_template);
-
-            String workingServiceTemplateContent = TransformationUtils.getJson(workingServiceTemplate, true);
-
-            FileUtils.writeStringToFile(new File("src/test/resources/service_templates/restconf_download_config.json"),
-                    workingServiceTemplateContent, Charset.defaultCharset());
-
-            File lcmFile = new File(
-                    "../../../adaptors/netconf-adaptor/provider/src/test/resources/service_templates/restconf_download_config.json");
-            FileUtils.writeStringToFile(lcmFile, workingServiceTemplateContent, Charset.defaultCharset());
-
         }
 
     }

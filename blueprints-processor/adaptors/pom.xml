@@ -28,7 +28,7 @@
 	<packaging>pom</packaging>
 	<artifactId>blueprints-processor-adaptors</artifactId>
 	<name>Blueprints Processor Adaptors - POM</name>
-	<url>http://wiki.sdn.labs.att.com</url>
+	<url>https://wiki.onap.org</url>
 	<description>Blueprints Processor Adaptors - POM</description>
 	<modules>
 		<module>data-adaptor-provider</module>

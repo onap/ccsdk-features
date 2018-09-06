@@ -33,7 +33,7 @@
 	<packaging>pom</packaging>
 
 	<name>Blueprints Processor Module</name>
-	<url>http://wiki.sdn.labs.att.com</url>
+	<url>https://wiki.onap.org</url>
 	<description>Blueprints Processor Blueprints Processor</description>
 
 	<properties>

@@ -38,10 +38,6 @@ public class ServiceTemplateValidationTest {
             serviceTemplateContent = IOUtils.toString(ServiceTemplateValidationTest.class.getClassLoader()
                     .getResourceAsStream("service_templates/resource_assignment.json"), Charset.defaultCharset());
             serviceTemplateValidator.validateServiceTemplate(serviceTemplateContent);
-            logger.info(" **************** Activate Netconf *****************");
-            serviceTemplateContent = IOUtils.toString(ServiceTemplateValidationTest.class.getClassLoader()
-                    .getResourceAsStream("service_templates/download_config.json"), Charset.defaultCharset());
-            serviceTemplateValidator.validateServiceTemplate(serviceTemplateContent);
         } catch (Exception e) {
             e.printStackTrace();
         }
