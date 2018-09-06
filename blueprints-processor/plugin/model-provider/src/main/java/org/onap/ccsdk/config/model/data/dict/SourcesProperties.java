@@ -23,8 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SourcesProperties {
 
-    private String key;
-
     @JsonProperty(value = "name")
     private String name;
 
@@ -51,14 +49,6 @@ public class SourcesProperties {
 
     @JsonProperty("key-dependencies")
     private List<String> dependencies;
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 
     public String getName() {
         return name;
