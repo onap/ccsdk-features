@@ -132,7 +132,7 @@
 			},
 			"capabilities": {
 				"content": {
-					"type": "tosca.capability.Content",
+					"type": "tosca.capabilities.Content",
 					"properties": {
 						"content": {
 							"required": true,
@@ -252,7 +252,7 @@
 					"type": "tosca.capabilities.Node"
 				},
 				"content": {
-					"type": "tosca.capability.Content",
+					"type": "tosca.capabilities.Content",
 					"properties": {
 						"type": {
 							"required": false,
