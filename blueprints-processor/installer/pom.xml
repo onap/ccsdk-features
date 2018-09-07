@@ -33,7 +33,7 @@
 	<properties>
 		<application.name>blueprints-processor</application.name>
 		<features.boot>blueprints-processor-features</features.boot>
-		<features.repositories>mvn:org.onap.ccsdk.config/blueprints-processor-features/${project.version}/xml/features</features.repositories>
+		<features.repositories>mvn:org.onap.ccsdk.features/ccsdk-features/blueprints-processor-features/${project.version}/xml/features</features.repositories>
 		<include.transitive.dependencies>false</include.transitive.dependencies>
 	</properties>
 

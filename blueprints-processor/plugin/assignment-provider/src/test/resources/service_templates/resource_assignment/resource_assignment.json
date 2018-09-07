@@ -196,7 +196,7 @@
 					"type": "tosca.capabilities.Node"
 				},
 				"content": {
-					"type": "tosca.capability.Content",
+					"type": "tosca.capabilities.Content",
 					"properties": {
 						"type": {
 							"required": false,
@@ -331,7 +331,7 @@
 			},
 			"capabilities": {
 				"content": {
-					"type": "tosca.capability.Content",
+					"type": "tosca.capabilities.Content",
 					"properties": {
 						"content": {
 							"required": true,
@@ -340,7 +340,7 @@
 					}
 				},
 				"mapping": {
-					"type": "tosca.capability.Mapping",
+					"type": "tosca.capabilities.Mapping",
 					"properties": {
 						"mapping": {
 							"required": false,
