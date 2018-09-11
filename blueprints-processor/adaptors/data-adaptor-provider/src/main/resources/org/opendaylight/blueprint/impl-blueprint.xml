@@ -24,20 +24,6 @@
 
 	<reference id="dataSource" interface="javax.sql.DataSource" />
 
-	<!-- Expose the Common Component Bean -->
-
-	<bean id="configResourceService"
-		class="org.onap.ccsdk.config.data.adaptor.service.ConfigResourceServiceImpl">
-		<argument ref="transactionLogDao" />
-		<argument ref="configResourceDao" />
-		<argument ref="queryExecutorDao" />
-		<argument ref="namedQueryExecutorDao" />
-		<argument ref="configPropertyMapDao" />
-	</bean>
-
-	<service ref="configResourceService"
-		interface="org.onap.ccsdk.config.data.adaptor.service.ConfigResourceService" />
-
 	<!-- Data SourceInitialisation -->
 
 	<bean id="config.dataSource"
@@ -80,5 +66,19 @@
 		class="org.onap.ccsdk.config.data.adaptor.dao.ConfigPropertyMapDaoImpl">
 		<argument ref="jdbcTemplate" />
 	</bean>
+
+	<!-- Expose the Common Component Bean -->
+
+	<bean id="configResourceService"
+	class="org.onap.ccsdk.config.data.adaptor.service.ConfigResourceServiceImpl">
+		<argument ref="transactionLogDao" />
+		<argument ref="configResourceDao" />
+		<argument ref="queryExecutorDao" />
+		<argument ref="namedQueryExecutorDao" />
+		<argument ref="configPropertyMapDao" />
+	</bean>
+
+	<service ref="configResourceService"
+	interface="org.onap.ccsdk.config.data.adaptor.service.ConfigResourceService" />
 
 </blueprint>

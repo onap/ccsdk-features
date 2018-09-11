@@ -37,11 +37,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>equinoxSDK381</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <version>${equinox.osgi.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.onap.ccsdk.config</groupId>
             <artifactId>blueprints-rest-adaptor-provider</artifactId>
             <version>${project.version}</version>
@@ -97,15 +92,12 @@
                         <Export-Package>org.onap.ccsdk.config.model,
                             org.onap.ccsdk.config.model.data,
                             org.onap.ccsdk.config.model.data.api,
-                            org.onap.ccsdk.config.model.data.custom,
-                            org.onap.ccsdk.config.model.data.custom.dict,
+                            org.onap.ccsdk.config.model.data.dict,
                             org.onap.ccsdk.config.model.domain,
                             org.onap.ccsdk.config.model.service,
                             org.onap.ccsdk.config.model.utils,
                             org.onap.ccsdk.config.model.validator
                         </Export-Package>
-                        <Import-Package>*</Import-Package>
-                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
