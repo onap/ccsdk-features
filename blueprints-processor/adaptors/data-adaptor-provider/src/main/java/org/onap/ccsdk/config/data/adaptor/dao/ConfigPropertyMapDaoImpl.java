@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.onap.ccsdk.config.data.adaptor.DataAdaptorConstants;
 import org.onap.ccsdk.sli.core.sli.SvcLogicException;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
@@ -45,21 +46,23 @@ public class ConfigPropertyMapDaoImpl implements ConfigPropertyMapDao {
         if (!(DataAdaptorConstants.PROPERTY_ENV_PROD.equalsIgnoreCase(envType)
                 || DataAdaptorConstants.PROPERTY_ENV_SOLO.equalsIgnoreCase(envType))) {
             ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-            Runnable task = () -> {
-                initializeMap();
-            };
+            Runnable task = this::initializeMap;
             executor.scheduleWithFixedDelay(task, 60, 15, TimeUnit.MINUTES);
         }
     }
 
     private void initializeMap() {
-        String getPropQuery = "SELECT * FROM CONFIG_PROPERTY_MAP";
-        jdbcTemplate.queryForList(getPropQuery).forEach(rows -> {
-            String key = StringUtils.trimToEmpty((String) rows.get("reference_key"));
-            String value = StringUtils.trimToEmpty((String) rows.get("reference_value"));
-            configPropertyMap.put(key, value);
-        });
-        logger.trace("loaded configPropertyMap : ({})", configPropertyMap);
+        try {
+            String getPropQuery = "SELECT * FROM CONFIG_PROPERTY_MAP";
+            jdbcTemplate.queryForList(getPropQuery).forEach(rows -> {
+                String key = StringUtils.trimToEmpty((String) rows.get("reference_key"));
+                String value = StringUtils.trimToEmpty((String) rows.get("reference_value"));
+                configPropertyMap.put(key, value);
+            });
+            logger.trace("loaded configPropertyMap : ({})", configPropertyMap);
+        } catch (CannotGetJdbcConnectionException e) {
+            // WHAT TO DO?
+        }
     }
 
     @Override
