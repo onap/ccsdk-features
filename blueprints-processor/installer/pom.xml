@@ -43,7 +43,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.onap.ccsdk.config</groupId>
-			<artifactId>blueprints-processor-features</artifactId>
+			<artifactId>ccsdk-blueprints-processor</artifactId>
 			<version>${project.version}</version>
 			<classifier>features</classifier>
 			<type>xml</type>

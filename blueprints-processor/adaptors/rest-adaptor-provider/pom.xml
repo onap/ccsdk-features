@@ -74,7 +74,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.12</version>
+            <version>1.17</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -176,18 +176,6 @@
                             org.onap.ccsdk.config.rest.adaptor.service,
                             org.onap.ccsdk.config.rest.adaptor.utils
                         </Export-Package>
-                        <Import-Package>!*spring*,!joptsimple,!net.*,!bsh,
-                            !org.apache.commons.pool*,!org.apache.commons.fileupload*,!org.apache.http.*,!org.apache.logger*,
-                            !org.apache.lucene*,!org.apache.t*,!org.apache.derby*,!org.codehaus.groovy*,!org.custommonkey.xmlunit*,
-                            !org.hibernate*,!org.jruby*,!org.aspectj*,!org.mockito*,!org.openqa*,!org.skyscreamer*,!org.testng*,
-                            !com.caucho*,!com.gargoylesoftware*,!com.jamonapi*,!com.rometools*,!com.squareup*,!com.sun*,!groovy*,
-                            !javax.ejb*,!javax.enterprise*,!javax.faces*,!javax.in*,!javax.money*,!javax.portlet*,!javax.resource*,
-                            org.*,javax.*,com.google.gson*,com.google.common.*,*jackson*
-                        </Import-Package>
-                        <Embed-Dependency>
-                            *;groupId=!*eelf*|*opendaylight*|*ccsdk*|*osgi*|*jackson*|*json*|*powermock*|*junit*
-                        </Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>

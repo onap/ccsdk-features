@@ -37,11 +37,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>equinoxSDK381</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <version>${equinox.osgi.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.onap.ccsdk.config</groupId>
             <artifactId>blueprints-generator-provider</artifactId>
             <version>${project.version}</version>
@@ -95,8 +90,6 @@
                             org.onap.ccsdk.config.assignment.processor,
                             org.onap.ccsdk.config.assignment.processor.custom
                         </Export-Package>
-                        <Import-Package>*</Import-Package>
-                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
