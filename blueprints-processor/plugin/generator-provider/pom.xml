@@ -36,11 +36,11 @@
     <url>http://maven.apache.org</url>
 
     <dependencies>
-        <dependency>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <groupId>equinoxSDK381</groupId>
-            <version>${equinox.osgi.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<artifactId>org.eclipse.osgi</artifactId>-->
+            <!--<groupId>equinoxSDK381</groupId>-->
+            <!--<version>${equinox.osgi.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.onap.ccsdk.config</groupId>
             <artifactId>blueprints-model-provider</artifactId>
@@ -92,8 +92,6 @@
                             org.onap.ccsdk.config.generator.service,
                             org.onap.ccsdk.config.generator.tool
                         </Export-Package>
-                        <Import-Package>*</Import-Package>
-                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
