@@ -147,8 +147,8 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
 
     public <T> T exchangeResource(HttpHeaders headers, String url, Object request, Class<T> responseType, String method)
             throws ConfigRestAdaptorException {
-        ResponseEntity<T> response = exchangeForEntity(headers, url, HttpMethod.resolve(method), request, responseType);
-        return processResponse(response, url, HttpMethod.resolve(method));
+        ResponseEntity<T> response = exchangeForEntity(headers, url, HttpMethod.valueOf(method), request, responseType);
+        return processResponse(response, url, HttpMethod.valueOf(method));
     }
 
     public RestResponse getResource(HttpHeaders headers, String url) throws ConfigRestAdaptorException {
@@ -162,7 +162,7 @@ abstract class AbstractConfigRestClientAdapter implements ConfigRestClientServic
 
     public RestResponse exchangeResource(HttpHeaders headers, String url, Object request, String method)
             throws ConfigRestAdaptorException {
-        return exchangeForEntity(headers, url, HttpMethod.resolve(method), request);
+        return exchangeForEntity(headers, url, HttpMethod.valueOf(method), request);
     }
 
     private RestResponse exchangeForEntity(HttpHeaders headers, String url, HttpMethod httpMethod, Object request)
