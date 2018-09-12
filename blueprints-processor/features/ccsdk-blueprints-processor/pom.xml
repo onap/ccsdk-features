@@ -83,16 +83,50 @@
             <artifactId>blueprints-assignment-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <!--<dependency>-->
             <!--<groupId>com.jcraft</groupId>-->
             <!--<artifactId>jsch</artifactId>-->
             <!--<version>${jsch.version}</version>-->
         <!--</dependency>-->
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${jsonpath.version}</version>
+        </dependency>
         <!--<dependency>-->
-            <!--<groupId>com.jayway.jsonpath</groupId>-->
-            <!--<artifactId>json-path</artifactId>-->
-            <!--<version>${jsonpath.version}</version>-->
+            <!--<groupId>org.apache.httpcomponents</groupId>-->
+            <!--<artifactId>httpcore</artifactId>-->
+            <!--<version>4.4.10</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.httpcomponents</groupId>-->
+            <!--<artifactId>httpclient</artifactId>-->
+            <!--<version>4.5.6</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-aop</artifactId>-->
+            <!--<version>4.2.9.RELEASE</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-tx</artifactId>-->
+            <!--<version>4.2.9.RELEASE</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-web</artifactId>-->
+            <!--<version>4.2.9.RELEASE</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-core</artifactId>-->
+            <!--<version>4.2.9.RELEASE</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-jdbc</artifactId>-->
+            <!--<version>4.2.9.RELEASE</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
             <!--<groupId>org.json</groupId>-->

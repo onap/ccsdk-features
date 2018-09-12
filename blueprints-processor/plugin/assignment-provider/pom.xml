@@ -83,7 +83,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>org.onap.ccsdk.config.assignment</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>org.onap.ccsdk.config.assignment,
                             org.onap.ccsdk.config.assignment.data,
                             org.onap.ccsdk.config.assignment.service,

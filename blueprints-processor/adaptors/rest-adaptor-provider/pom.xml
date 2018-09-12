@@ -48,68 +48,23 @@
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-xml</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jsonSchema</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.17</version>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>${org.json.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.5</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${apache.httpcomponents.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient-osgi</artifactId>
-            <version>4.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore-osgi</artifactId>
-            <version>4.4.10</version>
+            <artifactId>httpclient</artifactId>
+            <version>${apache.httpcomponents.client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>4.2.9.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>com.att.eelf</groupId>
@@ -117,39 +72,9 @@
             <version>${eelf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>4.2.9.RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>1.6.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>1.6.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-core</artifactId>
-            <version>1.6.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-support</artifactId>
-            <version>1.6.6</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -170,7 +95,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>org.onap.ccsdk.config.rest.adaptor</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>org.onap.ccsdk.config</Bundle-SymbolicName>
                         <Export-Package>org.onap.ccsdk.config.rest.adaptor,
                             org.onap.ccsdk.config.rest.adaptor.data,
                             org.onap.ccsdk.config.rest.adaptor.service,
