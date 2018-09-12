@@ -31,7 +31,7 @@
     <version>0.3.0-SNAPSHOT</version>
     <packaging>feature</packaging>
 
-    <name>Blueprints Processor :: features :: ${project.artifactId}</name>
+    <name>ccsdk-features :: features :: ${project.artifactId}</name>
     <dependencyManagement>
         <dependencies>
             <dependency>
