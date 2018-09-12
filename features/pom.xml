@@ -33,8 +33,8 @@
     <name>Blueprints Processor :: features</name>
 
     <modules>
-        <module>ccsdk-features-adaptors-all</module>
-        <module>features-features-adaptors</module>
+        <module>ccsdk-features-all</module>
+        <module>features-features</module>
         <module>installer</module>
     </modules>
 </project>
