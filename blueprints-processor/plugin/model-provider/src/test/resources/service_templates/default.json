@@ -146,7 +146,7 @@
       "resource-assignment" : {
         "type" : "component-resource-assignment",
         "interfaces" : {
-          "org-onap-ccsdk-config-assignment-service-ConfigAssignmentNode" : {
+          "org-onap-ccsdk-features-assignment-service-ConfigAssignmentNode" : {
             "operations" : {
               "process" : {
                 "inputs" : {
@@ -171,7 +171,7 @@
       "generate-configuration" : {
         "type" : "component-config-generator",
         "interfaces" : {
-          "org-onap-ccsdk-config-generator-service-ConfigGeneratorNode" : {
+          "org-onap-ccsdk-features-generator-service-ConfigGeneratorNode" : {
             "operations" : {
               "process" : {
                 "inputs" : {
@@ -403,7 +403,7 @@
         }
       },
       "interfaces" : {
-        "org-onap-ccsdk-config-assignment-service-ConfigAssignmentNode" : {
+        "org-onap-ccsdk-features-assignment-service-ConfigAssignmentNode" : {
           "operations" : {
             "process" : {
               "inputs" : {
@@ -465,7 +465,7 @@
         }
       },
       "interfaces" : {
-        "org-onap-ccsdk-config-generator-service-ConfigGeneratorNode" : {
+        "org-onap-ccsdk-features-generator-service-ConfigGeneratorNode" : {
           "operations" : {
             "process" : {
               "inputs" : {
@@ -512,7 +512,7 @@
                   "type" : "string"
                 },
                 "mask-info" : {
-                  "description" : "If template contains mask encription keys, then this mask-info field will be generated, This JSON Content alligns to the bean org.onap.ccsdk.config.model.data.custom.MaskInfo ",
+                  "description" : "If template contains mask encription keys, then this mask-info field will be generated, This JSON Content alligns to the bean org.onap.ccsdk.features.model.data.custom.MaskInfo ",
                   "required" : false,
                   "type" : "string"
                 },

@@ -53,10 +53,10 @@
 	<!-- <jdbc:script location="sql/schema.sql" /> -->
 	<!-- </jdbc:initialize-database> -->
 	<!-- <bean id="dataSetup" -->
-	<!-- class="org.onap.ccsdk.config.data.adaptor.db.utils.DataSetup"> -->
+	<!-- class="org.onap.ccsdk.features.data.adaptor.db.utils.DataSetup"> -->
 	<!-- <property name="testDb" ref="testDb" /> -->
 	<!-- </bean> -->
-	<!-- <bean id="testDb" class="org.onap.ccsdk.config.data.adaptor.db.utils.TestDb"> -->
+	<!-- <bean id="testDb" class="org.onap.ccsdk.features.data.adaptor.db.utils.TestDb"> -->
 	<!-- <property name="jdbcTemplate" ref="jdbcTemplate" /> -->
 	<!-- </bean> -->
 
@@ -71,26 +71,26 @@
 	</bean>
 
 	<bean id="configResourcelDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.ConfigResourceDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.ConfigResourceDaoImpl">
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="ConfigPropertyMapDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.ConfigPropertyMapDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.ConfigPropertyMapDaoImpl">
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="queryExecutorDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.QueryExecutorDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.QueryExecutorDaoImpl">
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="namedQueryExecutorDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.NamedQueryExecutorDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.NamedQueryExecutorDaoImpl">
 		<constructor-arg ref="namedParameterJdbcTemplate" />
 	</bean>
 
 	<context:component-scan
-		base-package="org.onap.ccsdk.config.data.adaptor" />
+		base-package="org.onap.ccsdk.features.data.adaptor" />
 
 </beans>

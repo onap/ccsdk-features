@@ -23,11 +23,11 @@
 	<!-- Expose the Common Component Bean -->
 
 	<bean id="configRestAdaptorService"
-		class="org.onap.ccsdk.config.rest.adaptor.service.ConfigRestAdaptorServiceImpl">
+		class="org.onap.ccsdk.features.rest.adaptor.service.ConfigRestAdaptorServiceImpl">
 		<argument value="/opt/sdnc/data/properties" />
 	</bean>
 
 	<service ref="configRestAdaptorService"
-		interface="org.onap.ccsdk.config.rest.adaptor.service.ConfigRestAdaptorService" />
+		interface="org.onap.ccsdk.features.rest.adaptor.service.ConfigRestAdaptorService" />
 
 </blueprint>

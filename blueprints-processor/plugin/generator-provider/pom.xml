@@ -108,10 +108,10 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            org.onap.ccsdk.config.generator,
-                            org.onap.ccsdk.config.generator.data,
-                            org.onap.ccsdk.config.generator.service,
-                            org.onap.ccsdk.config.generator.tool
+                            org.onap.ccsdk.features.generator,
+                            org.onap.ccsdk.features.generator.data,
+                            org.onap.ccsdk.features.generator.service,
+                            org.onap.ccsdk.features.generator.tool
                         </Export-Package>
                     </instructions>
                 </configuration>

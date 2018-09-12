@@ -27,7 +27,7 @@
 	<!-- Data SourceInitialisation -->
 
 	<bean id="config.dataSource"
-		class="org.onap.ccsdk.config.data.adaptor.db.DataSourceWrap">
+		class="org.onap.ccsdk.features.data.adaptor.db.DataSourceWrap">
 		<argument ref="dataSource" />
 	</bean>
 
@@ -43,34 +43,34 @@
 
 	<!-- DAO Initialisation -->
 	<bean id="transactionLogDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.TransactionLogDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.TransactionLogDaoImpl">
 		<argument ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="configResourceDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.ConfigResourceDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.ConfigResourceDaoImpl">
 		<argument ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="queryExecutorDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.QueryExecutorDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.QueryExecutorDaoImpl">
 		<argument ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="namedQueryExecutorDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.NamedQueryExecutorDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.NamedQueryExecutorDaoImpl">
 		<argument ref="namedParameterJdbcTemplate" />
 	</bean>
 
 	<bean id="configPropertyMapDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.ConfigPropertyMapDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.ConfigPropertyMapDaoImpl">
 		<argument ref="jdbcTemplate" />
 	</bean>
 
 	<!-- Expose the Common Component Bean -->
 
 	<bean id="configResourceService"
-	class="org.onap.ccsdk.config.data.adaptor.service.ConfigResourceServiceImpl">
+	class="org.onap.ccsdk.features.data.adaptor.service.ConfigResourceServiceImpl">
 		<argument ref="transactionLogDao" />
 		<argument ref="configResourceDao" />
 		<argument ref="queryExecutorDao" />
@@ -79,6 +79,6 @@
 	</bean>
 
 	<service ref="configResourceService"
-	interface="org.onap.ccsdk.config.data.adaptor.service.ConfigResourceService" />
+	interface="org.onap.ccsdk.features.data.adaptor.service.ConfigResourceService" />
 
 </blueprint>

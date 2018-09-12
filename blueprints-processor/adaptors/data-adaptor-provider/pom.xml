@@ -111,11 +111,11 @@
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.onap.ccsdk.config.data.adaptor,
-                            org.onap.ccsdk.config.data.adaptor.dao,
-                            org.onap.ccsdk.config.data.adaptor.db,
-                            org.onap.ccsdk.config.data.adaptor.domain,
-                            org.onap.ccsdk.config.data.adaptor.service
+                        <Export-Package>org.onap.ccsdk.features.data.adaptor,
+                            org.onap.ccsdk.features.data.adaptor.dao,
+                            org.onap.ccsdk.features.data.adaptor.db,
+                            org.onap.ccsdk.features.data.adaptor.domain,
+                            org.onap.ccsdk.features.data.adaptor.service
                         </Export-Package>
                     </instructions>
                 </configuration>

@@ -105,11 +105,11 @@
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.onap.ccsdk.config.assignment,
-                            org.onap.ccsdk.config.assignment.data,
-                            org.onap.ccsdk.config.assignment.service,
-                            org.onap.ccsdk.config.assignment.processor,
-                            org.onap.ccsdk.config.assignment.processor.custom
+                        <Export-Package>org.onap.ccsdk.features.assignment,
+                            org.onap.ccsdk.features.assignment.data,
+                            org.onap.ccsdk.features.assignment.service,
+                            org.onap.ccsdk.features.assignment.processor,
+                            org.onap.ccsdk.features.assignment.processor.custom
                         </Export-Package>
                     </instructions>
                 </configuration>

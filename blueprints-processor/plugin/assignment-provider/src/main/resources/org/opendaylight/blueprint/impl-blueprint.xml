@@ -21,23 +21,23 @@
 	odl:use-default-for-reference-types="true">
 
 	<reference id="componentNodeService"
-		interface="org.onap.ccsdk.config.model.service.ComponentNodeService" />
+		interface="org.onap.ccsdk.features.model.service.ComponentNodeService" />
 
 	<reference id="configResourceService"
-		interface="org.onap.ccsdk.config.data.adaptor.service.ConfigResourceService" />
+		interface="org.onap.ccsdk.features.data.adaptor.service.ConfigResourceService" />
 
 	<reference id="configModelService"
-		interface="org.onap.ccsdk.config.model.service.ConfigModelService" />
+		interface="org.onap.ccsdk.features.model.service.ConfigModelService" />
 
 	<reference id="configRestAdaptorService"
-		interface="org.onap.ccsdk.config.rest.adaptor.service.ConfigRestAdaptorService" />
+		interface="org.onap.ccsdk.features.rest.adaptor.service.ConfigRestAdaptorService" />
 
 	<reference id="configGeneratorService"
-		interface="org.onap.ccsdk.config.generator.service.ConfigGeneratorService" />
+		interface="org.onap.ccsdk.features.generator.service.ConfigGeneratorService" />
 
 	<!-- Expose the Common Component Bean -->
 	<bean id="configAssignmentNode"
-		class="org.onap.ccsdk.config.assignment.service.ConfigAssignmentNode">
+		class="org.onap.ccsdk.features.assignment.service.ConfigAssignmentNode">
 		<argument ref="configResourceService" />
 		<argument ref="configRestAdaptorService" />
 		<argument ref="configModelService" />
@@ -46,10 +46,10 @@
 	</bean>
 
 	<service ref="configAssignmentNode"
-		interface="org.onap.ccsdk.config.assignment.service.ConfigAssignmentNode" />
+		interface="org.onap.ccsdk.features.assignment.service.ConfigAssignmentNode" />
 
 	<bean id="configAssignmentService"
-		class="org.onap.ccsdk.config.assignment.service.ConfigAssignmentServiceImpl">
+		class="org.onap.ccsdk.features.assignment.service.ConfigAssignmentServiceImpl">
 		<argument ref="configResourceService" />
 		<argument ref="configRestAdaptorService" />
 		<argument ref="configModelService" />
@@ -58,6 +58,6 @@
 	</bean>
 
 	<service ref="configAssignmentService"
-		interface="org.onap.ccsdk.config.assignment.service.ConfigAssignmentService" />
+		interface="org.onap.ccsdk.features.assignment.service.ConfigAssignmentService" />
 
 </blueprint>

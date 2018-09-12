@@ -41,7 +41,7 @@
 			"generate-configuration": {
 				"type": "mock-component-generateConfig",
 				"interfaces": {
-					"org-onap-ccsdk-config-params-service-MockComponentNode": {
+					"org-onap-ccsdk-features-params-service-MockComponentNode": {
 						"operations": {
 							"process": {
 								"inputs": {
@@ -63,7 +63,7 @@
 	"node_types": {
 		"mock-component-generateConfig": {
 			"interfaces": {
-				"org-onap-ccsdk-config-params-service-MockComponentNode": {
+				"org-onap-ccsdk-features-params-service-MockComponentNode": {
 					"operations": {
 						"process": {
 							"inputs": {

@@ -23,46 +23,46 @@
 	<!-- Dependency -->
 
 	<reference id="configResourceService"
-		interface="org.onap.ccsdk.config.data.adaptor.service.ConfigResourceService" />
+		interface="org.onap.ccsdk.features.data.adaptor.service.ConfigResourceService" />
 
 	<reference id="configRestAdaptorService"
-		interface="org.onap.ccsdk.config.rest.adaptor.service.ConfigRestAdaptorService" />
+		interface="org.onap.ccsdk.features.rest.adaptor.service.ConfigRestAdaptorService" />
 
 	<!-- Expose the Common Component Bean -->
 	<bean id="configModelNode"
-		class="org.onap.ccsdk.config.model.service.ConfigModelNode">
+		class="org.onap.ccsdk.features.model.service.ConfigModelNode">
 	</bean>
 
 	<service ref="configModelNode"
-		interface="org.onap.ccsdk.config.model.service.ConfigModelNode" />
+		interface="org.onap.ccsdk.features.model.service.ConfigModelNode" />
 
 	<bean id="configModelService"
-		class="org.onap.ccsdk.config.model.service.ConfigModelServiceImpl">
+		class="org.onap.ccsdk.features.model.service.ConfigModelServiceImpl">
 		<argument ref="configRestAdaptorService" />
 	</bean>
 
 	<service ref="configModelService"
-		interface="org.onap.ccsdk.config.model.service.ConfigModelService" />
+		interface="org.onap.ccsdk.features.model.service.ConfigModelService" />
 
 
 	<!-- ComponentNode -->
 
 	<bean id="componentNodeService"
-		class="org.onap.ccsdk.config.model.service.ComponentNodeServiceImpl">
+		class="org.onap.ccsdk.features.model.service.ComponentNodeServiceImpl">
 		<argument ref="blueprintBundleContext" />
 		<argument ref="configResourceService" />
 		<argument ref="configRestAdaptorService" />
 	</bean>
 
 	<service ref="componentNodeService"
-		interface="org.onap.ccsdk.config.model.service.ComponentNodeService" />
+		interface="org.onap.ccsdk.features.model.service.ComponentNodeService" />
 
 	<bean id="componentNodeDelegate"
-		class="org.onap.ccsdk.config.model.service.ComponentNodeDelegate">
+		class="org.onap.ccsdk.features.model.service.ComponentNodeDelegate">
 		<argument ref="componentNodeService" />
 	</bean>
 
 	<service ref="componentNodeDelegate"
-		interface="org.onap.ccsdk.config.model.service.ComponentNodeDelegate" />
+		interface="org.onap.ccsdk.features.model.service.ComponentNodeDelegate" />
 
 </blueprint>

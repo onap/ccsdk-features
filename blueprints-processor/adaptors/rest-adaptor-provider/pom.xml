@@ -97,10 +97,10 @@
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.onap.ccsdk.config.rest.adaptor,
-                            org.onap.ccsdk.config.rest.adaptor.data,
-                            org.onap.ccsdk.config.rest.adaptor.service,
-                            org.onap.ccsdk.config.rest.adaptor.utils
+                        <Export-Package>org.onap.ccsdk.features.rest.adaptor,
+                            org.onap.ccsdk.features.rest.adaptor.data,
+                            org.onap.ccsdk.features.rest.adaptor.service,
+                            org.onap.ccsdk.features.rest.adaptor.utils
                         </Export-Package>
                     </instructions>
                 </configuration>

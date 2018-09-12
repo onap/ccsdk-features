@@ -53,31 +53,31 @@
 	</bean>
 
 	<bean id="configResourceDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.ConfigResourceDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.ConfigResourceDaoImpl">
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="configPropertyMapDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.ConfigPropertyMapDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.ConfigPropertyMapDaoImpl">
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="queryExecutorDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.QueryExecutorDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.QueryExecutorDaoImpl">
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="namedQueryExecutorDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.NamedQueryExecutorDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.NamedQueryExecutorDaoImpl">
 		<constructor-arg ref="namedParameterJdbcTemplate" />
 	</bean>
 
 	<bean id="transactionLogDao"
-		class="org.onap.ccsdk.config.data.adaptor.dao.TransactionLogDaoImpl">
+		class="org.onap.ccsdk.features.data.adaptor.dao.TransactionLogDaoImpl">
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
 
 	<context:component-scan
-		base-package="org.onap.ccsdk.config.data.adaptor" />
+		base-package="org.onap.ccsdk.features.data.adaptor" />
 
 </beans>

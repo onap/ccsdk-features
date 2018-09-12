@@ -139,7 +139,7 @@
 			"resource-assignment": {
 				"type": "component-resource-assignment",
 				"interfaces": {
-					"org-onap-ccsdk-config-assignment-service-ConfigAssignmentNode": {
+					"org-onap-ccsdk-features-assignment-service-ConfigAssignmentNode": {
 						"operations": {
 							"process": {
 								"inputs": {
@@ -245,7 +245,7 @@
 				}
 			},
 			"interfaces": {
-				"org-onap-ccsdk-config-assignment-service-ConfigAssignmentNode": {
+				"org-onap-ccsdk-features-assignment-service-ConfigAssignmentNode": {
 					"operations": {
 						"process": {
 							"inputs": {
