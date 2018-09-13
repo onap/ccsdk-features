@@ -22,6 +22,30 @@
       "revId": "280a0f6c73ab1c1aed9ee87fbd053d01d3838d70",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_5ed71c4b",
+        "filename": "blueprints-processor/adaptors/data-adaptor-provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2018-09-13T18:45:35Z",
+      "side": 1,
+      "message": "Scratch that ... I wasn\u0027t following the renames above in this commit.  You did refactor, which is fine - not strictly necessary, but less confusing.",
+      "parentUuid": "1a76adc5_e8a19294",
+      "range": {
+        "startLine": 114,
+        "startChar": 1,
+        "endLine": 119,
+        "endChar": 41
+      },
+      "revId": "280a0f6c73ab1c1aed9ee87fbd053d01d3838d70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
