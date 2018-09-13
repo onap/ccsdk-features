@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_e8a19294",
+        "filename": "blueprints-processor/adaptors/data-adaptor-provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2018-09-13T14:36:37Z",
+      "side": 1,
+      "message": "Not sure this is correct.  These should match the Java package names, which I do not believe were refactored.  All that was changed was the groupId, which has to match the repo name (package name doesn\u0027t have to match)",
+      "range": {
+        "startLine": 114,
+        "startChar": 1,
+        "endLine": 119,
+        "endChar": 41
+      },
+      "revId": "280a0f6c73ab1c1aed9ee87fbd053d01d3838d70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
