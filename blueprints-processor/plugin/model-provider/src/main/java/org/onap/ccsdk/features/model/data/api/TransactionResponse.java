@@ -22,25 +22,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TransactionResponse {
 
-    @JsonProperty("transaction-request-id")
-    private String transactionRequestId;
-    @JsonProperty("event-message")
-    private List<String> eventMessage;
+  @JsonProperty("transaction-request-id")
+  private String transactionRequestId;
+  @JsonProperty("event-message")
+  private List<String> eventMessage;
 
-    public String getTransactionRequestId() {
-        return transactionRequestId;
-    }
+  public String getTransactionRequestId() {
+    return transactionRequestId;
+  }
 
-    public void setTransactionRequestId(String transactionRequestId) {
-        this.transactionRequestId = transactionRequestId;
-    }
+  public void setTransactionRequestId(String transactionRequestId) {
+    this.transactionRequestId = transactionRequestId;
+  }
 
-    public List<String> getEventMessage() {
-        return eventMessage;
-    }
+  public List<String> getEventMessage() {
+    return eventMessage;
+  }
 
-    public void setEventMessage(List<String> eventMessage) {
-        this.eventMessage = eventMessage;
-    }
+  public void setEventMessage(List<String> eventMessage) {
+    this.eventMessage = eventMessage;
+  }
 
 }

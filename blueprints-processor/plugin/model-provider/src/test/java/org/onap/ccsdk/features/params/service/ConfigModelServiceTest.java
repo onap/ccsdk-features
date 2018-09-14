@@ -47,173 +47,173 @@ import com.att.eelf.configuration.EELFManager;
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigModelServiceTest {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigModelServiceTest.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigModelServiceTest.class);
 
-    @Mock
-    private ConfigRestAdaptorService configRestAdaptorService;
+  @Mock
+  private ConfigRestAdaptorService configRestAdaptorService;
 
-    @Test
-    public void testConfigAssignmentInputOutputParams() throws Exception {
+  @Test
+  public void testConfigAssignmentInputOutputParams() throws Exception {
 
-        String fileContent = FileUtils.readFileToString(
-                new File("src/test/resources/service_templates/resource_assignment.json"), Charset.defaultCharset());
+    String fileContent = FileUtils.readFileToString(
+        new File("src/test/resources/service_templates/resource_assignment.json"), Charset.defaultCharset());
 
-        Map<String, String> context = new HashMap<>();
-        ConfigModelServiceImpl configModelServiceImpl = new ConfigModelServiceImpl(configRestAdaptorService);
-        context = configModelServiceImpl.convertServiceTemplate2Properties(fileContent, context);
+    Map<String, String> context = new HashMap<>();
+    ConfigModelServiceImpl configModelServiceImpl = new ConfigModelServiceImpl(configRestAdaptorService);
+    context = configModelServiceImpl.convertServiceTemplate2Properties(fileContent, context);
 
-        Assert.assertNotNull("Failed to Prepare Context : ", context);
+    Assert.assertNotNull("Failed to Prepare Context : ", context);
 
-        context.put("request-id", "12345");
-        context.put("vnf-id", "vnf12345");
+    context.put("request-id", "12345");
+    context.put("vnf-id", "vnf12345");
 
-        Map<String, String> inparams = new HashMap<String, String>();
-        inparams.put(ConfigModelConstant.PROPERTY_SELECTOR, "resource-assignment");
+    Map<String, String> inparams = new HashMap<String, String>();
+    inparams.put(ConfigModelConstant.PROPERTY_SELECTOR, "resource-assignment");
 
-        SvcLogicContext inputContext = new SvcLogicContext();
-        context.forEach((name, value) -> {
-            inputContext.setAttribute(name, value);
-        });
+    SvcLogicContext inputContext = new SvcLogicContext();
+    context.forEach((name, value) -> {
+      inputContext.setAttribute(name, value);
+    });
 
-        // TransformationUtils.printProperty(inputContext.toProperties());
+    // TransformationUtils.printProperty(inputContext.toProperties());
 
-        configModelServiceImpl.assignInParamsFromModel(inputContext, inparams);
-        Assert.assertNotNull("In Param is Null : ", inparams);
-        Assert.assertNotNull("Failed to get entity-id in Inparms : ", inparams.get("resource-id"));
-        Assert.assertEquals("Failed to get entity-id vlaue in Inparms ", String.valueOf("vnf12345"),
-                inparams.get("resource-id"));
-        Assert.assertNotNull("Failed to get request-id in Inparms : ", inparams.get("request-id"));
-        Assert.assertEquals("Failed to get request-id vlaue in Inparms ", String.valueOf("12345"),
-                inparams.get("request-id"));
+    configModelServiceImpl.assignInParamsFromModel(inputContext, inparams);
+    Assert.assertNotNull("In Param is Null : ", inparams);
+    Assert.assertNotNull("Failed to get entity-id in Inparms : ", inparams.get("resource-id"));
+    Assert.assertEquals("Failed to get entity-id vlaue in Inparms ", String.valueOf("vnf12345"),
+        inparams.get("resource-id"));
+    Assert.assertNotNull("Failed to get request-id in Inparms : ", inparams.get("request-id"));
+    Assert.assertEquals("Failed to get request-id vlaue in Inparms ", String.valueOf("12345"),
+        inparams.get("request-id"));
 
-        configModelServiceImpl.assignOutParamsFromModel(inputContext, inparams);
-        logger.info("*************** Output Params *************");
-        // TransformationUtils.printProperty(inputContext.toProperties());
+    configModelServiceImpl.assignOutParamsFromModel(inputContext, inparams);
+    logger.info("*************** Output Params *************");
+    // TransformationUtils.printProperty(inputContext.toProperties());
 
+  }
+
+  @Test
+  public void testConvertServiceTemplate2PropertiesComplex() throws Exception {
+    String fileContent = FileUtils.readFileToString(
+        new File("src/test/resources/service_templates/resource_assignment.json"), Charset.defaultCharset());
+
+    Map<String, String> context = new HashMap<>();
+    context.put("host-password", "1234");
+    context.put("host-ip-address", "[123.23.34.45, 123.23.34.45]");
+
+    ConfigModelServiceImpl configModelServiceImpl = new ConfigModelServiceImpl(configRestAdaptorService);
+    configModelServiceImpl.convertServiceTemplate2Properties(fileContent, context);
+
+    // TransformationUtils.printMap(context);
+
+    Map<String, String> inparams = new HashMap<String, String>();
+    inparams.put(ConfigModelConstant.PROPERTY_SELECTOR, "resource-assignment");
+    logger.info("Before Input Result: " + inparams);
+
+    SvcLogicContext inputContext = new SvcLogicContext();
+    context.forEach((name, value) -> {
+      inputContext.setAttribute(name, value);
+    });
+
+    configModelServiceImpl.assignInParamsFromModel(inputContext, inparams);
+    logger.info("----------Input Result: " + inparams);
+
+    inputContext.setAttribute("assignment-params", "default-assigned");
+    configModelServiceImpl.assignOutParamsFromModel(inputContext, inparams);
+
+    // TransformationUtils.printProperty(inputContext.toProperties());
+
+  }
+
+  @Test
+  public void testGetNodeTemplateContent() throws Exception {
+    String templateContent = "{\"id\":\"id\"}";
+    SvcLogicContext context = new SvcLogicContext();
+    context.setAttribute(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + templateContent + ".content",
+        templateContent);
+
+    ConfigModelServiceImpl configModelServiceImpl = new ConfigModelServiceImpl(configRestAdaptorService);
+    String content = configModelServiceImpl.getNodeTemplateContent(context, templateContent);
+
+    Assert.assertEquals(content, templateContent);
+  }
+
+  @Test
+  public void testGetNodeTemplateMapping() throws Exception {
+    String templateContent = "{\"capabilities\":{\"mapping\":{\"properties\":{\"mapping\":[\"test\"]}}}}";
+    SvcLogicContext context = new SvcLogicContext();
+    context.setAttribute(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + templateContent, templateContent);
+
+    ConfigModelServiceImpl configModelServiceImpl = new ConfigModelServiceImpl(configRestAdaptorService);
+    configModelServiceImpl.getNodeTemplateMapping(context, templateContent);
+    // Assert.assertEquals(content, templateContent);
+  }
+
+  @Test
+  public void testValidateServiceTemplate() throws Exception {
+    ConfigModelServiceImpl configModelServiceImpl = new ConfigModelServiceImpl(configRestAdaptorService);
+    ServiceTemplate serviceTemplate = new ServiceTemplate();
+
+    try {
+      configModelServiceImpl.validateServiceTemplate(null);
+      fail("Should have thrown exception");
+    } catch (SvcLogicException e) {
     }
 
-    @Test
-    public void testConvertServiceTemplate2PropertiesComplex() throws Exception {
-        String fileContent = FileUtils.readFileToString(
-                new File("src/test/resources/service_templates/resource_assignment.json"), Charset.defaultCharset());
-
-        Map<String, String> context = new HashMap<>();
-        context.put("host-password", "1234");
-        context.put("host-ip-address", "[123.23.34.45, 123.23.34.45]");
-
-        ConfigModelServiceImpl configModelServiceImpl = new ConfigModelServiceImpl(configRestAdaptorService);
-        configModelServiceImpl.convertServiceTemplate2Properties(fileContent, context);
-
-        // TransformationUtils.printMap(context);
-
-        Map<String, String> inparams = new HashMap<String, String>();
-        inparams.put(ConfigModelConstant.PROPERTY_SELECTOR, "resource-assignment");
-        logger.info("Before Input Result: " + inparams);
-
-        SvcLogicContext inputContext = new SvcLogicContext();
-        context.forEach((name, value) -> {
-            inputContext.setAttribute(name, value);
-        });
-
-        configModelServiceImpl.assignInParamsFromModel(inputContext, inparams);
-        logger.info("----------Input Result: " + inparams);
-
-        inputContext.setAttribute("assignment-params", "default-assigned");
-        configModelServiceImpl.assignOutParamsFromModel(inputContext, inparams);
-
-        // TransformationUtils.printProperty(inputContext.toProperties());
-
+    try {
+      configModelServiceImpl.validateServiceTemplate(serviceTemplate);
+      fail("Should have thrown exception");
+    } catch (SvcLogicException e) {
     }
 
-    @Test
-    public void testGetNodeTemplateContent() throws Exception {
-        String templateContent = "{\"id\":\"id\"}";
-        SvcLogicContext context = new SvcLogicContext();
-        context.setAttribute(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + templateContent + ".content",
-                templateContent);
+    Map<String, String> metadata = new HashMap<String, String>();
+    metadata.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_AUTHOR, "author");
+    metadata.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_NAME, "name");
+    metadata.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_VERSION, "version");
+    serviceTemplate.setMetadata(metadata);
 
-        ConfigModelServiceImpl configModelServiceImpl = new ConfigModelServiceImpl(configRestAdaptorService);
-        String content = configModelServiceImpl.getNodeTemplateContent(context, templateContent);
+    Assert.assertTrue(configModelServiceImpl.validateServiceTemplate(serviceTemplate));
+  }
 
-        Assert.assertEquals(content, templateContent);
-    }
+  @Test
+  public void testPrepareContext() throws Exception {
+    Mockito.when(configRestAdaptorService.getResource(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+        .thenReturn(createConfigModel());
 
-    @Test
-    public void testGetNodeTemplateMapping() throws Exception {
-        String templateContent = "{\"capabilities\":{\"mapping\":{\"properties\":{\"mapping\":[\"test\"]}}}}";
-        SvcLogicContext context = new SvcLogicContext();
-        context.setAttribute(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + templateContent, templateContent);
+    String input = "{\"action-name\": \"resource-assignment-action\"}";
+    ConfigModelService configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
 
-        ConfigModelServiceImpl configModelServiceImpl = new ConfigModelServiceImpl(configRestAdaptorService);
-        configModelServiceImpl.getNodeTemplateMapping(context, templateContent);
-        // Assert.assertEquals(content, templateContent);
-    }
+    Map<String, String> ctx =
+        configModelService.prepareContext(null, input, "serviceTemplateName", "serviceTemplateVersion");
+    Assert.assertEquals("resource-assignment-action", ctx.get(ConfigModelConstant.PROPERTY_ACTION_NAME));
 
-    @Test
-    public void testValidateServiceTemplate() throws Exception {
-        ConfigModelServiceImpl configModelServiceImpl = new ConfigModelServiceImpl(configRestAdaptorService);
-        ServiceTemplate serviceTemplate = new ServiceTemplate();
+    ctx = configModelService.prepareContext(null, input, "{}");
+    Assert.assertEquals("resource-assignment-action", ctx.get(ConfigModelConstant.PROPERTY_ACTION_NAME));
+  }
 
-        try {
-            configModelServiceImpl.validateServiceTemplate(null);
-            fail("Should have thrown exception");
-        } catch (SvcLogicException e) {
-        }
+  @Test
+  public void testConvertServiceTemplate2Properties() throws Exception {
+    Map<String, String> metadata = new HashMap<String, String>();
+    metadata.put("key", "value");
+    ServiceTemplate serviceTemplate = new ServiceTemplate();
+    serviceTemplate.setMetadata(metadata);
+    Map<String, String> context = new HashMap<String, String>();
 
-        try {
-            configModelServiceImpl.validateServiceTemplate(serviceTemplate);
-            fail("Should have thrown exception");
-        } catch (SvcLogicException e) {
-        }
+    ConfigModelService configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
+    Map<String, String> ctx = configModelService.convertServiceTemplate2Properties(serviceTemplate, context);
 
-        Map<String, String> metadata = new HashMap<String, String>();
-        metadata.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_AUTHOR, "author");
-        metadata.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_NAME, "name");
-        metadata.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_VERSION, "version");
-        serviceTemplate.setMetadata(metadata);
+    Assert.assertEquals("value", ctx.get("key"));
+  }
 
-        Assert.assertTrue(configModelServiceImpl.validateServiceTemplate(serviceTemplate));
-    }
-
-    @Test
-    public void testPrepareContext() throws Exception {
-        Mockito.when(configRestAdaptorService.getResource(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
-                .thenReturn(createConfigModel());
-
-        String input = "{\"action-name\": \"resource-assignment-action\"}";
-        ConfigModelService configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
-
-        Map<String, String> ctx =
-                configModelService.prepareContext(null, input, "serviceTemplateName", "serviceTemplateVersion");
-        Assert.assertEquals("resource-assignment-action", ctx.get(ConfigModelConstant.PROPERTY_ACTION_NAME));
-
-        ctx = configModelService.prepareContext(null, input, "{}");
-        Assert.assertEquals("resource-assignment-action", ctx.get(ConfigModelConstant.PROPERTY_ACTION_NAME));
-    }
-
-    @Test
-    public void testConvertServiceTemplate2Properties() throws Exception {
-        Map<String, String> metadata = new HashMap<String, String>();
-        metadata.put("key", "value");
-        ServiceTemplate serviceTemplate = new ServiceTemplate();
-        serviceTemplate.setMetadata(metadata);
-        Map<String, String> context = new HashMap<String, String>();
-
-        ConfigModelService configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
-        Map<String, String> ctx = configModelService.convertServiceTemplate2Properties(serviceTemplate, context);
-
-        Assert.assertEquals("value", ctx.get("key"));
-    }
-
-    private ConfigModel createConfigModel() {
-        ConfigModel configModel = new ConfigModel();
-        List<ConfigModelContent> configModelContents = new ArrayList<ConfigModelContent>();
-        ConfigModelContent configModelContent = new ConfigModelContent();
-        configModelContent.setContentType(ConfigModelConstant.MODEL_CONTENT_TYPE_TOSCA_JSON);
-        configModelContent.setContent("{\"description\": \"description\"}");
-        configModelContents.add(configModelContent);
-        configModel.setConfigModelContents(configModelContents);
-        configModel.setPublished("Y");
-        return configModel;
-    }
+  private ConfigModel createConfigModel() {
+    ConfigModel configModel = new ConfigModel();
+    List<ConfigModelContent> configModelContents = new ArrayList<ConfigModelContent>();
+    ConfigModelContent configModelContent = new ConfigModelContent();
+    configModelContent.setContentType(ConfigModelConstant.MODEL_CONTENT_TYPE_TOSCA_JSON);
+    configModelContent.setContent("{\"description\": \"description\"}");
+    configModelContents.add(configModelContent);
+    configModel.setConfigModelContents(configModelContents);
+    configModel.setPublished("Y");
+    return configModel;
+  }
 }

@@ -29,67 +29,66 @@ import org.onap.ccsdk.features.model.ConfigModelException;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.features.model.utils.TransformationUtils;
 import org.onap.ccsdk.features.model.validator.ResourceAssignmentValidator;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class ResourceAssignmentValidation {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceAssignmentValidation.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceAssignmentValidation.class);
 
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
+  @Rule
+  public final ExpectedException exception = ExpectedException.none();
 
-    @Test
-    public void testValidateSuccess() {
-        try {
-            logger.info(" **************** testValidateSuccess *****************");
-            String resourceMapping = IOUtils.toString(
-                    TopologicalSortingTest.class.getClassLoader().getResourceAsStream("validation/success.json"),
-                    Charset.defaultCharset());
+  @Test
+  public void testValidateSuccess() {
+    try {
+      logger.info(" **************** testValidateSuccess *****************");
+      String resourceMapping =
+          IOUtils.toString(TopologicalSortingTest.class.getClassLoader().getResourceAsStream("validation/success.json"),
+              Charset.defaultCharset());
 
-            List<ResourceAssignment> assignments =
-                    TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
-            if (assignments != null) {
-                ResourceAssignmentValidator resourceAssignmentValidator = new ResourceAssignmentValidator(assignments);
+      List<ResourceAssignment> assignments =
+          TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
+      if (assignments != null) {
+        ResourceAssignmentValidator resourceAssignmentValidator = new ResourceAssignmentValidator(assignments);
 
-                boolean result = resourceAssignmentValidator.validateResourceAssignment();
-                Assert.assertTrue("Failed to Validate", result);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean result = resourceAssignmentValidator.validateResourceAssignment();
+        Assert.assertTrue("Failed to Validate", result);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test(expected = ConfigModelException.class)
+  public void testValidateDuplicate() throws IOException, ConfigModelException {
+    logger.info(" **************** testValidateDuplicate *****************");
+    String resourceMapping =
+        IOUtils.toString(TopologicalSortingTest.class.getClassLoader().getResourceAsStream("validation/duplicate.json"),
+            Charset.defaultCharset());
+
+    List<ResourceAssignment> assignments =
+        TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
+    if (assignments != null) {
+      ResourceAssignmentValidator resourceAssignmentValidator = new ResourceAssignmentValidator(assignments);
+      resourceAssignmentValidator.validateResourceAssignment();
     }
 
-    @Test(expected = ConfigModelException.class)
-    public void testValidateDuplicate() throws IOException, ConfigModelException {
-        logger.info(" **************** testValidateDuplicate *****************");
-        String resourceMapping = IOUtils.toString(
-                TopologicalSortingTest.class.getClassLoader().getResourceAsStream("validation/duplicate.json"),
-                Charset.defaultCharset());
+  }
 
-        List<ResourceAssignment> assignments =
-                TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
-        if (assignments != null) {
-            ResourceAssignmentValidator resourceAssignmentValidator = new ResourceAssignmentValidator(assignments);
-            resourceAssignmentValidator.validateResourceAssignment();
-        }
+  @Test(expected = ConfigModelException.class)
+  public void testValidateCyclic() throws IOException, ConfigModelException {
+    logger.info(" ****************  testValidateCyclic *****************");
+    String resourceMapping =
+        IOUtils.toString(TopologicalSortingTest.class.getClassLoader().getResourceAsStream("validation/cyclic.json"),
+            Charset.defaultCharset());
 
+    List<ResourceAssignment> assignments =
+        TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
+    if (assignments != null) {
+      ResourceAssignmentValidator resourceAssignmentValidator = new ResourceAssignmentValidator(assignments);
+
+      resourceAssignmentValidator.validateResourceAssignment();
     }
 
-    @Test(expected = ConfigModelException.class)
-    public void testValidateCyclic() throws IOException, ConfigModelException {
-        logger.info(" ****************  testValidateCyclic *****************");
-        String resourceMapping = IOUtils.toString(
-                TopologicalSortingTest.class.getClassLoader().getResourceAsStream("validation/cyclic.json"),
-                Charset.defaultCharset());
-
-        List<ResourceAssignment> assignments =
-                TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
-        if (assignments != null) {
-            ResourceAssignmentValidator resourceAssignmentValidator = new ResourceAssignmentValidator(assignments);
-
-            resourceAssignmentValidator.validateResourceAssignment();
-        }
-
-    }
+  }
 }

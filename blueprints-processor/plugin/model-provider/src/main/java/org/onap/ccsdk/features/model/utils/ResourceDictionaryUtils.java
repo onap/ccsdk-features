@@ -28,7 +28,6 @@ import org.onap.ccsdk.features.model.data.PropertyDefinition;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.features.model.data.dict.ResourceDefinition;
 import org.onap.ccsdk.features.model.data.dict.SourcesDefinition;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
@@ -39,82 +38,78 @@ import com.att.eelf.configuration.EELFManager;
  */
 public class ResourceDictionaryUtils {
 
-    private ResourceDictionaryUtils() {
-        // Do nothing
-    }
+  private ResourceDictionaryUtils() {
+    // Do nothing
+  }
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceDictionaryUtils.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceDictionaryUtils.class);
 
-    /**
-     * This Method is to assign the source name to the Dictionary Definition Check to see if the source
-     * definition is not present then assign, if more than one source then assign only one source.
-     *
-     * @param resourceAssignment
-     * @param resourceDefinition
-     */
-    @SuppressWarnings("squid:S3776")
-    public static void populateSourceMapping(ResourceAssignment resourceAssignment,
-            ResourceDefinition resourceDefinition) {
+  /**
+   * This Method is to assign the source name to the Dictionary Definition Check to see if the source
+   * definition is not present then assign, if more than one source then assign only one source.
+   *
+   * @param resourceAssignment
+   * @param resourceDefinition
+   */
+  @SuppressWarnings("squid:S3776")
+  public static void populateSourceMapping(ResourceAssignment resourceAssignment,
+      ResourceDefinition resourceDefinition) {
 
-        if (resourceAssignment != null && resourceDefinition != null
-                && StringUtils.isBlank(resourceAssignment.getDictionarySource())) {
+    if (resourceAssignment != null && resourceDefinition != null
+        && StringUtils.isBlank(resourceAssignment.getDictionarySource())) {
 
-            setProperty(resourceAssignment, resourceDefinition);
-            Map<String, SourcesDefinition> sourcesDefinition = resourceDefinition.getSources();
+      setProperty(resourceAssignment, resourceDefinition);
+      Map<String, SourcesDefinition> sourcesDefinition = resourceDefinition.getSources();
 
-            if (sourcesDefinition != null && MapUtils.isNotEmpty(sourcesDefinition) && sourcesDefinition.size() == 1) {
-                if (sourcesDefinition.get("input") != null) {
-                    resourceAssignment.setDictionarySource(ConfigModelConstant.SOURCE_INPUT);
-                } else if (sourcesDefinition.get("default") != null) {
-                    resourceAssignment.setDictionarySource(ConfigModelConstant.SOURCE_DEFAULT);
-                } else if (sourcesDefinition.get("db") != null) {
-                    resourceAssignment.setDictionarySource(ConfigModelConstant.SOURCE_DB);
-                    if (resolve(() -> sourcesDefinition.get("db").getProperties().getDependencies()).isPresent()
-                            && CollectionUtils
-                                    .isNotEmpty(sourcesDefinition.get("db").getProperties().getDependencies())) {
-                        resourceAssignment
-                                .setDependencies(sourcesDefinition.get("db").getProperties().getDependencies());
-                    }
-                } else if (sourcesDefinition.get("mdsal") != null) {
-                    resourceAssignment.setDictionarySource(ConfigModelConstant.SOURCE_MDSAL);
-                    if (resolve(() -> sourcesDefinition.get("mdsal").getProperties().getDependencies()).isPresent()
-                            && CollectionUtils
-                                    .isNotEmpty(sourcesDefinition.get("mdsal").getProperties().getDependencies())) {
-                        resourceAssignment
-                                .setDependencies(sourcesDefinition.get("mdsal").getProperties().getDependencies());
-                    }
-                }
-                logger.info("automapped resourceAssignment : {}", resourceAssignment);
-            }
+      if (sourcesDefinition != null && MapUtils.isNotEmpty(sourcesDefinition) && sourcesDefinition.size() == 1) {
+        if (sourcesDefinition.get("input") != null) {
+          resourceAssignment.setDictionarySource(ConfigModelConstant.SOURCE_INPUT);
+        } else if (sourcesDefinition.get("default") != null) {
+          resourceAssignment.setDictionarySource(ConfigModelConstant.SOURCE_DEFAULT);
+        } else if (sourcesDefinition.get("db") != null) {
+          resourceAssignment.setDictionarySource(ConfigModelConstant.SOURCE_DB);
+          if (resolve(() -> sourcesDefinition.get("db").getProperties().getDependencies()).isPresent()
+              && CollectionUtils.isNotEmpty(sourcesDefinition.get("db").getProperties().getDependencies())) {
+            resourceAssignment.setDependencies(sourcesDefinition.get("db").getProperties().getDependencies());
+          }
+        } else if (sourcesDefinition.get("mdsal") != null) {
+          resourceAssignment.setDictionarySource(ConfigModelConstant.SOURCE_MDSAL);
+          if (resolve(() -> sourcesDefinition.get("mdsal").getProperties().getDependencies()).isPresent()
+              && CollectionUtils.isNotEmpty(sourcesDefinition.get("mdsal").getProperties().getDependencies())) {
+            resourceAssignment.setDependencies(sourcesDefinition.get("mdsal").getProperties().getDependencies());
+          }
         }
+        logger.info("automapped resourceAssignment : {}", resourceAssignment);
+      }
     }
+  }
 
-    public static <T> Optional<T> resolve(Supplier<T> resolver) {
-        try {
-            T result = resolver.get();
-            return Optional.ofNullable(result);
-        } catch (NullPointerException e) {
-            return Optional.empty();
-        }
+  public static <T> Optional<T> resolve(Supplier<T> resolver) {
+    try {
+      T result = resolver.get();
+      return Optional.ofNullable(result);
+    } catch (NullPointerException e) {
+      return Optional.empty();
     }
+  }
 
-    /**
-     * Overriding ResourceAssignment Properties with properties defined in Dictionary
-     */
-    private static void setProperty(ResourceAssignment resourceAssignment, ResourceDefinition resourceDefinition) {
-        if (StringUtils.isNotBlank(resourceDefinition.getProperty().getType())) {
-            PropertyDefinition property = resourceAssignment.getProperty();
-            if (property == null) {
-                property = new PropertyDefinition();
-            }
-            if (resourceDefinition.getProperty() != null) {
-                property.setType(resourceDefinition.getProperty().getType());
-                if (resourceDefinition.getProperty().getEntrySchema() != null) {
-                    property.setEntrySchema(resourceDefinition.getProperty().getEntrySchema());
-                }
-                resourceAssignment.setProperty(property);
-            }
+  /**
+   * Overriding ResourceAssignment Properties with properties defined in Dictionary
+   */
+  private static void setProperty(ResourceAssignment resourceAssignment, ResourceDefinition resourceDefinition) {
+    if (StringUtils.isNotBlank(resourceDefinition.getProperty().getType())) {
+      PropertyDefinition property = resourceAssignment.getProperty();
+      if (property == null) {
+        property = new PropertyDefinition();
+      }
+      if (resourceDefinition.getProperty() != null) {
+        property.setType(resourceDefinition.getProperty().getType());
+        if (resourceDefinition.getProperty().getEntrySchema() != null) {
+          property.setEntrySchema(resourceDefinition.getProperty().getEntrySchema());
         }
+        resourceAssignment.setProperty(property);
+      }
     }
+  }
 
 }

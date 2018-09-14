@@ -44,224 +44,221 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class DBResourceProcessor implements ComponentNode {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(DBResourceProcessor.class);
-    private ConfigResourceService configResourceService;
-    private Map<String, ResourceDefinition> dictionaries;
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(DBResourceProcessor.class);
+  private ConfigResourceService configResourceService;
+  private Map<String, ResourceDefinition> dictionaries;
 
-    public DBResourceProcessor(ConfigResourceService configResourceService) {
-        this.configResourceService = configResourceService;
-    }
+  public DBResourceProcessor(ConfigResourceService configResourceService) {
+    this.configResourceService = configResourceService;
+  }
 
-    @Override
-    public Boolean preCondition(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        return Boolean.TRUE;
-    }
+  @Override
+  public Boolean preCondition(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    return Boolean.TRUE;
+  }
 
-    @Override
-    public void preProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        // Auto-generated method stub
-    }
+  @Override
+  public void preProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    // Auto-generated method stub
+  }
 
-    @Override
-    public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException {
-        // Auto-generated method stub
-    }
+  @Override
+  public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException {
+    // Auto-generated method stub
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        try {
-            List<ResourceAssignment> batchResourceAssignment =
-                    (List<ResourceAssignment>) componentContext.get(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS);
-            dictionaries =
-                    (Map<String, ResourceDefinition>) componentContext.get(ConfigModelConstant.PROPERTY_DICTIONARIES);
+  @SuppressWarnings("unchecked")
+  @Override
+  public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    try {
+      List<ResourceAssignment> batchResourceAssignment =
+          (List<ResourceAssignment>) componentContext.get(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS);
+      dictionaries = (Map<String, ResourceDefinition>) componentContext.get(ConfigModelConstant.PROPERTY_DICTIONARIES);
 
-            if (CollectionUtils.isNotEmpty(batchResourceAssignment)) {
-                for (ResourceAssignment resourceAssignment : batchResourceAssignment) {
-                    processResourceAssignment(ctx, componentContext, resourceAssignment);
-                }
-            }
-        } catch (Exception e) {
-            throw new SvcLogicException(String.format("DBResourceProcessor Exception : (%s)", e), e);
+      if (CollectionUtils.isNotEmpty(batchResourceAssignment)) {
+        for (ResourceAssignment resourceAssignment : batchResourceAssignment) {
+          processResourceAssignment(ctx, componentContext, resourceAssignment);
         }
+      }
+    } catch (Exception e) {
+      throw new SvcLogicException(String.format("DBResourceProcessor Exception : (%s)", e), e);
     }
+  }
 
-    private void processResourceAssignment(SvcLogicContext ctx, Map<String, Object> componentContext,
-            ResourceAssignment resourceAssignment) throws SvcLogicException, ConfigModelException {
-        if (resourceAssignment != null) {
-            try {
-                validate(resourceAssignment);
+  private void processResourceAssignment(SvcLogicContext ctx, Map<String, Object> componentContext,
+      ResourceAssignment resourceAssignment) throws SvcLogicException, ConfigModelException {
+    if (resourceAssignment != null) {
+      try {
+        validate(resourceAssignment);
 
-                // Check if It has Input
-                Object value = ConfigAssignmentUtils.getContextKeyValue(ctx, resourceAssignment.getName());
-                if (value != null) {
-                    logger.info("db source template key ({}) found from input and value is ({})",
-                            resourceAssignment.getName(), value);
-                    ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
-                    return;
-                }
-
-                ResourceDefinition resourceDefinition = dictionaries.get(resourceAssignment.getDictionaryName());
-                SourcesDefinition sourceDb = resourceDefinition.getSources().get("db");
-                if (StringUtils.isBlank(sourceDb.getProperties().getQuery())) {
-                    throw new SvcLogicException("db query property is missing");
-                }
-
-                String sql = sourceDb.getProperties().getQuery();
-                Map<String, String> inputKeyMapping = sourceDb.getProperties().getInputKeyMapping();
-
-                logger.info("Db dictionary information : ({}), ({}), ({})", sql, inputKeyMapping,
-                        sourceDb.getProperties().getOutputKeyMapping());
-
-                Map<String, Object> namedParameters = populateNamedParameter(componentContext, inputKeyMapping);
-
-                logger.info("Parameter information : ({})", namedParameters);
-                List<Map<String, Object>> rows = configResourceService.query(sql, namedParameters);
-                if (rows != null && !rows.isEmpty()) {
-                    processDBResults(ctx, componentContext, resourceAssignment, sourceDb, rows);
-                } else {
-                    logger.warn("Failed to get db result for dictionary name ({}) the query ({})",
-                            resourceAssignment.getDictionaryName(), sql);
-                }
-
-                // Check the value has populated for mandatory case
-                ResourceAssignmentUtils.assertTemplateKeyValueNotNull(componentContext, resourceAssignment);
-            } catch (Exception e) {
-                ResourceAssignmentUtils.setFailedResourceDataValue(componentContext, resourceAssignment,
-                        e.getMessage());
-                throw new SvcLogicException(
-                        String.format("Failed in template key (%s) assignments : (%s)", resourceAssignment, e), e);
-            }
-        } else {
-            // Do Nothing
-        }
-    }
-
-    private void validate(ResourceAssignment resourceAssignment) throws SvcLogicException {
-        if (resourceAssignment == null) {
-            throw new SvcLogicException("resource assignment is not defined");
-        }
-
-        if (StringUtils.isBlank(resourceAssignment.getName())) {
-            throw new SvcLogicException("resource assignment template key is not defined");
-        }
-
-        if (StringUtils.isBlank(resourceAssignment.getDictionaryName())) {
-            throw new SvcLogicException(
-                    String.format("resource assignment dictionary name is not defined for template key (%s)",
-                            resourceAssignment.getName()));
-        }
-
-        if (!ConfigModelConstant.SOURCE_DB.equalsIgnoreCase(resourceAssignment.getDictionarySource())) {
-            throw new SvcLogicException(String.format("resource assignment source is not db, it is (%s)",
-                    resourceAssignment.getDictionarySource()));
+        // Check if It has Input
+        Object value = ConfigAssignmentUtils.getContextKeyValue(ctx, resourceAssignment.getName());
+        if (value != null) {
+          logger.info("db source template key ({}) found from input and value is ({})", resourceAssignment.getName(),
+              value);
+          ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
+          return;
         }
 
         ResourceDefinition resourceDefinition = dictionaries.get(resourceAssignment.getDictionaryName());
-        if (resourceDefinition == null) {
-            throw new SvcLogicException(String.format("missing resource dictionary definition for name (%s)  ",
-                    resourceAssignment.getDictionaryName()));
-        }
-
-        if (resourceDefinition.getSources() == null || resourceDefinition.getSources().get("db") == null) {
-            throw new SvcLogicException(String.format("missing resource dictionary db source definition for name (%s) ",
-                    resourceAssignment.getDictionaryName()));
-        }
-
         SourcesDefinition sourceDb = resourceDefinition.getSources().get("db");
         if (StringUtils.isBlank(sourceDb.getProperties().getQuery())) {
-            throw new SvcLogicException(String.format("Failed to get request Query for dictionary (%s)",
-                    resourceAssignment.getDictionaryName()));
+          throw new SvcLogicException("db query property is missing");
         }
 
-    }
+        String sql = sourceDb.getProperties().getQuery();
+        Map<String, String> inputKeyMapping = sourceDb.getProperties().getInputKeyMapping();
 
-    private Map<String, Object> populateNamedParameter(Map<String, Object> componentContext,
-            Map<String, String> inputKeyMapping) {
-        Map<String, Object> namedParameters = new HashMap<>();
-        if (MapUtils.isNotEmpty(inputKeyMapping)) {
+        logger.info("Db dictionary information : ({}), ({}), ({})", sql, inputKeyMapping,
+            sourceDb.getProperties().getOutputKeyMapping());
 
-            for (Map.Entry<String, String> mapping : inputKeyMapping.entrySet()) {
-                ResourceDefinition referenceDictionaryDefinition = dictionaries.get(mapping.getValue());
-                Object expressionValue =
-                        ResourceAssignmentUtils.getDictionaryKeyValue(componentContext, referenceDictionaryDefinition);
-                logger.trace("Reference dictionary key ({}), value ({})", mapping.getKey(), expressionValue);
-                namedParameters.put(mapping.getKey(), expressionValue);
-            }
+        Map<String, Object> namedParameters = populateNamedParameter(componentContext, inputKeyMapping);
+
+        logger.info("Parameter information : ({})", namedParameters);
+        List<Map<String, Object>> rows = configResourceService.query(sql, namedParameters);
+        if (rows != null && !rows.isEmpty()) {
+          processDBResults(ctx, componentContext, resourceAssignment, sourceDb, rows);
+        } else {
+          logger.warn("Failed to get db result for dictionary name ({}) the query ({})",
+              resourceAssignment.getDictionaryName(), sql);
         }
-        return namedParameters;
+
+        // Check the value has populated for mandatory case
+        ResourceAssignmentUtils.assertTemplateKeyValueNotNull(componentContext, resourceAssignment);
+      } catch (Exception e) {
+        ResourceAssignmentUtils.setFailedResourceDataValue(componentContext, resourceAssignment, e.getMessage());
+        throw new SvcLogicException(
+            String.format("Failed in template key (%s) assignments : (%s)", resourceAssignment, e), e);
+      }
+    } else {
+      // Do Nothing
+    }
+  }
+
+  private void validate(ResourceAssignment resourceAssignment) throws SvcLogicException {
+    if (resourceAssignment == null) {
+      throw new SvcLogicException("resource assignment is not defined");
     }
 
-    @SuppressWarnings("squid:S3776")
-    private void processDBResults(SvcLogicContext ctx, Map<String, Object> componentContext,
-            ResourceAssignment resourceAssignment, SourcesDefinition sourceDb, List<Map<String, Object>> rows)
-            throws SvcLogicException, ConfigModelException {
+    if (StringUtils.isBlank(resourceAssignment.getName())) {
+      throw new SvcLogicException("resource assignment template key is not defined");
+    }
 
-        Map<String, String> outputKeyMapping = sourceDb.getProperties().getOutputKeyMapping();
-        String type = resourceAssignment.getProperty().getType();
-        String entrySchema = null;
-        logger.info("Response processing type({})", type);
-        // Primitive Types
-        if (ValidTypes.getPrimitivePropertType().contains(type)) {
+    if (StringUtils.isBlank(resourceAssignment.getDictionaryName())) {
+      throw new SvcLogicException(String.format(
+          "resource assignment dictionary name is not defined for template key (%s)", resourceAssignment.getName()));
+    }
 
-            Map<String, Object> row = rows.get(0);
+    if (!ConfigModelConstant.SOURCE_DB.equalsIgnoreCase(resourceAssignment.getDictionarySource())) {
+      throw new SvcLogicException(
+          String.format("resource assignment source is not db, it is (%s)", resourceAssignment.getDictionarySource()));
+    }
+
+    ResourceDefinition resourceDefinition = dictionaries.get(resourceAssignment.getDictionaryName());
+    if (resourceDefinition == null) {
+      throw new SvcLogicException(String.format("missing resource dictionary definition for name (%s)  ",
+          resourceAssignment.getDictionaryName()));
+    }
+
+    if (resourceDefinition.getSources() == null || resourceDefinition.getSources().get("db") == null) {
+      throw new SvcLogicException(String.format("missing resource dictionary db source definition for name (%s) ",
+          resourceAssignment.getDictionaryName()));
+    }
+
+    SourcesDefinition sourceDb = resourceDefinition.getSources().get("db");
+    if (StringUtils.isBlank(sourceDb.getProperties().getQuery())) {
+      throw new SvcLogicException(
+          String.format("Failed to get request Query for dictionary (%s)", resourceAssignment.getDictionaryName()));
+    }
+
+  }
+
+  private Map<String, Object> populateNamedParameter(Map<String, Object> componentContext,
+      Map<String, String> inputKeyMapping) {
+    Map<String, Object> namedParameters = new HashMap<>();
+    if (MapUtils.isNotEmpty(inputKeyMapping)) {
+
+      for (Map.Entry<String, String> mapping : inputKeyMapping.entrySet()) {
+        ResourceDefinition referenceDictionaryDefinition = dictionaries.get(mapping.getValue());
+        Object expressionValue =
+            ResourceAssignmentUtils.getDictionaryKeyValue(componentContext, referenceDictionaryDefinition);
+        logger.trace("Reference dictionary key ({}), value ({})", mapping.getKey(), expressionValue);
+        namedParameters.put(mapping.getKey(), expressionValue);
+      }
+    }
+    return namedParameters;
+  }
+
+  @SuppressWarnings("squid:S3776")
+  private void processDBResults(SvcLogicContext ctx, Map<String, Object> componentContext,
+      ResourceAssignment resourceAssignment, SourcesDefinition sourceDb, List<Map<String, Object>> rows)
+      throws SvcLogicException, ConfigModelException {
+
+    Map<String, String> outputKeyMapping = sourceDb.getProperties().getOutputKeyMapping();
+    String type = resourceAssignment.getProperty().getType();
+    String entrySchema = null;
+    logger.info("Response processing type({})", type);
+    // Primitive Types
+    if (ValidTypes.getPrimitivePropertType().contains(type)) {
+
+      Map<String, Object> row = rows.get(0);
+      String dbColumnName = outputKeyMapping.get(resourceAssignment.getDictionaryName());
+      Object dbColumnValue = row.get(dbColumnName);
+      ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, dbColumnValue);
+
+    } else if (ValidTypes.getListPropertType().contains(type)) {
+      // Array Types
+      if (resourceAssignment.getProperty().getEntrySchema() != null) {
+        entrySchema = resourceAssignment.getProperty().getEntrySchema().getType();
+      }
+
+      if (StringUtils.isNotBlank(entrySchema)) {
+        ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
+
+        for (Map<String, Object> row : rows) {
+          if (ValidTypes.getPrimitivePropertType().contains(entrySchema)) {
             String dbColumnName = outputKeyMapping.get(resourceAssignment.getDictionaryName());
             Object dbColumnValue = row.get(dbColumnName);
-            ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, dbColumnValue);
-
-        } else if (ValidTypes.getListPropertType().contains(type)) {
-            // Array Types
-            if (resourceAssignment.getProperty().getEntrySchema() != null) {
-                entrySchema = resourceAssignment.getProperty().getEntrySchema().getType();
-            }
-
-            if (StringUtils.isNotBlank(entrySchema)) {
-                ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
-
-                for (Map<String, Object> row : rows) {
-                    if (ValidTypes.getPrimitivePropertType().contains(entrySchema)) {
-                        String dbColumnName = outputKeyMapping.get(resourceAssignment.getDictionaryName());
-                        Object dbColumnValue = row.get(dbColumnName);
-                        // Add Array JSON
-                        JsonUtils.populatePrimitiveValues(dbColumnValue, entrySchema, arrayNode);
-                    } else {
-                        ObjectNode arrayChildNode = JsonNodeFactory.instance.objectNode();
-                        for (Map.Entry<String, String> mapping : outputKeyMapping.entrySet()) {
-                            Object dbColumnValue = row.get(mapping.getKey());
-                            String propertyTypeForDataType =
-                                    ConfigAssignmentUtils.getPropertyType(ctx, entrySchema, mapping.getKey());
-                            JsonUtils.populatePrimitiveValues(mapping.getKey(), dbColumnValue, propertyTypeForDataType,
-                                    arrayChildNode);
-                        }
-                        arrayNode.add(arrayChildNode);
-                    }
-                }
-                // Set the List of Complex Values
-                ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, arrayNode);
-            } else {
-                throw new SvcLogicException(String.format("Entry schema is not defined for dictionary (%s) info",
-                        resourceAssignment.getDictionaryName()));
-            }
-        } else {
-            // Complex Types
-            Map<String, Object> row = rows.get(0);
-            ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
+            // Add Array JSON
+            JsonUtils.populatePrimitiveValues(dbColumnValue, entrySchema, arrayNode);
+          } else {
+            ObjectNode arrayChildNode = JsonNodeFactory.instance.objectNode();
             for (Map.Entry<String, String> mapping : outputKeyMapping.entrySet()) {
-                Object dbColumnValue = row.get(mapping.getKey());
-                String propertyTypeForDataType = ConfigAssignmentUtils.getPropertyType(ctx, type, mapping.getKey());
-                JsonUtils.populatePrimitiveValues(mapping.getKey(), dbColumnValue, propertyTypeForDataType, objectNode);
+              Object dbColumnValue = row.get(mapping.getKey());
+              String propertyTypeForDataType =
+                  ConfigAssignmentUtils.getPropertyType(ctx, entrySchema, mapping.getKey());
+              JsonUtils.populatePrimitiveValues(mapping.getKey(), dbColumnValue, propertyTypeForDataType,
+                  arrayChildNode);
             }
-            ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, objectNode);
+            arrayNode.add(arrayChildNode);
+          }
         }
+        // Set the List of Complex Values
+        ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, arrayNode);
+      } else {
+        throw new SvcLogicException(String.format("Entry schema is not defined for dictionary (%s) info",
+            resourceAssignment.getDictionaryName()));
+      }
+    } else {
+      // Complex Types
+      Map<String, Object> row = rows.get(0);
+      ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
+      for (Map.Entry<String, String> mapping : outputKeyMapping.entrySet()) {
+        Object dbColumnValue = row.get(mapping.getKey());
+        String propertyTypeForDataType = ConfigAssignmentUtils.getPropertyType(ctx, type, mapping.getKey());
+        JsonUtils.populatePrimitiveValues(mapping.getKey(), dbColumnValue, propertyTypeForDataType, objectNode);
+      }
+      ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, objectNode);
     }
+  }
 
-    @Override
-    public void postProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        // Auto-generated method stub
-    }
+  @Override
+  public void postProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    // Auto-generated method stub
+  }
 
 }

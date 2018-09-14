@@ -53,88 +53,88 @@ import com.att.eelf.configuration.EELFManager;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ComponentNodeTest {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ComponentNodeTest.class);
-    @Mock
-    private ConfigResourceService configResourceService;
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ComponentNodeTest.class);
+  @Mock
+  private ConfigResourceService configResourceService;
 
-    @Mock
-    private ConfigRestAdaptorService configRestAdaptorService;
+  @Mock
+  private ConfigRestAdaptorService configRestAdaptorService;
 
-    BundleContext bundleContext = MockOsgi.newBundleContext();
+  BundleContext bundleContext = MockOsgi.newBundleContext();
 
-    @Before
-    public void before() {
-        MockitoAnnotations.initMocks(this);
+  @Before
+  public void before() {
+    MockitoAnnotations.initMocks(this);
 
-        MockComponentNode mockSvcLogicPlugin = new MockComponentNode();
-        bundleContext.registerService(MockComponentNode.class, mockSvcLogicPlugin, null);
+    MockComponentNode mockSvcLogicPlugin = new MockComponentNode();
+    bundleContext.registerService(MockComponentNode.class, mockSvcLogicPlugin, null);
 
-        try {
-            Mockito.doAnswer(new Answer<Void>() {
-                @Override
-                public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                    Object[] args = invocationOnMock.getArguments();
-                    if (args != null) {
-                        logger.trace("Transaction info " + Arrays.asList(args));
-                    }
-                    return null;
-                }
-            }).when(configResourceService).save(any(TransactionLog.class));
-        } catch (SvcLogicException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    try {
+      Mockito.doAnswer(new Answer<Void>() {
+        @Override
+        public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+          Object[] args = invocationOnMock.getArguments();
+          if (args != null) {
+            logger.trace("Transaction info " + Arrays.asList(args));
+          }
+          return null;
         }
+      }).when(configResourceService).save(any(TransactionLog.class));
+    } catch (SvcLogicException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
+  }
 
-    @After
-    public void after() {
+  @After
+  public void after() {
 
-    }
+  }
 
-    @Test
-    public void testProcess() {
+  @Test
+  public void testProcess() {
 
-        try {
-            String serviceTemplateContent = FileUtils.readFileToString(
-                    new File("src/test/resources/componentnode/default.json"), Charset.defaultCharset());
-            ConfigModelService configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
+    try {
+      String serviceTemplateContent = FileUtils
+          .readFileToString(new File("src/test/resources/componentnode/default.json"), Charset.defaultCharset());
+      ConfigModelService configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
 
-            Map<String, String> map = new HashMap<>();
-            configModelService.convertServiceTemplate2Properties(serviceTemplateContent, map);
+      Map<String, String> map = new HashMap<>();
+      configModelService.convertServiceTemplate2Properties(serviceTemplateContent, map);
 
-            SvcLogicContext ctx = new SvcLogicContext();
-            map.forEach((name, value) -> {
-                if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(value)) {
-                    ctx.setAttribute(name, value);
-                }
-            });
-            ctx.setAttribute("vnf-id", "1234");
-
-            ComponentNodeServiceImpl componentNodeService =
-                    new ComponentNodeServiceImpl(bundleContext, configResourceService, configRestAdaptorService);
-
-            ComponentNodeDelegate componentNodeDelegate = new ComponentNodeDelegate(componentNodeService);
-            Map<String, String> inParams = new HashMap<>();
-            inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "generate-configuration");
-
-            componentNodeDelegate.process(inParams, ctx);
-            TransformationUtils.printMap(inParams);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+      SvcLogicContext ctx = new SvcLogicContext();
+      map.forEach((name, value) -> {
+        if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(value)) {
+          ctx.setAttribute(name, value);
         }
+      });
+      ctx.setAttribute("vnf-id", "1234");
 
+      ComponentNodeServiceImpl componentNodeService =
+          new ComponentNodeServiceImpl(bundleContext, configResourceService, configRestAdaptorService);
+
+      ComponentNodeDelegate componentNodeDelegate = new ComponentNodeDelegate(componentNodeService);
+      Map<String, String> inParams = new HashMap<>();
+      inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "generate-configuration");
+
+      componentNodeDelegate.process(inParams, ctx);
+      TransformationUtils.printMap(inParams);
+
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
-    @Test(expected = SvcLogicException.class)
-    public void testFailure() throws Exception {
-        ComponentNodeServiceImpl componentNodeService =
-                new ComponentNodeServiceImpl(bundleContext, configResourceService, configRestAdaptorService);
-        ComponentNodeDelegate componentNodeDelegate = new ComponentNodeDelegate(componentNodeService);
+  }
 
-        Map<String, String> inParams = new HashMap<String, String>();
-        inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "generate-configuration");
-        SvcLogicContext ctx = new SvcLogicContext();
-        componentNodeDelegate.process(inParams, ctx);
-    }
+  @Test(expected = SvcLogicException.class)
+  public void testFailure() throws Exception {
+    ComponentNodeServiceImpl componentNodeService =
+        new ComponentNodeServiceImpl(bundleContext, configResourceService, configRestAdaptorService);
+    ComponentNodeDelegate componentNodeDelegate = new ComponentNodeDelegate(componentNodeService);
+
+    Map<String, String> inParams = new HashMap<String, String>();
+    inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "generate-configuration");
+    SvcLogicContext ctx = new SvcLogicContext();
+    componentNodeDelegate.process(inParams, ctx);
+  }
 }

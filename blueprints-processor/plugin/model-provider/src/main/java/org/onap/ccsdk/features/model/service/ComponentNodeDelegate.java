@@ -26,17 +26,17 @@ import com.att.eelf.configuration.EELFManager;
 
 public class ComponentNodeDelegate implements SvcLogicJavaPlugin {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ComponentNodeDelegate.class);
-    private ComponentNodeService componentNodeService;
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ComponentNodeDelegate.class);
+  private ComponentNodeService componentNodeService;
 
-    public ComponentNodeDelegate(ComponentNodeService componentNodeService) {
-        logger.info("{} Constructor Initiated", "ComponentNodeDelegate");
-        this.componentNodeService = componentNodeService;
+  public ComponentNodeDelegate(ComponentNodeService componentNodeService) {
+    logger.info("{} Constructor Initiated", "ComponentNodeDelegate");
+    this.componentNodeService = componentNodeService;
 
-    }
+  }
 
-    public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException {
-        this.componentNodeService.process(inParams, ctx, null);
-    }
+  public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException {
+    this.componentNodeService.process(inParams, ctx, null);
+  }
 
 }

@@ -24,27 +24,27 @@ package org.onap.ccsdk.features.rest.adaptor;
  */
 public class ConfigRestAdaptorException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * This is a ConfigRestAdaptorException constructor
-     *
-     * @param message
-     */
-    public ConfigRestAdaptorException(String message) {
-        super(message);
-    }
+  /**
+   * This is a ConfigRestAdaptorException constructor
+   *
+   * @param message
+   */
+  public ConfigRestAdaptorException(String message) {
+    super(message);
+  }
 
-    /**
-     * This is a ConfigRestAdaptorException constructor
-     *
-     * @param message
-     */
-    public ConfigRestAdaptorException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * This is a ConfigRestAdaptorException constructor
+   *
+   * @param message
+   */
+  public ConfigRestAdaptorException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
 }

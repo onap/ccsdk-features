@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.assignment.service;
 
 import java.util.List;
-
 import org.onap.ccsdk.features.assignment.data.ResourceAssignmentData;
 import org.onap.ccsdk.features.data.adaptor.service.ConfigResourceService;
 import org.onap.ccsdk.features.generator.service.ConfigGeneratorService;
@@ -32,49 +31,49 @@ import com.att.eelf.configuration.EELFManager;
 
 public class ConfigAssignmentServiceImpl implements ConfigAssignmentService {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigAssignmentServiceImpl.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigAssignmentServiceImpl.class);
 
-    private ComponentNodeService componentNodeService;
-    private ConfigResourceService configResourceService;
-    private ConfigModelService configModelService;
-    private ConfigRestAdaptorService configRestAdaptorService;
-    private ConfigGeneratorService configGeneratorService;
+  private ComponentNodeService componentNodeService;
+  private ConfigResourceService configResourceService;
+  private ConfigModelService configModelService;
+  private ConfigRestAdaptorService configRestAdaptorService;
+  private ConfigGeneratorService configGeneratorService;
 
-    private static final String CLASS_NAME = "ConfigAssignmentServiceImpl";
+  private static final String CLASS_NAME = "ConfigAssignmentServiceImpl";
 
-    public ConfigAssignmentServiceImpl(ConfigResourceService configResourceService,
-            ConfigRestAdaptorService configRestAdaptorService, ConfigModelService configModelService,
-            ComponentNodeService componentNodeService, ConfigGeneratorService configGeneratorService) {
-        logger.info("{} Constuctor Initated...", CLASS_NAME);
-        this.componentNodeService = componentNodeService;
-        this.configResourceService = configResourceService;
-        this.configModelService = configModelService;
-        this.configRestAdaptorService = configRestAdaptorService;
-        this.configGeneratorService = configGeneratorService;
-    }
+  public ConfigAssignmentServiceImpl(ConfigResourceService configResourceService,
+      ConfigRestAdaptorService configRestAdaptorService, ConfigModelService configModelService,
+      ComponentNodeService componentNodeService, ConfigGeneratorService configGeneratorService) {
+    logger.info("{} Constuctor Initated...", CLASS_NAME);
+    this.componentNodeService = componentNodeService;
+    this.configResourceService = configResourceService;
+    this.configModelService = configModelService;
+    this.configRestAdaptorService = configRestAdaptorService;
+    this.configGeneratorService = configGeneratorService;
+  }
 
-    @Override
-    public void resolveResources(ResourceAssignmentData resourceAssignmentData) throws SvcLogicException {
-        ConfigAssignmentProcessService configAssignmentProcessService =
-                new ConfigAssignmentProcessService(configResourceService, configRestAdaptorService, configModelService,
-                        componentNodeService, configGeneratorService);
-        configAssignmentProcessService.resolveResources(resourceAssignmentData);
-    }
+  @Override
+  public void resolveResources(ResourceAssignmentData resourceAssignmentData) throws SvcLogicException {
+    ConfigAssignmentProcessService configAssignmentProcessService =
+        new ConfigAssignmentProcessService(configResourceService, configRestAdaptorService, configModelService,
+            componentNodeService, configGeneratorService);
+    configAssignmentProcessService.resolveResources(resourceAssignmentData);
+  }
 
-    @Override
-    public void saveResourceMapping(ResourceAssignmentData resourceAssignmentData, String templateName,
-            List<ResourceAssignment> resourceAssignments) throws SvcLogicException {
-        ConfigAssignmentPersistService configAssignmentPersistService =
-                new ConfigAssignmentPersistService(configResourceService);
-        configAssignmentPersistService.saveResourceMapping(resourceAssignmentData, templateName, resourceAssignments);
-    }
+  @Override
+  public void saveResourceMapping(ResourceAssignmentData resourceAssignmentData, String templateName,
+      List<ResourceAssignment> resourceAssignments) throws SvcLogicException {
+    ConfigAssignmentPersistService configAssignmentPersistService =
+        new ConfigAssignmentPersistService(configResourceService);
+    configAssignmentPersistService.saveResourceMapping(resourceAssignmentData, templateName, resourceAssignments);
+  }
 
-    @Override
-    public ResourceAssignmentData generateTemplateResourceMash(ResourceAssignmentData resourceAssignmentData)
-            throws SvcLogicException {
-        ConfigPreviewService configPreviewService =
-                new ConfigPreviewService(configResourceService, configModelService, configGeneratorService);
-        return configPreviewService.generateTemplateResourceMash(resourceAssignmentData);
-    }
+  @Override
+  public ResourceAssignmentData generateTemplateResourceMash(ResourceAssignmentData resourceAssignmentData)
+      throws SvcLogicException {
+    ConfigPreviewService configPreviewService =
+        new ConfigPreviewService(configResourceService, configModelService, configGeneratorService);
+    return configPreviewService.generateTemplateResourceMash(resourceAssignmentData);
+  }
 
 }

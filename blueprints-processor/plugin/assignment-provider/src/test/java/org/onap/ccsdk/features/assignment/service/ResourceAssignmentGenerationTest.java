@@ -29,83 +29,83 @@ import org.onap.ccsdk.features.model.ValidTypes;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.features.model.utils.ResourceAssignmentUtils;
 import org.onap.ccsdk.features.model.utils.TransformationUtils;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ResourceAssignmentGenerationTest {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceAssignmentGenerationTest.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceAssignmentGenerationTest.class);
 
-    @Test
-    public void testResourceDataSetting() {
-        try {
-            logger.info(" **************** testResourceDataSetting *****************");
-            String resourceAssignmentContents = IOUtils.toString(TopologicalSortingTest.class.getClassLoader()
-                    .getResourceAsStream("assignments/alltype-empty-value-mapping.json"), Charset.defaultCharset());
+  @Test
+  public void testResourceDataSetting() {
+    try {
+      logger.info(" **************** testResourceDataSetting *****************");
+      String resourceAssignmentContents = IOUtils.toString(TopologicalSortingTest.class.getClassLoader()
+          .getResourceAsStream("assignments/alltype-empty-value-mapping.json"), Charset.defaultCharset());
 
-            List<ResourceAssignment> assignments =
-                    TransformationUtils.getListfromJson(resourceAssignmentContents, ResourceAssignment.class);
-            if (assignments != null) {
-                Map<String, Object> componentContext = new HashMap<>();
-                componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, "sample-recipe");
-                for (ResourceAssignment resourceAssignment : assignments) {
-                    if (resourceAssignment != null && resourceAssignment.getProperty() != null) {
-                        String type = resourceAssignment.getProperty().getType();
-                        Object value = null;
-                        if (ValidTypes.DATA_TYPE_STRING.equals(type)) {
-                            value = new String("abcdef");
-                        } else if (ValidTypes.DATA_TYPE_INTEGER.equals(type)) {
-                            value = new Integer(1234);
-                        } else if (ValidTypes.DATA_TYPE_BOOLEAN.equals(type)) {
-                            value = new Boolean(true);
-                        } else if (ValidTypes.DATA_TYPE_LIST.equals(type)) {
-                            String entityType = resourceAssignment.getProperty().getEntrySchema().getType();
-                            if (ValidTypes.DATA_TYPE_STRING.equals(entityType)) {
-                                value = "[\"abcd-array\"]";
-                            } else {
-                                String content = "[{\"name\" : \"abcd-array-complex\"}]";
-                                JsonNode node = TransformationUtils.getJsonNodeForString(content);
-                                value = node;
-                            }
-                        } else {
-                            String content = "{\"name\" : \"abcd-complex\"}";
-                            JsonNode node = TransformationUtils.getJsonNodeForString(content);
-                            value = node;
-                        }
-                        ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
-                    }
-                }
-                String generatedData = ResourceAssignmentUtils.generateResourceDataForAssignments(assignments);
-                logger.trace("Generated Data " + generatedData);
-
-                Assert.assertNotNull("Failed to generate resource data", generatedData);
+      List<ResourceAssignment> assignments =
+          TransformationUtils.getListfromJson(resourceAssignmentContents, ResourceAssignment.class);
+      if (assignments != null) {
+        Map<String, Object> componentContext = new HashMap<>();
+        componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, "sample-recipe");
+        for (ResourceAssignment resourceAssignment : assignments) {
+          if (resourceAssignment != null && resourceAssignment.getProperty() != null) {
+            String type = resourceAssignment.getProperty().getType();
+            Object value = null;
+            if (ValidTypes.DATA_TYPE_STRING.equals(type)) {
+              value = new String("abcdef");
+            } else if (ValidTypes.DATA_TYPE_INTEGER.equals(type)) {
+              value = new Integer(1234);
+            } else if (ValidTypes.DATA_TYPE_BOOLEAN.equals(type)) {
+              value = new Boolean(true);
+            } else if (ValidTypes.DATA_TYPE_LIST.equals(type)) {
+              String entityType = resourceAssignment.getProperty().getEntrySchema().getType();
+              if (ValidTypes.DATA_TYPE_STRING.equals(entityType)) {
+                value = "[\"abcd-array\"]";
+              } else {
+                String content = "[{\"name\" : \"abcd-array-complex\"}]";
+                JsonNode node = TransformationUtils.getJsonNodeForString(content);
+                value = node;
+              }
+            } else {
+              String content = "{\"name\" : \"abcd-complex\"}";
+              JsonNode node = TransformationUtils.getJsonNodeForString(content);
+              value = node;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
+          }
         }
+        String generatedData = ResourceAssignmentUtils.generateResourceDataForAssignments(assignments);
+        logger.trace("Generated Data " + generatedData);
+
+        Assert.assertNotNull("Failed to generate resource data", generatedData);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
-    @Test
-    public void testGenerateResourceData() {
-        try {
-            logger.info(" **************** testGenerateResourceData *****************");
-            String resourceAssignmentContents = IOUtils.toString(TopologicalSortingTest.class.getClassLoader()
-                    .getResourceAsStream("assignments/alltype-mapping.json"), Charset.defaultCharset());
+  @Test
+  public void testGenerateResourceData() {
+    try {
+      logger.info(" **************** testGenerateResourceData *****************");
+      String resourceAssignmentContents = IOUtils.toString(
+          TopologicalSortingTest.class.getClassLoader().getResourceAsStream("assignments/alltype-mapping.json"),
+          Charset.defaultCharset());
 
-            List<ResourceAssignment> assignments =
-                    TransformationUtils.getListfromJson(resourceAssignmentContents, ResourceAssignment.class);
-            if (assignments != null) {
+      List<ResourceAssignment> assignments =
+          TransformationUtils.getListfromJson(resourceAssignmentContents, ResourceAssignment.class);
+      if (assignments != null) {
 
-                String generatedData = ResourceAssignmentUtils.generateResourceDataForAssignments(assignments);
-                logger.trace("Generated Data " + generatedData);
+        String generatedData = ResourceAssignmentUtils.generateResourceDataForAssignments(assignments);
+        logger.trace("Generated Data " + generatedData);
 
-                Assert.assertNotNull("Failed to generate resource data", generatedData);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Assert.assertNotNull("Failed to generate resource data", generatedData);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
 }

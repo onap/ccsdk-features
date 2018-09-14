@@ -24,208 +24,208 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ConfigModel implements Serializable {
 
-    private Long id;
-    private String serviceUUID;
-    private String distributionId;
-    private String serviceName;
-    private String serviceDescription;
-    private String resourceUUID;
-    private String resourceInstanceName;
-    private String resourceName;
-    private String resourceVersion;
-    private String resourceType;
-    private String artifactUUId;
-    private String artifactType;
-    private String artifactVersion;
-    private String artifactDescription;
-    private Integer internalVersion;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy KK:mm:ss a Z")
-    private Date createdDate = new Date();
-    private String artifactName;
-    private String published;
-    private String updatedBy;
-    private String tags;
-    @SuppressWarnings("squid:S1948")
-    private List<ConfigModelContent> configModelContents;
+  private Long id;
+  private String serviceUUID;
+  private String distributionId;
+  private String serviceName;
+  private String serviceDescription;
+  private String resourceUUID;
+  private String resourceInstanceName;
+  private String resourceName;
+  private String resourceVersion;
+  private String resourceType;
+  private String artifactUUId;
+  private String artifactType;
+  private String artifactVersion;
+  private String artifactDescription;
+  private Integer internalVersion;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy KK:mm:ss a Z")
+  private Date createdDate = new Date();
+  private String artifactName;
+  private String published;
+  private String updatedBy;
+  private String tags;
+  @SuppressWarnings("squid:S1948")
+  private List<ConfigModelContent> configModelContents;
 
-    @Override
-    public String toString() {
-        StringBuilder buffer = new StringBuilder("[");
-        buffer.append("id = " + id);
-        buffer.append(", artifactType = " + artifactType);
-        buffer.append(", artifactVersion = " + artifactVersion);
-        buffer.append(", artifactName = " + artifactName);
-        buffer.append(", active = " + published);
-        buffer.append("]");
-        return buffer.toString();
-    }
+  @Override
+  public String toString() {
+    StringBuilder buffer = new StringBuilder("[");
+    buffer.append("id = " + id);
+    buffer.append(", artifactType = " + artifactType);
+    buffer.append(", artifactVersion = " + artifactVersion);
+    buffer.append(", artifactName = " + artifactName);
+    buffer.append(", active = " + published);
+    buffer.append("]");
+    return buffer.toString();
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getServiceUUID() {
-        return serviceUUID;
-    }
+  public String getServiceUUID() {
+    return serviceUUID;
+  }
 
-    public void setServiceUUID(String serviceUUID) {
-        this.serviceUUID = serviceUUID;
-    }
+  public void setServiceUUID(String serviceUUID) {
+    this.serviceUUID = serviceUUID;
+  }
 
-    public String getDistributionId() {
-        return distributionId;
-    }
+  public String getDistributionId() {
+    return distributionId;
+  }
 
-    public void setDistributionId(String distributionId) {
-        this.distributionId = distributionId;
-    }
+  public void setDistributionId(String distributionId) {
+    this.distributionId = distributionId;
+  }
 
-    public String getServiceName() {
-        return serviceName;
-    }
+  public String getServiceName() {
+    return serviceName;
+  }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
+  public void setServiceName(String serviceName) {
+    this.serviceName = serviceName;
+  }
 
-    public String getServiceDescription() {
-        return serviceDescription;
-    }
+  public String getServiceDescription() {
+    return serviceDescription;
+  }
 
-    public void setServiceDescription(String serviceDescription) {
-        this.serviceDescription = serviceDescription;
-    }
+  public void setServiceDescription(String serviceDescription) {
+    this.serviceDescription = serviceDescription;
+  }
 
-    public String getResourceUUID() {
-        return resourceUUID;
-    }
+  public String getResourceUUID() {
+    return resourceUUID;
+  }
 
-    public void setResourceUUID(String resourceUUID) {
-        this.resourceUUID = resourceUUID;
-    }
+  public void setResourceUUID(String resourceUUID) {
+    this.resourceUUID = resourceUUID;
+  }
 
-    public String getResourceInstanceName() {
-        return resourceInstanceName;
-    }
+  public String getResourceInstanceName() {
+    return resourceInstanceName;
+  }
 
-    public void setResourceInstanceName(String resourceInstanceName) {
-        this.resourceInstanceName = resourceInstanceName;
-    }
+  public void setResourceInstanceName(String resourceInstanceName) {
+    this.resourceInstanceName = resourceInstanceName;
+  }
 
-    public String getResourceName() {
-        return resourceName;
-    }
+  public String getResourceName() {
+    return resourceName;
+  }
 
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
+  public void setResourceName(String resourceName) {
+    this.resourceName = resourceName;
+  }
 
-    public String getResourceVersion() {
-        return resourceVersion;
-    }
+  public String getResourceVersion() {
+    return resourceVersion;
+  }
 
-    public void setResourceVersion(String resourceVersion) {
-        this.resourceVersion = resourceVersion;
-    }
+  public void setResourceVersion(String resourceVersion) {
+    this.resourceVersion = resourceVersion;
+  }
 
-    public String getResourceType() {
-        return resourceType;
-    }
+  public String getResourceType() {
+    return resourceType;
+  }
 
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
-    }
+  public void setResourceType(String resourceType) {
+    this.resourceType = resourceType;
+  }
 
-    public String getArtifactUUId() {
-        return artifactUUId;
-    }
+  public String getArtifactUUId() {
+    return artifactUUId;
+  }
 
-    public void setArtifactUUId(String artifactUUId) {
-        this.artifactUUId = artifactUUId;
-    }
+  public void setArtifactUUId(String artifactUUId) {
+    this.artifactUUId = artifactUUId;
+  }
 
-    public String getArtifactType() {
-        return artifactType;
-    }
+  public String getArtifactType() {
+    return artifactType;
+  }
 
-    public void setArtifactType(String artifactType) {
-        this.artifactType = artifactType;
-    }
+  public void setArtifactType(String artifactType) {
+    this.artifactType = artifactType;
+  }
 
-    public String getArtifactVersion() {
-        return artifactVersion;
-    }
+  public String getArtifactVersion() {
+    return artifactVersion;
+  }
 
-    public void setArtifactVersion(String artifactVersion) {
-        this.artifactVersion = artifactVersion;
-    }
+  public void setArtifactVersion(String artifactVersion) {
+    this.artifactVersion = artifactVersion;
+  }
 
-    public String getArtifactDescription() {
-        return artifactDescription;
-    }
+  public String getArtifactDescription() {
+    return artifactDescription;
+  }
 
-    public void setArtifactDescription(String artifactDescription) {
-        this.artifactDescription = artifactDescription;
-    }
+  public void setArtifactDescription(String artifactDescription) {
+    this.artifactDescription = artifactDescription;
+  }
 
-    public Integer getInternalVersion() {
-        return internalVersion;
-    }
+  public Integer getInternalVersion() {
+    return internalVersion;
+  }
 
-    public void setInternalVersion(Integer internalVersion) {
-        this.internalVersion = internalVersion;
-    }
+  public void setInternalVersion(Integer internalVersion) {
+    this.internalVersion = internalVersion;
+  }
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
+  public Date getCreatedDate() {
+    return createdDate;
+  }
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
+  public void setCreatedDate(Date createdDate) {
+    this.createdDate = createdDate;
+  }
 
-    public String getArtifactName() {
-        return artifactName;
-    }
+  public String getArtifactName() {
+    return artifactName;
+  }
 
-    public void setArtifactName(String artifactName) {
-        this.artifactName = artifactName;
-    }
+  public void setArtifactName(String artifactName) {
+    this.artifactName = artifactName;
+  }
 
-    public String getPublished() {
-        return published;
-    }
+  public String getPublished() {
+    return published;
+  }
 
-    public void setPublished(String published) {
-        this.published = published;
-    }
+  public void setPublished(String published) {
+    this.published = published;
+  }
 
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
+  public String getUpdatedBy() {
+    return updatedBy;
+  }
 
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
+  public void setUpdatedBy(String updatedBy) {
+    this.updatedBy = updatedBy;
+  }
 
-    public String getTags() {
-        return tags;
-    }
+  public String getTags() {
+    return tags;
+  }
 
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
+  public void setTags(String tags) {
+    this.tags = tags;
+  }
 
-    public List<ConfigModelContent> getConfigModelContents() {
-        return configModelContents;
-    }
+  public List<ConfigModelContent> getConfigModelContents() {
+    return configModelContents;
+  }
 
-    public void setConfigModelContents(List<ConfigModelContent> configModelContents) {
-        this.configModelContents = configModelContents;
-    }
+  public void setConfigModelContents(List<ConfigModelContent> configModelContents) {
+    this.configModelContents = configModelContents;
+  }
 
 }

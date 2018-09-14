@@ -19,38 +19,37 @@ package org.onap.ccsdk.features.model.service;
 
 import java.util.List;
 import java.util.Map;
-
 import org.onap.ccsdk.features.model.data.ServiceTemplate;
 import org.onap.ccsdk.sli.core.sli.SvcLogicContext;
 import org.onap.ccsdk.sli.core.sli.SvcLogicException;
 
 public interface ConfigModelService {
 
-    public Boolean validateServiceTemplate(ServiceTemplate serviceTemplate) throws SvcLogicException;
+  public Boolean validateServiceTemplate(ServiceTemplate serviceTemplate) throws SvcLogicException;
 
-    public Map<String, String> prepareContext(Map<String, String> context, String input, String serviceTemplateName,
-            String serviceTemplateVersion) throws SvcLogicException;
+  public Map<String, String> prepareContext(Map<String, String> context, String input, String serviceTemplateName,
+      String serviceTemplateVersion) throws SvcLogicException;
 
-    public Map<String, String> prepareContext(Map<String, String> context, String input, String serviceTemplateContent)
-            throws SvcLogicException;
+  public Map<String, String> prepareContext(Map<String, String> context, String input, String serviceTemplateContent)
+      throws SvcLogicException;
 
-    public Map<String, String> convertJson2properties(Map<String, String> context, String jsonContent,
-            List<String> blockKeys) throws SvcLogicException;
+  public Map<String, String> convertJson2properties(Map<String, String> context, String jsonContent,
+      List<String> blockKeys) throws SvcLogicException;
 
-    public Map<String, String> convertServiceTemplate2Properties(String serviceTemplateContent,
-            final Map<String, String> context) throws SvcLogicException;
+  public Map<String, String> convertServiceTemplate2Properties(String serviceTemplateContent,
+      final Map<String, String> context) throws SvcLogicException;
 
-    public Map<String, String> convertServiceTemplate2Properties(ServiceTemplate serviceTemplate,
-            final Map<String, String> context) throws SvcLogicException;
+  public Map<String, String> convertServiceTemplate2Properties(ServiceTemplate serviceTemplate,
+      final Map<String, String> context) throws SvcLogicException;
 
-    public SvcLogicContext assignInParamsFromModel(final SvcLogicContext context, final Map<String, String> inParams)
-            throws SvcLogicException;
+  public SvcLogicContext assignInParamsFromModel(final SvcLogicContext context, final Map<String, String> inParams)
+      throws SvcLogicException;
 
-    public SvcLogicContext assignOutParamsFromModel(final SvcLogicContext context, final Map<String, String> inParams)
-            throws SvcLogicException;
+  public SvcLogicContext assignOutParamsFromModel(final SvcLogicContext context, final Map<String, String> inParams)
+      throws SvcLogicException;
 
-    public String getNodeTemplateContent(final SvcLogicContext context, String templateName) throws SvcLogicException;
+  public String getNodeTemplateContent(final SvcLogicContext context, String templateName) throws SvcLogicException;
 
-    public String getNodeTemplateMapping(final SvcLogicContext context, String templateName) throws SvcLogicException;
+  public String getNodeTemplateMapping(final SvcLogicContext context, String templateName) throws SvcLogicException;
 
 }

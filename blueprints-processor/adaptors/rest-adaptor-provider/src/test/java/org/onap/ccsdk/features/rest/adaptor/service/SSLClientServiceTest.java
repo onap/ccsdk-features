@@ -43,79 +43,79 @@ import org.springframework.web.client.RestTemplate;
 @PrepareForTest({AbstractConfigRestClientAdapter.class})
 public class SSLClientServiceTest {
 
-    ConfigRestAdaptorService configRestAdaptorService;
+  ConfigRestAdaptorService configRestAdaptorService;
 
-    RestTemplate mockRestTemplate = mock(RestTemplate.class);
+  RestTemplate mockRestTemplate = mock(RestTemplate.class);
 
-    String path = "path";
+  String path = "path";
 
-    @Before
-    public void before() throws Exception {
-        whenNew(RestTemplate.class).withAnyArguments().thenReturn(mockRestTemplate);
+  @Before
+  public void before() throws Exception {
+    whenNew(RestTemplate.class).withAnyArguments().thenReturn(mockRestTemplate);
 
-        String propertyDir = "src/test/resources";
-        configRestAdaptorService = new ConfigRestAdaptorServiceImpl(propertyDir);
-    }
+    String propertyDir = "src/test/resources";
+    configRestAdaptorService = new ConfigRestAdaptorServiceImpl(propertyDir);
+  }
 
-    @Test
-    public void testGetResource() throws Exception {
-        String responseBody = "sampleBodyString";
-        ResponseEntity<Object> response = new ResponseEntity<Object>(responseBody, HttpStatus.OK);
-        when(mockRestTemplate.exchange(Matchers.endsWith(path), Matchers.eq(HttpMethod.GET), Matchers.any(),
-                Matchers.any(Class.class))).thenReturn(response);
+  @Test
+  public void testGetResource() throws Exception {
+    String responseBody = "sampleBodyString";
+    ResponseEntity<Object> response = new ResponseEntity<Object>(responseBody, HttpStatus.OK);
+    when(mockRestTemplate.exchange(Matchers.endsWith(path), Matchers.eq(HttpMethod.GET), Matchers.any(),
+        Matchers.any(Class.class))).thenReturn(response);
 
-        String body = configRestAdaptorService.getResource("aai", path, String.class);
+    String body = configRestAdaptorService.getResource("aai", path, String.class);
 
-        Assert.assertEquals(responseBody, body);
-    }
+    Assert.assertEquals(responseBody, body);
+  }
 
-    @Test
-    public void testPostResource() throws Exception {
-        String responseBody = "sampleBodyString";
-        ResponseEntity<Object> response = new ResponseEntity<Object>(responseBody, HttpStatus.OK);
-        when(mockRestTemplate.exchange(Matchers.endsWith(path), Matchers.eq(HttpMethod.POST), Matchers.any(),
-                Matchers.any(Class.class))).thenReturn(response);
+  @Test
+  public void testPostResource() throws Exception {
+    String responseBody = "sampleBodyString";
+    ResponseEntity<Object> response = new ResponseEntity<Object>(responseBody, HttpStatus.OK);
+    when(mockRestTemplate.exchange(Matchers.endsWith(path), Matchers.eq(HttpMethod.POST), Matchers.any(),
+        Matchers.any(Class.class))).thenReturn(response);
 
-        String body = configRestAdaptorService.postResource("aai", path, null, String.class);
+    String body = configRestAdaptorService.postResource("aai", path, null, String.class);
 
-        Assert.assertEquals(responseBody, body);
-    }
+    Assert.assertEquals(responseBody, body);
+  }
 
-    @Test
-    public void testExchange() throws Exception {
-        String responseBody = "sampleBodyString";
-        ResponseEntity<Object> response = new ResponseEntity<Object>(responseBody, HttpStatus.OK);
-        when(mockRestTemplate.exchange(Matchers.endsWith(path), Matchers.eq(HttpMethod.GET), Matchers.any(),
-                Matchers.any(Class.class))).thenReturn(response);
+  @Test
+  public void testExchange() throws Exception {
+    String responseBody = "sampleBodyString";
+    ResponseEntity<Object> response = new ResponseEntity<Object>(responseBody, HttpStatus.OK);
+    when(mockRestTemplate.exchange(Matchers.endsWith(path), Matchers.eq(HttpMethod.GET), Matchers.any(),
+        Matchers.any(Class.class))).thenReturn(response);
 
-        String body = configRestAdaptorService.exchangeResource("aai", path, null, String.class, "GET");
+    String body = configRestAdaptorService.exchangeResource("aai", path, null, String.class, "GET");
 
-        Assert.assertEquals(responseBody, body);
-    }
+    Assert.assertEquals(responseBody, body);
+  }
 
-    @Test(expected = ConfigRestAdaptorException.class)
-    public void testGetResourceError() throws Exception {
-        ResponseEntity<Object> response = new ResponseEntity<Object>("", HttpStatus.INTERNAL_SERVER_ERROR);
-        when(mockRestTemplate.getForEntity(Matchers.endsWith(path), Matchers.any())).thenReturn(response);
+  @Test(expected = ConfigRestAdaptorException.class)
+  public void testGetResourceError() throws Exception {
+    ResponseEntity<Object> response = new ResponseEntity<Object>("", HttpStatus.INTERNAL_SERVER_ERROR);
+    when(mockRestTemplate.getForEntity(Matchers.endsWith(path), Matchers.any())).thenReturn(response);
 
-        configRestAdaptorService.getResource("aai", path, String.class);
-    }
+    configRestAdaptorService.getResource("aai", path, String.class);
+  }
 
-    @Test(expected = ConfigRestAdaptorException.class)
-    public void testPostResourceError() throws Exception {
-        ResponseEntity<Object> response = new ResponseEntity<Object>("", HttpStatus.INTERNAL_SERVER_ERROR);
-        when(mockRestTemplate.postForEntity(Matchers.endsWith(path), Matchers.anyObject(), Matchers.any()))
-                .thenReturn(response);
+  @Test(expected = ConfigRestAdaptorException.class)
+  public void testPostResourceError() throws Exception {
+    ResponseEntity<Object> response = new ResponseEntity<Object>("", HttpStatus.INTERNAL_SERVER_ERROR);
+    when(mockRestTemplate.postForEntity(Matchers.endsWith(path), Matchers.anyObject(), Matchers.any()))
+        .thenReturn(response);
 
-        configRestAdaptorService.postResource("aai", path, null, String.class);
-    }
+    configRestAdaptorService.postResource("aai", path, null, String.class);
+  }
 
-    @Test(expected = ConfigRestAdaptorException.class)
-    public void testExchangeError() throws Exception {
-        ResponseEntity<Object> response = new ResponseEntity<Object>("", HttpStatus.INTERNAL_SERVER_ERROR);
-        when(mockRestTemplate.exchange(Matchers.endsWith(path), Matchers.eq(HttpMethod.GET), Matchers.any(),
-                Matchers.any(Class.class))).thenReturn(response);
+  @Test(expected = ConfigRestAdaptorException.class)
+  public void testExchangeError() throws Exception {
+    ResponseEntity<Object> response = new ResponseEntity<Object>("", HttpStatus.INTERNAL_SERVER_ERROR);
+    when(mockRestTemplate.exchange(Matchers.endsWith(path), Matchers.eq(HttpMethod.GET), Matchers.any(),
+        Matchers.any(Class.class))).thenReturn(response);
 
-        configRestAdaptorService.exchangeResource("aai", path, null, String.class, "GET");
-    }
+    configRestAdaptorService.exchangeResource("aai", path, null, String.class, "GET");
+  }
 }

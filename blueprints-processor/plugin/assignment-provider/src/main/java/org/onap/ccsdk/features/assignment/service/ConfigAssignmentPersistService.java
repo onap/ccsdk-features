@@ -35,89 +35,89 @@ import com.att.eelf.configuration.EELFManager;
 
 public class ConfigAssignmentPersistService {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigAssignmentPersistService.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigAssignmentPersistService.class);
 
-    private ConfigResourceService configResourceService;
+  private ConfigResourceService configResourceService;
 
-    public ConfigAssignmentPersistService(ConfigResourceService configResourceService) {
-        this.configResourceService = configResourceService;
+  public ConfigAssignmentPersistService(ConfigResourceService configResourceService) {
+    this.configResourceService = configResourceService;
+  }
+
+  public void saveResourceMapping(org.onap.ccsdk.features.assignment.data.ResourceAssignmentData resourceAssignmentData,
+      String templateName, List<ResourceAssignment> resourceAssignments) throws SvcLogicException {
+    try {
+
+      if (resourceAssignmentData == null) {
+        throw new SvcLogicException("Resource assignment data is missing");
+      }
+
+      if (StringUtils.isBlank(resourceAssignmentData.getRequestId())) {
+        logger.warn("Request Id ({}) is missing, may be getting request for resource update.",
+            resourceAssignmentData.getRequestId());
+      }
+
+      if (StringUtils.isBlank(resourceAssignmentData.getResourceId())) {
+        throw new SvcLogicException("Resource Id is missing");
+      }
+
+      if (StringUtils.isBlank(resourceAssignmentData.getResourceType())) {
+        throw new SvcLogicException("Resource type is missing");
+      }
+
+      if (StringUtils.isBlank(resourceAssignmentData.getActionName())) {
+        throw new SvcLogicException("Action name is missing");
+      }
+
+      if (StringUtils.isBlank(templateName)) {
+        throw new SvcLogicException("template name is missing");
+      }
+
+      StringBuilder builder = new StringBuilder();
+      builder.append("Resource Assignment for Template Name :");
+      builder.append(templateName);
+      builder.append("\n");
+      builder.append(TransformationUtils.getJson(resourceAssignments, true));
+
+      configResourceService.save(new TransactionLog(resourceAssignmentData.getRequestId(),
+          DataAdaptorConstants.LOG_MESSAGE_TYPE_LOG, builder.toString()));
+
+      // Resource Data should be Regenerated based on the new Updates
+      String resourceData = ResourceAssignmentUtils.generateResourceDataForAssignments(resourceAssignments);
+
+      List<ResourceAssignmentData> resourceAssignmentDataList =
+          ConfigAssignmentUtils.convertResoureAssignmentList(resourceAssignments);
+
+      ConfigResource configResource = new ConfigResource();
+      configResource.setRequestId(resourceAssignmentData.getRequestId());
+      configResource.setServiceTemplateName(resourceAssignmentData.getServiceTemplateName());
+      configResource.setServiceTemplateVersion(resourceAssignmentData.getServiceTemplateVersion());
+      configResource.setRecipeName(resourceAssignmentData.getActionName());
+      configResource.setResourceId(resourceAssignmentData.getResourceId());
+      configResource.setResourceType(resourceAssignmentData.getResourceType());
+      configResource.setResourceData(resourceData);
+      configResource.setTemplateName(templateName);
+      configResource.setStatus(ConfigModelConstant.STATUS_SUCCESS);
+      configResource.setUpdatedBy(ConfigModelConstant.USER_SYSTEM);
+
+      if (CollectionUtils.isNotEmpty(resourceAssignmentDataList)) {
+        configResource.setResourceAssignments(resourceAssignmentDataList);
+      }
+      configResource = configResourceService.saveConfigResource(configResource);
+      logger.info("Resource data saved successfully for the template ({}) with resource id ({})", templateName,
+          configResource.getResourceId());
+
+      builder = new StringBuilder();
+      builder.append("Resource Data Template Name :");
+      builder.append(templateName);
+      builder.append("\n");
+      builder.append(resourceData);
+      configResourceService.save(new TransactionLog(resourceAssignmentData.getRequestId(),
+          DataAdaptorConstants.LOG_MESSAGE_TYPE_LOG, builder.toString()));
+
+    } catch (Exception e) {
+      throw new SvcLogicException("ConfigAssignmentPersistService : " + e.getMessage(), e);
     }
 
-    public void saveResourceMapping(org.onap.ccsdk.features.assignment.data.ResourceAssignmentData resourceAssignmentData,
-            String templateName, List<ResourceAssignment> resourceAssignments) throws SvcLogicException {
-        try {
-
-            if (resourceAssignmentData == null) {
-                throw new SvcLogicException("Resource assignment data is missing");
-            }
-
-            if (StringUtils.isBlank(resourceAssignmentData.getRequestId())) {
-                logger.warn("Request Id ({}) is missing, may be getting request for resource update.",
-                        resourceAssignmentData.getRequestId());
-            }
-
-            if (StringUtils.isBlank(resourceAssignmentData.getResourceId())) {
-                throw new SvcLogicException("Resource Id is missing");
-            }
-
-            if (StringUtils.isBlank(resourceAssignmentData.getResourceType())) {
-                throw new SvcLogicException("Resource type is missing");
-            }
-
-            if (StringUtils.isBlank(resourceAssignmentData.getActionName())) {
-                throw new SvcLogicException("Action name is missing");
-            }
-
-            if (StringUtils.isBlank(templateName)) {
-                throw new SvcLogicException("template name is missing");
-            }
-
-            StringBuilder builder = new StringBuilder();
-            builder.append("Resource Assignment for Template Name :");
-            builder.append(templateName);
-            builder.append("\n");
-            builder.append(TransformationUtils.getJson(resourceAssignments, true));
-
-            configResourceService.save(new TransactionLog(resourceAssignmentData.getRequestId(),
-                    DataAdaptorConstants.LOG_MESSAGE_TYPE_LOG, builder.toString()));
-
-            // Resource Data should be Regenerated based on the new Updates
-            String resourceData = ResourceAssignmentUtils.generateResourceDataForAssignments(resourceAssignments);
-
-            List<ResourceAssignmentData> resourceAssignmentDataList =
-                    ConfigAssignmentUtils.convertResoureAssignmentList(resourceAssignments);
-
-            ConfigResource configResource = new ConfigResource();
-            configResource.setRequestId(resourceAssignmentData.getRequestId());
-            configResource.setServiceTemplateName(resourceAssignmentData.getServiceTemplateName());
-            configResource.setServiceTemplateVersion(resourceAssignmentData.getServiceTemplateVersion());
-            configResource.setRecipeName(resourceAssignmentData.getActionName());
-            configResource.setResourceId(resourceAssignmentData.getResourceId());
-            configResource.setResourceType(resourceAssignmentData.getResourceType());
-            configResource.setResourceData(resourceData);
-            configResource.setTemplateName(templateName);
-            configResource.setStatus(ConfigModelConstant.STATUS_SUCCESS);
-            configResource.setUpdatedBy(ConfigModelConstant.USER_SYSTEM);
-
-            if (CollectionUtils.isNotEmpty(resourceAssignmentDataList)) {
-                configResource.setResourceAssignments(resourceAssignmentDataList);
-            }
-            configResource = configResourceService.saveConfigResource(configResource);
-            logger.info("Resource data saved successfully for the template ({}) with resource id ({})", templateName,
-                    configResource.getResourceId());
-
-            builder = new StringBuilder();
-            builder.append("Resource Data Template Name :");
-            builder.append(templateName);
-            builder.append("\n");
-            builder.append(resourceData);
-            configResourceService.save(new TransactionLog(resourceAssignmentData.getRequestId(),
-                    DataAdaptorConstants.LOG_MESSAGE_TYPE_LOG, builder.toString()));
-
-        } catch (Exception e) {
-            throw new SvcLogicException("ConfigAssignmentPersistService : " + e.getMessage(), e);
-        }
-
-    }
+  }
 
 }

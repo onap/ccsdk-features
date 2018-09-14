@@ -28,32 +28,32 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 @SuppressWarnings("squid:S1118")
 public class JsonParserUtils {
 
-    public static final Configuration JACKSON_JSON_NODE_CONFIGURATION = Configuration.builder()
-            .mappingProvider(new JacksonMappingProvider()).jsonProvider(new JacksonJsonNodeJsonProvider()).build();
+  public static final Configuration JACKSON_JSON_NODE_CONFIGURATION = Configuration.builder()
+      .mappingProvider(new JacksonMappingProvider()).jsonProvider(new JacksonJsonNodeJsonProvider()).build();
 
-    public static final Configuration PATH_CONFIGURATION = Configuration.builder().options(Option.AS_PATH_LIST).build();
+  public static final Configuration PATH_CONFIGURATION = Configuration.builder().options(Option.AS_PATH_LIST).build();
 
-    public static List<String> paths(String jsonContent, String expression) {
-        return using(PATH_CONFIGURATION).parse(jsonContent).read(expression);
-    }
+  public static List<String> paths(String jsonContent, String expression) {
+    return using(PATH_CONFIGURATION).parse(jsonContent).read(expression);
+  }
 
-    public static List<String> paths(JsonNode jsonNode, String expression) {
-        return paths(jsonNode.toString(), expression);
-    }
+  public static List<String> paths(JsonNode jsonNode, String expression) {
+    return paths(jsonNode.toString(), expression);
+  }
 
-    public static JsonNode parse(String jsonContent, String expression) {
-        return using(JACKSON_JSON_NODE_CONFIGURATION).parse(jsonContent).read(expression);
-    }
+  public static JsonNode parse(String jsonContent, String expression) {
+    return using(JACKSON_JSON_NODE_CONFIGURATION).parse(jsonContent).read(expression);
+  }
 
-    public static JsonNode parse(JsonNode jsonNode, String expression) {
-        return parse(jsonNode.toString(), expression);
-    }
+  public static JsonNode parse(JsonNode jsonNode, String expression) {
+    return parse(jsonNode.toString(), expression);
+  }
 
-    public static JsonNode parseNSet(String jsonContent, String expression, JsonNode value) {
-        return using(JACKSON_JSON_NODE_CONFIGURATION).parse(jsonContent).set(expression, value).json();
-    }
+  public static JsonNode parseNSet(String jsonContent, String expression, JsonNode value) {
+    return using(JACKSON_JSON_NODE_CONFIGURATION).parse(jsonContent).set(expression, value).json();
+  }
 
-    public static JsonNode parseNSet(JsonNode jsonNode, String expression, JsonNode valueNode) {
-        return parseNSet(jsonNode.toString(), expression, valueNode);
-    }
+  public static JsonNode parseNSet(JsonNode jsonNode, String expression, JsonNode valueNode) {
+    return parseNSet(jsonNode.toString(), expression, valueNode);
+  }
 }

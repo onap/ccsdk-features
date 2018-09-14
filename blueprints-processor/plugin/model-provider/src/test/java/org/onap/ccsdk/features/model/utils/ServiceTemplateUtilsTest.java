@@ -28,51 +28,51 @@ import org.onap.ccsdk.features.model.utils.ServiceTemplateUtils;
 
 public class ServiceTemplateUtilsTest {
 
-    ServiceTemplateUtils serviceTemplateUtils = new ServiceTemplateUtils();
+  ServiceTemplateUtils serviceTemplateUtils = new ServiceTemplateUtils();
 
-    @Test
-    public void testPopulateVnfNodeProperties() {
-        NodeTemplate nodeTemplate = createNodeTemplate();
+  @Test
+  public void testPopulateVnfNodeProperties() {
+    NodeTemplate nodeTemplate = createNodeTemplate();
 
-        String nodeTemplateKey = "nodeTemplateKey";
-        Map<String, String> context = new HashMap<String, String>();
+    String nodeTemplateKey = "nodeTemplateKey";
+    Map<String, String> context = new HashMap<String, String>();
 
-        Map<String, String> result =
-                serviceTemplateUtils.populateVnfNodeProperties(nodeTemplateKey, nodeTemplate, context, null);
+    Map<String, String> result =
+        serviceTemplateUtils.populateVnfNodeProperties(nodeTemplateKey, nodeTemplate, context, null);
 
-        Assert.assertTrue(result.size() > 0);
-    }
+    Assert.assertTrue(result.size() > 0);
+  }
 
-    @Test
-    public void testPopulateNodeTemplateArtifacts() {
-        String nodeTemplateKey = "nodeTemplateKey";
-        NodeTemplate nodeTemplate = createNodeTemplate();
-        Map<String, String> context = new HashMap<String, String>();
+  @Test
+  public void testPopulateNodeTemplateArtifacts() {
+    String nodeTemplateKey = "nodeTemplateKey";
+    NodeTemplate nodeTemplate = createNodeTemplate();
+    Map<String, String> context = new HashMap<String, String>();
 
-        Map<String, String> result =
-                serviceTemplateUtils.populateNodeTemplateArtifacts(nodeTemplateKey, nodeTemplate, context);
+    Map<String, String> result =
+        serviceTemplateUtils.populateNodeTemplateArtifacts(nodeTemplateKey, nodeTemplate, context);
 
-        Assert.assertTrue(result.size() > 0);
-    }
+    Assert.assertTrue(result.size() > 0);
+  }
 
-    private NodeTemplate createNodeTemplate() {
-        NodeTemplate nodeTemplate = new NodeTemplate();
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put("prop1", "value");
-        CapabilityAssignment capabilityAssignment = new CapabilityAssignment();
-        capabilityAssignment.setProperties(properties);
-        Map<String, CapabilityAssignment> capabilities = new HashMap<String, CapabilityAssignment>();
-        capabilities.put("key", capabilityAssignment);
-        nodeTemplate.setCapabilities(capabilities);
+  private NodeTemplate createNodeTemplate() {
+    NodeTemplate nodeTemplate = new NodeTemplate();
+    Map<String, Object> properties = new HashMap<String, Object>();
+    properties.put("prop1", "value");
+    CapabilityAssignment capabilityAssignment = new CapabilityAssignment();
+    capabilityAssignment.setProperties(properties);
+    Map<String, CapabilityAssignment> capabilities = new HashMap<String, CapabilityAssignment>();
+    capabilities.put("key", capabilityAssignment);
+    nodeTemplate.setCapabilities(capabilities);
 
-        ArtifactDefinition artifactDefinition = new ArtifactDefinition();
-        artifactDefinition.setFile("file");
-        artifactDefinition.setDeployPath("deployPath");
-        artifactDefinition.setContent("content");
-        Map<String, ArtifactDefinition> artifacts = new HashMap<String, ArtifactDefinition>();
-        artifacts.put("artifactName1", artifactDefinition);
-        nodeTemplate.setArtifacts(artifacts);
+    ArtifactDefinition artifactDefinition = new ArtifactDefinition();
+    artifactDefinition.setFile("file");
+    artifactDefinition.setDeployPath("deployPath");
+    artifactDefinition.setContent("content");
+    Map<String, ArtifactDefinition> artifacts = new HashMap<String, ArtifactDefinition>();
+    artifacts.put("artifactName1", artifactDefinition);
+    nodeTemplate.setArtifacts(artifacts);
 
-        return nodeTemplate;
-    }
+    return nodeTemplate;
+  }
 }

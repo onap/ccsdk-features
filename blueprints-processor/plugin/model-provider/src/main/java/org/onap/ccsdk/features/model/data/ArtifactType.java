@@ -23,80 +23,80 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ArtifactType {
-    @JsonIgnore
-    private String id;
-    private String description;
-    private String version;
-    private Map<String, String> metadata;
-    @JsonProperty("derived_from")
-    private String derivedFrom;
-    private Map<String, PropertyDefinition> properties;
-    @JsonProperty("mime_type")
-    private String mimeType;
-    @JsonProperty("file_ext")
-    private List<String> fileExt;
+  @JsonIgnore
+  private String id;
+  private String description;
+  private String version;
+  private Map<String, String> metadata;
+  @JsonProperty("derived_from")
+  private String derivedFrom;
+  private Map<String, PropertyDefinition> properties;
+  @JsonProperty("mime_type")
+  private String mimeType;
+  @JsonProperty("file_ext")
+  private List<String> fileExt;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getVersion() {
-        return version;
-    }
+  public String getVersion() {
+    return version;
+  }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+  public void setVersion(String version) {
+    this.version = version;
+  }
 
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
+  public Map<String, String> getMetadata() {
+    return metadata;
+  }
 
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
+  public void setMetadata(Map<String, String> metadata) {
+    this.metadata = metadata;
+  }
 
-    public String getDerivedFrom() {
-        return derivedFrom;
-    }
+  public String getDerivedFrom() {
+    return derivedFrom;
+  }
 
-    public void setDerivedFrom(String derivedFrom) {
-        this.derivedFrom = derivedFrom;
-    }
+  public void setDerivedFrom(String derivedFrom) {
+    this.derivedFrom = derivedFrom;
+  }
 
-    public Map<String, PropertyDefinition> getProperties() {
-        return properties;
-    }
+  public Map<String, PropertyDefinition> getProperties() {
+    return properties;
+  }
 
-    public void setProperties(Map<String, PropertyDefinition> properties) {
-        this.properties = properties;
-    }
+  public void setProperties(Map<String, PropertyDefinition> properties) {
+    this.properties = properties;
+  }
 
-    public String getMimeType() {
-        return mimeType;
-    }
+  public String getMimeType() {
+    return mimeType;
+  }
 
-    public void setMimeType(String mimeType) {
-        this.mimeType = mimeType;
-    }
+  public void setMimeType(String mimeType) {
+    this.mimeType = mimeType;
+  }
 
-    public List<String> getFileExt() {
-        return fileExt;
-    }
+  public List<String> getFileExt() {
+    return fileExt;
+  }
 
-    public void setFileExt(List<String> fileExt) {
-        this.fileExt = fileExt;
-    }
+  public void setFileExt(List<String> fileExt) {
+    this.fileExt = fileExt;
+  }
 }

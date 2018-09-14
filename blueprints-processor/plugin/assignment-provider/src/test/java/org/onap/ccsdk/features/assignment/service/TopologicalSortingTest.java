@@ -30,31 +30,30 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class TopologicalSortingTest {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(TopologicalSortingTest.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(TopologicalSortingTest.class);
 
-    @Test
-    public void testBulkSequencingMapping() {
-        try {
-            logger.info(" **************** Bulk Sequencing Default *****************");
-            String resourceMapping = IOUtils.toString(
-                    TopologicalSortingTest.class.getClassLoader().getResourceAsStream("mapping/dependency.json"),
-                    Charset.defaultCharset());
+  @Test
+  public void testBulkSequencingMapping() {
+    try {
+      logger.info(" **************** Bulk Sequencing Default *****************");
+      String resourceMapping =
+          IOUtils.toString(TopologicalSortingTest.class.getClassLoader().getResourceAsStream("mapping/dependency.json"),
+              Charset.defaultCharset());
 
-            List<ResourceAssignment> assignments =
-                    TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
-            if (assignments != null) {
-                SvcLogicContext ctx = new SvcLogicContext();
-                ResourceAssignmentProcessor resourceAssignmentProcessor =
-                        new ResourceAssignmentProcessor(assignments, ctx);
-                List<List<ResourceAssignment>> sequenceBatchResourceAssignment = resourceAssignmentProcessor.process();
+      List<ResourceAssignment> assignments =
+          TransformationUtils.getListfromJson(resourceMapping, ResourceAssignment.class);
+      if (assignments != null) {
+        SvcLogicContext ctx = new SvcLogicContext();
+        ResourceAssignmentProcessor resourceAssignmentProcessor = new ResourceAssignmentProcessor(assignments, ctx);
+        List<List<ResourceAssignment>> sequenceBatchResourceAssignment = resourceAssignmentProcessor.process();
 
-                Assert.assertNotNull("Failed to populate Sequence Bulk Mappings", sequenceBatchResourceAssignment);
-                Assert.assertNotEquals("Failed to populate Sequence Bulk Mappings size ",
-                        (sequenceBatchResourceAssignment.size() > 0));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Assert.assertNotNull("Failed to populate Sequence Bulk Mappings", sequenceBatchResourceAssignment);
+        Assert.assertNotEquals("Failed to populate Sequence Bulk Mappings size ",
+            (sequenceBatchResourceAssignment.size() > 0));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
 }

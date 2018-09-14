@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.ccsdk.features.data.adaptor.DataAdaptorConstants;
-import org.onap.ccsdk.features.data.adaptor.dao.ConfigPropertyMapDao;
 import org.onap.ccsdk.features.data.adaptor.dao.ConfigResourceDao;
 import org.onap.ccsdk.features.data.adaptor.dao.NamedQueryExecutorDao;
 import org.onap.ccsdk.features.data.adaptor.dao.QueryExecutorDao;
@@ -42,48 +41,45 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = {"classpath:test-context-h2db.xml"})
 public class ConfigResourceNodeTest {
 
-    ConfigResourceNode configResourceNode;
+  ConfigResourceNode configResourceNode;
 
-    ConfigResourceService configResourceService;
+  ConfigResourceService configResourceService;
 
-    @Autowired
-    TransactionLogDao transactionLogDao;
+  @Autowired
+  TransactionLogDao transactionLogDao;
 
-    @Autowired
-    ConfigResourceDao configResourceDao;
+  @Autowired
+  ConfigResourceDao configResourceDao;
 
-    @Autowired
-    QueryExecutorDao queryExecutorDao;
+  @Autowired
+  QueryExecutorDao queryExecutorDao;
 
-    @Autowired
-    NamedQueryExecutorDao namedQueryExecutorDao;
+  @Autowired
+  NamedQueryExecutorDao namedQueryExecutorDao;
 
-    @Autowired
-    ConfigPropertyMapDao configPropertyMapDao;
+  @Before
+  public void before() {
+    configResourceService =
+        new ConfigResourceServiceImpl(transactionLogDao, configResourceDao, queryExecutorDao, namedQueryExecutorDao);
+    configResourceNode = new ConfigResourceNode(configResourceService);
+  }
 
-    @Before
-    public void before() {
-        configResourceService = new ConfigResourceServiceImpl(transactionLogDao, configResourceDao, queryExecutorDao,
-                namedQueryExecutorDao, configPropertyMapDao);
-        configResourceNode = new ConfigResourceNode(configResourceService);
-    }
+  @Test
+  public void testSaveConfigTransactionLog() throws Exception {
+    Map<String, String> inParams = new HashMap<>();
+    inParams.put(DataAdaptorConstants.INPUT_PARAM_MESSAGE_TYPE, "messageType");
+    inParams.put(DataAdaptorConstants.INPUT_PARAM_MESSAGE, "message");
+    SvcLogicContext ctx = new SvcLogicContext();
+    ctx.setAttribute("request-id", "requestId12345");
 
-    @Test
-    public void testSaveConfigTransactionLog() throws Exception {
-        Map<String, String> inParams = new HashMap<>();
-        inParams.put(DataAdaptorConstants.INPUT_PARAM_MESSAGE_TYPE, "messageType");
-        inParams.put(DataAdaptorConstants.INPUT_PARAM_MESSAGE, "message");
-        SvcLogicContext ctx = new SvcLogicContext();
-        ctx.setAttribute("request-id", "requestId12345");
+    configResourceNode.saveConfigTransactionLog(inParams, ctx);
 
-        configResourceNode.saveConfigTransactionLog(inParams, ctx);
+    Assert.assertTrue(!transactionLogDao.getTransactionsByRequestId("requestId12345").isEmpty());
+  }
 
-        Assert.assertTrue(!transactionLogDao.getTransactionsByRequestId("requestId12345").isEmpty());
-    }
-
-    @Test(expected = SvcLogicException.class)
-    public void testSaveConfigTransactionLogException() throws Exception {
-        configResourceNode = new ConfigResourceNode(null);
-        configResourceNode.saveConfigTransactionLog(new HashMap<>(), new SvcLogicContext());
-    }
+  @Test(expected = SvcLogicException.class)
+  public void testSaveConfigTransactionLogException() throws Exception {
+    configResourceNode = new ConfigResourceNode(null);
+    configResourceNode.saveConfigTransactionLog(new HashMap<>(), new SvcLogicContext());
+  }
 }

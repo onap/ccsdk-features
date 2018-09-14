@@ -27,30 +27,30 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.Assert;
 
 public class BasicAuthorizationInterceptor implements ClientHttpRequestInterceptor {
-    private static final Charset UTF_8 = Charset.forName("UTF-8");
+  private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-    private final String username;
+  private final String username;
 
-    private final String pass;
+  private final String pass;
 
-    /**
-     * Create a new interceptor which adds a BASIC authorization header for the given username and pass.
-     *
-     * @param username the username to use
-     * @param pass the password to use
-     */
-    public BasicAuthorizationInterceptor(String username, String pass) {
-        Assert.hasLength(username, "Username must not be empty");
-        this.username = username;
-        this.pass = (pass != null ? pass : "");
-    }
+  /**
+   * Create a new interceptor which adds a BASIC authorization header for the given username and pass.
+   *
+   * @param username the username to use
+   * @param pass the password to use
+   */
+  public BasicAuthorizationInterceptor(String username, String pass) {
+    Assert.hasLength(username, "Username must not be empty");
+    this.username = username;
+    this.pass = (pass != null ? pass : "");
+  }
 
-    @Override
-    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
-            throws IOException {
+  @Override
+  public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
+      throws IOException {
 
-        String token = Base64.getEncoder().encodeToString((this.username + ":" + this.pass).getBytes(UTF_8));
-        request.getHeaders().add("Authorization", "Basic " + token);
-        return execution.execute(request, body);
-    }
+    String token = Base64.getEncoder().encodeToString((this.username + ":" + this.pass).getBytes(UTF_8));
+    request.getHeaders().add("Authorization", "Basic " + token);
+    return execution.execute(request, body);
+  }
 }

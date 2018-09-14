@@ -18,19 +18,18 @@
 package org.onap.ccsdk.features.assignment.service;
 
 import java.util.List;
-
 import org.onap.ccsdk.features.assignment.data.ResourceAssignmentData;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.sli.core.sli.SvcLogicException;
 
 public interface ConfigAssignmentService {
 
-    public void resolveResources(ResourceAssignmentData resourceAssignmentData) throws SvcLogicException;
+  public void resolveResources(ResourceAssignmentData resourceAssignmentData) throws SvcLogicException;
 
-    public void saveResourceMapping(ResourceAssignmentData resourceAssignmentData, String templateName,
-            List<ResourceAssignment> resourceAssignments) throws SvcLogicException;
+  public void saveResourceMapping(ResourceAssignmentData resourceAssignmentData, String templateName,
+      List<ResourceAssignment> resourceAssignments) throws SvcLogicException;
 
-    public ResourceAssignmentData generateTemplateResourceMash(ResourceAssignmentData resourceAssignmentData)
-            throws SvcLogicException;
+  public ResourceAssignmentData generateTemplateResourceMash(ResourceAssignmentData resourceAssignmentData)
+      throws SvcLogicException;
 
 }

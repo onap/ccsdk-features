@@ -22,12 +22,12 @@ import org.onap.ccsdk.sli.core.sli.SvcLogicException;
 
 public interface ConfigGeneratorService {
 
-    public ConfigGeneratorInfo generateConfiguration(String templateContent, String templateData)
-            throws SvcLogicException;
+  public ConfigGeneratorInfo generateConfiguration(String templateContent, String templateData)
+      throws SvcLogicException;
 
-    public ConfigGeneratorInfo generateConfiguration(String templateContent, String templateData, boolean ignoreNull)
-            throws SvcLogicException;
+  public ConfigGeneratorInfo generateConfiguration(String templateContent, String templateData, boolean ignoreNull)
+      throws SvcLogicException;
 
-    public ConfigGeneratorInfo generateConfiguration(ConfigGeneratorInfo configGeneratorInfo) throws SvcLogicException;
+  public ConfigGeneratorInfo generateConfiguration(ConfigGeneratorInfo configGeneratorInfo) throws SvcLogicException;
 
 }

@@ -27,71 +27,71 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @version 1.0
  */
 public class TopologyTemplate {
-    @JsonIgnore
-    private String id;
-    private String description;
-    private Map<String, PropertyDefinition> inputs;
-    @JsonProperty("node_templates")
-    private Map<String, NodeTemplate> nodeTemplates;
-    @JsonProperty("relationship_templates")
-    private Map<String, RelationshipTemplate> relationshipTemplates;
-    private Map<String, CapabilityAssignment> capabilities;
-    private Map<String, Workflow> workflows;
+  @JsonIgnore
+  private String id;
+  private String description;
+  private Map<String, PropertyDefinition> inputs;
+  @JsonProperty("node_templates")
+  private Map<String, NodeTemplate> nodeTemplates;
+  @JsonProperty("relationship_templates")
+  private Map<String, RelationshipTemplate> relationshipTemplates;
+  private Map<String, CapabilityAssignment> capabilities;
+  private Map<String, Workflow> workflows;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public Map<String, PropertyDefinition> getInputs() {
-        return inputs;
-    }
+  public Map<String, PropertyDefinition> getInputs() {
+    return inputs;
+  }
 
-    public void setInputs(Map<String, PropertyDefinition> inputs) {
-        this.inputs = inputs;
-    }
+  public void setInputs(Map<String, PropertyDefinition> inputs) {
+    this.inputs = inputs;
+  }
 
-    public Map<String, NodeTemplate> getNodeTemplates() {
-        return nodeTemplates;
-    }
+  public Map<String, NodeTemplate> getNodeTemplates() {
+    return nodeTemplates;
+  }
 
-    public void setNodeTemplates(Map<String, NodeTemplate> nodeTemplates) {
-        this.nodeTemplates = nodeTemplates;
-    }
+  public void setNodeTemplates(Map<String, NodeTemplate> nodeTemplates) {
+    this.nodeTemplates = nodeTemplates;
+  }
 
-    public Map<String, RelationshipTemplate> getRelationshipTemplates() {
-        return relationshipTemplates;
-    }
+  public Map<String, RelationshipTemplate> getRelationshipTemplates() {
+    return relationshipTemplates;
+  }
 
-    public void setRelationshipTemplates(Map<String, RelationshipTemplate> relationshipTemplates) {
-        this.relationshipTemplates = relationshipTemplates;
-    }
+  public void setRelationshipTemplates(Map<String, RelationshipTemplate> relationshipTemplates) {
+    this.relationshipTemplates = relationshipTemplates;
+  }
 
-    public Map<String, CapabilityAssignment> getCapabilities() {
-        return capabilities;
-    }
+  public Map<String, CapabilityAssignment> getCapabilities() {
+    return capabilities;
+  }
 
-    public void setCapabilities(Map<String, CapabilityAssignment> capabilities) {
-        this.capabilities = capabilities;
-    }
+  public void setCapabilities(Map<String, CapabilityAssignment> capabilities) {
+    this.capabilities = capabilities;
+  }
 
-    public Map<String, Workflow> getWorkflows() {
-        return workflows;
-    }
+  public Map<String, Workflow> getWorkflows() {
+    return workflows;
+  }
 
-    public void setWorkflows(Map<String, Workflow> workflows) {
-        this.workflows = workflows;
-    }
+  public void setWorkflows(Map<String, Workflow> workflows) {
+    this.workflows = workflows;
+  }
 
 }

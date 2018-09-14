@@ -53,171 +53,172 @@ import com.att.eelf.configuration.EELFManager;
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigGeneratorNodeTest {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigGeneratorNodeTest.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigGeneratorNodeTest.class);
 
-    @Mock
-    private ConfigResourceService configResourceService;
+  @Mock
+  private ConfigResourceService configResourceService;
 
-    @Mock
-    private ConfigRestAdaptorService configRestAdaptorService;
+  @Mock
+  private ConfigRestAdaptorService configRestAdaptorService;
 
-    private ConfigModelService configModelService;
+  private ConfigModelService configModelService;
 
-    @Before
-    public void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
 
-        configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
+    configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
 
-        MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.initMocks(this);
 
-        try {
-            Mockito.doAnswer(new Answer<Void>() {
-                @Override
-                public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                    Object[] args = invocationOnMock.getArguments();
-                    if (args != null) {
-                        logger.trace("Transaction info " + Arrays.asList(args));
-                    }
-                    return null;
-                }
-            }).when(configResourceService).save(any(TransactionLog.class));
-
-            Mockito.doAnswer(new Answer<List<ConfigResource>>() {
-                @Override
-                public List<ConfigResource> answer(InvocationOnMock invocationOnMock) throws Throwable {
-                    List<ConfigResource> configResources = new ArrayList<>();
-                    Object[] args = invocationOnMock.getArguments();
-                    if (args != null) {
-                        logger.trace("Transaction info " + Arrays.asList(args));
-                        String resourceData = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
-                                .getResourceAsStream("service_templates/configdata.json"), Charset.defaultCharset());
-                        ConfigResource configResource = (ConfigResource) args[0];
-                        configResource.setRecipeName("Sample-recipe");
-                        configResource.setResourceData(resourceData);
-                        configResources.add(configResource);
-                    }
-                    return configResources;
-                }
-            }).when(configResourceService).getConfigResource(any(ConfigResource.class));
-
-        } catch (SvcLogicException e) {
-            e.printStackTrace();
+    try {
+      Mockito.doAnswer(new Answer<Void>() {
+        @Override
+        public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+          Object[] args = invocationOnMock.getArguments();
+          if (args != null) {
+            logger.trace("Transaction info " + Arrays.asList(args));
+          }
+          return null;
         }
-    }
+      }).when(configResourceService).save(any(TransactionLog.class));
 
-    @Test
-    public void testInputTemplateContentNData() throws Exception {
-
-        ConfigGeneratorNode configGeneratorNode = new ConfigGeneratorNode(configResourceService, configModelService);
-
-        Map<String, String> inParams = new HashMap<String, String>();
-        inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "test");
-
-        String jsonData = IOUtils.toString(
+      Mockito.doAnswer(new Answer<List<ConfigResource>>() {
+        @Override
+        public List<ConfigResource> answer(InvocationOnMock invocationOnMock) throws Throwable {
+          List<ConfigResource> configResources = new ArrayList<>();
+          Object[] args = invocationOnMock.getArguments();
+          if (args != null) {
+            logger.trace("Transaction info " + Arrays.asList(args));
+            String resourceData = IOUtils.toString(
                 ConfigGeneratorNodeTest.class.getClassLoader().getResourceAsStream("service_templates/configdata.json"),
                 Charset.defaultCharset());
-        inParams.put(ConfigGeneratorConstant.INPUT_PARAM_TEMPLATE_DATA, jsonData);
+            ConfigResource configResource = (ConfigResource) args[0];
+            configResource.setRecipeName("Sample-recipe");
+            configResource.setResourceData(resourceData);
+            configResources.add(configResource);
+          }
+          return configResources;
+        }
+      }).when(configResourceService).getConfigResource(any(ConfigResource.class));
 
-        String templateData = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
-                .getResourceAsStream("service_templates/velocity/base-config-template.vtl"), Charset.defaultCharset());
-        inParams.put(ConfigGeneratorConstant.INPUT_PARAM_TEMPLATE_CONTENT, templateData);
-
-        SvcLogicContext ctx = new SvcLogicContext();
-        Map<String, Object> componentContext = new HashMap<>();
-        configGeneratorNode.process(inParams, ctx, componentContext);
-        Assert.assertEquals("Failed to generate Configuration Status as Failure",
-                ConfigGeneratorConstant.OUTPUT_STATUS_SUCCESS,
-                ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_STATUS));
-        Assert.assertNotNull("Failed to generate Configuration",
-                ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
-
-        logger.trace("Generated Configuration:\n "
-                + ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
-        logger.trace("Generated Configuration:\n "
-                + ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_MASK_INFO));
-
+    } catch (SvcLogicException e) {
+      e.printStackTrace();
     }
+  }
 
-    @Test
-    public void testInputTemplateWithNullData() throws Exception {
+  @Test
+  public void testInputTemplateContentNData() throws Exception {
 
-        ConfigGeneratorNode configGeneratorNode = new ConfigGeneratorNode(configResourceService, configModelService);
+    ConfigGeneratorNode configGeneratorNode = new ConfigGeneratorNode(configResourceService, configModelService);
 
-        Map<String, String> inParams = new HashMap<String, String>();
-        inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "test");
+    Map<String, String> inParams = new HashMap<String, String>();
+    inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "test");
 
-        String jsonData = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
-                .getResourceAsStream("service_templates/configdata_with_null.json"), Charset.defaultCharset());
-        inParams.put(ConfigGeneratorConstant.INPUT_PARAM_TEMPLATE_DATA, jsonData);
+    String jsonData = IOUtils.toString(
+        ConfigGeneratorNodeTest.class.getClassLoader().getResourceAsStream("service_templates/configdata.json"),
+        Charset.defaultCharset());
+    inParams.put(ConfigGeneratorConstant.INPUT_PARAM_TEMPLATE_DATA, jsonData);
 
-        String templateData = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
-                .getResourceAsStream("service_templates/velocity/base-config-template.vtl"), Charset.defaultCharset());
-        inParams.put(ConfigGeneratorConstant.INPUT_PARAM_TEMPLATE_CONTENT, templateData);
+    String templateData = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
+        .getResourceAsStream("service_templates/velocity/base-config-template.vtl"), Charset.defaultCharset());
+    inParams.put(ConfigGeneratorConstant.INPUT_PARAM_TEMPLATE_CONTENT, templateData);
 
-        SvcLogicContext ctx = new SvcLogicContext();
-        Map<String, Object> componentContext = new HashMap<>();
-        configGeneratorNode.process(inParams, ctx, componentContext);
-        Assert.assertEquals("Failed to generate Configuration Status as Failure",
-                ConfigGeneratorConstant.OUTPUT_STATUS_SUCCESS,
-                ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_STATUS));
-        Assert.assertNotNull("Failed to generate Configuration",
-                ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
+    SvcLogicContext ctx = new SvcLogicContext();
+    Map<String, Object> componentContext = new HashMap<>();
+    configGeneratorNode.process(inParams, ctx, componentContext);
+    Assert.assertEquals("Failed to generate Configuration Status as Failure",
+        ConfigGeneratorConstant.OUTPUT_STATUS_SUCCESS,
+        ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_STATUS));
+    Assert.assertNotNull("Failed to generate Configuration",
+        ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
 
-        logger.trace("Generated Configuration:\n "
-                + ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
-        logger.trace("Generated Configuration:\n "
-                + ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_MASK_INFO));
+    logger.trace("Generated Configuration:\n "
+        + ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
+    logger.trace(
+        "Generated Configuration:\n " + ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_MASK_INFO));
 
-    }
+  }
 
-    @Test
-    public void testDBTemplateContentNData() throws Exception {
+  @Test
+  public void testInputTemplateWithNullData() throws Exception {
 
-        String fileContent = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
-                .getResourceAsStream("service_templates/generate_configuration.json"), Charset.defaultCharset());
+    ConfigGeneratorNode configGeneratorNode = new ConfigGeneratorNode(configResourceService, configModelService);
 
-        String baseConfigTemplateContent = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
-                .getResourceAsStream("service_templates/velocity/base-config-template.vtl"), Charset.defaultCharset());
+    Map<String, String> inParams = new HashMap<String, String>();
+    inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "test");
 
-        Map<String, String> context = new HashMap<>();
-        context = configModelService.convertServiceTemplate2Properties(fileContent, context);
+    String jsonData = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
+        .getResourceAsStream("service_templates/configdata_with_null.json"), Charset.defaultCharset());
+    inParams.put(ConfigGeneratorConstant.INPUT_PARAM_TEMPLATE_DATA, jsonData);
 
-        context.put("node_templates.base-config-template.content", baseConfigTemplateContent);
+    String templateData = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
+        .getResourceAsStream("service_templates/velocity/base-config-template.vtl"), Charset.defaultCharset());
+    inParams.put(ConfigGeneratorConstant.INPUT_PARAM_TEMPLATE_CONTENT, templateData);
 
-        Assert.assertNotNull("Failed to Prepare Context : ", context);
+    SvcLogicContext ctx = new SvcLogicContext();
+    Map<String, Object> componentContext = new HashMap<>();
+    configGeneratorNode.process(inParams, ctx, componentContext);
+    Assert.assertEquals("Failed to generate Configuration Status as Failure",
+        ConfigGeneratorConstant.OUTPUT_STATUS_SUCCESS,
+        ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_STATUS));
+    Assert.assertNotNull("Failed to generate Configuration",
+        ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
 
-        context.put("request-id", "12345");
-        context.put("vnf-id", "vnf12345");
-        context.put("action-name", "config-generator-action");
+    logger.trace("Generated Configuration:\n "
+        + ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
+    logger.trace(
+        "Generated Configuration:\n " + ctx.getAttribute("test." + ConfigGeneratorConstant.OUTPUT_PARAM_MASK_INFO));
 
-        Map<String, String> inparams = new HashMap<String, String>();
-        inparams.put(ConfigModelConstant.PROPERTY_SELECTOR, "generate-configuration");
+  }
 
-        SvcLogicContext inputContext = new SvcLogicContext();
-        context.forEach((name, value) -> {
-            inputContext.setAttribute(name, value);
-        });
+  @Test
+  public void testDBTemplateContentNData() throws Exception {
 
-        TransformationUtils.printMap(context);
-        configModelService.assignInParamsFromModel(inputContext, inparams);
-        ConfigGeneratorNode configGeneratorNode = new ConfigGeneratorNode(configResourceService, configModelService);
+    String fileContent = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
+        .getResourceAsStream("service_templates/generate_configuration.json"), Charset.defaultCharset());
 
-        Map<String, Object> componentContext = new HashMap<>();
-        configGeneratorNode.process(inparams, inputContext, componentContext);
+    String baseConfigTemplateContent = IOUtils.toString(ConfigGeneratorNodeTest.class.getClassLoader()
+        .getResourceAsStream("service_templates/velocity/base-config-template.vtl"), Charset.defaultCharset());
 
-        Assert.assertEquals("Failed to generate Configuration Status as Failure",
-                ConfigGeneratorConstant.OUTPUT_STATUS_SUCCESS,
-                inputContext.getAttribute("generate-configuration." + ConfigGeneratorConstant.OUTPUT_PARAM_STATUS));
-        Assert.assertNotNull("Failed to generate Configuration", inputContext
-                .getAttribute("generate-configuration." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
+    Map<String, String> context = new HashMap<>();
+    context = configModelService.convertServiceTemplate2Properties(fileContent, context);
 
-        logger.trace("Generated Configuration:\n " + inputContext
-                .getAttribute("generate-configuration." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
-    }
+    context.put("node_templates.base-config-template.content", baseConfigTemplateContent);
 
-    @Test
-    public void testTemplateContentNDataForMask() throws Exception {
+    Assert.assertNotNull("Failed to Prepare Context : ", context);
 
-    }
+    context.put("request-id", "12345");
+    context.put("vnf-id", "vnf12345");
+    context.put("action-name", "config-generator-action");
+
+    Map<String, String> inparams = new HashMap<String, String>();
+    inparams.put(ConfigModelConstant.PROPERTY_SELECTOR, "generate-configuration");
+
+    SvcLogicContext inputContext = new SvcLogicContext();
+    context.forEach((name, value) -> {
+      inputContext.setAttribute(name, value);
+    });
+
+    TransformationUtils.printMap(context);
+    configModelService.assignInParamsFromModel(inputContext, inparams);
+    ConfigGeneratorNode configGeneratorNode = new ConfigGeneratorNode(configResourceService, configModelService);
+
+    Map<String, Object> componentContext = new HashMap<>();
+    configGeneratorNode.process(inparams, inputContext, componentContext);
+
+    Assert.assertEquals("Failed to generate Configuration Status as Failure",
+        ConfigGeneratorConstant.OUTPUT_STATUS_SUCCESS,
+        inputContext.getAttribute("generate-configuration." + ConfigGeneratorConstant.OUTPUT_PARAM_STATUS));
+    Assert.assertNotNull("Failed to generate Configuration",
+        inputContext.getAttribute("generate-configuration." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
+
+    logger.trace("Generated Configuration:\n "
+        + inputContext.getAttribute("generate-configuration." + ConfigGeneratorConstant.OUTPUT_PARAM_GENERATED_CONFIG));
+  }
+
+  @Test
+  public void testTemplateContentNDataForMask() throws Exception {
+
+  }
 
 }

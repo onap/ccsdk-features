@@ -75,11 +75,6 @@
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
 
-	<bean id="ConfigPropertyMapDao"
-		class="org.onap.ccsdk.features.data.adaptor.dao.ConfigPropertyMapDaoImpl">
-		<constructor-arg ref="jdbcTemplate" />
-	</bean>
-
 	<bean id="queryExecutorDao"
 		class="org.onap.ccsdk.features.data.adaptor.dao.QueryExecutorDaoImpl">
 		<constructor-arg ref="jdbcTemplate" />

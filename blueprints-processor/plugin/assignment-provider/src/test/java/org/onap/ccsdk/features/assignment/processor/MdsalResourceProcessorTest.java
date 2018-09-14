@@ -47,223 +47,212 @@ import com.att.eelf.configuration.EELFManager;
 @RunWith(MockitoJUnitRunner.class)
 public class MdsalResourceProcessorTest {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(MdsalResourceProcessorTest.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(MdsalResourceProcessorTest.class);
 
-    @Mock
-    private ConfigRestAdaptorService configRestAdaptorService;
+  @Mock
+  private ConfigRestAdaptorService configRestAdaptorService;
 
-    @SuppressWarnings("unchecked")
-    @Before
-    public void before() {
+  @SuppressWarnings("unchecked")
+  @Before
+  public void before() {
 
-    }
+  }
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testMdsalSimpleProcess() throws Exception {
-        logger.info(" *******************************  testMdsalSimpleProcess  ***************************");
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testMdsalSimpleProcess() throws Exception {
+    logger.info(" *******************************  testMdsalSimpleProcess  ***************************");
 
-        Mockito.doAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocationOnMock) throws Throwable {
-                Object[] args = invocationOnMock.getArguments();
-                String response = null;
-                if (args != null) {
-                    response = FileUtils.readFileToString(
-                            new File("src/test/resources/mapping/Mdsal/simple-response.json"),
-                            Charset.defaultCharset());
-                    logger.info(" Returning response :" + response);
-                }
-                return response;
-            }
-        }).when(configRestAdaptorService).getResource(Matchers.anyString(), Matchers.anyString(),
-                Matchers.any(Class.class));
+    Mockito.doAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocationOnMock) throws Throwable {
+        Object[] args = invocationOnMock.getArguments();
+        String response = null;
+        if (args != null) {
+          response = FileUtils.readFileToString(new File("src/test/resources/mapping/Mdsal/simple-response.json"),
+              Charset.defaultCharset());
+          logger.info(" Returning response :" + response);
+        }
+        return response;
+      }
+    }).when(configRestAdaptorService).getResource(Matchers.anyString(), Matchers.anyString(),
+        Matchers.any(Class.class));
 
-        String recipeName = "sample-recipe";
+    String recipeName = "sample-recipe";
 
-        String resourceassignmentContent = FileUtils.readFileToString(
-                new File("src/test/resources/mapping/Mdsal/resource-assignments-simple.json"),
-                Charset.defaultCharset());
-        List<ResourceAssignment> batchResourceAssignment =
-                TransformationUtils.getListfromJson(resourceassignmentContent, ResourceAssignment.class);
+    String resourceassignmentContent = FileUtils.readFileToString(
+        new File("src/test/resources/mapping/Mdsal/resource-assignments-simple.json"), Charset.defaultCharset());
+    List<ResourceAssignment> batchResourceAssignment =
+        TransformationUtils.getListfromJson(resourceassignmentContent, ResourceAssignment.class);
 
-        String dictionaryContent = FileUtils.readFileToString(
-                new File("src/test/resources/mapping/Mdsal/mdsal-simple.json"), Charset.defaultCharset());
-        Map<String, ResourceDefinition> dictionaries =
-                ConfigResourceAssignmentTestUtils.getMapfromJson(dictionaryContent);
-        MdsalResourceProcessor mdsalResourceProcessor = new MdsalResourceProcessor(configRestAdaptorService);
-        Map<String, Object> componentContext = new HashMap<>();
-        componentContext.put(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS, batchResourceAssignment);
-        componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
-        componentContext.put(ConfigModelConstant.PROPERTY_TEMPLATE_NAME, "sample-template");
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARIES, dictionaries);
+    String dictionaryContent = FileUtils
+        .readFileToString(new File("src/test/resources/mapping/Mdsal/mdsal-simple.json"), Charset.defaultCharset());
+    Map<String, ResourceDefinition> dictionaries = ConfigResourceAssignmentTestUtils.getMapfromJson(dictionaryContent);
+    MdsalResourceProcessor mdsalResourceProcessor = new MdsalResourceProcessor(configRestAdaptorService);
+    Map<String, Object> componentContext = new HashMap<>();
+    componentContext.put(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS, batchResourceAssignment);
+    componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
+    componentContext.put(ConfigModelConstant.PROPERTY_TEMPLATE_NAME, "sample-template");
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARIES, dictionaries);
 
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".profile_name", "sample");
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".profile_name", "sample");
 
-        Map<String, String> inParams = new HashMap<>();
-        SvcLogicContext ctx = new SvcLogicContext();
-        mdsalResourceProcessor.process(inParams, ctx, componentContext);
+    Map<String, String> inParams = new HashMap<>();
+    SvcLogicContext ctx = new SvcLogicContext();
+    mdsalResourceProcessor.process(inParams, ctx, componentContext);
 
-    }
+  }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testMDSALComplexProcess() throws Exception {
-        logger.info(" *******************************  testMDSALComplexProcess  ***************************");
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testMDSALComplexProcess() throws Exception {
+    logger.info(" *******************************  testMDSALComplexProcess  ***************************");
 
-        Mockito.doAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocationOnMock) throws Throwable {
-                Object[] args = invocationOnMock.getArguments();
-                String response = null;
-                if (args != null) {
-                    response = FileUtils.readFileToString(
-                            new File("src/test/resources/mapping/Mdsal/complex-response.json"),
-                            Charset.defaultCharset());
-                }
-                return response;
-            }
-        }).when(configRestAdaptorService).getResource(Matchers.anyString(), Matchers.anyString(),
-                Matchers.any(Class.class));
+    Mockito.doAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocationOnMock) throws Throwable {
+        Object[] args = invocationOnMock.getArguments();
+        String response = null;
+        if (args != null) {
+          response = FileUtils.readFileToString(new File("src/test/resources/mapping/Mdsal/complex-response.json"),
+              Charset.defaultCharset());
+        }
+        return response;
+      }
+    }).when(configRestAdaptorService).getResource(Matchers.anyString(), Matchers.anyString(),
+        Matchers.any(Class.class));
 
-        String recipeName = "sample-recipe";
+    String recipeName = "sample-recipe";
 
-        String resourceassignmentContent = FileUtils.readFileToString(
-                new File("src/test/resources/mapping/Mdsal/resource-assignments-complex.json"),
-                Charset.defaultCharset());
-        List<ResourceAssignment> batchResourceAssignment =
-                TransformationUtils.getListfromJson(resourceassignmentContent, ResourceAssignment.class);
+    String resourceassignmentContent = FileUtils.readFileToString(
+        new File("src/test/resources/mapping/Mdsal/resource-assignments-complex.json"), Charset.defaultCharset());
+    List<ResourceAssignment> batchResourceAssignment =
+        TransformationUtils.getListfromJson(resourceassignmentContent, ResourceAssignment.class);
 
-        String dictionaryContent = FileUtils.readFileToString(
-                new File("src/test/resources/mapping/Mdsal/mdsal-complex.json"), Charset.defaultCharset());
-        Map<String, ResourceDefinition> dictionaries =
-                ConfigResourceAssignmentTestUtils.getMapfromJson(dictionaryContent);
-        MdsalResourceProcessor dbResourceProcessor = new MdsalResourceProcessor(configRestAdaptorService);
-        Map<String, Object> componentContext = new HashMap<>();
-        componentContext.put(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS, batchResourceAssignment);
-        componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
-        componentContext.put(ConfigModelConstant.PROPERTY_TEMPLATE_NAME, "sample-template");
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARIES, dictionaries);
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".profile_name", "sample");
+    String dictionaryContent = FileUtils
+        .readFileToString(new File("src/test/resources/mapping/Mdsal/mdsal-complex.json"), Charset.defaultCharset());
+    Map<String, ResourceDefinition> dictionaries = ConfigResourceAssignmentTestUtils.getMapfromJson(dictionaryContent);
+    MdsalResourceProcessor dbResourceProcessor = new MdsalResourceProcessor(configRestAdaptorService);
+    Map<String, Object> componentContext = new HashMap<>();
+    componentContext.put(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS, batchResourceAssignment);
+    componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
+    componentContext.put(ConfigModelConstant.PROPERTY_TEMPLATE_NAME, "sample-template");
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARIES, dictionaries);
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".profile_name", "sample");
 
-        Map<String, String> inParams = new HashMap<>();
-        SvcLogicContext ctx = new SvcLogicContext();
-        String datatypeContent = FileUtils.readFileToString(
-                new File("src/test/resources/mapping/Mdsal/dt-location.json"), Charset.defaultCharset());
-        ctx.setAttribute("data_types.dt-location", datatypeContent);
-        dbResourceProcessor.process(inParams, ctx, componentContext);
+    Map<String, String> inParams = new HashMap<>();
+    SvcLogicContext ctx = new SvcLogicContext();
+    String datatypeContent = FileUtils.readFileToString(new File("src/test/resources/mapping/Mdsal/dt-location.json"),
+        Charset.defaultCharset());
+    ctx.setAttribute("data_types.dt-location", datatypeContent);
+    dbResourceProcessor.process(inParams, ctx, componentContext);
 
-    }
+  }
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testMDSALArrayComplexProcess() throws Exception {
-        logger.info(" *******************************  testMDSALArrayComplexProcess  ***************************");
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testMDSALArrayComplexProcess() throws Exception {
+    logger.info(" *******************************  testMDSALArrayComplexProcess  ***************************");
 
-        Mockito.doAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocationOnMock) throws Throwable {
-                Object[] args = invocationOnMock.getArguments();
-                String response = null;
-                if (args != null) {
-                    response = FileUtils.readFileToString(
-                            new File("src/test/resources/mapping/Mdsal/array-complex-response.json"),
-                            Charset.defaultCharset());
-                }
-                return response;
-            }
-        }).when(configRestAdaptorService).getResource(Matchers.anyString(), Matchers.anyString(),
-                Matchers.any(Class.class));
+    Mockito.doAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocationOnMock) throws Throwable {
+        Object[] args = invocationOnMock.getArguments();
+        String response = null;
+        if (args != null) {
+          response = FileUtils.readFileToString(
+              new File("src/test/resources/mapping/Mdsal/array-complex-response.json"), Charset.defaultCharset());
+        }
+        return response;
+      }
+    }).when(configRestAdaptorService).getResource(Matchers.anyString(), Matchers.anyString(),
+        Matchers.any(Class.class));
 
-        String recipeName = "sample-recipe";
+    String recipeName = "sample-recipe";
 
-        String resourceassignmentContent = FileUtils.readFileToString(
-                new File("src/test/resources/mapping/Mdsal/resource-assignments-array.json"), Charset.defaultCharset());
-        List<ResourceAssignment> batchResourceAssignment =
-                TransformationUtils.getListfromJson(resourceassignmentContent, ResourceAssignment.class);
+    String resourceassignmentContent = FileUtils.readFileToString(
+        new File("src/test/resources/mapping/Mdsal/resource-assignments-array.json"), Charset.defaultCharset());
+    List<ResourceAssignment> batchResourceAssignment =
+        TransformationUtils.getListfromJson(resourceassignmentContent, ResourceAssignment.class);
 
-        String dictionaryContent = FileUtils.readFileToString(
-                new File("src/test/resources/mapping/Mdsal/mdsal-array.json"), Charset.defaultCharset());
+    String dictionaryContent = FileUtils.readFileToString(new File("src/test/resources/mapping/Mdsal/mdsal-array.json"),
+        Charset.defaultCharset());
 
-        Map<String, ResourceDefinition> dictionaries =
-                ConfigResourceAssignmentTestUtils.getMapfromJson(dictionaryContent);
-        MdsalResourceProcessor dbResourceProcessor = new MdsalResourceProcessor(configRestAdaptorService);
-        Map<String, Object> componentContext = new HashMap<>();
-        componentContext.put(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS, batchResourceAssignment);
-        componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
-        componentContext.put(ConfigModelConstant.PROPERTY_TEMPLATE_NAME, "sample-template");
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARIES, dictionaries);
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".profile_name", "sample");
+    Map<String, ResourceDefinition> dictionaries = ConfigResourceAssignmentTestUtils.getMapfromJson(dictionaryContent);
+    MdsalResourceProcessor dbResourceProcessor = new MdsalResourceProcessor(configRestAdaptorService);
+    Map<String, Object> componentContext = new HashMap<>();
+    componentContext.put(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS, batchResourceAssignment);
+    componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
+    componentContext.put(ConfigModelConstant.PROPERTY_TEMPLATE_NAME, "sample-template");
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARIES, dictionaries);
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".profile_name", "sample");
 
-        Map<String, String> inParams = new HashMap<>();
-        SvcLogicContext ctx = new SvcLogicContext();
-        String datatypeContent = FileUtils.readFileToString(
-                new File("src/test/resources/mapping/Mdsal/dt-location.json"), Charset.defaultCharset());
-        ctx.setAttribute("data_types.dt-location", datatypeContent);
-        dbResourceProcessor.process(inParams, ctx, componentContext);
-        logger.info("Component Context = ({})", componentContext);
-        Assert.assertNotNull("failed to populate Array Complex response ", componentContext);
+    Map<String, String> inParams = new HashMap<>();
+    SvcLogicContext ctx = new SvcLogicContext();
+    String datatypeContent = FileUtils.readFileToString(new File("src/test/resources/mapping/Mdsal/dt-location.json"),
+        Charset.defaultCharset());
+    ctx.setAttribute("data_types.dt-location", datatypeContent);
+    dbResourceProcessor.process(inParams, ctx, componentContext);
+    logger.info("Component Context = ({})", componentContext);
+    Assert.assertNotNull("failed to populate Array Complex response ", componentContext);
 
-    }
+  }
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testMDSALArraySimpleProcess() throws Exception {
-        logger.info(" *******************************  testMDSALArrayComplexProcess  ***************************");
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testMDSALArraySimpleProcess() throws Exception {
+    logger.info(" *******************************  testMDSALArrayComplexProcess  ***************************");
 
-        Mockito.doAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocationOnMock) throws Throwable {
-                Object[] args = invocationOnMock.getArguments();
-                String response = null;
-                if (args != null) {
-                    response = FileUtils.readFileToString(
-                            new File("src/test/resources/mapping/Mdsal/array-complex-v4-assigned-response.json"),
-                            Charset.defaultCharset());
-                }
-                return response;
-            }
-        }).when(configRestAdaptorService).getResource(Matchers.anyString(), Matchers.anyString(),
-                Matchers.any(Class.class));
+    Mockito.doAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocationOnMock) throws Throwable {
+        Object[] args = invocationOnMock.getArguments();
+        String response = null;
+        if (args != null) {
+          response = FileUtils.readFileToString(
+              new File("src/test/resources/mapping/Mdsal/array-complex-v4-assigned-response.json"),
+              Charset.defaultCharset());
+        }
+        return response;
+      }
+    }).when(configRestAdaptorService).getResource(Matchers.anyString(), Matchers.anyString(),
+        Matchers.any(Class.class));
 
-        String recipeName = "sample-recipe";
+    String recipeName = "sample-recipe";
 
-        String resourceassignmentContent = FileUtils.readFileToString(
-                new File("src/test/resources/mapping/Mdsal/resource-assignments-complex-simple.json"),
-                Charset.defaultCharset());
-        List<ResourceAssignment> batchResourceAssignment =
-                TransformationUtils.getListfromJson(resourceassignmentContent, ResourceAssignment.class);
+    String resourceassignmentContent = FileUtils.readFileToString(
+        new File("src/test/resources/mapping/Mdsal/resource-assignments-complex-simple.json"),
+        Charset.defaultCharset());
+    List<ResourceAssignment> batchResourceAssignment =
+        TransformationUtils.getListfromJson(resourceassignmentContent, ResourceAssignment.class);
 
-        String dictionaryContent = FileUtils.readFileToString(
-                new File("src/test/resources/mapping/Mdsal/mdsal-array-v4iplist.json"), Charset.defaultCharset());
-        Map<String, ResourceDefinition> dictionaries =
-                ConfigResourceAssignmentTestUtils.getMapfromJson(dictionaryContent);
-        MdsalResourceProcessor mdsalResourceProcessor = new MdsalResourceProcessor(configRestAdaptorService);
-        Map<String, Object> componentContext = new HashMap<>();
-        componentContext.put(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS, batchResourceAssignment);
-        componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
-        componentContext.put(ConfigModelConstant.PROPERTY_TEMPLATE_NAME, "sample-template");
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARIES, dictionaries);
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".service-instance-id",
-                "3c8d5a63-a793-4206-a67c-4b2e8e648196");
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".oam-network-role",
-                "sample");
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".oam-ipv4-ip-type",
-                "sample");
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".profile_name", "sample");
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".oam-vm-type", "sample");
+    String dictionaryContent = FileUtils.readFileToString(
+        new File("src/test/resources/mapping/Mdsal/mdsal-array-v4iplist.json"), Charset.defaultCharset());
+    Map<String, ResourceDefinition> dictionaries = ConfigResourceAssignmentTestUtils.getMapfromJson(dictionaryContent);
+    MdsalResourceProcessor mdsalResourceProcessor = new MdsalResourceProcessor(configRestAdaptorService);
+    Map<String, Object> componentContext = new HashMap<>();
+    componentContext.put(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS, batchResourceAssignment);
+    componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
+    componentContext.put(ConfigModelConstant.PROPERTY_TEMPLATE_NAME, "sample-template");
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARIES, dictionaries);
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".service-instance-id",
+        "3c8d5a63-a793-4206-a67c-4b2e8e648196");
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".oam-network-role", "sample");
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".oam-ipv4-ip-type", "sample");
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".profile_name", "sample");
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".oam-vm-type", "sample");
 
-        Map<String, String> inParams = new HashMap<>();
-        SvcLogicContext ctx = new SvcLogicContext();
-        // String datatypeContent = FileUtils.readFileToString(new
-        // File("src/test/resources/mapping/Mdsal/dt-v4-assigned-ip-list.json"), Charset.defaultCharset() );
-        // ctx.setAttribute("data_types.dt-v4-assigned-ip-list", datatypeContent);
-        mdsalResourceProcessor.process(inParams, ctx, componentContext);
-        logger.info("Component Context = ({})", componentContext);
-        Assert.assertNotNull("failed to populate Array Complex response ", componentContext);
-        Assert.assertEquals("Compare String ", "10.66.1.152",
-                componentContext.get(ConfigModelConstant.PROPERTY_RECIPE_KEY_DOT + recipeName + ".v4-ip-prefix"));
+    Map<String, String> inParams = new HashMap<>();
+    SvcLogicContext ctx = new SvcLogicContext();
+    // String datatypeContent = FileUtils.readFileToString(new
+    // File("src/test/resources/mapping/Mdsal/dt-v4-assigned-ip-list.json"), Charset.defaultCharset() );
+    // ctx.setAttribute("data_types.dt-v4-assigned-ip-list", datatypeContent);
+    mdsalResourceProcessor.process(inParams, ctx, componentContext);
+    logger.info("Component Context = ({})", componentContext);
+    Assert.assertNotNull("failed to populate Array Complex response ", componentContext);
+    Assert.assertEquals("Compare String ", "10.66.1.152",
+        componentContext.get(ConfigModelConstant.PROPERTY_RECIPE_KEY_DOT + recipeName + ".v4-ip-prefix"));
 
-    }
+  }
 
 }

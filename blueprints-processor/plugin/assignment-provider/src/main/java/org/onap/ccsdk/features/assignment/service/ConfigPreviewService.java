@@ -34,86 +34,86 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class ConfigPreviewService {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigAssignmentPersistService.class);
-    private ConfigResourceService configResourceService;
-    private ConfigModelService configModelService;
-    private ConfigGeneratorService configGeneratorService;
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigAssignmentPersistService.class);
+  private ConfigResourceService configResourceService;
+  private ConfigModelService configModelService;
+  private ConfigGeneratorService configGeneratorService;
 
-    public ConfigPreviewService(ConfigResourceService configResourceService, ConfigModelService configModelService,
-            ConfigGeneratorService configGeneratorService) {
-        this.configResourceService = configResourceService;
-        this.configModelService = configModelService;
-        this.configGeneratorService = configGeneratorService;
+  public ConfigPreviewService(ConfigResourceService configResourceService, ConfigModelService configModelService,
+      ConfigGeneratorService configGeneratorService) {
+    this.configResourceService = configResourceService;
+    this.configModelService = configModelService;
+    this.configGeneratorService = configGeneratorService;
+  }
+
+  public String generatePreview(String templateContent, String templateData) throws SvcLogicException {
+    String mashedData = "";
+    ConfigGeneratorInfo configGeneratorInfo =
+        configGeneratorService.generateConfiguration(templateContent, templateData);
+    if (configGeneratorInfo != null) {
+      mashedData = configGeneratorInfo.getMashedData();
+    }
+    return mashedData;
+  }
+
+  public ResourceAssignmentData generateTemplateResourceMash(ResourceAssignmentData resourceAssignmentData)
+      throws SvcLogicException {
+    if (resourceAssignmentData == null) {
+      throw new SvcLogicException("Resource assignment data is missing");
+    }
+    if (StringUtils.isBlank(resourceAssignmentData.getServiceTemplateName())) {
+      throw new SvcLogicException("Service template name is missing");
+    }
+    if (StringUtils.isBlank(resourceAssignmentData.getServiceTemplateVersion())) {
+      throw new SvcLogicException("Service template version is missing");
+    }
+    if (StringUtils.isBlank(resourceAssignmentData.getResourceType())) {
+      throw new SvcLogicException("Resource type is missing");
+    }
+    if (StringUtils.isBlank(resourceAssignmentData.getResourceId())) {
+      throw new SvcLogicException("Resource Id is missing");
+    }
+    if (StringUtils.isBlank(resourceAssignmentData.getActionName())) {
+      throw new SvcLogicException("Action name is missing");
     }
 
-    public String generatePreview(String templateContent, String templateData) throws SvcLogicException {
-        String mashedData = "";
-        ConfigGeneratorInfo configGeneratorInfo =
-                configGeneratorService.generateConfiguration(templateContent, templateData);
-        if (configGeneratorInfo != null) {
-            mashedData = configGeneratorInfo.getMashedData();
-        }
-        return mashedData;
+    String serviceTemplateName = resourceAssignmentData.getServiceTemplateName();
+    String serviceTemplateVersion = resourceAssignmentData.getServiceTemplateVersion();
+    String actionName = resourceAssignmentData.getActionName();
+    String resourceId = resourceAssignmentData.getResourceId();
+    String resourceType = resourceAssignmentData.getResourceType();
+    String inputData = "{}";
+
+    Map<String, String> context = new HashMap<>();
+    context.put(ConfigModelConstant.PROPERTY_ACTION_NAME, actionName);
+    context = configModelService.prepareContext(context, inputData, serviceTemplateName, serviceTemplateVersion);
+
+    ConfigResource configResourceQuery = new ConfigResource();
+    configResourceQuery.setServiceTemplateVersion(serviceTemplateName);
+    configResourceQuery.setServiceTemplateVersion(serviceTemplateVersion);
+    configResourceQuery.setRecipeName(actionName);
+    configResourceQuery.setResourceId(resourceId);
+    configResourceQuery.setResourceType(resourceType);
+
+    List<ConfigResource> configResources = configResourceService.getConfigResource(configResourceQuery);
+    if (CollectionUtils.isNotEmpty(configResources)) {
+      for (ConfigResource cr : configResources) {
+        String templateContent =
+            context.get(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + cr.getTemplateName() + ".content");
+        String templateData = cr.getResourceData();
+        String previewContent = generatePreview(templateContent, templateData);
+        resourceAssignmentData.getTemplatesMashedContents().put(cr.getTemplateName(), previewContent);
+        logger.info("Preview generated for template name ({}) ", cr.getTemplateName());
+        logger.trace("Preview generated for preview ({}) ", previewContent);
+      }
+    } else {
+      logger.info(
+          "Couldn't get config resource for service template name ({}) service template version ({})"
+              + " action ({}) resource id ({}) resource type ({})",
+          serviceTemplateName, serviceTemplateVersion, actionName, resourceId, resourceType);
     }
+    return resourceAssignmentData;
 
-    public ResourceAssignmentData generateTemplateResourceMash(ResourceAssignmentData resourceAssignmentData)
-            throws SvcLogicException {
-        if (resourceAssignmentData == null) {
-            throw new SvcLogicException("Resource assignment data is missing");
-        }
-        if (StringUtils.isBlank(resourceAssignmentData.getServiceTemplateName())) {
-            throw new SvcLogicException("Service template name is missing");
-        }
-        if (StringUtils.isBlank(resourceAssignmentData.getServiceTemplateVersion())) {
-            throw new SvcLogicException("Service template version is missing");
-        }
-        if (StringUtils.isBlank(resourceAssignmentData.getResourceType())) {
-            throw new SvcLogicException("Resource type is missing");
-        }
-        if (StringUtils.isBlank(resourceAssignmentData.getResourceId())) {
-            throw new SvcLogicException("Resource Id is missing");
-        }
-        if (StringUtils.isBlank(resourceAssignmentData.getActionName())) {
-            throw new SvcLogicException("Action name is missing");
-        }
-
-        String serviceTemplateName = resourceAssignmentData.getServiceTemplateName();
-        String serviceTemplateVersion = resourceAssignmentData.getServiceTemplateVersion();
-        String actionName = resourceAssignmentData.getActionName();
-        String resourceId = resourceAssignmentData.getResourceId();
-        String resourceType = resourceAssignmentData.getResourceType();
-        String inputData = "{}";
-
-        Map<String, String> context = new HashMap<>();
-        context.put(ConfigModelConstant.PROPERTY_ACTION_NAME, actionName);
-        context = configModelService.prepareContext(context, inputData, serviceTemplateName, serviceTemplateVersion);
-
-        ConfigResource configResourceQuery = new ConfigResource();
-        configResourceQuery.setServiceTemplateVersion(serviceTemplateName);
-        configResourceQuery.setServiceTemplateVersion(serviceTemplateVersion);
-        configResourceQuery.setRecipeName(actionName);
-        configResourceQuery.setResourceId(resourceId);
-        configResourceQuery.setResourceType(resourceType);
-
-        List<ConfigResource> configResources = configResourceService.getConfigResource(configResourceQuery);
-        if (CollectionUtils.isNotEmpty(configResources)) {
-            for (ConfigResource cr : configResources) {
-                String templateContent = context
-                        .get(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + cr.getTemplateName() + ".content");
-                String templateData = cr.getResourceData();
-                String previewContent = generatePreview(templateContent, templateData);
-                resourceAssignmentData.getTemplatesMashedContents().put(cr.getTemplateName(), previewContent);
-                logger.info("Preview generated for template name ({}) ", cr.getTemplateName());
-                logger.trace("Preview generated for preview ({}) ", previewContent);
-            }
-        } else {
-            logger.info(
-                    "Couldn't get config resource for service template name ({}) service template version ({})"
-                            + " action ({}) resource id ({}) resource type ({})",
-                    serviceTemplateName, serviceTemplateVersion, actionName, resourceId, resourceType);
-        }
-        return resourceAssignmentData;
-
-    }
+  }
 
 }

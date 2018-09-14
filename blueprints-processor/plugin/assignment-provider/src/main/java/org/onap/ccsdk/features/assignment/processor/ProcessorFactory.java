@@ -25,28 +25,28 @@ import org.onap.ccsdk.features.rest.adaptor.service.ConfigRestAdaptorService;
 
 public class ProcessorFactory {
 
-    private ConfigResourceService configResourceService;
-    private ConfigRestAdaptorService configRestAdaptorService;
-    private ComponentNodeService componentNodeService;
+  private ConfigResourceService configResourceService;
+  private ConfigRestAdaptorService configRestAdaptorService;
+  private ComponentNodeService componentNodeService;
 
-    public ProcessorFactory(ConfigResourceService configResourceService,
-            ConfigRestAdaptorService configRestAdaptorService, ComponentNodeService componentNodeService) {
-        this.componentNodeService = componentNodeService;
-        this.configResourceService = configResourceService;
-        this.configRestAdaptorService = configRestAdaptorService;
+  public ProcessorFactory(ConfigResourceService configResourceService,
+      ConfigRestAdaptorService configRestAdaptorService, ComponentNodeService componentNodeService) {
+    this.componentNodeService = componentNodeService;
+    this.configResourceService = configResourceService;
+    this.configRestAdaptorService = configRestAdaptorService;
+  }
+
+  public ComponentNode getInstance(String source) {
+
+    if (ConfigModelConstant.SOURCE_DEFAULT.equalsIgnoreCase(source)) {
+      return new DefaultResourceProcessor(configResourceService);
+    } else if (ConfigModelConstant.SOURCE_DB.equalsIgnoreCase(source)) {
+      return new DBResourceProcessor(configResourceService);
+    } else if (ConfigModelConstant.SOURCE_MDSAL.equalsIgnoreCase(source)) {
+      return new MdsalResourceProcessor(configRestAdaptorService);
     }
-
-    public ComponentNode getInstance(String source) {
-
-        if (ConfigModelConstant.SOURCE_DEFAULT.equalsIgnoreCase(source)) {
-            return new DefaultResourceProcessor(configResourceService);
-        } else if (ConfigModelConstant.SOURCE_DB.equalsIgnoreCase(source)) {
-            return new DBResourceProcessor(configResourceService);
-        } else if (ConfigModelConstant.SOURCE_MDSAL.equalsIgnoreCase(source)) {
-            return new MdsalResourceProcessor(configRestAdaptorService);
-        }
-        // Default
-        return new InputResourceProcessor(configResourceService);
-    }
+    // Default
+    return new InputResourceProcessor(configResourceService);
+  }
 
 }

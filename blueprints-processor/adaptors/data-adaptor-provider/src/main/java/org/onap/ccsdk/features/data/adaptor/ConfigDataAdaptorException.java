@@ -24,27 +24,27 @@ package org.onap.ccsdk.features.data.adaptor;
  */
 public class ConfigDataAdaptorException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * This is a ConfigDataAdaptorException constructor
-     *
-     * @param message
-     */
-    public ConfigDataAdaptorException(String message) {
-        super(message);
-    }
+  /**
+   * This is a ConfigDataAdaptorException constructor
+   *
+   * @param message
+   */
+  public ConfigDataAdaptorException(String message) {
+    super(message);
+  }
 
-    /**
-     * This is a ConfigDataAdaptorException constructor
-     *
-     * @param message
-     */
-    public ConfigDataAdaptorException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * This is a ConfigDataAdaptorException constructor
+   *
+   * @param message
+   */
+  public ConfigDataAdaptorException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
 }

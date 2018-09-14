@@ -23,30 +23,30 @@ import org.onap.ccsdk.features.generator.tool.EscapeUtils;
 
 public class EscapeUtilsTest {
 
-    @Test
-    public void testEscapeSql() {
-        Assert.assertEquals("", EscapeUtils.escapeSql(""));
-        Assert.assertEquals("text", EscapeUtils.escapeSql("text"));
+  @Test
+  public void testEscapeSql() {
+    Assert.assertEquals("", EscapeUtils.escapeSql(""));
+    Assert.assertEquals("text", EscapeUtils.escapeSql("text"));
 
-        Assert.assertEquals("''", EscapeUtils.escapeSql("'"));
-        Assert.assertEquals("\\\\", EscapeUtils.escapeSql("\\"));
+    Assert.assertEquals("''", EscapeUtils.escapeSql("'"));
+    Assert.assertEquals("\\\\", EscapeUtils.escapeSql("\\"));
 
-        Assert.assertEquals("text''text", EscapeUtils.escapeSql("text'text"));
-        Assert.assertEquals("text\\\\text", EscapeUtils.escapeSql("text\\text"));
-    }
+    Assert.assertEquals("text''text", EscapeUtils.escapeSql("text'text"));
+    Assert.assertEquals("text\\\\text", EscapeUtils.escapeSql("text\\text"));
+  }
 
-    @Test
-    public void testEscapeSequence() {
-        Assert.assertEquals("", EscapeUtils.escapeSequence(""));
-        Assert.assertEquals("text", EscapeUtils.escapeSequence("text"));
+  @Test
+  public void testEscapeSequence() {
+    Assert.assertEquals("", EscapeUtils.escapeSequence(""));
+    Assert.assertEquals("text", EscapeUtils.escapeSequence("text"));
 
-        Assert.assertEquals("\\\'", EscapeUtils.escapeSequence("'"));
-        Assert.assertEquals("\\\"", EscapeUtils.escapeSequence("\""));
-        Assert.assertEquals("\\\\", EscapeUtils.escapeSequence("\\"));
+    Assert.assertEquals("\\\'", EscapeUtils.escapeSequence("'"));
+    Assert.assertEquals("\\\"", EscapeUtils.escapeSequence("\""));
+    Assert.assertEquals("\\\\", EscapeUtils.escapeSequence("\\"));
 
-        Assert.assertEquals("text\\\'text", EscapeUtils.escapeSequence("text'text"));
-        Assert.assertEquals("text\\\"text", EscapeUtils.escapeSequence("text\"text"));
-        Assert.assertEquals("text\\\\text", EscapeUtils.escapeSequence("text\\text"));
-    }
+    Assert.assertEquals("text\\\'text", EscapeUtils.escapeSequence("text'text"));
+    Assert.assertEquals("text\\\"text", EscapeUtils.escapeSequence("text\"text"));
+    Assert.assertEquals("text\\\\text", EscapeUtils.escapeSequence("text\\text"));
+  }
 
 }

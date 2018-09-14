@@ -31,170 +31,166 @@ import org.onap.ccsdk.features.model.data.PropertyDefinition;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.features.model.data.dict.ResourceDefinition;
 import org.onap.ccsdk.features.model.utils.ResourceAssignmentUtils;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ResourceAssignmentUtilsTest {
 
-    @Test
-    public void testGetArtifactNodeContent() {
-        String nodeTemplateName = "nodeTemplateNmae";
-        String templateContent = "content";
-        Map<String, Object> context = new HashMap<String, Object>();
-        context.put(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + nodeTemplateName + ".content", templateContent);
+  @Test
+  public void testGetArtifactNodeContent() {
+    String nodeTemplateName = "nodeTemplateNmae";
+    String templateContent = "content";
+    Map<String, Object> context = new HashMap<String, Object>();
+    context.put(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + nodeTemplateName + ".content", templateContent);
 
-        String retrievedContent = ResourceAssignmentUtils.getArtifactNodeContent(nodeTemplateName, context);
+    String retrievedContent = ResourceAssignmentUtils.getArtifactNodeContent(nodeTemplateName, context);
 
-        assertTrue(templateContent.equals(retrievedContent));
-    }
+    assertTrue(templateContent.equals(retrievedContent));
+  }
 
-    @Test
-    public void testGetArtifactNodeMapping() {
-        String nodeTemplateName = "nodeTemplateNmae";
-        String templateContent = "[]";
-        Map<String, Object> context = new HashMap<String, Object>();
-        context.put(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + nodeTemplateName + ".mapping", templateContent);
+  @Test
+  public void testGetArtifactNodeMapping() {
+    String nodeTemplateName = "nodeTemplateNmae";
+    String templateContent = "[]";
+    Map<String, Object> context = new HashMap<String, Object>();
+    context.put(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + nodeTemplateName + ".mapping", templateContent);
 
-        List<ResourceAssignment> map = ResourceAssignmentUtils.getArtifactNodeMapping(nodeTemplateName, context);
-        assertTrue(map.size() == 0);
-    }
+    List<ResourceAssignment> map = ResourceAssignmentUtils.getArtifactNodeMapping(nodeTemplateName, context);
+    assertTrue(map.size() == 0);
+  }
 
-    @Test
-    public void testCleanContextTemplateNDictionaryKeys() {
-        String recipeName = "recipe";
-        Map<String, Object> componentContext = new HashMap<String, Object>();
-        componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".", "value1");
-        componentContext.put(ConfigModelConstant.PROPERTY_RECIPE_KEY_DOT + recipeName + ".", "value2");
-        ResourceAssignmentUtils.cleanContextTemplateNDictionaryKeys(componentContext);
+  @Test
+  public void testCleanContextTemplateNDictionaryKeys() {
+    String recipeName = "recipe";
+    Map<String, Object> componentContext = new HashMap<String, Object>();
+    componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + ".", "value1");
+    componentContext.put(ConfigModelConstant.PROPERTY_RECIPE_KEY_DOT + recipeName + ".", "value2");
+    ResourceAssignmentUtils.cleanContextTemplateNDictionaryKeys(componentContext);
 
-        assertTrue(componentContext.size() == 1);
-    }
+    assertTrue(componentContext.size() == 1);
+  }
 
-    @Test
-    public void testGetDictionaryKeyValue() {
-        String recipeName = "recipe";
-        String dictionaryName = "dictionaryKey";
-        Map<String, Object> componentContext = new HashMap<String, Object>();
-        componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + "." + dictionaryName,
-                "value1");
-        ResourceAssignment resourceAssignment = new ResourceAssignment();
-        resourceAssignment.setDictionaryName(dictionaryName);
+  @Test
+  public void testGetDictionaryKeyValue() {
+    String recipeName = "recipe";
+    String dictionaryName = "dictionaryKey";
+    Map<String, Object> componentContext = new HashMap<String, Object>();
+    componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + "." + dictionaryName, "value1");
+    ResourceAssignment resourceAssignment = new ResourceAssignment();
+    resourceAssignment.setDictionaryName(dictionaryName);
 
-        String value = (String) ResourceAssignmentUtils.getDictionaryKeyValue(componentContext, resourceAssignment);
-        assertTrue("value1".equals(value));
-    }
+    String value = (String) ResourceAssignmentUtils.getDictionaryKeyValue(componentContext, resourceAssignment);
+    assertTrue("value1".equals(value));
+  }
 
-    @Test
-    public void testGetDictionaryKeyValueWithDictionaryDefinition() {
-        String recipeName = "recipe";
-        String dictionaryName = "dictionaryKey";
-        Map<String, Object> componentContext = new HashMap<String, Object>();
-        componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
-        componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + "." + dictionaryName,
-                "value1");
-        ResourceDefinition resourceDefinition = new ResourceDefinition();
-        resourceDefinition.setName(dictionaryName);
+  @Test
+  public void testGetDictionaryKeyValueWithDictionaryDefinition() {
+    String recipeName = "recipe";
+    String dictionaryName = "dictionaryKey";
+    Map<String, Object> componentContext = new HashMap<String, Object>();
+    componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
+    componentContext.put(ConfigModelConstant.PROPERTY_DICTIONARY_KEY_DOT + recipeName + "." + dictionaryName, "value1");
+    ResourceDefinition resourceDefinition = new ResourceDefinition();
+    resourceDefinition.setName(dictionaryName);
 
-        String value = (String) ResourceAssignmentUtils.getDictionaryKeyValue(componentContext, resourceDefinition);
-        assertTrue("value1".equals(value));
-    }
+    String value = (String) ResourceAssignmentUtils.getDictionaryKeyValue(componentContext, resourceDefinition);
+    assertTrue("value1".equals(value));
+  }
 
-    @Test
-    public void testGetTemplateKeyValue() {
-        String recipeName = "recipe";
-        String templateKeyName = "templateKey";
-        Map<String, Object> componentContext = new HashMap<String, Object>();
-        componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
-        componentContext.put(ConfigModelConstant.PROPERTY_RECIPE_KEY_DOT + recipeName + "." + templateKeyName,
-                "value1");
-        ResourceAssignment resourceAssignment = new ResourceAssignment();
-        resourceAssignment.setName(templateKeyName);
+  @Test
+  public void testGetTemplateKeyValue() {
+    String recipeName = "recipe";
+    String templateKeyName = "templateKey";
+    Map<String, Object> componentContext = new HashMap<String, Object>();
+    componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
+    componentContext.put(ConfigModelConstant.PROPERTY_RECIPE_KEY_DOT + recipeName + "." + templateKeyName, "value1");
+    ResourceAssignment resourceAssignment = new ResourceAssignment();
+    resourceAssignment.setName(templateKeyName);
 
-        String value = (String) ResourceAssignmentUtils.getTemplateKeyValue(componentContext, resourceAssignment);
-        assertTrue("value1".equals(value));
-    }
+    String value = (String) ResourceAssignmentUtils.getTemplateKeyValue(componentContext, resourceAssignment);
+    assertTrue("value1".equals(value));
+  }
 
-    @Test
-    public void testSetResourceDataValue() throws Exception {
-        String recipeName = "recipe";
-        Map<String, Object> componentContext = new HashMap<String, Object>();
-        componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
+  @Test
+  public void testSetResourceDataValue() throws Exception {
+    String recipeName = "recipe";
+    Map<String, Object> componentContext = new HashMap<String, Object>();
+    componentContext.put(ConfigModelConstant.PROPERTY_ACTION_NAME, recipeName);
 
-        ResourceAssignment resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_STRING, null);
-        Object value = "value";
-        ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
-        assertTrue(value.equals(resourceAssignment.getProperty().getValue()));
+    ResourceAssignment resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_STRING, null);
+    Object value = "value";
+    ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
+    assertTrue(value.equals(resourceAssignment.getProperty().getValue()));
 
-        resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_INTEGER, null);
-        value = "1";
-        ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
-        assertTrue((int) resourceAssignment.getProperty().getValue() == 1);
+    resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_INTEGER, null);
+    value = "1";
+    ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
+    assertTrue((int) resourceAssignment.getProperty().getValue() == 1);
 
-        resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_BOOLEAN, null);
-        value = "true";
-        ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
-        assertTrue((boolean) resourceAssignment.getProperty().getValue());
+    resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_BOOLEAN, null);
+    value = "true";
+    ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
+    assertTrue((boolean) resourceAssignment.getProperty().getValue());
 
-        resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_FLOAT, null);
-        value = "1.1";
-        ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
-        assertTrue((float) resourceAssignment.getProperty().getValue() == 1.1f);
-    }
+    resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_FLOAT, null);
+    value = "1.1";
+    ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
+    assertTrue((float) resourceAssignment.getProperty().getValue() == 1.1f);
+  }
 
-    @Test
-    public void testSetFailedResourceDataValue() throws Exception {
-        ResourceAssignment resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_STRING, "value");
-        String message = "message";
-        ResourceAssignmentUtils.setFailedResourceDataValue(null, resourceAssignment, message);
+  @Test
+  public void testSetFailedResourceDataValue() throws Exception {
+    ResourceAssignment resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_STRING, "value");
+    String message = "message";
+    ResourceAssignmentUtils.setFailedResourceDataValue(null, resourceAssignment, message);
 
-        assertTrue(message.equals(resourceAssignment.getMessage()));
-        assertTrue(ConfigModelConstant.STATUS_FAILURE.equals(resourceAssignment.getStatus()));
-    }
+    assertTrue(message.equals(resourceAssignment.getMessage()));
+    assertTrue(ConfigModelConstant.STATUS_FAILURE.equals(resourceAssignment.getStatus()));
+  }
 
-    @Test(expected = ConfigModelException.class)
-    public void testAssertTemplateKeyValueNotNull() throws Exception {
-        Map<String, Object> componentContext = null;
-        ResourceAssignment resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_STRING, "value");
-        ResourceAssignmentUtils.assertTemplateKeyValueNotNull(componentContext, resourceAssignment);
-    }
+  @Test(expected = ConfigModelException.class)
+  public void testAssertTemplateKeyValueNotNull() throws Exception {
+    Map<String, Object> componentContext = null;
+    ResourceAssignment resourceAssignment = createResourceAssignment("name1", ValidTypes.DATA_TYPE_STRING, "value");
+    ResourceAssignmentUtils.assertTemplateKeyValueNotNull(componentContext, resourceAssignment);
+  }
 
-    @Test
-    public void testGenerateResourceDataForAssignments() throws Exception {
-        List<ResourceAssignment> assignments = new ArrayList<ResourceAssignment>();
-        assignments.add(createResourceAssignment("name1", ValidTypes.DATA_TYPE_STRING, "string"));
-        assignments.add(createResourceAssignment("name2", ValidTypes.DATA_TYPE_BOOLEAN, true));
-        assignments.add(createResourceAssignment("name3", ValidTypes.DATA_TYPE_INTEGER, 1));
-        assignments.add(createResourceAssignment("name4", ValidTypes.DATA_TYPE_FLOAT, 1.1f));
-        assignments.add(createResourceAssignment("name5", ValidTypes.DATA_TYPE_TIMESTAMP, "1523908097735"));
-        assignments.add(createResourceAssignment("name6", "", new HashMap<String, String>()));
-        ResourceAssignmentUtils.generateResourceDataForAssignments(assignments);
-    }
+  @Test
+  public void testGenerateResourceDataForAssignments() throws Exception {
+    List<ResourceAssignment> assignments = new ArrayList<ResourceAssignment>();
+    assignments.add(createResourceAssignment("name1", ValidTypes.DATA_TYPE_STRING, "string"));
+    assignments.add(createResourceAssignment("name2", ValidTypes.DATA_TYPE_BOOLEAN, true));
+    assignments.add(createResourceAssignment("name3", ValidTypes.DATA_TYPE_INTEGER, 1));
+    assignments.add(createResourceAssignment("name4", ValidTypes.DATA_TYPE_FLOAT, 1.1f));
+    assignments.add(createResourceAssignment("name5", ValidTypes.DATA_TYPE_TIMESTAMP, "1523908097735"));
+    assignments.add(createResourceAssignment("name6", "", new HashMap<String, String>()));
+    ResourceAssignmentUtils.generateResourceDataForAssignments(assignments);
+  }
 
-    public void testResourceAssignmentForNullEmptyValues() throws Exception {
+  public void testResourceAssignmentForNullEmptyValues() throws Exception {
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode raContent =
-                mapper.readTree(new File("src/test/resources/service_templates/ra-content-with-mising-value.json"));
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode raContent =
+        mapper.readTree(new File("src/test/resources/service_templates/ra-content-with-mising-value.json"));
 
-        List<ResourceAssignment> assignments =
-                mapper.readValue(raContent.toString(), new TypeReference<List<ResourceAssignment>>() {});
+    List<ResourceAssignment> assignments =
+        mapper.readValue(raContent.toString(), new TypeReference<List<ResourceAssignment>>() {});
 
-        ResourceAssignmentUtils.generateResourceDataForAssignments(assignments);
-    }
+    ResourceAssignmentUtils.generateResourceDataForAssignments(assignments);
+  }
 
-    private ResourceAssignment createResourceAssignment(String name, String dataType, Object value) {
-        PropertyDefinition property = new PropertyDefinition();
-        property.setType(dataType);
-        property.setValue(value);
-        property.setRequired(true);
-        ResourceAssignment ra = new ResourceAssignment();
-        ra.setName(name);
-        ra.setProperty(property);
-        return ra;
-    }
+  private ResourceAssignment createResourceAssignment(String name, String dataType, Object value) {
+    PropertyDefinition property = new PropertyDefinition();
+    property.setType(dataType);
+    property.setValue(value);
+    property.setRequired(true);
+    ResourceAssignment ra = new ResourceAssignment();
+    ra.setName(name);
+    ra.setProperty(property);
+    return ra;
+  }
 
 }

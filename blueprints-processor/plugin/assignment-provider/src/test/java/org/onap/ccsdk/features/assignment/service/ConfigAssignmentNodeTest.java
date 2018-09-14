@@ -53,195 +53,190 @@ import com.att.eelf.configuration.EELFManager;
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigAssignmentNodeTest {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigAssignmentNodeTest.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigAssignmentNodeTest.class);
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
-    @Mock
-    private ConfigResourceService configResourceService;
+  @Mock
+  private ConfigResourceService configResourceService;
 
-    @Mock
-    private ConfigRestAdaptorService configRestAdaptorService;
+  @Mock
+  private ConfigRestAdaptorService configRestAdaptorService;
 
-    private ConfigModelService configModelService;
+  private ConfigModelService configModelService;
 
-    private ComponentNodeService componentNodeService;
+  private ComponentNodeService componentNodeService;
 
-    private ConfigGeneratorService configGeneratorService;
+  private ConfigGeneratorService configGeneratorService;
 
-    BundleContext bundleContext = MockOsgi.newBundleContext();
+  BundleContext bundleContext = MockOsgi.newBundleContext();
 
-    @SuppressWarnings("unchecked")
-    @Before
-    public void before() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        /*
-         * ConfigAssignmentNode configAssignmentNode = new ConfigAssignmentNode(componentNodeService,
-         * configResourceService, configModelService, configRestAdaptorService, configGeneratorService);
-         * bundleContext.registerService(ConfigAssignmentNode.class, configAssignmentNode, null);
-         */
-    }
+  @SuppressWarnings("unchecked")
+  @Before
+  public void before() throws Exception {
+    MockitoAnnotations.initMocks(this);
+    /*
+     * ConfigAssignmentNode configAssignmentNode = new ConfigAssignmentNode(componentNodeService,
+     * configResourceService, configModelService, configRestAdaptorService, configGeneratorService);
+     * bundleContext.registerService(ConfigAssignmentNode.class, configAssignmentNode, null);
+     */
+  }
 
-    @Test
-    public void testResourceAssignment() throws Exception {
-        ConfigResourceAssignmentTestUtils.injectTransactionLogSaveMock(configResourceService);
+  @Test
+  public void testResourceAssignment() throws Exception {
+    ConfigResourceAssignmentTestUtils.injectTransactionLogSaveMock(configResourceService);
 
-        ConfigResourceAssignmentTestUtils.injectConfigModelMock(configRestAdaptorService, "resource_assignment");
+    ConfigResourceAssignmentTestUtils.injectConfigModelMock(configRestAdaptorService, "resource_assignment");
 
-        ConfigResourceAssignmentTestUtils.injectResourceDictionaryMock(configRestAdaptorService,
-                "assignments/empty-dictionary.json");
+    ConfigResourceAssignmentTestUtils.injectResourceDictionaryMock(configRestAdaptorService,
+        "assignments/empty-dictionary.json");
 
-        ConfigResourceAssignmentTestUtils.injectConfigResourceSaveMock(configResourceService);
+    ConfigResourceAssignmentTestUtils.injectConfigResourceSaveMock(configResourceService);
 
-        componentNodeService =
-                new ComponentNodeServiceImpl(bundleContext, configResourceService, configRestAdaptorService);
-        configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
-        configGeneratorService = new ConfigGeneratorServiceImpl(configResourceService);
+    componentNodeService = new ComponentNodeServiceImpl(bundleContext, configResourceService, configRestAdaptorService);
+    configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
+    configGeneratorService = new ConfigGeneratorServiceImpl(configResourceService);
 
-        ConfigAssignmentNode configAssignmentNode = new ConfigAssignmentNode(configResourceService,
-                configRestAdaptorService, configModelService, componentNodeService, configGeneratorService);
+    ConfigAssignmentNode configAssignmentNode = new ConfigAssignmentNode(configResourceService,
+        configRestAdaptorService, configModelService, componentNodeService, configGeneratorService);
 
-        String inputContent = FileUtils.readFileToString(
-                new File("src/test/resources/service_templates/input/input.json"), Charset.defaultCharset());
+    String inputContent = FileUtils.readFileToString(new File("src/test/resources/service_templates/input/input.json"),
+        Charset.defaultCharset());
 
-        Map<String, String> inParams = new HashMap<>();
-        inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "test");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_REQUEST_ID, "1234");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_ID, "resourceid-1234");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_TYPE, "vnf-type");
-        inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_NAME, "vpe-201802-baseconfig");
-        inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_VERSION, "1.0.0");
-        inParams.put(ConfigModelConstant.PROPERTY_ACTION_NAME, "resource-assignment-action");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_INPUT_DATA, inputContent);
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_TEMPLATE_NAMES, "[\"base-config-template\"]");
+    Map<String, String> inParams = new HashMap<>();
+    inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "test");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_REQUEST_ID, "1234");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_ID, "resourceid-1234");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_TYPE, "vnf-type");
+    inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_NAME, "vpe-201802-baseconfig");
+    inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_VERSION, "1.0.0");
+    inParams.put(ConfigModelConstant.PROPERTY_ACTION_NAME, "resource-assignment-action");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_INPUT_DATA, inputContent);
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_TEMPLATE_NAMES, "[\"base-config-template\"]");
 
-        // Populate the SvcContext ( Simulation)
-        SvcLogicContext svcLogicContext = new SvcLogicContext();
-        Map<String, String> context = new HashMap<>();
-        context.put(ConfigModelConstant.PROPERTY_ACTION_NAME, "resource-assignment-action");
-        context = configModelService.prepareContext(context, inputContent, "vpe-201802-baseconfig", "1.0.0");
-        context.forEach((key, value) -> svcLogicContext.setAttribute(key, value));
+    // Populate the SvcContext ( Simulation)
+    SvcLogicContext svcLogicContext = new SvcLogicContext();
+    Map<String, String> context = new HashMap<>();
+    context.put(ConfigModelConstant.PROPERTY_ACTION_NAME, "resource-assignment-action");
+    context = configModelService.prepareContext(context, inputContent, "vpe-201802-baseconfig", "1.0.0");
+    context.forEach((key, value) -> svcLogicContext.setAttribute(key, value));
 
-        Map<String, Object> componentContext = new HashMap<>();
-        configAssignmentNode.process(inParams, svcLogicContext, componentContext);
-        Assert.assertNotNull("Failed to get response status", svcLogicContext.getAttribute("test.status"));
+    Map<String, Object> componentContext = new HashMap<>();
+    configAssignmentNode.process(inParams, svcLogicContext, componentContext);
+    Assert.assertNotNull("Failed to get response status", svcLogicContext.getAttribute("test.status"));
 
-    }
+  }
 
-    @Test
-    public void testSimplePreview() throws Exception {
-        ConfigResourceAssignmentTestUtils.injectTransactionLogSaveMock(configResourceService);
+  @Test
+  public void testSimplePreview() throws Exception {
+    ConfigResourceAssignmentTestUtils.injectTransactionLogSaveMock(configResourceService);
 
-        ConfigResourceAssignmentTestUtils.injectConfigModelMock(configRestAdaptorService, "resource_assignment");
+    ConfigResourceAssignmentTestUtils.injectConfigModelMock(configRestAdaptorService, "resource_assignment");
 
-        ConfigResourceAssignmentTestUtils.injectResourceDictionaryMock(configRestAdaptorService,
-                "assignments/empty-dictionary.json");
+    ConfigResourceAssignmentTestUtils.injectResourceDictionaryMock(configRestAdaptorService,
+        "assignments/empty-dictionary.json");
 
-        ConfigResourceAssignmentTestUtils.injectConfigResourceSaveMock(configResourceService);
+    ConfigResourceAssignmentTestUtils.injectConfigResourceSaveMock(configResourceService);
 
-        componentNodeService =
-                new ComponentNodeServiceImpl(bundleContext, configResourceService, configRestAdaptorService);
-        configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
-        configGeneratorService = new ConfigGeneratorServiceImpl(configResourceService);
+    componentNodeService = new ComponentNodeServiceImpl(bundleContext, configResourceService, configRestAdaptorService);
+    configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
+    configGeneratorService = new ConfigGeneratorServiceImpl(configResourceService);
 
-        ConfigAssignmentNode configAssignmentNode = new ConfigAssignmentNode(configResourceService,
-                configRestAdaptorService, configModelService, componentNodeService, configGeneratorService);
+    ConfigAssignmentNode configAssignmentNode = new ConfigAssignmentNode(configResourceService,
+        configRestAdaptorService, configModelService, componentNodeService, configGeneratorService);
 
-        String inputContent = FileUtils.readFileToString(
-                new File("src/test/resources/service_templates/input/input.json"), Charset.defaultCharset());
+    String inputContent = FileUtils.readFileToString(new File("src/test/resources/service_templates/input/input.json"),
+        Charset.defaultCharset());
 
-        Map<String, String> inParams = new HashMap<>();
-        inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "test");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_REQUEST_ID, "1234");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_ID, "resourceid-1234");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_TYPE, "vnf-type");
-        inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_NAME, "vpe-201802-baseconfig");
-        inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_VERSION, "1.0.0");
-        inParams.put(ConfigModelConstant.PROPERTY_ACTION_NAME, "resource-assignment-action");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_INPUT_DATA, inputContent);
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_TEMPLATE_NAMES, "[\"base-config-template\"]");
-        SvcLogicContext ctx = new SvcLogicContext();
-        configAssignmentNode.process(inParams, ctx);
-        Assert.assertNotNull("Failed to get response mashed Content",
-                ctx.getAttribute("test.mashed-data.base-config-template"));
-    }
+    Map<String, String> inParams = new HashMap<>();
+    inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "test");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_REQUEST_ID, "1234");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_ID, "resourceid-1234");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_TYPE, "vnf-type");
+    inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_NAME, "vpe-201802-baseconfig");
+    inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_VERSION, "1.0.0");
+    inParams.put(ConfigModelConstant.PROPERTY_ACTION_NAME, "resource-assignment-action");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_INPUT_DATA, inputContent);
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_TEMPLATE_NAMES, "[\"base-config-template\"]");
+    SvcLogicContext ctx = new SvcLogicContext();
+    configAssignmentNode.process(inParams, ctx);
+    Assert.assertNotNull("Failed to get response mashed Content",
+        ctx.getAttribute("test.mashed-data.base-config-template"));
+  }
 
-    @Test
-    public void testComplexPreview() throws Exception {
-        ConfigResourceAssignmentTestUtils.injectTransactionLogSaveMock(configResourceService);
+  @Test
+  public void testComplexPreview() throws Exception {
+    ConfigResourceAssignmentTestUtils.injectTransactionLogSaveMock(configResourceService);
 
-        ConfigResourceAssignmentTestUtils.injectConfigModelMock(configRestAdaptorService, "vpe-201802-baseconfig");
+    ConfigResourceAssignmentTestUtils.injectConfigModelMock(configRestAdaptorService, "vpe-201802-baseconfig");
 
-        ConfigResourceAssignmentTestUtils.injectResourceDictionaryMock(configRestAdaptorService,
-                "service_templates/vpe-201802-baseconfig/dict.json");
+    ConfigResourceAssignmentTestUtils.injectResourceDictionaryMock(configRestAdaptorService,
+        "service_templates/vpe-201802-baseconfig/dict.json");
 
-        ConfigResourceAssignmentTestUtils.injectConfigResourceSaveMock(configResourceService);
+    ConfigResourceAssignmentTestUtils.injectConfigResourceSaveMock(configResourceService);
 
-        componentNodeService =
-                new ComponentNodeServiceImpl(bundleContext, configResourceService, configRestAdaptorService);
-        configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
-        configGeneratorService = new ConfigGeneratorServiceImpl(configResourceService);
+    componentNodeService = new ComponentNodeServiceImpl(bundleContext, configResourceService, configRestAdaptorService);
+    configModelService = new ConfigModelServiceImpl(configRestAdaptorService);
+    configGeneratorService = new ConfigGeneratorServiceImpl(configResourceService);
 
-        ConfigAssignmentNode configAssignmentNode = new ConfigAssignmentNode(configResourceService,
-                configRestAdaptorService, configModelService, componentNodeService, configGeneratorService);
+    ConfigAssignmentNode configAssignmentNode = new ConfigAssignmentNode(configResourceService,
+        configRestAdaptorService, configModelService, componentNodeService, configGeneratorService);
 
-        String inputContent = FileUtils.readFileToString(
-                new File("src/test/resources/service_templates/vpe-201802-baseconfig/input-complex.json"),
-                Charset.defaultCharset());
+    String inputContent = FileUtils.readFileToString(
+        new File("src/test/resources/service_templates/vpe-201802-baseconfig/input-complex.json"),
+        Charset.defaultCharset());
 
-        Map<String, String> inParams = new HashMap<>();
-        inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "complex-test");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_REQUEST_ID, "request-1234");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_ID, "resourceid-1234");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_TYPE, "vnf-type");
-        inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_NAME, "vpe-201802-baseconfig");
-        inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_VERSION, "1.0.0");
-        inParams.put(ConfigModelConstant.PROPERTY_ACTION_NAME, "resource-assignment-action");
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_INPUT_DATA, inputContent);
-        inParams.put(ConfigAssignmentConstants.INPUT_PARAM_TEMPLATE_NAMES, "[\"base-config-template\"]");
-        SvcLogicContext ctx = new SvcLogicContext();
-        configAssignmentNode.process(inParams, ctx);
-        Assert.assertNotNull("Failed to get response mashed Content",
-                ctx.getAttribute("complex-test.mashed-data.base-config-template"));
+    Map<String, String> inParams = new HashMap<>();
+    inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "complex-test");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_REQUEST_ID, "request-1234");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_ID, "resourceid-1234");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_RESOURCE_TYPE, "vnf-type");
+    inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_NAME, "vpe-201802-baseconfig");
+    inParams.put(ConfigModelConstant.SERVICE_TEMPLATE_KEY_ARTIFACT_VERSION, "1.0.0");
+    inParams.put(ConfigModelConstant.PROPERTY_ACTION_NAME, "resource-assignment-action");
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_INPUT_DATA, inputContent);
+    inParams.put(ConfigAssignmentConstants.INPUT_PARAM_TEMPLATE_NAMES, "[\"base-config-template\"]");
+    SvcLogicContext ctx = new SvcLogicContext();
+    configAssignmentNode.process(inParams, ctx);
+    Assert.assertNotNull("Failed to get response mashed Content",
+        ctx.getAttribute("complex-test.mashed-data.base-config-template"));
 
-    }
+  }
 
-    @Test
-    public void inputValidator() {
-        SvcLogicContext ctx = new SvcLogicContext();
-        try {
+  @Test
+  public void inputValidator() {
+    SvcLogicContext ctx = new SvcLogicContext();
+    try {
 
-            logger.info(" *******************************  inputValidator  ***************************");
-            String serviceTemplateContent = FileUtils.readFileToString(
-                    new File("src/test/resources/service_templates/resource_assignment.json"),
-                    Charset.defaultCharset());
+      logger.info(" *******************************  inputValidator  ***************************");
+      String serviceTemplateContent = FileUtils.readFileToString(
+          new File("src/test/resources/service_templates/resource_assignment.json"), Charset.defaultCharset());
 
-            String inputcontent = FileUtils.readFileToString(
-                    new File("src/test/resources/service_templates/input/inputValidateTest.json"),
-                    Charset.defaultCharset());
+      String inputcontent = FileUtils.readFileToString(
+          new File("src/test/resources/service_templates/input/inputValidateTest.json"), Charset.defaultCharset());
 
-            Map<String, String> context = new HashMap<>();
-            configModelService.prepareContext(context, inputcontent, serviceTemplateContent);
+      Map<String, String> context = new HashMap<>();
+      configModelService.prepareContext(context, inputcontent, serviceTemplateContent);
 
-            // TransformationUtils.printMap(context);
+      // TransformationUtils.printMap(context);
 
-            context.forEach((name, value) -> {
-                if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(value)) {
-                    ctx.setAttribute(name, value);
-                }
-            });
-
-            ComponentNodeDelegate componentNodeDelegate = new ComponentNodeDelegate(componentNodeService);
-            Map<String, String> inParams = new HashMap<>();
-            inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "resource-assignment");
-            componentNodeDelegate.process(inParams, ctx);
-            Assert.fail();
-        } catch (Exception e) {
-            logger.error("Failed in inputValidator" + e.getMessage());
-            logger.info("** ctx.getAttribute Check for **" + ctx.getAttribute("resource-assignment.error-message"));
+      context.forEach((name, value) -> {
+        if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(value)) {
+          ctx.setAttribute(name, value);
         }
+      });
 
+      ComponentNodeDelegate componentNodeDelegate = new ComponentNodeDelegate(componentNodeService);
+      Map<String, String> inParams = new HashMap<>();
+      inParams.put(ConfigModelConstant.PROPERTY_SELECTOR, "resource-assignment");
+      componentNodeDelegate.process(inParams, ctx);
+      Assert.fail();
+    } catch (Exception e) {
+      logger.error("Failed in inputValidator" + e.getMessage());
+      logger.info("** ctx.getAttribute Check for **" + ctx.getAttribute("resource-assignment.error-message"));
     }
+
+  }
 
 }

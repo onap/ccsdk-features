@@ -23,103 +23,103 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SourcesProperties {
 
-    @JsonProperty(value = "name")
-    private String name;
+  @JsonProperty(value = "name")
+  private String name;
 
-    @JsonProperty(value = "base")
-    private String base;
+  @JsonProperty(value = "base")
+  private String base;
 
-    @JsonProperty(value = "type")
-    private String type;
+  @JsonProperty(value = "type")
+  private String type;
 
-    @JsonProperty(value = "query")
-    private String query;
+  @JsonProperty(value = "query")
+  private String query;
 
-    @JsonProperty(value = "url-path")
-    private String urlPath;
+  @JsonProperty(value = "url-path")
+  private String urlPath;
 
-    @JsonProperty(value = "path")
-    private String path;
+  @JsonProperty(value = "path")
+  private String path;
 
-    @JsonProperty("input-key-mapping")
-    private Map<String, String> inputKeyMapping;
+  @JsonProperty("input-key-mapping")
+  private Map<String, String> inputKeyMapping;
 
-    @JsonProperty("output-key-mapping")
-    private Map<String, String> outputKeyMapping;
+  @JsonProperty("output-key-mapping")
+  private Map<String, String> outputKeyMapping;
 
-    @JsonProperty("key-dependencies")
-    private List<String> dependencies;
+  @JsonProperty("key-dependencies")
+  private List<String> dependencies;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getBase() {
-        return base;
-    }
+  public String getBase() {
+    return base;
+  }
 
-    public void setBase(String base) {
-        this.base = base;
-    }
+  public void setBase(String base) {
+    this.base = base;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public String getQuery() {
-        return query;
-    }
+  public String getQuery() {
+    return query;
+  }
 
-    public void setQuery(String query) {
-        this.query = query;
-    }
+  public void setQuery(String query) {
+    this.query = query;
+  }
 
-    public String getUrlPath() {
-        return urlPath;
-    }
+  public String getUrlPath() {
+    return urlPath;
+  }
 
-    public void setUrlPath(String urlPath) {
-        this.urlPath = urlPath;
-    }
+  public void setUrlPath(String urlPath) {
+    this.urlPath = urlPath;
+  }
 
-    public String getPath() {
-        return path;
-    }
+  public String getPath() {
+    return path;
+  }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+  public void setPath(String path) {
+    this.path = path;
+  }
 
-    public Map<String, String> getInputKeyMapping() {
-        return inputKeyMapping;
-    }
+  public Map<String, String> getInputKeyMapping() {
+    return inputKeyMapping;
+  }
 
-    public void setInputKeyMapping(Map<String, String> inputKeyMapping) {
-        this.inputKeyMapping = inputKeyMapping;
-    }
+  public void setInputKeyMapping(Map<String, String> inputKeyMapping) {
+    this.inputKeyMapping = inputKeyMapping;
+  }
 
-    public Map<String, String> getOutputKeyMapping() {
-        return outputKeyMapping;
-    }
+  public Map<String, String> getOutputKeyMapping() {
+    return outputKeyMapping;
+  }
 
-    public void setOutputKeyMapping(Map<String, String> outputKeyMapping) {
-        this.outputKeyMapping = outputKeyMapping;
-    }
+  public void setOutputKeyMapping(Map<String, String> outputKeyMapping) {
+    this.outputKeyMapping = outputKeyMapping;
+  }
 
-    public List<String> getDependencies() {
-        return dependencies;
-    }
+  public List<String> getDependencies() {
+    return dependencies;
+  }
 
-    public void setDependencies(List<String> dependencies) {
-        this.dependencies = dependencies;
-    }
+  public void setDependencies(List<String> dependencies) {
+    this.dependencies = dependencies;
+  }
 
 }

@@ -26,87 +26,87 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @version 1.0
  */
 public class NodeTemplate {
-    @JsonIgnore
-    private String id;
-    private String description;
-    private String type;
-    private Map<String, String> metadata;
-    private Map<String, Object> properties;
-    private Map<String, InterfaceAssignment> interfaces;
-    private Map<String, ArtifactDefinition> artifacts;
-    private Map<String, CapabilityAssignment> capabilities;
-    private Map<String, RequirementAssignment> requirements;
+  @JsonIgnore
+  private String id;
+  private String description;
+  private String type;
+  private Map<String, String> metadata;
+  private Map<String, Object> properties;
+  private Map<String, InterfaceAssignment> interfaces;
+  private Map<String, ArtifactDefinition> artifacts;
+  private Map<String, CapabilityAssignment> capabilities;
+  private Map<String, RequirementAssignment> requirements;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
+  public Map<String, String> getMetadata() {
+    return metadata;
+  }
 
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
+  public void setMetadata(Map<String, String> metadata) {
+    this.metadata = metadata;
+  }
 
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
+  public Map<String, Object> getProperties() {
+    return properties;
+  }
 
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
-    }
+  public void setProperties(Map<String, Object> properties) {
+    this.properties = properties;
+  }
 
-    public Map<String, InterfaceAssignment> getInterfaces() {
-        return interfaces;
-    }
+  public Map<String, InterfaceAssignment> getInterfaces() {
+    return interfaces;
+  }
 
-    public void setInterfaces(Map<String, InterfaceAssignment> interfaces) {
-        this.interfaces = interfaces;
-    }
+  public void setInterfaces(Map<String, InterfaceAssignment> interfaces) {
+    this.interfaces = interfaces;
+  }
 
-    public Map<String, ArtifactDefinition> getArtifacts() {
-        return artifacts;
-    }
+  public Map<String, ArtifactDefinition> getArtifacts() {
+    return artifacts;
+  }
 
-    public void setArtifacts(Map<String, ArtifactDefinition> artifacts) {
-        this.artifacts = artifacts;
-    }
+  public void setArtifacts(Map<String, ArtifactDefinition> artifacts) {
+    this.artifacts = artifacts;
+  }
 
-    public Map<String, CapabilityAssignment> getCapabilities() {
-        return capabilities;
-    }
+  public Map<String, CapabilityAssignment> getCapabilities() {
+    return capabilities;
+  }
 
-    public void setCapabilities(Map<String, CapabilityAssignment> capabilities) {
-        this.capabilities = capabilities;
-    }
+  public void setCapabilities(Map<String, CapabilityAssignment> capabilities) {
+    this.capabilities = capabilities;
+  }
 
-    public Map<String, RequirementAssignment> getRequirements() {
-        return requirements;
-    }
+  public Map<String, RequirementAssignment> getRequirements() {
+    return requirements;
+  }
 
-    public void setRequirements(Map<String, RequirementAssignment> requirements) {
-        this.requirements = requirements;
-    }
+  public void setRequirements(Map<String, RequirementAssignment> requirements) {
+    this.requirements = requirements;
+  }
 
 }

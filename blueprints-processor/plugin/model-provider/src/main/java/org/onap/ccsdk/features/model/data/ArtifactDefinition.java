@@ -26,80 +26,80 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @version 1.0
  */
 public class ArtifactDefinition {
-    @JsonIgnore
-    private String id;
-    private String type;
-    private String file;
-    private String repository;
-    private String description;
-    @JsonProperty("deploy_Path")
-    private String deployPath;
-    // Used for Template Type
-    private String content;
-    private String mappingContent;
+  @JsonIgnore
+  private String id;
+  private String type;
+  private String file;
+  private String repository;
+  private String description;
+  @JsonProperty("deploy_Path")
+  private String deployPath;
+  // Used for Template Type
+  private String content;
+  private String mappingContent;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public String getFile() {
-        return file;
-    }
+  public String getFile() {
+    return file;
+  }
 
-    public void setFile(String file) {
-        this.file = file;
-    }
+  public void setFile(String file) {
+    this.file = file;
+  }
 
-    public String getRepository() {
-        return repository;
-    }
+  public String getRepository() {
+    return repository;
+  }
 
-    public void setRepository(String repository) {
-        this.repository = repository;
-    }
+  public void setRepository(String repository) {
+    this.repository = repository;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getDeployPath() {
-        return deployPath;
-    }
+  public String getDeployPath() {
+    return deployPath;
+  }
 
-    public void setDeployPath(String deployPath) {
-        this.deployPath = deployPath;
-    }
+  public void setDeployPath(String deployPath) {
+    this.deployPath = deployPath;
+  }
 
-    public String getContent() {
-        return content;
-    }
+  public String getContent() {
+    return content;
+  }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+  public void setContent(String content) {
+    this.content = content;
+  }
 
-    public String getMappingContent() {
-        return mappingContent;
-    }
+  public String getMappingContent() {
+    return mappingContent;
+  }
 
-    public void setMappingContent(String mappingContent) {
-        this.mappingContent = mappingContent;
-    }
+  public void setMappingContent(String mappingContent) {
+    this.mappingContent = mappingContent;
+  }
 
 }

@@ -20,26 +20,25 @@ package org.onap.ccsdk.features.model.utils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onap.ccsdk.features.model.utils.JsonParserUtils;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonParserUtilsTest {
 
-    @Test
-    public void testParse() {
-        final String jsonExample = "{\"key\":\"value\"}";
+  @Test
+  public void testParse() {
+    final String jsonExample = "{\"key\":\"value\"}";
 
-        JsonNode rootJsonNode = JsonParserUtils.parse(jsonExample, "$");
-        Assert.assertEquals(jsonExample, rootJsonNode.toString());
+    JsonNode rootJsonNode = JsonParserUtils.parse(jsonExample, "$");
+    Assert.assertEquals(jsonExample, rootJsonNode.toString());
 
-        JsonNode keyJsonNode = JsonParserUtils.parse(rootJsonNode, "$['key']");
-        Assert.assertEquals("value", keyJsonNode.asText());
+    JsonNode keyJsonNode = JsonParserUtils.parse(rootJsonNode, "$['key']");
+    Assert.assertEquals("value", keyJsonNode.asText());
 
-        Assert.assertEquals(jsonExample,
-                JsonParserUtils.parseNSet("{\"key\":\"NOT_VALUE\"}", "$['key']", keyJsonNode).toString());
+    Assert.assertEquals(jsonExample,
+        JsonParserUtils.parseNSet("{\"key\":\"NOT_VALUE\"}", "$['key']", keyJsonNode).toString());
 
-        rootJsonNode = JsonParserUtils.parse("{\"key\":\"NOT_VALUE\"}", "$");
-        Assert.assertEquals(jsonExample, JsonParserUtils.parseNSet(rootJsonNode, "$['key']", keyJsonNode).toString());
-    }
+    rootJsonNode = JsonParserUtils.parse("{\"key\":\"NOT_VALUE\"}", "$");
+    Assert.assertEquals(jsonExample, JsonParserUtils.parseNSet(rootJsonNode, "$['key']", keyJsonNode).toString());
+  }
 
 }

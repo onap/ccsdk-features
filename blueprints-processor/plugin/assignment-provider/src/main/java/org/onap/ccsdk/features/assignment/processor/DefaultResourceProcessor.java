@@ -32,76 +32,75 @@ import org.onap.ccsdk.sli.core.sli.SvcLogicException;
 
 public class DefaultResourceProcessor implements ComponentNode {
 
-    public DefaultResourceProcessor(ConfigResourceService configResourceService) {}
+  public DefaultResourceProcessor(ConfigResourceService configResourceService) {}
 
-    @Override
-    public Boolean preCondition(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        return Boolean.TRUE;
+  @Override
+  public Boolean preCondition(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public void preProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    // Auto-generated method stub
+  }
+
+  @Override
+  public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException {
+    // Auto-generated method stub
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    try {
+      List<ResourceAssignment> batchResourceAssignment =
+          (List<ResourceAssignment>) componentContext.get(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS);
+
+      if (batchResourceAssignment != null && !batchResourceAssignment.isEmpty()) {
+        for (ResourceAssignment resourceAssignment : batchResourceAssignment) {
+          processResourceAssignment(ctx, componentContext, resourceAssignment);
+        }
+      }
+    } catch (Exception e) {
+      throw new SvcLogicException(String.format("DefaultResourceProcessor Exception : (%s)", e), e);
     }
 
-    @Override
-    public void preProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        // Auto-generated method stub
-    }
+  }
 
-    @Override
-    public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException {
-        // Auto-generated method stub
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        try {
-            List<ResourceAssignment> batchResourceAssignment =
-                    (List<ResourceAssignment>) componentContext.get(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS);
-
-            if (batchResourceAssignment != null && !batchResourceAssignment.isEmpty()) {
-                for (ResourceAssignment resourceAssignment : batchResourceAssignment) {
-                    processResourceAssignment(ctx, componentContext, resourceAssignment);
-                }
-            }
-        } catch (Exception e) {
-            throw new SvcLogicException(String.format("DefaultResourceProcessor Exception : (%s)", e), e);
+  private void processResourceAssignment(SvcLogicContext ctx, Map<String, Object> componentContext,
+      ResourceAssignment resourceAssignment) throws ConfigModelException, SvcLogicException {
+    if (resourceAssignment != null && StringUtils.isNotBlank(resourceAssignment.getName())
+        && resourceAssignment.getProperty() != null) {
+      try {
+        // Check if It has Input
+        Object value = ConfigAssignmentUtils.getContextKeyValue(ctx, resourceAssignment.getName());
+        if (value == null) {
+          value = resourceAssignment.getProperty().getDefaultValue();
         }
 
-    }
-
-    private void processResourceAssignment(SvcLogicContext ctx, Map<String, Object> componentContext,
-            ResourceAssignment resourceAssignment) throws ConfigModelException, SvcLogicException {
-        if (resourceAssignment != null && StringUtils.isNotBlank(resourceAssignment.getName())
-                && resourceAssignment.getProperty() != null) {
-            try {
-                // Check if It has Input
-                Object value = ConfigAssignmentUtils.getContextKeyValue(ctx, resourceAssignment.getName());
-                if (value == null) {
-                    value = resourceAssignment.getProperty().getDefaultValue();
-                }
-
-                // if value is null don't call setResourceDataValue to populate the value
-                if (value != null) {
-                    ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
-                }
-
-                // Check the value has populated for mandatory case
-                ResourceAssignmentUtils.assertTemplateKeyValueNotNull(componentContext, resourceAssignment);
-            } catch (Exception e) {
-                ResourceAssignmentUtils.setFailedResourceDataValue(componentContext, resourceAssignment,
-                        e.getMessage());
-                throw new SvcLogicException(
-                        String.format("Failed in template key (%s) assignments with : (%s)", resourceAssignment, e), e);
-            }
+        // if value is null don't call setResourceDataValue to populate the value
+        if (value != null) {
+          ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
         }
-    }
 
-    @Override
-    public void postProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        // Auto-generated method stub
-
+        // Check the value has populated for mandatory case
+        ResourceAssignmentUtils.assertTemplateKeyValueNotNull(componentContext, resourceAssignment);
+      } catch (Exception e) {
+        ResourceAssignmentUtils.setFailedResourceDataValue(componentContext, resourceAssignment, e.getMessage());
+        throw new SvcLogicException(
+            String.format("Failed in template key (%s) assignments with : (%s)", resourceAssignment, e), e);
+      }
     }
+  }
+
+  @Override
+  public void postProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    // Auto-generated method stub
+
+  }
 
 }

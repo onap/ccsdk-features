@@ -28,61 +28,61 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @version 1.0
  */
 public class CapabilityDefinition {
-    @JsonIgnore
-    private String id;
-    private String type;
-    private String description;
-    private Map<String, PropertyDefinition> properties;
-    @JsonProperty("valid_source_types")
-    private List<String> validSourceTypes;
-    private List<Object> occurrences;
+  @JsonIgnore
+  private String id;
+  private String type;
+  private String description;
+  private Map<String, PropertyDefinition> properties;
+  @JsonProperty("valid_source_types")
+  private List<String> validSourceTypes;
+  private List<Object> occurrences;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public Map<String, PropertyDefinition> getProperties() {
-        return properties;
-    }
+  public Map<String, PropertyDefinition> getProperties() {
+    return properties;
+  }
 
-    public void setProperties(Map<String, PropertyDefinition> properties) {
-        this.properties = properties;
-    }
+  public void setProperties(Map<String, PropertyDefinition> properties) {
+    this.properties = properties;
+  }
 
-    public List<String> getValidSourceTypes() {
-        return validSourceTypes;
-    }
+  public List<String> getValidSourceTypes() {
+    return validSourceTypes;
+  }
 
-    public void setValidSourceTypes(List<String> validSourceTypes) {
-        this.validSourceTypes = validSourceTypes;
-    }
+  public void setValidSourceTypes(List<String> validSourceTypes) {
+    this.validSourceTypes = validSourceTypes;
+  }
 
-    public List<Object> getOccurrences() {
-        return occurrences;
-    }
+  public List<Object> getOccurrences() {
+    return occurrences;
+  }
 
-    public void setOccurrences(List<Object> occurrences) {
-        this.occurrences = occurrences;
-    }
+  public void setOccurrences(List<Object> occurrences) {
+    this.occurrences = occurrences;
+  }
 
 }

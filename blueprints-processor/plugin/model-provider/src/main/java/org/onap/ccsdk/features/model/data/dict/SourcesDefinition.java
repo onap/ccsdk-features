@@ -21,26 +21,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SourcesDefinition {
 
-    @JsonProperty(value = "type", required = true)
-    private String type;
+  @JsonProperty(value = "type", required = true)
+  private String type;
 
-    @JsonProperty(value = "properties", required = true)
-    private SourcesProperties properties;
+  @JsonProperty(value = "properties", required = true)
+  private SourcesProperties properties;
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public SourcesProperties getProperties() {
-        return properties;
-    }
+  public SourcesProperties getProperties() {
+    return properties;
+  }
 
-    public void setProperties(SourcesProperties properties) {
-        this.properties = properties;
-    }
+  public void setProperties(SourcesProperties properties) {
+    this.properties = properties;
+  }
 
 }

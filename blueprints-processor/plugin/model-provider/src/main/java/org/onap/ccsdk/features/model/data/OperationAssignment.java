@@ -26,51 +26,51 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @version 1.0
  */
 public class OperationAssignment {
-    @JsonIgnore
-    private String id;
-    private String description;
-    private String implementation;
-    private Map<String, Object> inputs;
-    private Map<String, Object> outputs;
+  @JsonIgnore
+  private String id;
+  private String description;
+  private String implementation;
+  private Map<String, Object> inputs;
+  private Map<String, Object> outputs;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getImplementation() {
-        return implementation;
-    }
+  public String getImplementation() {
+    return implementation;
+  }
 
-    public void setImplementation(String implementation) {
-        this.implementation = implementation;
-    }
+  public void setImplementation(String implementation) {
+    this.implementation = implementation;
+  }
 
-    public Map<String, Object> getInputs() {
-        return inputs;
-    }
+  public Map<String, Object> getInputs() {
+    return inputs;
+  }
 
-    public void setInputs(Map<String, Object> inputs) {
-        this.inputs = inputs;
-    }
+  public void setInputs(Map<String, Object> inputs) {
+    this.inputs = inputs;
+  }
 
-    public Map<String, Object> getOutputs() {
-        return outputs;
-    }
+  public Map<String, Object> getOutputs() {
+    return outputs;
+  }
 
-    public void setOutputs(Map<String, Object> outputs) {
-        this.outputs = outputs;
-    }
+  public void setOutputs(Map<String, Object> outputs) {
+    this.outputs = outputs;
+  }
 
 }

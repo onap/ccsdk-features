@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.params.service;
 
 import java.util.Map;
-
 import org.onap.ccsdk.features.model.service.ComponentNode;
 import org.onap.ccsdk.sli.core.sli.SvcLogicContext;
 import org.onap.ccsdk.sli.core.sli.SvcLogicException;
@@ -26,38 +25,38 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class MockComponentNode implements ComponentNode {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(MockComponentNode.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(MockComponentNode.class);
 
-    @Override
-    public Boolean preCondition(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        logger.info("Received preCondition ");
-        componentContext.put("test-key", "test");
-        return true;
-    }
+  @Override
+  public Boolean preCondition(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    logger.info("Received preCondition ");
+    componentContext.put("test-key", "test");
+    return true;
+  }
 
-    @Override
-    public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException {
+  @Override
+  public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException {
 
-    }
+  }
 
-    @Override
-    public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        logger.info("Received Request " + componentContext);
-    }
+  @Override
+  public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    logger.info("Received Request " + componentContext);
+  }
 
-    @Override
-    public void preProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        logger.info("Received preProcess ");
+  @Override
+  public void preProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    logger.info("Received preProcess ");
 
-    }
+  }
 
-    @Override
-    public void postProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        logger.info("Received postProcess ");
-    }
+  @Override
+  public void postProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    logger.info("Received postProcess ");
+  }
 
 }

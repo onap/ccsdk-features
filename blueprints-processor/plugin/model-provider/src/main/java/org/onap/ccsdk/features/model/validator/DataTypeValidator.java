@@ -33,77 +33,77 @@ import org.onap.ccsdk.features.model.data.ServiceTemplate;
  */
 public class DataTypeValidator {
 
-    private StringBuilder message;
-    private Map<String, DataType> stDataTypes;
-    private ServiceTemplate serviceTemplate;
-    private PropertyDefinitionValidator propertyDefinitionValidator;
+  private StringBuilder message;
+  private Map<String, DataType> stDataTypes;
+  private ServiceTemplate serviceTemplate;
+  private PropertyDefinitionValidator propertyDefinitionValidator;
 
-    /**
-     * This is a DataTypeValidator
-     *
-     * @param serviceTemplate
-     * @throws ConfigModelException
-     */
-    public DataTypeValidator(ServiceTemplate serviceTemplate, StringBuilder message) throws ConfigModelException {
-        this.serviceTemplate = serviceTemplate;
-        this.message = message;
-        propertyDefinitionValidator = new PropertyDefinitionValidator(this.message);
-        stDataTypes = new HashMap<>();
-        loadInitial();
+  /**
+   * This is a DataTypeValidator
+   *
+   * @param serviceTemplate
+   * @throws ConfigModelException
+   */
+  public DataTypeValidator(ServiceTemplate serviceTemplate, StringBuilder message) throws ConfigModelException {
+    this.serviceTemplate = serviceTemplate;
+    this.message = message;
+    propertyDefinitionValidator = new PropertyDefinitionValidator(this.message);
+    stDataTypes = new HashMap<>();
+    loadInitial();
 
+  }
+
+  private void loadInitial() {
+    if (serviceTemplate != null && serviceTemplate.getDataTypes() != null) {
+      message.append("\n DataTypes" + serviceTemplate.getDataTypes());
+      serviceTemplate.getDataTypes().forEach((dataTypeKey, dataType) -> {
+        stDataTypes.put(dataTypeKey, dataType);
+        message.append("\n Data Type (" + dataTypeKey + ")  loaded successfully.");
+      });
     }
+  }
 
-    private void loadInitial() {
-        if (serviceTemplate != null && serviceTemplate.getDataTypes() != null) {
-            message.append("\n DataTypes" + serviceTemplate.getDataTypes());
-            serviceTemplate.getDataTypes().forEach((dataTypeKey, dataType) -> {
-                stDataTypes.put(dataTypeKey, dataType);
-                message.append("\n Data Type (" + dataTypeKey + ")  loaded successfully.");
-            });
+  /**
+   * This is a validateDataTypes
+   *
+   * @return boolean
+   * @throws ConfigModelException
+   */
+  @SuppressWarnings("squid:S00112")
+  public boolean validateDataTypes() {
+    if (serviceTemplate != null && serviceTemplate.getDataTypes() != null) {
+
+      serviceTemplate.getDataTypes().forEach((dataTypeKey, dataType) -> {
+        if (dataType != null) {
+          try {
+            String derivedFrom = dataType.getDerivedFrom();
+            checkValidDerivedType(dataTypeKey, derivedFrom);
+            checkValidProperties(dataTypeKey, dataType.getProperties());
+          } catch (ConfigModelException e) {
+            throw new RuntimeException(e);
+          }
+
         }
+
+      });
     }
+    return true;
+  }
 
-    /**
-     * This is a validateDataTypes
-     *
-     * @return boolean
-     * @throws ConfigModelException
-     */
-    @SuppressWarnings("squid:S00112")
-    public boolean validateDataTypes() {
-        if (serviceTemplate != null && serviceTemplate.getDataTypes() != null) {
+  private boolean checkValidDerivedType(String dataTypeName, String derivedFrom) throws ConfigModelException {
 
-            serviceTemplate.getDataTypes().forEach((dataTypeKey, dataType) -> {
-                if (dataType != null) {
-                    try {
-                        String derivedFrom = dataType.getDerivedFrom();
-                        checkValidDerivedType(dataTypeKey, derivedFrom);
-                        checkValidProperties(dataTypeKey, dataType.getProperties());
-                    } catch (ConfigModelException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                }
-
-            });
-        }
-        return true;
+    if (StringUtils.isBlank(derivedFrom) || !ValidTypes.getValidDataTypeDerivedFrom().contains(derivedFrom)) {
+      throw new ConfigModelException(derivedFrom + " is not a valid derived type for Data type " + dataTypeName);
     }
+    return true;
+  }
 
-    private boolean checkValidDerivedType(String dataTypeName, String derivedFrom) throws ConfigModelException {
-
-        if (StringUtils.isBlank(derivedFrom) || !ValidTypes.getValidDataTypeDerivedFrom().contains(derivedFrom)) {
-            throw new ConfigModelException(derivedFrom + " is not a valid derived type for Data type " + dataTypeName);
-        }
-        return true;
+  private boolean checkValidProperties(String dataTypeName, Map<String, PropertyDefinition> properties) {
+    if (properties != null) {
+      message.append("\n validation Data Type (" + dataTypeName + ") Property.");
+      propertyDefinitionValidator.validatePropertyDefinition(stDataTypes, properties);
     }
-
-    private boolean checkValidProperties(String dataTypeName, Map<String, PropertyDefinition> properties) {
-        if (properties != null) {
-            message.append("\n validation Data Type (" + dataTypeName + ") Property.");
-            propertyDefinitionValidator.validatePropertyDefinition(stDataTypes, properties);
-        }
-        return true;
-    }
+    return true;
+  }
 
 }

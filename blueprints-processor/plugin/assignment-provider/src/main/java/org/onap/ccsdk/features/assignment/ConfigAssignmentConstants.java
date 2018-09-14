@@ -20,18 +20,18 @@ package org.onap.ccsdk.features.assignment;
 @SuppressWarnings("squid:S1118")
 public class ConfigAssignmentConstants {
 
-    public static final String OUTPUT_PARAM_STATUS = "status";
-    public static final String OUTPUT_PARAM_RESOURCE_ASSIGNMENT_PARAMS = "resource-assignment-params";
-    public static final String OUTPUT_PARAM_MASHED_DATA = "mashed-data";
-    public static final String OUTPUT_PARAM_ERROR_MESSAGE = "error-message";
-    public static final String OUTPUT_STATUS_SUCCESS = "success";
-    public static final String OUTPUT_STATUS_FAILURE = "failure";
+  public static final String OUTPUT_PARAM_STATUS = "status";
+  public static final String OUTPUT_PARAM_RESOURCE_ASSIGNMENT_PARAMS = "resource-assignment-params";
+  public static final String OUTPUT_PARAM_MASHED_DATA = "mashed-data";
+  public static final String OUTPUT_PARAM_ERROR_MESSAGE = "error-message";
+  public static final String OUTPUT_STATUS_SUCCESS = "success";
+  public static final String OUTPUT_STATUS_FAILURE = "failure";
 
-    public static final String INPUT_PARAM_REQUEST_ID = "request-id";
-    public static final String INPUT_PARAM_RESOURCE_ID = "resource-id";
-    public static final String INPUT_PARAM_RESOURCE_TYPE = "resource-type";
-    public static final String INPUT_PARAM_ACTION_NAME = "action-name";
-    public static final String INPUT_PARAM_TEMPLATE_NAMES = "template-names";
-    public static final String INPUT_PARAM_INPUT_DATA = "input-data";
+  public static final String INPUT_PARAM_REQUEST_ID = "request-id";
+  public static final String INPUT_PARAM_RESOURCE_ID = "resource-id";
+  public static final String INPUT_PARAM_RESOURCE_TYPE = "resource-type";
+  public static final String INPUT_PARAM_ACTION_NAME = "action-name";
+  public static final String INPUT_PARAM_TEMPLATE_NAMES = "template-names";
+  public static final String INPUT_PARAM_INPUT_DATA = "input-data";
 
 }

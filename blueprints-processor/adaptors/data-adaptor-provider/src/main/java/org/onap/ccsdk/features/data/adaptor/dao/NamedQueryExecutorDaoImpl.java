@@ -26,31 +26,31 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class NamedQueryExecutorDaoImpl implements NamedQueryExecutorDao {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(QueryExecutorDaoImpl.class);
-    private static final String CLASS_NAME = "NamedQueryExecutorDaoImpl";
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(QueryExecutorDaoImpl.class);
+  private static final String CLASS_NAME = "NamedQueryExecutorDaoImpl";
 
-    @Autowired(required = true)
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+  @Autowired(required = true)
+  private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public NamedQueryExecutorDaoImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        logger.info("{} Constructor initialised..", CLASS_NAME);
-    }
+  public NamedQueryExecutorDaoImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    logger.info("{} Constructor initialised..", CLASS_NAME);
+  }
 
-    @Override
-    public List<Map<String, Object>> query(String sql, Map<String, Object> parameters) throws SvcLogicException {
-        logger.debug("Query  ({}) with parameters ({})", sql, parameters);
-        return namedParameterJdbcTemplate.queryForList(sql, parameters);
-    }
+  @Override
+  public List<Map<String, Object>> query(String sql, Map<String, Object> parameters) throws SvcLogicException {
+    logger.debug("Query  ({}) with parameters ({})", sql, parameters);
+    return namedParameterJdbcTemplate.queryForList(sql, parameters);
+  }
 
-    @Override
-    public NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
-        return namedParameterJdbcTemplate;
-    }
+  @Override
+  public NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
+    return namedParameterJdbcTemplate;
+  }
 
-    @Override
-    public int update(String sql, Map<String, Object> parameters) throws SvcLogicException {
-        logger.debug("update ({}) with parameters ({})", sql, parameters);
-        return namedParameterJdbcTemplate.update(sql, parameters);
-    }
+  @Override
+  public int update(String sql, Map<String, Object> parameters) throws SvcLogicException {
+    logger.debug("update ({}) with parameters ({})", sql, parameters);
+    return namedParameterJdbcTemplate.update(sql, parameters);
+  }
 }

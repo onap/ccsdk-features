@@ -23,14 +23,14 @@ package org.onap.ccsdk.features.model.data;
  * @version 1.0
  */
 public class EntrySchema {
-    private String type;
+  private String type;
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
 }

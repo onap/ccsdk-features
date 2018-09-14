@@ -27,79 +27,79 @@ import java.util.List;
  */
 public class ValidTypes {
 
-    public static final String DATA_TYPE_STRING = "string";
-    public static final String DATA_TYPE_INTEGER = "integer";
-    public static final String DATA_TYPE_FLOAT = "float";
-    public static final String DATA_TYPE_BOOLEAN = "boolean";
-    public static final String DATA_TYPE_TIMESTAMP = "timestamp";
-    public static final String DATA_TYPE_NULL = "null";
-    public static final String DATA_TYPE_LIST = "list";
-    public static final String DATA_TYPE_LONGTEXT = "longtext";
+  public static final String DATA_TYPE_STRING = "string";
+  public static final String DATA_TYPE_INTEGER = "integer";
+  public static final String DATA_TYPE_FLOAT = "float";
+  public static final String DATA_TYPE_BOOLEAN = "boolean";
+  public static final String DATA_TYPE_TIMESTAMP = "timestamp";
+  public static final String DATA_TYPE_NULL = "null";
+  public static final String DATA_TYPE_LIST = "list";
+  public static final String DATA_TYPE_LONGTEXT = "longtext";
 
-    private ValidTypes() {
+  private ValidTypes() {
 
-    }
+  }
 
-    public static List<String> getValidModelTypes() {
-        List<String> validTypes = new ArrayList<>();
-        validTypes.add(ConfigModelConstant.MODEL_DEFINITION_TYPE_DATA_TYPE);
-        validTypes.add(ConfigModelConstant.MODEL_DEFINITION_TYPE_NODE_TYPE);
-        validTypes.add(ConfigModelConstant.MODEL_DEFINITION_TYPE_CAPABILITY_TYPE);
-        validTypes.add(ConfigModelConstant.MODEL_DEFINITION_TYPE_RELATIONSHIP_TYPE);
-        return validTypes;
-    }
+  public static List<String> getValidModelTypes() {
+    List<String> validTypes = new ArrayList<>();
+    validTypes.add(ConfigModelConstant.MODEL_DEFINITION_TYPE_DATA_TYPE);
+    validTypes.add(ConfigModelConstant.MODEL_DEFINITION_TYPE_NODE_TYPE);
+    validTypes.add(ConfigModelConstant.MODEL_DEFINITION_TYPE_CAPABILITY_TYPE);
+    validTypes.add(ConfigModelConstant.MODEL_DEFINITION_TYPE_RELATIONSHIP_TYPE);
+    return validTypes;
+  }
 
-    public static List<String> getValidNodeTypes() {
-        List<String> validTypes = new ArrayList<>();
-        validTypes.add(ConfigModelConstant.MODEL_TYPE_NODE_DG);
-        validTypes.add(ConfigModelConstant.MODEL_TYPE_NODE_COMPONENT);
-        validTypes.add(ConfigModelConstant.MODEL_TYPE_NODE_VNF);
-        validTypes.add(ConfigModelConstant.MODEL_TYPE_NODE_ARTIFACT);
-        return validTypes;
-    }
+  public static List<String> getValidNodeTypes() {
+    List<String> validTypes = new ArrayList<>();
+    validTypes.add(ConfigModelConstant.MODEL_TYPE_NODE_DG);
+    validTypes.add(ConfigModelConstant.MODEL_TYPE_NODE_COMPONENT);
+    validTypes.add(ConfigModelConstant.MODEL_TYPE_NODE_VNF);
+    validTypes.add(ConfigModelConstant.MODEL_TYPE_NODE_ARTIFACT);
+    return validTypes;
+  }
 
-    public static List<String> getValidDerivedFrom() {
-        List<String> validTypes = new ArrayList<>();
-        validTypes.add(ConfigModelConstant.MODEL_TYPE_DATA_TYPE_DYNAMIC);
-        validTypes.add(ConfigModelConstant.MODEL_TYPE_DATA_TYPE);
-        validTypes.add(ConfigModelConstant.MODEL_TYPE_NODE_TYPE);
-        return validTypes;
-    }
+  public static List<String> getValidDerivedFrom() {
+    List<String> validTypes = new ArrayList<>();
+    validTypes.add(ConfigModelConstant.MODEL_TYPE_DATA_TYPE_DYNAMIC);
+    validTypes.add(ConfigModelConstant.MODEL_TYPE_DATA_TYPE);
+    validTypes.add(ConfigModelConstant.MODEL_TYPE_NODE_TYPE);
+    return validTypes;
+  }
 
-    public static List<String> getValidDataTypeDerivedFrom() {
-        List<String> validTypes = new ArrayList<>();
-        validTypes.add(ConfigModelConstant.MODEL_TYPE_DATA_TYPE_DYNAMIC);
-        validTypes.add(ConfigModelConstant.MODEL_TYPE_DATA_TYPE);
-        return validTypes;
-    }
+  public static List<String> getValidDataTypeDerivedFrom() {
+    List<String> validTypes = new ArrayList<>();
+    validTypes.add(ConfigModelConstant.MODEL_TYPE_DATA_TYPE_DYNAMIC);
+    validTypes.add(ConfigModelConstant.MODEL_TYPE_DATA_TYPE);
+    return validTypes;
+  }
 
-    public static List<String> getValidPropertType() {
-        List<String> validTypes = new ArrayList<>();
-        validTypes.add(DATA_TYPE_STRING);
-        validTypes.add(DATA_TYPE_INTEGER);
-        validTypes.add(DATA_TYPE_FLOAT);
-        validTypes.add(DATA_TYPE_BOOLEAN);
-        validTypes.add(DATA_TYPE_TIMESTAMP);
-        validTypes.add(DATA_TYPE_NULL);
-        validTypes.add(DATA_TYPE_LIST);
-        return validTypes;
-    }
+  public static List<String> getValidPropertType() {
+    List<String> validTypes = new ArrayList<>();
+    validTypes.add(DATA_TYPE_STRING);
+    validTypes.add(DATA_TYPE_INTEGER);
+    validTypes.add(DATA_TYPE_FLOAT);
+    validTypes.add(DATA_TYPE_BOOLEAN);
+    validTypes.add(DATA_TYPE_TIMESTAMP);
+    validTypes.add(DATA_TYPE_NULL);
+    validTypes.add(DATA_TYPE_LIST);
+    return validTypes;
+  }
 
-    public static List<String> getPrimitivePropertType() {
-        List<String> validTypes = new ArrayList<>();
-        validTypes.add(DATA_TYPE_STRING);
-        validTypes.add(DATA_TYPE_INTEGER);
-        validTypes.add(DATA_TYPE_FLOAT);
-        validTypes.add(DATA_TYPE_BOOLEAN);
-        validTypes.add(DATA_TYPE_TIMESTAMP);
-        validTypes.add(DATA_TYPE_NULL);
-        return validTypes;
-    }
+  public static List<String> getPrimitivePropertType() {
+    List<String> validTypes = new ArrayList<>();
+    validTypes.add(DATA_TYPE_STRING);
+    validTypes.add(DATA_TYPE_INTEGER);
+    validTypes.add(DATA_TYPE_FLOAT);
+    validTypes.add(DATA_TYPE_BOOLEAN);
+    validTypes.add(DATA_TYPE_TIMESTAMP);
+    validTypes.add(DATA_TYPE_NULL);
+    return validTypes;
+  }
 
-    public static List<String> getListPropertType() {
-        List<String> validTypes = new ArrayList<>();
-        validTypes.add(DATA_TYPE_LIST);
-        return validTypes;
-    }
+  public static List<String> getListPropertType() {
+    List<String> validTypes = new ArrayList<>();
+    validTypes.add(DATA_TYPE_LIST);
+    return validTypes;
+  }
 
 }

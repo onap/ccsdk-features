@@ -34,43 +34,41 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ExpressionUtilsTest {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ExpressionUtilsTest.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ExpressionUtilsTest.class);
 
-    @Test
-    public void testProcessJsonExpression() throws Exception {
-        String fileContent = FileUtils.readFileToString(new File("src/test/resources/properties/default.json"),
-                Charset.defaultCharset());
+  @Test
+  public void testProcessJsonExpression() throws Exception {
+    String fileContent =
+        FileUtils.readFileToString(new File("src/test/resources/properties/default.json"), Charset.defaultCharset());
 
-        SvcLogicContext context = new SvcLogicContext();
-        context.setAttribute("host-password", "1234");
-        context.setAttribute("host-ip-address", "[\"123.23.34.45\", \"123.23.34.45\"]");
-        context.setAttribute("loopback-default", "[\"Sample\", \"Brinda\"]");
+    SvcLogicContext context = new SvcLogicContext();
+    context.setAttribute("host-password", "1234");
+    context.setAttribute("host-ip-address", "[\"123.23.34.45\", \"123.23.34.45\"]");
+    context.setAttribute("loopback-default", "[\"Sample\", \"Brinda\"]");
 
-        Map<String, String> inparams = new HashMap<String, String>();
-        ExpressionUtils jsonExpressionUtils = new ExpressionUtils(context, inparams);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootArray = mapper.readTree(fileContent);
-        jsonExpressionUtils.processJsonExpression(rootArray);
+    Map<String, String> inparams = new HashMap<String, String>();
+    ExpressionUtils jsonExpressionUtils = new ExpressionUtils(context, inparams);
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode rootArray = mapper.readTree(fileContent);
+    jsonExpressionUtils.processJsonExpression(rootArray);
 
-    }
+  }
 
-    @Test
-    public void testJson2Property() throws Exception {
-        String fileContent = FileUtils.readFileToString(new File("src/test/resources/properties/convert.json"),
-                Charset.defaultCharset());
+  @Test
+  public void testJson2Property() throws Exception {
+    String fileContent =
+        FileUtils.readFileToString(new File("src/test/resources/properties/convert.json"), Charset.defaultCharset());
 
-        List<String> blockKeys = new ArrayList<String>();
-        blockKeys.add(
-                "interfaces.ResourceAssignmentService.operations.getResourceAssignment.inputs.assignment-mappings");
-        blockKeys.add("interfaces.ResourceAssignmentService.operations.getResourceAssignment.outputs");
-        blockKeys.add("type");
+    List<String> blockKeys = new ArrayList<String>();
+    blockKeys.add("interfaces.ResourceAssignmentService.operations.getResourceAssignment.inputs.assignment-mappings");
+    blockKeys.add("interfaces.ResourceAssignmentService.operations.getResourceAssignment.outputs");
+    blockKeys.add("type");
 
-        Map<String, String> workflowMap = new HashMap<>();
-        Map<String, String> propertyMap =
-                TransformationUtils.convertJson2Properties(workflowMap, fileContent, blockKeys);
+    Map<String, String> workflowMap = new HashMap<>();
+    Map<String, String> propertyMap = TransformationUtils.convertJson2Properties(workflowMap, fileContent, blockKeys);
 
-        TransformationUtils.printMap(propertyMap);
+    TransformationUtils.printMap(propertyMap);
 
-    }
+  }
 
 }

@@ -25,32 +25,32 @@ import java.util.Map;
  * @version 1.0
  */
 public class RelationshipTemplate {
-    private String description;
-    private String type;
-    private Map<String, PropertyDefinition> properties;
+  private String description;
+  private String type;
+  private Map<String, PropertyDefinition> properties;
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public Map<String, PropertyDefinition> getProperties() {
-        return properties;
-    }
+  public Map<String, PropertyDefinition> getProperties() {
+    return properties;
+  }
 
-    public void setProperties(Map<String, PropertyDefinition> properties) {
-        this.properties = properties;
-    }
+  public void setProperties(Map<String, PropertyDefinition> properties) {
+    this.properties = properties;
+  }
 
 }

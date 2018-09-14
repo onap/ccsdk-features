@@ -26,24 +26,24 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @version 1.0
  */
 public class Implementation {
-    @JsonIgnore
-    private String primary;
-    private List<String> dependencies;
+  @JsonIgnore
+  private String primary;
+  private List<String> dependencies;
 
-    public String getPrimary() {
-        return primary;
-    }
+  public String getPrimary() {
+    return primary;
+  }
 
-    public void setPrimary(String primary) {
-        this.primary = primary;
-    }
+  public void setPrimary(String primary) {
+    this.primary = primary;
+  }
 
-    public List<String> getDependencies() {
-        return dependencies;
-    }
+  public List<String> getDependencies() {
+    return dependencies;
+  }
 
-    public void setDependencies(List<String> dependencies) {
-        this.dependencies = dependencies;
-    }
+  public void setDependencies(List<String> dependencies) {
+    this.dependencies = dependencies;
+  }
 
 }

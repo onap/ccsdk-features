@@ -29,7 +29,6 @@ import org.onap.ccsdk.features.model.data.PropertyDefinition;
 import org.onap.ccsdk.features.model.data.RequirementAssignment;
 import org.onap.ccsdk.features.model.data.ServiceTemplate;
 import org.onap.ccsdk.features.model.data.TopologyTemplate;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
@@ -39,166 +38,165 @@ import com.att.eelf.configuration.EELFManager;
  * @version 1.0
  */
 public class TopologyTemplateValidator {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(TopologyTemplateValidator.class);
-    private StringBuilder message;
-    private Map<String, DataType> stDataTypes;
-    private Map<String, NodeType> stNodeTypes;
-    private Map<String, NodeTemplate> stNodeTemplates;
-    private ServiceTemplate serviceTemplate;
-    private PropertyDefinitionValidator propertyDefinitionValidator;
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(TopologyTemplateValidator.class);
+  private StringBuilder message;
+  private Map<String, DataType> stDataTypes;
+  private Map<String, NodeType> stNodeTypes;
+  private Map<String, NodeTemplate> stNodeTemplates;
+  private ServiceTemplate serviceTemplate;
+  private PropertyDefinitionValidator propertyDefinitionValidator;
 
-    /**
-     * This is a TopologyTemplateValidator
-     *
-     * @param serviceTemplate
-     * @throws ConfigModelException
-     */
-    public TopologyTemplateValidator(ServiceTemplate serviceTemplate, StringBuilder message) {
-        this.serviceTemplate = serviceTemplate;
-        this.message = message;
-        propertyDefinitionValidator = new PropertyDefinitionValidator(this.message);
-        stDataTypes = new HashMap<>();
-        stNodeTypes = new HashMap<>();
-        stNodeTemplates = new HashMap<>();
-        loadInitial();
+  /**
+   * This is a TopologyTemplateValidator
+   *
+   * @param serviceTemplate
+   * @throws ConfigModelException
+   */
+  public TopologyTemplateValidator(ServiceTemplate serviceTemplate, StringBuilder message) {
+    this.serviceTemplate = serviceTemplate;
+    this.message = message;
+    propertyDefinitionValidator = new PropertyDefinitionValidator(this.message);
+    stDataTypes = new HashMap<>();
+    stNodeTypes = new HashMap<>();
+    stNodeTemplates = new HashMap<>();
+    loadInitial();
+  }
+
+  private void loadInitial() {
+    if (serviceTemplate != null) {
+
+      if (serviceTemplate.getDataTypes() != null) {
+        serviceTemplate.getDataTypes().forEach((dataTypeKey, dataType) -> {
+          stDataTypes.put(dataTypeKey, dataType);
+          logger.trace("Data Type ({}) loaded successfully.", dataTypeKey);
+        });
+      }
+
+      if (serviceTemplate.getNodeTypes() != null) {
+        serviceTemplate.getNodeTypes().forEach((nodeTypeKey, nodeType) -> {
+          stNodeTypes.put(nodeTypeKey, nodeType);
+          logger.trace("Node Type ({}) loaded successfully.", nodeTypeKey);
+        });
+      }
+
+      if (serviceTemplate.getTopologyTemplate() != null) {
+        TopologyTemplate topologyTemplate = serviceTemplate.getTopologyTemplate();
+
+        if (topologyTemplate.getNodeTemplates() != null) {
+          topologyTemplate.getNodeTemplates().forEach((nodeTemplateKey, nodeTemplate) -> {
+            stNodeTemplates.put(nodeTemplateKey, nodeTemplate);
+            logger.trace("Node Template ({}) Type loaded successfully.", nodeTemplateKey);
+          });
+        }
+      }
     }
 
-    private void loadInitial() {
-        if (serviceTemplate != null) {
+  }
 
-            if (serviceTemplate.getDataTypes() != null) {
-                serviceTemplate.getDataTypes().forEach((dataTypeKey, dataType) -> {
-                    stDataTypes.put(dataTypeKey, dataType);
-                    logger.trace("Data Type ({}) loaded successfully.", dataTypeKey);
-                });
+  /**
+   * This is a validateTopologyTemplate to validate the Topology Template
+   *
+   * @return boolean
+   * @throws ConfigModelException
+   */
+  public boolean validateTopologyTemplate() {
+    if (serviceTemplate != null && serviceTemplate.getTopologyTemplate() != null) {
+
+      checkValidInputProperties(serviceTemplate.getTopologyTemplate().getInputs());
+
+      validateNodeTemplates(serviceTemplate.getTopologyTemplate().getNodeTemplates());
+    }
+    return true;
+  }
+
+  private boolean checkValidInputProperties(Map<String, PropertyDefinition> properties) {
+    if (properties != null) {
+      message.append("\n Validation topology template input properties :");
+      propertyDefinitionValidator.validatePropertyDefinition(stDataTypes, properties);
+    }
+    return true;
+  }
+
+  @SuppressWarnings({"squid:S00112", "squid:S3776"})
+  private boolean validateNodeTemplates(Map<String, NodeTemplate> nodeTemplates) {
+    if (nodeTemplates != null) {
+      nodeTemplates.forEach((nodeTemplateKey, nodeTemplate) -> {
+        if (nodeTemplate != null) {
+          message.append(
+              "\n ##### Validation Node Template  (" + nodeTemplateKey + "), of type (" + nodeTemplate.getType() + ")");
+
+          String nodeTypeName = nodeTemplate.getType();
+          if (!stNodeTypes.containsKey(nodeTypeName)) {
+            throw new RuntimeException("Node Type (" + nodeTypeName + ")not Defined.");
+          }
+
+          if (nodeTemplate.getRequirements() != null) {
+            validateNodeTemplateRequirement(nodeTemplate.getRequirements());
+          }
+
+          // Validate Resource Assignments
+          NodeType nodeType = stNodeTypes.get(nodeTypeName);
+          if (nodeType != null && ConfigModelConstant.MODEL_TYPE_NODE_ARTIFACT.equals(nodeType.getDerivedFrom())) {
+            logger.info("Validating Resource Assignment NodeTemplate ({}).", nodeTemplateKey);
+            ResourceAssignmentValidator resourceAssignmentValidator;
+            try {
+              resourceAssignmentValidator = new ResourceAssignmentValidator(nodeTemplate);
+              resourceAssignmentValidator.validateResourceAssignment();
+            } catch (ConfigModelException e) {
+              throw new RuntimeException(e);
             }
 
-            if (serviceTemplate.getNodeTypes() != null) {
-                serviceTemplate.getNodeTypes().forEach((nodeTypeKey, nodeType) -> {
-                    stNodeTypes.put(nodeTypeKey, nodeType);
-                    logger.trace("Node Type ({}) loaded successfully.", nodeTypeKey);
-                });
-            }
-
-            if (serviceTemplate.getTopologyTemplate() != null) {
-                TopologyTemplate topologyTemplate = serviceTemplate.getTopologyTemplate();
-
-                if (topologyTemplate.getNodeTemplates() != null) {
-                    topologyTemplate.getNodeTemplates().forEach((nodeTemplateKey, nodeTemplate) -> {
-                        stNodeTemplates.put(nodeTemplateKey, nodeTemplate);
-                        logger.trace("Node Template ({}) Type loaded successfully.", nodeTemplateKey);
-                    });
-                }
-            }
+          }
         }
+      });
+    }
+    return true;
+  }
+
+  @SuppressWarnings("squid:S00112")
+  private boolean validateNodeTemplateRequirement(Map<String, RequirementAssignment> requirements) {
+    if (requirements != null) {
+      requirements.forEach((requirementKey, requirement) -> {
+        if (requirement != null) {
+          String requirementnodeTypeName = requirement.getNode();
+          String capabilityName = requirement.getCapability();
+          try {
+            checkCapabilityPresentInNodeTemplate(requirementnodeTypeName, capabilityName);
+          } catch (ConfigModelException e) {
+            throw new RuntimeException(e);
+          }
+        }
+      });
+    }
+    return true;
+  }
+
+  private boolean checkCapabilityPresentInNodeTemplate(String nodeTemplateName, String capabilityName)
+      throws ConfigModelException {
+    if (StringUtils.isNotBlank(nodeTemplateName) && StringUtils.isNotBlank(capabilityName)) {
+
+      if (!stNodeTemplates.containsKey(nodeTemplateName)) {
+        throw new ConfigModelException(nodeTemplateName + " Node Template not Defined.");
+      } else {
+        message.append("\n Node Template (" + nodeTemplateName + ") Defined.");
+      }
+
+      NodeTemplate relationalNodeType = stNodeTemplates.get(nodeTemplateName);
+
+      if (relationalNodeType.getCapabilities() == null) {
+        throw new ConfigModelException(
+            "Node Template (" + nodeTemplateName + "), doesn't have Capability Definitions.");
+      }
+
+      if (!relationalNodeType.getCapabilities().containsKey(capabilityName)) {
+        throw new ConfigModelException(
+            "Node Type (" + nodeTemplateName + ") doesn't have  (" + capabilityName + ") Capability Definitions.");
+      } else {
+        message
+            .append("\n Node Template (" + nodeTemplateName + ") has (" + capabilityName + ") Capability Definitions.");
+      }
 
     }
-
-    /**
-     * This is a validateTopologyTemplate to validate the Topology Template
-     *
-     * @return boolean
-     * @throws ConfigModelException
-     */
-    public boolean validateTopologyTemplate() {
-        if (serviceTemplate != null && serviceTemplate.getTopologyTemplate() != null) {
-
-            checkValidInputProperties(serviceTemplate.getTopologyTemplate().getInputs());
-
-            validateNodeTemplates(serviceTemplate.getTopologyTemplate().getNodeTemplates());
-        }
-        return true;
-    }
-
-    private boolean checkValidInputProperties(Map<String, PropertyDefinition> properties) {
-        if (properties != null) {
-            message.append("\n Validation topology template input properties :");
-            propertyDefinitionValidator.validatePropertyDefinition(stDataTypes, properties);
-        }
-        return true;
-    }
-
-    @SuppressWarnings({"squid:S00112", "squid:S3776"})
-    private boolean validateNodeTemplates(Map<String, NodeTemplate> nodeTemplates) {
-        if (nodeTemplates != null) {
-            nodeTemplates.forEach((nodeTemplateKey, nodeTemplate) -> {
-                if (nodeTemplate != null) {
-                    message.append("\n ##### Validation Node Template  (" + nodeTemplateKey + "), of type ("
-                            + nodeTemplate.getType() + ")");
-
-                    String nodeTypeName = nodeTemplate.getType();
-                    if (!stNodeTypes.containsKey(nodeTypeName)) {
-                        throw new RuntimeException("Node Type (" + nodeTypeName + ")not Defined.");
-                    }
-
-                    if (nodeTemplate.getRequirements() != null) {
-                        validateNodeTemplateRequirement(nodeTemplate.getRequirements());
-                    }
-
-                    // Validate Resource Assignments
-                    NodeType nodeType = stNodeTypes.get(nodeTypeName);
-                    if (nodeType != null
-                            && ConfigModelConstant.MODEL_TYPE_NODE_ARTIFACT.equals(nodeType.getDerivedFrom())) {
-                        logger.info("Validating Resource Assignment NodeTemplate ({}).", nodeTemplateKey);
-                        ResourceAssignmentValidator resourceAssignmentValidator;
-                        try {
-                            resourceAssignmentValidator = new ResourceAssignmentValidator(nodeTemplate);
-                            resourceAssignmentValidator.validateResourceAssignment();
-                        } catch (ConfigModelException e) {
-                            throw new RuntimeException(e);
-                        }
-
-                    }
-                }
-            });
-        }
-        return true;
-    }
-
-    @SuppressWarnings("squid:S00112")
-    private boolean validateNodeTemplateRequirement(Map<String, RequirementAssignment> requirements) {
-        if (requirements != null) {
-            requirements.forEach((requirementKey, requirement) -> {
-                if (requirement != null) {
-                    String requirementnodeTypeName = requirement.getNode();
-                    String capabilityName = requirement.getCapability();
-                    try {
-                        checkCapabilityPresentInNodeTemplate(requirementnodeTypeName, capabilityName);
-                    } catch (ConfigModelException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-        }
-        return true;
-    }
-
-    private boolean checkCapabilityPresentInNodeTemplate(String nodeTemplateName, String capabilityName)
-            throws ConfigModelException {
-        if (StringUtils.isNotBlank(nodeTemplateName) && StringUtils.isNotBlank(capabilityName)) {
-
-            if (!stNodeTemplates.containsKey(nodeTemplateName)) {
-                throw new ConfigModelException(nodeTemplateName + " Node Template not Defined.");
-            } else {
-                message.append("\n Node Template (" + nodeTemplateName + ") Defined.");
-            }
-
-            NodeTemplate relationalNodeType = stNodeTemplates.get(nodeTemplateName);
-
-            if (relationalNodeType.getCapabilities() == null) {
-                throw new ConfigModelException(
-                        "Node Template (" + nodeTemplateName + "), doesn't have Capability Definitions.");
-            }
-
-            if (!relationalNodeType.getCapabilities().containsKey(capabilityName)) {
-                throw new ConfigModelException("Node Type (" + nodeTemplateName + ") doesn't have  (" + capabilityName
-                        + ") Capability Definitions.");
-            } else {
-                message.append("\n Node Template (" + nodeTemplateName + ") has (" + capabilityName
-                        + ") Capability Definitions.");
-            }
-
-        }
-        return true;
-    }
+    return true;
+  }
 }

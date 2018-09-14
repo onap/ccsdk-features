@@ -18,23 +18,23 @@
 package org.onap.ccsdk.features.model.data.api;
 
 public class Flags {
-    private boolean force;
-    private Integer ttl;
+  private boolean force;
+  private Integer ttl;
 
-    public boolean isForce() {
-        return force;
-    }
+  public boolean isForce() {
+    return force;
+  }
 
-    public void setForce(boolean force) {
-        this.force = force;
-    }
+  public void setForce(boolean force) {
+    this.force = force;
+  }
 
-    public Integer getTtl() {
-        return ttl;
-    }
+  public Integer getTtl() {
+    return ttl;
+  }
 
-    public void setTtl(Integer ttl) {
-        this.ttl = ttl;
-    }
+  public void setTtl(Integer ttl) {
+    this.ttl = ttl;
+  }
 
 }

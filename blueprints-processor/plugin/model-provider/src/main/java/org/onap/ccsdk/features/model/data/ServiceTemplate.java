@@ -27,92 +27,92 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @version 1.0
  */
 public class ServiceTemplate {
-    @JsonIgnore
-    private String id;
-    @JsonProperty("tosca_definitions_version")
-    private String toscaDefinitionsVersion;
-    private Map<String, String> metadata;
-    private String description;
-    @JsonProperty("dsl_definitions")
-    private Map<String, Object> dslDefinitions;
-    @JsonProperty("topology_template")
-    private TopologyTemplate topologyTemplate;
-    @JsonProperty("artifact_types")
-    private Map<String, ArtifactType> artifactTypes;
-    @JsonProperty("node_types")
-    private Map<String, NodeType> nodeTypes;
-    @JsonProperty("data_types")
-    private Map<String, DataType> dataTypes;
+  @JsonIgnore
+  private String id;
+  @JsonProperty("tosca_definitions_version")
+  private String toscaDefinitionsVersion;
+  private Map<String, String> metadata;
+  private String description;
+  @JsonProperty("dsl_definitions")
+  private Map<String, Object> dslDefinitions;
+  @JsonProperty("topology_template")
+  private TopologyTemplate topologyTemplate;
+  @JsonProperty("artifact_types")
+  private Map<String, ArtifactType> artifactTypes;
+  @JsonProperty("node_types")
+  private Map<String, NodeType> nodeTypes;
+  @JsonProperty("data_types")
+  private Map<String, DataType> dataTypes;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getToscaDefinitionsVersion() {
-        return toscaDefinitionsVersion;
-    }
+  public String getToscaDefinitionsVersion() {
+    return toscaDefinitionsVersion;
+  }
 
-    public void setToscaDefinitionsVersion(String toscaDefinitionsVersion) {
-        this.toscaDefinitionsVersion = toscaDefinitionsVersion;
-    }
+  public void setToscaDefinitionsVersion(String toscaDefinitionsVersion) {
+    this.toscaDefinitionsVersion = toscaDefinitionsVersion;
+  }
 
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
+  public Map<String, String> getMetadata() {
+    return metadata;
+  }
 
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
+  public void setMetadata(Map<String, String> metadata) {
+    this.metadata = metadata;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public Map<String, Object> getDslDefinitions() {
-        return dslDefinitions;
-    }
+  public Map<String, Object> getDslDefinitions() {
+    return dslDefinitions;
+  }
 
-    public void setDslDefinitions(Map<String, Object> dslDefinitions) {
-        this.dslDefinitions = dslDefinitions;
-    }
+  public void setDslDefinitions(Map<String, Object> dslDefinitions) {
+    this.dslDefinitions = dslDefinitions;
+  }
 
-    public TopologyTemplate getTopologyTemplate() {
-        return topologyTemplate;
-    }
+  public TopologyTemplate getTopologyTemplate() {
+    return topologyTemplate;
+  }
 
-    public void setTopologyTemplate(TopologyTemplate topologyTemplate) {
-        this.topologyTemplate = topologyTemplate;
-    }
+  public void setTopologyTemplate(TopologyTemplate topologyTemplate) {
+    this.topologyTemplate = topologyTemplate;
+  }
 
-    public Map<String, NodeType> getNodeTypes() {
-        return nodeTypes;
-    }
+  public Map<String, NodeType> getNodeTypes() {
+    return nodeTypes;
+  }
 
-    public void setNodeTypes(Map<String, NodeType> nodeTypes) {
-        this.nodeTypes = nodeTypes;
-    }
+  public void setNodeTypes(Map<String, NodeType> nodeTypes) {
+    this.nodeTypes = nodeTypes;
+  }
 
-    public Map<String, DataType> getDataTypes() {
-        return dataTypes;
-    }
+  public Map<String, DataType> getDataTypes() {
+    return dataTypes;
+  }
 
-    public void setDataTypes(Map<String, DataType> dataTypes) {
-        this.dataTypes = dataTypes;
-    }
+  public void setDataTypes(Map<String, DataType> dataTypes) {
+    this.dataTypes = dataTypes;
+  }
 
-    public Map<String, ArtifactType> getArtifactTypes() {
-        return artifactTypes;
-    }
+  public Map<String, ArtifactType> getArtifactTypes() {
+    return artifactTypes;
+  }
 
-    public void setArtifactTypes(Map<String, ArtifactType> artifactTypes) {
-        this.artifactTypes = artifactTypes;
-    }
+  public void setArtifactTypes(Map<String, ArtifactType> artifactTypes) {
+    this.artifactTypes = artifactTypes;
+  }
 }

@@ -26,51 +26,51 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @version 1.0
  */
 public class OperationDefinition {
-    @JsonIgnore
-    private String id;
-    private String description;
-    private Implementation implementation;
-    private Map<String, PropertyDefinition> inputs;
-    private Map<String, PropertyDefinition> outputs;
+  @JsonIgnore
+  private String id;
+  private String description;
+  private Implementation implementation;
+  private Map<String, PropertyDefinition> inputs;
+  private Map<String, PropertyDefinition> outputs;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public Implementation getImplementation() {
-        return implementation;
-    }
+  public Implementation getImplementation() {
+    return implementation;
+  }
 
-    public void setImplementation(Implementation implementation) {
-        this.implementation = implementation;
-    }
+  public void setImplementation(Implementation implementation) {
+    this.implementation = implementation;
+  }
 
-    public Map<String, PropertyDefinition> getInputs() {
-        return inputs;
-    }
+  public Map<String, PropertyDefinition> getInputs() {
+    return inputs;
+  }
 
-    public void setInputs(Map<String, PropertyDefinition> inputs) {
-        this.inputs = inputs;
-    }
+  public void setInputs(Map<String, PropertyDefinition> inputs) {
+    this.inputs = inputs;
+  }
 
-    public Map<String, PropertyDefinition> getOutputs() {
-        return outputs;
-    }
+  public Map<String, PropertyDefinition> getOutputs() {
+    return outputs;
+  }
 
-    public void setOutputs(Map<String, PropertyDefinition> outputs) {
-        this.outputs = outputs;
-    }
+  public void setOutputs(Map<String, PropertyDefinition> outputs) {
+    this.outputs = outputs;
+  }
 
 }

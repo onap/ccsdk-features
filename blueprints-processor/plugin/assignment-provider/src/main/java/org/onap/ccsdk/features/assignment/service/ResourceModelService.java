@@ -32,66 +32,65 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class ResourceModelService {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceModelService.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ResourceModelService.class);
 
-    private ConfigModelService configModelService;
+  private ConfigModelService configModelService;
 
-    public ResourceModelService(ConfigModelService configModelService) {
-        this.configModelService = configModelService;
-    }
+  public ResourceModelService(ConfigModelService configModelService) {
+    this.configModelService = configModelService;
+  }
 
-    public Map<String, String> getTemplatesContents(SvcLogicContext ctx, List<String> templateNames)
-            throws SvcLogicException {
-        Map<String, String> templatesContents = new HashMap<>();
-        try {
-            if (CollectionUtils.isNotEmpty(templateNames)) {
-                for (String templateName : templateNames) {
-                    String templateContent = this.configModelService.getNodeTemplateContent(ctx, templateName);
-                    logger.trace("Processing template ({}) with  content : {}", templateName, templateContent);
-                    templatesContents.put(templateName, templateContent);
-                }
-            }
-        } catch (Exception e) {
-            throw new SvcLogicException(e.getMessage());
+  public Map<String, String> getTemplatesContents(SvcLogicContext ctx, List<String> templateNames)
+      throws SvcLogicException {
+    Map<String, String> templatesContents = new HashMap<>();
+    try {
+      if (CollectionUtils.isNotEmpty(templateNames)) {
+        for (String templateName : templateNames) {
+          String templateContent = this.configModelService.getNodeTemplateContent(ctx, templateName);
+          logger.trace("Processing template ({}) with  content : {}", templateName, templateContent);
+          templatesContents.put(templateName, templateContent);
         }
-        return templatesContents;
+      }
+    } catch (Exception e) {
+      throw new SvcLogicException(e.getMessage());
     }
+    return templatesContents;
+  }
 
-    public Map<String, List<ResourceAssignment>> getTemplatesResourceAssignments(SvcLogicContext ctx,
-            List<String> templateNames) throws SvcLogicException {
-        Map<String, List<ResourceAssignment>> templatesResourceAssignments = new HashMap<>();
-        try {
-            if (CollectionUtils.isNotEmpty(templateNames)) {
-                for (String templateName : templateNames) {
-                    String resourceMappingContent = this.configModelService.getNodeTemplateMapping(ctx, templateName);
-                    logger.info("Processing template ({}) with resource assignment content : {}", templateName,
-                            resourceMappingContent);
+  public Map<String, List<ResourceAssignment>> getTemplatesResourceAssignments(SvcLogicContext ctx,
+      List<String> templateNames) throws SvcLogicException {
+    Map<String, List<ResourceAssignment>> templatesResourceAssignments = new HashMap<>();
+    try {
+      if (CollectionUtils.isNotEmpty(templateNames)) {
+        for (String templateName : templateNames) {
+          String resourceMappingContent = this.configModelService.getNodeTemplateMapping(ctx, templateName);
+          logger.info("Processing template ({}) with resource assignment content : {}", templateName,
+              resourceMappingContent);
 
-                    if (StringUtils.isNotBlank(resourceMappingContent)) {
+          if (StringUtils.isNotBlank(resourceMappingContent)) {
 
-                        List<ResourceAssignment> resourceAssignments =
-                                TransformationUtils.getListfromJson(resourceMappingContent, ResourceAssignment.class);
+            List<ResourceAssignment> resourceAssignments =
+                TransformationUtils.getListfromJson(resourceMappingContent, ResourceAssignment.class);
 
-                        if (resourceAssignments != null) {
-                            ResourceAssignmentValidator resourceAssignmentValidator =
-                                    new ResourceAssignmentValidator(resourceAssignments);
-                            resourceAssignmentValidator.validateResourceAssignment();
-                            logger.info("Resource assignment validated successfully for the template ({})",
-                                    templateName);
-                            templatesResourceAssignments.put(templateName, resourceAssignments);
-                        } else {
-                            throw new SvcLogicException(String.format(
-                                    "Failed to convert assignment content (%s) to object", resourceMappingContent));
-                        }
-                    } else {
-                        // Do nothing, because som e templates may not have mappings
-                    }
-                }
+            if (resourceAssignments != null) {
+              ResourceAssignmentValidator resourceAssignmentValidator =
+                  new ResourceAssignmentValidator(resourceAssignments);
+              resourceAssignmentValidator.validateResourceAssignment();
+              logger.info("Resource assignment validated successfully for the template ({})", templateName);
+              templatesResourceAssignments.put(templateName, resourceAssignments);
+            } else {
+              throw new SvcLogicException(
+                  String.format("Failed to convert assignment content (%s) to object", resourceMappingContent));
             }
-        } catch (Exception e) {
-            throw new SvcLogicException(e.getMessage());
+          } else {
+            // Do nothing, because som e templates may not have mappings
+          }
         }
-
-        return templatesResourceAssignments;
+      }
+    } catch (Exception e) {
+      throw new SvcLogicException(e.getMessage());
     }
+
+    return templatesResourceAssignments;
+  }
 }

@@ -21,29 +21,29 @@ import java.nio.charset.Charset;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.onap.ccsdk.features.model.validator.ServiceTemplateValidator;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class ServiceTemplateValidationTest {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ServiceTemplateValidationTest.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ServiceTemplateValidationTest.class);
 
-    @Test
-    public void validateServiceTemplate() {
-        try {
-            logger.info(" **************** Validating Default *****************");
-            String serviceTemplateContent = IOUtils.toString(ServiceTemplateValidationTest.class.getClassLoader()
-                    .getResourceAsStream("service_templates/default.json"), Charset.defaultCharset());
-            ServiceTemplateValidator serviceTemplateValidator = new ServiceTemplateValidator();
-            serviceTemplateValidator.validateServiceTemplate(serviceTemplateContent);
-            logger.info(" **************** Reqource Assignment *****************");
-            serviceTemplateContent = IOUtils.toString(ServiceTemplateValidationTest.class.getClassLoader()
-                    .getResourceAsStream("service_templates/resource_assignment.json"), Charset.defaultCharset());
-            serviceTemplateValidator.validateServiceTemplate(serviceTemplateContent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+  @Test
+  public void validateServiceTemplate() {
+    try {
+      logger.info(" **************** Validating Default *****************");
+      String serviceTemplateContent = IOUtils.toString(
+          ServiceTemplateValidationTest.class.getClassLoader().getResourceAsStream("service_templates/default.json"),
+          Charset.defaultCharset());
+      ServiceTemplateValidator serviceTemplateValidator = new ServiceTemplateValidator();
+      serviceTemplateValidator.validateServiceTemplate(serviceTemplateContent);
+      logger.info(" **************** Reqource Assignment *****************");
+      serviceTemplateContent = IOUtils.toString(ServiceTemplateValidationTest.class.getClassLoader()
+          .getResourceAsStream("service_templates/resource_assignment.json"), Charset.defaultCharset());
+      serviceTemplateValidator.validateServiceTemplate(serviceTemplateContent);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+
+  }
 
 }

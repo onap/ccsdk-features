@@ -23,10 +23,10 @@ import org.onap.ccsdk.sli.core.sli.SvcLogicException;
 
 public interface ComponentNodeService {
 
-    public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException;
+  public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException;
 
-    public ComponentNode getComponentNodeInterface(String pluginName, String componentType) throws SvcLogicException;
+  public ComponentNode getComponentNodeInterface(String pluginName, String componentType) throws SvcLogicException;
 
-    public ComponentNode getComponentNode(SvcLogicContext ctx, String selectorName) throws SvcLogicException;
+  public ComponentNode getComponentNode(SvcLogicContext ctx, String selectorName) throws SvcLogicException;
 }

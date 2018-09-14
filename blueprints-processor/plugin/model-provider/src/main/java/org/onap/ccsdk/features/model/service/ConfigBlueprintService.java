@@ -33,68 +33,67 @@ import com.att.eelf.configuration.EELFManager;
 
 public class ConfigBlueprintService {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigBlueprintService.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigBlueprintService.class);
 
-    private final ConfigRestAdaptorService configRestAdaptorService;
+  private final ConfigRestAdaptorService configRestAdaptorService;
 
-    public ConfigBlueprintService(ConfigRestAdaptorService configRestAdaptorService) {
-        this.configRestAdaptorService = configRestAdaptorService;
+  public ConfigBlueprintService(ConfigRestAdaptorService configRestAdaptorService) {
+    this.configRestAdaptorService = configRestAdaptorService;
+  }
+
+  public Map<String, String> prepareContext(Map<String, String> context, String input, String serviceTemplateName,
+      String serviceTemplateVersion) throws SvcLogicException {
+    try {
+      PrepareContextUtils prepareContextUtils = new PrepareContextUtils();
+      String serviceTemplateContent = getServiceModel(context, serviceTemplateName, serviceTemplateVersion);
+
+      if (StringUtils.isBlank(serviceTemplateContent)) {
+        throw new SvcLogicException(String.format("Failed to get the Service Template (%s), version (%s)",
+            serviceTemplateName, serviceTemplateVersion));
+      }
+
+      return prepareContextUtils.prepareContext(context, input, serviceTemplateContent);
+    } catch (Exception e) {
+      throw new SvcLogicException(e.getMessage(), e);
     }
+  }
 
-    public Map<String, String> prepareContext(Map<String, String> context, String input, String serviceTemplateName,
-            String serviceTemplateVersion) throws SvcLogicException {
-        try {
-            PrepareContextUtils prepareContextUtils = new PrepareContextUtils();
-            String serviceTemplateContent = getServiceModel(context, serviceTemplateName, serviceTemplateVersion);
+  @SuppressWarnings("squid:S3776")
+  private String getServiceModel(Map<String, String> context, String serviceTemplateName, String serviceTemplateVersion)
+      throws SvcLogicException, ConfigRestAdaptorException {
+    String content = null;
 
-            if (StringUtils.isBlank(serviceTemplateContent)) {
-                throw new SvcLogicException(String.format("Failed to get the Service Template (%s), version (%s)",
-                        serviceTemplateName, serviceTemplateVersion));
-            }
+    logger.info("Getting service template ({}) of version ({}) ", serviceTemplateName, serviceTemplateVersion);
 
-            return prepareContextUtils.prepareContext(context, input, serviceTemplateContent);
-        } catch (Exception e) {
-            throw new SvcLogicException(e.getMessage(), e);
+    String path = "configmodelbyname/" + serviceTemplateName + "/version/" + serviceTemplateVersion;
+
+    ConfigModel configModel = configRestAdaptorService.getResource(ConfigRestAdaptorConstants.SELECTOR_MODEL_SERVICE,
+        path, ConfigModel.class);
+
+    if (configModel == null || configModel.getConfigModelContents() == null
+        || configModel.getConfigModelContents().isEmpty()) {
+      throw new SvcLogicException("Service template model is missing for  service template name (" + serviceTemplateName
+          + "), service template version (" + serviceTemplateVersion + ") ");
+    } else {
+      if (configModel.getPublished() == null || !configModel.getPublished().equalsIgnoreCase("Y")) {
+        throw new SvcLogicException(
+            String.format("Service template model is not published for service template (%s) ", serviceTemplateName));
+      }
+
+      List<ConfigModelContent> configModelContents = configModel.getConfigModelContents();
+      for (ConfigModelContent configModelContent : configModelContents) {
+        if (configModelContent != null) {
+          if (ConfigModelConstant.MODEL_CONTENT_TYPE_TOSCA_JSON.equals(configModelContent.getContentType())) {
+            content = configModelContent.getContent();
+          } else if (ConfigModelConstant.MODEL_CONTENT_TYPE_TEMPLATE.equals(configModelContent.getContentType())) {
+            context.put(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + configModelContent.getName() + ".content",
+                configModelContent.getContent());
+          }
         }
+      }
+      logger.trace("Service model data : {} ", content);
     }
-
-    @SuppressWarnings("squid:S3776")
-    private String getServiceModel(Map<String, String> context, String serviceTemplateName,
-            String serviceTemplateVersion) throws SvcLogicException, ConfigRestAdaptorException {
-        String content = null;
-
-        logger.info("Getting service template ({}) of version ({}) ", serviceTemplateName, serviceTemplateVersion);
-
-        String path = "configmodelbyname/" + serviceTemplateName + "/version/" + serviceTemplateVersion;
-
-        ConfigModel configModel = configRestAdaptorService
-                .getResource(ConfigRestAdaptorConstants.SELECTOR_MODEL_SERVICE, path, ConfigModel.class);
-
-        if (configModel == null || configModel.getConfigModelContents() == null
-                || configModel.getConfigModelContents().isEmpty()) {
-            throw new SvcLogicException("Service template model is missing for  service template name ("
-                    + serviceTemplateName + "), service template version (" + serviceTemplateVersion + ") ");
-        } else {
-            if (configModel.getPublished() == null || !configModel.getPublished().equalsIgnoreCase("Y")) {
-                throw new SvcLogicException(String.format(
-                        "Service template model is not published for service template (%s) ", serviceTemplateName));
-            }
-
-            List<ConfigModelContent> configModelContents = configModel.getConfigModelContents();
-            for (ConfigModelContent configModelContent : configModelContents) {
-                if (configModelContent != null) {
-                    if (ConfigModelConstant.MODEL_CONTENT_TYPE_TOSCA_JSON.equals(configModelContent.getContentType())) {
-                        content = configModelContent.getContent();
-                    } else if (ConfigModelConstant.MODEL_CONTENT_TYPE_TEMPLATE
-                            .equals(configModelContent.getContentType())) {
-                        context.put(ConfigModelConstant.PROPERTY_NODE_TEMPLATES_DOT + configModelContent.getName()
-                                + ".content", configModelContent.getContent());
-                    }
-                }
-            }
-            logger.trace("Service model data : {} ", content);
-        }
-        return content;
-    }
+    return content;
+  }
 
 }

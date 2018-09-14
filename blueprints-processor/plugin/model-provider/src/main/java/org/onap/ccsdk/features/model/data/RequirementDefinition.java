@@ -26,60 +26,60 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @version 1.0
  */
 public class RequirementDefinition {
-    @JsonIgnore
-    private String id;
-    private String description;
-    private String capability;
-    private String node;
-    private String relationship;
-    private List<Object> occurrences;
+  @JsonIgnore
+  private String id;
+  private String description;
+  private String capability;
+  private String node;
+  private String relationship;
+  private List<Object> occurrences;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getCapability() {
-        return capability;
-    }
+  public String getCapability() {
+    return capability;
+  }
 
-    public void setCapability(String capability) {
-        this.capability = capability;
-    }
+  public void setCapability(String capability) {
+    this.capability = capability;
+  }
 
-    public String getNode() {
-        return node;
-    }
+  public String getNode() {
+    return node;
+  }
 
-    public void setNode(String node) {
-        this.node = node;
-    }
+  public void setNode(String node) {
+    this.node = node;
+  }
 
-    public String getRelationship() {
-        return relationship;
-    }
+  public String getRelationship() {
+    return relationship;
+  }
 
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
-    }
+  public void setRelationship(String relationship) {
+    this.relationship = relationship;
+  }
 
-    public List<Object> getOccurrences() {
-        return occurrences;
-    }
+  public List<Object> getOccurrences() {
+    return occurrences;
+  }
 
-    public void setOccurrences(List<Object> occurrences) {
-        this.occurrences = occurrences;
-    }
+  public void setOccurrences(List<Object> occurrences) {
+    this.occurrences = occurrences;
+  }
 
 }

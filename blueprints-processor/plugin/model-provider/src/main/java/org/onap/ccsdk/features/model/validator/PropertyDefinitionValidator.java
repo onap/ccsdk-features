@@ -32,58 +32,57 @@ import org.onap.ccsdk.features.model.data.PropertyDefinition;
  */
 public class PropertyDefinitionValidator {
 
-    StringBuilder message = new StringBuilder();
+  StringBuilder message = new StringBuilder();
 
-    public PropertyDefinitionValidator(StringBuilder message) {
-        this.message = message;
+  public PropertyDefinitionValidator(StringBuilder message) {
+    this.message = message;
 
-    }
+  }
 
-    /**
-     * This is a validatePropertyDefinition stored in database
-     *
-     * @param stDataTypes
-     * @param properties
-     * @return boolean
-     * @throws ConfigModelException
-     */
-    @SuppressWarnings({"squid:S00112", "squid:S3776", "squid:S1192"})
-    public boolean validatePropertyDefinition(Map<String, DataType> stDataTypes,
-            Map<String, PropertyDefinition> properties) {
+  /**
+   * This is a validatePropertyDefinition stored in database
+   *
+   * @param stDataTypes
+   * @param properties
+   * @return boolean
+   * @throws ConfigModelException
+   */
+  @SuppressWarnings({"squid:S00112", "squid:S3776", "squid:S1192"})
+  public boolean validatePropertyDefinition(Map<String, DataType> stDataTypes,
+      Map<String, PropertyDefinition> properties) {
 
-        if (stDataTypes != null && properties != null) {
-            properties.forEach((propertyKey, prop) -> {
-                if (propertyKey != null && prop != null) {
-                    try {
-                        String propertType = prop.getType();
-                        message.append("\n Validating (" + propertyKey + ") " + prop);
+    if (stDataTypes != null && properties != null) {
+      properties.forEach((propertyKey, prop) -> {
+        if (propertyKey != null && prop != null) {
+          try {
+            String propertType = prop.getType();
+            message.append("\n Validating (" + propertyKey + ") " + prop);
 
-                        if (!ValidTypes.getValidPropertType().contains(propertType)
-                                && !stDataTypes.containsKey(propertType)) {
-                            throw new ConfigModelException("Data Type (" + propertyKey + ") -> type(" + propertType
-                                    + ") is not a valid type.");
-                        } else if (ValidTypes.getListPropertType().contains(propertType)) {
-                            if (prop.getEntrySchema() == null || StringUtils.isBlank(prop.getEntrySchema().getType())) {
-                                throw new ConfigModelException("Data Type (" + propertyKey + ") -> type (" + propertType
-                                        + ") Entity Schema is not defined.");
-                            }
+            if (!ValidTypes.getValidPropertType().contains(propertType) && !stDataTypes.containsKey(propertType)) {
+              throw new ConfigModelException(
+                  "Data Type (" + propertyKey + ") -> type(" + propertType + ") is not a valid type.");
+            } else if (ValidTypes.getListPropertType().contains(propertType)) {
+              if (prop.getEntrySchema() == null || StringUtils.isBlank(prop.getEntrySchema().getType())) {
+                throw new ConfigModelException(
+                    "Data Type (" + propertyKey + ") -> type (" + propertType + ") Entity Schema is not defined.");
+              }
 
-                            String entitySchemaType = prop.getEntrySchema().getType();
+              String entitySchemaType = prop.getEntrySchema().getType();
 
-                            if (!ValidTypes.getValidPropertType().contains(entitySchemaType)
-                                    && !stDataTypes.containsKey(entitySchemaType)) {
-                                message.append("\n Present Data Type " + stDataTypes);
-                                throw new ConfigModelException("Data Type (" + propertyKey + ") -> type(" + propertType
-                                        + ") -> entitySchema(" + entitySchemaType + ") is not defined.");
-                            }
-                        }
-                    } catch (ConfigModelException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
+              if (!ValidTypes.getValidPropertType().contains(entitySchemaType)
+                  && !stDataTypes.containsKey(entitySchemaType)) {
+                message.append("\n Present Data Type " + stDataTypes);
+                throw new ConfigModelException("Data Type (" + propertyKey + ") -> type(" + propertType
+                    + ") -> entitySchema(" + entitySchemaType + ") is not defined.");
+              }
+            }
+          } catch (ConfigModelException e) {
+            throw new RuntimeException(e);
+          }
         }
-        return true;
+      });
     }
+    return true;
+  }
 
 }

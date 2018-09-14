@@ -24,18 +24,18 @@ import org.onap.ccsdk.sli.core.sli.SvcLogicJavaPlugin;
 
 public interface ComponentNode extends SvcLogicJavaPlugin {
 
-    public Boolean preCondition(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException;
+  public Boolean preCondition(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException;
 
-    public void preProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException;
+  public void preProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException;
 
-    public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException;
+  public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException;
 
-    public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException;
+  public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException;
 
-    public void postProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException;
+  public void postProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException;
 
 }

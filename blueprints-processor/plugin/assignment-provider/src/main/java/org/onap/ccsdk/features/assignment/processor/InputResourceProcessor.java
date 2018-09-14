@@ -31,66 +31,66 @@ import org.onap.ccsdk.sli.core.sli.SvcLogicException;
 
 public class InputResourceProcessor implements ComponentNode {
 
-    public InputResourceProcessor(ConfigResourceService configResourceService) {}
+  public InputResourceProcessor(ConfigResourceService configResourceService) {}
 
-    @Override
-    public Boolean preCondition(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        return Boolean.TRUE;
-    }
+  @Override
+  public Boolean preCondition(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    return Boolean.TRUE;
+  }
 
-    @Override
-    public void preProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        // Auto-generated method stub
-    }
+  @Override
+  public void preProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    // Auto-generated method stub
+  }
 
-    @Override
-    public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException {
-        // Auto-generated method stub
-    }
+  @Override
+  public void process(Map<String, String> inParams, SvcLogicContext ctx) throws SvcLogicException {
+    // Auto-generated method stub
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        try {
-            List<ResourceAssignment> batchResourceAssignment =
-                    (List<ResourceAssignment>) componentContext.get(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS);
-            if (batchResourceAssignment != null && !batchResourceAssignment.isEmpty()) {
-                for (ResourceAssignment resourceAssignment : batchResourceAssignment) {
-                    processResourceAssignment(ctx, componentContext, resourceAssignment);
-                }
-            }
-        } catch (Exception e) {
-            throw new SvcLogicException(String.format("InputResourceProcessor Exception : (%s)", e), e);
+  @SuppressWarnings("unchecked")
+  @Override
+  public void process(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    try {
+      List<ResourceAssignment> batchResourceAssignment =
+          (List<ResourceAssignment>) componentContext.get(ConfigModelConstant.PROPERTY_RESOURCE_ASSIGNMENTS);
+      if (batchResourceAssignment != null && !batchResourceAssignment.isEmpty()) {
+        for (ResourceAssignment resourceAssignment : batchResourceAssignment) {
+          processResourceAssignment(ctx, componentContext, resourceAssignment);
         }
+      }
+    } catch (Exception e) {
+      throw new SvcLogicException(String.format("InputResourceProcessor Exception : (%s)", e), e);
     }
+  }
 
-    private void processResourceAssignment(SvcLogicContext ctx, Map<String, Object> componentContext,
-            ResourceAssignment resourceAssignment) throws ConfigModelException, SvcLogicException {
-        try {
-            if (StringUtils.isNotBlank(resourceAssignment.getName())) {
-                String value = ctx.getAttribute(resourceAssignment.getName());
-                // if value is null don't call setResourceDataValue to populate the value
-                if (StringUtils.isNotBlank(value)) {
-                    ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
-                }
-            }
-
-            // Check the value has populated for mandatory case
-            ResourceAssignmentUtils.assertTemplateKeyValueNotNull(componentContext, resourceAssignment);
-        } catch (Exception e) {
-            ResourceAssignmentUtils.setFailedResourceDataValue(componentContext, resourceAssignment, e.getMessage());
-            throw new SvcLogicException(
-                    String.format("Failed in template key (%s) assignments with : (%s)", resourceAssignment, e), e);
+  private void processResourceAssignment(SvcLogicContext ctx, Map<String, Object> componentContext,
+      ResourceAssignment resourceAssignment) throws ConfigModelException, SvcLogicException {
+    try {
+      if (StringUtils.isNotBlank(resourceAssignment.getName())) {
+        String value = ctx.getAttribute(resourceAssignment.getName());
+        // if value is null don't call setResourceDataValue to populate the value
+        if (StringUtils.isNotBlank(value)) {
+          ResourceAssignmentUtils.setResourceDataValue(componentContext, resourceAssignment, value);
         }
-    }
+      }
 
-    @Override
-    public void postProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
-            throws SvcLogicException {
-        // Auto-generated method stub
+      // Check the value has populated for mandatory case
+      ResourceAssignmentUtils.assertTemplateKeyValueNotNull(componentContext, resourceAssignment);
+    } catch (Exception e) {
+      ResourceAssignmentUtils.setFailedResourceDataValue(componentContext, resourceAssignment, e.getMessage());
+      throw new SvcLogicException(
+          String.format("Failed in template key (%s) assignments with : (%s)", resourceAssignment, e), e);
     }
+  }
+
+  @Override
+  public void postProcess(Map<String, String> inParams, SvcLogicContext ctx, Map<String, Object> componentContext)
+      throws SvcLogicException {
+    // Auto-generated method stub
+  }
 
 }

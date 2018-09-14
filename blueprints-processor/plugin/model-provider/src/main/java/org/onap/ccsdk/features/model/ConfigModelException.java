@@ -24,27 +24,27 @@ package org.onap.ccsdk.features.model;
  */
 public class ConfigModelException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * This is a ConfigGeneratorException constructor
-     *
-     * @param message
-     */
-    public ConfigModelException(String message) {
-        super(message);
-    }
+  /**
+   * This is a ConfigGeneratorException constructor
+   *
+   * @param message
+   */
+  public ConfigModelException(String message) {
+    super(message);
+  }
 
-    /**
-     * This is a ConfigGeneratorException constructor
-     *
-     * @param message
-     */
-    public ConfigModelException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * This is a ConfigGeneratorException constructor
+   *
+   * @param message
+   */
+  public ConfigModelException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
 }

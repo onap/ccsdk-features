@@ -31,29 +31,29 @@ import org.onap.ccsdk.features.rest.adaptor.service.SSLRestClientAdapterImpl;
 
 public class AbstractConfigRestClientAdapterTest {
 
-    Map<String, String> properties = new HashMap<>();
+  Map<String, String> properties = new HashMap<>();
 
-    @Before
-    public void setup() throws Exception {
-        String propertyfile = "src/test/resources/config-rest-adaptor.properties";
+  @Before
+  public void setup() throws Exception {
+    String propertyfile = "src/test/resources/config-rest-adaptor.properties";
 
-        Properties restProperties = new Properties();
-        restProperties.load(new FileInputStream(propertyfile));
+    Properties restProperties = new Properties();
+    restProperties.load(new FileInputStream(propertyfile));
 
-        properties.putAll(restProperties.entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString())));
-    }
+    properties.putAll(restProperties.entrySet().stream()
+        .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString())));
+  }
 
-    @Test
-    public void testInitGenericRestClient() throws Exception {
-        ConfigRestClientServiceAdapter genericRestClient = new GenericRestClientAdapterImpl(properties, "modelservice");
-        Assert.assertNotNull(genericRestClient);
-    }
+  @Test
+  public void testInitGenericRestClient() throws Exception {
+    ConfigRestClientServiceAdapter genericRestClient = new GenericRestClientAdapterImpl(properties, "modelservice");
+    Assert.assertNotNull(genericRestClient);
+  }
 
-    @Test
-    public void testInitSSLClient() throws Exception {
-        ConfigRestClientServiceAdapter sslClient = new SSLRestClientAdapterImpl(properties, "aai");
-        Assert.assertNotNull(sslClient);
-    }
+  @Test
+  public void testInitSSLClient() throws Exception {
+    ConfigRestClientServiceAdapter sslClient = new SSLRestClientAdapterImpl(properties, "aai");
+    Assert.assertNotNull(sslClient);
+  }
 
 }

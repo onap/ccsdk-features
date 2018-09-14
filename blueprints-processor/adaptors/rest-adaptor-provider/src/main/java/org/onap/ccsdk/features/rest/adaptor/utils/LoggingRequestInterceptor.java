@@ -29,43 +29,43 @@ import com.att.eelf.configuration.EELFManager;
 
 public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(LoggingRequestInterceptor.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(LoggingRequestInterceptor.class);
 
-    @Override
-    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
-            throws IOException {
-        traceRequest(request, body);
-        ClientHttpResponse response = execution.execute(request, body);
-        traceResponse(response);
-        return response;
-    }
+  @Override
+  public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
+      throws IOException {
+    traceRequest(request, body);
+    ClientHttpResponse response = execution.execute(request, body);
+    traceResponse(response);
+    return response;
+  }
 
-    @SuppressWarnings({"squid:S2629", "squid:S3457"})
-    private void traceRequest(HttpRequest request, byte[] body) throws IOException {
-        logger.info("===========================request begin================================================");
-        logger.info("URI         : {}", request.getURI());
-        logger.info("Method      : {}", request.getMethod());
-        logger.info("Headers     : {}", request.getHeaders());
-        logger.info("Request body: {}", new String(body, "UTF-8"));
-        logger.debug("==========================request end================================================");
-    }
+  @SuppressWarnings({"squid:S2629", "squid:S3457"})
+  private void traceRequest(HttpRequest request, byte[] body) throws IOException {
+    logger.info("===========================request begin================================================");
+    logger.info("URI         : {}", request.getURI());
+    logger.info("Method      : {}", request.getMethod());
+    logger.info("Headers     : {}", request.getHeaders());
+    logger.info("Request body: {}", new String(body, "UTF-8"));
+    logger.debug("==========================request end================================================");
+  }
 
-    @SuppressWarnings({"squid:S2629", "squid:S3457"})
-    private void traceResponse(ClientHttpResponse response) throws IOException {
-        StringBuilder inputStringBuilder = new StringBuilder();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getBody(), "UTF-8"));
-        String line = bufferedReader.readLine();
-        while (line != null) {
-            inputStringBuilder.append(line);
-            inputStringBuilder.append('\n');
-            line = bufferedReader.readLine();
-        }
-        logger.info("============================response begin==========================================");
-        logger.info("Status code  : {}", response.getStatusCode());
-        logger.info("Status text  : {}", response.getStatusText());
-        logger.info("Headers      : {}", response.getHeaders());
-        logger.debug("Response body: {}", inputStringBuilder.toString());
-        logger.debug("=======================response end=================================================");
+  @SuppressWarnings({"squid:S2629", "squid:S3457"})
+  private void traceResponse(ClientHttpResponse response) throws IOException {
+    StringBuilder inputStringBuilder = new StringBuilder();
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getBody(), "UTF-8"));
+    String line = bufferedReader.readLine();
+    while (line != null) {
+      inputStringBuilder.append(line);
+      inputStringBuilder.append('\n');
+      line = bufferedReader.readLine();
     }
+    logger.info("============================response begin==========================================");
+    logger.info("Status code  : {}", response.getStatusCode());
+    logger.info("Status text  : {}", response.getStatusText());
+    logger.info("Headers      : {}", response.getHeaders());
+    logger.debug("Response body: {}", inputStringBuilder.toString());
+    logger.debug("=======================response end=================================================");
+  }
 
 }

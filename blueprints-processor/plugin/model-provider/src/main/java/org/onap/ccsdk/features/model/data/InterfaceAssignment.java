@@ -26,33 +26,33 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @version 1.0
  */
 public class InterfaceAssignment {
-    @JsonIgnore
-    private String id;
-    private String type;
-    private Map<String, OperationAssignment> operations;
+  @JsonIgnore
+  private String id;
+  private String type;
+  private Map<String, OperationAssignment> operations;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public Map<String, OperationAssignment> getOperations() {
-        return operations;
-    }
+  public Map<String, OperationAssignment> getOperations() {
+    return operations;
+  }
 
-    public void setOperations(Map<String, OperationAssignment> operations) {
-        this.operations = operations;
-    }
+  public void setOperations(Map<String, OperationAssignment> operations) {
+    this.operations = operations;
+  }
 
 }

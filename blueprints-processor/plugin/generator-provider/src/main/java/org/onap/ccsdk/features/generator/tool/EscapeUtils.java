@@ -22,61 +22,61 @@ import org.apache.commons.lang3.StringUtils;
 @SuppressWarnings("squid:S1118")
 public class EscapeUtils {
 
-    public static String escapeSql(String str) {
-        if (str == null) {
-            return null;
-        }
-        String[] searchList = new String[] {"'", "\\"};
-        String[] replacementList = new String[] {"''", "\\\\"};
-        return StringUtils.replaceEach(str, searchList, replacementList);
+  public static String escapeSql(String str) {
+    if (str == null) {
+      return null;
+    }
+    String[] searchList = new String[] {"'", "\\"};
+    String[] replacementList = new String[] {"''", "\\\\"};
+    return StringUtils.replaceEach(str, searchList, replacementList);
+  }
+
+  // For Generic Purpose
+  public static String escapeSequence(String s) {
+    if (s == null) {
+      return null;
     }
 
-    // For Generic Purpose
-    public static String escapeSequence(String s) {
-        if (s == null) {
-            return null;
-        }
-
-        int length = s.length();
-        int newLength = length;
-        for (int i = 0; i < length; i++) {
-            char c = s.charAt(i);
-            switch (c) {
-                case '\\':
-                case '\"':
-                case '\'':
-                case '\0':
-                    newLength += 1;
-                    break;
-                default:
-                    // do nothing
-            }
-        }
-        if (length == newLength) {
-            // nothing to escape in the string
-            return s;
-        }
-        StringBuilder sb = new StringBuilder(newLength);
-        for (int i = 0; i < length; i++) {
-            char c = s.charAt(i);
-            switch (c) {
-                case '\\':
-                    sb.append("\\\\");
-                    break;
-                case '\"':
-                    sb.append("\\\"");
-                    break;
-                case '\'':
-                    sb.append("\\\'");
-                    break;
-                case '\0':
-                    sb.append("\\0");
-                    break;
-                default:
-                    sb.append(c);
-            }
-        }
-        return sb.toString();
+    int length = s.length();
+    int newLength = length;
+    for (int i = 0; i < length; i++) {
+      char c = s.charAt(i);
+      switch (c) {
+        case '\\':
+        case '\"':
+        case '\'':
+        case '\0':
+          newLength += 1;
+          break;
+        default:
+          // do nothing
+      }
     }
+    if (length == newLength) {
+      // nothing to escape in the string
+      return s;
+    }
+    StringBuilder sb = new StringBuilder(newLength);
+    for (int i = 0; i < length; i++) {
+      char c = s.charAt(i);
+      switch (c) {
+        case '\\':
+          sb.append("\\\\");
+          break;
+        case '\"':
+          sb.append("\\\"");
+          break;
+        case '\'':
+          sb.append("\\\'");
+          break;
+        case '\0':
+          sb.append("\\0");
+          break;
+        default:
+          sb.append(c);
+      }
+    }
+    return sb.toString();
+  }
 
 }

@@ -22,21 +22,21 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 public class CustomTextNode extends TextNode {
 
-    public CustomTextNode(String v) {
-        super(v);
-    }
+  public CustomTextNode(String v) {
+    super(v);
+  }
 
-    @Override
-    public String toString() {
-        int len = textValue().length();
-        len = len + 2 + (len >> 4);
-        StringBuilder sb = new StringBuilder(len);
-        appendQuoted(sb, textValue());
-        return sb.toString();
-    }
+  @Override
+  public String toString() {
+    int len = textValue().length();
+    len = len + 2 + (len >> 4);
+    StringBuilder sb = new StringBuilder(len);
+    appendQuoted(sb, textValue());
+    return sb.toString();
+  }
 
-    protected static void appendQuoted(StringBuilder sb, String content) {
-        CharTypes.appendQuoted(sb, content);
-    }
+  protected static void appendQuoted(StringBuilder sb, String content) {
+    CharTypes.appendQuoted(sb, content);
+  }
 
 }

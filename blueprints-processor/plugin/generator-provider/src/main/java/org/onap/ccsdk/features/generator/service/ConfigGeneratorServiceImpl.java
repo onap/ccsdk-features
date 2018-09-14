@@ -37,107 +37,106 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ConfigGeneratorServiceImpl implements ConfigGeneratorService {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigGeneratorServiceImpl.class);
-    private static final String CLASS_NAME = "ConfigGeneratorServiceImpl";
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigGeneratorServiceImpl.class);
+  private static final String CLASS_NAME = "ConfigGeneratorServiceImpl";
 
-    private ConfigResourceService configResourceService;
+  private ConfigResourceService configResourceService;
 
-    public ConfigGeneratorServiceImpl(ConfigResourceService configResourceService) {
-        logger.info("{} Constuctor Initated...", CLASS_NAME);
-        this.configResourceService = configResourceService;
-    }
+  public ConfigGeneratorServiceImpl(ConfigResourceService configResourceService) {
+    logger.info("{} Constuctor Initated...", CLASS_NAME);
+    this.configResourceService = configResourceService;
+  }
 
-    @Override
-    public ConfigGeneratorInfo generateConfiguration(ConfigGeneratorInfo configGeneratorInfo) throws SvcLogicException {
+  @Override
+  public ConfigGeneratorInfo generateConfiguration(ConfigGeneratorInfo configGeneratorInfo) throws SvcLogicException {
 
-        if (configGeneratorInfo != null && StringUtils.isNotBlank(configGeneratorInfo.getResourceId())
-                && StringUtils.isNotBlank(configGeneratorInfo.getResourceType())
-                && StringUtils.isNotBlank(configGeneratorInfo.getRecipeName())
-                && StringUtils.isNotBlank(configGeneratorInfo.getTemplateName())
-                && StringUtils.isNotBlank(configGeneratorInfo.getTemplateContent())) {
+    if (configGeneratorInfo != null && StringUtils.isNotBlank(configGeneratorInfo.getResourceId())
+        && StringUtils.isNotBlank(configGeneratorInfo.getResourceType())
+        && StringUtils.isNotBlank(configGeneratorInfo.getRecipeName())
+        && StringUtils.isNotBlank(configGeneratorInfo.getTemplateName())
+        && StringUtils.isNotBlank(configGeneratorInfo.getTemplateContent())) {
 
-            ConfigResource configResourceQuery = new ConfigResource();
-            configResourceQuery.setResourceId(configGeneratorInfo.getResourceId());
-            configResourceQuery.setResourceType(configGeneratorInfo.getResourceType());
-            configResourceQuery.setTemplateName(configGeneratorInfo.getTemplateName());
+      ConfigResource configResourceQuery = new ConfigResource();
+      configResourceQuery.setResourceId(configGeneratorInfo.getResourceId());
+      configResourceQuery.setResourceType(configGeneratorInfo.getResourceType());
+      configResourceQuery.setTemplateName(configGeneratorInfo.getTemplateName());
 
-            List<ConfigResource> configResourceList = configResourceService.getConfigResource(configResourceQuery);
+      List<ConfigResource> configResourceList = configResourceService.getConfigResource(configResourceQuery);
 
-            if (CollectionUtils.isEmpty(configResourceList)) {
-                throw new SvcLogicException("No Config Resource found");
-            } else if (configResourceList.size() > 1) {
-                throw new SvcLogicException("More than one Config Resource found for specified parameter for"
-                        + " resourceId " + configGeneratorInfo.getResourceId() + ", resourceType "
-                        + configGeneratorInfo.getResourceType() + ", recipeName " + configGeneratorInfo.getRecipeName()
-                        + ", templateName " + configGeneratorInfo.getTemplateName());
-            }
+      if (CollectionUtils.isEmpty(configResourceList)) {
+        throw new SvcLogicException("No Config Resource found");
+      } else if (configResourceList.size() > 1) {
+        throw new SvcLogicException("More than one Config Resource found for specified parameter for" + " resourceId "
+            + configGeneratorInfo.getResourceId() + ", resourceType " + configGeneratorInfo.getResourceType()
+            + ", recipeName " + configGeneratorInfo.getRecipeName() + ", templateName "
+            + configGeneratorInfo.getTemplateName());
+      }
 
-            ConfigResource configResource = configResourceList.get(0);
+      ConfigResource configResource = configResourceList.get(0);
 
-            if (configResource != null && StringUtils.isNotBlank(configResource.getResourceData())) {
-                configGeneratorInfo.setResourceData(configResource.getResourceData());
-                logger.debug("Retrieve ConfigResource Data : ({})", configResource.getResourceData());
-                ConfigGeneratorInfo generatorInfo = generateConfiguration(configGeneratorInfo.getTemplateContent(),
-                        configResource.getResourceData());
-                if (generatorInfo != null) {
-                    configGeneratorInfo.setMashedData(generatorInfo.getMashedData());
-                }
-            } else {
-                throw new SvcLogicException(
-                        "Failed to get the Resource Data for the Resource Id :" + configGeneratorInfo.getResourceId()
-                                + " of template :" + configGeneratorInfo.getTemplateName());
-            }
+      if (configResource != null && StringUtils.isNotBlank(configResource.getResourceData())) {
+        configGeneratorInfo.setResourceData(configResource.getResourceData());
+        logger.debug("Retrieve ConfigResource Data : ({})", configResource.getResourceData());
+        ConfigGeneratorInfo generatorInfo =
+            generateConfiguration(configGeneratorInfo.getTemplateContent(), configResource.getResourceData());
+        if (generatorInfo != null) {
+          configGeneratorInfo.setMashedData(generatorInfo.getMashedData());
         }
-        return configGeneratorInfo;
+      } else {
+        throw new SvcLogicException("Failed to get the Resource Data for the Resource Id :"
+            + configGeneratorInfo.getResourceId() + " of template :" + configGeneratorInfo.getTemplateName());
+      }
     }
+    return configGeneratorInfo;
+  }
 
-    @Override
-    public ConfigGeneratorInfo generateConfiguration(String templateContent, String templateData)
-            throws SvcLogicException {
-        return generateConfiguration(templateContent, templateData, true);
-    }
+  @Override
+  public ConfigGeneratorInfo generateConfiguration(String templateContent, String templateData)
+      throws SvcLogicException {
+    return generateConfiguration(templateContent, templateData, true);
+  }
 
-    @Override
-    public ConfigGeneratorInfo generateConfiguration(String templateContent, String templateData, boolean ignoreNull)
-            throws SvcLogicException {
-        ConfigGeneratorInfo configGeneratorInfo = null;
-        try {
-            if (StringUtils.isNotBlank(templateContent) && StringUtils.isNotBlank(templateData)) {
-                configGeneratorInfo = new ConfigGeneratorInfo();
+  @Override
+  public ConfigGeneratorInfo generateConfiguration(String templateContent, String templateData, boolean ignoreNull)
+      throws SvcLogicException {
+    ConfigGeneratorInfo configGeneratorInfo = null;
+    try {
+      if (StringUtils.isNotBlank(templateContent) && StringUtils.isNotBlank(templateData)) {
+        configGeneratorInfo = new ConfigGeneratorInfo();
 
-                Velocity.init();
+        Velocity.init();
 
-                ObjectMapper mapper = new ObjectMapper();
-                CustomJsonNodeFactory f = new CustomJsonNodeFactory();
-                mapper.setNodeFactory(f);
+        ObjectMapper mapper = new ObjectMapper();
+        CustomJsonNodeFactory f = new CustomJsonNodeFactory();
+        mapper.setNodeFactory(f);
 
-                JsonNode jsonObj = mapper.readValue(templateData, JsonNode.class);
-                if (ignoreNull) {
-                    TransformationUtils.removeJsonNullNode(jsonObj);
-                }
-
-                VelocityContext context = new VelocityContext();
-                context.put("StringUtils", org.apache.commons.lang3.StringUtils.class);
-                context.put("BooleanUtils", org.apache.commons.lang3.BooleanUtils.class);
-
-                Iterator<String> ii = jsonObj.fieldNames();
-                while (ii.hasNext()) {
-                    String key = ii.next();
-                    JsonNode node = jsonObj.get(key);
-                    logger.info("Adding key ({}) with value ({})", key, node);
-                    context.put(key, node);
-                }
-
-                StringWriter writer = new StringWriter();
-                Velocity.evaluate(context, writer, "TemplateData", templateContent);
-                writer.flush();
-                configGeneratorInfo.setMashedData(writer.toString());
-            }
-        } catch (Exception e) {
-            logger.error("Failed to generate Configuration ({})", e.getMessage());
-            throw new SvcLogicException(e.getMessage(), e);
+        JsonNode jsonObj = mapper.readValue(templateData, JsonNode.class);
+        if (ignoreNull) {
+          TransformationUtils.removeJsonNullNode(jsonObj);
         }
-        return configGeneratorInfo;
+
+        VelocityContext context = new VelocityContext();
+        context.put("StringUtils", org.apache.commons.lang3.StringUtils.class);
+        context.put("BooleanUtils", org.apache.commons.lang3.BooleanUtils.class);
+
+        Iterator<String> ii = jsonObj.fieldNames();
+        while (ii.hasNext()) {
+          String key = ii.next();
+          JsonNode node = jsonObj.get(key);
+          logger.info("Adding key ({}) with value ({})", key, node);
+          context.put(key, node);
+        }
+
+        StringWriter writer = new StringWriter();
+        Velocity.evaluate(context, writer, "TemplateData", templateContent);
+        writer.flush();
+        configGeneratorInfo.setMashedData(writer.toString());
+      }
+    } catch (Exception e) {
+      logger.error("Failed to generate Configuration ({})", e.getMessage());
+      throw new SvcLogicException(e.getMessage(), e);
     }
+    return configGeneratorInfo;
+  }
 
 }

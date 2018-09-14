@@ -27,27 +27,27 @@ import com.att.eelf.configuration.EELFManager;
 
 public class QueryExecutorDaoImpl implements QueryExecutorDao {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(QueryExecutorDaoImpl.class);
-    private static final String CLASS_NAME = "QueryExecutorDaoImpl";
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(QueryExecutorDaoImpl.class);
+  private static final String CLASS_NAME = "QueryExecutorDaoImpl";
 
-    @Autowired(required = true)
-    private JdbcTemplate jdbcTemplate;
+  @Autowired(required = true)
+  private JdbcTemplate jdbcTemplate;
 
-    public QueryExecutorDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        logger.info("{} Constructor initialised..", CLASS_NAME);
-    }
+  public QueryExecutorDaoImpl(JdbcTemplate jdbcTemplate) {
+    this.jdbcTemplate = jdbcTemplate;
+    logger.info("{} Constructor initialised..", CLASS_NAME);
+  }
 
-    @Override
-    public List<Map<String, Object>> query(String sql, Object[] data) throws SvcLogicException {
-        logger.debug("Query  ({}) with data ({})", sql, data);
-        return jdbcTemplate.queryForList(sql, data);
-    }
+  @Override
+  public List<Map<String, Object>> query(String sql, Object[] data) throws SvcLogicException {
+    logger.debug("Query  ({}) with data ({})", sql, data);
+    return jdbcTemplate.queryForList(sql, data);
+  }
 
-    @Override
-    public int update(String sql, Object[] data) throws SvcLogicException {
-        logger.debug("Query  ({}) with data ({})", sql, data);
-        return jdbcTemplate.update(sql, data);
-    }
+  @Override
+  public int update(String sql, Object[] data) throws SvcLogicException {
+    logger.debug("Query  ({}) with data ({})", sql, data);
+    return jdbcTemplate.update(sql, data);
+  }
 
 }

@@ -21,41 +21,41 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Status {
 
-    private Integer code;
-    @JsonProperty("error-message")
-    private String errorMessage;
-    private String message;
-    private String completed;
+  private Integer code;
+  @JsonProperty("error-message")
+  private String errorMessage;
+  private String message;
+  private String completed;
 
-    public Integer getCode() {
-        return code;
-    }
+  public Integer getCode() {
+    return code;
+  }
 
-    public void setCode(Integer code) {
-        this.code = code;
-    }
+  public void setCode(Integer code) {
+    this.code = code;
+  }
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
+  public String getErrorMessage() {
+    return errorMessage;
+  }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
+  public void setErrorMessage(String errorMessage) {
+    this.errorMessage = errorMessage;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public String getCompleted() {
-        return completed;
-    }
+  public String getCompleted() {
+    return completed;
+  }
 
-    public void setCompleted(String completed) {
-        this.completed = completed;
-    }
+  public void setCompleted(String completed) {
+    this.completed = completed;
+  }
 }

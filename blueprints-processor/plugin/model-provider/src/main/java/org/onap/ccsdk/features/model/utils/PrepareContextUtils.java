@@ -21,44 +21,43 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.onap.ccsdk.features.model.ConfigModelConstant;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 public class PrepareContextUtils {
 
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(PrepareContextUtils.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(PrepareContextUtils.class);
 
-    public Map<String, String> prepareContext(Map<String, String> context, String input, String serviceTemplateContent)
-            throws Exception {
-        if (StringUtils.isNotBlank(serviceTemplateContent)) {
+  public Map<String, String> prepareContext(Map<String, String> context, String input, String serviceTemplateContent)
+      throws Exception {
+    if (StringUtils.isNotBlank(serviceTemplateContent)) {
 
-            if (context == null) {
-                context = new HashMap<>();
-            }
-            if (StringUtils.isNotBlank(input)) {
-                TransformationUtils.convertJson2RootProperties(context, input);
-            }
+      if (context == null) {
+        context = new HashMap<>();
+      }
+      if (StringUtils.isNotBlank(input)) {
+        TransformationUtils.convertJson2RootProperties(context, input);
+      }
 
-            String recipeName = context.get(ConfigModelConstant.PROPERTY_ACTION_NAME);
-            if (StringUtils.isNotBlank(recipeName)) {
-                String recipeInputName =
-                        recipeName.replace(ConfigModelConstant.PROPERTY_RECIPE, ConfigModelConstant.PROPERTY_REQUEST);
-                String recipeInput = context.get(recipeInputName);
-                if (StringUtils.isNotBlank(recipeInput)) {
-                    // Un necessary to hold the Recipe Request, It is already in input
-                    context.remove(recipeInputName);
-                    context.remove(ConfigModelConstant.PROPERTY_PAYLOAD);
-                    TransformationUtils.convertJson2RootProperties(context, recipeInput);
-                    logger.info("Converted recipe ({}) request inputs to context.", recipeName);
-                }
-            }
-
-            ServiceTemplateUtils serviceTemplateUtils = new ServiceTemplateUtils();
-            serviceTemplateUtils.convertServiceTemplate2Properties(serviceTemplateContent, context);
+      String recipeName = context.get(ConfigModelConstant.PROPERTY_ACTION_NAME);
+      if (StringUtils.isNotBlank(recipeName)) {
+        String recipeInputName =
+            recipeName.replace(ConfigModelConstant.PROPERTY_RECIPE, ConfigModelConstant.PROPERTY_REQUEST);
+        String recipeInput = context.get(recipeInputName);
+        if (StringUtils.isNotBlank(recipeInput)) {
+          // Un necessary to hold the Recipe Request, It is already in input
+          context.remove(recipeInputName);
+          context.remove(ConfigModelConstant.PROPERTY_PAYLOAD);
+          TransformationUtils.convertJson2RootProperties(context, recipeInput);
+          logger.info("Converted recipe ({}) request inputs to context.", recipeName);
         }
-        return context;
+      }
 
+      ServiceTemplateUtils serviceTemplateUtils = new ServiceTemplateUtils();
+      serviceTemplateUtils.convertServiceTemplate2Properties(serviceTemplateContent, context);
     }
+    return context;
+
+  }
 
 }

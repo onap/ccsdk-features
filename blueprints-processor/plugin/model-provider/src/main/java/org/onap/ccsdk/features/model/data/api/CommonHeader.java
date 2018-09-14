@@ -21,62 +21,62 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CommonHeader {
 
-    private String timestamp;
-    @JsonProperty("api-ver")
-    private String apiVer;
-    @JsonProperty("originator-id")
-    private String originatorId;
-    @JsonProperty("request-id")
-    private String requestId;
-    @JsonProperty("sub-request-id")
-    private String subRequestId;
-    private Flags flags;
+  private String timestamp;
+  @JsonProperty("api-ver")
+  private String apiVer;
+  @JsonProperty("originator-id")
+  private String originatorId;
+  @JsonProperty("request-id")
+  private String requestId;
+  @JsonProperty("sub-request-id")
+  private String subRequestId;
+  private Flags flags;
 
-    public String getTimestamp() {
-        return timestamp;
-    }
+  public String getTimestamp() {
+    return timestamp;
+  }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
-    }
+  public void setTimestamp(String timestamp) {
+    this.timestamp = timestamp;
+  }
 
-    public String getApiVer() {
-        return apiVer;
-    }
+  public String getApiVer() {
+    return apiVer;
+  }
 
-    public void setApiVer(String apiVer) {
-        this.apiVer = apiVer;
-    }
+  public void setApiVer(String apiVer) {
+    this.apiVer = apiVer;
+  }
 
-    public String getOriginatorId() {
-        return originatorId;
-    }
+  public String getOriginatorId() {
+    return originatorId;
+  }
 
-    public void setOriginatorId(String originatorId) {
-        this.originatorId = originatorId;
-    }
+  public void setOriginatorId(String originatorId) {
+    this.originatorId = originatorId;
+  }
 
-    public String getRequestId() {
-        return requestId;
-    }
+  public String getRequestId() {
+    return requestId;
+  }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
-    }
+  public void setRequestId(String requestId) {
+    this.requestId = requestId;
+  }
 
-    public String getSubRequestId() {
-        return subRequestId;
-    }
+  public String getSubRequestId() {
+    return subRequestId;
+  }
 
-    public void setSubRequestId(String subRequestId) {
-        this.subRequestId = subRequestId;
-    }
+  public void setSubRequestId(String subRequestId) {
+    this.subRequestId = subRequestId;
+  }
 
-    public Flags getFlags() {
-        return flags;
-    }
+  public Flags getFlags() {
+    return flags;
+  }
 
-    public void setFlags(Flags flags) {
-        this.flags = flags;
-    }
+  public void setFlags(Flags flags) {
+    this.flags = flags;
+  }
 }

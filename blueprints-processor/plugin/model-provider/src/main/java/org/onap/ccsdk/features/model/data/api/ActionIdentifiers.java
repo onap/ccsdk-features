@@ -20,43 +20,43 @@ package org.onap.ccsdk.features.model.data.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ActionIdentifiers {
-    @JsonProperty("service-template-name")
-    private String serviceTemplateName;
-    @JsonProperty("service-template-version")
-    private String serviceTemplateVersion;
-    @JsonProperty("action-name")
-    private String actionName;
-    private String mode;
+  @JsonProperty("service-template-name")
+  private String serviceTemplateName;
+  @JsonProperty("service-template-version")
+  private String serviceTemplateVersion;
+  @JsonProperty("action-name")
+  private String actionName;
+  private String mode;
 
-    public String getServiceTemplateName() {
-        return serviceTemplateName;
-    }
+  public String getServiceTemplateName() {
+    return serviceTemplateName;
+  }
 
-    public void setServiceTemplateName(String serviceTemplateName) {
-        this.serviceTemplateName = serviceTemplateName;
-    }
+  public void setServiceTemplateName(String serviceTemplateName) {
+    this.serviceTemplateName = serviceTemplateName;
+  }
 
-    public String getServiceTemplateVersion() {
-        return serviceTemplateVersion;
-    }
+  public String getServiceTemplateVersion() {
+    return serviceTemplateVersion;
+  }
 
-    public void setServiceTemplateVersion(String serviceTemplateVersion) {
-        this.serviceTemplateVersion = serviceTemplateVersion;
-    }
+  public void setServiceTemplateVersion(String serviceTemplateVersion) {
+    this.serviceTemplateVersion = serviceTemplateVersion;
+  }
 
-    public String getActionName() {
-        return actionName;
-    }
+  public String getActionName() {
+    return actionName;
+  }
 
-    public void setActionName(String actionName) {
-        this.actionName = actionName;
-    }
+  public void setActionName(String actionName) {
+    this.actionName = actionName;
+  }
 
-    public String getMode() {
-        return mode;
-    }
+  public String getMode() {
+    return mode;
+  }
 
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
+  public void setMode(String mode) {
+    this.mode = mode;
+  }
 }

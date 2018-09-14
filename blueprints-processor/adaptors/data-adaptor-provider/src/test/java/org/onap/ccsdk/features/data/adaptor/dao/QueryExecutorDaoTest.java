@@ -35,48 +35,47 @@ import com.att.eelf.configuration.EELFManager;
 @ContextConfiguration(locations = {"classpath:test-context-h2db.xml"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class QueryExecutorDaoTest {
-    private static EELFLogger logger = EELFManager.getInstance().getLogger(QueryExecutorDaoTest.class);
+  private static EELFLogger logger = EELFManager.getInstance().getLogger(QueryExecutorDaoTest.class);
 
-    @Autowired
-    private QueryExecutorDao queryExecutorDao;
+  @Autowired
+  private QueryExecutorDao queryExecutorDao;
 
-    @Before
-    public void initialise() {
+  @Before
+  public void initialise() {
 
-    }
+  }
 
-    @Test
-    public void testInsertQueryExecution() throws Exception {
+  @Test
+  public void testInsertQueryExecution() throws Exception {
 
-        String sql = "INSERT INTO CONFIG_RESOURCE"
-                + "(config_resource_id, resource_id, resource_type, template_name, recipe_name, request_id, resource_data, mask_data, created_date, updated_by) "
-                + "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-        Object[] data =
-                new Object[] {"12345", "vUSP - vDBE-IPX HUB", "1234567", "activate-action", "vrr-service-template",
-                        "resource-data", "mask-data", null, new Date(System.currentTimeMillis()), "ab1234"};
-        int result = queryExecutorDao.update(sql, data);
-        logger.info("Updated successfully rows :" + result);
-        Assert.assertNotNull("Failed to get Query Result", result);
-    }
+    String sql = "INSERT INTO CONFIG_RESOURCE"
+        + "(config_resource_id, resource_id, resource_type, template_name, recipe_name, request_id, resource_data, mask_data, created_date, updated_by) "
+        + "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+    Object[] data = new Object[] {"12345", "vUSP - vDBE-IPX HUB", "1234567", "activate-action", "vrr-service-template",
+        "resource-data", "mask-data", null, new Date(System.currentTimeMillis()), "ab1234"};
+    int result = queryExecutorDao.update(sql, data);
+    logger.info("Updated successfully rows :" + result);
+    Assert.assertNotNull("Failed to get Query Result", result);
+  }
 
-    @Test
-    public void testUpdateQueryExecution() throws Exception {
+  @Test
+  public void testUpdateQueryExecution() throws Exception {
 
-        String sql = "UPDATE CONFIG_RESOURCE set recipe_name=? where config_resource_id=?";
-        Object[] data = new Object[] {"vce-service-template", "12345"};
-        int result = queryExecutorDao.update(sql, data);
-        logger.info("Updated successfully rows :" + result);
-        Assert.assertNotNull("Failed to get Query Result", result);
-    }
+    String sql = "UPDATE CONFIG_RESOURCE set recipe_name=? where config_resource_id=?";
+    Object[] data = new Object[] {"vce-service-template", "12345"};
+    int result = queryExecutorDao.update(sql, data);
+    logger.info("Updated successfully rows :" + result);
+    Assert.assertNotNull("Failed to get Query Result", result);
+  }
 
-    @Test
-    public void testDeleteQueryExecution() throws Exception {
+  @Test
+  public void testDeleteQueryExecution() throws Exception {
 
-        String sql = "DELETE FROM CONFIG_RESOURCE where config_resource_id=?";
-        Object[] data = new Object[] {"12345"};
-        int result = queryExecutorDao.update(sql, data);
-        logger.info("Updated successfully rows :" + result);
-        Assert.assertNotNull("Failed to get Query Result", result);
-    }
+    String sql = "DELETE FROM CONFIG_RESOURCE where config_resource_id=?";
+    Object[] data = new Object[] {"12345"};
+    int result = queryExecutorDao.update(sql, data);
+    logger.info("Updated successfully rows :" + result);
+    Assert.assertNotNull("Failed to get Query Result", result);
+  }
 
 }
