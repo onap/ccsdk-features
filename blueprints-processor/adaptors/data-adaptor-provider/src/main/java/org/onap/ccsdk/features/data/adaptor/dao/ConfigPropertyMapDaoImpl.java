@@ -60,8 +60,8 @@ public class ConfigPropertyMapDaoImpl implements ConfigPropertyMapDao {
                 configPropertyMap.put(key, value);
             });
             logger.trace("loaded configPropertyMap : ({})", configPropertyMap);
-        } catch (CannotGetJdbcConnectionException e) {
-            // WHAT TO DO?
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
     }
 
