@@ -29,7 +29,6 @@ import org.onap.ccsdk.features.model.ConfigModelException;
 import org.onap.ccsdk.features.model.ValidTypes;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.features.model.data.dict.ResourceDefinition;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.fasterxml.jackson.databind.JsonNode;

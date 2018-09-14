@@ -31,7 +31,6 @@ import org.onap.ccsdk.features.model.data.OperationDefinition;
 import org.onap.ccsdk.features.model.data.PropertyDefinition;
 import org.onap.ccsdk.features.model.data.RequirementDefinition;
 import org.onap.ccsdk.features.model.data.ServiceTemplate;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 

@@ -39,8 +39,4 @@ CREATE TABLE IF NOT EXISTS CONFIG_TRANSACTION_LOG (
    message                    LONGTEXT      NULL          DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS CONFIG_PROPERTY_MAP (
-   reference_key  		VARCHAR(100) 	NOT NULL,
-   reference_value  	VARCHAR(250) 	NOT NULL
-);
 

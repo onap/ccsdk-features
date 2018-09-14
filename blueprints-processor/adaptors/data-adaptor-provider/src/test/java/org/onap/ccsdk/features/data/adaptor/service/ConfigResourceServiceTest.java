@@ -29,7 +29,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.onap.ccsdk.features.data.adaptor.dao.ConfigPropertyMapDao;
 import org.onap.ccsdk.features.data.adaptor.dao.ConfigResourceDao;
 import org.onap.ccsdk.features.data.adaptor.dao.ConfigResourceDaoTest;
 import org.onap.ccsdk.features.data.adaptor.dao.NamedQueryExecutorDao;
@@ -62,13 +61,10 @@ public class ConfigResourceServiceTest {
     @Autowired
     NamedQueryExecutorDao namedQueryExecutorDao;
 
-    @Autowired
-    ConfigPropertyMapDao configPropertyMapDao;
-
     @Before
     public void before() {
         configResourceService = new ConfigResourceServiceImpl(transactionLogDao, configResourceDao, queryExecutorDao,
-                namedQueryExecutorDao, configPropertyMapDao);
+                namedQueryExecutorDao);
     }
 
     @Test

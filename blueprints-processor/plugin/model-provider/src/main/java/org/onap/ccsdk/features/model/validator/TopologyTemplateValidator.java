@@ -29,7 +29,6 @@ import org.onap.ccsdk.features.model.data.PropertyDefinition;
 import org.onap.ccsdk.features.model.data.RequirementAssignment;
 import org.onap.ccsdk.features.model.data.ServiceTemplate;
 import org.onap.ccsdk.features.model.data.TopologyTemplate;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 

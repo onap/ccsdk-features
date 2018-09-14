@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.model.utils;
 
 import org.onap.ccsdk.features.model.ValidTypes;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;

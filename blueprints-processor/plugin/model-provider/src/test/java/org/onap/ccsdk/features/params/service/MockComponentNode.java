@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.params.service;
 
 import java.util.Map;
-
 import org.onap.ccsdk.features.model.service.ComponentNode;
 import org.onap.ccsdk.sli.core.sli.SvcLogicContext;
 import org.onap.ccsdk.sli.core.sli.SvcLogicException;

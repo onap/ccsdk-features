@@ -21,7 +21,6 @@ import java.nio.charset.Charset;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.onap.ccsdk.features.model.validator.ServiceTemplateValidator;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 

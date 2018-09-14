@@ -43,8 +43,9 @@ public class ConfigAssignmentPersistService {
         this.configResourceService = configResourceService;
     }
 
-    public void saveResourceMapping(org.onap.ccsdk.features.assignment.data.ResourceAssignmentData resourceAssignmentData,
-            String templateName, List<ResourceAssignment> resourceAssignments) throws SvcLogicException {
+    public void saveResourceMapping(
+            org.onap.ccsdk.features.assignment.data.ResourceAssignmentData resourceAssignmentData, String templateName,
+            List<ResourceAssignment> resourceAssignments) throws SvcLogicException {
         try {
 
             if (resourceAssignmentData == null) {

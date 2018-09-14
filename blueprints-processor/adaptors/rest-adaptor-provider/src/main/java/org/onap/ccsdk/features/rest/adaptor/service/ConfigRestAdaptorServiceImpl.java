@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.onap.ccsdk.features.rest.adaptor.ConfigRestAdaptorConstants;
 import org.onap.ccsdk.features.rest.adaptor.ConfigRestAdaptorException;
 import org.onap.ccsdk.features.rest.adaptor.data.RestResponse;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 

@@ -19,8 +19,6 @@ package org.onap.ccsdk.features.data.adaptor.service;
 
 import java.util.List;
 import java.util.Map;
-
-import org.onap.ccsdk.features.data.adaptor.dao.ConfigPropertyMapDao;
 import org.onap.ccsdk.features.data.adaptor.dao.ConfigResourceDao;
 import org.onap.ccsdk.features.data.adaptor.dao.NamedQueryExecutorDao;
 import org.onap.ccsdk.features.data.adaptor.dao.QueryExecutorDao;
@@ -40,19 +38,16 @@ public class ConfigResourceServiceImpl implements ConfigResourceService {
     private ConfigResourceDao configResourceDao;
     private QueryExecutorDao queryExecutorDao;
     private NamedQueryExecutorDao namedQueryExecutorDao;
-    private ConfigPropertyMapDao configPropertyMapDao;
 
     @SuppressWarnings("squid:S00107")
     public ConfigResourceServiceImpl(TransactionLogDao transactionLogDao, ConfigResourceDao configResourceDao,
-            QueryExecutorDao queryExecutorDao, NamedQueryExecutorDao namedQueryExecutorDao,
-            ConfigPropertyMapDao configPropertyMapDao) {
+            QueryExecutorDao queryExecutorDao, NamedQueryExecutorDao namedQueryExecutorDao) {
 
         logger.info("{} Constuctor Initated...", CLASS_NAME);
         this.transactionLogDao = transactionLogDao;
         this.configResourceDao = configResourceDao;
         this.queryExecutorDao = queryExecutorDao;
         this.namedQueryExecutorDao = namedQueryExecutorDao;
-        this.configPropertyMapDao = configPropertyMapDao;
     }
 
     @Override
@@ -104,11 +99,6 @@ public class ConfigResourceServiceImpl implements ConfigResourceService {
     @Override
     public ConfigResource saveConfigResource(ConfigResource configResource) throws SvcLogicException {
         return configResourceDao.save(configResource);
-    }
-
-    @Override
-    public String getConfigPropertyByKey(String key) throws SvcLogicException {
-        return configPropertyMapDao.getConfigPropertyByKey(key);
     }
 
 }

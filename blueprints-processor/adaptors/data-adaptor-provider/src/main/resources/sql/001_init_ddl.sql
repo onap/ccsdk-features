@@ -6,7 +6,6 @@ DROP TABLE sdnctl.CONFIG_RESOURCE_ASSIGNMENT_DATA;
 DROP TABLE sdnctl.CONFIG_RESOURCE;
 DROP TABLE sdnctl.CONFIG_RESOURCE_RELATION;
 DROP TABLE sdnctl.CONFIG_TRANSACTION_LOG
-DROP TABLE sdnctl.CONFIG_PROPERTY_MAP
 
 
 -- -----------------------------------------------------
@@ -95,12 +94,3 @@ CREATE TABLE IF NOT EXISTS sdnctl.CONFIG_RESOURCE_ASSIGNMENT_DATA (
    ON UPDATE NO ACTION
    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-
--- -----------------------------------------------------
--- table sdnctl.CONFIG_PROPERTY_MAP
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS sdnctl.CONFIG_PROPERTY_MAP (
-   reference_key  VARCHAR(100) NOT NULL,
-   reference_value  VARCHAR(250) NOT NULL,
-   CONSTRAINT PK_CONFIG_PROPERTY_MAP PRIMARY KEY (reference_key)
-   ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

@@ -30,7 +30,6 @@ import org.onap.ccsdk.features.model.data.NodeTemplate;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.features.model.utils.TopologicalSortingUtils;
 import org.onap.ccsdk.features.model.utils.TransformationUtils;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 

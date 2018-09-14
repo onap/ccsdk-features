@@ -142,6 +142,4 @@ public class ConfigModelConstant {
     public static final String EXPRESSION_GET_ATTRIBUTE = "get_attribute";
     public static final String EXPRESSION_SET_VALUE = "set_value";
 
-    public static final String CONFIG_PROPERTY_MAP_KEY_PREFIX = "org.onap.ccsdk.sli.adaptors.";
-
 }

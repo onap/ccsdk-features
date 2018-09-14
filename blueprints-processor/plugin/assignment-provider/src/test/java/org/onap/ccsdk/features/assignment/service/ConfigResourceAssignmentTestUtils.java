@@ -41,7 +41,6 @@ import org.onap.ccsdk.features.model.data.dict.ResourceDefinition;
 import org.onap.ccsdk.features.model.domain.ConfigModel;
 import org.onap.ccsdk.features.model.domain.ConfigModelContent;
 import org.onap.ccsdk.features.rest.adaptor.service.ConfigRestAdaptorService;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.fasterxml.jackson.core.type.TypeReference;

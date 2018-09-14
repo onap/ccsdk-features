@@ -20,7 +20,6 @@ package org.onap.ccsdk.features.assignment.data;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.sli.core.sli.SvcLogicContext;
 

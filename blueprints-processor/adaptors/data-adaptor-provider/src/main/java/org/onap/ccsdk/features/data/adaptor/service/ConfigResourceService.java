@@ -19,7 +19,6 @@ package org.onap.ccsdk.features.data.adaptor.service;
 
 import java.util.List;
 import java.util.Map;
-
 import org.onap.ccsdk.features.data.adaptor.domain.ConfigResource;
 import org.onap.ccsdk.features.data.adaptor.domain.TransactionLog;
 import org.onap.ccsdk.sli.core.sli.SvcLogicException;
@@ -126,15 +125,6 @@ public interface ConfigResourceService {
      * @throws org.onap.ccsdk.sli.core.sli.SvcLogicException if there is any problem issuing the insert
      */
     public ConfigResource saveConfigResource(ConfigResource configResource) throws SvcLogicException;
-
-    /**
-     * Query ConcurrentHashMap having CONFIG_PROPERTY_MAP table data for given key.
-     *
-     * @param key key mapped to a value
-     * @return the result string, containing mapped string value
-     * @throws org.onap.ccsdk.sli.core.sli.SvcLogicException if fails
-     */
-    public String getConfigPropertyByKey(String key) throws SvcLogicException;
 
     /**
      * Query CONFIG_TRANSACTION_LOG table for given request_id, mapping each row to a Java object via a

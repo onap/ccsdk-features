@@ -18,9 +18,7 @@
 package org.onap.ccsdk.features.model.data.dict;
 
 import java.util.Map;
-
 import org.onap.ccsdk.features.model.data.PropertyDefinition;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

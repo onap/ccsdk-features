@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.assignment.service;
 
 import java.util.List;
-
 import org.onap.ccsdk.features.assignment.data.ResourceAssignmentData;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.sli.core.sli.SvcLogicException;

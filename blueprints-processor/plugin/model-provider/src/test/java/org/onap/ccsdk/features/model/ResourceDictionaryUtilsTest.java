@@ -28,7 +28,6 @@ import org.onap.ccsdk.features.model.data.dict.ResourceDefinition;
 import org.onap.ccsdk.features.model.data.dict.SourcesDefinition;
 import org.onap.ccsdk.features.model.data.dict.SourcesProperties;
 import org.onap.ccsdk.features.model.utils.ResourceDictionaryUtils;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 

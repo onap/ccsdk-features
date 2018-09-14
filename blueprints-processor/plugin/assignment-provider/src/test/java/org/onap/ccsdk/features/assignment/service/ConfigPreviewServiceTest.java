@@ -38,7 +38,6 @@ import org.onap.ccsdk.features.generator.service.ConfigGeneratorServiceImpl;
 import org.onap.ccsdk.features.model.service.ConfigModelService;
 import org.onap.ccsdk.features.model.service.ConfigModelServiceImpl;
 import org.onap.ccsdk.features.rest.adaptor.service.ConfigRestAdaptorService;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 

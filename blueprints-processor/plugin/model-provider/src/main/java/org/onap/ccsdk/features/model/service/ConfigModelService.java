@@ -19,7 +19,6 @@ package org.onap.ccsdk.features.model.service;
 
 import java.util.List;
 import java.util.Map;
-
 import org.onap.ccsdk.features.model.data.ServiceTemplate;
 import org.onap.ccsdk.sli.core.sli.SvcLogicContext;
 import org.onap.ccsdk.sli.core.sli.SvcLogicException;

@@ -29,7 +29,6 @@ import org.onap.ccsdk.features.model.ValidTypes;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.features.model.utils.ResourceAssignmentUtils;
 import org.onap.ccsdk.features.model.utils.TransformationUtils;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -24,7 +24,6 @@ import org.onap.ccsdk.features.model.ConfigModelConstant;
 import org.onap.ccsdk.features.model.ConfigModelException;
 import org.onap.ccsdk.features.model.data.ServiceTemplate;
 import org.onap.ccsdk.features.model.utils.TransformationUtils;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 

@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.onap.ccsdk.features.model.ValidTypes;
 import org.onap.ccsdk.features.model.utils.JsonUtils;
-
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;

@@ -19,7 +19,6 @@ package org.onap.ccsdk.features.rest.adaptor.service;
 
 import java.util.Map;
 import java.util.UUID;
-
 import org.onap.ccsdk.features.rest.adaptor.ConfigRestAdaptorConstants;
 import org.onap.ccsdk.features.rest.adaptor.ConfigRestAdaptorException;
 import org.onap.ccsdk.features.rest.adaptor.data.RestResponse;

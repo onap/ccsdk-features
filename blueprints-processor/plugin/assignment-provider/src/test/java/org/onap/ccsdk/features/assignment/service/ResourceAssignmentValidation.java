@@ -29,7 +29,6 @@ import org.onap.ccsdk.features.model.ConfigModelException;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.features.model.utils.TransformationUtils;
 import org.onap.ccsdk.features.model.validator.ResourceAssignmentValidator;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 

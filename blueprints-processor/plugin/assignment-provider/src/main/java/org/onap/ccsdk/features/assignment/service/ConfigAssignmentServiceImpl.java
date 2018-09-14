@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.assignment.service;
 
 import java.util.List;
-
 import org.onap.ccsdk.features.assignment.data.ResourceAssignmentData;
 import org.onap.ccsdk.features.data.adaptor.service.ConfigResourceService;
 import org.onap.ccsdk.features.generator.service.ConfigGeneratorService;

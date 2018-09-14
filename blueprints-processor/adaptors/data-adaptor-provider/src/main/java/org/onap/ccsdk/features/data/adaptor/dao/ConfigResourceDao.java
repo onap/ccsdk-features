@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.data.adaptor.dao;
 
 import java.util.List;
-
 import org.onap.ccsdk.features.data.adaptor.domain.ConfigResource;
 import org.onap.ccsdk.sli.core.sli.SvcLogicException;
 
