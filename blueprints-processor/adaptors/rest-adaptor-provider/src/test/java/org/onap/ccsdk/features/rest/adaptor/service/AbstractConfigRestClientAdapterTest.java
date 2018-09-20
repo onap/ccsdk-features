@@ -35,7 +35,7 @@ public class AbstractConfigRestClientAdapterTest {
 
     @Before
     public void setup() throws Exception {
-        String propertyfile = "src/test/resources/config-rest-adaptor.properties";
+        String propertyfile = "src/test/resources/blueprints-processor-adaptor.properties";
 
         Properties restProperties = new Properties();
         restProperties.load(new FileInputStream(propertyfile));
