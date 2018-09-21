@@ -17,8 +17,11 @@
 
 package org.onap.ccsdk.features.model.data.dict;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SourcesDefinition {
 
     @JsonProperty(value = "type", required = true)

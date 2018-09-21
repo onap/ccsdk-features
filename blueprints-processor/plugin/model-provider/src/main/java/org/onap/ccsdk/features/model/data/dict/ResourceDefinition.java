@@ -24,22 +24,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ResourceDefinition {
-    private String tags;
 
     @JsonProperty(value = "name", required = true)
     private String name;
+    
+    @JsonProperty(value = "tags")
+    private String tags;
 
     @JsonProperty(value = "property")
     private PropertyDefinition property;
 
     @JsonProperty(value = "updated-by")
     private String updatedBy;
-
-    @JsonProperty(value = "resource-type", required = true)
-    private String resourceType;
-
-    @JsonProperty(value = "resource-path", required = true)
-    private String resourcePath;
 
     @JsonProperty(value = "sources", required = true)
     private Map<String, SourcesDefinition> sourcesDefinition;
@@ -74,22 +70,6 @@ public class ResourceDefinition {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public String getResourceType() {
-        return resourceType;
-    }
-
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
-    }
-
-    public String getResourcePath() {
-        return resourcePath;
-    }
-
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
     }
 
     public Map<String, SourcesDefinition> getSources() {

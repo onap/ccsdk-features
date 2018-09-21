@@ -19,15 +19,15 @@ package org.onap.ccsdk.features.model.data.dict;
 
 import java.util.List;
 import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SourcesProperties {
 
-    @JsonProperty(value = "name")
-    private String name;
-
-    @JsonProperty(value = "base")
-    private String base;
+    @JsonProperty(value = "key")
+    private String key;
 
     @JsonProperty(value = "type")
     private String type;
@@ -38,6 +38,9 @@ public class SourcesProperties {
     @JsonProperty(value = "url-path")
     private String urlPath;
 
+    @JsonProperty(value = "expression-type")
+    private String expressionType;
+    
     @JsonProperty(value = "path")
     private String path;
 
@@ -50,20 +53,12 @@ public class SourcesProperties {
     @JsonProperty("key-dependencies")
     private List<String> dependencies;
 
-    public String getName() {
-        return name;
+    public String getKey() {
+        return key;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getBase() {
-        return base;
-    }
-
-    public void setBase(String base) {
-        this.base = base;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getType() {
@@ -92,6 +87,14 @@ public class SourcesProperties {
 
     public String getPath() {
         return path;
+    }
+
+    public void setExpressionType(String expressionType) {
+        this.expressionType = expressionType;
+    }
+
+    public String getExpressionType() {
+        return expressionType;
     }
 
     public void setPath(String path) {

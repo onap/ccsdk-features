@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @version 1.0
  */
+
 public class PropertyDefinition {
     @JsonIgnore
     private String id;
