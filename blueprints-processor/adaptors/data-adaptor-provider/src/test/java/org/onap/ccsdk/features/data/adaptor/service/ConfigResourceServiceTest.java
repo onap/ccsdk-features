@@ -37,8 +37,6 @@ import org.onap.ccsdk.features.data.adaptor.dao.TransactionLogDao;
 import org.onap.ccsdk.features.data.adaptor.domain.ConfigResource;
 import org.onap.ccsdk.features.data.adaptor.domain.ResourceAssignmentData;
 import org.onap.ccsdk.features.data.adaptor.domain.TransactionLog;
-import org.onap.ccsdk.features.data.adaptor.service.ConfigResourceService;
-import org.onap.ccsdk.features.data.adaptor.service.ConfigResourceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

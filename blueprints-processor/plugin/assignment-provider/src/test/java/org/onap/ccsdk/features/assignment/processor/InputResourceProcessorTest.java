@@ -35,7 +35,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.onap.ccsdk.features.assignment.processor.InputResourceProcessor;
 import org.onap.ccsdk.features.assignment.service.ConfigResourceAssignmentTestUtils;
 import org.onap.ccsdk.features.data.adaptor.domain.TransactionLog;
 import org.onap.ccsdk.features.data.adaptor.service.ConfigResourceService;

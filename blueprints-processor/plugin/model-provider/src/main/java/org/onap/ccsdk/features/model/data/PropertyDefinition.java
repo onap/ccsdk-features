@@ -21,12 +21,15 @@ import java.util.HashMap;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * PropertyDefinition.java Purpose: Provide PropertyDefinition TOSCO Model POJO bean.
  *
  * @version 1.0
  */
+@JsonPropertyOrder({"id", "description", "required", "defaultValue", "type", "entry_schema", "status", "constraints",
+        "value"})
 public class PropertyDefinition {
     @JsonIgnore
     private String id;

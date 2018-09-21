@@ -28,7 +28,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.onap.ccsdk.features.data.adaptor.dao.ConfigResourceDao;
 import org.onap.ccsdk.features.data.adaptor.domain.ConfigResource;
 import org.onap.ccsdk.features.data.adaptor.domain.ResourceAssignmentData;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -19,7 +19,6 @@ package org.onap.ccsdk.features.model.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onap.ccsdk.features.model.utils.JsonParserUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonParserUtilsTest {
