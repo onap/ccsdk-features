@@ -65,7 +65,7 @@ public class ConfigBlueprintService {
 
         logger.info("Getting service template ({}) of version ({}) ", serviceTemplateName, serviceTemplateVersion);
 
-        String path = "configmodelbyname/" + serviceTemplateName + "/version/" + serviceTemplateVersion;
+        String path = "config-model/by-name/" + serviceTemplateName + "/version/" + serviceTemplateVersion;
 
         ConfigModel configModel = configRestAdaptorService
                 .getResource(ConfigRestAdaptorConstants.SELECTOR_MODEL_SERVICE, path, ConfigModel.class);
