@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.onap.ccsdk.features.model.data.ArtifactDefinition;
 import org.onap.ccsdk.features.model.data.CapabilityAssignment;
 import org.onap.ccsdk.features.model.data.NodeTemplate;
-import org.onap.ccsdk.features.model.utils.ServiceTemplateUtils;
 
 public class ServiceTemplateUtilsTest {
 

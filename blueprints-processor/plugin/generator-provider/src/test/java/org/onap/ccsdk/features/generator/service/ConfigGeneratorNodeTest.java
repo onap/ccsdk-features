@@ -39,7 +39,6 @@ import org.onap.ccsdk.features.data.adaptor.domain.ConfigResource;
 import org.onap.ccsdk.features.data.adaptor.domain.TransactionLog;
 import org.onap.ccsdk.features.data.adaptor.service.ConfigResourceService;
 import org.onap.ccsdk.features.generator.ConfigGeneratorConstant;
-import org.onap.ccsdk.features.generator.service.ConfigGeneratorNode;
 import org.onap.ccsdk.features.model.ConfigModelConstant;
 import org.onap.ccsdk.features.model.service.ConfigModelService;
 import org.onap.ccsdk.features.model.service.ConfigModelServiceImpl;

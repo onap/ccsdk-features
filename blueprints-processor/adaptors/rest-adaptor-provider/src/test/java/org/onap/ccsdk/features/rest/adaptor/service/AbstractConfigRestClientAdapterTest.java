@@ -25,9 +25,6 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.ccsdk.features.rest.adaptor.service.ConfigRestClientServiceAdapter;
-import org.onap.ccsdk.features.rest.adaptor.service.GenericRestClientAdapterImpl;
-import org.onap.ccsdk.features.rest.adaptor.service.SSLRestClientAdapterImpl;
 
 public class AbstractConfigRestClientAdapterTest {
 

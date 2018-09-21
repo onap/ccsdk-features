@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.Assert;
 import org.junit.Test;
-import org.onap.ccsdk.features.model.ValidTypes;
 import org.onap.ccsdk.features.model.data.PropertyDefinition;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;
 import org.onap.ccsdk.features.model.data.dict.ResourceDefinition;

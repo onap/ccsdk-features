@@ -33,7 +33,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.onap.ccsdk.features.assignment.processor.MdsalResourceProcessor;
 import org.onap.ccsdk.features.assignment.service.ConfigResourceAssignmentTestUtils;
 import org.onap.ccsdk.features.model.ConfigModelConstant;
 import org.onap.ccsdk.features.model.data.ResourceAssignment;

@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
-import org.onap.ccsdk.features.model.utils.TransformationUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class TransformationUtilsTest {

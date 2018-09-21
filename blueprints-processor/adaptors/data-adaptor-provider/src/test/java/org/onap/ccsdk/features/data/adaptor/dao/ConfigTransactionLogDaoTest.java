@@ -27,8 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.onap.ccsdk.features.data.adaptor.DataAdaptorConstants;
-import org.onap.ccsdk.features.data.adaptor.dao.NamedQueryExecutorDao;
-import org.onap.ccsdk.features.data.adaptor.dao.TransactionLogDao;
 import org.onap.ccsdk.features.data.adaptor.domain.TransactionLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

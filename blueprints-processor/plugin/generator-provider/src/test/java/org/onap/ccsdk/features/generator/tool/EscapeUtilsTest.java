@@ -19,7 +19,6 @@ package org.onap.ccsdk.features.generator.tool;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onap.ccsdk.features.generator.tool.EscapeUtils;
 
 public class EscapeUtilsTest {
 

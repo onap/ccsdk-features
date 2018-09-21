@@ -30,7 +30,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.onap.ccsdk.features.assignment.data.ResourceAssignmentData;
-import org.onap.ccsdk.features.assignment.service.ConfigPreviewService;
 import org.onap.ccsdk.features.data.adaptor.domain.ConfigResource;
 import org.onap.ccsdk.features.data.adaptor.service.ConfigResourceService;
 import org.onap.ccsdk.features.generator.service.ConfigGeneratorService;
