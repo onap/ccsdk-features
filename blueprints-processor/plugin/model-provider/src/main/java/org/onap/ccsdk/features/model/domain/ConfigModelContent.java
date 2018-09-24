@@ -28,7 +28,7 @@ public class ConfigModelContent {
     private String description;
     private String content;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-    private Date createdDate = new Date();
+    private Date creationDate = new Date();
 
     @Override
     public String toString() {
@@ -81,11 +81,11 @@ public class ConfigModelContent {
     }
 
     public Date getCreatedDate() {
-        return createdDate;
+        return creationDate;
     }
 
     public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+        this.creationDate = createdDate;
     }
 
 }
