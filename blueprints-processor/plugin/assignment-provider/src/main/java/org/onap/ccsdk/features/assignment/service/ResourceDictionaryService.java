@@ -83,7 +83,7 @@ public class ResourceDictionaryService {
         if (!names.isEmpty()) {
 
             String dictionaryContents = configRestAdaptorService.postResource(
-                    ConfigRestAdaptorConstants.SELECTOR_MODEL_SERVICE, "dictionarybynames", names, String.class);
+                    ConfigRestAdaptorConstants.SELECTOR_MODEL_SERVICE, "dictionary/by-names", names, String.class);
 
             if (StringUtils.isNotBlank(dictionaryContents)) {
                 List<ResourceDictionary> dataDictionaries =
