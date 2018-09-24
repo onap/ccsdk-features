@@ -27,7 +27,7 @@ public class ConfigModelContent {
     private String contentType;
     private String description;
     private String content;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy KK:mm:ss a Z")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date createdDate = new Date();
 
     @Override

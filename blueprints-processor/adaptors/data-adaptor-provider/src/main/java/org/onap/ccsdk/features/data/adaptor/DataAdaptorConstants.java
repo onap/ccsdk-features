@@ -23,7 +23,7 @@ public class DataAdaptorConstants {
     public static final String OUTPUT_STATUS_SUCCESS = "success";
     public static final String OUTPUT_STATUS_FAILURE = "failure";
 
-    public static final String PROPERTY_ENV_TYPE = "org.onap.ccsdk.features.rest.adaptors.envtype";
+    public static final String PROPERTY_ENV_TYPE = "org.onap.ccsdk.features.blueprints.adaptors.envtype";
     public static final String PROPERTY_ENV_PROD = "field";
     public static final String PROPERTY_ENV_SOLO = "solo";
 

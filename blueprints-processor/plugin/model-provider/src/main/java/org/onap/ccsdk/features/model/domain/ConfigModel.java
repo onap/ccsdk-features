@@ -39,7 +39,7 @@ public class ConfigModel implements Serializable {
     private String artifactVersion;
     private String artifactDescription;
     private Integer internalVersion;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy KK:mm:ss a Z")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date createdDate = new Date();
     private String artifactName;
     private String published;
