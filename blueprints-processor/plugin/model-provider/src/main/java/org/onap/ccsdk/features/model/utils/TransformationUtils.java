@@ -194,8 +194,7 @@ public class TransformationUtils {
     public static <T> List<T> getListfromJson(String content, Class<T> valueType) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            CollectionType javaType = mapper.getTypeFactory().constructCollectionType(List.class, valueType);
-            return mapper.readValue(content, javaType);
+            return mapper.readValue(content, new TypeReference<List<T>>(){});
         } catch (Exception e) {
             logger.warn("failed in getListfromJson for the content ({}) with error message ({}).", content,
                     e.getMessage());
