@@ -17,6 +17,7 @@
 
 package org.onap.ccsdk.features.model.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -31,7 +32,7 @@ public class ResourceDictionary implements Serializable {
     private String entrySchema;
     private String validValues;
     private String sampleValue;
-    private String definition;
+    private JsonNode definition;
     private String description;
     private String tags;
     private Date creationDate;
@@ -120,11 +121,7 @@ public class ResourceDictionary implements Serializable {
     }
 
     public String getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
+        return definition.asText();
     }
 
     public String getDescription() {
