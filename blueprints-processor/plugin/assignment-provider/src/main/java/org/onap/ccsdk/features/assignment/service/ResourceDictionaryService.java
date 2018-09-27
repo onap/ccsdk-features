@@ -51,11 +51,9 @@ public class ResourceDictionaryService {
                 List<String> names = new ArrayList<>();
                 for (ResourceAssignment resourceAssignment : resourceAssignments) {
                     if (resourceAssignment != null && StringUtils.isNotBlank(resourceAssignment.getDictionaryName())) {
-
                         if (!names.contains(resourceAssignment.getDictionaryName())) {
                             names.add(resourceAssignment.getDictionaryName());
                         }
-
                         if (resourceAssignment.getDependencies() != null
                                 && !resourceAssignment.getDependencies().isEmpty()) {
                             List<String> dependencieNames = resourceAssignment.getDependencies();
@@ -83,7 +81,7 @@ public class ResourceDictionaryService {
         if (!names.isEmpty()) {
 
             String dictionaryContents = configRestAdaptorService.postResource(
-                    ConfigRestAdaptorConstants.SELECTOR_MODEL_SERVICE, "dictionarybynames", names, String.class);
+                    ConfigRestAdaptorConstants.SELECTOR_MODEL_SERVICE, "dictionary/by-names", names, String.class);
 
             if (StringUtils.isNotBlank(dictionaryContents)) {
                 List<ResourceDictionary> dataDictionaries =
@@ -91,9 +89,9 @@ public class ResourceDictionaryService {
                 if (dataDictionaries != null) {
                     for (ResourceDictionary dataDictionary : dataDictionaries) {
                         if (dataDictionary != null && StringUtils.isNotBlank(dataDictionary.getName())
-                                && StringUtils.isNotBlank(dataDictionary.getDefinition())) {
+                                && !dataDictionary.getDefinition().isNull()) {
                             ResourceDefinition resourceDefinition = TransformationUtils
-                                    .readValue(dataDictionary.getDefinition(), ResourceDefinition.class);
+                                    .treeToValue(dataDictionary.getDefinition(), ResourceDefinition.class);
                             if (resourceDefinition != null && StringUtils.isNotBlank(resourceDefinition.getName())) {
                                 dictionaries.put(resourceDefinition.getName(), resourceDefinition);
                             } else {

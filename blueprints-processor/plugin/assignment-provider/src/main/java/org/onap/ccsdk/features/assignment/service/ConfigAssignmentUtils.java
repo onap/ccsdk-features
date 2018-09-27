@@ -56,14 +56,10 @@ public class ConfigAssignmentUtils {
 
     public static synchronized Object getContextKeyValue(SvcLogicContext context, String key) {
         Object value = null;
-        if (context != null && key != null) {
-            if (context.getAttributeKeySet().contains(key)) {
-                String strValue = context.getAttribute(key);
-                if (StringUtils.isNotBlank(strValue)) {
-                    value = strValue;
-                }
-            } else {
-                // Do Nothing
+        if (context != null && key != null && context.getAttributeKeySet().contains(key)) {
+            String strValue = context.getAttribute(key);
+            if (StringUtils.isNotBlank(strValue)) {
+                value = strValue;
             }
         }
         return value;
@@ -135,9 +131,9 @@ public class ConfigAssignmentUtils {
         ResourceDefinition resourceDefinition = null;
         if (dictionaries != null && StringUtils.isNotBlank(dictionaryName)) {
             ResourceDictionary resourceDictionary = dictionaries.get(dictionaryName);
-            if (resourceDictionary != null && StringUtils.isNotBlank(resourceDictionary.getDefinition())) {
+            if (resourceDictionary != null && !resourceDictionary.getDefinition().isNull()) {
                 resourceDefinition =
-                        TransformationUtils.readValue(resourceDictionary.getDefinition(), ResourceDefinition.class);
+                        TransformationUtils.treeToValue(resourceDictionary.getDefinition(), ResourceDefinition.class);
             }
         }
         return resourceDefinition;
