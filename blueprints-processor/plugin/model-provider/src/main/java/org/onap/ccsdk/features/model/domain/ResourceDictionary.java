@@ -17,21 +17,17 @@
 
 package org.onap.ccsdk.features.model.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.Serializable;
 import java.util.Date;
 
 public class ResourceDictionary implements Serializable {
     private static final long serialVersionUID = 1L;
-
     private Long id;
     private String name;
-    private String resourcePath;
-    private String resourceType;
     private String dataType;
     private String entrySchema;
-    private String validValues;
-    private String sampleValue;
-    private String definition;
+    private JsonNode definition;
     private String description;
     private String tags;
     private Date creationDate;
@@ -40,16 +36,9 @@ public class ResourceDictionary implements Serializable {
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder("[");
-        buffer.append("id = " + id);
-        buffer.append(", name = " + name);
-        buffer.append(", resourcePath = " + resourcePath);
-        buffer.append(", resourceType = " + resourceType);
+        buffer.append("name = " + name);
         buffer.append(", dataType = " + dataType);
         buffer.append(", entrySchema = " + entrySchema);
-        buffer.append(", validValues = " + validValues);
-        buffer.append(", definition =" + definition);
-        buffer.append(", description = " + description);
-        buffer.append(", tags = " + tags);
         buffer.append(", creationDate = " + creationDate);
         buffer.append("]");
         return buffer.toString();
@@ -71,22 +60,6 @@ public class ResourceDictionary implements Serializable {
         this.name = name;
     }
 
-    public String getResourcePath() {
-        return resourcePath;
-    }
-
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
-    }
-
-    public String getResourceType() {
-        return resourceType;
-    }
-
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
-    }
-
     public String getDataType() {
         return dataType;
     }
@@ -103,27 +76,11 @@ public class ResourceDictionary implements Serializable {
         this.entrySchema = entrySchema;
     }
 
-    public String getValidValues() {
-        return validValues;
-    }
-
-    public void setValidValues(String validValues) {
-        this.validValues = validValues;
-    }
-
-    public String getSampleValue() {
-        return sampleValue;
-    }
-
-    public void setSampleValue(String sampleValue) {
-        this.sampleValue = sampleValue;
-    }
-
-    public String getDefinition() {
+    public JsonNode getDefinition() {
         return definition;
     }
 
-    public void setDefinition(String definition) {
+    public void setDefinition(JsonNode definition) {
         this.definition = definition;
     }
 
