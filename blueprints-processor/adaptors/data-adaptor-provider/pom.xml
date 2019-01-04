@@ -13,33 +13,42 @@
 	<parent>
 		<groupId>org.onap.ccsdk.parent</groupId>
 		<artifactId>binding-parent</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.1-SNAPSHOT</version>
 		<relativePath/>
 	</parent>
 
 	<groupId>org.onap.ccsdk.features</groupId>
-	<version>0.4.0-SNAPSHOT</version>
+	<version>0.4.1-SNAPSHOT</version>
 	<artifactId>blueprints-data-adaptor-provider</artifactId>
 	<packaging>bundle</packaging>
 	<name>Blueprints Data Adaptor - Provider</name>
 	<url>http://maven.apache.org</url>
+	
+    <dependencyManagement>
+    	<dependencies>
+    		<dependency>
+    			<groupId>org.onap.ccsdk.sli.core</groupId>
+    			<artifactId>sli-core-artifacts</artifactId>
+    			<version>${ccsdk.sli.core.version}</version>
+    			<type>pom</type>
+    			<scope>import</scope>
+    		</dependency>
+    	</dependencies>
+    </dependencyManagement>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>${commons.lang3.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.onap.ccsdk.sli.core</groupId>
 			<artifactId>sli-provider</artifactId>
-			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
