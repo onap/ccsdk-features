@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>org.onap.ccsdk.sli.core</groupId>
 			<artifactId>sli-provider</artifactId>
-			<version>${project.version}</version>
+			<version>${ccsdk.sli.core.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
