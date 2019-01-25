@@ -23,6 +23,7 @@
 
 	<modules>
 		<module>features</module>
+		<module>sdnr/wt</module>
 		<module>blueprints-processor</module>
 	</modules>
 
