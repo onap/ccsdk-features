@@ -7,3 +7,11 @@ The API gateway provides WEB access to all wt related web service providers to p
   * /database to access elasticsearch
   * /aai to access AAI
   * /ms to access mediator servers
+
+## devicemodel
+
+Model classes, specified by ONF Model and provided as yang files for Java class generation for NETCONF devices.
+
+## websocketmanager
+
+Notification service for browser clients.
