@@ -1,13 +1,13 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
  * Modifications Copyright © 2018 IBM.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,9 @@ package org.onap.ccsdk.features.rest.adaptor.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,14 +35,17 @@ import org.onap.ccsdk.features.rest.adaptor.ConfigRestAdaptorException;
 import org.onap.ccsdk.features.rest.adaptor.data.RestResponse;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 
 public class ConfigRestAdaptorServiceImpl implements ConfigRestAdaptorService {
 
     private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigRestAdaptorServiceImpl.class);
     private Map<String, String> restProperties = new ConcurrentHashMap<>();
 
-    public ConfigRestAdaptorServiceImpl(String propertyPath) {
-        initializeProperties(propertyPath);
+    public ConfigRestAdaptorServiceImpl() {
+        loadProps();
         try {
             String envType = restProperties.get(ConfigRestAdaptorConstants.REST_ADAPTOR_BASE_PROPERTY
                     + ConfigRestAdaptorConstants.REST_ADAPTOR_ENV_TYPE);
@@ -47,9 +53,7 @@ public class ConfigRestAdaptorServiceImpl implements ConfigRestAdaptorService {
             if (!(ConfigRestAdaptorConstants.PROPERTY_ENV_PROD.equalsIgnoreCase(envType)
                     || ConfigRestAdaptorConstants.PROPERTY_ENV_SOLO.equalsIgnoreCase(envType))) {
                 ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-                Runnable task = () -> {
-                    initializeProperties(propertyPath);
-                };
+                Runnable task = this::loadProps;
                 executor.scheduleWithFixedDelay(task, 60, 15, TimeUnit.MINUTES);
             }
         } catch (Exception e) {
@@ -57,33 +61,30 @@ public class ConfigRestAdaptorServiceImpl implements ConfigRestAdaptorService {
         }
     }
 
-    private void initializeProperties(String propertyPath) {
-        logger.trace("Initialising Config rest adaptor Service with property directory ({})", propertyPath);
-        try {
-            if (StringUtils.isBlank(propertyPath)) {
-                propertyPath = System.getProperty(ConfigRestAdaptorConstants.SDNC_ROOT_DIR_ENV_VAR_KEY);
-            }
 
-            if (StringUtils.isBlank(propertyPath)) {
-                throw new ConfigRestAdaptorException(
-                        String.format("Failed to get the property directory (%s)", propertyPath));
-            }
-
-            // Loading Default config-rest-adaptor.properties
-            String propertyFile =
-                    propertyPath + File.separator + ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME;
-
-            Properties properties = new Properties();
-            properties.load(new FileInputStream(propertyFile));
-
-            logger.trace("Initializing properties details for property file ({}) properties ({})", propertyFile,
-                    properties);
-            restProperties.putAll(properties.entrySet().stream()
-                    .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString())));
-
+    private void loadProps() {
+        Properties properties = new Properties();
+        // Try to load config from dir
+        final String ccsdkConfigDir =
+            System.getProperty(ConfigRestAdaptorConstants.SDNC_ROOT_DIR_ENV_VAR_KEY) + File.separator + ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME;
+        try (FileInputStream in = new FileInputStream(ccsdkConfigDir)) {
+            properties.load(in);
+            logger.info("Loaded {} properties from file {}", properties.size(), ccsdkConfigDir);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            // Try to load config from jar
+            final Bundle bundle = FrameworkUtil.getBundle(ConfigRestAdaptorServiceImpl.class);
+            final BundleContext ctx = bundle.getBundleContext();
+            final URL url = ctx.getBundle().getResource(ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME);
+
+            try (InputStream inputStream = url.openStream()) {
+                properties.load(inputStream);
+                logger.info("Loaded {} properties from file {}", properties.size(), ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME);
+            } catch (IOException e1) {
+                logger.error("Failed to load properties for file: {} " + ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME, e1);
+            }
         }
+        restProperties.putAll(properties.entrySet().stream()
+            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString())));
     }
 
     @Override
