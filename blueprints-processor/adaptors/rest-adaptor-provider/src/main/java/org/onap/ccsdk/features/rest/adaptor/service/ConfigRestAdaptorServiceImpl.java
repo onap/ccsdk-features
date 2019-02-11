@@ -1,13 +1,13 @@
 /*
  * Copyright © 2017-2018 AT&T Intellectual Property.
  * Modifications Copyright © 2018 IBM.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,9 @@ package org.onap.ccsdk.features.rest.adaptor.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,24 +35,29 @@ import org.onap.ccsdk.features.rest.adaptor.ConfigRestAdaptorException;
 import org.onap.ccsdk.features.rest.adaptor.data.RestResponse;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 
 public class ConfigRestAdaptorServiceImpl implements ConfigRestAdaptorService {
 
     private static EELFLogger logger = EELFManager.getInstance().getLogger(ConfigRestAdaptorServiceImpl.class);
     private Map<String, String> restProperties = new ConcurrentHashMap<>();
 
-    public ConfigRestAdaptorServiceImpl(String propertyPath) {
-        initializeProperties(propertyPath);
+    public ConfigRestAdaptorServiceImpl() {
+        this(null);
+    }
+
+    public ConfigRestAdaptorServiceImpl(final String propertyFilePath) {
+        loadProps(propertyFilePath);
         try {
             String envType = restProperties.get(ConfigRestAdaptorConstants.REST_ADAPTOR_BASE_PROPERTY
-                    + ConfigRestAdaptorConstants.REST_ADAPTOR_ENV_TYPE);
+                + ConfigRestAdaptorConstants.REST_ADAPTOR_ENV_TYPE);
 
             if (!(ConfigRestAdaptorConstants.PROPERTY_ENV_PROD.equalsIgnoreCase(envType)
-                    || ConfigRestAdaptorConstants.PROPERTY_ENV_SOLO.equalsIgnoreCase(envType))) {
+                || ConfigRestAdaptorConstants.PROPERTY_ENV_SOLO.equalsIgnoreCase(envType))) {
                 ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-                Runnable task = () -> {
-                    initializeProperties(propertyPath);
-                };
+                Runnable task = () -> loadProps(propertyFilePath);
                 executor.scheduleWithFixedDelay(task, 60, 15, TimeUnit.MINUTES);
             }
         } catch (Exception e) {
@@ -57,52 +65,63 @@ public class ConfigRestAdaptorServiceImpl implements ConfigRestAdaptorService {
         }
     }
 
-    private void initializeProperties(String propertyPath) {
-        logger.trace("Initialising Config rest adaptor Service with property directory ({})", propertyPath);
-        try {
-            if (StringUtils.isBlank(propertyPath)) {
-                propertyPath = System.getProperty(ConfigRestAdaptorConstants.SDNC_ROOT_DIR_ENV_VAR_KEY);
-            }
 
-            if (StringUtils.isBlank(propertyPath)) {
-                throw new ConfigRestAdaptorException(
-                        String.format("Failed to get the property directory (%s)", propertyPath));
-            }
-
-            // Loading Default config-rest-adaptor.properties
+    // propertyFilePath is only specified in test case.
+    private void loadProps(final String propertyFilePath) {
+        Properties properties = new Properties();
+        if (propertyFilePath != null) {
+            // Loading Default properties
             String propertyFile =
-                    propertyPath + File.separator + ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME;
+                propertyFilePath + File.separator + ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME;
+            doLoadFromPath(propertyFile, properties);
+        } else {
+            // Try to load config from dir
+            final String ccsdkConfigDir =
+                System.getProperty(ConfigRestAdaptorConstants.SDNC_ROOT_DIR_ENV_VAR_KEY) + File.separator
+                    + ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME;
+            try (FileInputStream in = new FileInputStream(ccsdkConfigDir)) {
+                properties.load(in);
+                logger.info("Loaded {} properties from file {}", properties.size(), ccsdkConfigDir);
+            } catch (Exception e) {
+                // Try to load config from jar
+                final Bundle bundle = FrameworkUtil.getBundle(ConfigRestAdaptorServiceImpl.class);
+                final BundleContext ctx = bundle.getBundleContext();
+                final URL url = ctx.getBundle()
+                    .getResource(ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME);
+                doLoadFromPath(url.getPath(), properties);
+            }
+        }
+        restProperties.putAll(properties.entrySet().stream()
+            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString())));
+    }
 
-            Properties properties = new Properties();
-            properties.load(new FileInputStream(propertyFile));
-
-            logger.trace("Initializing properties details for property file ({}) properties ({})", propertyFile,
-                    properties);
-            restProperties.putAll(properties.entrySet().stream()
-                    .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString())));
-
+    private void doLoadFromPath(final String propertyFile, final Properties properties) {
+        try (FileInputStream in = new FileInputStream(propertyFile)) {
+            properties.load(in);
+            logger.info("Loaded {} properties from file {}", properties.size(), propertyFile);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Failed to load properties for file: {} "
+                + ConfigRestAdaptorConstants.REST_ADAPTOR_PROPERTIES_FILE_NAME, e);
         }
     }
 
     @Override
     public <T> T getResource(String serviceSelector, String path, Class<T> responseType)
-            throws ConfigRestAdaptorException {
+        throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).getResource(path, responseType);
     }
 
     @Override
     public <T> T postResource(String serviceSelector, String path, Object request, Class<T> responseType)
-            throws ConfigRestAdaptorException {
+        throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).postResource(path, request, responseType);
     }
 
     @Override
     public <T> T exchangeResource(String serviceSelector, String path, Object request, Class<T> responseType,
-            String method) throws ConfigRestAdaptorException {
+        String method) throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).exchangeResource(path, request, responseType,
-                method);
+            method);
     }
 
     @Override
@@ -112,20 +131,20 @@ public class ConfigRestAdaptorServiceImpl implements ConfigRestAdaptorService {
 
     @Override
     public RestResponse postResource(String serviceSelector, String path, Object request)
-            throws ConfigRestAdaptorException {
+        throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).postResource(path, request);
     }
 
     @Override
     public RestResponse exchangeResource(String serviceSelector, String path, Object request, String method)
-            throws ConfigRestAdaptorException {
+        throws ConfigRestAdaptorException {
         return getRestClientAdapterBySelectorName(serviceSelector).exchangeResource(path, request, method);
     }
 
     private ConfigRestClientServiceAdapter getRestClientAdapterBySelectorName(String serviceSelector)
-            throws ConfigRestAdaptorException {
+        throws ConfigRestAdaptorException {
         String adoptorType = restProperties.get(ConfigRestAdaptorConstants.REST_ADAPTOR_BASE_PROPERTY + serviceSelector
-                + ConfigRestAdaptorConstants.SERVICE_TYPE_PROPERTY);
+            + ConfigRestAdaptorConstants.SERVICE_TYPE_PROPERTY);
         if (StringUtils.isNotBlank(adoptorType)) {
             if (ConfigRestAdaptorConstants.REST_ADAPTOR_TYPE_GENERIC.equalsIgnoreCase(adoptorType)) {
                 return new GenericRestClientAdapterImpl(restProperties, serviceSelector);
@@ -133,12 +152,12 @@ public class ConfigRestAdaptorServiceImpl implements ConfigRestAdaptorService {
                 return new SSLRestClientAdapterImpl(restProperties, serviceSelector);
             } else {
                 throw new ConfigRestAdaptorException(
-                        String.format("no implementation for rest adoptor type (%s) for the selector (%s).",
-                                adoptorType, serviceSelector));
+                    String.format("no implementation for rest adoptor type (%s) for the selector (%s).",
+                        adoptorType, serviceSelector));
             }
         } else {
             throw new ConfigRestAdaptorException(
-                    String.format("couldn't get rest adoptor type for the selector (%s)", serviceSelector));
+                String.format("couldn't get rest adoptor type for the selector (%s)", serviceSelector));
         }
     }
 
