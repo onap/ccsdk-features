@@ -24,7 +24,6 @@
 
 	<bean id="configRestAdaptorService"
 		class="org.onap.ccsdk.features.rest.adaptor.service.ConfigRestAdaptorServiceImpl">
-		<argument value="/opt/onap/sdnc/data/properties" />
 	</bean>
 
 	<service ref="configRestAdaptorService"
