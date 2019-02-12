@@ -12,6 +12,22 @@ The API gateway provides WEB access to all wt related web service providers to p
 
 Model classes, specified by ONF Model and provided as yang files for Java class generation for NETCONF devices.
 
-## websocketmanager
+## websocketmanager2
 
 Notification service for browser clients.
+
+## devicemanager
+
+Management application for NETCONF devices.
+
+## odlux
+
+Web applications for user operations for devices
+
+## helpserver
+
+Providing help pages for related web applications
+
+## featureaggregator
+
+karaf feature with name sdnr-wt-feature-aggregator to start all services.
