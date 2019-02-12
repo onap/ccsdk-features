@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
  * ============LICENSE_START=======================================================
- * ONAP : CCSDK.apps.sdnr.wt
+ * ONAP : CCSDK.feature.sdnr.wt
  * ================================================================================
- * Copyright (C) 2018 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,32 +18,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-        <parent>
-                <groupId>org.onap.ccsdk.parent</groupId>
-                <artifactId>odlparent-lite</artifactId>
-                <version>1.2.1-SNAPSHOT</version>
-                <relativePath/>
-        </parent>
-
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>sdnr-wt</artifactId>
+    <artifactId>sdnr-wt-feature-aggregator-top</artifactId>
     <version>0.4.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>ccsdk-sdnr-wireless transport :: micro-services</name>
-    <description>SDN-R wireless transport micro-services</description>
+    <name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
 
     <modules>
-      <module>apigateway</module>
-      <module>devicemodel</module>
-      <module>websocketmanager2</module>
-      <module>helpserver</module>
-      <module>devicemanager</module>
-      <module>odlux</module>
-      <module>featureaggregator</module>
+        <module>feature</module>
+        <module>installer</module>
     </modules>
-</project>
 
+</project>
