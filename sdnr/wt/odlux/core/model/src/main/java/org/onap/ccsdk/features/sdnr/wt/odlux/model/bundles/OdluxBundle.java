@@ -83,7 +83,7 @@ public class OdluxBundle {
         LOG.info("Registering resources");
         try {
             List<String> resources = this.getResourceFiles("/odlux");
-            if (resources.size() > 0) {
+            if (resources.isEmpty()) {
                 for (String res : resources) {
                     LOG.debug("found res " + res);
                 }
@@ -132,15 +132,12 @@ public class OdluxBundle {
             return null;
         LOG.debug("try to load res " + url.toString());
         StringBuilder sb = new StringBuilder();
-        BufferedReader in;
-        try {
-            in = new BufferedReader(new InputStreamReader(url.openStream()));
+        try(BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));) {
 
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
                 sb.append(inputLine + LR);
             }
-            in.close();
         } catch (IOException e) {
             LOG.warn("could not load resfile " + url.toString() + ": " + e.getMessage());
             return null;

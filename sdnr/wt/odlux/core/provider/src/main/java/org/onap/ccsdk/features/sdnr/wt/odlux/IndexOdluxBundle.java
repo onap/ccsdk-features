@@ -60,9 +60,7 @@ public class IndexOdluxBundle extends OdluxBundle {
 		LOG.debug("try to load res " + url.toString());
 		StringBuilder sb = new StringBuilder();
 		Matcher matcher;
-		BufferedReader in;
-		try {
-			in = new BufferedReader(new InputStreamReader(url.openStream()));
+		try(BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));) {
 
 			String inputLine;
 			if (bundles == null) {
