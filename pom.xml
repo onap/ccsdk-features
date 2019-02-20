@@ -25,6 +25,7 @@
 		<module>features</module>
 		<module>sdnr/wt</module>
 		<module>blueprints-processor</module>
+		<module>aafshiro</module>
 	</modules>
 
 	<scm>
