@@ -14,39 +14,35 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.onap.ccsdk.parent</groupId>
 		<artifactId>single-feature-parent</artifactId>
 		<version>1.2.1-SNAPSHOT</version>
-		<relativePath/>
+		<relativePath />
 	</parent>
 
 	<groupId>org.onap.ccsdk.features</groupId>
-	<artifactId>ccsdk-features-all</artifactId>
+	<artifactId>ccsdk-aafshiro</artifactId>
 	<version>0.4.1-SNAPSHOT</version>
 	<packaging>feature</packaging>
 
-	<name>ccsdk-features :: features :: ${project.artifactId}</name>
+	<name>ccsdk-features :: aafshiro :: ${project.artifactId}</name>
 
+	<properties>
+		<aaf-shiro-bundle.version>2.1.13</aaf-shiro-bundle.version>
+		<skip.karaf.featureTest>true</skip.karaf.featureTest>
+	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.onap.ccsdk.features</groupId>
-			<artifactId>ccsdk-blueprints-processor</artifactId>
-			<version>${project.version}</version>
-			<type>xml</type>
-			<classifier>features</classifier>
+			<groupId>org.onap.aaf.cadi</groupId>
+			<artifactId>aaf-shiro-aafrealm-osgi-bundle</artifactId>
+			<version>${aaf-shiro-bundle.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.onap.ccsdk.features</groupId>
-			<artifactId>ccsdk-aafshiro</artifactId>
-			<version>${project.version}</version>
-			<type>xml</type>
-			<classifier>features</classifier>
-		</dependency>
-
 	</dependencies>
 </project>
