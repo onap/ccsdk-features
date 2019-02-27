@@ -15,48 +15,54 @@
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles;
+package org.onap.ccsdk.features.sdnr.wt.odlux.bundles;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles.OdluxBundle;
+import org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles.OdluxBundleLoader;
 
-public class OdluxBundleLoaderImpl implements OdluxBundleLoader {
+public class MyOdluxBundle extends OdluxBundle {
 
-    final static Logger LOG = LoggerFactory.getLogger(OdluxBundleLoaderImpl.class);
-    private static OdluxBundleLoaderImpl mObj;
-
-    public static OdluxBundleLoaderImpl getInstance() {
-        if (mObj == null)
-            mObj = new OdluxBundleLoaderImpl();
-        return mObj;
-    }
-
-    private final List<OdluxBundle> bundles;
-
-    public synchronized List<OdluxBundle> getBundles() {
-        return this.bundles;
-    }
-
-    public OdluxBundleLoaderImpl() {
-        this.bundles = Collections.synchronizedList(new ArrayList<OdluxBundle>());
-        mObj = this;
+    @Override
+    public void initialize() {
+        super.initialize();
     }
 
     @Override
-    public synchronized void addBundle(OdluxBundle bundle) {
-        LOG.debug("odlux bundle " + bundle.getBundleName() + " added");
-        this.bundles.add(bundle);
-
+    public void clean() {
+        super.clean();
     }
 
     @Override
-    public synchronized void removeBundle(OdluxBundle bundle) {
-        this.bundles.remove(bundle);
-        LOG.debug("odlux bundle " + bundle.getBundleName() + " removed");
-
+    public String getResourceFileContent(String filename) {
+        return super.getResourceFileContent(filename);
     }
 
+    @Override
+    public boolean hasResource(String filename) {
+        return super.hasResource(filename);
+    }
+
+    @Override
+    public void setBundleName(String bundleName) {
+        super.setBundleName(bundleName);
+    }
+
+    @Override
+    public void setLoader(OdluxBundleLoader loader) {
+        super.setLoader(loader);
+    }
+
+    @Override
+    public String getBundleName() {
+        return super.getBundleName();
+    }
+
+    @Override
+    public OdluxBundleLoader getLoader() {
+        return super.getLoader();
+    }
+
+    public MyOdluxBundle() {
+        super();
+    }
 }
