@@ -15,36 +15,24 @@
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl;
-import javax.annotation.Nonnull;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
-public interface DeviceManagerService {
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.listener.ODLEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    public enum Action {
-        CREATE,
-        REMOVE,
-        UPDATE
+/**
+ * WrapperMock class for web-socket notifications to the web-socket service.
+ */
+public class WebSocketServiceClientDummyImpl implements WebSocketServiceClient {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ODLEventListener.class);
+
+    public WebSocketServiceClientDummyImpl() {
     }
-    /**
-     * Mountpoint was created or existing. Managed device is now fully connected to node/mountpoint.
-     * @param action provide action
-     * @param nNodeId id of the mountpoint
-     * @param nNode mountpoint contents
-     */
-    void startListenerOnNodeForConnectedState(@Nonnull  Action action, @Nonnull NodeId nNodeId, @Nonnull NetconfNode nNode);
 
-    /**
-     * Mountpoint created or existing. Managed device is actually disconnected from node/ mountpoint.
-     * @param nNodeId id of the mountpoint
-     * @param nNode mountpoint contents
-     */
-    void enterNonConnectedState(@Nonnull NodeId nNodeId, @Nonnull NetconfNode nNode);
-
-    /**
-     * Mountpoint removed indication.
-     * @param nNodeId id of the mountpoint
-     */
-    void removeMountpointState(@Nonnull NodeId nNodeId);
+    @Override
+    public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(String nodeName, T notificationXml) {
+        LOG.info("Dummy to send websocket event {} for mountpoint {}", notificationXml.getClass().getSimpleName(), nodeName);
+    }
 }

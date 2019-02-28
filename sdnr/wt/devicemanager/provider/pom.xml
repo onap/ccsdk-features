@@ -46,20 +46,12 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.opendaylight.controller</groupId>
-        <artifactId>mdsal-artifacts</artifactId>
-        <version>1.6.1</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>sdnr-wt-devicemanager-model</artifactId>
@@ -76,12 +68,34 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>sal-binding-api</artifactId>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
     </dependency>
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.mdsal</groupId> -->
+<!--       <artifactId>mdsal-binding-dom-adapter</artifactId> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.mdsal</groupId> -->
+<!--       <artifactId>mdsal-dom-spi</artifactId> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.controller</groupId> -->
+<!--       <artifactId>sal-binding-api</artifactId> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.netconf</groupId> -->
+<!--       <artifactId>sal-netconf-connector</artifactId> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--       <groupId>org.opendaylight.mdsal</groupId> -->
+<!--       <artifactId>mdsal-dom-broker</artifactId> -->
+<!--     </dependency> -->
     <dependency>
       <groupId>org.opendaylight.netconf</groupId>
       <artifactId>sal-netconf-connector</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
@@ -293,49 +307,49 @@
       <groupId>org.elasticsearch.plugin</groupId>
       <artifactId>delete-by-query</artifactId>
       <version>2.2.0</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
+        <filtering>true</filtering>
       </resource>
-      <resource>
-        <directory>target/plugins</directory>
-        <targetPath>elasticsearch/plugins</targetPath>
-      </resource>
+<!--       <resource> -->
+<!--         <directory>${project.build.directory}/plugins</directory> -->
+<!--         <targetPath>elasticsearch/plugins</targetPath> -->
+<!--       </resource> -->
     </resources>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-plugin</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.elasticsearch.plugin</groupId>
-                  <artifactId>delete-by-query</artifactId>
-                  <version>2.2.0</version>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.basedir}/target/plugins/delete-by-query</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-              <includes>**/*</includes>
-              <overWriteReleases>true</overWriteReleases>
-              <overWriteSnapshots>true</overWriteSnapshots>
-              <excludeTransitive>true</excludeTransitive>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+<!--       <plugin> -->
+<!--         <groupId>org.apache.maven.plugins</groupId> -->
+<!--         <artifactId>maven-dependency-plugin</artifactId> -->
+<!--         <executions> -->
+<!--           <execution> -->
+<!--             <id>copy-plugin</id> -->
+<!--             <phase>generate-sources</phase> -->
+<!--             <goals> -->
+<!--               <goal>copy</goal> -->
+<!--             </goals> -->
+<!--             <configuration> -->
+<!--               <artifactItems> -->
+<!--                 <artifactItem> -->
+<!--                   <groupId>org.elasticsearch.plugin</groupId> -->
+<!--                   <artifactId>delete-by-query</artifactId> -->
+<!--                   <version>2.2.0</version> -->
+<!--                   <type>jar</type> -->
+<!--                   <overWrite>true</overWrite> -->
+<!--                   <outputDirectory>${project.build.directory}/plugins/delete-by-query</outputDirectory> -->
+<!--                 </artifactItem> -->
+<!--               </artifactItems> -->
+<!--               <includes>**/*</includes> -->
+<!--               <overWriteReleases>true</overWriteReleases> -->
+<!--               <overWriteSnapshots>true</overWriteSnapshots> -->
+<!--               <excludeTransitive>true</excludeTransitive> -->
+<!--             </configuration> -->
+<!--           </execution> -->
+<!--         </executions> -->
+<!--       </plugin> -->
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -349,7 +363,7 @@
               org.opendaylight.yangtools.concepts;version="[2.0,3)",
               org.opendaylight.yangtools.yang.binding;version="[0.12,1)",
               org.opendaylight.yangtools.yang.common;version="[2.0,3)",
-              org.osgi.framework;version="[1.7,2)",
+              org.osgi.framework,
               org.osgi.service.blueprint.container,
               org.slf4j;version="[1.7,2)",
               org.slf4j.spi;version="[1.7,2)",
@@ -400,7 +414,6 @@
               org.jboss.netty.util;version="[3.10,4)",
 
               org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105,
-
               org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714;version="[1.4,2)",
               org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset.rev170208;version="[0.3,1)",
               org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset.rev170208.port.ds.entry;version="[0.3,1)",
@@ -454,11 +467,12 @@
               org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology;version="[2013.10,2014)",
               org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology;version="[2013.10,2014)"
             </Import-Package>
-            <Embed-Dependency>jackson*,ela*,joda*,Hdr*,lucene*,
+            <Embed-Dependency>jackson*,ela*,delete-by-query,joda*,Hdr*,lucene*,
               hppc,jsr166e,t-digest,snakeyaml,securesm,spatial4j,compress-lzf,commons-cli,jakarta-regexp,
               commons-lang3,commons-collections,commons-logging,commons-beanutils</Embed-Dependency>
             <Include-Resource>{maven-resources},{maven-dependencies},META-INF/git.properties=-target/classes/META-INF/git.properties</Include-Resource>
             <Embed-Transitive>true</Embed-Transitive>
+            <Export-Package>org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.*</Export-Package>
           </instructions>
         </configuration>
       </plugin>

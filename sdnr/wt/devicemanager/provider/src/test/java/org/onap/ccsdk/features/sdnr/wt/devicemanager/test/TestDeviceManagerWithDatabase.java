@@ -25,6 +25,8 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("deprecation")
 public class TestDeviceManagerWithDatabase {
 
     private static int DATABASETIMEOUTSECONDS = 30;
@@ -89,22 +92,26 @@ public class TestDeviceManagerWithDatabase {
         RpcProviderRegistry rpcProviderRegistry = new RpcProviderRegistryMock();
 
         //start using blueprint interface
-        deviceManager = new DeviceManagerImpl();
-
-        deviceManager.setDataBroker(dataBrokerNetconf);
-        deviceManager.setMountPointService(mountPointService);
-        deviceManager.setNotificationPublishService(notificationPublishService);
-        deviceManager.setRpcProviderRegistry(rpcProviderRegistry);
-
+        String msg = "";
         try {
+            deviceManager = new DeviceManagerImpl();
+
+            deviceManager.setDataBroker(dataBrokerNetconf);
+            deviceManager.setMountPointService(mountPointService);
+            deviceManager.setNotificationPublishService(notificationPublishService);
+            deviceManager.setRpcProviderRegistry(rpcProviderRegistry);
+
             deviceManager.init();
         } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            msg = sw.toString(); // stack trace as a string
             e.printStackTrace();
         }
-
         readOnlyTransaction.close();
         System.out.println("Initialization status: "+deviceManager.isDevicemanagerInitializationOk());
-        assertTrue("Devicemanager not initialized", deviceManager.isDevicemanagerInitializationOk());
+        assertTrue("Devicemanager not initialized: "+msg, deviceManager.isDevicemanagerInitializationOk());
         System.out.println("Initialization done");
 
     }
@@ -159,7 +166,7 @@ public class TestDeviceManagerWithDatabase {
         mountPoint.setDatabrokerAbsent(true);
         NodeId nodeId = new NodeId("mountpointTest2");
         try {
-            deviceManager.startListenerOnNodeForConnectedState(Action.ADD, nodeId, nNode);
+            deviceManager.startListenerOnNodeForConnectedState(Action.CREATE, nodeId, nNode);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception received.");
@@ -186,7 +193,7 @@ public class TestDeviceManagerWithDatabase {
         System.out.println("Node capabilites: "+capabilities);
 
         try {
-            deviceManager.startListenerOnNodeForConnectedState(Action.ADD, nodeId, nNode);
+            deviceManager.startListenerOnNodeForConnectedState(Action.CREATE, nodeId, nNode);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception received.");
@@ -219,7 +226,7 @@ public class TestDeviceManagerWithDatabase {
         System.out.println("Node capabilites: "+capabilities);
 
         try {
-            deviceManager.startListenerOnNodeForConnectedState(Action.ADD, nodeId, nNode);
+            deviceManager.startListenerOnNodeForConnectedState(Action.CREATE, nodeId, nNode);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception received.");
@@ -253,7 +260,7 @@ public class TestDeviceManagerWithDatabase {
         System.out.println("Node capabilites: "+capabilities);
 
         try {
-            deviceManager.startListenerOnNodeForConnectedState(Action.ADD, nodeId, nNode);
+            deviceManager.startListenerOnNodeForConnectedState(Action.CREATE, nodeId, nNode);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception received.");
