@@ -3,6 +3,7 @@
 .checkstyle
 .classpath
 .project
+.fbExcludeFilterFile
 .settings/
 target/
 target-ide/
