@@ -22,17 +22,14 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.test.mock;
 
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * @author herbert
@@ -74,10 +71,5 @@ public class DataBrokerNetconfMock implements DataBroker {
         return null;
     }
 
-    @Override
-    public ListenerRegistration<DataChangeListener> registerDataChangeListener(LogicalDatastoreType store,
-            InstanceIdentifier<?> path, DataChangeListener listener, DataChangeScope triggeringScope) {
-        return null;
-    }
 
 }
