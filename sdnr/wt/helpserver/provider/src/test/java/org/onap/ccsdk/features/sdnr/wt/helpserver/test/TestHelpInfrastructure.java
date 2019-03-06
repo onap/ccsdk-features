@@ -6,36 +6,42 @@
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.helpserver.data;
+package org.onap.ccsdk.features.sdnr.wt.helpserver.test;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
-import java.util.Map;
+import static org.junit.Assert.fail;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.helpserver.data.HelpInfrastructureObject;
 
-public class Environment {
+public class TestHelpInfrastructure {
 
-	public static String getVar(String v)
-	{
-		if(v.equals("$HOSTNAME"))
-			try {
-				return Inet4Address.getLocalHost().getHostName();
-			} catch (UnknownHostException e) {
+    @Test
+    public void test() {
 
-			}
-		Map<String, String> env = System.getenv();
-        for (String envName : env.keySet()) {
-           if(envName!=null && envName.equals(v))
-              return env.get(envName);
+        final ClassLoader loader = this.getClass().getClassLoader();
+        URL url = loader.getResource("help/meta.json");
+        Path path;
+        try {
+            path = Paths.get(url.toURI());
+            HelpInfrastructureObject helpInfrastuctureObject = new HelpInfrastructureObject(path);
+            System.out.println("Help: "+helpInfrastuctureObject);
+        } catch (URISyntaxException e) {
+            fail(e.getMessage());
         }
-        return null;
-	}
+
+
+    }
+
 }
