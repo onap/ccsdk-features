@@ -1,0 +1,97 @@
+module oofpcipoc-api {
+    yang-version "1.1";
+    namespace "org:onap:ccsdk";
+    prefix "oofpcipoc-api";
+
+  import oofpcipoc {
+    prefix oofpcipoc;
+    revision-date "2019-03-08";
+  }
+
+  organization
+    "ONAP";
+  contact
+    "Editors:  Sandeep Shah <mailto:sandeep.shah2@techmahindra.com> Martin Skorupski <mailto:martin.skorupski@highstreet-technologies.com> ";
+
+  description
+    "This module contains a collection of YANG definitions for managing radio access network (RAN) devices.";
+
+  revision 2019-03-08 {
+    description
+      "Added new API's to support ANR use case";
+    reference
+      "";
+  }
+
+  revision 2018-11-27 {
+    description
+      "oofpcipoc api definition ";
+    reference
+      "";
+  }
+
+
+  rpc greeting {
+    description
+      "For testing";
+  input {
+    leaf salutation {
+      type string;
+    description
+      "salutation";
+    }
+  }
+  output {
+    leaf response {
+      type string;
+    description
+      "Hello response";
+      }
+    }
+  }
+
+  rpc configuration-phy-cell-id {
+    description
+      "Configure PCI value of a specific cell in Radio Access Network (RAN)";
+    input {
+      uses oofpcipoc:configuration-phy-cell-id-request;
+    }
+    output {
+      uses oofpcipoc:oofpcipoc-rpc-response;
+    }
+  }
+
+  rpc generic-neighbor-configuration {
+    description
+      "Configure properties of a neighbor of a cell";
+    input {
+      uses oofpcipoc:generic-neighbor-configuration-request;
+    }
+    output {
+      uses oofpcipoc:oofpcipoc-rpc-response;
+    }
+  }
+
+  rpc add-neighbor {
+    description
+      "Add a neighbor (or neighbors) to a specific cell";
+    input {
+      uses oofpcipoc:add-neighbor-request;
+    }
+    output {
+      uses oofpcipoc:oofpcipoc-rpc-response;
+    }
+  }
+
+  rpc delete-neighbor {
+    description
+      "Delete a neighbor (or neighbors) of a specific cell";
+    input {
+      uses oofpcipoc:delete-neighbor-request;
+    }
+    output {
+      uses oofpcipoc:oofpcipoc-rpc-response;
+    }
+  }
+
+}
