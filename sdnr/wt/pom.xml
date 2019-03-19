@@ -41,9 +41,7 @@
       <module>websocketmanager2</module>
       <module>helpserver</module>
       <module>devicemanager</module>
-<!--
       <module>odlux</module>
--->
       <module>featureaggregator</module>
     </modules>
 </project>
