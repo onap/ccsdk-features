@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<parent>
 		<groupId>org.onap.ccsdk.parent</groupId>
 		<artifactId>odlparent</artifactId>
 		<version>1.2.2-SNAPSHOT</version>
-		<relativePath/>
+		<relativePath />
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
@@ -13,6 +15,12 @@
 	<version>0.4.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>sdnr-wt-odlux-framework</name>
+	<properties>
+		<buildtime>${maven.build.timestamp}</buildtime>
+		<distversion>ONAP Dublin (Flourine-SR2)</distversion>
+		<buildno>6.aa84511(19/03/28)</buildno>
+		<odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
+	</properties>
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
@@ -74,7 +82,7 @@
 						</goals>
 						<phase>initialize</phase>
 						<configuration>
-							<arguments>-W add lerna</arguments>
+							<arguments>add lerna@3.13.1 -W --exact</arguments>
 							<installDirectory>${project.basedir}</installDirectory>
 							<workingDirectory>${project.basedir}/../</workingDirectory>
 						</configuration>
@@ -105,6 +113,32 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.2</version>
+				<executions>
+					<execution>
+						<id>replace version</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<basedir>${project.build.directory}/classes/odlux</basedir>
+					<includes>
+						<include>app.js</include>
+					</includes>
+					<replacements>
+						<replacement>
+							<token>##odlux.version##</token>
+							<value>${odlux.version}</value>
+						</replacement>
+					</replacements>
+				</configuration>
 			</plugin>
 		</plugins>
 		<resources>

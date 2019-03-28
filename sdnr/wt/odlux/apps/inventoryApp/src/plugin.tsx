@@ -9,9 +9,9 @@ import { Dashboard } from  './views/dashboard';
 
 export function register() {
   applicationManager.registerApplication({
-    name: "inventoryApp",
+    name: "inventory",
     icon: faShoppingBag,
     rootComponent: Dashboard,
-    menuEntry: "Inventory App"
+    menuEntry: "Inventory"
   });
 }
