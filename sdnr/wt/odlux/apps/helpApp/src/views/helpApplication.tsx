@@ -11,8 +11,8 @@ import { Markdown } from "../components/markdown";
 import '!style-loader!css-loader!github-markdown-css/github-markdown.css'
 
 const mapProps = (state: IApplicationStoreState) => ({
-  content: state.helpApp.content,
-  currentPath: state.helpApp.currentPath
+  content: state.help.content,
+  currentPath: state.help.currentPath
 });
 
 type HelpApplicationComponentProps = Connect<typeof mapProps>;
@@ -22,27 +22,27 @@ class HelpApplicationComponent extends React.Component<HelpApplicationComponentP
   /**
    * Initializes a new instance.
    */
-  constructor(props: HelpApplicationComponentProps) {
+  constructor (props: HelpApplicationComponentProps) {
     super(props);
-    
+
     this.renderer = new marked.Renderer();
 
     this.renderer.link = (href: string, title: string, text: string) => {
       // check if href is rel or abs
       const absUrlMatch = href.trim().match(/^https?:\/\//i);
-      return `<a href="${ absUrlMatch ? href : resolvePath('#/helpApp/', this.props.currentPath || '/', href) }" title="${ title }" >${ text }</a>`
+      return `<a href="${absUrlMatch ? href : resolvePath('#/help/', this.props.currentPath || '/', href)}" title="${title}" >${text}</a>`
     };
 
     this.renderer.image = (href: string, title: string) => {
-      return `<img src="${ resolvePath('/help/', this.props.currentPath || '/',  href) }" alt="${ title }" />`
+      return `<img src="${resolvePath('/help/', this.props.currentPath || '/', href)}" alt="${title}" />`
     };
 
   }
 
   render(): JSX.Element {
     return this.props.content ? (
-      <Markdown text={ this.props.content } markedOptions={ { renderer: this.renderer } } className="markdown-body" 
-         style={{ maxWidth: "960px", margin: "1.5em auto" }} />
+      <Markdown text={this.props.content} markedOptions={{ renderer: this.renderer }} className="markdown-body"
+        style={{ maxWidth: "960px", margin: "1.5em auto" }} />
     ) : (<h2>Loading ...</h2>)
   }
 

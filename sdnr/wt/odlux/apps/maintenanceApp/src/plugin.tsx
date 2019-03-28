@@ -16,11 +16,11 @@ const App : React.SFC = (props) => {
 
 export function register() {
   applicationManager.registerApplication({
-    name: "maintenanceApp",
+    name: "maintenance",
     icon: faLock,
     rootComponent: App,
     rootActionHandler: maintenanceAppRootHandler,
-    menuEntry: "Maintenance App"
+    menuEntry: "Maintenance"
   });
 }
 
