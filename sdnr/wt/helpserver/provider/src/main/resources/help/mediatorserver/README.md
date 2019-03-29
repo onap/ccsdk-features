@@ -1,7 +1,7 @@
 # MediatorServer
 
 ## Description
-The mediator server is the physical device on which multiple instances of the [mediators](mediator/) are running. Additionally a small webserver provides an API to control and create the mediators via HTTP-API. These mediators are translating the requests and responses between the SDN-Controller(netconf) and the device(snmp). Because of the restricted snmp protocol (port 162 only) we have to implement a prerouting automatism that forwards the alarms sent by the devices to another local port so that each mediator only gets the alarms of its device.
+The mediator server is the physical device on which multiple instances of the [mediators](mediator/README.md) are running. Additionally a small webserver provides an API to control and create the mediators via HTTP-API. These mediators are translating the requests and responses between the SDN-Controller(netconf) and the device(snmp). Because of the restricted snmp protocol (port 162 only) we have to implement a prerouting automatism that forwards the alarms sent by the devices to another local port so that each mediator only gets the alarms of its device.
 
 
 

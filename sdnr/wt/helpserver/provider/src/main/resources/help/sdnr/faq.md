@@ -1,6 +1,6 @@
 # Frequently asked questions
 
-- - -
+
 
 ## Which browser should I use to operate Opendaylight SDN-R User interface?
 
@@ -49,4 +49,24 @@ grep -anr --include=*.log* "Unable to read NE data for mountpoint" . | grep 2018
 grep -anr --include=*.log* "LKCYFL79Q01M01MSS801" . | grep 2018 >> 09-LKCYFL79Q01M01MSS801.txt
 ```
 
-- - -
+
+## How to report an odlux issue
+
+If you would like to report an odlux issue which you have noticed in the Graphical User Interface, please provide the following information:
+
+1. **Description**: In which application you have noticed the issue?
+
+2. **Environment**: 
+    - Which browser is used and the version of the browser.  eg: *Google chrome - version 71.0.3578.80  / Mozilla Firefox.*
+    - Which Operating system and version. eg: *Linux/ Windows 10 -  version 1803.* 
+    - In which language you are using the application. 
+    - The application URL which is available on the browser address bar.  eg: *http://hostname/odlux/index.html#/connectApp* 
+
+3. **Expected Result**: What is the expected result you are looking for?
+
+4. **Actual Result**: What is the actual result you got?
+
+5. **Steps to reproduce**: Describe the steps to reproduce the scenario. If possible, please provide the screenshots
+ 
+The above information helps us to analyze the problem quicker.
+
