@@ -10,6 +10,3 @@ The applications are implemented as OpenDaylight-DLUX web application using the 
 
 Connections status information are updated automatically due to a web socket for notifications from OpenDaylight to the browser.
 
-## Video
-
-https://youtu.be/QhchzRV2tac
