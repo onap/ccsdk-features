@@ -10,7 +10,9 @@
     License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
     OF ANY KIND, either express or implied. See the License for the specific
     language governing permissions and limitations under the License. ============LICENSE_END========================================================= -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
   <artifactId>sdnr-wt-websocketmanager2-provider</artifactId>
@@ -21,7 +23,7 @@
     <groupId>org.onap.ccsdk.parent</groupId>
     <artifactId>binding-parent</artifactId>
     <version>1.2.2-SNAPSHOT</version>
-    <relativePath/>
+    <relativePath></relativePath>
   </parent>
   <properties>
     <maven.javadoc.skip>true</maven.javadoc.skip>
