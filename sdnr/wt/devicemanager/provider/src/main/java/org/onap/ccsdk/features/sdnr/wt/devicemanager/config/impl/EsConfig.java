@@ -29,13 +29,29 @@ public class EsConfig extends BaseSubConfig {
     public static final String ESDATATYPENAME = "database";
     private static final String EMPTY = "empty";
     private static final String PROPERTY_KEY_CLUSTER = "esCluster";
+    private static final String PROPERTY_KEY_ARCHIVE_INTERVAL = "esArchiveCheckIntervalSeconds";
+    private static final String PROPERTY_KEY_ARCHIVE_LIMIT = "esArchiveLifetimeSeconds";
+
     private static final String DEFAULT_VALUE_CLUSTER = "";
+    /**
+     * check db data in this interval [in seconds]
+     * 0 deactivated
+     */
+    private static final long DEFAULT_ARCHIVE_INTERVAL_SEC = 0;
+    /**
+     * keep data for this time [in seconds]
+     * 30 days
+     */
+    private static final long DEFAULT_ARCHIVE_LIMIT_SEC = 60 * 60 * 24 * 30;
+
     private static EsConfig esConfig;
 
     private String cluster;
     private String host;
     private String node;
     private String index;
+    private long archiveCheckIntervalSeconds;
+    private long archiveLifetimeSeconds;
 
     private EsConfig() {
         super();
@@ -43,6 +59,8 @@ public class EsConfig extends BaseSubConfig {
         this.node = EMPTY;
         this.index = EMPTY;
         this.cluster = DEFAULT_VALUE_CLUSTER;
+        this.archiveCheckIntervalSeconds = DEFAULT_ARCHIVE_INTERVAL_SEC;
+        this.archiveLifetimeSeconds = DEFAULT_ARCHIVE_LIMIT_SEC;
     }
 
     public EsConfig cloneWithIndex(String _index) {
@@ -51,6 +69,8 @@ public class EsConfig extends BaseSubConfig {
         c.host = this.host;
         c.node = this.node;
         c.cluster = this.cluster;
+        c.archiveCheckIntervalSeconds = this.archiveCheckIntervalSeconds;
+        c.archiveLifetimeSeconds = this.archiveLifetimeSeconds;
         return c;
     }
 
@@ -90,6 +110,22 @@ public class EsConfig extends BaseSubConfig {
         this.index = index;
     }
 
+    public long getArchiveCheckIntervalSeconds() {
+        return this.archiveCheckIntervalSeconds;
+    }
+
+    public void setArchiveCheckIntervalSeconds(long x) {
+        this.archiveCheckIntervalSeconds = x;
+    }
+
+    public long getArchiveLifetimeSeconds() {
+        return this.archiveLifetimeSeconds;
+    }
+
+    public void setArchiveLimit(long x) {
+        this.archiveLifetimeSeconds = x;
+    }
+
     @Override
     public String toString() {
         return "EsConfig [cluster=" + cluster + ", host=" + host + ", node=" + node + ", index=" + index + "]";
@@ -112,9 +148,13 @@ public class EsConfig extends BaseSubConfig {
         this.cluster = c;
         this.node = String.format("%s%s", this.cluster, "n1");
         this.host = "localhost";
+        this.archiveCheckIntervalSeconds = this.getLong(PROPERTY_KEY_ARCHIVE_INTERVAL, DEFAULT_ARCHIVE_INTERVAL_SEC);
+        this.archiveLifetimeSeconds = this.getLong(PROPERTY_KEY_ARCHIVE_LIMIT, DEFAULT_ARCHIVE_LIMIT_SEC);
 
         if (save) {
             config.setProperty(SECTION_MARKER_ES + "." + PROPERTY_KEY_CLUSTER, this.cluster);
+            config.setProperty(SECTION_MARKER_ES + "." + PROPERTY_KEY_ARCHIVE_INTERVAL, this.archiveCheckIntervalSeconds);
+            config.setProperty(SECTION_MARKER_ES + "." + PROPERTY_KEY_ARCHIVE_LIMIT, this.archiveLifetimeSeconds);
             this.save();
         }
     }
@@ -170,15 +210,21 @@ public class EsConfig extends BaseSubConfig {
         } else if (!node.equals(other.node)) {
             return false;
         }
+        if (archiveCheckIntervalSeconds != other.archiveCheckIntervalSeconds) {
+            return false;
+        }
+        if (archiveLifetimeSeconds != other.archiveLifetimeSeconds) {
+            return false;
+        }
         return true;
     }
 
     @Override
-    public void save()
-    {
+    public void save() {
         this.getConfig().setProperty(SECTION_MARKER_ES + "." + PROPERTY_KEY_CLUSTER, this.cluster);
         super.save();
     }
+
     public static boolean isInstantiated() {
         return esConfig != null;
     }
@@ -213,7 +259,7 @@ public class EsConfig extends BaseSubConfig {
     }
 
     public static void clear() {
-        esConfig=null;
+        esConfig = null;
     }
 
 }
