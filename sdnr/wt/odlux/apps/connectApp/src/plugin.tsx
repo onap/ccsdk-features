@@ -23,20 +23,20 @@ type ObjectNotification = {
 
 export function register() {
   const applicationApi = applicationManager.registerApplication({
-    name: "connectApp",
+    name: "connect",
     icon: faPlug,
     rootComponent: ConnectApplication,
     rootActionHandler: connectAppRootHandler,
-    menuEntry: "Connect App"
+    menuEntry: "Connect"
   });
 
   // subscribe to the websocket notifications
-  subscribe<ObjectNotification & IFormatedMessage>(["ObjectCreationNotification", "ObjectDeletionNotification"], (msg => {
+  subscribe<ObjectNotification & IFormatedMessage>(["ObjectCreationNotification", "ObjectDeletionNotification","AttributeValueChangedNotification"], (msg => {
     const store = applicationApi && applicationApi.applicationStore;
     if (msg && msg.notifType === "ObjectCreationNotification" && store) {
       store.dispatch(addMountedNetworkElementAsyncActionCreator(msg.objectId));
       store.dispatch(new AddSnackbarNotification({ message: `Adding network element [${ msg.objectId }]`, options: { variant: 'info' } }));
-    } else if (msg && msg.notifType === "ObjectDeletionNotification" && store) {
+    } else if (msg && (msg.notifType === "ObjectDeletionNotification" || msg.notifType === "AttributeValueChangedNotification") && store) {
       store.dispatch(new AddSnackbarNotification({ message: `Updating network element [${ msg.objectId }]`, options: { variant: 'info' } }));
       store.dispatch(updateMountedNetworkElementAsyncActionCreator(msg.objectId));
     }
