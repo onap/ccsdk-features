@@ -31,6 +31,7 @@
         <module>apps/maintenanceApp</module>
         <module>apps/minimumApp</module>
         <module>apps/performanceHistoryApp</module>
+        <module>apps/configurationApp</module>
         <module>apps/app-feature</module>
         <module>apps/app-installer</module>
     </modules>

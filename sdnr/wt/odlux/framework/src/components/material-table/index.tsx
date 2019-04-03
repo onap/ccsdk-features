@@ -408,7 +408,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
     if (isMaterialTableComponentPropsWithRequestData(this.props)) {
       this.setState({ loading: true });
       const result = await Promise.resolve(
-        this.props.onRequestData( 1, 1000, this.state.orderBy, this.state.order, this.state.showFilter && this.state.filter || {})
+        this.props.onRequestData( 0, 1000, this.state.orderBy, this.state.order, this.state.showFilter && this.state.filter || {})
       );
       data = result.rows;
       this.setState({ loading: true });
