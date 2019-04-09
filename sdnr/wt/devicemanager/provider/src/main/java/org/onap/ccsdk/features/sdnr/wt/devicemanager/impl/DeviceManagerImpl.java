@@ -35,6 +35,8 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.config.impl.EsConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.config.impl.GeoConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.config.impl.PmConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeProviderClient;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.DeviceMonitor;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.DeviceMonitorEmptyImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.DeviceMonitorImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.database.service.HtDatabaseEventsService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.listener.NetconfChangeListener;
@@ -61,6 +63,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.StreamNameType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.ClusteredConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -108,8 +111,8 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
     private @Nullable PerformanceManagerImpl performanceManager = null;
     private ProviderClient dcaeProviderClient;
     private ProviderClient aotsMProvider;
-    private @Nullable AaiProviderClient aaiProviderClient;
-    private DeviceMonitorImpl deviceMonitor;
+    private @Nullable AaiProviderClient aaiProviderClient = null;
+    private @Nullable DeviceMonitor deviceMonitor = new DeviceMonitorEmptyImpl();
     private IndexUpdateService updateService;
     private IndexConfigService configService;
     private IndexMwtnService mwtnService;
@@ -219,9 +222,6 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
                 LOG.warn("No configuration available. Don't start event manager");
             } else {
                 this.databaseClientEvents = new HtDatabaseEventsService(htDatabase);
-                //Make sure to start for one cluster node only
-                if (akkaConfig == null || akkaConfig.isClusterAndFirstNode() || akkaConfig.isSingleNode()) {
-                 }
 
                 String myDbKeyNameExtended = MYDBKEYNAMEBASE + "-" + dbConfig.getCluster();
 
@@ -256,7 +256,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
             // DeviceMonitor has to be available before netconfSubscriptionManager is
             // configured
             LOG.debug("start DeviceMonitor Service");
-            this.deviceMonitor = new DeviceMonitorImpl(dataBroker, odlEventListener);
+            this.deviceMonitor = new DeviceMonitorImpl(dataBroker, odlEventListener, config);
 
             // netconfSubscriptionManager should be the last one because this is a callback
             // service
@@ -340,7 +340,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
             return;
         }
 
-        if (!isMaster(nNode)) {
+        if (!isNetconfNodeMaster(nNode)) {
             // Change Devicemonitor-status to connected ... for non master mountpoints.
             deviceMonitor.deviceConnectSlaveIndication(mountPointNodeName);
             return;
@@ -398,9 +398,8 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
         ne.initialReadFromNetworkElement();
         ne.initSynchronizationExtension();
 
-        // Setup Service that monitors registration/ deregistration of session
-        ConnectionStatus csts = nNode.getConnectionStatus();
-        sendCreateOrUpdateNotification(mountPointNodeName, action, csts);
+
+        sendUpdateNotification(mountPointNodeName, nNode.getConnectionStatus());
 
         if (aaiProviderClient != null) {
             aaiProviderClient.onDeviceRegistered(mountPointNodeName);
@@ -426,15 +425,14 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
     public void enterNonConnectedState(Action action, NodeId nNodeId, NetconfNode nNode) {
         String mountPointNodeName = nNodeId.getValue();
         ConnectionStatus csts = nNode.getConnectionStatus();
-
-        sendCreateOrUpdateNotification(mountPointNodeName, action, csts);
+        if (isNetconfNodeMaster(nNode)) {
+        	sendUpdateNotification(mountPointNodeName, csts);
+        }
 
         // Handling if mountpoint exist. connected -> connecting/UnableToConnect
         stopListenerOnNodeForConnectedState(mountPointNodeName);
 
-        if (deviceMonitor != null) {
-            deviceMonitor.deviceDisconnectIndication(mountPointNodeName);
-        }
+        deviceMonitor.deviceDisconnectIndication(mountPointNodeName);
 
     }
 
@@ -473,12 +471,10 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
         }
     }
 
-    private void sendCreateOrUpdateNotification(String mountPointNodeName, Action action, ConnectionStatus csts) {
-        LOG.info("enter Non ConnectedState for device :: Name : {} Action {} ConnectionStatus {}", mountPointNodeName, action, csts);
-        if (action == Action.CREATE) {
-            odlEventListener.registration(mountPointNodeName);
-        } else {
-            odlEventListener.updateRegistration(mountPointNodeName, ConnectionStatus.class.getSimpleName(), csts != null ? csts.getName() : "null");
+    private void sendUpdateNotification(String mountPointNodeName, ConnectionStatus csts) {
+        LOG.info("enter Non ConnectedState for device :: Name : {} ConnectionStatus {}", mountPointNodeName, csts);
+        if (odlEventListener != null) {
+        	odlEventListener.updateRegistration(mountPointNodeName, ConnectionStatus.class.getSimpleName(), csts != null ? csts.getName() : "null");
         }
     }
 
@@ -486,32 +482,44 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
      * Handle netconf/mountpoint changes
      */
     @Override
-    public void netconfChangeHandler(Action action, @Nullable ConnectionStatus csts, NodeId nodeId, NetconfNode nnode) {
-        switch (action) {
-            case REMOVE:
-                removeMountpointState(nodeId); // Stop Monitor
-                //deviceManagerService.enterNonConnectedState(nodeId, nnode); // Remove Mountpoint handler
-                break;
+    public void netconfChangeHandler(Action action, @Nullable ConnectionStatus csts, NodeId nodeId, NetconfNode nNode) {
 
-            case UPDATE:
-            case CREATE:
-                if (csts != null) {
-                    switch (csts) {
-                        case Connected: {
-                            startListenerOnNodeForConnectedState(action, nodeId, nnode);
-                            break;
-                        }
-                        case UnableToConnect:
-                        case Connecting: {
-                            enterNonConnectedState(action, nodeId, nnode);
-                            break;
-                        }
-                    }
-                } else {
-                    LOG.debug("NETCONF Node handled with null status for action", action);
-                }
-                break;
-        }
+		ClusteredConnectionStatus ccsts = nNode.getClusteredConnectionStatus();
+		String nodeIdString = nodeId.getValue();
+		if (action == Action.CREATE) {
+	        if (odlEventListener != null) {
+	        	odlEventListener.registration(nodeIdString);
+	        }
+		}
+		boolean isCluster = akkaConfig == null && akkaConfig.isCluster();
+		if (isCluster && ccsts == null) {
+			LOG.debug("NETCONF Node {} {} does not provide cluster status. Stop execution.", nodeIdString, action);
+		} else {
+			switch (action) {
+			case REMOVE:
+				removeMountpointState(nodeId); // Stop Monitor
+				break;
+
+			case UPDATE:
+			case CREATE:
+				if (csts != null) {
+					switch (csts) {
+					case Connected: {
+						startListenerOnNodeForConnectedState(action, nodeId, nNode);
+						break;
+					}
+					case UnableToConnect:
+					case Connecting: {
+						enterNonConnectedState(action, nodeId, nNode);
+						break;
+					}
+					}
+				} else {
+					LOG.debug("NETCONF Node handled with null status for action", action);
+				}
+				break;
+			}
+		}
     }
 
     /*-------------------------------------------------------------------------------------------
@@ -590,9 +598,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
             }
 
             // Force a sync
-            if (this.deviceMonitor != null) {
-                this.deviceMonitor.refreshAlarmsInDb();
-            }
+            this.deviceMonitor.refreshAlarmsInDb();
 
             threadDoClearCurrentFaultByNodename = new Thread(() -> {
                 refreshCounter++;
@@ -697,17 +703,11 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
         return this.akkaConfig == null ? "" : this.akkaConfig.getClusterConfig().getClusterSeedNodeName("abc");
     }
 
-    private boolean isMaster(NetconfNode nnode) {
+    private boolean isNetconfNodeMaster(NetconfNode nnode) {
         if (isInClusterMode()) {
             LOG.debug("check if me is responsible for node");
             String masterNodeName = nnode.getClusteredConnectionStatus() == null ? "null"
                     : nnode.getClusteredConnectionStatus().getNetconfMasterNode();
-            /*
-             * List<NodeStatus> clusterNodeStatusList=nnode.getClusteredConnectionStatus()==null?null:nnode.
-             * getClusteredConnectionStatus().getNodeStatus(); if(clusterNodeStatusList!=null) { for(NodeStatus
-             * s: clusterNodeStatusList) LOG.debug("node "+s.getNode()+
-             * " with status "+(s.getStatus()==null?"null":s.getStatus().getName())); }
-             */
             String myNodeName = getClusterNetconfNodeName();
             LOG.debug("sdnMasterNode=" + masterNodeName + " and sdnMyNode=" + myNodeName);
             if (!masterNodeName.equals(myNodeName)) {
