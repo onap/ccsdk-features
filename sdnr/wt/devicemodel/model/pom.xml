@@ -26,7 +26,7 @@
 
   <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
   <artifactId>sdnr-wt-devicemodel-model</artifactId>
-  <version>0.4.2-SNAPSHOT</version>
+  <version>0.4.3-SNAPSHOT</version>
   <name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
   <packaging>bundle</packaging>
 

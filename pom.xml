@@ -23,7 +23,7 @@
 
 	<modules>
 		<module>features</module>
-<!--		<module>sdnr/wt</module> -->
+		<module>sdnr/wt</module>
 		<module>sdnr/northbound</module>
 		<module>blueprints-processor</module>
 		<module>aafshiro</module>
