@@ -102,7 +102,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
 
     private final ConcurrentHashMap<String, ONFCoreNetworkElementRepresentation> networkElementRepresentations =
             new ConcurrentHashMap<>();
-
+    private final ONFCoreNetworkElementRepresentation networkelementLock = ONFCoreNetworkElementFactory.getEmpty("NE-LOCK");
     private WebSocketServiceClient webSocketService;
     private HtDatabaseEventsService databaseClientEvents;
     private ODLEventListener odlEventListener;
@@ -335,84 +335,109 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
             return;
         }
 
-        if (networkElementRepresentations.containsKey(mountPointNodeName)) {
-            LOG.warn("Mountpoint {} already registered. Leave startup procedure.", mountPointNodeName);
-            return;
-        }
-
         if (!isNetconfNodeMaster(nNode)) {
             // Change Devicemonitor-status to connected ... for non master mountpoints.
             deviceMonitor.deviceConnectSlaveIndication(mountPointNodeName);
-            return;
-        }
+		} else {
 
-        InstanceIdentifier<Node> instanceIdentifier =
-                NETCONF_TOPO_IID.child(Node.class, new NodeKey(new NodeId(mountPointNodeName)));
+			InstanceIdentifier<Node> instanceIdentifier = NETCONF_TOPO_IID.child(Node.class,
+					new NodeKey(new NodeId(mountPointNodeName)));
 
-        Optional<MountPoint> optionalMountPoint = null;
-        int timeout = 10000;
-        while (!(optionalMountPoint = mountPointService.getMountPoint(instanceIdentifier)).isPresent() && timeout > 0) {
-            LOG.info("Event listener waiting for mount point for Netconf device :: Name : {}", mountPointNodeName);
-            sleepMs(1000);
-            timeout -= 1000;
-        }
+			Optional<MountPoint> optionalMountPoint = null;
+			int timeout = 10000;
+			while (!(optionalMountPoint = mountPointService.getMountPoint(instanceIdentifier)).isPresent()
+					&& timeout > 0) {
+				LOG.info("Event listener waiting for mount point for Netconf device :: Name : {}", mountPointNodeName);
+				sleepMs(1000);
+				timeout -= 1000;
+			}
 
-        if (!optionalMountPoint.isPresent()) {
-            LOG.warn("Event listener timeout while waiting for mount point for Netconf device :: Name : {} ",
-                    mountPointNodeName);
-            return;
-        }
-        // Mountpoint is present for sure
-        MountPoint mountPoint = optionalMountPoint.get();
-        //BindingDOMDataBrokerAdapter.BUILDER_FACTORY;
-        LOG.info("Mountpoint with id: {} class {} toString {}", mountPoint.getIdentifier(), mountPoint.getClass().getName(), mountPoint);
-        Optional<DataBroker> optionalNetconfNodeDatabroker = mountPoint.getService(DataBroker.class);
+			if (!optionalMountPoint.isPresent()) {
+				LOG.warn("Event listener timeout while waiting for mount point for Netconf device :: Name : {} ",
+						mountPointNodeName);
+			} else {
+				// Mountpoint is present for sure
+				MountPoint mountPoint = optionalMountPoint.get();
+				// BindingDOMDataBrokerAdapter.BUILDER_FACTORY;
+				LOG.info("Mountpoint with id: {} class {} toString {}", mountPoint.getIdentifier(),
+						mountPoint.getClass().getName(), mountPoint);
+				Optional<DataBroker> optionalNetconfNodeDatabroker = mountPoint.getService(DataBroker.class);
 
-        if (! optionalNetconfNodeDatabroker.isPresent()) {
-            LOG.info("Slave mountpoint {} without databroker", mountPointNodeName);
-            return;
-        }
+				if (!optionalNetconfNodeDatabroker.isPresent()) {
+					LOG.info("Slave mountpoint {} without databroker", mountPointNodeName);
+				} else {
 
-        DataBroker netconfNodeDataBroker = optionalNetconfNodeDatabroker.get();
-        LOG.info("Master mountpoint {}", mountPointNodeName);
-        // getNodeInfoTest(dataBroker);
+					// It is master for mountpoint and all data are available.
+					// Make sure that specific mountPointNodeName is handled only once.
+					// be aware that startListenerOnNodeForConnectedState could be called multiple
+					// times for same mountPointNodeName.
+					// networkElementRepresentations contains handled NEs at master node.
 
-        // create automatic empty maintenance entry into db before reading and listening for problems
-        this.maintenanceService.createIfNotExists(mountPointNodeName);
+					synchronized (networkelementLock) {
+						if (networkElementRepresentations.containsKey(mountPointNodeName)) {
+							LOG.warn("Mountpoint {} already registered. Leave startup procedure.", mountPointNodeName);
+							return;
+						} else {
+							ONFCoreNetworkElementRepresentation result = networkElementRepresentations.put(mountPointNodeName,
+									networkelementLock);
+							if (result != null) {
+								LOG.info("Expected null value was not provided, but {}", result.getMountPointNodeName());
+							}
+						}
+					}
 
-        // Setup microwaveEventListener for Notificationservice
+					DataBroker netconfNodeDataBroker = optionalNetconfNodeDatabroker.get();
+					LOG.info("Master mountpoint {}", mountPointNodeName);
+					// getNodeInfoTest(dataBroker);
 
-        // MicrowaveEventListener microwaveEventListener = new
-        // MicrowaveEventListener(mountPointNodeName, websocketmanagerService,
-        // xmlMapper, databaseClientEvents);
-        ONFCoreNetworkElementRepresentation ne = ONFCoreNetworkElementFactory.create(mountPointNodeName, dataBroker,
-                webSocketService, databaseClientEvents, instanceIdentifier, netconfNodeDataBroker, dcaeProviderClient,
-                aotsMProvider, maintenanceService, notificationDelayService);
-        networkElementRepresentations.put(mountPointNodeName, ne);
-        ne.doRegisterMicrowaveEventListener(mountPoint);
+					// create automatic empty maintenance entry into db before reading and listening
+					// for problems
+					this.maintenanceService.createIfNotExists(mountPointNodeName);
 
-        // Register netconf stream
-        registerNotificationStream(mountPointNodeName, mountPoint, "NETCONF");
+					// Setup microwaveEventListener for Notificationservice
 
-        // -- Read data from NE
-        ne.initialReadFromNetworkElement();
-        ne.initSynchronizationExtension();
+					// MicrowaveEventListener microwaveEventListener = new
+					// MicrowaveEventListener(mountPointNodeName, websocketmanagerService,
+					// xmlMapper, databaseClientEvents);
+					ONFCoreNetworkElementRepresentation ne = ONFCoreNetworkElementFactory.create(mountPointNodeName,
+							dataBroker, webSocketService, databaseClientEvents, instanceIdentifier,
+							netconfNodeDataBroker, dcaeProviderClient, aotsMProvider, maintenanceService,
+							notificationDelayService);
 
+					synchronized (networkelementLock) {
+						ONFCoreNetworkElementRepresentation result = networkElementRepresentations
+								.put(mountPointNodeName, ne);
+						if (result != networkelementLock) {
+							LOG.info("NE list does not provide lock as epxected, but {}.",
+									result.getMountPointNodeName());
+						}
+					}
+					ne.doRegisterMicrowaveEventListener(mountPoint);
 
-        sendUpdateNotification(mountPointNodeName, nNode.getConnectionStatus());
+					// Register netconf stream
+					registerNotificationStream(mountPointNodeName, mountPoint, "NETCONF");
 
-        if (aaiProviderClient != null) {
-            aaiProviderClient.onDeviceRegistered(mountPointNodeName);
-        }
-        // -- Register NE to performance manager
-        if (performanceManager != null) {
-            performanceManager.registration(mountPointNodeName, ne);
-        }
+					// -- Read data from NE
+					ne.initialReadFromNetworkElement();
+					ne.initSynchronizationExtension();
 
-        deviceMonitor.deviceConnectMasterIndication(mountPointNodeName, ne);
+					sendUpdateNotification(mountPointNodeName, nNode.getConnectionStatus());
 
-        LOG.info("Starting Event listener on Netconf device :: Name : {} finished", mountPointNodeName);
-    }
+					if (aaiProviderClient != null) {
+						aaiProviderClient.onDeviceRegistered(mountPointNodeName);
+					}
+					// -- Register NE to performance manager
+					if (performanceManager != null) {
+						performanceManager.registration(mountPointNodeName, ne);
+					}
+
+					deviceMonitor.deviceConnectMasterIndication(mountPointNodeName, ne);
+
+					LOG.info("Starting Event listener on Netconf device :: Name : {} finished", mountPointNodeName);
+				}
+			}
+		}
+	}
 
     /**
      * Mountpoint created or existing. Managed device is actually disconnected from node/ mountpoint.
