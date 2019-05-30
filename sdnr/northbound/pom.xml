@@ -24,13 +24,13 @@
         <parent>
                 <groupId>org.onap.ccsdk.parent</groupId>
                 <artifactId>odlparent-lite</artifactId>
-                <version>1.2.3</version>
+                <version>1.2.4-SNAPSHOT</version>
                 <relativePath/>
         </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
     <artifactId>sdnr-northbound</artifactId>
-    <version>0.4.3-SNAPSHOT</version>
+    <version>0.4.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>ccsdk-sdnr-northbound :: features</name>
     <description>SDN-R RAN and OOF PCI ANR POC </description>
