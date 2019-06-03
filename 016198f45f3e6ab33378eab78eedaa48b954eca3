@@ -1,0 +1,9 @@
+Code-Review-1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Verified+1: Dan Timoney <dtimoney@att.com>
+Code-Review+2: Jun (Nicolas) Hu <jun.nicolas.hu@att.com>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Mon, 03 Jun 2019 17:51:04 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/89048
+Project: ccsdk/features
+Branch: refs/heads/dublin
