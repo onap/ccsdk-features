@@ -96,7 +96,7 @@ export const updateLpIdAsyncActionCreator = (lpId: string | undefined) => async 
 export const updateViewDataAsyncActionCreator = (viewId: string | undefined, indexValues: string[] = []) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
   const { configuration: { nodeId, lpId, capability, conditionalPackage, viewSpecifications } } = getState();
   if (!viewId || !capability || !nodeId || !lpId || !conditionalPackage) {
-    dispatch(new AddSnackbarNotification({ message: `Error invalid parameter !${JSON.stringify({viewId ,capability ,nodeId ,lpId ,conditionalPackage}, null,2)}`, options: { variant: 'error' } }));
+    // dispatch(new AddSnackbarNotification({ message: `Error invalid parameter !${JSON.stringify({capability ,nodeId ,lpId ,conditionalPackage}, null,2)}`, options: { variant: 'error' } }));
     dispatch(new UpdateViewData());
     return;
   }
@@ -131,7 +131,7 @@ export const updateViewDataAsyncActionCreator = (viewId: string | undefined, ind
     viewData = viewData[path];
   }
 
-  return viewData ?
+  return viewData != null ?
     dispatch(new UpdateViewData(viewId, indexValues.length > 0 ? indexValues.join("/") : "", viewData)) :
     dispatch(new UpdateViewData());
 }

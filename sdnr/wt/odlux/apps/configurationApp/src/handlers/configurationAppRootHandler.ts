@@ -44,7 +44,14 @@ export const configurationAppRootHandler: IActionHandler<IConfigurationAppStoreS
     state = {
       ...state,
       nodeId: action.nodeId,
-      coreModel: action.coreModel
+      coreModel: action.coreModel,
+      lpId: undefined,
+      capability: undefined,
+      conditionalPackage: undefined,
+      viewSpecifications: [],
+      viewData: { },
+      indexValues: undefined,
+      viewId: undefined,
     };
   } else if (action instanceof UpdateLp) {
     state = {
@@ -52,7 +59,10 @@ export const configurationAppRootHandler: IActionHandler<IConfigurationAppStoreS
       lpId: action.lpId,
       capability: action.capability,
       conditionalPackage: action.conditionalPackage,
-      viewSpecifications: action.viewSpecifications
+      viewSpecifications: action.viewSpecifications,
+      viewData: { },
+      indexValues: undefined,
+      viewId: undefined,
     };
   } else if (action instanceof UpdateViewData) {
     state = {

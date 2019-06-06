@@ -11,20 +11,22 @@ import { SnackbarItem } from '../models/snackbarItem';
 
 export interface IApplicationState {
   title: string;
-  icon?: IconType; 
+  appId?: string;
+  icon?: IconType;
 
   errors: ErrorInfo[];
   snackBars: SnackbarItem[];
 }
 
-const applicationStateInit: IApplicationState = { title: "Loading ...", errors: [], snackBars:[] };
+const applicationStateInit: IApplicationState = { title: "Loading ...",  errors: [], snackBars:[] };
 
 export const applicationStateHandler: IActionHandler<IApplicationState> = (state = applicationStateInit, action) => {
   if (action instanceof SetTitleAction) {
     state = {
       ...state,
       title: action.title,
-      icon: action.icon
+      icon: action.icon,
+      appId: action.appId
     };
   } else if (action instanceof AddErrorInfoAction) {
     state = {
