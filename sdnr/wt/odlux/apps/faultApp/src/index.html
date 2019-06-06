@@ -15,10 +15,14 @@
   <script type="text/javascript" src="./config.js"></script>
   <script>
     // run the application
-    require(["app", "faultApp"], function (app, faultApp) {
-      faultApp.register();
-      app("./app.tsx");
-    });
+    require(["app", "connectApp", "faultApp", "maintenanceApp", "configurationApp", "helpApp"], function (app, connectApp, faultApp, maintenanceApp, configurationApp, helpApp) {
+        connectApp.register();
+        faultApp.register();
+        configurationApp.register();
+        maintenanceApp.register();
+        helpApp.register();
+        app("./app.tsx").runApplication();
+      });
   </script>
 </body>
 

@@ -26,8 +26,8 @@ class ConfigurationService {
   /** Gets the UI description object for a capability of a network element. */
   public async getUIDescriptionByCapability(capability: string, revision: string | null): Promise<ViewSpecification[] | null> {
     const capFile = capability && revision && `${capability}@${revision}.json`;
-    const coreModelResponse = capFile && await requestRest<{ views: ViewSpecification[] } >(`assets/${capFile}`, { method: "GET" });
-    return coreModelResponse &&  coreModelResponse.views || null;
+    const coreModelResponse = capFile && await requestRest<{ views: ViewSpecification[] }>(`assets/${capFile}`, { method: "GET" }, false, true);
+    return coreModelResponse && coreModelResponse.views || null;
   }
 
 }

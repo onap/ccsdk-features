@@ -51,14 +51,14 @@ const ConfigurationApplicationRouteAdapter = connect(mapProps, mapDisp)((props: 
         currentLpId = props.match.params.lpId || undefined;
         currentViewId = null;
         currentIndex = null;
-        currentLpId && await props.updateLpId(currentLpId);
+        currentMountId && await props.updateLpId(currentLpId);
       }
 
       // check if the viewId or the indices has changed
       if (currentViewId !== props.match.params.viewId || currentIndex !== props.match.params[0]) {
         currentViewId = props.match.params.viewId || undefined;
         currentIndex = props.match.params[0] || undefined;
-        currentViewId && await props.updateViewData(currentViewId || '', currentIndex && currentIndex.split("/") || [] );
+        currentLpId && await props.updateViewData(currentViewId || '', currentIndex && currentIndex.split("/") || [] );
       }
 
     });
