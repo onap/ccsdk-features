@@ -70,11 +70,11 @@
             <artifactId>sdnr-wt-odlux-app-inventoryApp</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-odlux-app-minimumApp</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-odlux-app-mediatorApp</artifactId>

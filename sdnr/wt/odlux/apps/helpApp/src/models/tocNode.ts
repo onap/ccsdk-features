@@ -5,7 +5,7 @@ export type VersionInfo = {
 }
 
 export type TocNode  = {
-  label: string; 
+  label: string;
   versions: {
     [versionKey: string]: VersionInfo,
     current: VersionInfo
@@ -17,6 +17,7 @@ export type TocNodeCollection = { [tocNodeKey: string]: TocNode };
 
 
 export type TocTreeNode = {
+  id: string;
   label: string;
   uri: string;
   nodes?: TocTreeNode[];

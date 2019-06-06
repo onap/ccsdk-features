@@ -10,12 +10,14 @@ import { IFaultNotifications, faultNotificationsHandler } from './notificationsH
 import { ICurrentProblemsState, currentProblemsActionHandler } from './currentProblemsHandler';
 import { IAlarmLogEntriesState, alarmLogEntriesActionHandler } from './alarmLogEntriesHandler';
 import { SetPanelAction } from '../actions/panelChangeActions';
+import { IFaultStatus, faultStatusHandler } from './faultStatusHandler';
 
 export interface IFaultAppStoreState {
   currentProblems: ICurrentProblemsState;
   faultNotifications: IFaultNotifications;
   alarmLogEntries: IAlarmLogEntriesState;
   currentOpenPanel: string|null;
+  faultStatus: IFaultStatus;
 }
 
 const currentOpenPanelHandler: IActionHandler<string | null> = (state = null, action) => {
@@ -35,7 +37,8 @@ const actionHandlers = {
   currentProblems: currentProblemsActionHandler,
   faultNotifications: faultNotificationsHandler,
   alarmLogEntries: alarmLogEntriesActionHandler,
-  currentOpenPanel: currentOpenPanelHandler
+  currentOpenPanel: currentOpenPanelHandler,
+  faultStatus: faultStatusHandler
 };
 
 export const faultAppRootHandler = combineActionHandler<IFaultAppStoreState>(actionHandlers);
