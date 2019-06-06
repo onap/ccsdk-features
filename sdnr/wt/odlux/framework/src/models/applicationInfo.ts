@@ -17,15 +17,19 @@ export class ApplicationInfo {
   /** The root component of the application. */
   rootComponent: ComponentType;
   /** Optional: The root action handler of the application. */
-  rootActionHandler?: IActionHandler<{ [key: string]: any }>; 
+  rootActionHandler?: IActionHandler<{ [key: string]: any }>;
   /** Optional: Application speciffic middlewares. */
-  middlewares?: Middleware<{ [key: string]: any }>[]; 
+  middlewares?: Middleware<{ [key: string]: any }>[];
   /** Optional: A mapping object with the exported components. */
   exportedComponents?: { [key: string]: ComponentType }
   /** Optional: The entry to be shown in the menu. If undefiened the name will be used. */
   menuEntry?: string | React.ComponentType;
   /** Optional: A component to be shown in the menu when this app is active below the main entry. If undefiened the name will be used. */
   subMenuEntry?: React.ComponentType;
+  /** Optional: A component to be shown in the applications status bar. If undefiened the name will be used. */
+  statusBarElement?: React.ComponentType;
+  /** Optional: A component to be shown in the dashboardview. If undefiened the name will be used. */
+  dashbaordElement?: React.ComponentType;
   /** Optional: The pasth for this application. If undefined the name will be use as path. */
   path?: string;
 }

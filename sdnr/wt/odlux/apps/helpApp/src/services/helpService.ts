@@ -29,6 +29,7 @@ class HelpService {
         return Object.keys(col).reduce <TocTreeNode[]>((acc, key) => {
           const current = col[key];
           acc.push({
+            id: key,
             label: current.label,
             uri: current.versions.current.path,
             nodes: current.nodes && mapNodesCollection(current.nodes) || undefined

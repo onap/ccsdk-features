@@ -27,7 +27,7 @@
         <module>apps/inventoryApp</module>
         <module>apps/mediatorApp</module>
         <module>apps/maintenanceApp</module>
-        <module>apps/minimumApp</module>
+<!--        <module>apps/minimumApp</module> -->
         <module>apps/performanceHistoryApp</module>
         <module>apps/configurationApp</module>
         <module>apps/app-feature</module>
