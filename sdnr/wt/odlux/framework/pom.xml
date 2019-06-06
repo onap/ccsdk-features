@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<parent>
 		<groupId>org.onap.ccsdk.parent</groupId>
 		<artifactId>odlparent</artifactId>
 		<version>1.3.0-SNAPSHOT</version>
-		<relativePath/>
+		<relativePath />
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
@@ -16,7 +18,7 @@
 	<properties>
 		<buildtime>${maven.build.timestamp}</buildtime>
 		<distversion>ONAP Dublin (Flourine-SR2)</distversion>
-		<buildno>8.c7848df(19/04/03)</buildno>
+		<buildno>13.ac4a3af(19/06/05)</buildno>
 		<odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
 	</properties>
 	<licenses>

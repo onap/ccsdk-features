@@ -1,10 +1,10 @@
 import { Action } from '../flux/action';
 
-import { IconType } from '../models/iconDefinition'; 
+import { IconType } from '../models/iconDefinition';
 
 export class SetTitleAction extends Action {
- 
-  constructor(public title: string, public icon?: IconType) {
+
+  constructor(public title: string, public icon?: IconType, public appId?: string) {
     super();
   }
 }
