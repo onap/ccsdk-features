@@ -20,7 +20,9 @@ import { PanelId } from "./models/panelId";
 import { SetPanelAction } from "./actions/panelChangeActions";
 import { AddFaultNotificationAction } from "./actions/notificationActions";
 
-import { createCurrentProblemsProperties, createCurrentProblemsActions } from "./handlers/currentProblemsHandler";
+import { createCurrentProblemsProperties, createCurrentProblemsActions, currentProblemsReloadAction } from "./handlers/currentProblemsHandler";
+import { FaultStatus } from "./components/faultStatus";
+import { refreshFaultStatusAsyncAction } from "./actions/statusActions";
 
 let currentMountId: string | undefined = undefined;
 
@@ -65,6 +67,7 @@ export function register() {
     icon: faBell,
     rootComponent: App,
     rootActionHandler: faultAppRootHandler,
+    statusBarElement: FaultStatus,
     menuEntry: "Fault"
   });
 
@@ -75,4 +78,18 @@ export function register() {
       store.dispatch(new AddFaultNotificationAction(fault));
     }
   }));
+
+  applicationApi.applicationStoreInitialized.then(store => {
+    store.dispatch(currentProblemsReloadAction);
+  });
+
+  applicationApi.applicationStoreInitialized.then(store => {
+    store.dispatch(refreshFaultStatusAsyncAction);
+  });
+  window.setInterval(() => {
+    applicationApi.applicationStoreInitialized.then(store => {
+      store.dispatch(refreshFaultStatusAsyncAction);
+    });
+  }, 15000);
+
 }

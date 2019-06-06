@@ -69,12 +69,18 @@ class TitleBarComponent extends React.Component<TitleBarProps, { anchorEl: HTMLE
             <MenuIcon />
           </IconButton>
           <Logo />
-          <Typography variant="title" color="inherit" className={ classes.grow }>
+          <Typography variant="title" color="inherit" >
             { state.framework.applicationState.icon
               ? (<FontAwesomeIcon className={ classes.icon } icon={ state.framework.applicationState.icon } />)
               : null }
             { state.framework.applicationState.title }
           </Typography>
+          <div className={classes.grow}></div>
+          { state.framework.applicationRegistraion && Object.keys(state.framework.applicationRegistraion).map(key => {
+            const reg = state.framework.applicationRegistraion[key];
+            return reg && reg.statusBarElement && <reg.statusBarElement key={key} /> || null
+          })}
+
           { state.framework.authenticationState.user
             ? (<div>
               <Button

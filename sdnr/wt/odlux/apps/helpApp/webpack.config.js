@@ -123,7 +123,6 @@ module.exports = (env) => {
           }]),
         ]
     ],
-
     devServer: {
       public: "http://localhost:3100",
       contentBase: frameworkPath,
