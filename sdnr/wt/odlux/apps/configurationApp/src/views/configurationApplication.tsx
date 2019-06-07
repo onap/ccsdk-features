@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { MaterialTable, ColumnType, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
 import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { IConnectAppStoreState } from '../../../connectApp/src/handlers/connectAppRootHandler';
@@ -70,11 +70,12 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         </>
       );
     } else if (!this.props.lpId) {
-      return (
+      return this.props.coreModel && this.props.coreModel.ltp && this.props.coreModel.ltp.length
+       ? (
         <>
           <h2>Please select an existing LP first !</h2>
           <ul>
-            { this.props.coreModel && this.props.coreModel.ltp.map(ltp => {
+            { this.props.coreModel.ltp.map(ltp => {
               return <li key={ltp.uuid}>
                 <Link component="a" variant="body2" color="secondary" onClick={() => {
                   this.props.changeLp(ltp.lp[0].uuid);
@@ -82,6 +83,11 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
               </li>
             }) || null}
           </ul>
+        </>
+      ) 
+      : (
+        <>
+         <h2>No LTP / LP found !</h2>
         </>
       );
     } else if (!this.props.capability && !this.props.viewId) {
@@ -113,7 +119,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         </div>
         </>
       )
-      : <h2>View Not Found</h2>;
+      : <h2>View [{this.props.viewId || this.props.conditionalPackage}] Not Found ! {this.props.viewSpecifications.length} </h2>;
   }
 
   private static keyPropertyParser = /\$\$INDEX:(\d+):?([a-z\-]+)?\$\$$/;

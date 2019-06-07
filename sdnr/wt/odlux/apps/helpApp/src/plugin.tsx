@@ -14,6 +14,7 @@ import { helpAppRootHandler } from './handlers/helpAppRootHandler';
 
 import { HelpApplication } from './views/helpApplication';
 import { SubMenuEntry } from "./components/subMenuEntry";
+import { HelpStatus } from "./components/helpStatus";
 
 import '!style-loader!css-loader!highlight.js/styles/default.css';
 
@@ -58,6 +59,7 @@ export async function register() {
     icon: faFirstAid,
     rootComponent: App,
     rootActionHandler: helpAppRootHandler,
+    statusBarElement: HelpStatus,
     menuEntry: "Help",
     subMenuEntry: SubMenuEntry
   });

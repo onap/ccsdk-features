@@ -6,13 +6,12 @@ import { requestRest } from '../services/restService';
 
 type propType = string | number | null | undefined | (string | number)[];
 type dataType = { [prop: string]: propType };
-type resultType<TData = dataType> = { page: number, rowCount: number, rows: TData[] };
 
-export function createSearchDataHandler<TResult extends {} = dataType>(uri: string, additionalParameters?: {}): DataCallback<(TResult & { _id: string })>;
-export function createSearchDataHandler<TResult extends {} = dataType, TData = dataType>(uri: string, additionalParameters: {} | null | undefined, mapResult: (res: HitEntry<TResult>, index: number, arr: HitEntry<TResult>[]) => (TData & { _id: string }), mapRequest?: (name?: string | null) => string): DataCallback<(TData & { _id: string })>
-export function createSearchDataHandler<TResult, TData>(uri: string, additionalParameters?: {} | null | undefined, mapResult?: (res: HitEntry<TResult>, index: number, arr: HitEntry<TResult>[]) => (TData & { _id: string }), mapRequest?: (name?: string | null) => string): DataCallback<(TData & { _id: string })> {
-  const url = `${ window.location.origin }/database/${uri}/_search`;
-  const fetchData: DataCallback<(TData & { _id: string }) > = async (page, rowsPerPage, orderBy, order, filter) => {
+export function createSearchDataHandler<TResult extends {} = dataType>(uri: (() => string) | string, additionalParameters?: {}): DataCallback<(TResult & { _id: string })>;
+export function createSearchDataHandler<TResult extends {} = dataType, TData = dataType>(uri: (() => string) | string, additionalParameters: {} | null | undefined, mapResult: (res: HitEntry<TResult>, index: number, arr: HitEntry<TResult>[]) => (TData & { _id: string }), mapRequest?: (name?: string | null) => string): DataCallback<(TData & { _id: string })>
+export function createSearchDataHandler<TResult, TData>(uri: (() => string) | string, additionalParameters?: {} | null | undefined, mapResult?: (res: HitEntry<TResult>, index: number, arr: HitEntry<TResult>[]) => (TData & { _id: string }), mapRequest?: (name?: string | null) => string): DataCallback<(TData & { _id: string })> {
+  const url = `${ window.location.origin }/database/${typeof uri === "function" ? uri(): uri}/_search`;
+  const fetchData: DataCallback<(TData & { _id: string })> = async (page, rowsPerPage, orderBy, order, filter) => {
     const from = rowsPerPage && page != null && !isNaN(+page)
       ? (+page) * rowsPerPage
       : null;

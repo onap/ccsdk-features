@@ -16,7 +16,7 @@
 	<properties>
 		<buildtime>${maven.build.timestamp}</buildtime>
 		<distversion>ONAP Dublin (Flourine-SR2)</distversion>
-		<buildno>8.c7848df(19/04/03)</buildno>
+		<buildno>9.ac4a3af(19/06/06)</buildno>
 		<odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
 	</properties>
 	<licenses>
