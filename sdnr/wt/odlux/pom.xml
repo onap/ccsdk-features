@@ -12,7 +12,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>odlux-top</artifactId>
-    <version>0.4.4-SNAPSHOT</version>
+    <version>0.4.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>odlux</name>
 
@@ -33,5 +33,30 @@
         <module>apps/app-feature</module>
         <module>apps/app-installer</module>
     </modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>exec-maven-plugin</artifactId>
+				<groupId>org.codehaus.mojo</groupId>
+				<executions>
+					<execution><!-- Run our version calculation script -->
+						<id>Clean node and node_modules</id>
+						<phase>package</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>rm</executable>
+                                                        <arguments>
+								<argument>-r</argument>
+								<argument>node_modules</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
