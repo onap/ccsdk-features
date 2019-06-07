@@ -14,7 +14,6 @@ export type PerformanceDataType = {
   "unavailability": string;
 };
 
-
 export type PerformanceResult = { "performance-data": PerformanceDataType };
 
 export type Performance = PerformanceDataType & { _id: string };

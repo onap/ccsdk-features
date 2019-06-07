@@ -47,7 +47,6 @@ export type AdaptiveModulationDataType = {
   "time8192-states-l": string;
 };
 
-
 export type AdaptiveModulationResult = { "performance-data": AdaptiveModulationDataType };
 
 export type AdaptiveModulation = AdaptiveModulationDataType & { _id: string };

@@ -21,7 +21,10 @@
   "author": "Sai Neetha Phulmali",
   "license": "Apache License, Version 2.0",
   "dependencies": {
-    "@odlux/framework" : "*"
+    "@odlux/framework" : "*",
+    "@odlux/connect-app": "*",
+    "react-chartjs-2":"2.7.6",
+    "chart.js":"2.8.0"
   },
   "peerDependencies": {
      "@types/react": "16.4.14",

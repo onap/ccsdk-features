@@ -14,7 +14,6 @@ export type TemperatureDataType = {
   "rf-temp-max": string;
 };
 
-
 export type TemperatureResult = { "performance-data": TemperatureDataType };
 
 export type Temperature = TemperatureDataType & { _id: string };

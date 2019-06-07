@@ -1,7 +1,7 @@
 import { Action } from '../../../../framework/src/flux/action';
 import { Dispatch } from '../../../../framework/src/flux/store';
 
-import { Ltp } from '../models/availableLtps';
+import { LtpIds } from '../models/availableLtps';
 import { PerformanceHistoryService } from '../services/performanceHistoryService';
 
 /** 
@@ -22,7 +22,7 @@ export class AllAvailableLtpsLoadedAction extends BaseAction {
    * Initialize this instance.
    * @param availableLtps The available ltps which are returned from the database.
    */
-  constructor(public availableLtps: Ltp[] | null, public error?: string) {
+  constructor(public availableLtps: LtpIds[] | null, public error?: string) {
     super();
   }
 }
@@ -37,39 +37,25 @@ export class AllAvailableLtpsLoadedAction extends BaseAction {
  * @param resetLtp The function to verify if the selected ltp is also available in the selected time period database else reset the Ltp dropdown to select.
  */
 export const loadDistinctLtpsbyNetworkElementAsync = (networkElement: string, selectedTimePeriod: string, selectedLtp: string, selectFirstLtp?: Function, resetLtp?: Function) => (dispatch: Dispatch) => {
-  if (selectedTimePeriod == "15min") {
-    dispatch(new LoadAllAvailableLtpsAction());
-    PerformanceHistoryService.getDistinctLtpsFrom15minDatabase(networkElement).then(distinctLtps => {
-      if(distinctLtps) {
-        let ltpNotSelected: boolean = true;
-        selectFirstLtp && selectFirstLtp(distinctLtps[0].key);
-        distinctLtps.forEach((value: Ltp) => {
-          if(value.key === selectedLtp) {
-            ltpNotSelected = false;
-          }
-        });
-        resetLtp && resetLtp(ltpNotSelected);
-        dispatch(new AllAvailableLtpsLoadedAction(distinctLtps))
-      }
-    }).catch(error => {
-      dispatch(new AllAvailableLtpsLoadedAction(null, error));
-    });
-  } else {
-    dispatch(new LoadAllAvailableLtpsAction());
-    PerformanceHistoryService.getDistinctLtpsFrom24hoursDatabase(networkElement).then(distinctLtps => {
-      if(distinctLtps) {
-        let ltpNotSelected: boolean = true;
-        selectFirstLtp && selectFirstLtp(distinctLtps[0].key);
-        distinctLtps.forEach((value: Ltp) => {
-          if(value.key === selectedLtp) {
-            ltpNotSelected = false;
-          }
-        });
-        resetLtp && resetLtp(ltpNotSelected);
-        dispatch(new AllAvailableLtpsLoadedAction(distinctLtps))
-      }
-    }).catch(error => {
-      dispatch(new AllAvailableLtpsLoadedAction(null, error));
-    });
-  }
+  dispatch(new LoadAllAvailableLtpsAction());
+  PerformanceHistoryService.getDistinctLtpsFromDatabase(networkElement, selectedTimePeriod).then(distinctLtps => {
+    if (distinctLtps) {
+      const ltps = getDistinctLtps(distinctLtps, selectedLtp, selectFirstLtp, resetLtp);
+      dispatch(new AllAvailableLtpsLoadedAction(ltps));
+    }
+  }).catch(error => {
+    dispatch(new AllAvailableLtpsLoadedAction(null, error));
+  });
 };
+
+const getDistinctLtps = (distinctLtps: LtpIds[], selectedLtp: string, selectFirstLtp?: Function, resetLtp?: Function) => {
+  let ltpNotSelected: boolean = true;
+  selectFirstLtp && selectFirstLtp(distinctLtps[0].key);
+  distinctLtps.forEach((value: LtpIds) => {
+    if (value.key === selectedLtp) {
+      ltpNotSelected = false;
+    }
+  });
+  resetLtp && resetLtp(ltpNotSelected);
+  return distinctLtps;
+}

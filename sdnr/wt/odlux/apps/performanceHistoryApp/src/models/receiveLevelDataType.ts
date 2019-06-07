@@ -14,7 +14,6 @@ export type ReceiveLevelDataType = {
   "rx-level-max": string;
 };
 
-
 export type ReceiveLevelResult = { "performance-data": ReceiveLevelDataType };
 
 export type ReceiveLevel = ReceiveLevelDataType & { _id: string };

@@ -10,14 +10,15 @@ import { IApplicationStoreState } from '../../../../framework/src/store/applicat
 import { Panel } from '../../../../framework/src/components/material-ui';
 
 import { PanelId } from '../models/panelId';
-import { PerformanceData } from '../components/performanceData';
-import { ReceiveLevel } from '../components/receiveLevel';
-import { TransmissionPower } from '../components/transmissionPower';
-import { AdaptiveModulation } from '../components/adaptiveModulation';
-import { Temperature } from '../components/temperature';
-import { SignalToInterference } from '../components/signalToInterference';
-import { CrossPolarDiscrimination } from '../components/crossPolarDiscrimination';
+import PerformanceData from '../components/performanceData';
+import ReceiveLevel from '../components/receiveLevel';
+import TransmissionPower from '../components/transmissionPower';
+import AdaptiveModulation from '../components/adaptiveModulation';
+import Temperature from '../components/temperature';
+import SignalToInterference from '../components/signalToInterference';
+import CrossPolarDiscrimination from '../components/crossPolarDiscrimination';
 import { loadAllConnectedNetworkElementsAsync } from '../actions/connectedNetworkElementsActions';
+import { loadAllMountedNetworkElementsAsync } from '../../../connectApp/src/actions/mountedNetworkElementsActions';
 import { loadDistinctLtpsbyNetworkElementAsync } from '../actions/ltpAction';
 import { SetPanelAction } from '../actions/panelChangeActions';
 import { createPerformanceData15minPreActions, performanceData15minReloadAction } from '../handlers/performanceData15minHandler';
@@ -34,6 +35,7 @@ import { createSignalToInterference15minPreActions, signalToInterference15minRel
 import { createSignalToInterference24hoursPreActions, signalToInterference24hoursReloadAction } from '../handlers/signalToInterference24hoursHandler';
 import { createCrossPolarDiscrimination15minPreActions, crossPolarDiscrimination15minReloadAction } from '../handlers/crossPolarDiscrimination15minHandler';
 import { createCrossPolarDiscrimination24hoursPreActions, crossPolarDiscrimination24hoursReloadAction } from '../handlers/crossPolarDiscrimination24hoursHandler';
+
 
 const PerformanceHistoryComponentStyles = (theme: Theme) => createStyles({
   root: {
@@ -61,7 +63,7 @@ const PerformanceHistoryComponentStyles = (theme: Theme) => createStyles({
 const mapProps = (state: IApplicationStoreState) => ({
   activePanel: state.performanceHistory.currentOpenPanel,
   availableLtps: state.performanceHistory.ltps.distinctLtps,
-  networkElements: state.performanceHistory.networkElements.connectedNetworkElements
+  networkElements: state.performanceHistory.networkElements.connectedNetworkElementIds
 });
 
 const mapDispatcher = (dispatcher: IDispatcher) => ({
@@ -93,8 +95,11 @@ const mapDispatcher = (dispatcher: IDispatcher) => ({
   signalToInterference24hoursPreActions: createSignalToInterference24hoursPreActions(dispatcher.dispatch),
   crossPolarDiscrimination15minPreActions: createCrossPolarDiscrimination15minPreActions(dispatcher.dispatch),
   crossPolarDiscrimination24hoursPreActions: createCrossPolarDiscrimination24hoursPreActions(dispatcher.dispatch),
-  getConnectedNetworkElements: () => dispatcher.dispatch(loadAllConnectedNetworkElementsAsync),
-  getDistinctLtps: (selectedNetworkElement: string, selectedTimePeriod: string, selectedLtp: string, selectFirstLtp?: Function, resetLTP?: Function) => dispatcher.dispatch(loadDistinctLtpsbyNetworkElementAsync(selectedNetworkElement, selectedTimePeriod, selectedLtp, selectFirstLtp, resetLTP)),
+  getConnectedNetworkElementsIds: async() => {
+    await dispatcher.dispatch(loadAllMountedNetworkElementsAsync)
+    dispatcher.dispatch(loadAllConnectedNetworkElementsAsync);
+  },
+  getDistinctLtpsIds: (selectedNetworkElement: string, selectedTimePeriod: string, selectedLtp: string, selectFirstLtp?: Function, resetLTP?: Function) => dispatcher.dispatch(loadDistinctLtpsbyNetworkElementAsync(selectedNetworkElement, selectedTimePeriod, selectedLtp, selectFirstLtp, resetLTP)),
   setCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new SetPanelAction(panelId))
 });
 
@@ -135,58 +140,56 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
       this.props.setCurrentPanel(nextActivePanel);
       switch (nextActivePanel) {
         case "PerformanceData":
-          if (this.state.selectedTimePeriod == "15min") {
+          if (this.state.selectedTimePeriod === "15min") {
             this.props.reloadPerformanceData15min();
           } else {
-
             this.props.reloadPerformanceData24hours();
           }
           break;
         case "ReceiveLevel":
-          if (this.state.selectedTimePeriod == "15min") {
+          if (this.state.selectedTimePeriod === "15min") {
             this.props.reloadReceiveLevel15min();
           } else {
             this.props.reloadReceiveLevel24hours();
           }
           break;
         case "TransmissionPower":
-          if (this.state.selectedTimePeriod == "15min") {
+          if (this.state.selectedTimePeriod === "15min") {
             this.props.reloadTransmissionPower15min();
           } else {
             this.props.reloadTransmissionPower24hours();
           }
           break;
         case "AdaptiveModulation":
-          if (this.state.selectedTimePeriod == "15min") {
+          if (this.state.selectedTimePeriod === "15min") {
             this.props.reloadAdaptiveModulation15min();
           } else {
             this.props.reloadAdaptiveModulation24hours();
           }
           break;
         case "Temperature":
-          if (this.state.selectedTimePeriod == "15min") {
+          if (this.state.selectedTimePeriod === "15min") {
             this.props.reloadTemperature15min();
           } else {
             this.props.reloadTemperature24hours();
           }
           break;
         case "SINR":
-          if (this.state.selectedTimePeriod == "15min") {
+          if (this.state.selectedTimePeriod === "15min") {
             this.props.reloadSignalToInterference15min();
           } else {
             this.props.reloadSignalToInterference24hours();
           }
           break;
         case "CPD":
-          if (this.state.selectedTimePeriod == "15min") {
+          if (this.state.selectedTimePeriod === "15min") {
             this.props.reloadCrossPolarDiscrimination15min();
           } else {
             this.props.reloadCrossPolarDiscrimination24hours();
           }
           break;
-        case null:
-          break;
         default:
+          // do nothing if all panels are closed
           break;
       }
     }
@@ -255,7 +258,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
   };
 
   public componentDidMount() {
-    this.props.getConnectedNetworkElements();
+    this.props.getConnectedNetworkElementsIds();
   }
 
   /**
@@ -277,7 +280,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
       "node-name": networkElement,
       "uuid-interface": ltp
     };
-    if (timePeriod == "15min") {
+    if (timePeriod === "15min") {
       this.props.performanceData15minPreActions.onPreFilterChanged(preFilter);
       this.props.receiveLevel15minPreActions.onPreFilterChanged(preFilter);
       this.props.transmissionPower15minPreActions.onPreFilterChanged(preFilter);
@@ -285,7 +288,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
       this.props.temperature15minPreActions.onPreFilterChanged(preFilter);
       this.props.signalToInterference15minPreActions.onPreFilterChanged(preFilter);
       this.props.crossPolarDiscrimination15minPreActions.onPreFilterChanged(preFilter);
-    } else if (timePeriod == "24hours") {
+    } else if (timePeriod === "24hours") {
       this.props.performanceData24hoursPreActions.onPreFilterChanged(preFilter);
       this.props.receiveLevel24hoursPreActions.onPreFilterChanged(preFilter);
       this.props.transmissionPower24hoursPreActions.onPreFilterChanged(preFilter);
@@ -313,7 +316,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
       selectedNetworkElement: event.target.value,
       selectedLtp: "-1"
     });
-    this.props.getDistinctLtps(event.target.value, this.state.selectedTimePeriod, "-1", this.selectFirstLtp);
+    this.props.getDistinctLtpsIds(event.target.value, this.state.selectedTimePeriod, "-1", this.selectFirstLtp);
   }
 
   /**
@@ -335,10 +338,10 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
     this.setState({
       selectedTimePeriod: event.target.value,
     });
-    if (event.target.value == "15min") {
-      this.props.getDistinctLtps(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp, undefined, this.resetLtpDropdown);
-    } else if (event.target.value == "24hours") {
-      this.props.getDistinctLtps(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp, undefined, this.resetLtpDropdown);
+    if (event.target.value === "15min") {
+      this.props.getDistinctLtpsIds(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp, undefined, this.resetLtpDropdown);
+    } else if (event.target.value === "24hours") {
+      this.props.getDistinctLtpsIds(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp, undefined, this.resetLtpDropdown);
     }
     this.preFilterChangeAndReload(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp);
   }
@@ -359,5 +362,5 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
   }
 }
 
-export const PerformanceHistoryApplication = withStyles(PerformanceHistoryComponentStyles)(connect(mapProps, mapDispatcher)(PerformanceHistoryComponent));
+const PerformanceHistoryApplication = withStyles(PerformanceHistoryComponentStyles)(connect(mapProps, mapDispatcher)(PerformanceHistoryComponent));
 export default PerformanceHistoryApplication;

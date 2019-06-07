@@ -5,10 +5,10 @@ import {
   LoadAllAvailableLtpsAction,
 } from '../actions/ltpAction';
 
-import { Ltp } from '../models/availableLtps';
+import { LtpIds } from '../models/availableLtps';
 
 export interface IAvailableLtpsState {
-  distinctLtps: Ltp[];
+  distinctLtps: LtpIds[];
   busy: boolean;
 }
 

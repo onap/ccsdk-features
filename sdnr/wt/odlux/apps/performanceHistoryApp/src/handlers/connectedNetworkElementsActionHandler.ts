@@ -1,19 +1,15 @@
 import { IActionHandler } from '../../../../framework/src/flux/action';
 
-import {
-  AllConnectedNetworkElementsLoadedAction,
-  LoadAllConnectedNetworkElementsAction,
-} from '../actions/connectedNetworkElementsActions';
-
-import { ConnectedNetworkElements } from '../models/connectedNetworkElements';
+import { AllConnectedNetworkElementsLoadedAction, LoadAllConnectedNetworkElementsAction } from '../actions/connectedNetworkElementsActions';
+import { ConnectedNetworkElementIds } from '../models/connectedNetworkElements';
 
 export interface IConnectedNetworkElementsState {
-  connectedNetworkElements: ConnectedNetworkElements[];
+  connectedNetworkElementIds: ConnectedNetworkElementIds[];
   busy: boolean;
 }
 
 const connectedNetworkElementsStateInit: IConnectedNetworkElementsState = {
-  connectedNetworkElements: [],
+  connectedNetworkElementIds: [],
   busy: false
 };
 
@@ -26,10 +22,10 @@ export const connectedNetworkElementsActionHandler: IActionHandler<IConnectedNet
     };
 
   } else if (action instanceof AllConnectedNetworkElementsLoadedAction) {
-    if (!action.error && action.connectedNetworkElements) {
+    if (!action.error && action.connectedNetworkElementIds) {
       state = {
         ...state,
-        connectedNetworkElements: action.connectedNetworkElements,
+        connectedNetworkElementIds: action.connectedNetworkElementIds,
         busy: false
       };
     } else {

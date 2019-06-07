@@ -31,7 +31,13 @@ export function register() {
     menuEntry: "Connect"
   });
 
-  applicationApi.applicationStoreInitialized.then(applicationStore => { applicationStore.dispatch(loadAllMountedNetworkElementsAsync); });
+  const updateAllMountedNetworkElements = () => {
+    applicationApi.applicationStoreInitialized.then(applicationStore => { applicationStore.dispatch(loadAllMountedNetworkElementsAsync); })
+  };
+
+  applicationApi.loginEvent.addHandler(updateAllMountedNetworkElements);
+  updateAllMountedNetworkElements();
+
   // subscribe to the websocket notifications
   subscribe<ObjectNotification & IFormatedMessage>(["ObjectCreationNotification", "ObjectDeletionNotification", "AttributeValueChangedNotification"], (msg => {
     const store = applicationApi.applicationStore;

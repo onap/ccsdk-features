@@ -3,6 +3,8 @@ import { UpdateAuthentication } from '../actions/authentication';
 
 import { User } from '../models/authentication';
 
+import { onLogin, onLogout } from '../services/applicationApi';
+
 export interface IAuthenticationState {
   user?: User;
 }
@@ -19,8 +21,10 @@ export const authenticationStateHandler: IActionHandler<IAuthenticationState> = 
     const user = action.bearerToken && new User(action.bearerToken) || undefined;
     if (user) {
       localStorage.setItem("userToken", user.toString());
+      onLogin();
     } else {
       localStorage.removeItem("userToken");
+      onLogout();
     }
 
     state = {

@@ -14,7 +14,6 @@ export type CrossPolarDiscriminationDataType = {
   "xpd-max": string;
 };
 
-
 export type CrossPolarDiscriminationResult = { "performance-data": CrossPolarDiscriminationDataType };
 
 export type CrossPolarDiscrimination = CrossPolarDiscriminationDataType & { _id: string };

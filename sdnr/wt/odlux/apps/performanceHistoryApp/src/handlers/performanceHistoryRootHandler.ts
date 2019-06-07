@@ -6,6 +6,7 @@ import { combineActionHandler } from '../../../../framework/src/flux/middleware'
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { IActionHandler } from '../../../../framework/src/flux/action';
 
+import { IConnectAppStoreState } from '../../../connectApp/src/handlers/connectAppRootHandler';
 import { IPerformanceData15minState, performanceData15minActionHandler } from './performanceData15minHandler';
 import { IReceiveLevel15minState, receiveLevel15minActionHandler } from './receiveLevel15minHandler';
 import { ITransmissionPower15minState, transmissionPower15minActionHandler } from './transmissionPower15minHandler';
@@ -55,6 +56,7 @@ const currentOpenPanelHandler: IActionHandler<string | null> = (state = null, ac
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
     performanceHistory: IPerformanceHistoryStoreState;
+    connect: IConnectAppStoreState;
   }
 }
 
@@ -75,9 +77,9 @@ const actionHandlers = {
   signalToInterference24hours: signalToInterference24hoursActionHandler,
   crossPolarDiscrimination15min: crossPolarDiscrimination15minActionHandler,
   crossPolarDiscrimination24hours: crossPolarDiscrimination24hoursActionHandler,
-  currentOpenPanel: currentOpenPanelHandler,
+  currentOpenPanel: currentOpenPanelHandler
 };
 
-export const performanceHistoryRootHandler = combineActionHandler<IPerformanceHistoryStoreState>(actionHandlers);
+const performanceHistoryRootHandler = combineActionHandler<IPerformanceHistoryStoreState>(actionHandlers);
 export default performanceHistoryRootHandler;
 

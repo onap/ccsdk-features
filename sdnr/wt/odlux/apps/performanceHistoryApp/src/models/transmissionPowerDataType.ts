@@ -14,7 +14,6 @@ export type TransmissionPowerDataType = {
   "tx-level-max": string;
 };
 
-
 export type TransmissionPowerResult = { "performance-data": TransmissionPowerDataType };
 
 export type TransmissionPower = TransmissionPowerDataType & { _id: string };

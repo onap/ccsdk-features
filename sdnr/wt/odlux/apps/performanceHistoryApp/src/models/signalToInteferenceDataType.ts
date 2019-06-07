@@ -14,7 +14,6 @@ export type SignalToInterferenceDataType = {
   "snir-max": string;
 };
 
-
 export type SignalToInterferenceResult = { "performance-data": SignalToInterferenceDataType };
 
 export type SignalToInterference = SignalToInterferenceDataType & { _id: string };
