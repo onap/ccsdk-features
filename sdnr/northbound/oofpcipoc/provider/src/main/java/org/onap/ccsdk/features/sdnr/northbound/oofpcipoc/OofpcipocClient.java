@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.ConfigurationPhyCel
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.AddNeighborOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.DeleteNeighborOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.GenericNeighborConfigurationOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.HandleNbrlistChangeNotifOutputBuilder;
 
 
 import org.slf4j.Logger;
@@ -303,5 +304,56 @@ public Properties execute(String module, String rpc, String version, String mode
 
 	return respProps;
 }
+
+
+// handleNbrlistChangeNotif
+	public Properties execute(String module, String rpc, String version, String mode, HandleNbrlistChangeNotifOutputBuilder serviceData)
+			throws SvcLogicException {
+
+		Properties parms = new Properties();
+
+		return execute(module,rpc,version, mode,serviceData,parms);
+	}
+
+	public Properties execute(String module, String rpc, String version, String mode, HandleNbrlistChangeNotifOutputBuilder serviceData, Properties parms)
+				throws SvcLogicException {
+				Properties localProp;
+				localProp = MdsalHelper.toProperties(parms, serviceData);
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("Parameters passed to SLI");
+
+			for (Object key : localProp.keySet()) {
+				String parmName = (String) key;
+				String parmValue = localProp.getProperty(parmName);
+
+				LOG.debug(parmName+" = "+parmValue);
+
+			}
+		}
+
+		Properties respProps = svcLogicService.execute(module, rpc, version, mode, localProp);
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("Parameters returned by SLI");
+
+			for (Object key : respProps.keySet()) {
+				String parmName = (String) key;
+				String parmValue = respProps.getProperty(parmName);
+
+				LOG.debug(parmName+" = "+parmValue);
+
+			}
+		}
+		if ("failure".equalsIgnoreCase(respProps.getProperty("SvcLogic.status"))) {
+			return respProps;
+		}
+
+		MdsalHelper.toBuilder(respProps, serviceData);
+
+		return respProps;
+	}
 
 }

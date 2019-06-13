@@ -34,6 +34,11 @@ module oofpcipoc {
         "";
   }
 
+    typedef payload {
+           type string ;
+           description "The payload can be any valid JSON string value. Json escape characters need to be added when required to include an inner json within the payload to make it a valid json string value";
+    }
+
     grouping configuration-phy-cell-id-request {
 
       leaf fap-service-number-of-entries {
@@ -143,8 +148,56 @@ module oofpcipoc {
              length "0..52";
           }
         }
+        leaf pnf-name {
+          type string {
+            length "0..256";
+          }
+          description
+            "PNF name ";
+        }
       }
    }
+
+   grouping handle-nbrlist-change-notif-request {
+
+   description
+     "Input payload for handle-nbrlist-change-notif RPC for this POC";
+
+     leaf fap-service-number-of-entries-changed {
+       type uint64;
+       description
+         "Number of cells for which neighbor list has changed";
+     }
+     list fap-service {
+       key "alias";
+       leaf alias {
+         type string {
+           length "1..64";
+         }
+       }
+       leaf cid {
+         type string {
+         length "0..52";
+         }
+       }
+       uses x-0005b9-lte-g;
+       leaf lte-cell-number-of-entries {
+         type uint64;
+         description
+           "Number of cells in a neighbor list that was changed";
+       }
+       list lte-ran-neighbor-list-in-use-lte-cell-changed {
+         key "plmnid cid";
+         uses lte-ran-neighbor-list-in-use-lte-cell-g;
+         description
+           "Changed/Modified List of cells in a neighbor list for this fap service";
+           }
+        }
+        leaf payload {
+            type payload;
+            mandatory true;
+        }
+    }
 
     grouping oofpcipoc-rpc-response {
       leaf response-code {
@@ -383,6 +436,7 @@ module oofpcipoc {
           length "0..52";
           }
         }
+        uses x-0005b9-lte-g;
         leaf lte-cell-number-of-entries {
           type uint64;
           description

@@ -94,4 +94,14 @@ module oofpcipoc-api {
     }
   }
 
+  rpc handle-nbrlist-change-notif {
+    description
+      "Handle nbrlist-change-notification: update configDB & publish DMAAP message";
+    input {
+      uses oofpcipoc:handle-nbrlist-change-notif-request;
+    }
+    output {
+      uses oofpcipoc:oofpcipoc-rpc-response;
+    }
+  }
 }

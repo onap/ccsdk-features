@@ -441,5 +441,73 @@ public class OofpcipocProvider implements AutoCloseable, OofpcipocApiService {
       		return Futures.immediateFuture(rpcResult);
       	}
 
+    // RPC handle-nbrlist-change-notif
+        @Override
+      	public ListenableFuture<RpcResult<HandleNbrlistChangeNotifOutput>> handleNbrlistChangeNotif(
+      			HandleNbrlistChangeNotifInput input) {
+      		final String svcOperation = "handle-nbrlist-change-notif";
+
+      		Properties parms = new Properties();
+      		HandleNbrlistChangeNotifOutputBuilder serviceDataBuilder = new HandleNbrlistChangeNotifOutputBuilder();
+
+          LOG.info( "Reached RPC handle-nbrlist-change-notif");
+
+      		LOG.info( svcOperation +" called." );
+
+      		if(input == null ) {
+      			LOG.debug("exiting " +svcOperation+ " because of invalid input");
+      			serviceDataBuilder.setResponseCode("Input is null");
+      			RpcResult<HandleNbrlistChangeNotifOutput> rpcResult =
+      				RpcResultBuilder.<HandleNbrlistChangeNotifOutput> status(true).withResult(serviceDataBuilder.build()).build();
+      			return Futures.immediateFuture(rpcResult);
+      		}
+
+      		// add input to parms
+      		LOG.info("Adding INPUT data for "+svcOperation+" input: " + input);
+      		HandleNbrlistChangeNotifInputBuilder inputBuilder = new HandleNbrlistChangeNotifInputBuilder(input);
+      		MdsalHelper.toProperties(parms, inputBuilder.build());
+
+      		// Call SLI sync method
+      		try
+      		{
+      			if (OofpcipocClient.hasGraph("Oofpcipoc", svcOperation , null, "sync"))
+      			{
+              LOG.info( "OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
+      				try
+      				{
+                OofpcipocClient.execute("Oofpcipoc", svcOperation, null, "sync", serviceDataBuilder, parms);
+      				}
+      				catch (Exception e)
+      				{
+      					LOG.error("Caught exception executing service logic for "+ svcOperation, e);
+      					serviceDataBuilder.setResponseCode("500");
+      				}
+      			} else {
+      				LOG.error("No service logic active for Oofpcipoc: '" + svcOperation + "'");
+      				serviceDataBuilder.setResponseCode("503");
+      			}
+      		}
+      		catch (Exception e)
+      		{
+      			LOG.error("Caught exception looking for service logic", e);
+      			serviceDataBuilder.setResponseCode("500");
+      		}
+
+      		String errorCode = serviceDataBuilder.getResponseCode();
+
+      		if (!("0".equals(errorCode) || "200".equals(errorCode))) {
+      			LOG.error("Returned FAILED for "+svcOperation+" error code: '" + errorCode + "'");
+      		} else {
+      			LOG.info("Returned SUCCESS for "+svcOperation+" ");
+            serviceDataBuilder.setResponseCode("Welcome OOF POC. Number of FAP services changed = " + input.getFapServiceNumberOfEntriesChanged());
+      		}
+
+      		RpcResult<HandleNbrlistChangeNotifOutput> rpcResult =
+      				RpcResultBuilder.<HandleNbrlistChangeNotifOutput> status(true).withResult(serviceDataBuilder.build()).build();
+
+          LOG.info("Successful exit from handle-nbrlist-change-notif ");
+
+      		return Futures.immediateFuture(rpcResult);
+      	}
 
 }
