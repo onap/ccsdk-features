@@ -43,5 +43,6 @@
       <module>devicemanager</module>
       <module>odlux</module>
       <module>featureaggregator</module>
+      <module>lighty</module>
     </modules>
 </project>

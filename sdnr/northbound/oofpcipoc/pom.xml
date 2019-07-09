@@ -22,6 +22,7 @@
 		<module>provider</module>
 		<module>consumer</module>
 		<module>installer</module>
+		<module>lighty</module>
 	</modules>
 
 	<properties>
