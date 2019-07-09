@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.archiveservice.ArchiveCleanService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDatabaseWebAPIClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.Resources;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.ResourcesImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.container.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.DeviceManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.DeviceManagerService.Action;
@@ -68,6 +69,7 @@ public class TestDeviceManagerWithDatabase {
     private static DeviceManagerImpl deviceManager;
     private static MountPointMock mountPoint;
     private static DataBrokerNetconfMock dataBrokerNetconf;
+    private static Resources resources;
 
     private static final Logger LOG = LoggerFactory.getLogger(TestDeviceManagerWithDatabase.class);
 
@@ -94,7 +96,7 @@ public class TestDeviceManagerWithDatabase {
 		MountPointService mountPointService = new MountPointServiceMock(mountPoint);
         NotificationPublishService notificationPublishService = new NotificationPublishServiceMock();
         RpcProviderRegistry rpcProviderRegistry = new RpcProviderRegistryMock();
-
+        resources = new ResourcesImpl();
         // start using blueprint interface
         String msg = "";
         try {
@@ -105,6 +107,7 @@ public class TestDeviceManagerWithDatabase {
             deviceManager.setNotificationPublishService(notificationPublishService);
             deviceManager.setRpcProviderRegistry(rpcProviderRegistry);
             deviceManager.setClusterSingletonService(clusterSingletonService);
+            deviceManager.setResources(resources);
             deviceManager.init();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -274,7 +277,7 @@ public class TestDeviceManagerWithDatabase {
 
         System.out.println("Test6: Write zip data file file");
         File testFile = new File("etc/elasticsearch_update.zip");
-        Resources.extractFileTo("elasticsearch_update.zip", testFile);
+        resources.extractFileTo("elasticsearch_update.zip", testFile);
         int wait = 130;
         while (testFile.exists() && wait-- > 0) {
             System.out.println("Waiting " + wait);

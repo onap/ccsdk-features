@@ -21,6 +21,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDataBaseRea
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDatabaseClientAbstract;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDatabaseNode;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.IndexClientBuilder;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.Resources;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.container.AllPm;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.util.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl.database.types.EsHistoricalPerformance15Minutes;
@@ -42,14 +43,14 @@ public class MicrowaveHistoricalPerformanceWriterService {
     private HtDataBaseReaderAndWriter<EsHistoricalPerformance24Hours> historicalPerformance24hRW;
     private HtDataBaseReaderAndWriter<EsHistoricalPerformanceLogEntry> historicalPerformanceLogRW;
 
-    public MicrowaveHistoricalPerformanceWriterService(HtDatabaseNode database) {
+    public MicrowaveHistoricalPerformanceWriterService(HtDatabaseNode database, Resources resources) {
 
         LOG.info("Create {} start", MicrowaveHistoricalPerformanceWriterService.class);
 
         try {
 
             IndexClientBuilder clientBuilder =
-                    IndexClientBuilder.getBuilder(INDEX).setMappingSettingJsonFileName(MAPPING);
+                    IndexClientBuilder.getBuilder(INDEX, resources).setMappingSettingJsonFileName(MAPPING);
             client = clientBuilder.create(database);
             clientBuilder.close();
 
