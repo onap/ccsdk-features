@@ -60,12 +60,14 @@ public class HtDatabaseNode implements AutoCloseable {
     private static Integer initializedReached = 0;
 
     private final Node node;
+    private final Resources resources;
 
-    private HtDatabaseNode() {
+    private HtDatabaseNode(Resources resources) {
         LOGGER.debug("Start elasticsearch service");
 
         LOGGER.debug("Lucine version: " + Version.LATEST);
 
+        this.resources = resources;
         node = nodeBuilder().settings(Settings.builder().put("path.home", "etc").put("path.conf", "etc")).node();
         LOGGER.info("Starting Database service. Wait {} s", DELAYSECONDS);
         // Wait for orange status for single node without redundancy
@@ -118,17 +120,17 @@ public class HtDatabaseNode implements AutoCloseable {
 
 
     // Visibility package for test purpose
-    static void checkorcreateplugins(String pluginFolder) {
+    static void checkorcreateplugins(String pluginFolder, Resources resources) {
         File f = new File(pluginFolder);
         if (!f.exists()) {
             f.mkdir();
         }
-        if (!Resources.copyFolderInto(RESFOLDER_PLUGINHEAD, PLUGINFOLDER, RESFOLDER_PLUGIN)) {
+        if (!resources.copyFolderInto(RESFOLDER_PLUGINHEAD, PLUGINFOLDER, RESFOLDER_PLUGIN)) {
             throw new IllegalArgumentException("Copy not successfull Name: " + RESFOLDER_PLUGINHEAD + " folder src "
                     + PLUGINFOLDER + " folder dst " + RESFOLDER_PLUGIN);
         }
        //Normal JAR loaded by classloader as part of the bundle
-       if (!Resources.copyFolderInto(RESFOLDER_PLUGINDELETE, PLUGINFOLDER, RESFOLDER_PLUGIN)) {
+       if (!resources.copyFolderInto(RESFOLDER_PLUGINDELETE, PLUGINFOLDER, RESFOLDER_PLUGIN)) {
             throw new IllegalArgumentException("Copy not successfull Name: " + RESFOLDER_PLUGINDELETE + " folder src "
                     + PLUGINFOLDER + " folder dst " + RESFOLDER_PLUGIN);
        }
@@ -170,11 +172,12 @@ public class HtDatabaseNode implements AutoCloseable {
         return false;
     }
 
-    private static void checkorcreateConfigFile(EsConfig config, AkkaConfig akkaConfig, GeoConfig geoConfig) {
+    private static void checkorcreateConfigFile(EsConfig config, AkkaConfig akkaConfig, GeoConfig geoConfig,
+            Resources resources) {
         File f = new File(DBCONFIGFILENAME);
         if (!f.exists()) {
             LOGGER.debug("no " + DBCONFIGFILENAME + " found - extracting from resources");
-            if (Resources.extractFileTo("elasticsearch/elasticsearch.yml", f)) {
+            if (resources.extractFileTo("elasticsearch/elasticsearch.yml", f)) {
                 // replace template values
                 LOGGER.debug("replace template values with config:" + config);
                 Charset charset = StandardCharsets.UTF_8;
@@ -245,13 +248,14 @@ public class HtDatabaseNode implements AutoCloseable {
      * @param geoConfig data
      * @return the node or null if external node used
      */
-    public static HtDatabaseNode start(EsConfig config, AkkaConfig akkaConfig, GeoConfig geoConfig) {
+    public static HtDatabaseNode start(EsConfig config, AkkaConfig akkaConfig, GeoConfig geoConfig,
+            Resources resources) {
         if (isPortAvailable(ES_PORT)) {
             LOGGER.info("ES Port not in use. Start internal ES.");
             if (oneNode == null) {
-                checkorcreateplugins(PLUGINFOLDER);
-                checkorcreateConfigFile(config, akkaConfig, geoConfig);
-                oneNode = new HtDatabaseNode();
+                checkorcreateplugins(PLUGINFOLDER, resources);
+                checkorcreateConfigFile(config, akkaConfig, geoConfig, resources);
+                oneNode = new HtDatabaseNode(resources);
             } else {
                 throw new IllegalStateException(
                         "Database is already started, but can only be started once. Stop here.");

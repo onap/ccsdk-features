@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl.AaiProviderClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.archiveservice.ArchiveCleanService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDatabaseNode;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.Resources;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.ONFCoreNetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.ONFCoreNetworkElementRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.toggleAlarmFilter.NotificationDelayService;
@@ -125,6 +126,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
     private ArchiveCleanService archiveCleanService;
     @SuppressWarnings("unused")
 	private ClusterSingletonServiceRegistration cssRegistration;
+    private Resources resources;
 
     // Blueprint 1
     public DeviceManagerImpl() {
@@ -149,6 +151,11 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
     public void setClusterSingletonService(ClusterSingletonServiceProvider clusterSingletonService) {
     	this.clusterSingletonServiceProvider = clusterSingletonService;
     }
+
+    public void setResources(Resources resources) {
+        this.resources = resources;
+    }
+
     public void init() {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
@@ -186,7 +193,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
         EsConfig dbConfig = config.getEs();
         LOG.debug("esConfig=" + dbConfig.toString());
         // Start database
-        htDatabase = HtDatabaseNode.start(dbConfig, akkaConfig, geoConfig);
+        htDatabase = HtDatabaseNode.start(dbConfig, akkaConfig, geoConfig, resources);
         if (htDatabase == null) {
             LOG.error("Can only run with local database. Stop initialization of devicemanager.");
         } else {
@@ -195,7 +202,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
                 // Create DB index if not existing and if database is running
                 try {
                     //this.configService = new IndexConfigService(htDatabase);issue#1
-                    this.mwtnService = new IndexMwtnService(htDatabase);
+                    this.mwtnService = new IndexMwtnService(htDatabase, resources);
                 } catch (Exception e) {
                     LOG.warn("Can not start ES access clients to provide database index config, mwtn. ", e);
                 }
@@ -220,7 +227,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
             if (emConfig == null) {
                 LOG.warn("No configuration available. Don't start event manager");
             } else {
-                this.databaseClientEvents = new HtDatabaseEventsService(htDatabase);
+                this.databaseClientEvents = new HtDatabaseEventsService(htDatabase, resources);
 
                 String myDbKeyNameExtended = MYDBKEYNAMEBASE + "-" + dbConfig.getCluster();
 
@@ -238,7 +245,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
             } else {
                 @Nullable
                 MicrowaveHistoricalPerformanceWriterService databaseClientHistoricalPerformance;
-                databaseClientHistoricalPerformance = new MicrowaveHistoricalPerformanceWriterService(htDatabase);
+                databaseClientHistoricalPerformance = new MicrowaveHistoricalPerformanceWriterService(htDatabase, resources);
                 this.performanceManager = new PerformanceManagerImpl(60, databaseClientHistoricalPerformance);
             }
 

@@ -24,6 +24,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDataBaseRea
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDatabaseClientAbstract;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDatabaseNode;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.IndexClientBuilder;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.Resources;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.util.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.index.database.types.EsEventOdluxLog;
 import org.slf4j.Logger;
@@ -52,11 +53,10 @@ public class IndexMwtnService implements AutoCloseable, ArchiveCleanProvider {
 
     // --- Construct and initialize
 
-    public IndexMwtnService(HtDatabaseNode database) throws Exception {
+    public IndexMwtnService(HtDatabaseNode database, Resources resources) throws Exception {
         LOG.info("Create {} start", this.getClass().getSimpleName());
 
-
-        IndexClientBuilder clientBuilder = IndexClientBuilder.getBuilder(INDEX)
+        IndexClientBuilder clientBuilder = IndexClientBuilder.getBuilder(INDEX, resources)
                 .setMappingSettingJsonFileName(MAPPING);
         client = clientBuilder.create(database);
         clientBuilder.close();
