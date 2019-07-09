@@ -27,6 +27,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDataBaseRea
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDatabaseClientAbstract;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDatabaseNode;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.IndexClientBuilder;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.Resources;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.ONFCoreNetworkElement12Equipment;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.util.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.database.types.EsEventBase;
@@ -66,13 +67,13 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider {
 
     // --- Construct and initialize
 
-    public HtDatabaseEventsService(HtDatabaseNode database) {
+    public HtDatabaseEventsService(HtDatabaseNode database, Resources resources) {
 
         LOG.info("Create {} start", HtDatabaseEventsService.class);
 
         try {
             // Create control structure
-            IndexClientBuilder clientBuilder = IndexClientBuilder.getBuilder(INDEX).setMappingSettingJsonFileName(MAPPING);
+            IndexClientBuilder clientBuilder = IndexClientBuilder.getBuilder(INDEX, resources).setMappingSettingJsonFileName(MAPPING);
             client = clientBuilder.create(database);
             clientBuilder.close();
 

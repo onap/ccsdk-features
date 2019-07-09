@@ -38,7 +38,8 @@ public class IndexClientBuilder implements AutoCloseable {
 
     /** Index name to be used */
     private final String index;
-    /** Location of mapping data **/
+	private final Resources resources;
+	/** Location of mapping data **/
     private String mappingSettingFileName = null;
     /** Location of configuration data **/
     private String modelDataDirectory = null;
@@ -50,9 +51,10 @@ public class IndexClientBuilder implements AutoCloseable {
 
     // --- Construct and initialize
 
-    public IndexClientBuilder(String index) {
+    public IndexClientBuilder(String index, Resources resources) {
     	this.index = index;
-    	this.databaseNode = null;
+		this.resources = resources;
+		this.databaseNode = null;
     	this.scheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
@@ -92,7 +94,7 @@ public class IndexClientBuilder implements AutoCloseable {
 
 			// Initialisation 1
 			if (mappingSettingFileName != null) {
-  				JSONObject indexconfigdata=Resources.getJSONFile(mappingSettingFileName);
+  				JSONObject indexconfigdata=resources.getJSONFile(mappingSettingFileName);
     			client.doCreateIndexWithMapping(indexconfigdata);
 			} else
 				client.doCreateIndex();
@@ -111,7 +113,7 @@ public class IndexClientBuilder implements AutoCloseable {
     		try { //Prevent ending task by exception
 				if (modelDataDirectory != null) {
 					LOG.info("... write initial data for index {}",index);
-					List<JSONObject> dataList=Resources.getJSONFiles(modelDataDirectory, false);
+					List<JSONObject> dataList=resources.getJSONFiles(modelDataDirectory, false);
 					LOG.debug("received number of objects: {} of index {}", dataList.size(), index);
 					for (JSONObject da: dataList) {
 						client.doWriteJSONObject(da);
@@ -133,8 +135,8 @@ public class IndexClientBuilder implements AutoCloseable {
      * static files
      */
 
-    public static IndexClientBuilder getBuilder(String index) {
-    	return new IndexClientBuilder(index);
+    public static IndexClientBuilder getBuilder(String index, Resources resources) {
+    	return new IndexClientBuilder(index, resources);
     }
 
 
