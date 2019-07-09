@@ -21,6 +21,7 @@
 		<module>feature</module>
 		<module>provider</module>
 		<module>installer</module>
+		<module>lighty</module>
 	</modules>
 
 	<properties>
