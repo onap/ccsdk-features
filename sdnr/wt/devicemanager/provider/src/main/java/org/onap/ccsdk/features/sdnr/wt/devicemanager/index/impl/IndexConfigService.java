@@ -20,6 +20,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.index.impl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDatabaseClientAbstract;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.HtDatabaseNode;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.database.IndexClientBuilder;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +42,10 @@ public class IndexConfigService implements AutoCloseable {
 
     // --- Construct and initialize
 
-    public IndexConfigService(HtDatabaseNode database) throws Exception {
+    public IndexConfigService(HtDatabaseNode database, Resources resources) throws Exception {
         LOG.info("Create {} start", this.getClass().getSimpleName());
 
-        IndexClientBuilder clientBuilder = IndexClientBuilder.getBuilder(INDEX).setModelDataDirectory(MODELDATA);
+        IndexClientBuilder clientBuilder = IndexClientBuilder.getBuilder(INDEX, resources).setModelDataDirectory(MODELDATA);
         client = clientBuilder.create(database);
         clientBuilder.close();
         LOG.info("Create {} finished. DB Service sucessfully started.", this.getClass().getSimpleName());
