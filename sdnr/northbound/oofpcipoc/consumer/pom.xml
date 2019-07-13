@@ -50,7 +50,7 @@
 			<artifactId>oofpcipoc-provider</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.opendaylight.controller</groupId> <artifactId>sal-binding-config</artifactId> 
+		<!-- <dependency> <groupId>org.opendaylight.controller</groupId> <artifactId>sal-binding-config</artifactId>
 			</dependency> -->
 		<dependency>
 			<groupId>org.opendaylight.controller</groupId>
@@ -110,13 +110,11 @@
 			<artifactId>utils-provider</artifactId>
 			<!-- <version>${sdnctl.sli.version}</version> -->
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-core -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-core</artifactId>
 			<version>2.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.json/json -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -126,22 +124,6 @@
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.21</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
 		</dependency>
 	</dependencies>
 
