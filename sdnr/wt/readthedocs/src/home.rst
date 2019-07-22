@@ -25,10 +25,7 @@ microwave and millimeter wave radios, eNodeB, RRH, DAS equipment).
 .. toctree::
    :maxdepth: 1
 
-   connect
-   pnfFault
-   pnfMaintenance
-   pnfConfig
-   pnfPerformance
-   pnfInventory
-   pnfMediator
+   applications
+   installation
+   faq
+   abbreviations

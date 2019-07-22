@@ -10,5 +10,3 @@ Below are the references for SDN-R User Documentation
    :maxdepth: 1
 
    guides/onap-user/home
-   guides/onap-user/faq
-   guides/onap-user/abbreviations
