@@ -143,7 +143,7 @@ public class HelpServletBase {
 
 	@Before
 	public void initEsTestWebserver() throws IOException {
-		this.server = HttpServer.create(new InetSocketAddress(this.port), 0);
+		this.server = HttpServer.create(new InetSocketAddress("127.0.0.1",this.port), 0);
 		this.httpThreadPool = Executors.newFixedThreadPool(5);
 		this.server.setExecutor(this.httpThreadPool);
 		this.server.createContext("/mwtn/test", new MyHandler());
