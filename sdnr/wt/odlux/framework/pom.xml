@@ -16,7 +16,7 @@
 	<properties>
 		<buildtime>${maven.build.timestamp}</buildtime>
 		<distversion>ONAP Dublin (Flourine-SR2)</distversion>
-		<buildno>10.2befc1b(19/06/07)</buildno>
+		<buildno>12.c51336e(19/07/25)</buildno>
 		<odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
 	</properties>
 	<licenses>
@@ -92,6 +92,7 @@
 						</goals>
 						<phase>initialize</phase>
 						<configuration>
+							 <lernaInheritsProxyConfigFromMaven>false</lernaInheritsProxyConfigFromMaven>
 							<arguments>bootstrap</arguments>
 							<installDirectory>${project.basedir}</installDirectory>
 							<workingDirectory>${project.basedir}/../</workingDirectory>
