@@ -40,37 +40,35 @@ import java.util.concurrent.Executors;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.After;
 import org.junit.Before;
-import org.onap.ccsdk.features.sdnr.wt.apigateway.AaiServlet;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 public class HelpServletBase {
 
-	protected static final String HTTPMETHOD_GET = "GET";
-	protected static final String HTTPMETHOD_POST = "POST";
-	protected static final String HTTPMETHOD_PUT = "PUT";
-	protected static final String HTTPMETHOD_DELETE = "DELETE";
-	protected static final String HTTPMETHOD_OPTIONS = "OPTIONS";
+	public static final String HTTPMETHOD_GET = "GET";
+	public static final String HTTPMETHOD_POST = "POST";
+	public static final String HTTPMETHOD_PUT = "PUT";
+	public static final String HTTPMETHOD_DELETE = "DELETE";
+	public static final String HTTPMETHOD_OPTIONS = "OPTIONS";
 	private IPublicServlet servlet;
-	private HttpServer server;
+	private static HttpServer server;
+	private static ExecutorService httpThreadPool;
+	
 	public final String HOST = "localhost";
-	protected final int port;
+	protected static int testPort;
 	private final String baseUri;
 	protected static final String LR = "\n";
 
 	public HelpServletBase(String baseuri, int port) {
 		this.baseUri=baseuri;
-		this.port = port;
+		testPort = port;
 	}
-	private ExecutorService httpThreadPool;
 	
 	public void setServlet(IPublicServlet s)
 	{
@@ -78,10 +76,13 @@ public class HelpServletBase {
 	}
 	
 	protected void testrequest(String method, String data, String expectedResponse, boolean exact) {
-		this.testrequest(method, data, expectedResponse, exact, null);
+		this.testrequest("/mwtn/test",method, data, expectedResponse, exact, null);
+	}
+	protected void testrequest(String uri,String method, String data, String expectedResponse, boolean exact) {
+		this.testrequest(uri,method, data, expectedResponse, exact, null);
 	}
 
-	protected void testrequest(String method, String data, String expectedResponse, boolean exact,
+	protected void testrequest(String uri,String method, String data, String expectedResponse, boolean exact,
 			Map<String, String> headersToCheck) {
 			
 		HttpServletRequest mockRequest = mock(HttpServletRequest.class);
@@ -107,7 +108,7 @@ public class HelpServletBase {
 		headers.add("User-Agent");
 		Enumeration<String> headerNames = headers.elements();
 		try {
-			when(mockRequest.getRequestURI()).thenReturn(this.baseUri+"/mwtn/test");
+			when(mockRequest.getRequestURI()).thenReturn(this.baseUri+uri);
 			when(mockRequest.getHeaderNames()).thenReturn(headerNames);
 			when(mockRequest.getHeader("Accept")).thenReturn("application/json");
 			when(mockRequest.getHeader("User-Agent")).thenReturn("Gecko abc");
@@ -140,35 +141,46 @@ public class HelpServletBase {
 
 		}
 	}
-
 	@Before
-	public void initEsTestWebserver() throws IOException {
-		this.server = HttpServer.create(new InetSocketAddress("127.0.0.1",this.port), 0);
-		this.httpThreadPool = Executors.newFixedThreadPool(5);
-		this.server.setExecutor(this.httpThreadPool);
-		this.server.createContext("/mwtn/test", new MyHandler());
+	private void init() throws IOException{
+	
+		
+		initEsTestWebserver(testPort);
+	}
+	@After
+	private void deinit() {
+		stopTestWebserver();
+	}
+	
+	public static void initEsTestWebserver(int port) throws IOException {
+		initEsTestWebserver(port, "/mwtn/test");
+	}
+	public static void initEsTestWebserver(int port,String baseUri) throws IOException {
+		server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
+		httpThreadPool = Executors.newFixedThreadPool(5);
+		server.setExecutor(httpThreadPool);
+		server.createContext(baseUri, new MyHandler());
 		//server.createContext("/", new MyRootHandler());
-		this.server.setExecutor(null); // creates a default executor
-		this.server.start();
+		server.setExecutor(null); // creates a default executor
+		server.start();
 		System.out.println("http server started");
 	}
 
-	@After
-	public void stopTestWebserver() {
-		if (this.server != null) {
-			this.server.stop(0);
-			this.httpThreadPool.shutdownNow();
+	public static void stopTestWebserver() {
+		if (server != null) {
+			server.stop(0);
+			httpThreadPool.shutdownNow();
 			System.out.println("http server stopped" );
 		}
 	}
 
 	
 
-	static class MyHandler implements HttpHandler {
+	public static class MyHandler implements HttpHandler {
 		@Override
 		public void handle(HttpExchange t) throws IOException {
 			String method = t.getRequestMethod();
-			System.out.println("req method: " + method);
+			System.out.println(String.format("req received: %s %s" ,method,t.getRequestURI()));
 			OutputStream os = null;
 			try {
 				if (method.equals(HTTPMETHOD_GET)) {

@@ -26,6 +26,8 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.MyProperties;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpAaiServlet;
@@ -34,8 +36,9 @@ import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpServletBase;
 
 public class TestAaiServlet extends HelpServletBase{
 
+	private static final int PORT = 40001;
 	public TestAaiServlet() {
-		super("/aai",40001);
+		super("/aai",PORT);
 	}
 	
 	@Test
@@ -49,10 +52,10 @@ public class TestAaiServlet extends HelpServletBase{
 		String query = "{\"query\":{\"match_all\":{}}}";
 		String tmpconfigcontent = "aai=off" + LR + "aaiHeaders=[]" + LR + "database=off" + LR + "insecure=0" + LR
 				+ "cors=0";
-		String tmpconfigcontent2 = "aai=http://" + HOST + ":" + this.port + LR + "aaiHeaders=[]" + LR + "database=off"+ LR
+		String tmpconfigcontent2 = "aai=http://" + HOST + ":" + PORT + LR + "aaiHeaders=[]" + LR + "database=off"+ LR
 				+ "insecure=1" + LR + "cors=1";
 		this.setServlet(new HelpAaiServlet());
-		// test diabled message
+		// test disabled message
 		properties.load(new ByteArrayInputStream(tmpconfigcontent.getBytes()));
 		String expectedResponse = "offline";
 		testrequest(HTTPMETHOD_GET, query, expectedResponse, false);
@@ -72,5 +75,12 @@ public class TestAaiServlet extends HelpServletBase{
 			tmpFile.delete();
 		
 	}
-
+	@Before
+	public void init() throws IOException{	
+		HelpServletBase.initEsTestWebserver(PORT);
+	}
+	@After
+	public void deinit() {
+		HelpServletBase.stopTestWebserver();
+	}
 }
