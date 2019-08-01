@@ -161,6 +161,9 @@ public abstract class BaseServlet extends HttpServlet {
 				}
 				http.disconnect();
 			}
+			else {
+				this.set404Response(resp);
+			}
 		}
 	}
 
@@ -183,6 +186,9 @@ public abstract class BaseServlet extends HttpServlet {
 					LOG.warn(e.getMessage());
 				}
 				http.disconnect();
+			}
+			else {
+				this.set404Response(resp);
 			}
 		}
 	}
@@ -207,6 +213,9 @@ public abstract class BaseServlet extends HttpServlet {
 				}
 				http.disconnect();
 			}
+			else {
+				this.set404Response(resp);
+			}
 		}
 	}
 
@@ -230,14 +239,38 @@ public abstract class BaseServlet extends HttpServlet {
 				}
 				http.disconnect();
 			}
+			else {
+				this.set404Response(resp);
+			}
 		}
+	}
+
+	private void set404Response(HttpServletResponse resp) {
+		resp.setStatus(404);
 	}
 
 	private URLConnection getConnection(HttpServletRequest req, final String method) throws IOException {
 
-		LOG.debug("{} Request", method);
+		LOG.debug("{} Request to {}", method,req.getRequestURL());
 		String surl = this.getRemoteUrl(req.getRequestURI());
+		if(method=="GET") {
+			Enumeration<String> params = req.getParameterNames();
+			if(params!=null) {
+				String param;
+				if(params.hasMoreElements()) {
+					param=params.nextElement();
+					surl+="?"+param+"="+req.getParameter(param);
+				}
+				while(params.hasMoreElements()) {
+					param=params.nextElement();
+					surl+="&"+param+"="+req.getParameter(param);
+				}
+			}
+		}
 		LOG.debug("RemoteURL: {}", surl);
+		if(surl==null) {
+			return null;
+		}
 		URL url = new URL(surl);
 		URLConnection http = url.openConnection();
 		((HttpURLConnection) http).setRequestMethod(method);

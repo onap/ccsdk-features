@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : CCSDK.apps.sdnr.wt.apigateway
  * ================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2018 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,25 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.apigateway.test;
+package org.onap.ccsdk.features.sdnr.wt.apigateway.database;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+public class MediatorServerInfo {
 
-@RunWith(Suite.class)
-@SuiteClasses({ TestAaiServlet.class, TestProperties.class,TestDatabaseServlet.class, TestMediatorServerServlet.class })
-public class AllTests {
+	private final String name;
+	private final String url;
+	public MediatorServerInfo(String name,String url) {
+		this.name = name;
+		if(url.endsWith("/")) {
+			url=url.substring(0,url.length()-1);
+		}
+		this.url = url;
+	}
+	public String getName() {
+		return this.name;
+	}
+	public String getHost() {
+		return this.url;
+	}
 
+	
 }

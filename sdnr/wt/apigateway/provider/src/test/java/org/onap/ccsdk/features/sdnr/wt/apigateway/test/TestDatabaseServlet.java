@@ -20,6 +20,8 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.apigateway.test;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.MyProperties;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpEsServlet;
@@ -30,8 +32,10 @@ import javax.servlet.ServletException;
 
 public class TestDatabaseServlet extends HelpServletBase{
 
+	private static final int PORT = 40002;
+	
 	public TestDatabaseServlet() {
-		super("/database",40002);
+		super("/database",PORT);
 	}
 
 
@@ -51,7 +55,7 @@ public class TestDatabaseServlet extends HelpServletBase{
 		String query = "{\"query\":{\"match_all\":{}}}";
 		String tmpconfigcontent = "aai=off" + LR + "aaiHeaders=[]" + LR + "database=off" + LR + "insecure=0" + LR
 				+ "cors=0";
-		String tmpconfigcontent2 = "aai=off" + LR + "aaiHeaders=[]" + LR + "database=http://" + HOST + ":" + this.port + LR
+		String tmpconfigcontent2 = "aai=off" + LR + "aaiHeaders=[]" + LR + "database=http://" + HOST + ":" + PORT + LR
 				+ "insecure=1" + LR + "cors=1";
 		this.setServlet(new HelpEsServlet());
 		// test diabled message
@@ -77,5 +81,12 @@ public class TestDatabaseServlet extends HelpServletBase{
 		
 		
 	}
-
+	@Before
+	public void init() throws IOException{	
+		HelpServletBase.initEsTestWebserver(PORT);
+	}
+	@After
+	public void deinit() {
+		HelpServletBase.stopTestWebserver();
+	}
 }
