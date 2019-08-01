@@ -21,12 +21,14 @@
 package org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onap.ccsdk.features.sdnr.wt.apigateway.MsServlet;
+import org.onap.ccsdk.features.sdnr.wt.apigateway.database.MediatorServerInfo;
 
 public class HelpMsServlet extends MsServlet implements IPublicServlet {
 
@@ -79,5 +81,8 @@ public class HelpMsServlet extends MsServlet implements IPublicServlet {
 	@Override
 	protected String getBaseUrl(String dbServerId) {
 		return this.baseurl;
+	}
+	public void setMediatorEntries(Map<String, MediatorServerInfo> entries) {
+		this.getEntryProvider().setEntries(entries);
 	}
 }

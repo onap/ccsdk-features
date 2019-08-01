@@ -25,6 +25,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onap.ccsdk.features.sdnr.wt.apigateway.EsServlet.IRequestCallback;
+import org.onap.ccsdk.features.sdnr.wt.apigateway.database.DatabaseEntryProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +35,31 @@ public class MsServlet extends BaseServlet {
 	/**
 	 *
 	 */
+	private static Logger LOG = LoggerFactory.getLogger(MsServlet.class);
 	private static final long serialVersionUID = -5361461082028405171L;
 	private static final String OFFLINE_RESPONSE_MESSAGE = "MediatorServer interface is offline";
-
+	private static final String DATABASE_REQUEST_URI_REGEX = "/mwtn/mediator-server";
+	private final DatabaseEntryProvider entryProvider;
 	public MsServlet() {
-
 		super();
+		this.entryProvider = new DatabaseEntryProvider("http://localhost:9200/",60);
+		EsServlet.registerRequestCallback(DATABASE_REQUEST_URI_REGEX, this.dbRequestCallback);
 	}
 
+	private final IRequestCallback dbRequestCallback = new IRequestCallback() {
+		
+		@Override
+		public void onRequest(String uri, String method) {
+			if(method=="POST"|| method=="PUT" || method=="DELETE") {
+				LOG.debug("found mediator related request. trigger update of local entries");
+				MsServlet.this.entryProvider.triggerReloadSync();
+			}
+			
+		}
+	};
+	protected DatabaseEntryProvider getEntryProvider() {
+		return this.entryProvider;
+	}
 	@Override
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setStatus(200);
@@ -53,7 +72,7 @@ public class MsServlet extends BaseServlet {
 
 	@Override
 	protected boolean isOff() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -62,13 +81,18 @@ public class MsServlet extends BaseServlet {
 		if (uri == null)
 			uri = "";
 		if (uri.length() > 0) {
-			uri = uri.substring("/ms".length());
-			dbServerId = uri.substring(0, uri.indexOf("/"));
+			uri = uri.substring("/ms/".length());
+			int idx= uri.indexOf("/");
+			dbServerId = uri.substring(0,idx);
+			uri=uri.substring(idx);
 		}
-		return this.getBaseUrl(dbServerId) + uri;
+		LOG.debug("request for ms server with id={}",dbServerId);
+		String url= this.getBaseUrl(dbServerId) + uri;
+		LOG.debug("dest-url: {}",url);
+		return url;
 	}
 
 	protected String getBaseUrl(String dbServerId) {
-		return "";
+		return this.entryProvider.getHostUrl(dbServerId);
 	}
 }
