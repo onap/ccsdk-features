@@ -54,7 +54,7 @@ public class OofpcipocProvider implements AutoCloseable, OofpcipocApiService {
 
     private static final Logger LOG = LoggerFactory.getLogger(OofpcipocProvider.class);
 
-    private static final String APPLICATION_NAME = "Oofpcipoc";
+    private static final String APPLICATION_NAME = "oofpcipoc-api";
 
     private final ExecutorService executor;
 
@@ -125,12 +125,12 @@ public class OofpcipocProvider implements AutoCloseable, OofpcipocApiService {
 		// Call SLI sync method
 		try
 		{
-			if (OofpcipocClient.hasGraph("Oofpcipoc", svcOperation , null, "sync"))
+			if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation , null, "sync"))
 			{
         LOG.info( "OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
 				try
 				{
-          OofpcipocClient.execute("Oofpcipoc", svcOperation, null, "sync", serviceDataBuilder, parms);
+          OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
 				}
 				catch (Exception e)
 				{
@@ -195,13 +195,13 @@ public class OofpcipocProvider implements AutoCloseable, OofpcipocApiService {
 		try
 		{
 
-			if (OofpcipocClient.hasGraph("Oofpcipoc", svcOperation , null, "sync"))
+			if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation , null, "sync"))
 			{
         LOG.info( "OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
 
 				try
 				{
-					OofpcipocClient.execute("Oofpcipoc", svcOperation, null, "sync", serviceDataBuilder, parms);
+					OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
 				}
 				catch (Exception e)
 				{
@@ -264,13 +264,13 @@ public class OofpcipocProvider implements AutoCloseable, OofpcipocApiService {
   		try
   		{
 
-  			if (OofpcipocClient.hasGraph("Oofpcipoc", svcOperation , null, "sync"))
+  			if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation , null, "sync"))
   			{
           LOG.info( "OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
 
   				try
   				{
-  					OofpcipocClient.execute("Oofpcipoc", svcOperation, null, "sync", serviceDataBuilder, parms);
+  					OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
   				}
   				catch (Exception e)
   				{
@@ -333,13 +333,13 @@ public class OofpcipocProvider implements AutoCloseable, OofpcipocApiService {
     		try
     		{
 
-    			if (OofpcipocClient.hasGraph("Oofpcipoc", svcOperation , null, "sync"))
+    			if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation , null, "sync"))
     			{
             LOG.info( "OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
 
     				try
     				{
-    					OofpcipocClient.execute("Oofpcipoc", svcOperation, null, "sync", serviceDataBuilder, parms);
+    					OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
     				}
     				catch (Exception e)
     				{
@@ -402,13 +402,13 @@ public class OofpcipocProvider implements AutoCloseable, OofpcipocApiService {
       		try
       		{
 
-      			if (OofpcipocClient.hasGraph("Oofpcipoc", svcOperation , null, "sync"))
+      			if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation , null, "sync"))
       			{
               LOG.info( "OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
 
       				try
       				{
-      					OofpcipocClient.execute("Oofpcipoc", svcOperation, null, "sync", serviceDataBuilder, parms);
+      					OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
       				}
       				catch (Exception e)
       				{
@@ -470,12 +470,12 @@ public class OofpcipocProvider implements AutoCloseable, OofpcipocApiService {
       		// Call SLI sync method
       		try
       		{
-      			if (OofpcipocClient.hasGraph("Oofpcipoc", svcOperation , null, "sync"))
+      			if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation , null, "sync"))
       			{
               LOG.info( "OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
       				try
       				{
-                OofpcipocClient.execute("Oofpcipoc", svcOperation, null, "sync", serviceDataBuilder, parms);
+                OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
       				}
       				catch (Exception e)
       				{
