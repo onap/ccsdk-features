@@ -26,7 +26,7 @@
 
 	<groupId>org.onap.ccsdk.features</groupId>
 	<artifactId>features-installer</artifactId>
-	<version>0.5.1-SNAPSHOT</version>
+	<version>0.5.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Blueprints Processor :: features :: ${project.artifactId}</name>

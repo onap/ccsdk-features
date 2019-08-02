@@ -26,7 +26,7 @@
 	</parent>
 
 	<groupId>org.onap.ccsdk.features</groupId>
-	<version>0.5.1-SNAPSHOT</version>
+	<version>0.5.2-SNAPSHOT</version>
 	<artifactId>blueprints-assignment-provider</artifactId>
 	<packaging>bundle</packaging>
 	<name>Blueprints Assignment - Provider</name>

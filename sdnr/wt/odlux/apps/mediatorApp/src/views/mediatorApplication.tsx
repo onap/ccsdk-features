@@ -1,3 +1,20 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
 import * as React from 'react';
 import { Theme, createStyles, WithStyles, withStyles, Tooltip } from '@material-ui/core';
 
@@ -52,6 +69,7 @@ const styles = (theme: Theme) => createStyles({
 const mapProps = (state: IApplicationStoreState) => ({
   serverName: state.mediator.mediatorServerState.name,
   serverUrl: state.mediator.mediatorServerState.url,
+  serverId: state.mediator.mediatorServerState.id,
   serverVersion: state.mediator.mediatorServerState.serverVersion,
   mediatorVersion: state.mediator.mediatorServerState.mediatorVersion,
   configurations: state.mediator.mediatorServerState.configurations,
@@ -89,7 +107,7 @@ type MediatorServerSelectionComponentState = {
 
 class MediatorApplicationComponent extends React.Component<MediatorApplicationComponentProps, MediatorServerSelectionComponentState> {
 
-  constructor (props: MediatorApplicationComponentProps) {
+  constructor(props: MediatorApplicationComponentProps) {
     super(props);
 
     this.state = {
@@ -120,7 +138,7 @@ class MediatorApplicationComponent extends React.Component<MediatorApplicationCo
           <Tooltip title={"Info"} ><IconButton className={classes.button}><InfoIcon /></IconButton></Tooltip>
         </div>
         <div className={classes.spacer}>
-          { process.env.NODE_ENV === "development" ? <Tooltip title={"Edit"} ><IconButton disabled={rowData[BusySymbol]} className={classes.button} onClick={event => this.onOpenEditConfigurationDialog(event, rowData)}><EditIcon /></IconButton></Tooltip> : null}
+          {process.env.NODE_ENV === "development" ? <Tooltip title={"Edit"} ><IconButton disabled={rowData[BusySymbol]} className={classes.button} onClick={event => this.onOpenEditConfigurationDialog(event, rowData)}><EditIcon /></IconButton></Tooltip> : null}
           <Tooltip title={"Remove"} ><IconButton disabled={rowData[BusySymbol]} className={classes.button} onClick={event => this.onOpenRemoveConfigutationDialog(event, rowData)}><DeleteIcon /></IconButton></Tooltip>
         </div>
       </>
@@ -166,9 +184,9 @@ class MediatorApplicationComponent extends React.Component<MediatorApplicationCo
     this.setState({
       busy: true,
     });
-    this.props.serverUrl && Promise.all([
-      mediatorService.getMediatorServerFreeNcPorts(this.props.serverUrl, 1),
-      mediatorService.getMediatorServerFreeSnmpPorts(this.props.serverUrl, 1),
+    this.props.serverId && Promise.all([
+      mediatorService.getMediatorServerFreeNcPorts(this.props.serverId, 1),
+      mediatorService.getMediatorServerFreeSnmpPorts(this.props.serverId, 1),
     ]).then(([freeNcPorts, freeSnmpPorts]) => {
       if (freeNcPorts && freeSnmpPorts && freeNcPorts.length > 0 && freeSnmpPorts.length > 0) {
         this.setState({

@@ -1,3 +1,20 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
 import { Action } from '../../../../framework/src/flux/action';
 import { Dispatch } from '../../../../framework/src/flux/store';
 
@@ -11,7 +28,7 @@ import { IApplicationStoreState } from '../../../../framework/src/store/applicat
 export class BaseAction extends Action { }
 
 export class SetMediatorServerBusy extends BaseAction {
-  constructor (public isBusy: boolean) {
+  constructor(public isBusy: boolean) {
     super();
   }
 }
@@ -20,7 +37,7 @@ export class SetMediatorServerInfo extends BaseAction {
   /**
    * Initializes a new instance of this class.
    */
-  constructor (public name: string | null, public url: string | null) {
+  constructor(public id: string | null, public name: string | null, public url: string | null) {
     super();
 
   }
@@ -30,7 +47,7 @@ export class SetMediatorServerVersion extends BaseAction {
   /**
    * Initializes a new instance of this class.
    */
-  constructor (public versionInfo: MediatorServerVersionInfo | null) {
+  constructor(public versionInfo: MediatorServerVersionInfo | null) {
     super();
 
   }
@@ -40,7 +57,7 @@ export class SetAllMediatorServerConfigurations extends BaseAction {
   /**
    * Initializes a new instance of this class.
    */
-  constructor (public allConfigurations: MediatorConfigResponse[] | null) {
+  constructor(public allConfigurations: MediatorConfigResponse[] | null) {
     super();
 
   }
@@ -50,7 +67,7 @@ export class SetMediatorServerSupportedDevices extends BaseAction {
   /**
    * Initializes a new instance of this class.
    */
-  constructor (public devices: MediatorServerDevice[] | null) {
+  constructor(public devices: MediatorServerDevice[] | null) {
     super();
 
   }
@@ -65,16 +82,16 @@ export const initializeMediatorServerAsyncActionCreator = (serverId: string) => 
       dispatch(new NavigateToApplication("mediator"));
       return;
     }
-    dispatch(new SetMediatorServerInfo(mediatorServer.name, mediatorServer.url));
+    dispatch(new SetMediatorServerInfo(mediatorServer._id, mediatorServer.name, mediatorServer.url));
 
-    mediatorService.getMediatorServerVersion(mediatorServer.url).then(versionInfo => {
+    mediatorService.getMediatorServerVersion(mediatorServer._id).then(versionInfo => {
       dispatch(new SetMediatorServerVersion(versionInfo));
     });
 
     Promise.all([
-      mediatorService.getMediatorServerAllConfigs(mediatorServer.url),
-      mediatorService.getMediatorServerSupportedDevices(mediatorServer.url)
-    ]).then(([configurations,supportedDevices]) => {
+      mediatorService.getMediatorServerAllConfigs(mediatorServer._id),
+      mediatorService.getMediatorServerSupportedDevices(mediatorServer._id)
+    ]).then(([configurations, supportedDevices]) => {
       dispatch(new SetAllMediatorServerConfigurations(configurations));
       dispatch(new SetMediatorServerSupportedDevices(supportedDevices));
       dispatch(new SetMediatorServerBusy(false));

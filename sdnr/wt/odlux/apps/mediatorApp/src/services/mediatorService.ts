@@ -1,13 +1,30 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
 import * as $ from 'jquery';
 
-import { requestRest } from '../../../../framework/src/services/restService';
+import { requestRest, formEncode } from '../../../../framework/src/services/restService';
 import { MediatorServer, MediatorServerVersionInfo, MediatorConfig, MediatorServerDevice, MediatorConfigResponse } from '../models/mediatorServer';
 import { HitEntry } from '../../../../framework/src/models';
 
 export const mediatorServerResourcePath = "mwtn/mediator-server";
 
 type MediatorServerResponse<TData> = { code: number, data: TData };
-type IndexableMediatorServer = MediatorServer & { [key: string]: any; } ;
+type IndexableMediatorServer = MediatorServer & { [key: string]: any; };
 
 /** 
  * Represents a web api accessor service for all mediator server actions.
@@ -60,13 +77,29 @@ class MediatorService {
 
   // https://cloud-highstreet-technologies.com/wiki/doku.php?id=att:ms:api
 
-  private accassMediatorServer<TData ={}>(mediatorServerUrl: string, task: string, data?: {}): Promise<MediatorServerResponse<TData> | null> {
-    const url = `${mediatorServerUrl}/api/?task=${task}`;
-    // return (await requestRest<{ code: number, data: TData}>(path, { method: "POST" })) || null ;
+  private async accassMediatorServer<TData = {}>(mediatorServerId: string, task: string, data?: {}): Promise<MediatorServerResponse<TData> | null> {
+    const path = `ms/${mediatorServerId}/api/'?task=${task}`;
+    const result = (await requestRest<string>(path, {
+      method: data ? "POST" : "GET",
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: data ? formEncode({
+        ...data,
+        ...{ task: task }
+      }) : null
+    }, true)) || null;
+
+    return result ? JSON.parse(result) as { code: number, data: TData } : null;
+  }
+  /*
+  private accassMediatorServer<TData = {}>(mediatorServerId: string, task: string, data?: {}): Promise<MediatorServerResponse<TData> | null> {
+    const path = `ms/${mediatorServerId}/api/?task=${task}`;
     return new Promise<{ code: number, data: TData }>((resolve, reject) => {
-      $.post({
-        url,
-        data: data,
+      $.ajax({
+        method: data ? 'POST' : 'GET',
+        url: path,
+        data: { ...{ task: task }, ...data },
         //contentType: 'application/json'
       }).then((result: any) => {
         if (typeof result === "string") {
@@ -76,70 +109,70 @@ class MediatorService {
         };
       });
     });
-  }
+  }*/
 
-  public async getMediatorServerVersion(mediatorServerUrl: string): Promise<MediatorServerVersionInfo | null> {
-    const result = await this.accassMediatorServer<MediatorServerVersionInfo>(mediatorServerUrl, 'version');
+  public async getMediatorServerVersion(mediatorServerId: string): Promise<MediatorServerVersionInfo | null> {
+    const result = await this.accassMediatorServer<MediatorServerVersionInfo>(mediatorServerId, 'version');
     if (result && result.code === 1) return result.data;
     return null;
   }
 
-  public async getMediatorServerAllConfigs(mediatorServerUrl: string): Promise<MediatorConfigResponse[] | null> {
-    const result = await this.accassMediatorServer<MediatorConfigResponse[]>(mediatorServerUrl, 'getconfig');
+  public async getMediatorServerAllConfigs(mediatorServerId: string): Promise<MediatorConfigResponse[] | null> {
+    const result = await this.accassMediatorServer<MediatorConfigResponse[]>(mediatorServerId, 'getconfig');
     if (result && result.code === 1) return result.data;
     return null;
   }
 
-  public async getMediatorServerConfigByName(mediatorServerUrl: string, name: string): Promise<MediatorConfigResponse | null> {
-    const result = await this.accassMediatorServer<MediatorConfigResponse[]>(mediatorServerUrl, 'getconfig', { name } );
+  public async getMediatorServerConfigByName(mediatorServerId: string, name: string): Promise<MediatorConfigResponse | null> {
+    const result = await this.accassMediatorServer<MediatorConfigResponse[]>(mediatorServerId, `getconfig&name=${name}`);
     if (result && result.code === 1 && result.data && result.data.length === 1) return result.data[0];
     return null;
   }
 
-  public async getMediatorServerSupportedDevices(mediatorServerUrl: string): Promise<MediatorServerDevice[] | null> {
-    const result = await this.accassMediatorServer<MediatorServerDevice[]>(mediatorServerUrl, 'getdevices' );
+  public async getMediatorServerSupportedDevices(mediatorServerId: string): Promise<MediatorServerDevice[] | null> {
+    const result = await this.accassMediatorServer<MediatorServerDevice[]>(mediatorServerId, 'getdevices');
     if (result && result.code === 1) return result.data;
     return null;
   }
 
-  public async startMediatorByName(mediatorServerUrl: string, name: string): Promise<string | null> {
-    const result = await this.accassMediatorServer<string>(mediatorServerUrl, 'start', { name } );
+  public async startMediatorByName(mediatorServerId: string, name: string): Promise<string | null> {
+    const result = await this.accassMediatorServer<string>(mediatorServerId, `start&name=${name}`);
     if (result && result.code === 1) return result.data;
     return null;
   }
 
-  public async stopMediatorByName(mediatorServerUrl: string, name: string): Promise<string | null> {
-    const result = await this.accassMediatorServer<string>(mediatorServerUrl, 'stop', { name } );
+  public async stopMediatorByName(mediatorServerId: string, name: string): Promise<string | null> {
+    const result = await this.accassMediatorServer<string>(mediatorServerId, `stop&name=${name}`);
     if (result && result.code === 1) return result.data;
     return null;
   }
 
-  public async createMediatorConfig(mediatorServerUrl: string, config: MediatorConfig): Promise<string | null> {
-    const result = await this.accassMediatorServer<string>(mediatorServerUrl, 'create', { config: JSON.stringify(config) }  );
+  public async createMediatorConfig(mediatorServerId: string, config: MediatorConfig): Promise<string | null> {
+    const result = await this.accassMediatorServer<string>(mediatorServerId, 'create', { config: JSON.stringify(config) });
     if (result && result.code === 1) return result.data;
     return null;
   }
 
-  public async updateMediatorConfigByName(mediatorServerUrl: string, config: MediatorConfig): Promise<string | null> {
-    const result = await this.accassMediatorServer<string>(mediatorServerUrl, 'update', { config: JSON.stringify(config) } );
+  public async updateMediatorConfigByName(mediatorServerId: string, config: MediatorConfig): Promise<string | null> {
+    const result = await this.accassMediatorServer<string>(mediatorServerId, 'update', { config: JSON.stringify(config) });
     if (result && result.code === 1) return result.data;
     return null;
   }
 
-  public async deleteMediatorConfigByName(mediatorServerUrl: string, name: string): Promise<string | null> {
-    const result = await this.accassMediatorServer<string>(mediatorServerUrl, 'delete', { name } );
+  public async deleteMediatorConfigByName(mediatorServerId: string, name: string): Promise<string | null> {
+    const result = await this.accassMediatorServer<string>(mediatorServerId, `delete&name=${name}`);
     if (result && result.code === 1) return result.data;
     return null;
   }
 
-  public async getMediatorServerFreeNcPorts(mediatorServerUrl: string, limit?: number): Promise<number[] | null> {
-    const result = await this.accassMediatorServer<number[]>(mediatorServerUrl, 'getncports', { limit } );
+  public async getMediatorServerFreeNcPorts(mediatorServerId: string, limit?: number): Promise<number[] | null> {
+    const result = await this.accassMediatorServer<number[]>(mediatorServerId, 'getncports', { limit });
     if (result && result.code === 1) return result.data;
     return null;
   }
-  
-  public async getMediatorServerFreeSnmpPorts(mediatorServerUrl: string, limit?: number): Promise<number[] | null> {
-    const result = await this.accassMediatorServer<number[]>(mediatorServerUrl, 'getsnmpports', { limit } );
+
+  public async getMediatorServerFreeSnmpPorts(mediatorServerId: string, limit?: number): Promise<number[] | null> {
+    const result = await this.accassMediatorServer<number[]>(mediatorServerId, 'getsnmpports', { limit });
     if (result && result.code === 1) return result.data;
     return null;
   }

@@ -4,7 +4,7 @@
 
 	<groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
 	<artifactId>sdnr-wt-odlux-core-provider</artifactId>
-	<version>0.5.1-SNAPSHOT</version>
+	<version>0.5.2-SNAPSHOT</version>
 	<name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
 	<packaging>bundle</packaging>
 
