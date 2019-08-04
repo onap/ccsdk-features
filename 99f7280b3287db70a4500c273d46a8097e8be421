@@ -1,0 +1,10 @@
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Code-Review+2: Brinda Santh Muthuramalingam <brindasanth@in.ibm.com>
+Code-Review+1: Jessica Wagantall <jwagantall@linuxfoundation.org>
+Code-Review+1: Aric Gardner <agardner@linuxfoundation.org>
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Sun, 04 Aug 2019 19:03:02 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/92615
+Project: ccsdk/features
+Branch: refs/heads/master
