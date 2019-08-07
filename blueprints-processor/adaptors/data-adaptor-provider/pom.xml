@@ -18,7 +18,7 @@
 	</parent>
 
 	<groupId>org.onap.ccsdk.features</groupId>
-	<version>0.5.1-SNAPSHOT</version>
+	<version>0.5.1</version>
 	<artifactId>blueprints-data-adaptor-provider</artifactId>
 	<packaging>bundle</packaging>
 	<name>Blueprints Data Adaptor - Provider</name>

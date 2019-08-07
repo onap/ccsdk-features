@@ -11,7 +11,7 @@
 
   <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
   <artifactId>energysavings-installer</artifactId>
-  <version>0.2.4-SNAPSHOT</version>
+  <version>0.2.4</version>
   <packaging>pom</packaging>
 
   <name>ccsdk-features-sdnr-northbound :: energysavings :: ${project.artifactId}</name>

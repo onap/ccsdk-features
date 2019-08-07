@@ -26,7 +26,7 @@
 
 	<groupId>org.onap.ccsdk.features</groupId>
 	<artifactId>features-blueprints-processor</artifactId>
-	<version>0.5.1-SNAPSHOT</version>
+	<version>0.5.1</version>
 	<packaging>feature</packaging>
 
 	<name>Blueprints Processor :: CCSDK Features :: ${project.artifactId}</name>

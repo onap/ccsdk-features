@@ -25,7 +25,7 @@
 		<relativePath/>
 	</parent>
 
-	<version>0.5.1-SNAPSHOT</version>
+	<version>0.5.1</version>
 	<artifactId>blueprints-processor-plugin</artifactId>
 	<groupId>org.onap.ccsdk.features</groupId>
 	<packaging>pom</packaging>
