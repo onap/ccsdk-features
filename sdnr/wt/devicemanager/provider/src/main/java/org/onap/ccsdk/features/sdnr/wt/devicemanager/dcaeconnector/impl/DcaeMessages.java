@@ -28,11 +28,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.ParseException;
+
 import javax.annotation.Nullable;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.InternalSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.InventoryInformation;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.ONFCoreNetworkElementRepresentation;
@@ -331,7 +332,7 @@ public class DcaeMessages {
         long microseconds = -1;
         try {
             microseconds = NETCONFTIME_CONVERTER.getTimeStampFromNetconfAsMilliseconds(timeAsString) * 1000;
-        } catch (IllegalArgumentException | ParseException e) {
+        } catch (IllegalArgumentException e) {
             LOG.info("Can not convert timeAsString", e);
         }
         return String.valueOf(microseconds);

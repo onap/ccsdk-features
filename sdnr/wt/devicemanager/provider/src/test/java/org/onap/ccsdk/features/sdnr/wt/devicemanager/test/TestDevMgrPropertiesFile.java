@@ -75,7 +75,8 @@ public class TestDevMgrPropertiesFile {
         assertTrue(ToggleAlarmConfig.isInstantiated());
 
         System.out.println("Verify\n"+cfg.getAai()+"\n"+AaiConfig.getDefaultConfiguration());
-        boolean res;
+        @SuppressWarnings("unused")
+		boolean res;
         res = cfg.getAai().equals(AaiConfig.getDefaultConfiguration());
         res = cfg.getDcae().equals(DcaeConfig.getDefaultConfiguration());
         res = cfg.getPm().equals(PmConfig.getDefaultConfiguration());

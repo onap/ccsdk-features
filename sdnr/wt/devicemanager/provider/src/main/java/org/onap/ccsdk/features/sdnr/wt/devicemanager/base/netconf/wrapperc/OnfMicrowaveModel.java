@@ -18,7 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.wrapperc;
 
 import java.util.List;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.ONFCOreNetworkElementCoreData;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.ONFCoreNetworkElementCoreData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.container.ONFLayerProtocolName;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
@@ -29,7 +29,7 @@ import org.opendaylight.yangtools.yang.common.QName;
 
 public interface OnfMicrowaveModel {
 
-    public void setCoreData(ONFCOreNetworkElementCoreData coreData);
+    public void setCoreData(ONFCoreNetworkElementCoreData coreData);
 
 	public void readTheFaultsOfMicrowaveModel(ONFLayerProtocolName lpName, Class<?> lpClass, UniversalId uuid,
 			List<ProblemNotificationXml> resultList);

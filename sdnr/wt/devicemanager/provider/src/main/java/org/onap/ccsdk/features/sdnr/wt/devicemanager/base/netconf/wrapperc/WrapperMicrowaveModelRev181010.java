@@ -32,7 +32,7 @@ import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.InternalDateAndTime;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.InternalSeverity;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.ONFCOreNetworkElementCoreData;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.ONFCoreNetworkElementCoreData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.container.ExtendedAirInterfaceHistoricalPerformanceType1211p;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.container.ONFLayerProtocolName;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.util.GenericTransactionUtils;
@@ -86,7 +86,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     public static final QName QNAME = MwAirInterfacePac.QNAME;
 
 
-    private ONFCOreNetworkElementCoreData coreData;
+    private ONFCoreNetworkElementCoreData coreData;
 
 	private OnfMicrowaveModelNotification microwaveModelListener;
 
@@ -95,11 +95,11 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
      */
 
     @Override
-    public void setCoreData(ONFCOreNetworkElementCoreData coreData) {
+    public void setCoreData(ONFCoreNetworkElementCoreData coreData) {
 		this.coreData = coreData;
 	}
 
-	public ONFCOreNetworkElementCoreData getCoreData() {
+	public ONFCoreNetworkElementCoreData getCoreData() {
 		return coreData;
 	}
 
