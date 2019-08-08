@@ -22,18 +22,26 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf;
 
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.InventoryInformation;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.container.AllPm;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
+import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.NetworkElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author herbert
  *
  */
-public class ONFCoreEmpty implements ONFCoreNetworkElementRepresentation {
+@SuppressWarnings("deprecation")
+public class ONFCoreNetworkElementEmpty implements ONFCoreNetworkElementRepresentation {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ONFCoreNetworkElementEmpty.class);
 
     private String mountPointNodeName = "";
 
 
-    ONFCoreEmpty(String mountPointNodeName) {
+    ONFCoreNetworkElementEmpty(String mountPointNodeName) {
+    	LOG.info("Create {}",ONFCoreNetworkElementEmpty.class.getSimpleName());
         this.mountPointNodeName = mountPointNodeName;
     }
 
@@ -45,6 +53,11 @@ public class ONFCoreEmpty implements ONFCoreNetworkElementRepresentation {
     public String getMountPointNodeName() {
         return mountPointNodeName;
     }
+
+	@Override
+	public String getMountpoint() {
+		return mountPointNodeName;
+	}
 
     @Override
     public void resetPMIterator() {
@@ -66,7 +79,7 @@ public class ONFCoreEmpty implements ONFCoreNetworkElementRepresentation {
 
     @Override
     public String pmStatusToString() {
-        return "ONFCoreEmpty";
+        return this.getClass().getSimpleName();
     }
 
     @Override
@@ -95,10 +108,6 @@ public class ONFCoreEmpty implements ONFCoreNetworkElementRepresentation {
     }
 
     @Override
-    public void initSynchronizationExtension() {
-    }
-
-    @Override
     public InventoryInformation getInventoryInformation() {
         return InventoryInformation.getDefault();
     }
@@ -107,5 +116,15 @@ public class ONFCoreEmpty implements ONFCoreNetworkElementRepresentation {
     public InventoryInformation getInventoryInformation(String layerProtocolFilter) {
         return InventoryInformation.getDefault();
     }
+
+	@Override
+	public DataBroker getDataBroker() {
+		return null;
+	}
+
+	@Override
+	public NetworkElement getOptionalNetworkElement() {
+		return null;
+	}
 
 }

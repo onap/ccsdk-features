@@ -20,9 +20,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf;
 
-import java.util.List;
-import javax.annotation.Nonnull;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.InventoryInformation;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.container.Capabilities;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.slf4j.Logger;
@@ -42,10 +39,6 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
     private final String mountPointNodeName;
     private final DataBroker netconfNodeDataBroker;
     private final Capabilities capabilities;
-    private final boolean isNetworkElementCurrentProblemsSupporting10;
-
-    private @Nonnull InventoryInformation inventoryInformation = new InventoryInformation();
-
 
     protected ONFCoreNetworkElementBase(String mountPointNodeName, DataBroker netconfNodeDataBroker,
             Capabilities capabilities) {
@@ -53,8 +46,6 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
         this.mountPointNodeName = mountPointNodeName;
         this.netconfNodeDataBroker = netconfNodeDataBroker;
         this.capabilities = capabilities;
-
-        this.isNetworkElementCurrentProblemsSupporting10 = false;
 
     }
 
@@ -77,33 +68,6 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
         return capabilities;
     }
 
-    /**
-     * @return the isNetworkElementCurrentProblemsSupporting10
-     */
-    public boolean isNetworkElementCurrentProblemsSupporting10() {
-        return isNetworkElementCurrentProblemsSupporting10;
-    }
-
-    public void setInventoryInformation(InventoryInformation newInventoryInformation) {
-        this.inventoryInformation = newInventoryInformation;
-    }
-
-    @Override
-    public InventoryInformation getInventoryInformation() {
-        return getInventoryInformation(null);
-    }
-
-    @Override
-    public InventoryInformation getInventoryInformation(String layerProtocolFilter) {
-        InventoryInformation res = new InventoryInformation(inventoryInformation);
-        res.setInterfaceUuidList(getFilteredInterfaceUuidsAsStringList(layerProtocolFilter));
-
-        return res;
-    }
-
-    @Override
-    public void close() throws Exception {}
-
     /*---------------------------------------------------------------
      * Getter/ Setter
      */
@@ -115,14 +79,5 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
     public DataBroker getDataBroker() {
         return netconfNodeDataBroker;
     }
-
-    /*-----------------------------------------------------------------------------
-     * Sychronization
-     */
-
-    @Override
-    public void initSynchronizationExtension() {}
-
-    protected @Nonnull abstract List<String> getFilteredInterfaceUuidsAsStringList(String layerProtocolFilter);
 
 }

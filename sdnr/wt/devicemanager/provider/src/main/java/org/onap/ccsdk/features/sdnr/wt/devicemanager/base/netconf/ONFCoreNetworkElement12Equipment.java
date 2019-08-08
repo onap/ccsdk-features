@@ -50,8 +50,9 @@ public class ONFCoreNetworkElement12Equipment {
 
     private static final UniversalId EQUIPMENTROOT = new UniversalId("network-element");
     private static final int EQUIPMENTROOTLEVEL = 0;
+    private static final OnfInterfacePac EMPTYEQUIPMENTPAC = (interfacePacUuid, resultList) -> { return(resultList); };
 
-    private final ONFCOreNetworkElementCoreData coreData;
+    private final ONFCoreNetworkElementCoreData coreData;
     private final OnfInterfacePac equipmentPac;
 
     private final ValueNameList extensionList;
@@ -59,15 +60,15 @@ public class ONFCoreNetworkElement12Equipment {
     private final List<ProblemNotificationXml> globalProblemList;
     private final List<ExtendedEquipment> globalEquipmentList;
 
-    public ONFCoreNetworkElement12Equipment(ONFCOreNetworkElementCoreData coreData, Capabilities capabilities) {
+    public ONFCoreNetworkElement12Equipment(ONFCoreNetworkElementCoreData coreData, Capabilities capabilities) {
         LOG.debug("Initialize " + ONFCoreNetworkElement12Equipment.class.getName());
         this.coreData = coreData;
         if (capabilities.isSupportingNamespaceAndRevision(WrapperEquipmentPacRev170402.QNAME)) {
             this.equipmentPac = new WrapperEquipmentPacRev170402(coreData);
-            LOG.debug("Equipement pac supported {}", WrapperEquipmentPacRev170402.QNAME);
+            LOG.debug("Equipment pac supported {}", WrapperEquipmentPacRev170402.QNAME);
         } else {
-            this.equipmentPac = null;
-            LOG.debug("Equipement pac not supported {}", WrapperEquipmentPacRev170402.QNAME);
+            this.equipmentPac = EMPTYEQUIPMENTPAC;
+            LOG.debug("Equipment pac not supported {}", WrapperEquipmentPacRev170402.QNAME);
         }
 
         extensionList = new ValueNameList();
@@ -178,21 +179,18 @@ public class ONFCoreNetworkElement12Equipment {
 
             Equipment equipment = this.readEquipment(uuid);
 
-            if (equipment != null) {
-                equipmentList.add(new ExtendedEquipment(parentUuid.getValue(), equipment, treeLevel));
+			if (equipment != null) {
+				equipmentList.add(new ExtendedEquipment(parentUuid.getValue(), equipment, treeLevel));
 
-                if (this.equipmentPac != null) {
-                    this.equipmentPac.readTheFaults(uuid, problemList);
-
-                    List<ContainedHolder> containedHolderListe = equipment.getContainedHolder();
-                    if (containedHolderListe != null) {
-                        for (ContainedHolder containedHolder : containedHolderListe) {
-                            recurseReadEquipmentProblems(containedHolder.getOccupyingFru(), uuid, treeLevel + 1,
-                                    problemList, equipmentList);
-                        }
-                    }
-                }
-            }
+				this.equipmentPac.readTheFaults(uuid, problemList);
+				List<ContainedHolder> containedHolderListe = equipment.getContainedHolder();
+				if (containedHolderListe != null) {
+					for (ContainedHolder containedHolder : containedHolderListe) {
+						recurseReadEquipmentProblems(containedHolder.getOccupyingFru(), uuid, treeLevel + 1,
+								problemList, equipmentList);
+					}
+				}
+			}
         }
     }
 

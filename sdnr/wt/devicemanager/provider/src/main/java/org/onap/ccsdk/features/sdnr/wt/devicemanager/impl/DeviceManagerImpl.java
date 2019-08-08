@@ -45,7 +45,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificatio
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientDummyImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientImpl2;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.index.impl.IndexConfigService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.index.impl.IndexMwtnService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.index.impl.IndexUpdateService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.maintenance.impl.MaintenanceServiceImpl;
@@ -114,7 +113,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
     private @Nullable AaiProviderClient aaiProviderClient = null;
     private @Nullable DeviceMonitor deviceMonitor = new DeviceMonitorEmptyImpl();
     private IndexUpdateService updateService;
-    private IndexConfigService configService;
+    //private IndexConfigService configService; issue#1
     private IndexMwtnService mwtnService;
     private HtDatabaseNode htDatabase;
     private Boolean devicemanagerInitializationOk = false;
@@ -195,7 +194,7 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
             if (akkaConfig == null || akkaConfig.isClusterAndFirstNode()) {
                 // Create DB index if not existing and if database is running
                 try {
-                    this.configService = new IndexConfigService(htDatabase);
+                    //this.configService = new IndexConfigService(htDatabase);issue#1
                     this.mwtnService = new IndexMwtnService(htDatabase);
                 } catch (Exception e) {
                     LOG.warn("Can not start ES access clients to provide database index config, mwtn. ", e);
@@ -281,7 +280,8 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
         close(aaiProviderClient);
         close(aotsMProvider);
         close(deviceMonitor);
-        close(updateService, configService, mwtnService);
+        //close(updateService, configService, mwtnService); issue#1
+        close(updateService, mwtnService);
         close(htDatabase);
         close(netconfChangeListener);
         close(maintenanceService);
@@ -419,7 +419,6 @@ public class DeviceManagerImpl implements DeviceManagerService, AutoCloseable, R
 
 					// -- Read data from NE
 					ne.initialReadFromNetworkElement();
-					ne.initSynchronizationExtension();
 
 					sendUpdateNotification(mountPointNodeName, nNode.getConnectionStatus());
 
