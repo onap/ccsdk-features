@@ -1,7 +1,7 @@
 {
     "sdnr": {
         "nodes": {
-            "connect": {
+            "connectApp": {
                 "versions": {
                     "0.4.0": {
                         "date": "2018-02-24",
@@ -16,7 +16,7 @@
                 },
                 "label": "Connect"
             },
-            "pnfFault": {
+            "faultApp": {
                 "versions": {
                     "0.4.0": {
                         "date": "2018-02-24",
@@ -31,7 +31,7 @@
                 },
                 "label": "Fault"
             },
-            "pnfMaintenance": {
+            "maintenanceApp": {
                 "versions": {
                     "0.4.0": {
                         "date": "2018-09-13",
@@ -46,7 +46,7 @@
                 },
                 "label": "Maintenance"
             },
-            "pnfConfig": {
+            "configApp": {
                 "versions": {
                     "0.4.0": {
                         "date": "2018-02-24",
@@ -61,7 +61,7 @@
                 },
                 "label": "Config"
             },
-            "pnfPerformance": {
+            "performanceApp": {
                 "versions": {
                     "0.4.0": {
                         "date": "2018-02-24",
@@ -91,7 +91,7 @@
                 },
                 "label": "Inventory"
             },
-            "pnfMediator": {
+            "mediatorApp": {
                 "versions": {
                     "0.4.0": {
                         "date": "2018-02-24",
