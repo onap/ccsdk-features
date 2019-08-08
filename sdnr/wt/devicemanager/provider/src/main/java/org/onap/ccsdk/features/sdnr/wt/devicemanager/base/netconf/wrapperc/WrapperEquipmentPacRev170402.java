@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.InternalDateAndTime;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.InternalSeverity;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.ONFCOreNetworkElementCoreData;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.ONFCoreNetworkElementCoreData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf.util.GenericTransactionUtils;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -42,9 +42,9 @@ public class WrapperEquipmentPacRev170402 implements OnfInterfacePac {
     private static final Logger LOG = LoggerFactory.getLogger(WrapperEquipmentPacRev170402.class);
     public static final QName QNAME = EquipmentPac.QNAME;
 
-    ONFCOreNetworkElementCoreData coreData;
+    ONFCoreNetworkElementCoreData coreData;
 
-    public WrapperEquipmentPacRev170402(ONFCOreNetworkElementCoreData coreData) {
+    public WrapperEquipmentPacRev170402(ONFCoreNetworkElementCoreData coreData) {
         this.coreData = coreData;
     }
 

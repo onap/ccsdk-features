@@ -44,7 +44,6 @@ public class IndexMwtnService implements AutoCloseable, ArchiveCleanProvider {
     /** Location of mapping data **/
     private static final String MAPPING = "elasticsearch/index/mwtn/mwtnMapping.json";
     /** Location of configuration data **/
-    private static final String MODELDATA = "elasticsearch/index/mwtn/modelDescription";
 
     private final HtDataBaseReaderAndWriter<EsEventOdluxLog> eventRWOdluxLog;
 
@@ -58,8 +57,7 @@ public class IndexMwtnService implements AutoCloseable, ArchiveCleanProvider {
 
 
         IndexClientBuilder clientBuilder = IndexClientBuilder.getBuilder(INDEX)
-                .setMappingSettingJsonFileName(MAPPING)
-                .setModelDataDirectory(MODELDATA);
+                .setMappingSettingJsonFileName(MAPPING);
         client = clientBuilder.create(database);
         clientBuilder.close();
 

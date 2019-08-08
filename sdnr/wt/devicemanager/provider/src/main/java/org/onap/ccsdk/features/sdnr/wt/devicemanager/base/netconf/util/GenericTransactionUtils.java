@@ -116,6 +116,7 @@ public final class GenericTransactionUtils {
                         data = optionalData.orNull();
                         statusIndicator.set("Read transaction done");
                         noErrorIndication.set(true);
+                        LOG.debug("Read done with no error. Data:[{}]", data);
                     }
                 }
 

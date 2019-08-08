@@ -18,12 +18,15 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.InternalDateAndTime;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.base.internalTypes.InternalSeverity;
+import org.slf4j.Logger;
 
 @XmlRootElement(name = "ProblemNotification")
 public class ProblemNotificationXml extends MwtNotificationBase implements GetEventType {
@@ -102,6 +105,7 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
         return strBuf.toString();
     }
 
+
     @Override
     public String toString() {
         return "ProblemNotificationXml [problem=" + problem + ", severity=" + severity + ", toString()="
@@ -111,5 +115,25 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
     @Override
     public String getEventType() {
         return EVENTTYPE;
+    }
+
+    /**
+     * LOG the newly added problems of the interface pac
+     * @param idxStart
+     * @param uuid
+     * @param resultList
+     */
+    public static void debugResultList(Logger log, String uuid, List<ProblemNotificationXml> resultList, int idxStart) {
+        if (log.isDebugEnabled()) {
+            StringBuffer sb = new StringBuffer();
+            int idx = 0;
+            for (int t = idxStart; t < resultList.size(); t++) {
+                sb.append(idx++);
+                sb.append(":{");
+                sb.append(resultList.get(t));
+                sb.append('}');
+            }
+            log.debug("Found problems {} {}", uuid, sb.toString());
+        }
     }
 }

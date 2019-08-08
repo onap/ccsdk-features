@@ -17,14 +17,16 @@
  ******************************************************************************/
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.base.netconf;
 
+import javax.annotation.Nullable;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.NetworkElement;
 
 @SuppressWarnings("deprecation")
-public interface ONFCOreNetworkElementCoreData {
+public interface ONFCoreNetworkElementCoreData {
 
     public String getMountpoint();
     public DataBroker getDataBroker();
-    public NetworkElement getOptionalNetworkElement();
+    public @Nullable NetworkElement getOptionalNetworkElement();
 
 }

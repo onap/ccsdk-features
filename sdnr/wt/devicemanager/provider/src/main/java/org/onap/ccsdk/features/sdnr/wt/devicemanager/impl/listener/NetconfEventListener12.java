@@ -35,18 +35,19 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ObjectDeletionNoti
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.maintenance.MaintenanceService;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.ProblemNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Important: Websocket notification must be the last action.
- * @author herbert
+ * At the beginning intended to handle notifications of type <code>OnfMicrowaveModelNotification</code>.
+ * Today an abstract class for processing notifications independent of model.
  *
- */ //OnfMicrowaveModelNotification  //
-public class MicrowaveEventListener12 implements OnfMicrowaveModelNotification, NotificationDelayedListener<ProblemNotificationXml> {
+ * @author herbert
+ */
+public class NetconfEventListener12 implements OnfMicrowaveModelNotification, NotificationDelayedListener<ProblemNotificationXml> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MicrowaveEventListener12.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NetconfEventListener12.class);
 
     private final String nodeName;
     private final WebSocketServiceClient webSocketService;
@@ -61,7 +62,7 @@ public class MicrowaveEventListener12 implements OnfMicrowaveModelNotification, 
     private final NotificationDelayFilter<ProblemNotificationXml> delayFilter;
     private final ONFCoreNetworkElementCallback ne;
 
-    public MicrowaveEventListener12(String nodeName, WebSocketServiceClient webSocketService,
+    public NetconfEventListener12(String nodeName, WebSocketServiceClient webSocketService,
             HtDatabaseEventsService databaseService, ProviderClient dcaeProvider,@Nullable ProviderClient aotsmClient,
             MaintenanceService maintenanceService2,NotificationDelayService<ProblemNotificationXml> notificationDelayService,
             ONFCoreNetworkElementCallback ne) {
@@ -135,7 +136,7 @@ public class MicrowaveEventListener12 implements OnfMicrowaveModelNotification, 
     @Override
     public void onNotificationDelay(ProblemNotificationXml notificationXml) {
 
-        LOG.debug("Got delayed event of type :: {}", ProblemNotification.class.getSimpleName());
+        LOG.debug("Got delayed event of type :: {}", ProblemNotificationXml.class.getSimpleName());
         this.pushAlarmIfNotInMaintenance(notificationXml);
 
     }
