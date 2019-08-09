@@ -23,9 +23,9 @@ for file in ${markdown_files[@]}; do
   pandoc -s --toc -f markdown -t rst $file > $PATH_DOC_USERDOC_DST"$rstfile"
 done
 
-cp -r "$BASEDIR"sdnr/wt/readthedocs/src/home.rst "$BASEDIR"docs/guides/onap-user/
-cp -r "$BASEDIR"sdnr/wt/readthedocs/src/index.rst "$BASEDIR"docs/
+cp "$BASEDIR"sdnr/wt/readthedocs/src/home.rst "$PATH_DOC_USERDOC_DST"
+cp "$BASEDIR"sdnr/wt/readthedocs/src/index.rst "$PATH_DOC_DST"
 
-echo "================Creating html=========================================="
-/usr/local/bin/sphinx-build -b html $PATH_DOC_DST /home/jack/public_html/sdnr-trial/
+#echo "================Creating html=========================================="
+#/usr/local/bin/sphinx-build -b html $PATH_DOC_DST /home/jack/public_html/sdnr-trial/
 
