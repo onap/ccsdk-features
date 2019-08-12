@@ -13,7 +13,17 @@ xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs">
             <entry key="alias" value="/index2.html" />
         </service-properties>
     </service>
-
+    
+   <bean id="indexServlet2"
+        class="org.onap.ccsdk.features.sdnr.wt.odlux.IndexServlet">
+    </bean>
+   
+   <service interface="javax.servlet.http.HttpServlet" ref="indexServlet2">
+        <service-properties>
+            <entry key="alias" value="/favicon.ico" />
+        </service-properties>
+    </service>
+    
     <bean id="resFilesServlet"
         class="org.onap.ccsdk.features.sdnr.wt.odlux.ResFilesServlet">
     </bean>
