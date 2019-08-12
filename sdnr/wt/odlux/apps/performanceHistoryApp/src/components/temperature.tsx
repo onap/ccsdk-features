@@ -1,3 +1,20 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
 import * as React from 'react';
 
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -8,19 +25,16 @@ import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/co
 
 import { TemperatureDataType } from '../models/temperatureDataType';
 import { IDataSet, IDataSetsObject } from '../models/chartTypes';
-import { createTemperature15minProperties, createTemperature15minActions } from '../handlers/temperature15minHandler';
-import { createTemperature24hoursProperties, createTemperature24hoursActions } from '../handlers/temperature24hoursHandler';
+import { createTemperatureProperties, createTemperatureActions } from '../handlers/temperatureHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
 
 const mapProps = (state: IApplicationStoreState) => ({
-  temperature15minProperties: createTemperature15minProperties(state),
-  temperature24hoursProperties: createTemperature24hoursProperties(state)
+  temperatureProperties: createTemperatureProperties(state),
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
-  temperature15minActions: createTemperature15minActions(dispatcher.dispatch),
-  temperature24hoursActions: createTemperature24hoursActions(dispatcher.dispatch)
+  temperatureActions: createTemperatureActions(dispatcher.dispatch),
 });
 
 type TemperatureComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -34,26 +48,22 @@ const TemperatureTable = MaterialTable as MaterialTableCtorType<TemperatureDataT
  */
 class TemperatureComponent extends React.Component<TemperatureComponentProps>{
   render(): JSX.Element {
-    const properties = this.props.selectedTimePeriod === "15min"
-      ? this.props.temperature15minProperties
-      : this.props.temperature24hoursProperties;
-    const actions = this.props.selectedTimePeriod === "15min"
-      ? this.props.temperature15minActions
-      : this.props.temperature24hoursActions;
+    const properties = this.props.temperatureProperties;
+    const actions = this.props.temperatureActions;
 
     const chartPagedData = this.getChartDataValues(properties.rows);
     const temperatureColumns: ColumnModel<TemperatureDataType>[] = [
-      { property: "radio-signal-id", title: "Radio signal", type: ColumnType.text },
-      { property: "scanner-id", title: "Scanner ID", type: ColumnType.text },
-      { property: "time-stamp", title: "End Time", type: ColumnType.text, disableFilter: true },
+      { property: "radioSignalId", title: "Radio signal", type: ColumnType.text },
+      { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
+      { property: "utcTimeStamp", title: "End Time", type: ColumnType.text, disableFilter: true },
       {
-        property: "suspect-interval-flag", title: "Suspect Interval", type: ColumnType.custom, customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspect-interval-flag"].toString();
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.custom, customControl: ({ rowData }) => {
+          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
           return <div >{suspectIntervalFlag} </div>
         }
       }
     ];
-    
+
     chartPagedData.datasets.forEach(ds => {
       temperatureColumns.push(addColumnLabels<TemperatureDataType>(ds.name, ds.columnLabel));
     });
@@ -75,7 +85,7 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
     sortDataByTimeStamp(_rows);
 
     const datasets: IDataSet[] = [{
-      name: "rf-temp-min",
+      name: "rfTempMin",
       label: "rf-temp-min",
       borderColor: '#0e17f3de',
       bezierCurve: false,
@@ -84,7 +94,7 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
       data: [],
       columnLabel: "Rf Temp Min[deg C]"
     }, {
-      name: "rf-temp-avg",
+      name: "rfTempAvg",
       label: "rf-temp-avg",
       borderColor: '#08edb6de',
       bezierCurve: false,
@@ -93,7 +103,7 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
       data: [],
       columnLabel: "Rf Temp Avg[deg C]"
     }, {
-      name: "rf-temp-max",
+      name: "rfTempMax",
       label: "rf-temp-max",
       borderColor: '#b308edde',
       bezierCurve: false,
@@ -106,7 +116,7 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
     _rows.forEach(row => {
       datasets.forEach(ds => {
         ds.data.push({
-          x: row["time-stamp"],
+          x: row["utcTimeStamp" as keyof TemperatureDataType] as string,
           y: row[ds.name as keyof TemperatureDataType] as string
         });
       });

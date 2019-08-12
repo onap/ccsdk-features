@@ -1,3 +1,20 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
 import * as React from 'react';
 
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -8,19 +25,16 @@ import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/co
 
 import { AdaptiveModulationDataType } from '../models/adaptiveModulationDataType';
 import { IDataSet, IDataSetsObject } from '../models/chartTypes';
-import { createAdaptiveModulation15minProperties, createAdaptiveModulation15minActions } from '../handlers/adaptiveModulation15minHandler';
-import { createAdaptiveModulation24hoursProperties, createAdaptiveModulation24hoursActions } from '../handlers/adaptiveModulation24hoursHandler';
+import { createAdaptiveModulationProperties, createAdaptiveModulationActions } from '../handlers/adaptiveModulationHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
 
 const mapProps = (state: IApplicationStoreState) => ({
-  adaptiveModulation15minProperties: createAdaptiveModulation15minProperties(state),
-  adaptiveModulation24hoursProperties: createAdaptiveModulation24hoursProperties(state)
+  adaptiveModulationProperties: createAdaptiveModulationProperties(state),
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
-  adaptiveModulation15minActions: createAdaptiveModulation15minActions(dispatcher.dispatch),
-  adaptiveModulation24hoursActions: createAdaptiveModulation24hoursActions(dispatcher.dispatch)
+  adaptiveModulationActions: createAdaptiveModulationActions(dispatcher.dispatch),
 });
 
 type AdaptiveModulationComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -34,22 +48,17 @@ const AdaptiveModulationTable = MaterialTable as MaterialTableCtorType<AdaptiveM
  */
 class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComponentProps>{
   render(): JSX.Element {
-    const properties = this.props.selectedTimePeriod === "15min"
-      ? this.props.adaptiveModulation15minProperties
-      : this.props.adaptiveModulation24hoursProperties;
-
-    const actions = this.props.selectedTimePeriod === "15min"
-      ? this.props.adaptiveModulation15minActions
-      : this.props.adaptiveModulation24hoursActions;
+    const properties = this.props.adaptiveModulationProperties;
+    const actions = this.props.adaptiveModulationActions;
 
     const chartPagedData = this.getChartDataValues(properties.rows);
     const adaptiveModulationColumns: ColumnModel<AdaptiveModulationDataType>[] = [
-      { property: "radio-signal-id", title: "Radio signal", type: ColumnType.text },
-      { property: "scanner-id", title: "Scanner ID", type: ColumnType.text },
-      { property: "time-stamp", title: "End Time", type: ColumnType.text, disableFilter: true },
+      { property: "radioSignalId", title: "Radio signal", type: ColumnType.text },
+      { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
+      { property: "utcTimeStamp", title: "End Time", type: ColumnType.text, disableFilter: true },
       {
-        property: "suspect-interval-flag", title: "Suspect Interval", type: ColumnType.custom, customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspect-interval-flag"].toString();
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.custom, customControl: ({ rowData }) => {
+          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
           return <div >{suspectIntervalFlag} </div>
         }
       }];
@@ -76,7 +85,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
     sortDataByTimeStamp(_rows);
 
     const datasets: IDataSet[] = [{
-      name: "time2-states-s",
+      name: "time2StatesS",
       label: "QAM2S",
       borderColor: '#62a309fc',
       bezierCurve: false,
@@ -85,7 +94,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM2S",
     }, {
-      name: "time2-states",
+      name: "time2States",
       label: "QAM2",
       borderColor: '#62a309fc',
       bezierCurve: false,
@@ -94,7 +103,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM2",
     }, {
-      name: "time2-states-l",
+      name: "time2StatesL",
       label: "QAM2L",
       borderColor: '#62a309fc',
       bezierCurve: false,
@@ -103,7 +112,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM2L",
     }, {
-      name: "time4-states-s",
+      name: "time4StatesS",
       label: "QAM4S",
       borderColor: '#b308edde',
       bezierCurve: false,
@@ -112,7 +121,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM4S",
     }, {
-      name: "time4-states",
+      name: "time4States",
       label: "QAM4",
       borderColor: '#b308edde',
       bezierCurve: false,
@@ -121,7 +130,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM4",
     }, {
-      name: "time4-states-l",
+      name: "time4StatesL",
       label: "QAM4L",
       borderColor: '#b308edde',
       bezierCurve: false,
@@ -130,7 +139,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM4L",
     }, {
-      name: "time16-states-s",
+      name: "time16StatesS",
       label: "QAM16S",
       borderColor: '#9b15e2',
       bezierCurve: false,
@@ -139,7 +148,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM16S",
     }, {
-      name: "time16-states",
+      name: "time16States",
       label: "QAM16",
       borderColor: '#9b15e2',
       bezierCurve: false,
@@ -148,7 +157,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM16",
     }, {
-      name: "time16-states-l",
+      name: "time16StatesL",
       label: "QAM16L",
       borderColor: '#9b15e2',
       bezierCurve: false,
@@ -157,7 +166,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM16L",
     }, {
-      name: "time32-states-s",
+      name: "time32StatesS",
       label: "QAM32S",
       borderColor: '#2704f5f0',
       bezierCurve: false,
@@ -166,7 +175,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM32S",
     }, {
-      name: "time32-states",
+      name: "time32States",
       label: "QAM32",
       borderColor: '#2704f5f0',
       bezierCurve: false,
@@ -175,7 +184,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM32",
     }, {
-      name: "time32-states-l",
+      name: "time32StatesL",
       label: "QAM32L",
       borderColor: '#2704f5f0',
       bezierCurve: false,
@@ -184,7 +193,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM32L",
     }, {
-      name: "time64-states-s",
+      name: "time64StatesS",
       label: "QAM64S",
       borderColor: '#347692',
       bezierCurve: false,
@@ -193,7 +202,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM64S",
     }, {
-      name: "time64-states",
+      name: "time64States",
       label: "QAM64",
       borderColor: '#347692',
       bezierCurve: false,
@@ -202,7 +211,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM64",
     }, {
-      name: "time64-states-l",
+      name: "time64StatesL",
       label: "QAM64L",
       borderColor: '#347692',
       bezierCurve: false,
@@ -211,7 +220,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM64L",
     }, {
-      name: "time128-states-s",
+      name: "time128StatesS",
       label: "QAM128S",
       borderColor: '#885e22',
       bezierCurve: false,
@@ -220,7 +229,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM128S",
     }, {
-      name: "time128-states",
+      name: "time128States",
       label: "QAM128",
       borderColor: '#885e22',
       bezierCurve: false,
@@ -229,7 +238,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM128",
     }, {
-      name: "time128-states-l",
+      name: "time128StatesL",
       label: "QAM128L",
       borderColor: '#885e22',
       bezierCurve: false,
@@ -238,7 +247,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM128L",
     }, {
-      name: "time256-states-s",
+      name: "time256StatesS",
       label: "QAM256S",
       borderColor: '#de07807a',
       bezierCurve: false,
@@ -247,7 +256,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM256S",
     }, {
-      name: "time256-states",
+      name: "time256States",
       label: "QAM256",
       borderColor: '#de07807a',
       bezierCurve: false,
@@ -256,7 +265,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM256",
     }, {
-      name: "time256-states-l",
+      name: "time256StatesL",
       label: "QAM256L",
       borderColor: '#de07807a',
       bezierCurve: false,
@@ -265,7 +274,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM256L",
     }, {
-      name: "time512-states-s",
+      name: "time512StatesS",
       label: "QAM512S",
       borderColor: '#8fdaacde',
       bezierCurve: false,
@@ -274,7 +283,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM512S",
     }, {
-      name: "time512-states",
+      name: "time512States",
       label: "QAM512",
       borderColor: '#8fdaacde',
       bezierCurve: false,
@@ -284,7 +293,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       columnLabel: "QAM512",
     }, {
 
-      name: "time512-states-l",
+      name: "time512StatesL",
       label: "QAM512L",
       borderColor: '#8fdaacde',
       bezierCurve: false,
@@ -294,7 +303,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       columnLabel: "QAM512L",
     }, {
 
-      name: "time1024-states-s",
+      name: "time1024StatesS",
       label: "QAM1024S",
       borderColor: '#435b22',
       bezierCurve: false,
@@ -304,7 +313,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       columnLabel: "QAM1024S",
     }, {
 
-      name: "time1024-states",
+      name: "time1024States",
       label: "QAM1024",
       borderColor: '#435b22',
       bezierCurve: false,
@@ -314,7 +323,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       columnLabel: "QAM1024",
     }, {
 
-      name: "time1024-states-l",
+      name: "time1024StatesL",
       label: "QAM1024L",
       borderColor: '#435b22',
       bezierCurve: false,
@@ -323,7 +332,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM1024L",
     }, {
-      name: "time2048-states-s",
+      name: "time2048StatesS",
       label: "QAM2048S",
       borderColor: '#e87a5b',
       bezierCurve: false,
@@ -332,7 +341,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM2048S",
     }, {
-      name: "time2048-states",
+      name: "time2048States",
       label: "QAM2048",
       borderColor: '#e87a5b',
       bezierCurve: false,
@@ -341,7 +350,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM2048",
     }, {
-      name: "time2048-states-l",
+      name: "time2048StatesL",
       label: "QAM2048L",
       borderColor: '#e87a5b',
       bezierCurve: false,
@@ -350,7 +359,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM2048L",
     }, {
-      name: "time4096-states-s",
+      name: "time4096StatesS",
       label: "QAM4096S",
       borderColor: '#5be878',
       bezierCurve: false,
@@ -359,7 +368,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM4096S",
     }, {
-      name: "time4096-states",
+      name: "time4096States",
       label: "QAM4096",
       borderColor: '#5be878',
       bezierCurve: false,
@@ -368,7 +377,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM4096",
     }, {
-      name: "time4096-states-l",
+      name: "time4096StatesL",
       label: "QAM4096L",
       borderColor: '#5be878',
       bezierCurve: false,
@@ -377,7 +386,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM4096L",
     }, {
-      name: "time8192-states-s",
+      name: "time8192StatesS",
       label: "QAM8192s",
       borderColor: '#cb5be8',
       bezierCurve: false,
@@ -386,7 +395,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM8192S",
     }, {
-      name: "time8192-states",
+      name: "time8192States",
       label: "QAM8192",
       borderColor: '#cb5be8',
       bezierCurve: false,
@@ -395,7 +404,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       data: [],
       columnLabel: "QAM8192",
     }, {
-      name: "time8192-states-l",
+      name: "time8192StatesL",
       label: "QAM8192L",
       borderColor: '#cb5be8',
       bezierCurve: false,
@@ -409,7 +418,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
     _rows.forEach(row => {
       datasets.forEach(ds => {
         ds.data.push({
-          x: row["time-stamp"],
+          x: row["utcTimeStamp" as keyof AdaptiveModulationDataType] as string,
           y: row[ds.name as keyof AdaptiveModulationDataType] as string
         });
       });

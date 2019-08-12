@@ -1,3 +1,20 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
 import * as React from 'react';
 
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
@@ -8,8 +25,12 @@ import Select from '@material-ui/core/Select';
 import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { Panel } from '../../../../framework/src/components/material-ui';
+import { loadAllMountedNetworkElementsAsync } from '../../../connectApp/src/actions/mountedNetworkElementsActions';
+import { NavigateToApplication } from '../../../../framework/src/actions/navigationActions';
+import { Dispatch } from '../../../../framework/src/flux/store';
 
 import { PanelId } from '../models/panelId';
+import { PmDataInterval } from '../models/performanceDataType';
 import PerformanceData from '../components/performanceData';
 import ReceiveLevel from '../components/receiveLevel';
 import TransmissionPower from '../components/transmissionPower';
@@ -18,24 +39,18 @@ import Temperature from '../components/temperature';
 import SignalToInterference from '../components/signalToInterference';
 import CrossPolarDiscrimination from '../components/crossPolarDiscrimination';
 import { loadAllConnectedNetworkElementsAsync } from '../actions/connectedNetworkElementsActions';
-import { loadAllMountedNetworkElementsAsync } from '../../../connectApp/src/actions/mountedNetworkElementsActions';
+import { TimeChangeAction } from '../actions/timeChangeAction';
 import { loadDistinctLtpsbyNetworkElementAsync } from '../actions/ltpAction';
 import { SetPanelAction } from '../actions/panelChangeActions';
-import { createPerformanceData15minPreActions, performanceData15minReloadAction } from '../handlers/performanceData15minHandler';
-import { createPerformanceData24hoursPreActions, performanceData24hoursReloadAction } from '../handlers/performanceData24hoursHandler';
-import { createReceiveLevel15minPreActions, receiveLevel15minReloadAction } from '../handlers/receiveLevel15minHandler';
-import { createReceiveLevel24hoursPreActions, receiveLevel24hoursReloadAction } from '../handlers/receiveLevel24hoursHandler';
-import { createTransmissionPower15minPreActions, transmissionPower15minReloadAction } from '../handlers/transmissionPower15minHandler';
-import { createTransmissionPower24hoursPreActions, transmissionPower24hoursReloadAction } from '../handlers/transmissionPower24hoursHandler';
-import { createAdaptiveModulation15minPreActions, adaptiveModulation15minReloadAction } from '../handlers/adaptiveModulation15minHandler';
-import { createAdaptiveModulation24hoursPreActions, adaptiveModulation24hoursReloadAction } from '../handlers/adaptiveModulation24hoursHandler';
-import { createTemperature15minPreActions, temperature15minReloadAction } from '../handlers/temperature15minHandler';
-import { createTemperature24hoursPreActions, temperature24hoursReloadAction } from '../handlers/temperature24hoursHandler';
-import { createSignalToInterference15minPreActions, signalToInterference15minReloadAction } from '../handlers/signalToInterference15minHandler';
-import { createSignalToInterference24hoursPreActions, signalToInterference24hoursReloadAction } from '../handlers/signalToInterference24hoursHandler';
-import { createCrossPolarDiscrimination15minPreActions, crossPolarDiscrimination15minReloadAction } from '../handlers/crossPolarDiscrimination15minHandler';
-import { createCrossPolarDiscrimination24hoursPreActions, crossPolarDiscrimination24hoursReloadAction } from '../handlers/crossPolarDiscrimination24hoursHandler';
+import { createPerformanceDataPreActions, performanceDataReloadAction, createPerformanceDataActions } from '../handlers/performanceDataHandler';
+import { createReceiveLevelPreActions, receiveLevelReloadAction, createReceiveLevelActions } from '../handlers/receiveLevelHandler';
+import { createTransmissionPowerPreActions, transmissionPowerReloadAction, createTransmissionPowerActions } from '../handlers/transmissionPowerHandler';
+import { createAdaptiveModulationPreActions, adaptiveModulationReloadAction, createAdaptiveModulationActions } from '../handlers/adaptiveModulationHandler';
+import { createTemperaturePreActions, temperatureReloadAction, createTemperatureActions } from '../handlers/temperatureHandler';
+import { createSignalToInterferencePreActions, signalToInterferenceReloadAction, createSignalToInterferenceActions } from '../handlers/signalToInterferenceHandler';
+import { createCrossPolarDiscriminationPreActions, crossPolarDiscriminationReloadAction, createCrossPolarDiscriminationActions } from '../handlers/crossPolarDiscriminationHandler';
 
+import { MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
 
 const PerformanceHistoryComponentStyles = (theme: Theme) => createStyles({
   root: {
@@ -61,47 +76,50 @@ const PerformanceHistoryComponentStyles = (theme: Theme) => createStyles({
 });
 
 const mapProps = (state: IApplicationStoreState) => ({
+  ...state.performanceHistory,
   activePanel: state.performanceHistory.currentOpenPanel,
   availableLtps: state.performanceHistory.ltps.distinctLtps,
   networkElements: state.performanceHistory.networkElements.connectedNetworkElementIds
 });
 
 const mapDispatcher = (dispatcher: IDispatcher) => ({
-  reloadPerformanceData15min: () => dispatcher.dispatch(performanceData15minReloadAction),
-  reloadPerformanceData24hours: () => dispatcher.dispatch(performanceData24hoursReloadAction),
-  reloadReceiveLevel15min: () => dispatcher.dispatch(receiveLevel15minReloadAction),
-  reloadReceiveLevel24hours: () => dispatcher.dispatch(receiveLevel24hoursReloadAction),
-  reloadTransmissionPower15min: () => dispatcher.dispatch(transmissionPower15minReloadAction),
-  reloadTransmissionPower24hours: () => dispatcher.dispatch(transmissionPower24hoursReloadAction),
-  reloadAdaptiveModulation15min: () => dispatcher.dispatch(adaptiveModulation15minReloadAction),
-  reloadAdaptiveModulation24hours: () => dispatcher.dispatch(adaptiveModulation24hoursReloadAction),
-  reloadTemperature15min: () => dispatcher.dispatch(temperature15minReloadAction),
-  reloadTemperature24hours: () => dispatcher.dispatch(temperature24hoursReloadAction),
-  reloadSignalToInterference15min: () => dispatcher.dispatch(signalToInterference15minReloadAction),
-  reloadSignalToInterference24hours: () => dispatcher.dispatch(signalToInterference24hoursReloadAction),
-  reloadCrossPolarDiscrimination15min: () => dispatcher.dispatch(crossPolarDiscrimination15minReloadAction),
-  reloadCrossPolarDiscrimination24hours: () => dispatcher.dispatch(crossPolarDiscrimination24hoursReloadAction),
-  performanceData15minPreActions: createPerformanceData15minPreActions(dispatcher.dispatch),
-  performanceData24hoursPreActions: createPerformanceData24hoursPreActions(dispatcher.dispatch),
-  receiveLevel15minPreActions: createReceiveLevel15minPreActions(dispatcher.dispatch),
-  receiveLevel24hoursPreActions: createReceiveLevel24hoursPreActions(dispatcher.dispatch),
-  transmissionPower15minPreActions: createTransmissionPower15minPreActions(dispatcher.dispatch),
-  transmissionPower24hoursPreActions: createTransmissionPower24hoursPreActions(dispatcher.dispatch),
-  adaptiveModulation15minPreActions: createAdaptiveModulation15minPreActions(dispatcher.dispatch),
-  adaptiveModulation24hoursPreActions: createAdaptiveModulation24hoursPreActions(dispatcher.dispatch),
-  temperature15minPreActions: createTemperature15minPreActions(dispatcher.dispatch),
-  temperature24hoursPreActions: createTemperature24hoursPreActions(dispatcher.dispatch),
-  signalToInterference15minPreActions: createSignalToInterference15minPreActions(dispatcher.dispatch),
-  signalToInterference24hoursPreActions: createSignalToInterference24hoursPreActions(dispatcher.dispatch),
-  crossPolarDiscrimination15minPreActions: createCrossPolarDiscrimination15minPreActions(dispatcher.dispatch),
-  crossPolarDiscrimination24hoursPreActions: createCrossPolarDiscrimination24hoursPreActions(dispatcher.dispatch),
-  getConnectedNetworkElementsIds: async() => {
+  enableFilterPerformanceData: createPerformanceDataActions(dispatcher.dispatch),
+  enableFilterReceiveLevel: createReceiveLevelActions(dispatcher.dispatch),
+  enableFilterTransmissionPower: createTransmissionPowerActions(dispatcher.dispatch),
+  enableFilterAdaptiveModulation: createAdaptiveModulationActions(dispatcher.dispatch),
+  enableFilterTemperature: createTemperatureActions(dispatcher.dispatch),
+  enableFilterSinr: createSignalToInterferenceActions(dispatcher.dispatch),
+  enableFilterCpd: createCrossPolarDiscriminationActions(dispatcher.dispatch),
+  reloadPerformanceData: () => dispatcher.dispatch(performanceDataReloadAction),
+  reloadReceiveLevel: () => dispatcher.dispatch(receiveLevelReloadAction),
+  reloadTransmissionPower: () => dispatcher.dispatch(transmissionPowerReloadAction),
+  reloadAdaptiveModulation: () => dispatcher.dispatch(adaptiveModulationReloadAction),
+  reloadTemperature: () => dispatcher.dispatch(temperatureReloadAction),
+  reloadSignalToInterference: () => dispatcher.dispatch(signalToInterferenceReloadAction),
+  reloadCrossPolarDiscrimination: () => dispatcher.dispatch(crossPolarDiscriminationReloadAction),
+  performanceDataPreActions: createPerformanceDataPreActions(dispatcher.dispatch),
+  receiveLevelPreActions: createReceiveLevelPreActions(dispatcher.dispatch),
+  transmissionPowerPreActions: createTransmissionPowerPreActions(dispatcher.dispatch),
+  adaptiveModulationPreActions: createAdaptiveModulationPreActions(dispatcher.dispatch),
+  temperaturePreActions: createTemperaturePreActions(dispatcher.dispatch),
+  signalToInterferencePreActions: createSignalToInterferencePreActions(dispatcher.dispatch),
+  crossPolarDiscriminationPreActions: createCrossPolarDiscriminationPreActions(dispatcher.dispatch),
+  getConnectedNetworkElementsIds: async () => {
     await dispatcher.dispatch(loadAllMountedNetworkElementsAsync)
     dispatcher.dispatch(loadAllConnectedNetworkElementsAsync);
   },
   getDistinctLtpsIds: (selectedNetworkElement: string, selectedTimePeriod: string, selectedLtp: string, selectFirstLtp?: Function, resetLTP?: Function) => dispatcher.dispatch(loadDistinctLtpsbyNetworkElementAsync(selectedNetworkElement, selectedTimePeriod, selectedLtp, selectFirstLtp, resetLTP)),
-  setCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new SetPanelAction(panelId))
+  setCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new SetPanelAction(panelId)),
+  timeIntervalChange: (time: PmDataInterval) => dispatcher.dispatch(new TimeChangeAction(time)),
+  changeNode: (nodeId: string) => dispatcher.dispatch((dispatch: Dispatch) => {
+    dispatch(new NavigateToApplication("performanceHistory", nodeId));
+  })
 });
+
+export type NetworkElementType = {
+  mountId: string,
+}
+const NetworkElementTable = MaterialTable as MaterialTableCtorType<NetworkElementType>;
 
 type PerformanceHistoryComponentProps = Connect<typeof mapProps, typeof mapDispatcher> & WithStyles<typeof PerformanceHistoryComponentStyles>;
 
@@ -109,13 +127,14 @@ type PerformanceHistoryComponentState = {
   selectedNetworkElement: string,
   selectedTimePeriod: string,
   selectedLtp: string,
+  showNetworkElementsTable: boolean,
   showLtps: boolean,
   showPanels: boolean
 };
 
 /**
- * Represents the component for Performance history application.
- */
+* Represents the component for Performance history application.
+*/
 class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComponentProps, PerformanceHistoryComponentState>{
   /**
   * Initialises this instance
@@ -126,144 +145,125 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
       selectedNetworkElement: "-1",
       selectedTimePeriod: "15min",
       selectedLtp: "-1",
+      showNetworkElementsTable: true,
       showLtps: false,
       showPanels: false
     };
   }
 
+  onTogglePanel = (panelId: PanelId) => {
+    const nextActivePanel = panelId === this.props.activePanel ? null : panelId;
+    this.props.setCurrentPanel(nextActivePanel);
+    switch (nextActivePanel) {
+      case "PerformanceData":
+        this.props.reloadPerformanceData();
+        break;
+      case "ReceiveLevel":
+        this.props.reloadReceiveLevel();
+        break;
+      case "TransmissionPower":
+        this.props.reloadTransmissionPower();
+        break;
+      case "AdaptiveModulation":
+        this.props.reloadAdaptiveModulation();
+        break;
+      case "Temperature":
+        this.props.reloadTemperature();
+        break;
+      case "SINR":
+        this.props.reloadSignalToInterference();
+        break;
+      case "CPD":
+        this.props.reloadCrossPolarDiscrimination();
+        break;
+      default:
+        // do nothing if all panels are closed
+        break;
+    }
+  }
+
   render(): JSX.Element {
     const { classes } = this.props;
-    const { activePanel } = this.props;
-
-    const onTogglePanel = (panelId: PanelId) => {
-      const nextActivePanel = panelId === this.props.activePanel ? null : panelId;
-      this.props.setCurrentPanel(nextActivePanel);
-      switch (nextActivePanel) {
-        case "PerformanceData":
-          if (this.state.selectedTimePeriod === "15min") {
-            this.props.reloadPerformanceData15min();
-          } else {
-            this.props.reloadPerformanceData24hours();
-          }
-          break;
-        case "ReceiveLevel":
-          if (this.state.selectedTimePeriod === "15min") {
-            this.props.reloadReceiveLevel15min();
-          } else {
-            this.props.reloadReceiveLevel24hours();
-          }
-          break;
-        case "TransmissionPower":
-          if (this.state.selectedTimePeriod === "15min") {
-            this.props.reloadTransmissionPower15min();
-          } else {
-            this.props.reloadTransmissionPower24hours();
-          }
-          break;
-        case "AdaptiveModulation":
-          if (this.state.selectedTimePeriod === "15min") {
-            this.props.reloadAdaptiveModulation15min();
-          } else {
-            this.props.reloadAdaptiveModulation24hours();
-          }
-          break;
-        case "Temperature":
-          if (this.state.selectedTimePeriod === "15min") {
-            this.props.reloadTemperature15min();
-          } else {
-            this.props.reloadTemperature24hours();
-          }
-          break;
-        case "SINR":
-          if (this.state.selectedTimePeriod === "15min") {
-            this.props.reloadSignalToInterference15min();
-          } else {
-            this.props.reloadSignalToInterference24hours();
-          }
-          break;
-        case "CPD":
-          if (this.state.selectedTimePeriod === "15min") {
-            this.props.reloadCrossPolarDiscrimination15min();
-          } else {
-            this.props.reloadCrossPolarDiscrimination24hours();
-          }
-          break;
-        default:
-          // do nothing if all panels are closed
-          break;
-      }
+    const { activePanel, mountId } = this.props;
+    if (mountId === "") {
+      return (
+        <>
+          <h2>Please select the network element !</h2>
+          <NetworkElementTable idProperty={"mountId"}  rows={ this.props.networkElements }  asynchronus
+            onHandleClick={(event, rowData) => { this.handleNetworkElementSelect(rowData.mountId) }} columns={
+              [{ property: "mountId" }]
+            } />
+        </>
+      )
     }
-
-    return (
-      <>
-        <div>
-          <form className={ classes.root } autoComplete="off">
-            <FormControl className={ classes.margin }>
-              <span> Select Network element </span>
-              <Select className={ classes.selectDropdown } value={ this.state.selectedNetworkElement } onChange={ this.handleNetworkElementChange }
-              >
-                <MenuItem value={ "-1" }><em>--Select--</em></MenuItem>
-                { this.props.networkElements.map(ne =>
-                  (<MenuItem value={ ne.mountId } key={ ne.mountId }>{ ne.mountId }</MenuItem>))}
-              </Select>
-            </FormControl>
-          </form>
-        </div>
-        { this.state.showLtps && (
-          <div>
-            <FormControl className={ classes.display }>
-              <span>
-                Select LTP
-              </span>
-              <Select className={ classes.selectDropdown } value={ this.state.selectedLtp } onChange={ this.handleLtpChange }  >
-                <MenuItem value={ "-1" }><em>--Select--</em></MenuItem>
-                { this.props.availableLtps.map(ltp =>
-                  (<MenuItem value={ltp.key} key={ltp.key}>{ltp.key}</MenuItem>)) }
-              </Select>
-              <span> Time-Period </span>
-              <Select className={ classes.selectDropdown } value={ this.state.selectedTimePeriod } onChange={ this.handleTimePeriodChange } >
-                <MenuItem value={ "15min" }>15min</MenuItem>
-                <MenuItem value={ "24hours" }>24hours</MenuItem>
-              </Select>
-            </FormControl>
-            { this.state.showPanels && (
-              <div>
-                <Panel activePanel={ activePanel } panelId={ "PerformanceData" } onToggle={ onTogglePanel } title={ "Performance Data" }>
-                  <PerformanceData selectedTimePeriod={ this.state.selectedTimePeriod} />
-                </Panel>
-                <Panel activePanel={ activePanel } panelId={ "ReceiveLevel" } onToggle={ onTogglePanel } title={ "Receive Level" }>
-                  <ReceiveLevel selectedTimePeriod={ this.state.selectedTimePeriod} />
-                </Panel>
-                <Panel activePanel={ activePanel } panelId={ "TransmissionPower" } onToggle={ onTogglePanel } title={ "Transmission Power" }>
-                  <TransmissionPower selectedTimePeriod={ this.state.selectedTimePeriod} />
-                </Panel>
-                <Panel activePanel={ activePanel } panelId={ "AdaptiveModulation" } onToggle={ onTogglePanel } title={ "Adaptive Modulation" }>
-                  <AdaptiveModulation selectedTimePeriod={ this.state.selectedTimePeriod} />
-                </Panel>
-                <Panel activePanel={ activePanel } panelId={ "Temperature" } onToggle={ onTogglePanel } title={ "Temperature" }>
-                  <Temperature selectedTimePeriod={ this.state.selectedTimePeriod} />
-                </Panel>
-                <Panel activePanel={ activePanel } panelId={ "SINR" } onToggle={ onTogglePanel } title={ "Signal-to-interference-plus-noise ratio (SINR)" }>
-                  <SignalToInterference selectedTimePeriod={ this.state.selectedTimePeriod} />
-                </Panel>
-                <Panel activePanel={ activePanel } panelId={ "CPD" } onToggle={ onTogglePanel } title={ "Cross Polar Discrimination" }>
-                  <CrossPolarDiscrimination selectedTimePeriod={ this.state.selectedTimePeriod } />
-                </Panel>
-              </div>
-            )}
-          </div>
-        )}
-      </>
-    );
+    else {
+      this.handleURLChange(mountId);
+      return (
+        <>
+          <h2>Selected Network Element: { this.state.selectedNetworkElement } </h2>
+          { this.state.showLtps && (
+            <div>
+              <FormControl className={ classes.display }>
+                <span>
+                  Select LTP
+                </span>
+                <Select className={ classes.selectDropdown } value={ this.state.selectedLtp } onChange={ this.handleLtpChange }  >
+                  <MenuItem value={ "-1" }><em>--Select--</em></MenuItem>
+                  { this.props.availableLtps.map(ltp =>
+                    (<MenuItem value={ ltp.key } key={ ltp.key }>{ ltp.key }</MenuItem>)) }
+                </Select>
+                <span> Time-Period </span>
+                <Select className={ classes.selectDropdown } value={ this.state.selectedTimePeriod } onChange={ this.handleTimePeriodChange } >
+                  <MenuItem value={ "15min" }>15min</MenuItem>
+                  <MenuItem value={ "24hours" }>24hours</MenuItem>
+                </Select>
+              </FormControl>
+              { this.state.showPanels && (
+                <div>
+                  <Panel activePanel={ activePanel } panelId={ "PerformanceData" } onToggle={ this.onTogglePanel } title={ "Performance Data" }>
+                    <PerformanceData selectedTimePeriod={ this.state.selectedTimePeriod } />
+                  </Panel>
+                  <Panel activePanel={ activePanel } panelId={ "ReceiveLevel" } onToggle={ this.onTogglePanel } title={ "Receive Level" }>
+                    <ReceiveLevel selectedTimePeriod={ this.state.selectedTimePeriod } />
+                  </Panel>
+                  <Panel activePanel={ activePanel } panelId={ "TransmissionPower" } onToggle={ this.onTogglePanel } title={ "Transmission Power" }>
+                    <TransmissionPower selectedTimePeriod={ this.state.selectedTimePeriod } />
+                  </Panel>
+                  <Panel activePanel={ activePanel } panelId={ "AdaptiveModulation" } onToggle={ this.onTogglePanel } title={ "Adaptive Modulation" }>
+                    <AdaptiveModulation selectedTimePeriod={ this.state.selectedTimePeriod } />
+                  </Panel>
+                  <Panel activePanel={ activePanel } panelId={ "Temperature" } onToggle={ this.onTogglePanel } title={ "Temperature" }>
+                    <Temperature selectedTimePeriod={ this.state.selectedTimePeriod } />
+                  </Panel>
+                  <Panel activePanel={ activePanel } panelId={ "SINR" } onToggle={ this.onTogglePanel } title={ "Signal-to-interference-plus-noise ratio (SINR)" }>
+                    <SignalToInterference selectedTimePeriod={ this.state.selectedTimePeriod } />
+                  </Panel>
+                  <Panel activePanel={ activePanel } panelId={ "CPD" } onToggle={ this.onTogglePanel } title={ "Cross Polar Discrimination" }>
+                    <CrossPolarDiscrimination selectedTimePeriod={ this.state.selectedTimePeriod } />
+                  </Panel>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      );
+    }
   };
 
   public componentDidMount() {
     this.props.getConnectedNetworkElementsIds();
+    this.props.enableFilterPerformanceData.onToggleFilter();
+    this.props.enableFilterReceiveLevel.onToggleFilter();
+    this.props.enableFilterTransmissionPower.onToggleFilter();
+    this.props.enableFilterTemperature.onToggleFilter();
+    this.props.enableFilterAdaptiveModulation.onToggleFilter();
+    this.props.enableFilterSinr.onToggleFilter();
+    this.props.enableFilterCpd.onToggleFilter();
   }
 
   /**
-   * Function which selects the first ltp returned from the database on selection of network element.
-   */
+  * Function which selects the first ltp returned from the database on selection of network element.
+  */
   private selectFirstLtp = (firstLtp: string) => {
     this.setState({
       showPanels: true,
@@ -273,56 +273,55 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
   }
 
   /**
-   * A function which loads the tables based on prefilters defined by network element and ltp on selected time period.
-   */
+  * A function which loads the tables based on prefilters defined by network element and ltp on selected time period.
+  */
   private preFilterChangeAndReload = (networkElement: string, timePeriod: string, ltp: string) => {
     const preFilter = {
       "node-name": networkElement,
       "uuid-interface": ltp
     };
-    if (timePeriod === "15min") {
-      this.props.performanceData15minPreActions.onPreFilterChanged(preFilter);
-      this.props.receiveLevel15minPreActions.onPreFilterChanged(preFilter);
-      this.props.transmissionPower15minPreActions.onPreFilterChanged(preFilter);
-      this.props.adaptiveModulation15minPreActions.onPreFilterChanged(preFilter);
-      this.props.temperature15minPreActions.onPreFilterChanged(preFilter);
-      this.props.signalToInterference15minPreActions.onPreFilterChanged(preFilter);
-      this.props.crossPolarDiscrimination15minPreActions.onPreFilterChanged(preFilter);
-    } else if (timePeriod === "24hours") {
-      this.props.performanceData24hoursPreActions.onPreFilterChanged(preFilter);
-      this.props.receiveLevel24hoursPreActions.onPreFilterChanged(preFilter);
-      this.props.transmissionPower24hoursPreActions.onPreFilterChanged(preFilter);
-      this.props.adaptiveModulation24hoursPreActions.onPreFilterChanged(preFilter);
-      this.props.temperature24hoursPreActions.onPreFilterChanged(preFilter);
-      this.props.signalToInterference24hoursPreActions.onPreFilterChanged(preFilter);
-      this.props.crossPolarDiscrimination24hoursPreActions.onPreFilterChanged(preFilter);
-    }
+    this.props.performanceDataPreActions.onPreFilterChanged(preFilter);
+    this.props.receiveLevelPreActions.onPreFilterChanged(preFilter);
+    this.props.transmissionPowerPreActions.onPreFilterChanged(preFilter);
+    this.props.adaptiveModulationPreActions.onPreFilterChanged(preFilter);
+    this.props.temperaturePreActions.onPreFilterChanged(preFilter);
+    this.props.signalToInterferencePreActions.onPreFilterChanged(preFilter);
+    this.props.crossPolarDiscriminationPreActions.onPreFilterChanged(preFilter);
+
   }
 
-  /**
-   * Function which handles network element changes.
-   */
-  private handleNetworkElementChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    var showLtps: boolean = true;
-    if (event.target.value === "-1") {
-      showLtps = false;
-    } else if (event.target.value !== this.state.selectedNetworkElement) {
-      this.setState({
-        showPanels: false
-      });
-    }
+ /**
+  * Function which handles network element changes.
+  */
+ private handleNetworkElementSelect = (selectedNetworkElement: string) => {
+
+  this.setState({
+    showLtps: true,
+    selectedNetworkElement: selectedNetworkElement,
+    showNetworkElementsTable: false,
+    showPanels: false,
+    selectedLtp: "-1"
+  });
+  this.props.changeNode(selectedNetworkElement);
+  this.props.getDistinctLtpsIds(selectedNetworkElement, this.state.selectedTimePeriod, "-1", this.selectFirstLtp);
+}
+
+private handleURLChange = (selectedNetworkElement: string) => {
+  if(selectedNetworkElement !== this.state.selectedNetworkElement) {
     this.setState({
-      showLtps: showLtps,
-      selectedNetworkElement: event.target.value,
+      showLtps: true,
+      selectedNetworkElement: selectedNetworkElement,
+      showPanels: false,
       selectedLtp: "-1"
     });
-    this.props.getDistinctLtpsIds(event.target.value, this.state.selectedTimePeriod, "-1", this.selectFirstLtp);
+    this.props.getDistinctLtpsIds(selectedNetworkElement, this.state.selectedTimePeriod, "-1", this.selectFirstLtp);
   }
+}
 
-  /**
-   * Function which resets the ltps to "--select--" in the state if the passed parameter @ltpNotSelected is true.
-   * @param ltpNotSelected: true, if existing selected is not available in the given time period, else false
-   */
+/**
+  * Function which resets the ltps to "--select--" in the state if the passed parameter @ltpNotSelected is true.
+  * @param ltpNotSelected: true, if existing selected is not available in the given time period, else false
+  */
   private resetLtpDropdown = (ltpNotSelected: boolean) => {
     if (ltpNotSelected) {
       this.setState({
@@ -332,23 +331,31 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
   }
 
   /**
-   * Function which handles the time period changes.
-   */
+  * Function which handles the time period changes.
+  */
   private handleTimePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedTimeInterval = event.target.value === "15min"
+      ? PmDataInterval.pmInterval15Min
+      : PmDataInterval.pmInterval24Hours
+
     this.setState({
       selectedTimePeriod: event.target.value,
     });
-    if (event.target.value === "15min") {
-      this.props.getDistinctLtpsIds(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp, undefined, this.resetLtpDropdown);
-    } else if (event.target.value === "24hours") {
-      this.props.getDistinctLtpsIds(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp, undefined, this.resetLtpDropdown);
-    }
+    this.props.timeIntervalChange(selectedTimeInterval);
+    this.props.reloadPerformanceData();
+    this.props.reloadReceiveLevel();
+    this.props.reloadTransmissionPower();
+    this.props.reloadAdaptiveModulation();
+    this.props.reloadTemperature();
+    this.props.reloadSignalToInterference();
+    this.props.reloadCrossPolarDiscrimination();
+    this.props.getDistinctLtpsIds(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp, undefined, this.resetLtpDropdown);
     this.preFilterChangeAndReload(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp);
   }
 
   /**
-   * Function which handles the ltp changes.
-   */
+  * Function which handles the ltp changes.
+  */
   private handleLtpChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     var showPanels: boolean = true;
     if (event.target.value === "-1") {

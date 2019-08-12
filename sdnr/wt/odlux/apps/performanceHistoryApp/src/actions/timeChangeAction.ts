@@ -15,14 +15,15 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { NetworkElementBaseType } from "./networkElementBase";
+import { Action } from '../../../../framework/src/flux/action';
+import { PmDataInterval } from '../models/performanceDataType';
 
-/**
-* Represents data of an mounted network elements.
-*/
-export type MountedNetworkElementType = NetworkElementBaseType & {
-  connectionStatus: string;
-  required: boolean;
-  capabilities: { module: string, revision: string }[];
-};
-
+export class TimeChangeAction extends Action {
+  /**
+   * Initialize this instance.
+   * @param time Action to set the time interval in dropdown.
+   */
+  constructor(public time: PmDataInterval) {
+    super();
+  }
+}

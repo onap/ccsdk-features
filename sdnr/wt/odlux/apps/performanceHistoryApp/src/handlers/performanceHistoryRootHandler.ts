@@ -1,3 +1,20 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
 // main state handler
 
 import { combineActionHandler } from '../../../../framework/src/flux/middleware';
@@ -7,48 +24,56 @@ import { IApplicationStoreState } from '../../../../framework/src/store/applicat
 import { IActionHandler } from '../../../../framework/src/flux/action';
 
 import { IConnectAppStoreState } from '../../../connectApp/src/handlers/connectAppRootHandler';
-import { IPerformanceData15minState, performanceData15minActionHandler } from './performanceData15minHandler';
-import { IReceiveLevel15minState, receiveLevel15minActionHandler } from './receiveLevel15minHandler';
-import { ITransmissionPower15minState, transmissionPower15minActionHandler } from './transmissionPower15minHandler';
-import { IAdaptiveModulation15minState, adaptiveModulation15minActionHandler } from './adaptiveModulation15minHandler';
-import { ITemperature15minState, temperature15minActionHandler } from './temperature15minHandler';
-import { ISignalToInterference15minState, signalToInterference15minActionHandler } from './signalToInterference15minHandler';
-import { ICrossPolarDiscrimination15minState, crossPolarDiscrimination15minActionHandler } from './crossPolarDiscrimination15minHandler';
-import { IPerformanceData24hoursState, performanceData24hoursActionHandler } from './performanceData24hoursHandler';
-import { IReceiveLevel24hoursState, receiveLevel24hoursActionHandler } from './receiveLevel24hoursHandler';
-import { ITransmissionPower24hoursState, transmissionPower24hoursActionHandler } from './transmissionPower24hoursHandler';
-import { IAdaptiveModulation24hoursState, adaptiveModulation24hoursActionHandler } from './adaptiveModulation24hoursHandler';
-import { ITemperature24hoursState, temperature24hoursActionHandler } from './temperature24hoursHandler';
-import { ISignalToInterference24hoursState, signalToInterference24hoursActionHandler } from './signalToInterference24hoursHandler';
-import { ICrossPolarDiscrimination24hoursState, crossPolarDiscrimination24hoursActionHandler } from './crossPolarDiscrimination24hoursHandler';
+import { IPerformanceDataState, performanceDataActionHandler } from './performanceDataHandler';
+import { IReceiveLevelState, receiveLevelActionHandler } from './receiveLevelHandler';
+import { ITransmissionPowerState, transmissionPowerActionHandler } from './transmissionPowerHandler';
+import { IAdaptiveModulationState, adaptiveModulationActionHandler } from './adaptiveModulationHandler';
+import { ITemperatureState, temperatureActionHandler } from './temperatureHandler';
+import { ISignalToInterferenceState, signalToInterferenceActionHandler } from './signalToInterferenceHandler';
+import { ICrossPolarDiscriminationState, crossPolarDiscriminationActionHandler } from './crossPolarDiscriminationHandler';
 import { SetPanelAction } from '../actions/panelChangeActions';
 import { IConnectedNetworkElementsState, connectedNetworkElementsActionHandler } from './connectedNetworkElementsActionHandler';
 import { IAvailableLtpsState, availableLtpsActionHandler } from './availableLtpsActionHandler';
+import { PmDataInterval } from '../models/performanceDataType';
+import { TimeChangeAction } from '../actions/timeChangeAction';
+import { UpdateMountId } from '../actions/connectedNetworkElementsActions';
 
 export interface IPerformanceHistoryStoreState {
+  mountId: string;
   networkElements: IConnectedNetworkElementsState;
   ltps: IAvailableLtpsState;
-  performanceData15min: IPerformanceData15minState;
-  performanceData24hours: IPerformanceData24hoursState;
-  receiveLevel15min: IReceiveLevel15minState;
-  receiveLevel24hours: IReceiveLevel24hoursState;
-  transmissionPower15min: ITransmissionPower15minState;
-  transmissionPower24hours: ITransmissionPower24hoursState;
-  adaptiveModulation15min: IAdaptiveModulation15minState;
-  adaptiveModulation24hours: IAdaptiveModulation24hoursState;
-  temperature15min: ITemperature15minState;
-  temperature24hours: ITemperature24hoursState;
-  signalToInterference15min:ISignalToInterference15minState;
-  signalToInterference24hours:ISignalToInterference24hoursState;
-  crossPolarDiscrimination15min: ICrossPolarDiscrimination15minState;
-  crossPolarDiscrimination24hours: ICrossPolarDiscrimination24hoursState;
+  performanceData: IPerformanceDataState;
+  receiveLevel: IReceiveLevelState;
+  transmissionPower: ITransmissionPowerState;
+  adaptiveModulation: IAdaptiveModulationState;
+  temperature: ITemperatureState;
+  signalToInterference: ISignalToInterferenceState;
+  crossPolarDiscrimination: ICrossPolarDiscriminationState;
   currentOpenPanel: string | null;
-
+  pmDataIntervalType: PmDataInterval;
 }
+
+const mountIdHandler: IActionHandler<string> = (state = "", action) => {
+  if (action instanceof UpdateMountId) {
+    state = "";
+    if (action.nodeId) {
+      state = action.nodeId;
+    }
+  }
+  return state;
+}
+
 
 const currentOpenPanelHandler: IActionHandler<string | null> = (state = null, action) => {
   if (action instanceof SetPanelAction) {
     state = action.panelId;
+  }
+  return state;
+}
+
+const currentPMDataIntervalHandler: IActionHandler<PmDataInterval> = (state = PmDataInterval.pmInterval15Min, action) => {
+  if (action instanceof TimeChangeAction) {
+    state = action.time;
   }
   return state;
 }
@@ -61,23 +86,18 @@ declare module '../../../../framework/src/store/applicationStore' {
 }
 
 const actionHandlers = {
+  mountId: mountIdHandler,
   networkElements: connectedNetworkElementsActionHandler,
   ltps: availableLtpsActionHandler,
-  performanceData15min: performanceData15minActionHandler,
-  performanceData24hours: performanceData24hoursActionHandler,
-  receiveLevel15min: receiveLevel15minActionHandler,
-  receiveLevel24hours: receiveLevel24hoursActionHandler,
-  transmissionPower15min: transmissionPower15minActionHandler,
-  transmissionPower24hours: transmissionPower24hoursActionHandler,
-  adaptiveModulation15min: adaptiveModulation15minActionHandler,
-  adaptiveModulation24hours: adaptiveModulation24hoursActionHandler,
-  temperature15min: temperature15minActionHandler,
-  temperature24hours: temperature24hoursActionHandler,
-  signalToInterference15min: signalToInterference15minActionHandler,
-  signalToInterference24hours: signalToInterference24hoursActionHandler,
-  crossPolarDiscrimination15min: crossPolarDiscrimination15minActionHandler,
-  crossPolarDiscrimination24hours: crossPolarDiscrimination24hoursActionHandler,
-  currentOpenPanel: currentOpenPanelHandler
+  performanceData: performanceDataActionHandler,
+  receiveLevel: receiveLevelActionHandler,
+  transmissionPower: transmissionPowerActionHandler,
+  adaptiveModulation: adaptiveModulationActionHandler,
+  temperature: temperatureActionHandler,
+  signalToInterference: signalToInterferenceActionHandler,
+  crossPolarDiscrimination: crossPolarDiscriminationActionHandler,
+  currentOpenPanel: currentOpenPanelHandler,
+  pmDataIntervalType: currentPMDataIntervalHandler
 };
 
 const performanceHistoryRootHandler = combineActionHandler<IPerformanceHistoryStoreState>(actionHandlers);

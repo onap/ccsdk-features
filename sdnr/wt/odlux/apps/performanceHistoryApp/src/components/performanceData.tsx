@@ -1,3 +1,20 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
 import * as React from 'react';
 
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -7,19 +24,16 @@ import { IApplicationStoreState } from '../../../../framework/src/store/applicat
 import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { PerformanceDataType } from '../models/performanceDataType';
 import { IDataSet, IDataSetsObject } from '../models/chartTypes';
-import { createPerformanceData15minProperties, createPerformanceData15minActions } from '../handlers/performanceData15minHandler';
-import { createPerformanceData24hoursProperties, createPerformanceData24hoursActions } from '../handlers/performanceData24hoursHandler';
+import { createPerformanceDataProperties, createPerformanceDataActions } from '../handlers/performanceDataHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
 
 const mapProps = (state: IApplicationStoreState) => ({
-  performanceData15minProperties: createPerformanceData15minProperties(state),
-  performanceData24hoursProperties: createPerformanceData24hoursProperties(state)
+  performanceDataProperties: createPerformanceDataProperties(state),
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
-  performanceData15minActions: createPerformanceData15minActions(dispatcher.dispatch),
-  performanceData24hoursActions: createPerformanceData24hoursActions(dispatcher.dispatch)
+  performanceDataActions: createPerformanceDataActions(dispatcher.dispatch),
 });
 
 type PerformanceDataComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -33,21 +47,17 @@ const PerformanceDataTable = MaterialTable as MaterialTableCtorType<PerformanceD
  */
 class PerformanceDataComponent extends React.Component<PerformanceDataComponentProps>{
   render(): JSX.Element {
-    const properties = this.props.selectedTimePeriod === "15min"
-      ? this.props.performanceData15minProperties
-      : this.props.performanceData24hoursProperties;
-    const actions = this.props.selectedTimePeriod === "15min"
-      ? this.props.performanceData15minActions
-      : this.props.performanceData24hoursActions;
+    const properties = this.props.performanceDataProperties;
+    const actions = this.props.performanceDataActions;
 
     const chartPagedData = this.getChartDataValues(properties.rows);
     const performanceColumns: ColumnModel<PerformanceDataType>[] = [
-      { property: "radio-signal-id", title: "Radio signal", type: ColumnType.text },
-      { property: "scanner-id", title: "Scanner ID", type: ColumnType.text },
-      { property: "time-stamp", title: "End Time", type: ColumnType.text, disableFilter: true },
+      { property: "radioSignalId", title: "Radio signal", type: ColumnType.text },
+      { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
+      { property: "utcTimeStamp", title: "End Time", type: ColumnType.text, disableFilter: true },
       {
-        property: "suspect-interval-flag", title: "Suspect Interval", type: ColumnType.custom, customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspect-interval-flag"].toString();
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.custom, customControl: ({ rowData }) => {
+          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
           return <div >{suspectIntervalFlag} </div>
         }
       }
@@ -104,7 +114,7 @@ class PerformanceDataComponent extends React.Component<PerformanceDataComponentP
     _rows.forEach(row => {
       datasets.forEach(ds => {
         ds.data.push({
-          x: row["time-stamp"],
+          x: row["utcTimeStamp" as keyof PerformanceDataType] as string,
           y: row[ds.name as keyof PerformanceDataType] as string
         });
       });

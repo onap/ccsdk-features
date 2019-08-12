@@ -1,3 +1,20 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
 import * as React from 'react';
 
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -8,19 +25,16 @@ import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/co
 
 import { ReceiveLevelDataType } from '../models/receiveLevelDataType';
 import { IDataSet, IDataSetsObject } from '../models/chartTypes';
-import { createReceiveLevel15minProperties, createReceiveLevel15minActions } from '../handlers/receiveLevel15minHandler';
-import { createReceiveLevel24hoursProperties, createReceiveLevel24hoursActions } from '../handlers/receiveLevel24hoursHandler';
+import { createReceiveLevelProperties, createReceiveLevelActions } from '../handlers/receiveLevelHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
 
 const mapProps = (state: IApplicationStoreState) => ({
-  receiveLevel15minProperties: createReceiveLevel15minProperties(state),
-  receiveLevel24hoursProperties: createReceiveLevel24hoursProperties(state)
+  receiveLevelProperties: createReceiveLevelProperties(state),
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
-  receiveLevel15minActions: createReceiveLevel15minActions(dispatcher.dispatch),
-  receiveLevel24hoursActions: createReceiveLevel24hoursActions(dispatcher.dispatch)
+  receiveLevelActions: createReceiveLevelActions(dispatcher.dispatch),
 });
 
 type ReceiveLevelComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -34,21 +48,17 @@ const ReceiveLevelTable = MaterialTable as MaterialTableCtorType<ReceiveLevelDat
  */
 class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
   render(): JSX.Element {
-    const properties = this.props.selectedTimePeriod === "15min"
-      ? this.props.receiveLevel15minProperties
-      : this.props.receiveLevel24hoursProperties;
-    const actions = this.props.selectedTimePeriod === "15min"
-      ? this.props.receiveLevel15minActions
-      : this.props.receiveLevel24hoursActions;
+    const properties = this.props.receiveLevelProperties;
+    const actions = this.props.receiveLevelActions;
 
     const chartPagedData = this.getChartDataValues(properties.rows);
     const receiveLevelColumns: ColumnModel<ReceiveLevelDataType>[] = [
-      { property: "radio-signal-id", title: "Radio signal", type: ColumnType.text },
-      { property: "scanner-id", title: "Scanner ID", type: ColumnType.text },
-      { property: "time-stamp", title: "End Time", type: ColumnType.text, disableFilter: true },
+      { property: "radioSignalId", title: "Radio signal", type: ColumnType.text },
+      { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
+      { property: "utcTimeStamp", title: "End Time", type: ColumnType.text, disableFilter: true },
       {
-        property: "suspect-interval-flag", title: "Suspect Interval", type: ColumnType.custom, customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspect-interval-flag"].toString();
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.custom, customControl: ({ rowData }) => {
+          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
           return <div >{suspectIntervalFlag} </div>
         }
       }
@@ -75,7 +85,7 @@ class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
     sortDataByTimeStamp(_rows);
 
     const datasets: IDataSet[] = [{
-      name: "rx-level-min",
+      name: "rxLevelMin",
       label: "rx-level-min",
       borderColor: '#0e17f3de',
       bezierCurve: false,
@@ -84,7 +94,7 @@ class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
       data: [],
       columnLabel: "Rx min"
     }, {
-      name: "rx-level-avg",
+      name: "rxLevelAvg",
       label: "rx-level-avg",
       borderColor: '#08edb6de',
       bezierCurve: false,
@@ -93,7 +103,7 @@ class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
       data: [],
       columnLabel: "Rx avg"
     }, {
-      name: "rx-level-max",
+      name: "rxLevelMax",
       label: "rx-level-max",
       borderColor: '#b308edde',
       bezierCurve: false,
@@ -106,7 +116,7 @@ class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
     _rows.forEach(row => {
       datasets.forEach(ds => {
         ds.data.push({
-          x: row["time-stamp"],
+          x: row["utcTimeStamp" as keyof ReceiveLevelDataType] as string,
           y: row[ds.name as keyof ReceiveLevelDataType] as string
         });
       });

@@ -1,3 +1,20 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
 import * as React from 'react';
 
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -8,19 +25,16 @@ import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/co
 
 import { TransmissionPowerDataType } from '../models/transmissionPowerDataType';
 import { IDataSet, IDataSetsObject } from '../models/chartTypes';
-import { createTransmissionPower15minProperties, createTransmissionPower15minActions } from '../handlers/transmissionPower15minHandler';
-import { createTransmissionPower24hoursProperties, createTransmissionPower24hoursActions } from '../handlers/transmissionPower24hoursHandler';
+import { createTransmissionPowerProperties, createTransmissionPowerActions } from '../handlers/transmissionPowerHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
 
 const mapProps = (state: IApplicationStoreState) => ({
-  transmissionPower15minProperties: createTransmissionPower15minProperties(state),
-  transmissionPower24hoursProperties: createTransmissionPower24hoursProperties(state)
+  transmissionPowerProperties: createTransmissionPowerProperties(state),
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
-  transmissionPower15minActions: createTransmissionPower15minActions(dispatcher.dispatch),
-  transmissionPower24hoursActions: createTransmissionPower24hoursActions(dispatcher.dispatch)
+  transmissionPowerActions: createTransmissionPowerActions(dispatcher.dispatch),
 });
 
 type TransmissionPowerComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -34,27 +48,23 @@ const TransmissionPowerTable = MaterialTable as MaterialTableCtorType<Transmissi
  */
 class TransmissionPowerComponent extends React.Component<TransmissionPowerComponentProps>{
   render(): JSX.Element {
-    const properties = this.props.selectedTimePeriod === "15min"
-      ? this.props.transmissionPower15minProperties
-      : this.props.transmissionPower24hoursProperties;
-    const actions = this.props.selectedTimePeriod === "15min"
-      ? this.props.transmissionPower15minActions
-      : this.props.transmissionPower24hoursActions;
+    const properties = this.props.transmissionPowerProperties
+    const actions = this.props.transmissionPowerActions
 
     const chartPagedData = this.getChartDataValues(properties.rows);
 
     const transmissionColumns: ColumnModel<TransmissionPowerDataType>[] = [
-      { property: "radio-signal-id", title: "Radio signal", type: ColumnType.text },
-      { property: "scanner-id", title: "Scanner ID", type: ColumnType.text },
-      { property: "time-stamp", title: "End Time", type: ColumnType.text, disableFilter: true },
+      { property: "radioSignalId", title: "Radio signal", type: ColumnType.text },
+      { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
+      { property: "utcTimeStamp", title: "End Time", type: ColumnType.text, disableFilter: true },
       {
-        property: "suspect-interval-flag", title: "Suspect Interval", type: ColumnType.custom, customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspect-interval-flag"].toString();
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.custom, customControl: ({ rowData }) => {
+          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
           return <div >{suspectIntervalFlag} </div>
         }
       }
     ];
-    
+
     chartPagedData.datasets.forEach(ds => {
       transmissionColumns.push(addColumnLabels<TransmissionPowerDataType>(ds.name, ds.columnLabel));
     });
@@ -77,7 +87,7 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
     sortDataByTimeStamp(_rows);
 
     const datasets: IDataSet[] = [{
-      name: "tx-level-min",
+      name: "txLevelMin",
       label: "tx-level-min",
       borderColor: '#0e17f3de',
       bezierCurve: false,
@@ -86,7 +96,7 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
       data: [],
       columnLabel: "Tx min"
     }, {
-      name: "tx-level-avg",
+      name: "txLevelAvg",
       label: "tx-level-avg",
       borderColor: '#08edb6de',
       bezierCurve: false,
@@ -95,7 +105,7 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
       data: [],
       columnLabel: "Tx avg"
     }, {
-      name: "tx-level-max",
+      name: "txLevelMax",
       label: "tx-level-max",
       borderColor: '#b308edde',
       bezierCurve: false,
@@ -108,7 +118,7 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
     _rows.forEach(row => {
       datasets.forEach(ds => {
         ds.data.push({
-          x: row["time-stamp"],
+          x: row["utcTimeStamp" as keyof TransmissionPowerDataType] as string,
           y: row[ds.name as keyof TransmissionPowerDataType] as string
         });
       });
