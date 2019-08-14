@@ -14,13 +14,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
   <artifactId>sdnr-wt-websocketmanager2-provider</artifactId>
-  <version>0.5.2-SNAPSHOT</version>
+  <version>0.5.2</version>
   <name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
   <packaging>bundle</packaging>
   <parent>
     <groupId>org.onap.ccsdk.parent</groupId>
     <artifactId>binding-parent</artifactId>
-    <version>1.3.3-SNAPSHOT</version>
+    <version>1.3.3</version>
     <relativePath/>
   </parent>
   <properties>
