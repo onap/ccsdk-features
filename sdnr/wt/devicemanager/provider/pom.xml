@@ -48,6 +48,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <version>2.23.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -95,10 +96,18 @@
       <artifactId>sal-netconf-connector</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+	  <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
+	  <artifactId>rfc6991-ietf-yang-types</artifactId>
+	 </dependency>
+	 <dependency>
+       <groupId>org.opendaylight.mdsal</groupId>
+       <artifactId>yang-binding</artifactId>
+	 </dependency>
      <dependency>
       <groupId>org.opendaylight.mdsal</groupId>
       <artifactId>mdsal-singleton-common-api</artifactId>
-      <scope>provided</scope>
+     <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
@@ -344,10 +353,10 @@
               org.opendaylight.controller.md.sal.binding.api;version="[1.6,2)",
               org.opendaylight.controller.md.sal.common.api.data;version="[1.6,2)",
               org.opendaylight.controller.sal.binding.api;version="[1.6,2)",
-              org.opendaylight.mdsal.singleton.common.api;version="[2.0,3)",
+              org.opendaylight.mdsal.singleton.common.api;version="[2.0,3.0.8]",
               org.opendaylight.yangtools.concepts;version="[2.0,3)",
-              org.opendaylight.yangtools.yang.binding;version="[0.12,1)",
               org.opendaylight.yangtools.yang.common;version="[2.0,3)",
+              org.opendaylight.yangtools.yang.binding;version="[1.0.8,2)",
               org.osgi.framework,
               org.osgi.service.blueprint.container,
               org.slf4j;version="[1.7,2)",
@@ -376,15 +385,15 @@
               org.apache.log4j.helpers;resolution:=optional;version="[1.2,2)",
               org.noggit;resolution:=optional,
 
-              com.google.common.base;version="[23.6,24)",
-              com.google.common.cache;version="[23.6,24)",
-              com.google.common.collect;version="[23.6,24)",
-              com.google.common.hash;version="[23.6,24)",
-              com.google.common.io;version="[23.6,24)",
-              com.google.common.math;version="[23.6,24)",
-              com.google.common.net;version="[23.6,24)",
-              com.google.common.primitives;version="[23.6,24)",
-              com.google.common.util.concurrent;version="[23.6,24)",
+   			  com.google.common.base;version="[23.6,26)",
+              com.google.common.cache;version="[23.6,26)",
+              com.google.common.collect;version="[23.6,26)",
+              com.google.common.hash;version="[23.6,26)",
+              com.google.common.io;version="[23.6,26)",
+              com.google.common.math;version="[23.6,26)",
+              com.google.common.net;version="[23.6,26)",
+              com.google.common.primitives;version="[23.6,26)",
+              com.google.common.util.concurrent;version="[23.6,26)",
 
               org.jboss.netty.bootstrap;version="[3.10,4)",
               org.jboss.netty.buffer;version="[3.10,4)",
@@ -401,7 +410,7 @@
               org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105,
               org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714;version="[1.4,2)",
               org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset.rev170208;version="[0.3,1)",
-              org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715;version="[2013.7,2014)",
+              org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715;version="[1.2.8,2)",
               org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320;version="[0.3,1)",
               org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.equipment.g;version="[0.3,1)",
               org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.extension.g;version="[0.3,1)",
@@ -463,3 +472,4 @@
     </plugins>
   </build>
 </project>
+
