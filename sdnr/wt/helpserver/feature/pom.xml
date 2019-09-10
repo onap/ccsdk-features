@@ -26,14 +26,14 @@
 
   <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
   <artifactId>sdnr-wt-helpserver-feature</artifactId>
-  <version>0.6.1-SNAPSHOT</version>
+  <version>0.6.1</version>
   <packaging>feature</packaging>
   <name>ccsdk-features-sdnr-wt :: ${project.artifactId} :: feature</name>
 
   <parent>
     <groupId>org.onap.ccsdk.parent</groupId>
     <artifactId>single-feature-parent</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.1</version>
     <relativePath/>
   </parent>
 
