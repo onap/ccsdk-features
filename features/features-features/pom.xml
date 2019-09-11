@@ -20,13 +20,13 @@
 	<parent>
 		<groupId>org.onap.ccsdk.parent</groupId>
 		<artifactId>feature-repo-parent</artifactId>
-		<version>1.4.1-SNAPSHOT</version>
+		<version>1.4.2-SNAPSHOT</version>
 		<relativePath/>
 	</parent>
 
 	<groupId>org.onap.ccsdk.features</groupId>
 	<artifactId>features-features</artifactId>
-	<version>0.6.1-SNAPSHOT</version>
+	<version>0.6.2-SNAPSHOT</version>
 	<packaging>feature</packaging>
 
 	<name>Blueprints Processor :: features :: ${project.artifactId}</name>
