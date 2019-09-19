@@ -21,11 +21,11 @@
 	<parent>
 		<groupId>org.onap.ccsdk.parent</groupId>
 		<artifactId>odlparent-lite</artifactId>
-		<version>1.4.3-SNAPSHOT</version>
+		<version>1.4.3</version>
 		<relativePath/>
 	</parent>
 
-	<version>0.6.3-SNAPSHOT</version>
+	<version>0.6.3</version>
 	<artifactId>blueprints-processor-plugin</artifactId>
 	<groupId>org.onap.ccsdk.features</groupId>
 	<packaging>pom</packaging>
