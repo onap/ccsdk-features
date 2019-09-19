@@ -4,13 +4,13 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>odlparent</artifactId>
-        <version>1.3.5-SNAPSHOT</version>
+        <version>1.3.5</version>
         <relativePath/>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-odlux-app-demoApp</artifactId>
-    <version>0.5.4-SNAPSHOT</version>
+    <version>0.5.4</version>
     <packaging>bundle</packaging>
     <name>sdnr-wt-odlux-app-demoApp</name>
     <licenses>
