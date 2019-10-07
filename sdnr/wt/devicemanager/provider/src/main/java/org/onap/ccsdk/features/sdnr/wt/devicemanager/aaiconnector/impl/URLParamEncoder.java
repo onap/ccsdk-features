@@ -19,13 +19,16 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl;
 
 class URLParamEncoder {
 
+    private URLParamEncoder() {
+    }
+
+    private static final String UNSAFE_CHARSET = " %$&+,/:;=?@<>#%";
+
     public static String encode(String input) {
         StringBuilder resultStr = new StringBuilder();
         for (char ch : input.toCharArray()) {
             if (isUnsafe(ch)) {
-                resultStr.append('%');
-                resultStr.append(toHex(ch / 16));
-                resultStr.append(toHex(ch % 16));
+                resultStr.append(escape(ch));
             } else {
                 resultStr.append(ch);
             }
@@ -33,14 +36,18 @@ class URLParamEncoder {
         return resultStr.toString();
     }
 
-    private static char toHex(int ch) {
-        return (char) (ch < 10 ? '0' + ch : 'A' + ch - 10);
-    }
-
     private static boolean isUnsafe(char ch) {
-        if (ch > 128 || ch < 0) {
+        if (ch > 128) {
             return true;
         }
-        return " %$&+,/:;=?@<>#%".indexOf(ch) >= 0;
+        return UNSAFE_CHARSET.indexOf(ch) >= 0;
+    }
+
+    private static String escape(char ch){
+        return String.format("%c%c%c", '%', toHex(ch / 16), toHex(ch % 16));
+    }
+
+    private static char toHex(int ch) {
+        return (char) (ch < 10 ? '0' + ch : 'A' + ch - 10);
     }
 }
