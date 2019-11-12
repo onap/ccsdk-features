@@ -124,6 +124,14 @@ public ListenableFuture<RpcResult<GetNearRTRICsOutput>> getNearRTRICs(
   GetNearRTRICsInputBuilder inputBuilder = new GetNearRTRICsInputBuilder(input);
   MdsalHelper.toProperties(parms, inputBuilder.build());
 
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
+
   // Call SLI sync method
   try
   {
@@ -193,6 +201,14 @@ public ListenableFuture<RpcResult<GetNearRTRICsOutput>> getNearRTRICs(
 		LOG.info("Adding INPUT data for "+svcOperation+" input: " + input);
 		GetHealthCheckInputBuilder inputBuilder = new GetHealthCheckInputBuilder(input);
 		MdsalHelper.toProperties(parms, inputBuilder.build());
+
+    LOG.info("Printing SLI parameters to be passed");
+
+    // iterate properties file to get key-value pairs
+			for (String key : parms.stringPropertyNames()) {
+				String value = parms.getProperty(key);
+				LOG.info("The SLI parameter in " + key + " is: " + value);
+			}
 
 		// Call SLI sync method
 		try
@@ -264,6 +280,14 @@ public ListenableFuture<RpcResult<GetPolicyTypesOutput>> getPolicyTypes(
   GetPolicyTypesInputBuilder inputBuilder = new GetPolicyTypesInputBuilder(input);
   MdsalHelper.toProperties(parms, inputBuilder.build());
 
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
+
   // Call SLI sync method
   try
   {
@@ -333,6 +357,14 @@ public ListenableFuture<RpcResult<CreatePolicyTypeOutput>> createPolicyType(
   LOG.info("Adding INPUT data for "+svcOperation+" input: " + input);
   CreatePolicyTypeInputBuilder inputBuilder = new CreatePolicyTypeInputBuilder(input);
   MdsalHelper.toProperties(parms, inputBuilder.build());
+
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
 
   // Call SLI sync method
   try
@@ -404,6 +436,14 @@ public ListenableFuture<RpcResult<GetPolicyTypeOutput>> getPolicyType(
   GetPolicyTypeInputBuilder inputBuilder = new GetPolicyTypeInputBuilder(input);
   MdsalHelper.toProperties(parms, inputBuilder.build());
 
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
+
   // Call SLI sync method
   try
   {
@@ -473,6 +513,14 @@ public ListenableFuture<RpcResult<DeletePolicyTypeOutput>> deletePolicyType(
   LOG.info("Adding INPUT data for "+svcOperation+" input: " + input);
   DeletePolicyTypeInputBuilder inputBuilder = new DeletePolicyTypeInputBuilder(input);
   MdsalHelper.toProperties(parms, inputBuilder.build());
+
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
 
   // Call SLI sync method
   try
@@ -544,6 +592,14 @@ public ListenableFuture<RpcResult<GetPolicyInstancesOutput>> getPolicyInstances(
   GetPolicyInstancesInputBuilder inputBuilder = new GetPolicyInstancesInputBuilder(input);
   MdsalHelper.toProperties(parms, inputBuilder.build());
 
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
+
   // Call SLI sync method
   try
   {
@@ -614,6 +670,14 @@ public ListenableFuture<RpcResult<CreatePolicyInstanceOutput>> createPolicyInsta
   LOG.info("Adding INPUT data for "+svcOperation+" input: " + input);
   CreatePolicyInstanceInputBuilder inputBuilder = new CreatePolicyInstanceInputBuilder(input);
   MdsalHelper.toProperties(parms, inputBuilder.build());
+
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
 
   // Call SLI sync method
   try
@@ -687,6 +751,14 @@ public ListenableFuture<RpcResult<GetPolicyInstanceOutput>> getPolicyInstance(
   GetPolicyInstanceInputBuilder inputBuilder = new GetPolicyInstanceInputBuilder(input);
   MdsalHelper.toProperties(parms, inputBuilder.build());
 
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
+
   // Call SLI sync method
   try
   {
@@ -759,6 +831,14 @@ public ListenableFuture<RpcResult<DeletePolicyInstanceOutput>> deletePolicyInsta
   DeletePolicyInstanceInputBuilder inputBuilder = new DeletePolicyInstanceInputBuilder(input);
   MdsalHelper.toProperties(parms, inputBuilder.build());
 
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
+
   // Call SLI sync method
   try
   {
@@ -830,6 +910,14 @@ public ListenableFuture<RpcResult<GetStatusOutput>> getStatus(
   LOG.info("Adding INPUT data for "+svcOperation+" input: " + input);
   GetStatusInputBuilder inputBuilder = new GetStatusInputBuilder(input);
   MdsalHelper.toProperties(parms, inputBuilder.build());
+
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
 
   // Call SLI sync method
   try
