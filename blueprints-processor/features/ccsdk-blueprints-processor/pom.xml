@@ -15,81 +15,84 @@
   limitations under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.onap.ccsdk.parent</groupId>
-		<artifactId>single-feature-parent</artifactId>
-		<version>1.5.0-SNAPSHOT</version>
-		<relativePath/>
-	</parent>
+    <parent>
+        <groupId>org.onap.ccsdk.parent</groupId>
+        <artifactId>single-feature-parent</artifactId>
+        <version>1.5.0</version>
+        <relativePath/>
+    </parent>
 
-	<groupId>org.onap.ccsdk.features</groupId>
-	<artifactId>ccsdk-blueprints-processor</artifactId>
-	<version>0.7.0-SNAPSHOT</version>
-	<packaging>feature</packaging>
+    <groupId>org.onap.ccsdk.features</groupId>
+    <artifactId>ccsdk-blueprints-processor</artifactId>
+    <version>0.7.0-SNAPSHOT</version>
+    <packaging>feature</packaging>
 
-	<name>Blueprints Processor :: Features :: ${project.artifactId}</name>
+    <name>Blueprints Processor :: Features :: ${project.artifactId}</name>
 
 
+    <properties>
+        <ccsdk.sli.core.version>${project.version}</ccsdk.sli.core.version>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.opendaylight.controller</groupId>
-			<artifactId>odl-mdsal-broker</artifactId>
-			<type>xml</type>
-			<classifier>features</classifier>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>odl-mdsal-broker</artifactId>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
 
-		<dependency>
-			<groupId>org.onap.ccsdk.sli.core</groupId>
-			<artifactId>ccsdk-sli</artifactId>
-			<version>${ccsdk.sli.core.version}</version>
-			<type>xml</type>
-			<classifier>features</classifier>
-		</dependency>
+        <dependency>
+            <groupId>org.onap.ccsdk.sli.core</groupId>
+            <artifactId>ccsdk-sli</artifactId>
+            <version>${ccsdk.sli.core.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
 
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>blueprints-rest-adaptor-provider</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>blueprints-data-adaptor-provider</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>blueprints-model-provider</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>blueprints-generator-provider</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>blueprints-assignment-provider</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueprints-rest-adaptor-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueprints-data-adaptor-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueprints-model-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueprints-generator-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueprints-assignment-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-jsonSchema</artifactId>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jsonSchema</artifactId>
+        </dependency>
+    </dependencies>
 </project>
