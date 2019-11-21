@@ -24,6 +24,10 @@
     <name>Blueprints Data Adaptor - Provider</name>
     <url>http://maven.apache.org</url>
     
+    <properties>
+        <ccsdk.sli.core.version>${project.version}</ccsdk.sli.core.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>

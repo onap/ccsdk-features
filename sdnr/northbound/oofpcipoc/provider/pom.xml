@@ -15,6 +15,11 @@
     <packaging>bundle</packaging>
 
 
+    <properties>
+        <ccsdk.sli.core.version>${project.version}</ccsdk.sli.core.version>
+    </properties>
+
+
     <dependencyManagement>
         <dependencies>
             <dependency>
