@@ -36,6 +36,7 @@
     <description>SDN-R wireless transport micro-services</description>
 
     <modules>
+      <module>common</module>
       <module>apigateway</module>
       <module>devicemodel</module>
       <module>websocketmanager2</module>
