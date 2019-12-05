@@ -89,7 +89,6 @@ print_response() {
     code=$(echo $response | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
     if [ "$VERBOSE" = "0" -a "$code" -ne "200" ] ; then
  	   echo "Error response $code $body"
- 	   exit 2
     fi
     if [ "$VERBOSE" -ge 1 ] ; then
  	   echo "response $code"
@@ -159,6 +158,11 @@ delete_index_alias() {
      # Delete index
     echo "deleting index $index"
     url="$index"
+    http_delete_request "$url"
+
+     # Delete alias that was falsely autocreated as index
+    echo "deleting index $index"
+    url="$alias"
     http_delete_request "$url"
 }
 
@@ -248,6 +252,9 @@ cmd_delete() {
 	for i in "${!ALIAS[@]}"; do
   		delete_index_alias "${ALIAS[$i]}"
 	done
+    for i in "${!ALIAS[@]}"; do
+        delete_index_alias "${ALIAS[$i]}"
+    done
 }
 cmd_purge() {
 #    http_get_request '_cat/aliases'
