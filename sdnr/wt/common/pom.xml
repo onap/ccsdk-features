@@ -124,6 +124,7 @@
 				<artifactId>elasticsearch-maven-plugin</artifactId>
 				<version>6.16</version>
 				<configuration>
+                                        <skip>true</skip>
 					<clusterName>testCluster</clusterName>
 					<transportPort>9500</transportPort>
 					<httpPort>${databaseport}</httpPort>
