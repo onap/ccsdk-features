@@ -20,22 +20,15 @@ package org.onap.ccsdk.features.sdnr.wt.common;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -48,7 +41,7 @@ public class Resources {
     private static final String RESSOURCEROOT = "src/main/resources";
 
     private static URL getFileURL(Class<?> cls,String resFile) {
-    	Bundle b = FrameworkUtil.getBundle(cls);
+        Bundle b = FrameworkUtil.getBundle(cls);
         URL u = null;
         LOG.debug("try to get file {}", resFile);
         if (b == null) {
@@ -83,7 +76,7 @@ public class Resources {
 
     private static String readFile(final InputStream s) throws IOException {
         // read file
-    	final String LR = "\n";
+        final String LR = "\n";
         BufferedReader in = new BufferedReader(new InputStreamReader(s));
         StringBuilder sb = new StringBuilder();
         String inputLine;
@@ -97,7 +90,7 @@ public class Resources {
 
     private static List<URL> getFileURLs(Bundle b,String folder, final String filter, final boolean recursive)
             throws IOException {
-        
+
         List<URL> list = new ArrayList<>();
         if (b == null) {
             FileFilter ff = pathname -> {
@@ -185,7 +178,7 @@ public class Resources {
 //        return list;
 //    }
     public static String getFileContent( Class<?> cls, String resFile) {
-    	 LOG.debug("loading file {} from res", resFile);
+         LOG.debug("loading file {} from res", resFile);
          URL u = getFileURL(cls,resFile);
          String s=null;
          if (u == null) {
@@ -199,7 +192,7 @@ public class Resources {
          }
          return s;
 
-	}
+    }
 //    public static JSONObject getJSONFile(Class<?> cls,String resFile) {
 //        LOG.debug("loading json file {} from res", resFile);
 //        JSONObject o = null;
@@ -269,11 +262,11 @@ public class Resources {
 //        Collection<URL> urlCollection = new ArrayList<>();
 //        URL url = getUrlForRessource(cls,folder);
 //        if(url==null) {
-//        	return Collections.enumeration(urlCollection);
+//            return Collections.enumeration(urlCollection);
 //        }
 //        String path = url.getPath();
 //        File[] files = new File(path).listFiles();
-//        
+//
 //        if (files != null) {
 //            for (File f : files) {
 //                try {
@@ -290,7 +283,7 @@ public class Resources {
 //        }
 //
 //        return Collections.enumeration(urlCollection);
-//        
+//
 //    }
 
     public static URL getUrlForRessource(Class<?> cls,String fileOrDirectory) {
@@ -298,7 +291,7 @@ public class Resources {
         ClassLoader loader = cls.getClassLoader();
         URL url = loader.getResource(fileOrDirectory);
         if(url==null && fileOrDirectory.startsWith("/")) {
-        	url = loader.getResource(fileOrDirectory.substring(1));
+            url = loader.getResource(fileOrDirectory.substring(1));
         }
         return url;
     }
