@@ -1,0 +1,1 @@
+export type PanelId = null | "NetworkElements" | "ConnectionStatusLog";
