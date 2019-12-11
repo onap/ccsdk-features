@@ -37,7 +37,7 @@ INITFILENAME="Init.script"
 set_definition() {
   def "connectionlog" '{"node-id": {"type": "keyword"},"timestamp": {"type": "date"},"status": {"type": "keyword"}}'
   def "maintenancemode" '{"node-id": {"type": "keyword"},"active": {"type": "boolean"}},"date_detection":false}}'
-  def "faultlog" '{"node-id": {"type": "keyword"},"severity": {"type": "keyword"},"timestamp": {"type": "date"},"problem": {"type": "keyword"},"counter": {"type": "keyword"},"object-id":{"type": "keyword"}}'
+  def "faultlog" '{"node-id": {"type": "keyword"},"severity": {"type": "keyword"},"timestamp": {"type": "date"},"problem": {"type": "keyword"},"counter": {"type": "keyword"},"object-id":{"type": "keyword"},"source-type":{"type": "keyword"}}'
   def "faultcurrent" '{"node-id": {"type": "keyword"},"severity": {"type": "keyword"},"timestamp": {"type": "date"},"problem": {"type": "keyword"},"counter": {"type": "keyword"},"object-id":{"type": "keyword"}}'
   def "eventlog" '{"node-id": {"type": "keyword"},"timestamp": {"type": "date"},"new-value": {"type": "keyword"},"attribute-name": {"type": "keyword"},"counter": {"type": "keyword"},"object-id": {"type": "keyword"}}'
   def "inventoryequipment" '{"date": {"type": "keyword"},"model-identifier": {"type": "keyword"},"manufacturer-identifier": {"type": "keyword"},"type-name": {"type": "keyword"},"description": {"type": "keyword"},"uuid": {"type": "keyword"},"version": {"type": "keyword"},"parent-uuid": {"type": "keyword"},"contained-holder": {"type": "keyword"},"node-id": {"type": "keyword"},"tree-level": {"type": "long"},"part-type-id": {"type": "keyword"},"serial": {"type": "keyword"}}'
@@ -88,11 +88,10 @@ print_response() {
     body=$(echo $response | sed -E 's/HTTPSTATUS\:[0-9]{3}$//')
     code=$(echo $response | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
     if [ "$VERBOSE" = "0" -a "$code" -ne "200" ] ; then
- 	   echo "Error response $code $body"
- 	   exit 2
+        echo "Error response $code $body"
     fi
     if [ "$VERBOSE" -ge 1 ] ; then
- 	   echo "response $code"
+        echo "response $code"
     fi
     if [ "$VERBOSE" -ge 2 ] ; then
        echo "content: $body"
@@ -160,6 +159,11 @@ delete_index_alias() {
     echo "deleting index $index"
     url="$index"
     http_delete_request "$url"
+
+     # Delete alias that was falsely autocreated as index
+    echo "deleting index $index"
+    url="$alias"
+    http_delete_request "$url"
 }
 
 # Write mappings
@@ -181,9 +185,9 @@ create_index_alias() {
     fi
 
     url=$index
-	echo "creating index $index"
-	if [ -z "$3" ] ; then
-	    http_put_request "$url" "$data"
+    echo "creating index $index"
+    if [ -z "$3" ] ; then
+        http_put_request "$url" "$data"
     else
         file_append "$url" "$data"
     fi
@@ -192,7 +196,7 @@ create_index_alias() {
     url="$index/_alias/$alias"
     echo "creating alias $alias for $index"
     if [ -z "$3" ] ; then
-    	http_put_request "$url"
+        http_put_request "$url"
     else
         file_append "$url" "{}"
     fi
@@ -210,7 +214,7 @@ es_wait_yellow() {
       echo "Error: Max attempts reached."
       exit 3
     fi
-	attempt_counter=$(($attempt_counter+1))
+    attempt_counter=$(($attempt_counter+1))
     printf '.'
     sleep 5
   done
@@ -222,7 +226,7 @@ es_wait_yellow() {
       echo "Status $ESSTATUS reached: $RES"
     else
       echo "Error: DB Reachable, but status $ESSTATUS not reached"
-	  exit 2
+      exit 2
     fi
   else
     echo "Error: $DBURL not reachable"
@@ -234,20 +238,23 @@ es_wait_yellow() {
 
 cmd_create() {
     if [ -n "$WAITYELLOW" ] ; then
-    	es_wait_yellow "$WAITYELLOW"
+        es_wait_yellow "$WAITYELLOW"
     fi
-	for i in "${!ALIAS[@]}"; do
-  		create_index_alias "${ALIAS[$i]}" "${MAPPING[$i]}"
-	done
+    for i in "${!ALIAS[@]}"; do
+          create_index_alias "${ALIAS[$i]}" "${MAPPING[$i]}"
+    done
 }
 
 cmd_delete() {
     if [ -n "$WAITYELLOW" ] ; then
-    	es_wait_yellow "$WAITYELLOW"
+        es_wait_yellow "$WAITYELLOW"
     fi
-	for i in "${!ALIAS[@]}"; do
-  		delete_index_alias "${ALIAS[$i]}"
-	done
+    for i in "${!ALIAS[@]}"; do
+          delete_index_alias "${ALIAS[$i]}"
+    done
+    for i in "${!ALIAS[@]}"; do
+        delete_index_alias "${ALIAS[$i]}"
+    done
 }
 cmd_purge() {
 #    http_get_request '_cat/aliases'
@@ -262,11 +269,11 @@ cmd_purge() {
 cmd_initfile() {
     echo "Create script initfile: $INITFILENAME"
     if [ -f "$INITFILENAME" ] ; then
-    	rm $INITFILENAME
+        rm $INITFILENAME
     fi
-	for i in "${!ALIAS[@]}"; do
-  		create_index_alias "${ALIAS[$i]}" "${MAPPING[$i]}" file
-	done
+    for i in "${!ALIAS[@]}"; do
+          create_index_alias "${ALIAS[$i]}" "${MAPPING[$i]}" file
+    done
 }
 
 # Prepare database startup
@@ -325,22 +332,22 @@ parse_args() {
         -f|--file)
           INITFILENAME="$value"
           shift
-		  ;;
-		-x|--verbose)
-		  VERBOSE="${value:-0}"
-		  shift
-		  ;;
-		-v|--version)
-		  VERSION="${value:--v1}"
-		  shift
-		  ;;
-		-vx|--versionx)
-		  VERSION=""
-		  ;;
-		-w|--wait)
+          ;;
+        -x|--verbose)
+          VERBOSE="${value:-0}"
+          shift
+          ;;
+        -v|--version)
+          VERSION="${value:--v1}"
+          shift
+          ;;
+        -vx|--versionx)
+          VERSION=""
+          ;;
+        -w|--wait)
           WAITYELLOW="${value:-30s}"
-		  shift
-		  ;;
+          shift
+          ;;
         --cmd)
           STARTUP_CMD="$value"
           shift
@@ -349,10 +356,10 @@ parse_args() {
           CLUSTER_ENABLED="$value"
           shift
           ;;
- 	    --index)
- 	      NODE_INDEX="$value"
- 	      shift
- 	      ;;
+         --index)
+           NODE_INDEX="$value"
+           shift
+           ;;
         *)
           ;;
       esac;
@@ -379,32 +386,32 @@ echo "  shards=$SHARDS replicas=$REPLICAS prefix=$PREFIX verbose=$VERBOSE versio
 
 case "$TASK" in
     "create")
-		getsdnrurl
-		if [ -z "$DBURL" ] ; then
-		  echo "Error: unable to detect database url."
-		  exit 1
-		fi
+        getsdnrurl
+        if [ -z "$DBURL" ] ; then
+          echo "Error: unable to detect database url."
+          exit 1
+        fi
         cmd_create
         ;;
     "delete")
-		getsdnrurl
-		if [ -z "$DBURL" ] ; then
-		  echo "Error: unable to detect database url."
-		  exit 1
-		fi
+        getsdnrurl
+        if [ -z "$DBURL" ] ; then
+          echo "Error: unable to detect database url."
+          exit 1
+        fi
         cmd_delete
         ;;
     "purge")
-		getsdnrurl
-		if [ -z "$DBURL" ] ; then
-		  echo "Error: unable to detect database url."
-		  exit 1
-		fi
+        getsdnrurl
+        if [ -z "$DBURL" ] ; then
+          echo "Error: unable to detect database url."
+          exit 1
+        fi
         cmd_purge
         ;;
     "initfile")
         cmd_initfile
-    	;;
+        ;;
     "startup")
         cmd_startup
         ;;

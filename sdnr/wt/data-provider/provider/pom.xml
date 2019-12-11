@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     ============LICENSE_START=======================================================
-    ONAP : CCSDK / SDNR / WT / common
+    ONAP : CCSDK / SDNR / WT / data-provider
     ================================================================================
     Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All
     rights reserved.
@@ -21,10 +21,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-	<artifactId>sdnr-wt-common</artifactId>
+	<artifactId>sdnr-wt-data-provider-provider</artifactId>
 	<version>0.7.0-SNAPSHOT</version>
 	<name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
-	<packaging>jar</packaging>
+	<packaging>bundle</packaging>
 
 	<parent>
 		<groupId>org.onap.ccsdk.parent</groupId>
@@ -37,9 +37,13 @@
 		<checkstyle.skip>true</checkstyle.skip> <!-- POM configuration -->
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-		<buildtime>${maven.build.timestamp} UTC</buildtime>
+		<buildtime>${maven.build.timestamp}</buildtime>
 		<elasticsearch.version>6.4.3</elasticsearch.version>
-		<databaseport>49400</databaseport>
+		<elasticsearch.lucene.version>7.4.0</elasticsearch.lucene.version>
+		<databaseport>49402</databaseport>
+		<onap.distname>Frankfurt</onap.distname>
+		<odl.distname>Neon-SR1</odl.distname>
+		<odlux.buildno>29.7af5ca8(19/11/19)</odlux.buildno>
 	</properties>
 
 	<licenses>
@@ -56,33 +60,49 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sdnr-wt-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sdnr-wt-data-provider-database</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+ 		<dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.opendaylight.netconf</groupId>
+			<artifactId>sal-netconf-connector</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
+			<artifactId>rfc6991-ietf-yang-types</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opendaylight.mdsal</groupId>
+			<artifactId>yang-binding</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opendaylight.mdsal</groupId>
+			<artifactId>mdsal-singleton-common-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
+			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-client</artifactId>
-			<version>${elasticsearch.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-
-
 	</dependencies>
 	<build>
 		<plugins>
@@ -105,17 +125,18 @@
 					<execution>
 						<id>generateDTOs</id>
 						<phase>generate-sources</phase>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<executable>${basedir}/../data-provider/database/src/main/resources/es-init.sh</executable>
-							<arguments>
-								<argument>initfile</argument>
-								<argument>-f</argument>
-								<argument>${project.build.directory}/EsInit.script</argument>
-							</arguments>
-						</configuration>
+					    <goals>
+        					<goal>exec</goal>
+				      	</goals>
+      				  	<configuration>
+                      		<skip>${skipTests}</skip>
+							<executable>${basedir}/../database/src/main/resources/es-init.sh</executable>
+       		                <arguments>
+       		                	<argument>initfile</argument>
+       		                	<argument>-f</argument>
+                    			<argument>${project.build.directory}/EsInit.script</argument>
+                    		</arguments>
+      					</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -124,7 +145,7 @@
 				<artifactId>elasticsearch-maven-plugin</artifactId>
 				<version>6.16</version>
 				<configuration>
-                                        <skip>true</skip>
+					<skip>true</skip>
 					<clusterName>testCluster</clusterName>
 					<transportPort>9500</transportPort>
 					<httpPort>${databaseport}</httpPort>
