@@ -38,13 +38,9 @@
     <modules>
       <module>common</module>
       <module>apigateway</module>
-      <module>devicemodel</module>
       <module>websocketmanager2</module>
       <module>helpserver</module>
       <module>data-provider</module>
-      <module>devicemanager</module>
       <module>netconfnode-state-service</module>
-      <module>odlux</module>
-      <module>featureaggregator</module>
     </modules>
 </project>
