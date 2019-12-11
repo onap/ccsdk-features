@@ -8,3 +8,4 @@
 target/
 target-ide/
 yang-gen-sal/
+direct-dependencies.txt
