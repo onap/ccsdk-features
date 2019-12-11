@@ -50,7 +50,7 @@ public class Section {
     }
 
     public String getProperty(String key) {
-        return this.getProperty(key, null);
+        return this.getProperty(key, "");
     }
 
     public String getProperty(String key, String defValue) {
@@ -61,7 +61,7 @@ public class Section {
     }
 
     public String getName() {
-    	return name;
+        return name;
     }
 
     public void setProperty(String key, String value) {
@@ -70,7 +70,7 @@ public class Section {
             key = key.substring(1);
         }
         if (this.values.containsKey(key)) {
-        	this.values.get(key).setValue(value).setIsUncommented(isuncommented);
+            this.values.get(key).setValue(value).setIsUncommented(isuncommented);
         } else {
             this.values.put(key, new SectionValue(value,isuncommented));
         }
@@ -128,7 +128,7 @@ public class Section {
             lines.add("[" + this.name + "]");
         }
         for (Entry<String, SectionValue> entry : this.values.entrySet()) {
-        	SectionValue sectionValue = entry.getValue();
+            SectionValue sectionValue = entry.getValue();
             if (sectionValue.getComments().size() > 0) {
                 for (String comment : sectionValue.getComments()) {
                     lines.add(comment);
@@ -173,11 +173,11 @@ public class Section {
 
     public Optional<Long> getLong(String key) {
         String v = this.getProperty(key);
-		try {
-			return Optional.of(Long.parseLong(v));
-		} catch (NumberFormatException e) {
-		}
-       	return Optional.empty();
+        try {
+            return Optional.of(Long.parseLong(v));
+        } catch (NumberFormatException e) {
+        }
+           return Optional.empty();
     }
 
     public boolean hasValues() {
@@ -188,9 +188,9 @@ public class Section {
         return this.values.containsKey(key);
     }
 
-	@Override
-	public String toString() {
-		return "Section [name=" + name + ", rawLines=" + rawLines + ", values=" + values + "]";
-	}
+    @Override
+    public String toString() {
+        return "Section [name=" + name + ", rawLines=" + rawLines + ", values=" + values + "]";
+    }
 
 }
