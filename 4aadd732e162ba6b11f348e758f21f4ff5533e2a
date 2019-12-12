@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a4e71e6_c1661759",
+        "filename": "blueprints-processor/adaptors/data-adaptor-provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2019-12-12T20:30:17Z",
+      "side": 0,
+      "message": "This is critical in ONAP to make sure that builds of CCSDK itself are not using the CCSDK version properties in the parent poms.  Otherwise, it is impossible to release one repo without releasing all others",
+      "range": {
+        "startLine": 28,
+        "startChar": 7,
+        "endLine": 28,
+        "endChar": 75
+      },
+      "revId": "4aadd732e162ba6b11f348e758f21f4ff5533e2a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4831ec0c_d9d9d509",
+        "filename": "blueprints-processor/features/ccsdk-blueprints-processor/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2019-12-12T20:30:17Z",
+      "side": 0,
+      "message": "This is critical (see earlier comment) and should not be deleted",
+      "range": {
+        "startLine": 36,
+        "startChar": 6,
+        "endLine": 36,
+        "endChar": 75
+      },
+      "revId": "4aadd732e162ba6b11f348e758f21f4ff5533e2a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73a2e34a_732b5179",
+        "filename": "sdnr/northbound/a1Adapter/provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2019-12-12T20:30:17Z",
+      "side": 0,
+      "message": "See earlier comments - this should not be deleted",
+      "range": {
+        "startLine": 18,
+        "startChar": 7,
+        "endLine": 18,
+        "endChar": 75
+      },
+      "revId": "4aadd732e162ba6b11f348e758f21f4ff5533e2a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99d98edc_a0bec498",
+        "filename": "sdnr/northbound/oofpcipoc/consumer/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2019-12-12T20:30:17Z",
+      "side": 0,
+      "message": "This cannot be deleted (see earlier comments)",
+      "range": {
+        "startLine": 18,
+        "startChar": 7,
+        "endLine": 18,
+        "endChar": 75
+      },
+      "revId": "4aadd732e162ba6b11f348e758f21f4ff5533e2a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "759a4efe_af7f3665",
+        "filename": "sdnr/northbound/oofpcipoc/provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2019-12-12T20:30:17Z",
+      "side": 0,
+      "message": "Cannot be deleted - see earlier comments",
+      "range": {
+        "startLine": 19,
+        "startChar": 8,
+        "endLine": 19,
+        "endChar": 75
+      },
+      "revId": "4aadd732e162ba6b11f348e758f21f4ff5533e2a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
