@@ -10,11 +10,11 @@
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
-    <artifactId>sdnr-oofpcipoc</artifactId>
+    <artifactId>oofpcipoc-feature</artifactId>
     <version>0.7.0-SNAPSHOT</version>
     <packaging>feature</packaging>
 
-    <name>ccsdk-features-sdnr-northbound :: oofpcipoc :: ${project.artifactId}</name>
+    <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
     <!--
       <dependencyManagement>

@@ -30,7 +30,7 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Blueprints Processor Adaptors - POM</name>
+    <name>ccsdk-features :: ${project.artifactId}</name>
     <description>Blueprints Processor Adaptors - POM</description>
 
     <modules>
