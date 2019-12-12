@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
@@ -7,11 +8,12 @@
         <version>1.5.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-odlux-app-maintenanceApp</artifactId>
     <version>0.7.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
+
     <name>sdnr-wt-odlux-app-maintenanceApp</name>
     <licenses>
         <license>
@@ -19,6 +21,7 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -37,8 +40,32 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>highstreet repo</id>
+            <url>https://cloud-highstreet-technologies.com/mvn/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
     <build>
         <sourceDirectory>src2/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>dist</directory>
+                <targetPath>odlux</targetPath>
+            </resource>
+            <resource>
+                <directory>src2/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src2/test/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -61,10 +88,10 @@
                             <followSymlinks>false</followSymlinks>
                         </fileset>
                         <!-- eclipse bug build bin folder in basedir -->
-						<fileset>
-							<directory>bin</directory>
-							<followSymlinks>false</followSymlinks>
-						</fileset>
+                        <fileset>
+                            <directory>bin</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
                     </filesets>
                 </configuration>
             </plugin>
@@ -130,27 +157,5 @@
                 </configuration>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>dist</directory>
-                <targetPath>odlux</targetPath>
-            </resource>
-            <resource>
-                <directory>src2/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>src2/test/resources</directory>
-            </resource>
-        </resources>
     </build>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>highstreet repo</id>
-            <url>https://cloud-highstreet-technologies.com/mvn/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 </project>
