@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "060b9890_75dd02fb",
+        "filename": "blueprints-processor/adaptors/data-adaptor-provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2019-12-12T20:38:57Z",
+      "side": 0,
+      "message": "binding-parent 1.5.1-SNAPSHOT currently has ccsdk.sli.core.version defined as 0.7.0-SNAPSHOT\nand abpove property is forcing sli-core to be on same version as ccsdk/features module which is wrong.\n\nWe should be able to release ccsdk/features without releasing sli-core.\n\nIf we override above property with project.version then during release of ccsdk/features version will become 1.5.1 and there will not be any sli-core with same version.",
+      "parentUuid": "7a4e71e6_c1661759",
+      "range": {
+        "startLine": 28,
+        "startChar": 7,
+        "endLine": 28,
+        "endChar": 75
+      },
+      "revId": "4aadd732e162ba6b11f348e758f21f4ff5533e2a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4831ec0c_d9d9d509",
         "filename": "blueprints-processor/features/ccsdk-blueprints-processor/pom.xml",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2019-12-12T20:30:17Z",
       "side": 0,
       "message": "This is critical (see earlier comment) and should not be deleted",
+      "range": {
+        "startLine": 36,
+        "startChar": 6,
+        "endLine": 36,
+        "endChar": 75
+      },
+      "revId": "4aadd732e162ba6b11f348e758f21f4ff5533e2a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "375ea3c8_62c67e33",
+        "filename": "blueprints-processor/features/ccsdk-blueprints-processor/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2019-12-12T20:38:57Z",
+      "side": 0,
+      "message": "see reply on earlier comment !",
+      "parentUuid": "4831ec0c_d9d9d509",
       "range": {
         "startLine": 36,
         "startChar": 6,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "d105c9dd_fa3cdeab",
+        "filename": "sdnr/northbound/a1Adapter/provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2019-12-12T20:38:57Z",
+      "side": 0,
+      "message": "see reply on earlier comment !",
+      "parentUuid": "73a2e34a_732b5179",
+      "range": {
+        "startLine": 18,
+        "startChar": 7,
+        "endLine": 18,
+        "endChar": 75
+      },
+      "revId": "4aadd732e162ba6b11f348e758f21f4ff5533e2a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "99d98edc_a0bec498",
         "filename": "sdnr/northbound/oofpcipoc/consumer/pom.xml",
         "patchSetId": 1
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "365763b6_8dfd3881",
+        "filename": "sdnr/northbound/oofpcipoc/consumer/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2019-12-12T20:38:57Z",
+      "side": 0,
+      "message": "see reply on earlier comment !",
+      "parentUuid": "99d98edc_a0bec498",
+      "range": {
+        "startLine": 18,
+        "startChar": 7,
+        "endLine": 18,
+        "endChar": 75
+      },
+      "revId": "4aadd732e162ba6b11f348e758f21f4ff5533e2a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "759a4efe_af7f3665",
         "filename": "sdnr/northbound/oofpcipoc/provider/pom.xml",
         "patchSetId": 1
@@ -105,6 +201,30 @@
       "writtenOn": "2019-12-12T20:30:17Z",
       "side": 0,
       "message": "Cannot be deleted - see earlier comments",
+      "range": {
+        "startLine": 19,
+        "startChar": 8,
+        "endLine": 19,
+        "endChar": 75
+      },
+      "revId": "4aadd732e162ba6b11f348e758f21f4ff5533e2a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ba37f80_0dca46e8",
+        "filename": "sdnr/northbound/oofpcipoc/provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2019-12-12T20:38:57Z",
+      "side": 0,
+      "message": "see reply on earlier comment !",
+      "parentUuid": "759a4efe_af7f3665",
       "range": {
         "startLine": 19,
         "startChar": 8,
