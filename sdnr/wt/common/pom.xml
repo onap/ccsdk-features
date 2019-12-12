@@ -130,6 +130,7 @@
                     <version>6.5.0</version>
                     <timeout>120</timeout>
                     <pathInitScript>${project.build.directory}/EsInit.script</pathInitScript>
+					<skip>${skipTests}</skip>
                 </configuration>
                 <executions>
                     <execution>
