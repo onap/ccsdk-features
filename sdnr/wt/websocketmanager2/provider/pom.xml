@@ -11,116 +11,120 @@
     OF ANY KIND, either express or implied. See the License for the specific
     language governing permissions and limitations under the License. ============LICENSE_END========================================================= -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-  <artifactId>sdnr-wt-websocketmanager2-provider</artifactId>
-  <version>0.7.0-SNAPSHOT</version>
-  <name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
-  <packaging>bundle</packaging>
-  <parent>
-    <groupId>org.onap.ccsdk.parent</groupId>
-    <artifactId>binding-parent</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
-    <relativePath/>
-  </parent>
-  <properties>
-    <maven.javadoc.skip>true</maven.javadoc.skip>
-    <checkstyle.skip>true</checkstyle.skip>
-  </properties>
-  <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-    </license>
-  </licenses>
-<!--     <dependencyManagement> -->
-<!--         <dependencies> -->
-<!--             <dependency> -->
-<!--                 <groupId>org.opendaylight.controller</groupId> -->
-<!--                 <artifactId>mdsal-artifacts</artifactId> -->
-<!--                 <version>1.6.1</version> -->
-<!--                 <type>pom</type> -->
-<!--                 <scope>import</scope> -->
-<!--             </dependency> -->
-<!--         </dependencies> -->
-<!--     </dependencyManagement> -->
+    <modelVersion>4.0.0</modelVersion>
 
-  <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>sdnr-wt-websocketmanager2-model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty.websocket</groupId>
-      <artifactId>websocket-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty.websocket</groupId>
-      <artifactId>websocket-servlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-transport</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
+    <parent>
+        <groupId>org.onap.ccsdk.parent</groupId>
+        <artifactId>binding-parent</artifactId>
+        <version>1.5.1-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+    <artifactId>sdnr-wt-websocketmanager2-provider</artifactId>
+    <version>0.7.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+
+    <name>ccsdk-features :: ${project.artifactId}</name>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <checkstyle.skip>true</checkstyle.skip>
+    </properties>
+
+    <!--     <dependencyManagement> -->
+    <!--         <dependencies> -->
+    <!--             <dependency> -->
+    <!--                 <groupId>org.opendaylight.controller</groupId> -->
+    <!--                 <artifactId>mdsal-artifacts</artifactId> -->
+    <!--                 <version>1.6.1</version> -->
+    <!--                 <type>pom</type> -->
+    <!--                 <scope>import</scope> -->
+    <!--             </dependency> -->
+    <!--         </dependencies> -->
+    <!--     </dependencyManagement> -->
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-websocketmanager2-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
             <!-- <version>${netty.version}</version> -->
-    </dependency>
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.typesafe.akka</groupId>
-      <artifactId>akka-actor_2.12</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.typesafe.akka</groupId>
-      <artifactId>akka-cluster_2.12</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.java-websocket</groupId>
-      <artifactId>Java-WebSocket</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-cluster_2.12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
             <!-- <version>2.23.4</version> -->
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>sal-binding-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.compendium</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlet</artifactId>
-      <scope>test</scope>
-    </dependency>
-<!--     <dependency> -->
-<!--       <groupId>org.eclipse.jetty.websocket</groupId> -->
-<!--       <artifactId>websocket-api</artifactId> -->
-<!--       <version>9.3.24.v20180605</version> -->
-<!--     </dependency> -->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--     <dependency> -->
+        <!--       <groupId>org.eclipse.jetty.websocket</groupId> -->
+        <!--       <artifactId>websocket-api</artifactId> -->
+        <!--       <version>9.3.24.v20180605</version> -->
+        <!--     </dependency> -->
         <!-- To run websockets in embedded server -->
         <!-- <dependency> -->
         <!-- <groupId>org.eclipse.jetty.websocket</groupId> -->
@@ -133,18 +137,18 @@
         <!-- <version>9.3.24.v20180605</version> -->
         <!-- <scope>test</scope> -->
         <!-- </dependency> -->
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
+    </dependencies>
 
-  </build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
