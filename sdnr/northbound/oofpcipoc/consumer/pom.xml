@@ -14,10 +14,6 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
-    <properties>
-        <ccsdk.sli.core.version>${project.version}</ccsdk.sli.core.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -38,9 +34,6 @@
 
         </dependencies>
     </dependencyManagement>
-
-
-
     <dependencies>
         <dependency>
             <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
@@ -159,5 +152,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
 </project>
