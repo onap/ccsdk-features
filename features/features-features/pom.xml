@@ -29,7 +29,7 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>feature</packaging>
 
-    <name>Blueprints Processor :: features :: ${project.artifactId}</name>
+    <name>ccsdk-features :: features :: ${project.artifactId}</name>
 
     <dependencies>
         <dependency>

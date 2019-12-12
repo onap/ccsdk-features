@@ -29,7 +29,7 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Blueprints Processor :: features</name>
+    <name>ccsdk-features :: features</name>
 
     <modules>
         <module>ccsdk-features-all</module>

@@ -10,11 +10,11 @@
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
-    <artifactId>sdnr-a1Adapter</artifactId>
+    <artifactId>a1Adapter-feature</artifactId>
     <version>0.7.0-SNAPSHOT</version>
     <packaging>feature</packaging>
 
-    <name>ccsdk-features-sdnr-northbound :: a1Adapter :: ${project.artifactId}</name>
+    <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
     <dependencies>
 

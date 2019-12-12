@@ -14,6 +14,8 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
+    <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
+
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>

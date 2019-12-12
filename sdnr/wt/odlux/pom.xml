@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
@@ -8,13 +9,12 @@
         <relativePath/>
     </parent>
 
-
-    <modelVersion>4.0.0</modelVersion>
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>odlux-top</artifactId>
+    <artifactId>sdnr-wt-odlux-top</artifactId>
     <version>0.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>odlux</name>
+
+    <name>ccsdk-features :: ${project.artifactId}</name>
 
     <modules>
         <module>framework</module>
@@ -29,35 +29,34 @@
         <module>apps/maintenanceApp</module>
         <module>apps/minimumApp</module>
         <module>apps/performanceHistoryApp</module>
-         <module>apps/eventLogApp</module>
+        <module>apps/eventLogApp</module>
         <module>apps/configurationApp</module>
         <module>apps/app-feature</module>
         <module>apps/app-installer</module>
     </modules>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>exec-maven-plugin</artifactId>
-				<groupId>org.codehaus.mojo</groupId>
-				<executions>
-					<execution><!-- Run our version calculation script -->
-						<id>Clean node and node_modules</id>
-						<phase>package</phase>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<executable>rm</executable>
-                                                        <arguments>
-								<argument>-r</argument>
-								<argument>node_modules</argument>
-							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution><!-- Run our version calculation script -->
+                        <id>Clean node and node_modules</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>rm</executable>
+                            <arguments>
+                                <argument>-r</argument>
+                                <argument>node_modules</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -14,10 +14,10 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>ccsdk-features-sdnr-northbound :: a1Adapter :: ${project.artifactId}</name>
+    <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
     <properties>
-        <application.name>sdnr-a1Adapter</application.name>
+        <application.name>a1Adapter</application.name>
         <include.transitive.dependencies>false</include.transitive.dependencies>
     </properties>
 
@@ -25,7 +25,7 @@
 
         <dependency>
             <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
-            <artifactId>${application.name}</artifactId>
+            <artifactId>${application.name}-feature</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>

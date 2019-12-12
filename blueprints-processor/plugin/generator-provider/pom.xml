@@ -30,7 +30,7 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
-    <name>Blueprints Generator - Provider</name>
+    <name>ccsdk-features :: blueprints-processor-plugin :: ${project.artifactId}</name>
     <url>http://maven.apache.org</url>
 
     <dependencies>
