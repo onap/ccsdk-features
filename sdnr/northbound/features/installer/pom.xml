@@ -14,7 +14,7 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>ccsdk-features-sdnr-northbound :: features :: ${project.artifactId}</name>
+    <name>ccsdk-features :: sdnr-northbound :: features :: ${project.artifactId}</name>
 
     <properties>
         <application.name>sdnr-northbound-all</application.name>
