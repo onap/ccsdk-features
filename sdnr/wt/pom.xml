@@ -47,5 +47,6 @@
       <module>devicemanager-oran</module>
       <module>devicemanager-gran</module>
       <module>odlux</module>
+      <module>featureaggregator</module>
     </modules>
 </project>
