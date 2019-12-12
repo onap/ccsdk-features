@@ -107,8 +107,9 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${basedir}/../data-provider/database/src/main/resources/es-init.sh</executable>
+							<executable>bash</executable>
                             <arguments>
+								<argument>${basedir}/../data-provider/database/src/main/resources/es-init.sh</argument>
                                 <argument>initfile</argument>
                                 <argument>-f</argument>
                                 <argument>${project.build.directory}/EsInit.script</argument>
@@ -126,8 +127,10 @@
                     <clusterName>testCluster</clusterName>
                     <transportPort>9500</transportPort>
                     <httpPort>${databaseport}</httpPort>
-                    <version>6.4.3</version>
+                    <version>6.5.0</version>
+                    <timeout>120</timeout>
                     <pathInitScript>${project.build.directory}/EsInit.script</pathInitScript>
+					<skip>${skipTests}</skip>
                 </configuration>
                 <executions>
                     <execution>
