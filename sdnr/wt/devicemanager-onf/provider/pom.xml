@@ -16,83 +16,84 @@
     ============LICENSE_END=========================================================
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-  <artifactId>sdnr-wt-devicemanager-onf-provider</artifactId>
-  <version>0.7.0-SNAPSHOT</version>
-  <name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
-  <packaging>bundle</packaging>
+    <parent>
+        <groupId>org.onap.ccsdk.parent</groupId>
+        <artifactId>binding-parent</artifactId>
+        <version>1.5.1-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
 
-  <parent>
-    <groupId>org.onap.ccsdk.parent</groupId>
-    <artifactId>binding-parent</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
-    <relativePath/>
-  </parent>
+    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+    <artifactId>sdnr-wt-devicemanager-onf-provider</artifactId>
+    <version>0.7.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
 
-  <properties>
-    <checkstyle.skip>true</checkstyle.skip> <!-- POM configuration -->
-    <maven.javadoc.skip>true</maven.javadoc.skip>
-    <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-    <buildtime>${maven.build.timestamp} UTC</buildtime>
-    <elasticsearch.version>6.4.3</elasticsearch.version>
-    <databaseport>49400</databaseport>
-  </properties>
+    <name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
 
-  <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-    </license>
-  </licenses>
+    <properties>
+        <checkstyle.skip>true</checkstyle.skip> <!-- POM configuration -->
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+        <buildtime>${maven.build.timestamp} UTC</buildtime>
+        <elasticsearch.version>6.4.3</elasticsearch.version>
+        <databaseport>49400</databaseport>
+    </properties>
 
-  <dependencies>
-    <!-- begin for testing -->
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <dependencies>
+        <!-- begin for testing -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-    <!-- end for testing -->
-<!--     <dependency> -->
-<!--       <groupId>${project.groupId}</groupId> -->
-<!--       <artifactId>sdnr-wt-devicemanager-onf-model</artifactId> -->
-<!--       <version>${project.version}</version> -->
-<!--       <scope>provided</scope> -->
-<!--     </dependency> -->
-    <dependency>
-      <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-      <artifactId>sdnr-wt-devicemanager-model</artifactId>
-      <version>${project.version}</version>
-       <scope>provided</scope>
-    </dependency>
-    <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>sdnr-wt-netconfnode-state-service-model</artifactId>
-        <version>${project.version}</version>
-        <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.netconf</groupId>
-      <artifactId>sal-netconf-connector</artifactId>
-      <scope>provided</scope>
-    </dependency>
-<!--     <dependency> -->
-<!--       <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId> -->
-<!--       <artifactId>rfc6991-ietf-yang-types</artifactId> -->
-<!--       <scope>provided</scope> -->
-<!--      </dependency> -->
-   </dependencies>
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-    <plugins>
+        <!-- end for testing -->
+        <!--     <dependency> -->
+        <!--       <groupId>${project.groupId}</groupId> -->
+        <!--       <artifactId>sdnr-wt-devicemanager-onf-model</artifactId> -->
+        <!--       <version>${project.version}</version> -->
+        <!--       <scope>provided</scope> -->
+        <!--     </dependency> -->
+        <dependency>
+            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <artifactId>sdnr-wt-devicemanager-model</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-netconfnode-state-service-model</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.netconf</groupId>
+            <artifactId>sal-netconf-connector</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!--     <dependency> -->
+        <!--       <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId> -->
+        <!--       <artifactId>rfc6991-ietf-yang-types</artifactId> -->
+        <!--       <scope>provided</scope> -->
+        <!--      </dependency> -->
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -114,15 +115,16 @@
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>exec</goal>
-                          </goals>
-                            <configuration>
-                              <executable>${basedir}/../../data-provider/database/src/main/resources/es-init.sh</executable>
-                               <arguments>
-                                   <argument>initfile</argument>
-                                   <argument>-f</argument>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>${basedir}/../database/src/main/resources/es-init.sh</argument>
+                                <argument>initfile</argument>
+                                <argument>-f</argument>
                                 <argument>${project.build.directory}/EsInit.script</argument>
                             </arguments>
-                          </configuration>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -134,8 +136,10 @@
                     <clusterName>testCluster</clusterName>
                     <transportPort>9500</transportPort>
                     <httpPort>${databaseport}</httpPort>
-                    <version>6.4.3</version>
+                    <version>6.5.0</version>
+                    <timeout>120</timeout>
                     <pathInitScript>${project.build.directory}/EsInit.script</pathInitScript>
+                    <skip>${skipTests}</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -167,6 +171,5 @@
                 </configuration>
             </plugin>
         </plugins>
-   </build>
+    </build>
 </project>
-
