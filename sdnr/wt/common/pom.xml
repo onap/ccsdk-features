@@ -30,7 +30,7 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
+    <name>ccsdk-features :: ${project.artifactId}</name>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -107,9 +107,9 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-							<executable>bash</executable>
+                            <executable>bash</executable>
                             <arguments>
-								<argument>${basedir}/../data-provider/database/src/main/resources/es-init.sh</argument>
+                                <argument>${basedir}/../data-provider/database/src/main/resources/es-init.sh</argument>
                                 <argument>initfile</argument>
                                 <argument>-f</argument>
                                 <argument>${project.build.directory}/EsInit.script</argument>
@@ -123,13 +123,13 @@
                 <artifactId>elasticsearch-maven-plugin</artifactId>
                 <version>6.16</version>
                 <configuration>
-					<skip>${skipTests}</skip>
                     <clusterName>testCluster</clusterName>
                     <transportPort>9500</transportPort>
                     <httpPort>${databaseport}</httpPort>
                     <version>6.5.0</version>
                     <timeout>120</timeout>
                     <pathInitScript>${project.build.directory}/EsInit.script</pathInitScript>
+                    <skip>${skipTests}</skip>
                 </configuration>
                 <executions>
                     <execution>

@@ -14,7 +14,7 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>feature</packaging>
 
-    <name>ccsdk-features-sdnr-northbound :: features :: ${project.artifactId}</name>
+    <name>ccsdk-features :: sdnr-northbound :: features :: ${project.artifactId}</name>
 
     <!--
       <dependencyManagement>
@@ -39,14 +39,14 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-oofpcipoc</artifactId>
+            <artifactId>oofpcipoc-feature</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-a1Adapter</artifactId>
+            <artifactId>a1Adapter-feature</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>

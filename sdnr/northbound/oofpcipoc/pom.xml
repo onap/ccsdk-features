@@ -14,7 +14,7 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>ccsdk-features-sdnr-northbound :: oofpcipoc</name>
+    <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
     <modules>
         <module>model</module>
