@@ -38,6 +38,9 @@
 
         </dependencies>
     </dependencyManagement>
+
+
+
     <dependencies>
         <dependency>
             <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
@@ -156,4 +159,5 @@
             </plugins>
         </pluginManagement>
     </build>
+
 </project>

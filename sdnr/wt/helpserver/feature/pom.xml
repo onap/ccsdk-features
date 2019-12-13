@@ -22,29 +22,29 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.onap.ccsdk.parent</groupId>
-        <artifactId>single-feature-parent</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
-        <relativePath/>
-    </parent>
+  <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+  <artifactId>sdnr-wt-helpserver-feature</artifactId>
+  <version>0.7.0-SNAPSHOT</version>
+  <packaging>feature</packaging>
+  <name>ccsdk-features-sdnr-wt :: ${project.artifactId} :: feature</name>
 
-    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>sdnr-wt-helpserver-feature</artifactId>
-    <version>0.7.0-SNAPSHOT</version>
-    <packaging>feature</packaging>
+  <parent>
+    <groupId>org.onap.ccsdk.parent</groupId>
+    <artifactId>single-feature-parent</artifactId>
+    <version>1.5.1-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
 
-    <name>ccsdk-features-sdnr-wt :: ${project.artifactId} :: feature</name>
+  
+  <dependencies>
 
-    <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>sdnr-wt-helpserver-provider</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-helpserver-provider</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-    </dependencies>
+  </dependencies>
 </project>

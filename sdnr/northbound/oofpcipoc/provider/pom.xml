@@ -14,9 +14,11 @@
     <version>0.7.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
+
     <properties>
         <ccsdk.sli.core.version>${project.version}</ccsdk.sli.core.version>
     </properties>
+
 
     <dependencyManagement>
         <dependencies>
@@ -27,6 +29,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.onap.ccsdk.sli.core</groupId>
                 <artifactId>sli-core-artifacts</artifactId>
@@ -34,8 +37,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
+
+
     <dependencies>
         <dependency>
             <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
@@ -90,6 +96,8 @@
             <artifactId>utils-provider</artifactId>
             <!-- <version>${sdnctl.sli.version}</version> -->
         </dependency>
+
+
     </dependencies>
 
     <build>
@@ -122,4 +130,5 @@
             </plugins>
         </pluginManagement>
     </build>
+
 </project>
