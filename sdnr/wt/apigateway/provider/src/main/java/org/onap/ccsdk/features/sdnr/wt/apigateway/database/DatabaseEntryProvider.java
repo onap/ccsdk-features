@@ -102,5 +102,8 @@ public class DatabaseEntryProvider implements AutoCloseable {
 		}
 		return s;
 	}
+	public void setBaseUrl(String baseUrl) {
+		this.httpClient.setBaseUrl(baseUrl);
+	}
 
 }

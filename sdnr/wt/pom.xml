@@ -41,5 +41,6 @@
         <module>apigateway</module>
         <module>websocketmanager2</module>
         <module>helpserver</module>
+        <module>data-provider</module>
     </modules>
 </project>

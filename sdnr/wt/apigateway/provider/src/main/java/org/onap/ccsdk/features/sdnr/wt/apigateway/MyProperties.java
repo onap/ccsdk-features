@@ -40,7 +40,7 @@ public class MyProperties {
 	private static final String DEFAULT_AAI_HEADERS = "[\"X-FromAppId:SDNR\",\"Authorization:Basic QUFJOkFBSQ==\"]";
 	private static final String DEFAULT_CORSENABLED = "0";
 	private static final String DEFAULT_TRUSTINSECURE = "0";
-	private static final String DEFAULT_ESDATABASE = "http://localhost:9200";
+	private static final String DEFAULT_ESDATABASE = "http://sdnrdb:9200";
 	private static final String DEFAULT_AAI = "off";
 
 	@Override
