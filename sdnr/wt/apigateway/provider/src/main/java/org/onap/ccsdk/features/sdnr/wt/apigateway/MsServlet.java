@@ -38,12 +38,23 @@ public class MsServlet extends BaseServlet {
 	private static Logger LOG = LoggerFactory.getLogger(MsServlet.class);
 	private static final long serialVersionUID = -5361461082028405171L;
 	private static final String OFFLINE_RESPONSE_MESSAGE = "MediatorServer interface is offline";
-	private static final String DATABASE_REQUEST_URI_REGEX = "/mwtn/mediator-server";
+	private static final String DATABASE_REQUEST_URI_REGEX = "/mediator-server/mediator-server";
 	private final DatabaseEntryProvider entryProvider;
+	private boolean isSecure;
+	public void setIsSecure(boolean secure) {
+		if(this.isSecure!=secure) {
+			this.isSecure=secure;
+			this.entryProvider.setBaseUrl(this.getDBBaseUrl());
+		}
+	}
 	public MsServlet() {
 		super();
-		this.entryProvider = new DatabaseEntryProvider("http://localhost:9200/",60);
+		this.entryProvider = new DatabaseEntryProvider(this.getDBBaseUrl(),60);
 		EsServlet.registerRequestCallback(DATABASE_REQUEST_URI_REGEX, this.dbRequestCallback);
+	}
+
+	private String getDBBaseUrl() {
+		return MyProperties.getInstance().getEsBaseUrl();
 	}
 
 	private final IRequestCallback dbRequestCallback = new IRequestCallback() {
@@ -64,7 +75,11 @@ public class MsServlet extends BaseServlet {
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setStatus(200);
 	}
-
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		super.doGet(req, resp);
+		this.isSecure=req.getScheme().equals("https");
+	}
 	@Override
 	protected String getOfflineResponse() {
 		return OFFLINE_RESPONSE_MESSAGE;

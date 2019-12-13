@@ -17,16 +17,22 @@
  ******************************************************************************/
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager2;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import javax.servlet.ServletException;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketEventInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketEventOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketmanagerService;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WebSocketManagerProvider extends Blueprint {
+public class WebSocketManagerProvider extends Blueprint implements WebsocketmanagerService {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebSocketManagerProvider.class);
     private static final String APPLICATION_NAME = WebSocketManagerProvider.class.getName();
@@ -96,5 +102,15 @@ public class WebSocketManagerProvider extends Blueprint {
 
     public void setWsServlet(WebSocketManager wsServlet) {
         this.wsServlet = wsServlet;
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<WebsocketEventOutput>> websocketEvent(WebsocketEventInput input) {
+        if (wsServlet != null) {
+			return wsServlet.websocketEvent(input);
+		} else {
+            RpcResultBuilder<WebsocketEventOutput> result = RpcResultBuilder.failed();
+            return result.withError(ErrorType.APPLICATION, "Not intialized").buildFuture();
+        }
     }
 }
