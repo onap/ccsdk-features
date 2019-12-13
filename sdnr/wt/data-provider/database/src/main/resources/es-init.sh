@@ -270,6 +270,8 @@ cmd_initfile() {
     echo "Create script initfile: $INITFILENAME"
     if [ -f "$INITFILENAME" ] ; then
         rm $INITFILENAME
+    else
+      mkdir -p $( dirname $INITFILENAME )
     fi
     for i in "${!ALIAS[@]}"; do
           create_index_alias "${ALIAS[$i]}" "${MAPPING[$i]}" file
