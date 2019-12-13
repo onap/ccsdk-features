@@ -43,5 +43,9 @@
         <module>helpserver</module>
         <module>data-provider</module>
         <module>netconfnode-state-service</module>
+        <module>devicemanager</module> 
+        <module>devicemanager-onf</module>
+        <module>devicemanager-oran</module>
+        <module>devicemanager-gran</module>
     </modules>
 </project>
