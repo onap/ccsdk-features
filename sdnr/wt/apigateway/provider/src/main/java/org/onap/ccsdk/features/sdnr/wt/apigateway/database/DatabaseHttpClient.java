@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class DatabaseHttpClient extends BaseHTTPClient {
 
 	private static Logger LOG = LoggerFactory.getLogger(DatabaseHttpClient.class);
-	private static final String URI = "/mwtn/mediator-server/_search";
+	private static final String URI = "/mediator-server/mediator-server/_search";
 	private final Map<String, String> headers;
 
 	public DatabaseHttpClient(String base, boolean trustAllCerts) {
@@ -44,7 +44,7 @@ public class DatabaseHttpClient extends BaseHTTPClient {
 
 	private Map<String, String> getHeaders() {
 		Map<String, String> h = new HashMap<String, String>();
-
+		h.put("Content-Type", "application/json");
 		return h;
 	}
 
@@ -80,4 +80,6 @@ public class DatabaseHttpClient extends BaseHTTPClient {
 		}
 		return entries;
 	}
+
+	
 }

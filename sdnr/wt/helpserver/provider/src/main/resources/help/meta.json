@@ -61,7 +61,7 @@
                 },
                 "label": "Config"
             },
-            "performanceApp": {
+            "performanceHistoryApp": {
                 "versions": {
                     "0.4.0": {
                         "date": "2018-02-24",
@@ -76,7 +76,7 @@
                 },
                 "label": "Performance"
             },
-            "pnfInventory": {
+            "inventoryApp": {
                 "versions": {
                     "0.4.0": {
                         "date": "2018-02-24",
@@ -121,28 +121,52 @@
         },
         "label": "SDN-R"
     },
-    "mediatorserver":{
-        "nodes":{
-            "installation":{
-                "versions":{
-                    "0.4.0":{"date":"","path":"mediatorserver/installation/README.md","label":""},
-                    "current":{"date":"","path":"mediatorserver/installation/README.md","label":""}
+    "mediatorserver": {
+        "nodes": {
+            "installation": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "",
+                        "path": "mediatorserver/installation/README.md",
+                        "label": ""
+                    },
+                    "current": {
+                        "date": "",
+                        "path": "mediatorserver/installation/README.md",
+                        "label": ""
+                    }
                 },
-                "label":"Installation"
+                "label": "Installation"
             },
-            "mediator":{
-                "versions":{
-                    "0.4.0":{"date":"","path":"mediatorserver/mediator/README.md","label":""},
-                    "current":{"date":"","path":"mediatorserver/mediator/README.md","label":""}
+            "mediator": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "",
+                        "path": "mediatorserver/mediator/README.md",
+                        "label": ""
+                    },
+                    "current": {
+                        "date": "",
+                        "path": "mediatorserver/mediator/README.md",
+                        "label": ""
+                    }
                 },
-                "label":"Mediator"
+                "label": "Mediator"
             }
         },
-        "versions":{
-            "0.4.0":{"date":"","path":"mediatorserver/README.md","label":""},
-            "current":{"date":"","path":"mediatorserver/README.md","label":""}
+        "versions": {
+            "0.4.0": {
+                "date": "",
+                "path": "mediatorserver/README.md",
+                "label": ""
+            },
+            "current": {
+                "date": "",
+                "path": "mediatorserver/README.md",
+                "label": ""
+            }
         },
-        "label":"MediatorServer"
+        "label": "MediatorServer"
     },
     "faq": {
         "versions": {

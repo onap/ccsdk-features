@@ -30,4 +30,8 @@
     <reference-listener ref="provider" bind-method="onBindService" unbind-method="onUnbindService" />
   </reference>
 
+  <service id="registerWebsocketmanagerService"
+           interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketmanagerService"
+           ref="provider" />
+
 </blueprint>
