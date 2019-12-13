@@ -111,7 +111,6 @@
 						<configuration>
 							<executable>${basedir}/../data-provider/database/src/main/resources/es-init.sh</executable>
 							<arguments>
-							        <ble>${basedir}/../data-provider/database/src/main/resources/es-init.sh</executable>
 								<argument>initfile</argument>
 								<argument>-f</argument>
 								<argument>${project.build.directory}/EsInit.script</argument>
