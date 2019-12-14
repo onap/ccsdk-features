@@ -1,0 +1,1 @@
+export type guiCutThrough = { webUri: string, nodeId: string }
