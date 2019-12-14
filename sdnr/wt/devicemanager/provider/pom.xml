@@ -213,6 +213,7 @@
                     <httpPort>${databaseport}</httpPort>
                     <version>6.4.3</version>
                     <pathInitScript>${project.build.directory}/EsInit.script</pathInitScript>
+                    <timeout>120</timeout>
                 </configuration>
                 <executions>
                     <execution>
