@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<parent>
+		<groupId>org.onap.ccsdk.parent</groupId>
+		<artifactId>odlparent</artifactId>
+		<version>1.5.1-SNAPSHOT</version>
+		<relativePath/>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+	<artifactId>sdnr-wt-odlux-framework</artifactId>
+	<version>0.7.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>sdnr-wt-odlux-framework</name>
+	<properties>
+		<buildtime>${maven.build.timestamp}</buildtime>
+		<distversion>ONAP Frankfurt (Neon, mdsal ${odl.mdsal.version})</distversion>
+		<buildno>36.1a30021(19/12/12)</buildno>
+		<odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
+	</properties>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>dist</directory>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>node</directory>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>node_modules</directory>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>../node_modules</directory>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<!-- eclipse bug build bin folder in basedir -->
+						<fileset>
+							<directory>bin</directory>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>de.jacks-it-lab</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>1.7.1</version>
+				<executions>
+					<execution>
+						<id>install node and yarn</id>
+						<goals>
+							<goal>install-node-and-yarn</goal>
+						</goals>
+						<!-- optional: default phase is "generate-resources" -->
+						<phase>initialize</phase>
+						<configuration>
+							<nodeVersion>v10.16.3</nodeVersion>
+							<yarnVersion>v1.19.0</yarnVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>clear cache</id>
+						<goals>
+							<goal>yarn</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<arguments>cache clean</arguments>
+							<installDirectory>${project.basedir}</installDirectory>
+							<workingDirectory>${project.basedir}/../</workingDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install lerna</id>
+						<goals>
+							<goal>yarn</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<arguments>add lerna@3.13.1 -W --exact</arguments>
+							<installDirectory>${project.basedir}</installDirectory>
+							<workingDirectory>${project.basedir}/../</workingDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>exec lerna bootstrap</id>
+						<goals>
+							<goal>lerna</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<lernaInheritsProxyConfigFromMaven>false</lernaInheritsProxyConfigFromMaven>
+							<arguments>bootstrap</arguments>
+							<installDirectory>${project.basedir}</installDirectory>
+							<workingDirectory>${project.basedir}/../</workingDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>yarn build</id>
+						<goals>
+							<goal>yarn</goal>
+						</goals>
+						<configuration>
+							<arguments>run build</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.2</version>
+				<executions>
+					<execution>
+						<id>replace version</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<basedir>${project.build.directory}/classes/odlux</basedir>
+					<includes>
+						<include>app.js</include>
+					</includes>
+					<replacements>
+						<replacement>
+							<token>##odlux.version##</token>
+							<value>${odlux.version}</value>
+						</replacement>
+					</replacements>
+				</configuration>
+			</plugin>
+		</plugins>
+		<resources>
+			<resource>
+				<directory>dist</directory>
+				<targetPath>odlux</targetPath>
+			</resource>
+		</resources>
+	</build>
+</project>
