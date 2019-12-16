@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "85460387_fa94c366",
+        "filename": "sdnr/wt/common/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2019-12-16T09:46:22Z",
+      "side": 1,
+      "message": "This line needs to be removed. It conflicts with new line 133",
+      "range": {
+        "startLine": 126,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 37
+      },
+      "revId": "4e984213a0de22298929c844fec8e64fe59c40da",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
