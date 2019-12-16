@@ -22,6 +22,30 @@
       "revId": "4e984213a0de22298929c844fec8e64fe59c40da",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39a6419c_52f1dba3",
+        "filename": "sdnr/wt/common/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2019-12-16T12:59:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "85460387_fa94c366",
+      "range": {
+        "startLine": 126,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 37
+      },
+      "revId": "4e984213a0de22298929c844fec8e64fe59c40da",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
