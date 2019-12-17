@@ -963,6 +963,85 @@ public ListenableFuture<RpcResult<GetStatusOutput>> getStatus(
 }
 
 
+// RPC notifyPolicyEnforcementUpdate
+
+@Override
+public ListenableFuture<RpcResult<NotifyPolicyEnforcementUpdateOutput>> notifyPolicyEnforcementUpdate(
+    NotifyPolicyEnforcementUpdateInput input) {
+  final String svcOperation = "notifyPolicyEnforcementUpdate";
+
+  Properties parms = new Properties();
+  NotifyPolicyEnforcementUpdateOutputBuilder serviceDataBuilder = new NotifyPolicyEnforcementUpdateOutputBuilder();
+
+  LOG.info( "Reached RPC notifyPolicyEnforcementUpdate");
+
+  LOG.info( svcOperation +" called." );
+
+  if(input == null ) {
+    LOG.debug("exiting " +svcOperation+ " because of invalid input");
+    serviceDataBuilder.setResponseCode("Input is null");
+    RpcResult<NotifyPolicyEnforcementUpdateOutput> rpcResult =
+      RpcResultBuilder.<NotifyPolicyEnforcementUpdateOutput> status(true).withResult(serviceDataBuilder.build()).build();
+    return Futures.immediateFuture(rpcResult);
+  }
+
+  // add input to parms
+  LOG.info("Adding INPUT data for "+svcOperation+" input: " + input);
+  NotifyPolicyEnforcementUpdateInputBuilder inputBuilder = new NotifyPolicyEnforcementUpdateInputBuilder(input);
+  MdsalHelper.toProperties(parms, inputBuilder.build());
+
+  LOG.info("Printing SLI parameters to be passed");
+
+  // iterate properties file to get key-value pairs
+    for (String key : parms.stringPropertyNames()) {
+      String value = parms.getProperty(key);
+      LOG.info("The SLI parameter in " + key + " is: " + value);
+    }
+
+  // Call SLI sync method
+  try
+  {
+    if (A1AdapterClient.hasGraph("A1-ADAPTER-API", svcOperation , null, "sync"))
+    {
+      LOG.info( "A1AdapterClient has a Directed Graph for '" + svcOperation + "'");
+      try
+      {
+        A1AdapterClient.execute("A1-ADAPTER-API", svcOperation, null, "sync", serviceDataBuilder, parms);
+      }
+      catch (Exception e)
+      {
+        LOG.error("Caught exception executing service logic for "+ svcOperation, e);
+        serviceDataBuilder.setResponseCode("500");
+      }
+    } else {
+      LOG.error("No service logic active for A1Adapter: '" + svcOperation + "'");
+      serviceDataBuilder.setResponseCode("503");
+    }
+  }
+  catch (Exception e)
+  {
+    LOG.error("Caught exception looking for service logic", e);
+    serviceDataBuilder.setResponseCode("500");
+  }
+
+  String errorCode = serviceDataBuilder.getResponseCode();
+
+  if (!("0".equals(errorCode) || "200".equals(errorCode))) {
+    LOG.error("Returned FAILED for "+svcOperation+" error code: '" + errorCode + "'");
+  } else {
+    LOG.info("Returned SUCCESS for "+svcOperation+" ");
+    serviceDataBuilder.setResponseCode("A1 Adapter Executed for notifyPolicyEnforcementUpdate. " );
+  }
+
+  RpcResult<NotifyPolicyEnforcementUpdateOutput> rpcResult =
+      RpcResultBuilder.<NotifyPolicyEnforcementUpdateOutput> status(true).withResult(serviceDataBuilder.build()).build();
+
+  LOG.info("Successful exit from notifyPolicyEnforcementUpdate ");
+
+  return Futures.immediateFuture(rpcResult);
+}
+
+
 
 
 }

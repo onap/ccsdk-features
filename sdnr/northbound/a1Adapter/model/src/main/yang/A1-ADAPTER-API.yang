@@ -14,8 +14,6 @@ module A1-ADAPTER-API {
         "A1 adapter for Frankfurt";
     }
 
-
-
     grouping a1-adapter-response {
       leaf response-code {
         type string;
@@ -27,12 +25,59 @@ module A1-ADAPTER-API {
         "Response payload for A1 Adapter RPC's";
     }
 
+    grouping a1-policy-instance-property {
+
+      description
+        "Properties as specified in the create_schema field of policy type in PUT payload";
+
+      leaf property-name {
+        type string {
+          length "1..64";
+        }
+        description
+          "Individual property name";
+      }
+      leaf property-value {
+        type string {
+          length "1..64";
+        }
+        description
+          "Value of the property";
+      }
+    }
+
+
+    grouping a1-policy-type-create-schema-property-statement {
+
+      leaf policy-statement {
+        type string {
+          length "1..64";
+        }
+        description
+          "Individual policy statement name";
+      }
+      leaf policy-statement-value {
+        type string {
+          length "1..64";
+        }
+        description
+          "Value of the policy statement";
+      }
+    }
+
 
 ///Flattend interface using RPC
 
     //Get a comma separated list of near-rt rics, e.g. domain-name1:port1,domainname2:port2
     //Each item in the returned list will be regarded as one near-rt-ric-id.
     rpc getNearRT-RICs {
+        // OpenDaylight Fluorine version of restconf cannot handle RPCs with no input
+        input {
+          leaf dummy {
+            type string;
+          }
+        }
+
         output {
             uses a1-adapter-response;
             leaf-list near-rt-ric-id-list {
@@ -91,7 +136,21 @@ module A1-ADAPTER-API {
             leaf policy-type {
                 type string;
             }
-        }
+            list properties {
+                key "property-name";
+                leaf property-name {
+                  type string {
+                    length "1..64";
+                  }
+                  description
+                    "Individual property name";
+                }
+                list policy-statements {
+                  key "policy-statement";
+                  uses a1-policy-type-create-schema-property-statement;
+                }
+            }
+          }
        output {
             uses a1-adapter-response;
             leaf status {
@@ -177,6 +236,10 @@ module A1-ADAPTER-API {
             leaf policy-instance {
                 type string;
             }
+            list properties {
+                key "property-name";
+                uses a1-policy-instance-property;
+            }
         }
         output {
         uses a1-adapter-response;
@@ -242,4 +305,37 @@ module A1-ADAPTER-API {
             }
         }
     }
+
+    //Policy feedback Notification to provide policy enforcement update
+    rpc notifyPolicyEnforcementUpdate {
+        input {
+            leaf near-rt-ric-id {
+                type string;
+            }
+            leaf policy-type-id {
+                type uint32;
+            }
+            leaf policy-instance-id {
+                type string;
+            }
+
+        }
+        output {
+            uses a1-adapter-response;
+            leaf policy_enforcement_status {
+                type string;
+                description
+                  "Policy enforcement status - IN_EFFECT or NON_IN_EFFECT";
+            }
+            leaf policy_enforcement_reason {
+                type string;
+                description
+                  "Indicates the reason why policy is no longer being enforced";
+            }
+        }
+    }
+
+
+
+
 }

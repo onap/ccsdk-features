@@ -617,6 +617,57 @@ public Properties execute(String module, String rpc, String version, String mode
 	}
 
 
+	// Client for  notifyPolicyEnforcementUpdate
+
+
+	public Properties execute(String module, String rpc, String version, String mode, NotifyPolicyEnforcementUpdateOutputBuilder serviceData)
+			throws SvcLogicException {
+
+		Properties parms = new Properties();
+
+		return execute(module,rpc,version, mode,serviceData,parms);
+	}
+
+	public Properties execute(String module, String rpc, String version, String mode, NotifyPolicyEnforcementUpdateOutputBuilder serviceData, Properties parms)
+				throws SvcLogicException {
+        Properties localProp;
+        localProp = MdsalHelper.toProperties(parms, serviceData);
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("Parameters passed to SLI");
+
+			for (Object key : localProp.keySet()) {
+				String parmName = (String) key;
+				String parmValue = localProp.getProperty(parmName);
+
+				LOG.debug(parmName+" = "+parmValue);
+
+			}
+		}
+
+		Properties respProps = svcLogicService.execute(module, rpc, version, mode, localProp);
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("Parameters returned by SLI");
+
+			for (Object key : respProps.keySet()) {
+				String parmName = (String) key;
+				String parmValue = respProps.getProperty(parmName);
+
+				LOG.debug(parmName+" = "+parmValue);
+
+			}
+		}
+		if ("failure".equalsIgnoreCase(respProps.getProperty("SvcLogic.status"))) {
+			return respProps;
+		}
+
+		MdsalHelper.toBuilder(respProps, serviceData);
+
+		return respProps;
+	}
 
 
 
