@@ -1,0 +1,41 @@
+module mountpoint-registrar {
+
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:mountpoint-registrar";
+    prefix "mountpoint-registrar";
+
+    description
+        "mountpoint-registrar Api Module";
+
+    revision "2019-09-21" {
+        description
+            "Initial revision";
+    }
+
+     rpc test {
+        description
+            "Test RPC that could be used by mountpoint-registrar-provider";
+        input{
+            leaf name {
+                mandatory true;
+                type string;
+                description    "name for test";
+            }
+            leaf test-date {
+                mandatory true;
+                type string;
+                description    "date for the test";
+            }
+
+        }
+        output {
+            leaf result-string {
+                mandatory true;
+                type string;
+                description    "Description for testing";
+            }
+        }
+    }
+
+}
+

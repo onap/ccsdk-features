@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+
  * ============LICENSE_START=======================================================
- * ONAP : CCSDK.apps.sdnr.wt
+ * ONAP : CCSDK.sdnr.wt.devicemanager
  * ================================================================================
- * Copyright (C) 2018 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2018 highstreet technologies GmbH Intellectual Property.
+ * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +19,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- -->
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+      <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+    <artifactId>sdnr-wt-mountpoint-registrar-top</artifactId>
+    <version>0.7.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
 
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
@@ -28,27 +37,15 @@
         <relativePath/>
     </parent>
 
-    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>sdnr-wt</artifactId>
-    <version>0.7.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-
-    <name>ccsdk-features :: ${project.artifactId}</name>
-    <description>SDN-R wireless transport micro-services</description>
+    <properties>
+        <feature-name>sdnr-wt-mountpoint-registrar</feature-name>
+    </properties>
 
     <modules>
-        <module>common</module>
-        <module>apigateway</module>
-        <module>websocketmanager2</module>
-        <module>helpserver</module>
-        <module>data-provider</module>
-        <module>netconfnode-state-service</module>
-        <module>devicemanager</module>
-        <module>devicemanager-onf</module>
-        <module>devicemanager-oran</module>
-        <module>devicemanager-gran</module>
-        <module>mountpoint-registrar</module>
-        <module>odlux</module>
-        <module>featureaggregator</module>
+        <module>model</module>
+        <module>provider</module>
+        <module>feature</module>
+        <module>installer</module>
     </modules>
+
 </project>
