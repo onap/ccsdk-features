@@ -48,6 +48,7 @@
         <module>devicemanager-oran</module>
         <module>devicemanager-gran</module>
         <module>mountpoint-registrar</module>
+        <module>mountpoint-state-provider</module>
         <module>odlux</module>
         <module>featureaggregator</module>
     </modules>
