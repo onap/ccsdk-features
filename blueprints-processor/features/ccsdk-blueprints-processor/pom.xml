@@ -34,6 +34,19 @@
         <ccsdk.sli.core.version>${project.version}</ccsdk.sli.core.version>
     </properties>
 
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.onap.ccsdk.parent</groupId>
+                <artifactId>dependencies-odl-bom</artifactId>
+                <version>1.5.1-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
