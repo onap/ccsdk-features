@@ -92,7 +92,7 @@
                             <useRepositoryLayout>true</useRepositoryLayout>
                             <addParentPoms>false</addParentPoms>
                             <copyPom>false</copyPom>
-                            <includeArtifactIds>oofpcipoc-model,oofpcipoc-provider,oofpcipoc-consumer,sdnr-oofpcipoc</includeArtifactIds>
+                            <includeArtifactIds>oofpcipoc-model,oofpcipoc-provider,oofpcipoc-consumer,oofpcipoc-feature</includeArtifactIds>
                             <scope>provided</scope>
                         </configuration>
                     </execution>

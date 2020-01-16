@@ -86,7 +86,7 @@
                             <useRepositoryLayout>true</useRepositoryLayout>
                             <addParentPoms>false</addParentPoms>
                             <copyPom>false</copyPom>
-                            <includeArtifactIds>a1Adapter-model,a1Adapter-provider,sdnr-a1Adapter</includeArtifactIds>
+                            <includeArtifactIds>a1Adapter-model,a1Adapter-provider,a1Adapter-feature</includeArtifactIds>
                             <scope>provided</scope>
                         </configuration>
                     </execution>
