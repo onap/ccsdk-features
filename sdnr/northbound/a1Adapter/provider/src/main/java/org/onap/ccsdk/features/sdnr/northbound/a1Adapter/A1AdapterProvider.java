@@ -207,7 +207,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for GetNearRTRICs ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for GetNearRTRICs ");
         }
 
         RpcResult<GetNearRTRICsOutput> rpcResult =
@@ -277,7 +277,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for GetHealthCheck. ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for GetHealthCheck. ");
         }
 
         RpcResult<GetHealthCheckOutput> rpcResult =
@@ -347,7 +347,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for GetPolicyTypes ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for GetPolicyTypes ");
         }
 
         RpcResult<GetPolicyTypesOutput> rpcResult =
@@ -418,7 +418,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for CreatePolicyType");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for CreatePolicyType");
         }
 
         RpcResult<CreatePolicyTypeOutput> rpcResult =
@@ -488,7 +488,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for GetPolicyType. ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for GetPolicyType. ");
         }
 
         RpcResult<GetPolicyTypeOutput> rpcResult =
@@ -559,7 +559,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for DeletePolicyType ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for DeletePolicyType ");
         }
 
         RpcResult<DeletePolicyTypeOutput> rpcResult =
@@ -630,7 +630,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for GetPolicyInstances ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for GetPolicyInstances ");
         }
 
         RpcResult<GetPolicyInstancesOutput> rpcResult =
@@ -703,7 +703,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for CreatePolicyInstance. ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for CreatePolicyInstance. ");
         }
 
         RpcResult<CreatePolicyInstanceOutput> rpcResult = RpcResultBuilder.<CreatePolicyInstanceOutput>status(true)
@@ -776,7 +776,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for GetPolicyInstance. ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for GetPolicyInstance. ");
         }
 
         RpcResult<GetPolicyInstanceOutput> rpcResult =
@@ -850,7 +850,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for DeletePolicyInstance. ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for DeletePolicyInstance. ");
         }
 
         RpcResult<DeletePolicyInstanceOutput> rpcResult = RpcResultBuilder.<DeletePolicyInstanceOutput>status(true)
@@ -922,7 +922,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for GetStatus. ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for GetStatus. ");
         }
 
         RpcResult<GetStatusOutput> rpcResult =
@@ -995,7 +995,7 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
             LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
         } else {
             LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseCode("A1 Adapter Executed for notifyPolicyEnforcementUpdate. ");
+            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for notifyPolicyEnforcementUpdate. ");
         }
 
         RpcResult<NotifyPolicyEnforcementUpdateOutput> rpcResult = RpcResultBuilder

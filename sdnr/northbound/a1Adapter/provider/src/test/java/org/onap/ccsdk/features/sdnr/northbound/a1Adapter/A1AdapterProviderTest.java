@@ -21,7 +21,6 @@
 package org.onap.ccsdk.features.sdnr.northbound.a1Adapter;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -148,7 +147,7 @@ public class A1AdapterProviderTest {
         when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) nearRTRICsOutputBuilder);
         ListenableFuture<RpcResult<GetNearRTRICsOutput>> result =
                 a1AdapterProviderMock.getNearRTRICs(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -215,7 +214,7 @@ public class A1AdapterProviderTest {
                 any(Properties.class))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetHealthCheckOutput>> result =
                 a1AdapterProviderMock.getHealthCheck(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -282,7 +281,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetPolicyTypesOutput>> result =
                 a1AdapterProviderMock.getPolicyTypes(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -349,7 +348,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<CreatePolicyTypeOutput>> result =
                 a1AdapterProviderMock.createPolicyType(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -417,7 +416,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetPolicyTypeOutput>> result =
                 a1AdapterProviderMock.getPolicyType(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -484,7 +483,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<DeletePolicyTypeOutput>> result =
                 a1AdapterProviderMock.deletePolicyType(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -552,7 +551,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetPolicyInstancesOutput>> result =
                 a1AdapterProviderMock.getPolicyInstances(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -621,7 +620,7 @@ public class A1AdapterProviderTest {
                 any(CreatePolicyInstanceOutputBuilder.class), eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<CreatePolicyInstanceOutput>> result =
                 a1AdapterProviderMock.createPolicyInstance(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -691,7 +690,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetPolicyInstanceOutput>> result =
                 a1AdapterProviderMock.getPolicyInstance(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -759,7 +758,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<DeletePolicyInstanceOutput>> result =
                 a1AdapterProviderMock.deletePolicyInstance(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -826,7 +825,7 @@ public class A1AdapterProviderTest {
         when(a1AdapterClient.execute(eq(module), eq(rpc), eq(null), eq(mode), any(GetPolicyTypeOutputBuilder.class),
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetStatusOutput>> result = a1AdapterProviderMock.getStatus(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -845,7 +844,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<NotifyPolicyEnforcementUpdateOutput>> result =
                 a1AdapterProviderMock.notifyPolicyEnforcementUpdate(inputBuilder.build());
-        assertNotNull(result.get().getResult().getResponseCode());
+        assertEquals("200",result.get().getResult().getResponseCode());
     }
 
 
