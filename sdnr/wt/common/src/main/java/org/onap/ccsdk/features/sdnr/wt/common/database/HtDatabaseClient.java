@@ -55,15 +55,25 @@ import org.slf4j.LoggerFactory;
  */
 public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, AutoCloseable {
 
- 	private final Logger LOG = LoggerFactory.getLogger(HtDatabaseClient.class);
+ 	private static final boolean REFRESH_AFTER_REWRITE_DEFAULT = true;
+
+	private final Logger LOG = LoggerFactory.getLogger(HtDatabaseClient.class);
 
  	private boolean doRefreshAfterWrite;
     public HtDatabaseClient(HostInfo[] hosts) {
- 		this(hosts,true);
+ 		this(hosts,REFRESH_AFTER_REWRITE_DEFAULT);
  	}
     public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite) {
  		super(hosts);
  		this.doRefreshAfterWrite = refreshAfterWrite;
+ 	}
+
+    public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite,String username,String password) {
+ 		super(hosts,username,password);
+ 		this.doRefreshAfterWrite = refreshAfterWrite;
+ 	}
+    public HtDatabaseClient(HostInfo[] hosts,String username,String password) {
+ 		this(hosts,REFRESH_AFTER_REWRITE_DEFAULT,username,password);
  	}
 
 
@@ -109,9 +119,13 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 
     @Override
     public @Nullable String doWriteRaw(String dataTypeName, @Nullable String esId, String json) {
-
+    		 return this.doWriteRaw(dataTypeName, dataTypeName, esId, json);
+    }
+    @Override
+    public @Nullable String doWriteRaw(String indexName,String dataTypeName, @Nullable String esId, String json) {
+    		   
         IndexResponse response = null;
-        IndexRequest indexRequest = new IndexRequest(dataTypeName,dataTypeName,esId);
+        IndexRequest indexRequest = new IndexRequest(indexName,dataTypeName,esId);
         indexRequest.source(json);
         try {
             response = this.index(indexRequest );
