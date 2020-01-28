@@ -41,14 +41,14 @@
         <module>apigateway</module>
         <module>websocketmanager2</module>
         <module>helpserver</module>
-        <module>data-provider</module>
+        <!--<module>data-provider</module>
         <module>netconfnode-state-service</module>
         <module>devicemanager</module>
         <module>devicemanager-onf</module>
         <module>devicemanager-oran</module>
         <module>devicemanager-gran</module>
+        <module>mountpoint-state-provider</module> -->
         <module>mountpoint-registrar</module>
-        <module>mountpoint-state-provider</module>
         <module>odlux</module>
         <module>featureaggregator</module>
     </modules>

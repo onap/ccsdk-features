@@ -16,20 +16,15 @@
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
 
-package org.onap.ccsdk.features.sdnr.wt.common;
+package org.onap.ccsdk.features.sdnr.wt.common.util;
 
-public class HtAssert {
+import java.io.File;
 
+public class ResourceFileLoader {
 
-    public static class HtNullable<T> {
-    }
-
-    public static void nonnull(Object ... oList) {
-        for (Object o : oList) {
-            if (o == null) {
-                throw new NullPointerException("Null not allowed here.");
-            }
-        }
-    };
+	public static File getFile(Object o, String fileName) {
+		ClassLoader classLoader = o.getClass().getClassLoader();
+		return new File(classLoader.getResource(fileName).getFile());
+	}
 
 }

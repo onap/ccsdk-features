@@ -51,13 +51,22 @@ public class PomFile {
 		if(props!=null) {
 			Node prop = findChild(key, props);
 			if(prop!=null) {
-			return getTextValue(prop);
+				return getTextValue(prop);
 			}
 		}
 		return null;
 	}
-	
-	public static String getTextValue(Node node) {
+	public String getParentVersion() {
+		Node parent = findChild("parent",this.xmlDoc.getDocumentElement());
+		if(parent!=null) {
+			Node version = findChild("version", parent);
+			if(version!=null) {
+				return getTextValue(version);
+			}
+		}
+		return null;
+	}
+	private static String getTextValue(Node node) {
 	    StringBuffer textValue = new StringBuffer();
 	    for (int i = 0,length = node.getChildNodes().getLength(); i < length; i ++) {
 	      Node c = node.getChildNodes().item(i);

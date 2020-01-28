@@ -30,7 +30,7 @@
     <version>0.7.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>ccsdk-features :: ${project.artifactId}</name>
+    <name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -43,8 +43,8 @@
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <buildtime>${maven.build.timestamp} UTC</buildtime>
-        <elasticsearch.version>6.4.3</elasticsearch.version>
         <databaseport>49400</databaseport>
+        <elasticsearch-rest-client.version>6.4.3</elasticsearch-rest-client.version>
     </properties>
 
     <dependencies>
@@ -52,6 +52,10 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -65,7 +69,7 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-client</artifactId>
-            <version>${elasticsearch.version}</version>
+            <version>${elasticsearch-rest-client.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -79,6 +83,7 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+
 
     </dependencies>
 
@@ -109,7 +114,7 @@
                         <configuration>
                             <executable>bash</executable>
                             <arguments>
-                                <argument>${basedir}/../data-provider/database/src/main/resources/es-init.sh</argument>
+                                <argument>${basedir}/../data-provider/provider/src/main/resources/es-init.sh</argument>
                                 <argument>initfile</argument>
                                 <argument>-f</argument>
                                 <argument>${project.build.directory}/EsInit.script</argument>
@@ -123,13 +128,13 @@
                 <artifactId>elasticsearch-maven-plugin</artifactId>
                 <version>6.16</version>
                 <configuration>
+                    <skip>${skipTests}</skip>
                     <clusterName>testCluster</clusterName>
                     <transportPort>9500</transportPort>
                     <httpPort>${databaseport}</httpPort>
                     <version>6.5.0</version>
                     <timeout>120</timeout>
                     <pathInitScript>${project.build.directory}/EsInit.script</pathInitScript>
-                    <skip>${skipTests}</skip>
                 </configuration>
                 <executions>
                     <execution>

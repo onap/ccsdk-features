@@ -80,6 +80,16 @@ public interface DatabaseClient {
     public @Nullable String doWriteRaw( String dataTypeName, @Nullable  String esId, String json);
 
     /**
+     * Write one object into Database
+     * @param indexName Name of index
+     * @param dataTypeName Name of datatype
+     * @param esId of object to be replaced or null for new entry.
+     * @param json String in JSON format.
+     * @return esId String of the database object or null in case of write problems.
+     */
+    public @Nullable String doWriteRaw(String indexName,String dataTypeName, @Nullable String esId, String json);
+        
+    /**
      * Remove Object from database
      * @param dataTypeName of object
      * @param esId of object to be deleted
