@@ -197,7 +197,7 @@ public class TestConfig {
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
-			Thread.interrupted();
+			Thread.currentThread().interrupt();
 		}
 		this.write(TESTFILENAME, TESTCONTENT1);
 		int i=10;
@@ -205,7 +205,7 @@ public class TestConfig {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				Thread.interrupted();
+				Thread.currentThread().interrupt();
 			}
 			if(changeFlag) {
 				break;

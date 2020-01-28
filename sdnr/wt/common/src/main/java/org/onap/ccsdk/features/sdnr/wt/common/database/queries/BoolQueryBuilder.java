@@ -35,25 +35,25 @@ public class BoolQueryBuilder extends QueryBuilder {
 		return "BoolQueryBuilder [inner=" + inner + "]";
 	}
 
-	public BoolQueryBuilder must(QueryBuilder matchQuery) {
+	public BoolQueryBuilder must(QueryBuilder query) {
 		
-		if(this.inner.has("must") || this.inner.has("match") || this.inner.has("regexp")) {
+		if(this.inner.has("must") || this.inner.has("match") || this.inner.has("regexp") || this.inner.has("range")) {
 			Object x = this.inner.has("must") ?this.inner.get("must"):this.inner;
 			if(x instanceof JSONArray) {
-				((JSONArray)x).put(matchQuery.getInner());
+				((JSONArray)x).put(query.getInner());
 			}
 			else {
 				this.inner = new JSONObject();
 				this.inner.put("must", new JSONObject());
 				JSONArray a=new JSONArray();
 				a.put(x);
-				a.put(matchQuery.getInner());
+				a.put(query.getInner());
 				this.inner.put("must", a);
 			}
 		}
 		
 		else {
-			this.inner = matchQuery.getInner();
+			this.inner = query.getInner();
 		}
 		this.setQuery("bool", this.inner);
 		return this;

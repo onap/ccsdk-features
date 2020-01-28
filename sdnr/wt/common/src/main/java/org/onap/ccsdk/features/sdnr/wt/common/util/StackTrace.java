@@ -15,21 +15,27 @@
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
+package org.onap.ccsdk.features.sdnr.wt.common.util;
 
-package org.onap.ccsdk.features.sdnr.wt.common;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-public class HtAssert {
+/**
+ * Stack related utils
+ *
+ */
+public class StackTrace {
 
-
-    public static class HtNullable<T> {
+    /**
+     * Return stacktrace as String
+     * @param e with stacktrace information to be converte
+     * @return String with call stack
+     */
+    public static String toString(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString(); // stack trace as a string
     }
-
-    public static void nonnull(Object ... oList) {
-        for (Object o : oList) {
-            if (o == null) {
-                throw new NullPointerException("Null not allowed here.");
-            }
-        }
-    };
 
 }

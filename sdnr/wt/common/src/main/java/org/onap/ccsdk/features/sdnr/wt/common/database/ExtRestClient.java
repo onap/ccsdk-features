@@ -17,11 +17,27 @@
  ******************************************************************************/
 package org.onap.ccsdk.features.sdnr.wt.common.database;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.ssl.SSLContexts;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.json.JSONException;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo.Protocol;
@@ -55,15 +71,92 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.responses.UpdateResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class ExtRestClient {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExtRestClient.class);
-	
+	private static final Logger LOG = LoggerFactory.getLogger(ExtRestClient.class);
+
+	private class BasicAuthHttpClientConfigCallback implements HttpClientConfigCallback {
+
+		private final String basicAuthUsername;
+		private final String basicAuthPassword;
+
+		BasicAuthHttpClientConfigCallback(String username, String password) {
+			this.basicAuthUsername = username;
+			this.basicAuthPassword = password;
+		}
+
+		@Override
+		public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+			if (basicAuthPassword == null || basicAuthUsername == null) {
+				return httpClientBuilder;
+			}
+			final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+			credentialsProvider.setCredentials(AuthScope.ANY,
+					new UsernamePasswordCredentials(basicAuthUsername, basicAuthPassword));
+
+			return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+		}
+
+	}
+	private class SSLCercAuthHttpClientConfigCallback implements HttpClientConfigCallback {
+
+		private final String certFilename;
+
+		SSLCercAuthHttpClientConfigCallback(String certfile) {
+			this.certFilename = certfile;
+		}
+
+		@Override
+		public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+			if (this.certFilename == null) {
+				return httpClientBuilder;
+			}
+
+			char[] keystorePass = "MY PASSWORD".toCharArray();
+
+			FileInputStream fis = null;
+
+			// Loading KEYSTORE in JKS format
+			KeyStore keyStorePci = null;
+			try {
+				keyStorePci = KeyStore.getInstance(KeyStore.getDefaultType());
+			} catch (KeyStoreException e1) {
+				LOG.warn("unable to load keystore: {}",e1);
+			}
+			if (keyStorePci != null) {
+				try {
+					fis = new FileInputStream(this.certFilename);
+					keyStorePci.load(fis, keystorePass);
+				} catch (Exception e) {
+					LOG.error("Error loading keystore: " + this.certFilename);
+				} finally {
+					if (fis != null) {
+						try {
+							fis.close();
+						} catch (IOException e) {
+
+						}
+					}
+				}
+			}
+			SSLContext sslcontext=null;
+			try {
+				sslcontext = SSLContexts.custom().loadKeyMaterial(keyStorePci, keystorePass).build();
+			} catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException
+					| KeyStoreException e) {
+				LOG.warn("unable to load sslcontext: {}",e);
+			}
+			return httpClientBuilder.setSSLContext(sslcontext);
+		}
+	}
+
 	private RestClient client;
 
-	public ExtRestClient(RestClient client) {
-		this.client = client;
+	protected ExtRestClient(HostInfo[] hosts) {
+		this(hosts, null, null);
+	}
+	protected ExtRestClient(HostInfo[] hosts,String username,String password) {
+		this.client = RestClient.builder(get(hosts)).setHttpClientConfigCallback(new BasicAuthHttpClientConfigCallback(username, password) ).build();
 	}
 
 	public ClusterHealthResponse health(ClusterHealthRequest request)
@@ -132,7 +225,7 @@ public class ExtRestClient {
 			try {
 				return new SearchResponse(this.client.performRequest(request.getInner()));
 			} catch (ResponseException e) {
-				LOGGER.debug("ignoring Exception for request {}: {}",request,e.getMessage());
+				LOG.debug("ignoring Exception for request {}: {}",request,e.getMessage());
 				return new SearchResponse(e.getResponse());
 			}
 		} else {
@@ -148,6 +241,8 @@ public class ExtRestClient {
 			return new GetResponse(e.getResponse());
 		}
 	}
+	
+
 	public UpdateByQueryResponse update(UpdateByQueryRequest request) throws IOException {
 		return new UpdateByQueryResponse(this.client.performRequest(request.getInner()));
 		
@@ -174,24 +269,21 @@ public class ExtRestClient {
 			response = this.health(request);
 
 		} catch (UnsupportedOperationException | IOException | JSONException e) {
-			LOGGER.error(e.getMessage());
+			LOG.error(e.getMessage());
 		}
 		if(response!=null) {
 			status=response.getStatus();
-			LOGGER.debug("Elasticsearch service started with status {}", response.getStatus());
+			LOG.debug("Elasticsearch service started with status {}", response.getStatus());
 
 		}
 		else {
-			LOGGER.warn("Elasticsearch service not started yet with status {}. current status is {}",status,"none");
+			LOG.warn("Elasticsearch service not started yet with status {}. current status is {}",status,"none");
 			return false;
 		}
 		return response.isStatusMinimal(ClusterHealthResponse.HEALTHSTATUS_YELLOW);
 
 	}
 	
-	protected ExtRestClient(HostInfo[] hosts) {
-		this(RestClient.builder(get(hosts)).build());
-	}
 	private static HttpHost[] get(HostInfo[] hosts) {
 		HttpHost[] httphosts = new HttpHost[hosts.length];
 		for(int i=0;i<hosts.length;i++) {
@@ -200,17 +292,15 @@ public class ExtRestClient {
 		return httphosts;
 	}
 	public static ExtRestClient createInstance(HostInfo[] hosts) {
-		HttpHost[] httphosts = new HttpHost[hosts.length];
-		for(int i=0;i<hosts.length;i++) {
-			httphosts[i]=new HttpHost(hosts[i].hostname, hosts[i].port, hosts[i].protocol.toString());
-		}
-		return new ExtRestClient(RestClient.builder(httphosts).build());
+		return new ExtRestClient(hosts);
 	}
-	public static ExtRestClient createInstance(String hostname, int port, Protocol protocol) throws InvalidProtocolException {
+	public static ExtRestClient createInstance(HostInfo[] hosts,String username,String password) {
+		return new ExtRestClient(hosts,username,password);
+	}
+	public static ExtRestClient createInstance(String hostname, int port, Protocol protocol){
 		return createInstance(new HostInfo[] {new HostInfo(hostname,port,protocol)});
 
 	}
-	
 	
 
 }
