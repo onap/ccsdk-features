@@ -1,0 +1,17 @@
+
+|  |  |
+| --- | ----- |
+| ONAP release | {release-name} |
+| ONAP release version | {release-version} |
+| Opendaylight release | {odl-version} |
+| ONAP CCSDK version | {ccsdk-version} |
+| Build timestamp | {build-time} |
+| Yangtools version | {yangtools-version}  |
+| MD-SAL version | {mdsal-version} |
+| SDN-R packages version | {package-version} ({package-githash}) |
+| ODLUX version | {odlux-revision} |
+| Cluster size | {cluster-size} |
+
+```
+{karaf-info}
+```
