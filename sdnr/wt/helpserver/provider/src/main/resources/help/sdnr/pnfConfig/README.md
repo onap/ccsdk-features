@@ -6,7 +6,7 @@ A separate window is available for modifying the configuration. All changes made
 
 ## Implementation
 
-The applications are implemented as OpenDaylight-DLUX web application using the RestConf northbound interface of the SDN controller. The key frameworks are: Maven, Angular.js, Bootstrap and UI-Grid.
+The applications are implemented as OpenDaylight-DLUX web application using the RestConf northbound interface of the SDN controller. The key frameworks are: Typescript, react and material-ui.
 
 Connections status information are updated automatically due to a web socket for notifications from OpenDaylight to the browser.
 
