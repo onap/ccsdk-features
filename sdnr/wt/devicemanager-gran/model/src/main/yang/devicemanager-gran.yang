@@ -1,0 +1,15 @@
+module devicemanager-gran {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:devicemanager-gran";
+    prefix "devicemanager-gran";
+
+    description
+        "DeviceManager 3gpp Api Module";
+
+    revision "2019-11-29" {
+        description
+            "Initial revision";
+    }
+
+ }
+

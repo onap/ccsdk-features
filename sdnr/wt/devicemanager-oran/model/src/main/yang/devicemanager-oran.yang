@@ -1,0 +1,15 @@
+module devicemanager-oran {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:devicemanager-oran";
+    prefix "devicemanager-oran";
+
+    description
+        "DeviceManager Open RAN Api Module";
+
+    revision "2019-11-15" {
+        description
+            "Initial revision";
+    }
+
+ }
+
