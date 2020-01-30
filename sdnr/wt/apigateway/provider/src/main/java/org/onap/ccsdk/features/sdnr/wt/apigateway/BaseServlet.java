@@ -36,7 +36,6 @@ import java.util.Map;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -48,336 +47,332 @@ import org.slf4j.LoggerFactory;
 
 public abstract class BaseServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7403047480257892794L;
-	private static Logger LOG = LoggerFactory.getLogger(BaseServlet.class);
-	private static SSLContext sc;
-	private boolean trustAll = false;
-	private static TrustManager[] trustCerts = null;
-	private static final int BUFSIZE = 2048;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 7403047480257892794L;
+    private static Logger LOG = LoggerFactory.getLogger(BaseServlet.class);
+    private static SSLContext sc;
+    private static TrustManager[] trustCerts = null;
+    private static final int BUFSIZE = 2048;
 
-	protected abstract String getOfflineResponse();
+    protected abstract String getOfflineResponse();
 
-	protected abstract boolean isOff();
+    protected abstract boolean isOff();
 
-	protected abstract String getRemoteUrl(String uri);
+    protected abstract boolean doTrustAll();
+    protected abstract void trustAll(boolean trust);
+    protected abstract String getRemoteUrl(String uri);
 
-	/**
-	 *
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyManagementException
-	 */
-	private static void setupSslTrustAll(boolean trustall) throws NoSuchAlgorithmException, KeyManagementException {
+    /**
+     *
+     * @throws NoSuchAlgorithmException
+     * @throws KeyManagementException
+     */
+    private static void setupSslTrustAll(boolean trustall) throws NoSuchAlgorithmException, KeyManagementException {
 
-		sc = SSLContext.getInstance("TLSv1.2");
-		if (trustall) {
-			if (trustCerts == null) {
-				trustCerts = new TrustManager[] { new javax.net.ssl.X509TrustManager() {
-					@Override
-					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-						return new java.security.cert.X509Certificate[] {};
-					}
+        sc = SSLContext.getInstance("TLSv1.2");
+        if (trustall) {
+            if (trustCerts == null) {
+                trustCerts = new TrustManager[] { new javax.net.ssl.X509TrustManager() {
+                    @Override
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[] {};
+                    }
 
-					@Override
-					public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-						// do not check anything when trust all
-					}
+                    @Override
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                        // do not check anything when trust all
+                    }
 
-					@Override
-					public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-						// do not check anything when trust all
-					}
-				} };
-			}
-		} else {
-			if (trustCerts != null)
-				trustCerts = null;
-		}
-		// Init the SSLContext with a TrustManager[] and SecureRandom()
-		sc.init(null, trustCerts, new java.security.SecureRandom());
-	}
+                    @Override
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                        // do not check anything when trust all
+                    }
+                } };
+            }
+        } else {
+            if (trustCerts != null) {
+                trustCerts = null;
+            }
+        }
+        // Init the SSLContext with a TrustManager[] and SecureRandom()
+        sc.init(null, trustCerts, new java.security.SecureRandom());
+    }
 
-	public BaseServlet() {
-		try {
-			MyProperties.Instantiate();
-		} catch (Exception e) {
-			LOG.error(e.getMessage());
-		}
-		this.trysslSetup(true);
-	}
+    public BaseServlet() {
+        try {
+            MyProperties.Instantiate();
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+        this.trysslSetup(true);
+    }
 
-	private void trysslSetup() {
-		this.trysslSetup(false);
-	}
+    private void trysslSetup() {
+        this.trysslSetup(false);
+    }
 
-	/**
-	 * init or deinit ssl insecure mode regarding to property
-	 * 
-	 * @param force init independent from property
-	 */
-	private void trysslSetup(boolean force) {
-		// if trustall config has changed
-		if (force || trustAll != MyProperties.getInstance().trustInsecure()) {
-			// resetup ssl config
-			trustAll = MyProperties.getInstance().trustInsecure();
-			try {
-				setupSslTrustAll(trustAll);
-			} catch (Exception e) {
-				LOG.error("problem setting up SSL: {}", e.getMessage());
-			}
-		}
-	}
+    /**
+     * init or deinit ssl insecure mode regarding to property
+     *
+     * @param force init independent from property
+     */
+    private void trysslSetup(boolean force) {
+        // if trustall config has changed
+        boolean trustAll = MyProperties.getInstance().trustInsecure();
+        if (force || this.doTrustAll() != trustAll) {
+            this.trustAll(trustAll);
+            // resetup ssl config
+            try {
+                setupSslTrustAll(trustAll);
+            } catch (Exception e) {
+                LOG.error("problem setting up SSL: {}", e.getMessage());
+            }
+        }
+    }
 
-	protected void sendOffResponse(HttpServletResponse response) {
-		response.setStatus(200);// HTML/OK
-		response.setHeader("Content-Type", "text/html; charset=utf-8");
-		try {
-			response.getOutputStream().write(this.getOfflineResponse().getBytes(StandardCharsets.UTF_8));
-		} catch (IOException e) {
-			LOG.debug("problem writing offline response");
-		}
+    protected void sendOffResponse(HttpServletResponse response) {
+        response.setStatus(200);// HTML/OK
+        response.setHeader("Content-Type", "text/html; charset=utf-8");
+        try {
+            response.getOutputStream().write(this.getOfflineResponse().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            LOG.debug("problem writing offline response");
+        }
 
-	}
+    }
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (this.isOff()) {
-			this.sendOffResponse(resp);
-		} else {
-			this.trysslSetup();
-			HttpURLConnection http = null;
-			try {
-				http = (HttpURLConnection) this.getConnection(req, "GET");
-			} catch (IOException e) {
-				LOG.warn(e.getMessage());
-			}
-			if (http != null) {
-				try {
-					this.handleRequest(http, req, resp, "GET");
-				} catch (IOException e) {
-					LOG.warn(e.getMessage());
-				}
-				http.disconnect();
-			}
-			else {
-				this.set404Response(resp);
-			}
-		}
-	}
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (this.isOff()) {
+            this.sendOffResponse(resp);
+        } else {
+            this.trysslSetup();
+            HttpURLConnection http = null;
+            try {
+                http = (HttpURLConnection) this.getConnection(req, "GET");
+            } catch (IOException e) {
+                LOG.warn(e.getMessage());
+            }
+            if (http != null) {
+                try {
+                    this.handleRequest(http, req, resp, "GET");
+                } catch (IOException e) {
+                    LOG.warn(e.getMessage());
+                }
+                http.disconnect();
+            }
+            else {
+                this.set404Response(resp);
+            }
+        }
+    }
 
-	@Override
-	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (this.isOff()) {
-			this.sendOffResponse(resp);
-		} else {
-			this.trysslSetup();
-			HttpURLConnection http = null;
-			try {
-				http = (HttpURLConnection) this.getConnection(req, "PUT");
-			} catch (IOException e) {
-				LOG.warn(e.getMessage());
-			}
-			if (http != null) {
-				try {
-					this.handleRequest(http, req, resp, "PUT");
-				} catch (IOException e) {
-					LOG.warn(e.getMessage());
-				}
-				http.disconnect();
-			}
-			else {
-				this.set404Response(resp);
-			}
-		}
-	}
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (this.isOff()) {
+            this.sendOffResponse(resp);
+        } else {
+            this.trysslSetup();
+            HttpURLConnection http = null;
+            try {
+                http = (HttpURLConnection) this.getConnection(req, "PUT");
+            } catch (IOException e) {
+                LOG.warn(e.getMessage());
+            }
+            if (http != null) {
+                try {
+                    this.handleRequest(http, req, resp, "PUT");
+                } catch (IOException e) {
+                    LOG.warn(e.getMessage());
+                }
+                http.disconnect();
+            }
+            else {
+                this.set404Response(resp);
+            }
+        }
+    }
 
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (this.isOff()) {
-			this.sendOffResponse(resp);
-		} else {
-			this.trysslSetup();
-			HttpURLConnection http = null;
-			try {
-				http = (HttpURLConnection) this.getConnection(req, "POST");
-			} catch (IOException e) {
-				LOG.warn(e.getMessage());
-			}
-			if (http != null) {
-				try {
-					this.handleRequest(http, req, resp, "POST");
-				} catch (IOException e) {
-					LOG.warn(e.getMessage());
-				}
-				http.disconnect();
-			}
-			else {
-				this.set404Response(resp);
-			}
-		}
-	}
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (this.isOff()) {
+            this.sendOffResponse(resp);
+        } else {
+            this.trysslSetup();
+            HttpURLConnection http = null;
+            try {
+                http = (HttpURLConnection) this.getConnection(req, "POST");
+            } catch (IOException e) {
+                LOG.warn(e.getMessage());
+            }
+            if (http != null) {
+                try {
+                    this.handleRequest(http, req, resp, "POST");
+                } catch (IOException e) {
+                    LOG.warn(e.getMessage());
+                }
+                http.disconnect();
+            }
+            else {
+                this.set404Response(resp);
+            }
+        }
+    }
 
-	@Override
-	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (this.isOff()) {
-			this.sendOffResponse(resp);
-		} else {
-			this.trysslSetup();
-			HttpURLConnection http = null;
-			try {
-				http = (HttpURLConnection) this.getConnection(req, "DELETE");
-			} catch (IOException e) {
-				LOG.warn(e.getMessage());
-			}
-			if (http != null) {
-				try {
-					this.handleRequest(http, req, resp, "DELETE");
-				} catch (IOException e) {
-					LOG.warn(e.getMessage());
-				}
-				http.disconnect();
-			}
-			else {
-				this.set404Response(resp);
-			}
-		}
-	}
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (this.isOff()) {
+            this.sendOffResponse(resp);
+        } else {
+            this.trysslSetup();
+            HttpURLConnection http = null;
+            try {
+                http = (HttpURLConnection) this.getConnection(req, "DELETE");
+            } catch (IOException e) {
+                LOG.warn(e.getMessage());
+            }
+            if (http != null) {
+                try {
+                    this.handleRequest(http, req, resp, "DELETE");
+                } catch (IOException e) {
+                    LOG.warn(e.getMessage());
+                }
+                http.disconnect();
+            }
+            else {
+                this.set404Response(resp);
+            }
+        }
+    }
 
-	private void set404Response(HttpServletResponse resp) {
-		resp.setStatus(404);
-	}
+    private void set404Response(HttpServletResponse resp) {
+        resp.setStatus(404);
+    }
 
-	private URLConnection getConnection(HttpServletRequest req, final String method) throws IOException {
+    private URLConnection getConnection(HttpServletRequest req, final String method) throws IOException {
 
-		LOG.debug("{} Request to {}", method,req.getRequestURL());
-		String surl = this.getRemoteUrl(req.getRequestURI());
-		if(method=="GET") {
-			Enumeration<String> params = req.getParameterNames();
-			if(params!=null) {
-				String param;
-				if(params.hasMoreElements()) {
-					param=params.nextElement();
-					surl+="?"+param+"="+req.getParameter(param);
-				}
-				while(params.hasMoreElements()) {
-					param=params.nextElement();
-					surl+="&"+param+"="+req.getParameter(param);
-				}
-			}
-		}
-		LOG.debug("RemoteURL: {}", surl);
-		if(surl==null) {
-			return null;
-		}
-		URL url = new URL(surl);
-		URLConnection http = url.openConnection();
-		((HttpURLConnection) http).setRequestMethod(method);
-		if (url.toString().startsWith("https")) {
-			((HttpsURLConnection) http).setSSLSocketFactory(sc.getSocketFactory());
-			if (trustAll) {
-				HostnameVerifier allHostsValid = new HostnameVerifier() {
+        LOG.debug("{} Request to {}", method,req.getRequestURL());
+        String surl = this.getRemoteUrl(req.getRequestURI());
+        if("GET".equals(method)) {
+            Enumeration<?> params = req.getParameterNames();
+            if(params!=null) {
+                String param;
+                if(params.hasMoreElements()) {
+                    param=(String)params.nextElement();
+                    surl+="?"+param+"="+req.getParameter(param);
+                }
+                while(params.hasMoreElements()) {
+                    param=(String)params.nextElement();
+                    surl+="&"+param+"="+req.getParameter(param);
+                }
+            }
+        }
+        LOG.debug("RemoteURL: {}", surl);
+        if(surl==null) {
+            return null;
+        }
+        URL url = new URL(surl);
+        URLConnection http = url.openConnection();
+        ((HttpURLConnection) http).setRequestMethod(method);
+        if (url.toString().startsWith("https")) {
+            ((HttpsURLConnection) http).setSSLSocketFactory(sc.getSocketFactory());
+            if (this.doTrustAll()) {
+                HostnameVerifier allHostsValid = (hostname, session) -> true;
+                ((HttpsURLConnection) http).setHostnameVerifier(allHostsValid);
+            }
+        }
+        http.setDoOutput(true);
+        // copy request headers
+        String s = "";
+        Enumeration<?> headers = req.getHeaderNames();
+        while (headers.hasMoreElements()) {
+            String h = (String)headers.nextElement();
+            String v = req.getHeader(h);
+            if (h != null && h.equals("Host")) {
+                v = url.getAuthority();
+            }
+            s += String.format("%s:%s;", h, v);
+            http.setRequestProperty(h, v);
+        }
+        LOG.debug("Request Headers: {}", s);
+        return http;
+    }
 
-					@Override
-					public boolean verify(String hostname, SSLSession session) {
-						// do not verify host if trust all
-						return true;
-					}
-				};
-				((HttpsURLConnection) http).setHostnameVerifier(allHostsValid);
-			}
-		}
-		http.setDoOutput(true);
-		// copy request headers
-		String s = "";
-		Enumeration<String> headers = req.getHeaderNames();
-		while (headers.hasMoreElements()) {
-			String h = headers.nextElement();
-			String v = req.getHeader(h);
-			if (h != null && h.equals("Host")) {
-				v = url.getAuthority();
-			}
-			s += String.format("%s:%s;", h, v);
-			http.setRequestProperty(h, v);
-		}
-		LOG.debug("Request Headers: {}", s);
-		return http;
-	}
+    private void handleRequest(HttpURLConnection http, HttpServletRequest req, HttpServletResponse resp, String method)
+            throws IOException {
+        byte[] buffer = new byte[BUFSIZE];
+        int len = 0, lensum = 0;
+        // send request
+        // Send the message to destination
+        OutputStream output = null;
+        if (!method.equals("GET")) {
+            try {
+                output = http.getOutputStream();
+            } catch (Exception e) {
+                LOG.debug("problem reading output stream: {}", e.getMessage());
+            }
+        }
+        if (output != null) {
+            while (true) {
+                len = req.getInputStream().read(buffer, 0, BUFSIZE);
+                if (len <= 0) {
+                    break;
+                }
+                lensum += len;
+                output.write(buffer, 0, len);
+            }
+        }
+        LOG.debug("written {} data out", lensum);
+        int responseCode = http.getResponseCode();
+        // Receive answer
+        InputStream response;
+        if (responseCode >= 200 && responseCode < 300) {
+            response = http.getInputStream();
+        } else {
+            response = http.getErrorStream();
+            if (response == null) {
+                http.getInputStream();
+            }
+        }
 
-	private void handleRequest(HttpURLConnection http, HttpServletRequest req, HttpServletResponse resp, String method)
-			throws IOException {
-		byte[] buffer = new byte[BUFSIZE];
-		int len = 0, lensum = 0;
-		// send request
-		// Send the message to destination
-		OutputStream output = null;
-		if (!method.equals("GET")) {
-			try {
-				output = http.getOutputStream();
-			} catch (Exception e) {
-				LOG.debug("problem reading output stream: {}", e.getMessage());
-			}
-		}
-		if (output != null) {
-			while (true) {
-				len = req.getInputStream().read(buffer, 0, BUFSIZE);
-				if (len <= 0) {
-					break;
-				}
-				lensum += len;
-				output.write(buffer, 0, len);
-			}
-		}
-		LOG.debug("written {} data out", lensum);
-		int responseCode = http.getResponseCode();
-		// Receive answer
-		InputStream response;
-		if (responseCode >= 200 && responseCode < 300) {
-			response = http.getInputStream();
-		} else {
-			response = http.getErrorStream();
-			if (response == null) {
-				http.getInputStream();
-			}
-		}
+        LOG.debug("ResponseCode: {}", responseCode);
+        resp.setStatus(responseCode);
+        Map<String, List<String>> set = http.getHeaderFields();
+        String s = "";
+        if (set != null) {
+            for (Map.Entry<String, List<String>> entry : set.entrySet()) {
+                if (entry.getKey() == null) {
+                    continue;
+                }
+                for (String v : entry.getValue()) {
+                    resp.setHeader(entry.getKey(), v);
+                    s += String.format("%s:%s;", entry.getKey(), v);
+                }
+                if (MyProperties.getInstance().corsEnabled()) {
+                    resp.setHeader("Access-Control-Allow-Origin", "*");
+                    // resp.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+                    resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                }
 
-		LOG.debug("ResponseCode: {}", responseCode);
-		resp.setStatus(responseCode);
-		Map<String, List<String>> set = http.getHeaderFields();
-		String s = "";
-		if (set != null) {
-			for (Map.Entry<String, List<String>> entry : set.entrySet()) {
-				if (entry.getKey() == null) {
-					continue;
-				}
-				for (String v : entry.getValue()) {
-					resp.setHeader(entry.getKey(), v);
-					s += String.format("%s:%s;", entry.getKey(), v);
-				}
-				if (MyProperties.getInstance().corsEnabled()) {
-					resp.setHeader("Access-Control-Allow-Origin", "*");
-					// resp.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-					resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-				}
-
-			}
-		}
-		LOG.debug("Received Headers: {}", s);
-		lensum = 0;
-		if (response != null) {
-			while (true) {
-				len = response.read(buffer, 0, BUFSIZE);
-				if (len <= 0) {
-					break;
-				}
-				lensum += len;
-				resp.getOutputStream().write(buffer, 0, len);
-			}
-		} else {
-			LOG.debug("response is null");
-		}
-		LOG.debug("Received {} bytes", lensum);
-	}
+            }
+        }
+        LOG.debug("Received Headers: {}", s);
+        lensum = 0;
+        if (response != null) {
+            while (true) {
+                len = response.read(buffer, 0, BUFSIZE);
+                if (len <= 0) {
+                    break;
+                }
+                lensum += len;
+                resp.getOutputStream().write(buffer, 0, len);
+            }
+        } else {
+            LOG.debug("response is null");
+        }
+        LOG.debug("Received {} bytes", lensum);
+    }
 
 }

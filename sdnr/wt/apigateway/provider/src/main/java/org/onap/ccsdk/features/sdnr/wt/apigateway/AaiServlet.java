@@ -32,7 +32,7 @@ public class AaiServlet extends BaseServlet {
 	 */
 	private static final long serialVersionUID = 5946205120796162644L;
 	private static final String OFFLINE_RESPONSE_MESSAGE = "AAI interface is offline";
-
+	private static boolean trustAll = false;
 	public AaiServlet() {
 		super();
 	}
@@ -70,5 +70,15 @@ public class AaiServlet extends BaseServlet {
 		}
 
 		return base + uri;
+	}
+
+	@Override
+	protected boolean doTrustAll() {
+		return trustAll;
+	}
+
+	@Override
+	protected void trustAll(boolean trust) {
+		trustAll = trust;
 	}
 }
