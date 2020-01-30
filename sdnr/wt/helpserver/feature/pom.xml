@@ -28,7 +28,7 @@
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>single-feature-parent</artifactId>
         <version>1.5.1</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>

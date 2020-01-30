@@ -1,6 +1,6 @@
 # Inventory
 
-The application offers basic inventory management of devices supporting ONF-TR-512. 
+The application offers basic inventory management of devices supporting ONF-TR-512 and ietf-hardware. 
 
 The view displays the inventory data of the network element - basically serial-numbers and part-numbers are displaced according to the containment of the equipment.
 
