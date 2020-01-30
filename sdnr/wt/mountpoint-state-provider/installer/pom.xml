@@ -2,9 +2,9 @@
 <!--
 
  * ============LICENSE_START=======================================================
- * ONAP : CCSDK.sdnr.wt.netconfnode-state-service.installer
+ * ONAP : CCSDK.sdnr.wt.mountpoint-state-provider.installer
  * ================================================================================
- * Copyright (C) 2018 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,14 +32,14 @@
   </parent>
 
   <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-  <artifactId>sdnr-wt-netconfnode-state-service-installer</artifactId>
+  <artifactId>sdnr-wt-mountpoint-state-provider-installer</artifactId>
   <version>0.7.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>ccsdk-features :: ${project.artifactId}</name>
 
   <properties>
-    <application.name>sdnr-wt-netconfnode-state-service</application.name>
+    <application.name>sdnr-wt-mountpoint-state-provider</application.name>
     <include.transitive.dependencies>false</include.transitive.dependencies>
   </properties>
 
@@ -116,6 +116,31 @@
               <useRepositoryLayout>true</useRepositoryLayout>
               <addParentPoms>false</addParentPoms>
               <copyPom>false</copyPom>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>copy-schemas</id>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <phase>validate</phase>
+            <configuration>
+              <outputDirectory>${project.build.directory}/assembly/cache/schema</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/../provider/src/main/resources/preload.cache.schema</directory>
+                  <includes>
+                    <include>*.yang</include>
+                  </includes>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
