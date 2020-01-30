@@ -1,33 +1,57 @@
 # wt - wireless transport microservices
 
-## apigateway
+## apigateway (osgi)
 
-The API gateway provides WEB access to all wt related web service providers to prevent cross site requests. The Opendaylight default UI port is extendet by additonal URIs.
+The API gateway provides WEB access to all wt related web service providers to prevent cross site requests. The Opendaylight default Web server is extended by additional URIs.
 
   * /database to access elasticsearch
   * /aai to access AAI
-  * /ms to access mediator servers
 
-## devicemodel
+## common (osgi)
 
-Model classes, specified by ONF Model and provided as yang files for Java class generation for NETCONF devices.
+Common classes, included into most bundles
 
-## websocketmanager2
+## data-provider (osgi)
 
-Notification service for browser clients.
+Interface to devicemanager database. In Frankfurt database is elasticsearch.
 
-## devicemanager
+## devicemanager (osgi)
 
-Management application for NETCONF devices.
+Devicemanager services, used by specfic devicemanagers for NETCONF devices.
 
-## odlux
+## devicemanager-specific (osgi)
 
-Web applications for user operations for devices
+Devicemanager implementation for specfic devicemodel. Today available are:
+  * onf: ONF Core model
+  * oran: O-RAN model
+  * gran: 3GPP model
 
-## helpserver
+## featureaggregator (osgi)
+
+karaf features
+  * sdnr-wt-feature-aggregator to start all services
+  * sdnr-wt-feature-aggregator-devicemanager to start devicemanager service
+
+## helpserver (osgi)
 
 Providing help pages for related web applications
 
-## featureaggregator
+## netconfnode-state-provider (osgi)
 
-karaf feature with name sdnr-wt-feature-aggregator to start all services.
+Provide netconf state information to devicemanager and mountpoint-state-provider
+
+## odlux (osgi)
+
+Web applications for user operations for devices
+
+## websocketmanager2 (osgi)
+
+Notification service for browser clients.
+
+## readthedocs
+
+readthedocs - Providing documentation. Scripts to convert documentation within helpserver to the [ccsdk/features]/doc folder
+~
+~
+~
+~
