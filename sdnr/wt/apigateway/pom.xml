@@ -28,7 +28,7 @@
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>odlparent-lite</artifactId>
         <version>1.5.1</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
@@ -39,8 +39,8 @@
     <name>ccsdk-features :: ${project.artifactId}</name>
 
     <modules>
-        <module>feature</module>
         <module>provider</module>
+        <module>feature</module>
         <module>installer</module>
     </modules>
 

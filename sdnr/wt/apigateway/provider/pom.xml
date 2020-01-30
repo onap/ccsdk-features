@@ -18,7 +18,7 @@
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
         <version>1.5.1</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
@@ -36,6 +36,11 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
