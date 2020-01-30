@@ -44,10 +44,10 @@
         <module>data-provider</module>
         <module>netconfnode-state-service</module>
         <module>mountpoint-state-provider</module>
-        <!--<module>devicemanager</module>
+        <module>devicemanager</module>
         <module>devicemanager-onf</module>
         <module>devicemanager-oran</module>
-        <module>devicemanager-gran</module> -->
+        <module>devicemanager-gran</module>
         <module>mountpoint-registrar</module>
         <module>odlux</module>
         <module>featureaggregator</module>
