@@ -1,0 +1,15 @@
+module devicemanager-onf {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:devicemanager-onf";
+    prefix "devicemanager-onf";
+
+    description
+        "DeviceManager Open Network Foundation Api Module";
+
+    revision "2019-12-09" {
+        description
+            "Initial revision";
+    }
+
+ }
+
