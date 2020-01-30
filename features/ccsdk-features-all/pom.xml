@@ -34,13 +34,6 @@
     <dependencies>
         <dependency>
             <groupId>org.onap.ccsdk.features</groupId>
-            <artifactId>ccsdk-blueprints-processor</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.onap.ccsdk.features</groupId>
             <artifactId>ccsdk-aafshiro</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
