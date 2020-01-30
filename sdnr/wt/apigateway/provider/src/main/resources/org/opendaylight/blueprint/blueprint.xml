@@ -24,13 +24,4 @@ xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs">
         </service-properties>
     </service>
 
-    <bean id="msServlet"
-        class="org.onap.ccsdk.features.sdnr.wt.apigateway.MsServlet">
-    </bean>
-
-   <service interface="javax.servlet.http.HttpServlet" ref="msServlet">
-        <service-properties>
-            <entry key="alias" value="/ms" />
-        </service-properties>
-    </service>
 </blueprint>

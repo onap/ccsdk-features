@@ -21,11 +21,6 @@
 package org.onap.ccsdk.features.sdnr.wt.apigateway;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,10 +30,6 @@ import org.slf4j.LoggerFactory;
 
 public class EsServlet extends BaseServlet {
 
-	public interface IRequestCallback{
-		
-		void onRequest(String uri,String method);
-	}
 	/**
 	 *
 	 */
@@ -46,43 +37,12 @@ public class EsServlet extends BaseServlet {
 	private static final String OFFLINE_RESPONSE_MESSAGE = "Database interface is offline";
 	private static Logger LOG = LoggerFactory.getLogger(EsServlet.class);
 	
-	private static final Map<String,List<IRequestCallback>> requestCallbacks=new HashMap<String,List<IRequestCallback>>();
-	
-	public static void registerRequestCallback(String uri,IRequestCallback callback) {
-		List<IRequestCallback> list=requestCallbacks.getOrDefault(uri, new ArrayList<IRequestCallback>());
-		if(!list.contains(callback)) {
-			list.add(callback);
-		}
-		requestCallbacks.put(uri, list);
-	}
-	public static void unregisterRequestCallback(String uri,IRequestCallback callback) {
-		List<IRequestCallback> list=requestCallbacks.getOrDefault(uri, new ArrayList<IRequestCallback>());
-		if(list.contains(callback)) {
-			list.remove(callback);
-		}
-	}
-	
+	private static boolean trustAll = false;
 	
 	public EsServlet() {
 		super();
 	}
 
-	private void handleCallbacks(String uri,String method) {
-	
-		LOG.debug("try to find callbacks for uri {}",uri);
-		for(Entry<String,List<IRequestCallback>> entry:requestCallbacks.entrySet()) {
-			if(uri.contains(entry.getKey())) {
-				List<IRequestCallback> cblist = entry.getValue();
-				if(cblist!=null && cblist.size()>0) {
-					LOG.debug("found at least one");
-					for(IRequestCallback cb :cblist) {
-						cb.onRequest(uri, method);
-					}
-				}		
-			}
-		
-		}
-	}
 	@Override
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		if (MyProperties.getInstance().corsEnabled()) {
@@ -113,21 +73,25 @@ public class EsServlet extends BaseServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		super.doGet(req, resp);
-		this.handleCallbacks(req.getRequestURI(),"GET");
 	}
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		super.doPost(req, resp);
-		this.handleCallbacks(req.getRequestURI(),"POST");
 	}
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		super.doPut(req, resp);
-		this.handleCallbacks(req.getRequestURI(),"PUT");
 	}
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		super.doDelete(req, resp);
-		this.handleCallbacks(req.getRequestURI(),"DELETE");
+	}
+	@Override
+	protected boolean doTrustAll() {
+		return trustAll;
+	}
+	@Override
+	protected void trustAll(boolean trust) {
+		trustAll = trust;
 	}
 }	
