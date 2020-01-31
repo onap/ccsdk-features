@@ -84,6 +84,9 @@
 | NOD              | Network On Demand   |
 | NS               | Network Services   |
 | NS               | (Vendor Specific) New Start   |
+| O-RAN            | [O-RAN Alliance, Operator Defined Next Generation Radio Access Networks Alliance](https://www.o-ran.org)
+| O-RAN-SC         | [O-RAN Software Community](https://o-ran-sc.org)
+| OAM              | Operation and Maintenance   |
 | OA&M             | Operations, Administration and Management   |
 | OMF              | Operational Management Framework (of ONAP)   |
 | OMSA             | ONAP Microservice Architecture   |
@@ -93,6 +96,7 @@
 | OOM              | [ONAP Operations Manager](https://wiki.onap.org/display/DW/OOM+User+Guide)   |
 | OPNFV            | [Open Platform for NFV Project](https://www.sdxcentral.com/nfv/definitions/opnfv/)   |
 | OSAM             | [Open Source Access Manager](https://wiki.onap.org/display/DW/OpenSource+Access+Manager+%28OSAM%29+Use+Case)   |
+| OSC              | O-RAN Software Community or Optical Supervisory Channel   |
 | OSS              | Operations Support System   |
 | PAP              | Policy Administration Point (ONAP)   |
 | PCE              | Path Computation and Element (ONAP)   |
@@ -108,7 +112,7 @@
 | RCA              | Root Cause Analysis   |
 | RCT              | Reference Connection Tool   |
 | REST             | [Representational State Transfer](https://en.wikipedia.org/wiki/Representational_state_transfer)   |
-| RESTCONF         | REST + NETCONF   |
+| RESTCONF         | A protocol based on HTTP for configuring data defined in YANG    |
 | RO               | Resource Orchestrator   |
 | RPC              | Remote Procedure Call   |
 | S3P              | [Stability, Security, Scalability, Performance](https://wiki.onap.org/pages/viewpage.action?pageId=16003367)   |
@@ -163,5 +167,6 @@
 | VSP              | Vendor Software Product (from SDC Demo Guide)   |
 | VTP              | [VNF Test Platform](https://wiki.onap.org/pages/viewpage.action?pageId=43386304)   |
 | VVP              | [VNF Validation Program](https://wiki.onap.org/display/DW/VNF+Validation+Program+Project)   |
-| WAR              | [Web application Archive](https://en.wikipedia.org/wiki/WAR_(file_format))  |
-| YANG             | A Data Modeling Language for the Network Configuration Protocol (NETCONF)   |
+| WAR              | [Web application Archive](https://en.wikipedia.org/wiki/WAR_(file_format))   |
+| xNF              | The combination of PNF and VNF; Network Function   |
+| YANG             | Yet Another Next Generation - a Data Modeling Language for the Network Configuration Protocol (NETCONF)   |
