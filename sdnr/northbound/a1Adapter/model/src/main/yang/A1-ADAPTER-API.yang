@@ -318,10 +318,6 @@ module A1-ADAPTER-API {
             leaf policy-instance-id {
                 type string;
             }
-
-        }
-        output {
-            uses a1-adapter-response;
             leaf policy_enforcement_status {
                 type string;
                 description
@@ -332,6 +328,9 @@ module A1-ADAPTER-API {
                 description
                   "Indicates the reason why policy is no longer being enforced";
             }
+        }
+        output {
+            uses a1-adapter-response;
         }
     }
 
