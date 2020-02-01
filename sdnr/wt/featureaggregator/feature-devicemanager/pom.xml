@@ -30,7 +30,7 @@
   </parent>
 
   <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-  <artifactId>sdnr-wt-feature-aggregator</artifactId>
+  <artifactId>sdnr-wt-feature-aggregator-devicemanager</artifactId>
   <version>0.7.1-SNAPSHOT</version>
   <packaging>feature</packaging>
 
@@ -40,13 +40,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>sdnr-wt-apigateway-feature</artifactId>
-      <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>sdnr-wt-helpserver-feature</artifactId>
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>features</classifier>
@@ -114,19 +107,5 @@
        <type>xml</type>
        <classifier>features</classifier>
      </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>sdnr-wt-odlux-core-feature</artifactId>
-      <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>sdnr-wt-odlux-apps-feature</artifactId>
-      <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
-    </dependency>
   </dependencies>
 </project>
