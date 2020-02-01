@@ -16,7 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 
-import * as React from 'react';
+import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import { WithStyles, withStyles, createStyles, Theme } from '@material-ui/core/styles';
@@ -26,11 +26,12 @@ import { IApplicationStoreState } from "../../../../framework/src/store/applicat
 import MaterialTable, { ColumnModel, ColumnType, MaterialTableCtorType } from "../../../../framework/src/components/material-table";
 import { Loader } from "../../../../framework/src/components/material-ui/loader";
 
-import { SetSelectedValue, splitVPath, updateDataActionAsyncCreator } from "../actions/deviceActions";
-import { ViewSpecification, isViewElementString, isViewElementNumber, isViewElementBoolean, isViewElementObjectOrList, isViewElementSelection } from "../models/uiModels";
+import { SetSelectedValue, splitVPath, updateDataActionAsyncCreator, updateViewActionAsyncCreator } from "../actions/deviceActions";
+import { ViewSpecification, isViewElementString, isViewElementNumber, isViewElementBoolean, isViewElementObjectOrList, isViewElementSelection, isViewElementChoise, ViewElement, ViewElementChoise, isViewElementUnion } from "../models/uiModels";
 
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import ArrowBack from '@material-ui/icons/ArrowBack';
 import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
 import SaveIcon from '@material-ui/icons/Save';
 import EditIcon from '@material-ui/icons/Edit';
@@ -38,7 +39,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import IconButton from "@material-ui/core/IconButton";
-import Button from "@material-ui/core/Button";
+
 import InputAdornment from "@material-ui/core/InputAdornment";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
@@ -46,6 +47,13 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "@material-ui/core/Link";
 import FormHelperText from '@material-ui/core/FormHelperText';
+
+import { UIElementReference } from '../components/uiElementReference';
+import { UiElementNumber } from '../components/uiElementNumber';
+import { UiElementString } from '../components/uiElementString';
+import { UiElementBoolean } from '../components/uiElementBoolean';
+import { UiElementSelection } from '../components/uiElementSelection';
+import { UIElementUnion } from '../components/uiElementUnion';
 
 const styles = (theme: Theme) => createStyles({
   header: {
@@ -97,6 +105,16 @@ const styles = (theme: Theme) => createStyles({
       },
     },
   },
+  section: {
+    padding: "15px",
+    borderBottom: `2px solid ${theme.palette.divider}`,
+  },
+  viewElements: {
+    width: 485, marginLeft: 20, marginRight: 20
+  },
+  verificationElements: {
+    width: 485, marginLeft: 20, marginRight: 20
+  }
 });
 
 const mapProps = (state: IApplicationStoreState) => ({
@@ -115,6 +133,7 @@ const mapProps = (state: IApplicationStoreState) => ({
 const mapDispatch = (dispatcher: IDispatcher) => ({
   onValueSelected: (value: any) => dispatcher.dispatch(new SetSelectedValue(value)),
   onUpdateData: (vPath: string, data: any) => dispatcher.dispatch(updateDataActionAsyncCreator(vPath, data)),
+  reloadView: (vPath: string) => dispatcher.dispatch(updateViewActionAsyncCreator(vPath)),
 });
 
 const SelectElementTable = MaterialTable as MaterialTableCtorType<{ [key: string]: any }>;
@@ -126,6 +145,7 @@ type ConfigurationApplicationComponentState = {
   editMode: boolean;
   canEdit: boolean;
   viewData: { [key: string]: any } | null;
+  choises: { [path: string]: { selectedCase: string, data: { [property: string]: any } } };
 }
 
 const OldProps = Symbol("OldProps");
@@ -134,27 +154,61 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
   /**
    *
    */
-  constructor (props: ConfigurationApplicationComponentProps) {
+  constructor(props: ConfigurationApplicationComponentProps) {
     super(props);
 
     this.state = {
       isNew: false,
       canEdit: false,
       editMode: false,
-      viewData: null
+      viewData: null,
+      choises: {},
     }
   }
 
-  static getDerivedStateFromProps(nextProps: ConfigurationApplicationComponentProps, prevState: ConfigurationApplicationComponentState & { [OldProps]: ConfigurationApplicationComponentProps  }) {
+  static getDerivedStateFromProps(nextProps: ConfigurationApplicationComponentProps, prevState: ConfigurationApplicationComponentState & { [OldProps]: ConfigurationApplicationComponentProps }) {
 
     if (!prevState || !prevState[OldProps] || (prevState[OldProps].viewData !== nextProps.viewData)) {
-      const isNew: boolean = nextProps.vPath?.endsWith("[]") || false;
+      const isNew: boolean = nextProps.vPath ?.endsWith("[]") || false;
       const state = {
         ...prevState,
         isNew: isNew,
         editMode: isNew,
         viewData: nextProps.viewData || null,
         [OldProps]: nextProps,
+        choises: nextProps.viewSpecification && Object.keys(nextProps.viewSpecification.elements).reduce((acc, cur) => {
+          const elm = nextProps.viewSpecification.elements[cur];
+          if (isViewElementChoise(elm)) {
+            const caseKeys = Object.keys(elm.cases);
+
+            // find the right case for this choise, use the first one with data, at least use index 0
+            const selectedCase = caseKeys.find(key => {
+              const caseElm = elm.cases[key];
+              return Object.keys(caseElm.elements).some(caseElmKey => {
+                const caseElmElm = caseElm.elements[caseElmKey];
+                return nextProps.viewData[caseElmElm.label] != null || nextProps.viewData[caseElmElm.id] != null;
+              });
+            }) || caseKeys[0];
+
+            // extract all data of the active case
+            const caseElements = elm.cases[selectedCase].elements;
+            const data = Object.keys(caseElements).reduce((dataAcc, dataCur) => {
+              const dataElm = caseElements[dataCur];
+              if (nextProps.viewData[dataElm.label] !== undefined) {
+                dataAcc[dataElm.label] = nextProps.viewData[dataElm.label];
+              } else if (nextProps.viewData[dataElm.id] !== undefined) {
+                dataAcc[dataElm.id] = nextProps.viewData[dataElm.id];
+              }
+              return dataAcc;
+            }, {} as { [name: string]: any });
+
+            acc[elm.id] = {
+              selectedCase,
+              data,
+            };
+          }
+          return acc;
+        }, {} as { [path: string]: { selectedCase: string, data: { [property: string]: any } } }) || {}
       }
       return state;
     }
@@ -174,123 +228,203 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     });
   }
 
-  private renderUIElement = (viewSpecification: ViewSpecification, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
-    const elements = viewSpecification.elements;
+  private renderUIElement = (uiElement: ViewElement, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
+    const isKey = (uiElement.label === keyProperty);
+    const canEdit = editMode && (isNew || (uiElement.config && !isKey));
+    if (isViewElementSelection(uiElement)) {
+
+      return <UiElementSelection
+        key={uiElement.id}
+        inputValue={viewData[uiElement.id] || ''}
+        value={uiElement}
+        readOnly={!canEdit}
+        disabled={editMode && !canEdit}
+        onChange={(e) => { this.changeValueFor(uiElement.id, e) }}
+      />
+
+    } else if (isViewElementBoolean(uiElement)) {
+      return <UiElementBoolean
+        key={uiElement.id}
+        inputValue={viewData[uiElement.id] || ''}
+        value={uiElement}
+        readOnly={!canEdit}
+        disabled={editMode && !canEdit}
+        onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
+
+    } else if (isViewElementString(uiElement)) {
+      return <UiElementString
+        key={uiElement.id}
+        inputValue={viewData[uiElement.id] || ''}
+        value={uiElement}
+        isKey={isKey}
+        readOnly={!canEdit}
+        disabled={editMode && !canEdit}
+        onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
+
+    } else if (isViewElementNumber(uiElement)) {
+      return <UiElementNumber
+        key={uiElement.id}
+        value={uiElement}
+        inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
+        readOnly={!canEdit}
+        disabled={editMode && !canEdit}
+        onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
+    } else if (isViewElementUnion(uiElement)) {
+      return <UIElementUnion
+        key={uiElement.id}
+        isKey={false}
+        value={uiElement}
+        inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
+        readOnly={!canEdit}
+        disabled={editMode && !canEdit}
+        onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
+    }
+    else {
+      if (process.env.NODE_ENV !== "production") {
+        console.error(`Unknown element type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
+      }
+      return null;
+    }
+  };
+
+  // private renderUIReference = (uiElement: ViewElement, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
+  //   const isKey = (uiElement.label === keyProperty);
+  //   const canEdit = editMode && (isNew || (uiElement.config && !isKey));
+  //   if (isViewElementObjectOrList(uiElement)) {
+  //     return (
+  //       <FormControl key={uiElement.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
+  //         <Tooltip title={uiElement.description || ''}>
+  //           <Button className={this.props.classes.leftButton} color="secondary" disabled={this.state.editMode} onClick={() => {
+  //             this.navigate(`/${uiElement.id}`);
+  //           }}>{uiElement.label}</Button>
+  //         </Tooltip>
+  //       </FormControl>
+  //     );
+  //   } else {
+  //     if (process.env.NODE_ENV !== "production") {
+  //       console.error(`Unknown reference type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
+  //     }
+  //     return null;
+  //   }
+  // };
+
+  private renderUIChoise = (uiElement: ViewElementChoise, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
+    const isKey = (uiElement.label === keyProperty);
+
+    const currentChoise = this.state.choises[uiElement.id];
+    const currentCase = currentChoise && uiElement.cases[currentChoise.selectedCase];
+
+    const canEdit = editMode && (isNew || (uiElement.config && !isKey));
+    if (isViewElementChoise(uiElement)) {
+      const subElements = currentCase ?.elements;
+      return (
+        <>
+          <FormControl key={uiElement.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
+            <InputLabel htmlFor={`select-${uiElement.id}`} >{uiElement.label}</InputLabel>
+            <Select
+              required={!!uiElement.mandatory}
+              onChange={(e) => {
+                if (currentChoise.selectedCase === e.target.value) {
+                  return; // nothing changed
+                }
+                this.setState({ choises: { ...this.state.choises, [uiElement.id]: { ...this.state.choises[uiElement.id], selectedCase: e.target.value as string } } });
+              }}
+              readOnly={!canEdit}
+              disabled={editMode && !canEdit}
+              value={this.state.choises[uiElement.id].selectedCase}
+              inputProps={{
+                name: uiElement.id,
+                id: `select-${uiElement.id}`,
+              }}
+            >
+              {
+                Object.keys(uiElement.cases).map(caseKey => {
+                  const caseElm = uiElement.cases[caseKey];
+                  return (
+                    <MenuItem key={caseElm.id} title={caseElm.description} value={caseKey}>{caseElm.label}</MenuItem>
+                  );
+                })
+              }
+            </Select>
+          </FormControl>
+          {subElements
+            ? Object.keys(subElements).map(elmKey => {
+              const elm = subElements[elmKey];
+              return this.renderUIElement(elm, viewData, keyProperty, editMode, isNew);
+            })
+            : <h3>Invalid Choise</h3>
+          }
+        </>
+      );
+    } else {
+      if (process.env.NODE_ENV !== "production") {
+        console.error(`Unknown type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
+      }
+      return null;
+    }
+  };
+
+  private renderUIView = (viewSpecification: ViewSpecification, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
+    const { classes } = this.props;
+
+    const orderFunc = (vsA: ViewElement, vsB: ViewElement) => {
+      if (keyProperty) {
+        // if (vsA.label === vsB.label) return 0;
+        if (vsA.label === keyProperty) return -1;
+        if (vsB.label === keyProperty) return +1;
+      }
+
+      // if (vsA.uiType === vsB.uiType) return 0;
+      // if (vsA.uiType !== "object" && vsB.uiType !== "object") return 0;
+      // if (vsA.uiType === "object") return +1;
+      return -1;
+    };
+
+    const sections = Object.keys(viewSpecification.elements).reduce((acc, cur) => {
+      const elm = viewSpecification.elements[cur];
+      if (isViewElementObjectOrList(elm)) {
+        acc.references.push(elm);
+      } else if (isViewElementChoise(elm)) {
+        acc.choises.push(elm);
+      } else {
+        acc.elements.push(elm);
+      }
+      return acc;
+    }, { elements: [] as ViewElement[], references: [] as ViewElement[], choises: [] as ViewElementChoise[] });
+
+    sections.elements = sections.elements.sort(orderFunc);
+
     return (
-      Object.keys(elements).sort((a, b) => {
-        const vsA = elements[a];
-        const vsB = elements[b];
-        if (keyProperty) {
-          // if (vsA.label === vsB.label) return 0;
-          if (vsA.label === keyProperty) return -1;
-          if (vsB.label === keyProperty) return +1;
+      <>
+        <div className={classes.section} />
+        {sections.elements.length > 0
+          ? (
+            <div className={classes.section}>
+              {sections.elements.map(element => this.renderUIElement(element, viewData, keyProperty, editMode, isNew))}
+            </div>
+          ) : null
         }
-
-        if (vsA.uiType === vsB.uiType) return 0;
-        if (vsA.uiType !== "object" && vsB.uiType !== "object") return 0;
-        if (vsA.uiType === "object") return +1;
-        return -1;
-      }).map(key => {
-        const uiElement = elements[key];
-        const isKey = (uiElement.label === keyProperty);
-        const canEdit = editMode && (isNew || (uiElement.config && !isKey));
-        if (isViewElementSelection(uiElement)) {
-          let error = ""
-          const value = String(viewData[uiElement.id]).toLowerCase();
-          if (uiElement.mandatory && !!value) {
-            error = "Error";
-          }
-          return (canEdit || viewData[uiElement.id] != null
-            ? (<FormControl key={uiElement.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
-              <InputLabel htmlFor={`select-${uiElement.id}`} >{uiElement.label}</InputLabel>
-              <Select
-                required={!!uiElement.mandatory}
-                error={!!error}
-                onChange={(e) => { this.changeValueFor(uiElement.id, e.target.value) }}
-                readOnly={!canEdit}
-                disabled={editMode && !canEdit}
-                value={(viewData[uiElement.id] || '').toString().toLowerCase()}
-                inputProps={{
-                  name: uiElement.id,
-                  id: `select-${uiElement.id}`,
-                }}
-              >
-                {uiElement.options.map(option => (<MenuItem key={option.key} title={option.description} value={option.value}>{option.key}</MenuItem>))}
-              </Select>
-              <FormHelperText>{error}</FormHelperText>
-            </FormControl>)
-            : null
-          );
-        } else if (isViewElementBoolean(uiElement)) {
-          let error = ""
-          const value = String(viewData[uiElement.id]).toLowerCase();
-          if (uiElement.mandatory && value !== "true" && value !== "false") {
-            error = "Error";
-          }
-          return (canEdit || viewData[uiElement.id] != null
-            ? (<FormControl key={uiElement.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
-              <InputLabel htmlFor={`select-${uiElement.id}`} >{uiElement.label}</InputLabel>
-              <Select
-                required={!!uiElement.mandatory}
-                error={!!error}
-                onChange={(e) => { this.changeValueFor(uiElement.id, e.target.value) }}
-                readOnly={!canEdit}
-                disabled={editMode && !canEdit}
-                value={value}
-                inputProps={{
-                  name: uiElement.id,
-                  id: `select-${uiElement.id}`,
-                }}
-              >
-                <MenuItem value={'true'}>{uiElement.trueValue || 'True'}</MenuItem>
-                <MenuItem value={'false'}>{uiElement.falseValue || 'False'}</MenuItem>
-
-              </Select>
-              <FormHelperText>{error}</FormHelperText>
-            </FormControl>)
-            : null
-          );
-        } else if (isViewElementString(uiElement)) {
-          return (
-            <Tooltip key={uiElement.id} title={uiElement.description || ''}>
-              <TextField InputProps={{ readOnly: !canEdit, disabled: editMode && !canEdit }} spellCheck={false} autoFocus margin="dense"
-                id={uiElement.id} label={isKey ? "🔑 " + uiElement.label : uiElement.label} type="text" value={viewData[uiElement.id] || ''}
-                style={{ width: 485, marginLeft: 20, marginRight: 20 }}
-                onChange={(e) => { this.changeValueFor(uiElement.id, e.target.value) }}
-              />
-            </Tooltip>
-          );
-        } else if (isViewElementNumber(uiElement)) {
-          return (
-            <Tooltip key={uiElement.id} title={uiElement.description || ''}>
-              <TextField InputProps={{ readOnly: !canEdit, disabled: editMode && !canEdit, startAdornment: uiElement.units != null ? <InputAdornment position="start">{uiElement.units}</InputAdornment> : undefined }} spellCheck={false} autoFocus margin="dense"
-                id={uiElement.id} label={uiElement.label} type="text" value={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
-                style={{ width: 485, marginLeft: 20, marginRight: 20 }}
-                onChange={(e) => { this.changeValueFor(uiElement.id, e.target.value) }}
-              />
-            </Tooltip>
-          );
-        } else if (isViewElementObjectOrList(uiElement)) {
-          return (
-            <FormControl key={uiElement.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
-              <Tooltip title={uiElement.description || ''}>
-                <Button className={this.props.classes.leftButton} color="secondary" disabled={this.state.editMode} onClick={() => {
-                  this.navigate(`/${uiElement.id}`);
-                }}>{uiElement.label}</Button>
-              </Tooltip>
-            </FormControl>
-          );
-        } else {
-          if (process.env.NODE_ENV !== "production") {
-            console.error(`Unknown type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
-          }
-          return null;
+        {sections.references.length > 0
+          ? (
+            <div className={classes.section}>
+              {sections.references.map(element => (
+                <UIElementReference key={element.id} element={element} disabled={editMode} onOpenReference={(elm) => { this.navigate(`/${elm.id}`) }} />
+              ))}
+            </div>
+          ) : null
         }
-      })
+        {sections.choises.length > 0
+          ? (
+            <div className={classes.section}>
+              {sections.choises.map(element => this.renderUIChoise(element, viewData, keyProperty, editMode, isNew))}
+            </div>
+          ) : null
+        }
+      </>
     );
   };
 
-  private renderUIElementList(listSpecification: ViewSpecification, listKeyProperty: string, listData: { [key: string]: any }[]) {
+  private renderUIViewList(listSpecification: ViewSpecification, listKeyProperty: string, listData: { [key: string]: any }[]) {
     const listElements = listSpecification.elements;
 
     const navigate = (path: string) => {
@@ -381,11 +515,41 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
             }
           </Breadcrumbs>
         </div>
+        {this.state.editMode && (
+          <Fab color="secondary" aria-label="edit" className={this.props.classes.fab} onClick={async () => {
+            this.props.vPath && await this.props.reloadView(this.props.vPath);
+            this.setState({ editMode: false });
+          }} ><ArrowBack /></Fab>
+        ) || null}
         { /* do not show edit if this is a list or it can't be edited */
           !displayAsList && viewSpecification.canEdit && (<div>
             <Fab color="secondary" aria-label="edit" className={this.props.classes.fab} onClick={() => {
               if (this.state.editMode) {
-                this.props.onUpdateData(this.props.vPath!, this.state.viewData);
+
+                // ensure only active choises will be contained
+                const choiseKeys = Object.keys(viewSpecification.elements).filter(elmKey => isViewElementChoise(viewSpecification.elements[elmKey]));
+                const elementsToRemove = choiseKeys.reduce((acc, cur) => {
+                  const choise = viewSpecification.elements[cur] as ViewElementChoise;
+                  const selectedCase = this.state.choises[cur].selectedCase;
+                  Object.keys(choise.cases).forEach(caseKey => {
+                    if (caseKey === selectedCase) return;
+                    const caseElements = choise.cases[caseKey].elements;
+                    Object.keys(caseElements).forEach(caseElementKey => {
+                      acc.push(caseElements[caseElementKey]);
+                    });
+                  });
+                  return acc;
+                }, [] as ViewElement[]);
+
+                const viewData = this.state.viewData;
+                const resultingViewData = viewData && Object.keys(viewData).reduce((acc, cur) => {
+                  if (!elementsToRemove.some(elm => elm.label === cur || elm.id === cur)) {
+                    acc[cur] = viewData[cur];
+                  }
+                  return acc;
+                }, {} as { [key: string]: any });
+
+                this.props.onUpdateData(this.props.vPath!, resultingViewData);
               }
               this.setState({ editMode: !editMode });
             }}>
@@ -431,10 +595,10 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
     return (
       <div>
-        { this.renderBreadCrumps() }
-        { displayAsList && viewData instanceof Array
-            ? this.renderUIElementList(viewSpecification, keyProperty!, viewData)
-            : this.renderUIElement(viewSpecification, viewData!, keyProperty, editMode, isNew)
+        {this.renderBreadCrumps()}
+        {displayAsList && viewData instanceof Array
+          ? this.renderUIViewList(viewSpecification, keyProperty!, viewData)
+          : this.renderUIView(viewSpecification, viewData!, keyProperty, editMode, isNew)
         }
       </div >
     );

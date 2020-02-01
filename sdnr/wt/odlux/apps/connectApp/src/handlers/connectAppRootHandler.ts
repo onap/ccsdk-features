@@ -21,7 +21,7 @@ import { combineActionHandler } from '../../../../framework/src/flux/middleware'
 import { INetworkElementsState, networkElementsActionHandler } from './networkElementsHandler';
 import { IConnectionStatusLogState, connectionStatusLogActionHandler } from './connectionStatusLogHandler';
 import { IInfoNetworkElementsState, infoNetworkElementsActionHandler } from './infoNetworkElementHandler';
-import { SetPanelAction, AddWebUriList, RemoveWebUri } from '../actions/commonNetworkElementsActions';
+import { SetPanelAction, AddWebUriList, RemoveWebUri, SetWeburiSearchBusy } from '../actions/commonNetworkElementsActions';
 import { PanelId } from '../models/panelId';
 import { guiCutThrough } from '../models/guiCutTrough';
 
@@ -41,26 +41,33 @@ const currentOpenPanelHandler: IActionHandler<PanelId> = (state = null, action) 
 }
 
 interface guiCutThroughState {
-  availableWebUris: guiCutThrough[];
-  knownElements: string[];
+  searchedElements: guiCutThrough[];
+  notSearchedElements: string[];
 }
 
-const guiCutThroughHandler: IActionHandler<guiCutThroughState> = (state = { availableWebUris: [], knownElements: [] }, action) => {
+const guiCutThroughHandler: IActionHandler<guiCutThroughState> = (state = { searchedElements: [], notSearchedElements: [] }, action) => {
   if (action instanceof AddWebUriList) {
-    let knownElements: string[];
-    let availableWebUris: guiCutThrough[];
+    let notSearchedElements: string[];
+    let searchedElements: guiCutThrough[];
 
-    knownElements = state.knownElements.concat(action.knownElements);
+    notSearchedElements = state.notSearchedElements.concat(action.notSearchedElements);
 
-    availableWebUris = state.availableWebUris.concat(action.element);
+    //remove elements, which were just searched
+    if (action.newlySearchedElements) {
+      action.newlySearchedElements.forEach(item => {
+        notSearchedElements = notSearchedElements.filter(id => id !== item);
+      })
+    }
 
-    state = { availableWebUris: availableWebUris, knownElements: knownElements }
+    searchedElements = state.searchedElements.concat(action.searchedElements);
+
+    state = { searchedElements: searchedElements, notSearchedElements: notSearchedElements }
 
   } else if (action instanceof RemoveWebUri) {
     const nodeId = action.element;
-    const webUris = state.availableWebUris.filter(item => item.nodeId !== nodeId);
-    const knownElements = state.knownElements.filter(item => item !== nodeId);
-    state = { knownElements: knownElements, availableWebUris: webUris };
+    const webUris = state.searchedElements.filter(item => item.nodeId !== nodeId);
+    const knownElements = state.notSearchedElements.filter(item => item !== nodeId);
+    state = { notSearchedElements: knownElements, searchedElements: webUris };
   }
   return state;
 }

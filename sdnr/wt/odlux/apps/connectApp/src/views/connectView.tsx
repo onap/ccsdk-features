@@ -25,7 +25,7 @@ import { connectionStatusLogReloadAction, createConnectionStatusLogActions } fro
 
 import { NetworkElementsList } from '../components/networkElements';
 import { ConnectionStatusLog } from '../components/connectionStatusLog';
-import { setPanelAction, findWebUrisForGuiCutThroughAsyncAction } from '../actions/commonNetworkElementsActions';
+import { setPanelAction, findWebUrisForGuiCutThroughAsyncAction, SetWeburiSearchBusy } from '../actions/commonNetworkElementsActions';
 import { PanelId } from '../models/panelId';
 import { NetworkElementConnection } from 'models/networkElementConnection';
 
@@ -42,7 +42,8 @@ const mapDispatcher = (dispatcher: IDispatcher) => ({
   onLoadNetworkElements: () => {
     dispatcher.dispatch(networkElementsReloadAction);
   },
-  loadWebUris: findWebUrisForGuiCutThroughAsyncAction(dispatcher.dispatch),
+  loadWebUris: async (networkElements: NetworkElementConnection[]) => { await dispatcher.dispatch(findWebUrisForGuiCutThroughAsyncAction(networkElements)) },
+  isBusy: (busy: boolean) => dispatcher.dispatch(new SetWeburiSearchBusy(busy)),
   onLoadConnectionStatusLog: () => {
     dispatcher.dispatch(connectionStatusLogReloadAction);
   },
@@ -55,13 +56,12 @@ type ConnectApplicationComponentProps = Connect<typeof mapProps, typeof mapDispa
 
 class ConnectApplicationComponent extends React.Component<ConnectApplicationComponentProps>{
 
-  componentDidUpdate = () => {
+  componentDidUpdate = async () => {
     // search for guicutthroughs after networkelements were found
     const networkElements = this.props.netWorkElements;
-    const guiCuttrough = this.props.availableGuiCutroughs;
 
-    if (networkElements.rows.length > 0 && networkElements.total !== guiCuttrough.knownElements.length) {
-      this.props.loadWebUris(networkElements.rows, guiCuttrough.knownElements);
+    if (networkElements.rows.length > 0) {
+      await this.props.loadWebUris(networkElements.rows);
     }
   }
 

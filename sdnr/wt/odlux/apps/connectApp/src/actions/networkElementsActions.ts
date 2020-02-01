@@ -43,7 +43,7 @@ export const editNetworkElementAsyncActionCreator = (element: UpdateNetworkEleme
     const res = await connectService.deleteNetworkElement(element);
   }
   else {
-      const res = await connectService.updateNetworkElement(element);
+    const res = await connectService.updateNetworkElement(element);
   }
   dispatch(updateCurrentViewAsyncAction());
   dispatch(new AddSnackbarNotification({ message: `Successfully modified [${element.id}]`, options: { variant: 'success' } }));
@@ -54,7 +54,7 @@ export const editNetworkElementAsyncActionCreator = (element: UpdateNetworkEleme
 export const removeNetworkElementAsyncActionCreator = (element: UpdateNetworkElement) => async (dispatch: Dispatch) => {
   const res = await connectService.deleteNetworkElement(element);
   await dispatch(unmountNetworkElementAsyncActionCreator(element && element.id));
-  dispatch(updateCurrentViewAsyncAction());
+  await dispatch(updateCurrentViewAsyncAction());
 };
 
 

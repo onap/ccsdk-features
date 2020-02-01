@@ -188,14 +188,20 @@ class ConnectService {
       promises.push(requestRest<any>(path, { method: "GET" })
         .then(result => {
 
-          if (result['network-element'] && result['network-element'].extension) {
+          if (result != null && result['network-element'] && result['network-element'].extension) {
             const webUri = result['network-element'].extension.find((item: any) => item['value-name'] === "webUri")
             if (webUri) {
               webUris.push({ webUri: webUri.value, nodeId: nodeId });
+            } else {
+              webUris.push({ webUri: undefined, nodeId: nodeId });
             }
+          } else {
+            webUris.push({ webUri: undefined, nodeId: nodeId });
           }
         })
-        .catch(error => console.log("network element is unreachable: " + error)))
+        .catch(error => {
+          webUris.push({ webUri: undefined, nodeId: nodeId });
+        }))
 
     })
 
