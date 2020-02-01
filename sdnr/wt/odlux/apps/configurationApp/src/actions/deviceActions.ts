@@ -202,7 +202,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
 
       if (ind === 0) { defaultNS = namespace };
 
-      viewElement = viewSpecification.elements[property];
+      viewElement = viewSpecification.elements[property] || viewSpecification.elements[`${namespace}:${property}`];
       if (!viewElement) throw Error("Property [" + property + "] does not exist.");
 
       if (viewElement.isList && !key) {

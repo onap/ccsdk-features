@@ -1,6 +1,24 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
+
 
 import { Token, Statement, Module, Identity } from "../models/yang";
-import { ViewSpecification, ViewElement, isViewElementObjectOrList, ViewElementBase, isViewElementReference } from "../models/uiModels";
+import { ViewSpecification, ViewElement, isViewElementObjectOrList, ViewElementBase, isViewElementReference, ViewElementChoise, ViewElementBinary, ViewElementString, isViewElementString, isViewElementNumber, ViewElementNumber, Expression, YangRange, ViewElementUnion } from "../models/uiModels";
 import { yangService } from "../services/yangService";
 
 export const splitVPath = (vPath: string, vPathParser: RegExp): RegExpMatchArray[] => {
@@ -238,6 +256,8 @@ class YangLexer {
 export class YangParser {
   private _groupingsToResolve: (() => void)[] = [];
   private _identityToResolve: (() => void)[] = [];
+  private _unionsToResolve: (() => void)[] = [];
+
 
   private _modules: { [name: string]: Module } = {};
   private _views: ViewSpecification[] = [{
@@ -248,7 +268,9 @@ export class YangParser {
     parentView: "0",
     title: "root",
     elements: {},
-   }];
+  }];
+
+  public static ResolveStack = Symbol("ResolveStack");
 
   constructor() {
 
@@ -311,12 +333,12 @@ export class YangParser {
     const revisions = this.extractNodes(rootStatement, "revision");
     module.revisions = {
       ...module.revisions,
-      ...revisions.reduce<{ [version: string]: { }}>((acc, version) => {
+      ...revisions.reduce<{ [version: string]: {} }>((acc, version) => {
         if (!version.arg) {
           throw new Error(`Module [${module.name}] has a version w/o version number.`);
         }
         const description = this.extractValue(version, "description");
-        const reference = this.extractValue(version,"reference");
+        const reference = this.extractValue(version, "reference");
         acc[version.arg] = {
           description,
           reference,
@@ -345,10 +367,10 @@ export class YangParser {
     const imports = this.extractNodes(rootStatement, "import");
     module.imports = {
       ...module.imports,
-      ...imports.reduce < { [key: string]: string }>((acc, imp) => {
+      ...imports.reduce<{ [key: string]: string }>((acc, imp) => {
         const prefix = imp.sub && imp.sub.filter(s => s.key === "prefix");
         if (!imp.arg) {
-           throw new Error(`Module [${module.name}] has an import with neither name nor prefix.`);
+          throw new Error(`Module [${module.name}] has an import with neither name nor prefix.`);
         }
         acc[prefix && prefix.length === 1 && prefix[0].arg || imp.arg] = imp.arg;
         return acc;
@@ -389,8 +411,15 @@ export class YangParser {
   }
 
   public postProcess() {
-    // process all groupings
+
     // execute all post processes like resolving in propper order
+    this._unionsToResolve.forEach(cb => {
+      try { cb(); } catch (error) {
+        console.warn(error.message);
+      }
+    });
+
+    // process all groupings
     this._groupingsToResolve.forEach(cb => {
       try { cb(); } catch (error) {
         console.warn(`Error resolving: [${error.message}]`);
@@ -418,7 +447,7 @@ export class YangParser {
     });
 
     // process Identities
-    const traverseIdentity = (identities : Identity[]) => {
+    const traverseIdentity = (identities: Identity[]) => {
       const result: Identity[] = [];
       for (let identity of identities) {
         if (identity.children && identity.children.length > 0) {
@@ -438,7 +467,7 @@ export class YangParser {
         const identity = module.identities[idKey];
         if (identity.base != null) {
           const base = this.resolveIdentity(identity.base, module);
-          base.children?.push(identity);
+          base.children ?.push(identity);
         } else {
           baseIdentites.push(identity);
         }
@@ -454,7 +483,6 @@ export class YangParser {
       }
     });
   };
-
 
   private _nextId = 1;
   private get nextId() {
@@ -478,7 +506,7 @@ export class YangParser {
   private extractTypeDefinitions(statement: Statement, module: Module, currentPath: string): void {
     const typedefs = this.extractNodes(statement, "typedef");
     typedefs && typedefs.forEach(def => {
-      if (! def.arg) {
+      if (!def.arg) {
         throw new Error(`Module: [${module.name}]. Found typefed without name.`);
       }
       module.typedefs[def.arg] = this.getViewElement(def, module, 0, currentPath, false);
@@ -562,13 +590,14 @@ export class YangParser {
     // extract conditions
     const ifFeature = this.extractValue(statement, "if-feature");
     const whenCondition = this.extractValue(statement, "when");
+    if (whenCondition) console.warn("Found in [" + module.name + "]" + currentPath + " when: " + whenCondition);
 
     // extract all container
     const container = this.extractNodes(statement, "container");
     if (container && container.length > 0) {
       subViews.push(...container.reduce<ViewSpecification[]>((acc, cur) => {
         if (!cur.arg) {
-          throw new Error(`Module: [${module.name}]. Found container without name.`);
+          throw new Error(`Module: [${module.name}]${currentPath}. Found container without name.`);
         }
         const [currentView, subViews] = this.extractSubViews(cur, currentId, module, `${currentPath}/${module.name}:${cur.arg}`);
         elements.push({
@@ -589,11 +618,11 @@ export class YangParser {
     if (lists && lists.length > 0) {
       subViews.push(...lists.reduce<ViewSpecification[]>((acc, cur) => {
         if (!cur.arg) {
-          throw new Error(`Module: [${module.name}]. Found list without name.`);
+          throw new Error(`Module: [${module.name}]${currentPath}. Found list without name.`);
         }
         const key = this.extractValue(cur, "key") || undefined;
         if (config && !key) {
-          throw new Error(`Module: [${module.name}]. Found configurable list without key.`);
+          throw new Error(`Module: [${module.name}]${currentPath}. Found configurable list without key.`);
         }
         const [currentView, subViews] = this.extractSubViews(cur, currentId, module, `${currentPath}/${module.name}:${cur.arg}`);
         elements.push({
@@ -635,10 +664,70 @@ export class YangParser {
 
     const choiceStms = this.extractNodes(statement, "choice");
     if (choiceStms && choiceStms.length > 0) {
-      for (let i = 0; i < choiceStms.length; ++i) {
-        const cases = this.extractNodes(choiceStms[i], "case");
-        console.warn(`Choice found ${choiceStms[i].arg}::${cases.map(c => c.arg).join(";")}`, choiceStms[i]);
-      }
+      elements.push(...choiceStms.reduce<ViewElementChoise[]>((accChoise, curChoise) => {
+        if (!curChoise.arg) {
+          throw new Error(`Module: [${module.name}]${currentPath}. Found choise without name.`);
+        }
+        // extract all cases like containers
+        const cases: { id: string, label: string, description?: string, elements: { [name: string]: ViewElement } }[] = [];
+        const caseStms = this.extractNodes(curChoise, "case");
+        if (caseStms && caseStms.length > 0) {
+          cases.push(...caseStms.reduce((accCase, curCase) => {
+            if (!curCase.arg) {
+              throw new Error(`Module: [${module.name}]${currentPath}/${curChoise.arg}. Found case without name.`);
+            }
+            const description = this.extractValue(curCase, "description") || undefined;
+            const [caseView, caseSubViews] = this.extractSubViews(curCase, parentId, module, `${currentPath}/${module.name}:${curChoise.arg}`);
+            subViews.push(caseView, ...caseSubViews);
+
+            const caseDef: { id: string, label: string, description?: string, elements: { [name: string]: ViewElement } } = {
+              id: parentId === 0 ? `${module.name}:${curCase.arg}` : curCase.arg,
+              label: curCase.arg,
+              description: description,
+              elements: caseView.elements
+            };
+            accCase.push(caseDef);
+            return accCase;
+          }, [] as { id: string, label: string, description?: string, elements: { [name: string]: ViewElement } }[]));
+        }
+
+        // extract all simple cases (one case per leaf, container, etc.)
+        const [choiseView, choiseSubViews] = this.extractSubViews(curChoise, parentId, module, `${currentPath}/${module.name}:${curChoise.arg}`);
+        subViews.push(choiseView, ...choiseSubViews);
+        cases.push(...Object.keys(choiseView.elements).reduce((accElm, curElm) => {
+          const elm = choiseView.elements[curElm];
+          const caseDef: { id: string, label: string, description?: string, elements: { [name: string]: ViewElement } } = {
+            id: elm.id,
+            label: elm.label,
+            description: elm.description,
+            elements: { [elm.id]: elm }
+          };
+          accElm.push(caseDef);
+          return accElm;
+        }, [] as { id: string, label: string, description?: string, elements: { [name: string]: ViewElement } }[]));
+
+        const description = this.extractValue(curChoise, "description") || undefined;
+        const configValue = this.extractValue(curChoise, "config");
+        const config = configValue == null ? true : configValue.toLocaleLowerCase() !== "false";
+
+        const mandatory = this.extractValue(curChoise, "mandatory") === "true" || false;
+
+        const element: ViewElementChoise = {
+          uiType: "choise",
+          id: parentId === 0 ? `${module.name}:${curChoise.arg}` : curChoise.arg,
+          label: curChoise.arg,
+          config: config,
+          mandatory: mandatory,
+          description: description,
+          cases: cases.reduce((acc, cur) => {
+            acc[cur.id] = cur;
+            return acc;
+          }, {} as { [name: string]: { id: string, label: string, description?: string, elements: { [name: string]: ViewElement } } })
+        };
+
+        accChoise.push(element);
+        return accChoise;
+      }, []));
     }
 
     const rpcs = this.extractNodes(statement, "rpc");
@@ -707,16 +796,73 @@ export class YangParser {
     return [viewSpec, subViews];
   }
 
+  // https://tools.ietf.org/html/rfc7950#section-9.3.4
+  private static decimalRange = [
+    { min: -9223372036854775808, max: 9223372036854775807 },
+    { min: -922337203685477580.8, max: 922337203685477580.7 },
+    { min: -92233720368547758.08, max: 92233720368547758.07 },
+    { min: -9223372036854775.808, max: 9223372036854775.807 },
+    { min: -922337203685477.5808, max: 922337203685477.5807 },
+    { min: -92233720368547.75808, max: 92233720368547.75807 },
+    { min: -9223372036854.775808, max: 9223372036854.775807 },
+    { min: -922337203685.4775808, max: 922337203685.4775807 },
+    { min: -92233720368.54775808, max: 92233720368.54775807 },
+    { min: -9223372036.854775808, max: 9223372036.854775807 },
+    { min: -922337203.6854775808, max: 922337203.6854775807 },
+    { min: -92233720.36854775808, max: 92233720.36854775807 },
+    { min: -9223372.036854775808, max: 9223372.036854775807 },
+    { min: -922337.2036854775808, max: 922337.2036854775807 },
+    { min: -92233.72036854775808, max: 92233.72036854775807 },
+    { min: -9223.372036854775808, max: 9223.372036854775807 },
+    { min: -922.3372036854775808, max: 922.3372036854775807 },
+    { min: -92.23372036854775808, max: 92.23372036854775807 },
+    { min: -9.223372036854775808, max: 9.223372036854775807 },
+  ];
+
   /** Extracts the UI View from the type in the cur statement. */
   private getViewElement(cur: Statement, module: Module, parentId: number, currentPath: string, isList: boolean): ViewElement {
 
     const type = this.extractValue(cur, "type");
     const defaultVal = this.extractValue(cur, "default") || undefined;
     const description = this.extractValue(cur, "description") || undefined;
-    const rangeMatch = this.extractValue(cur, "range", /^(\d+)\.\.(\d+)/) || undefined;
 
     const configValue = this.extractValue(cur, "config");
     const config = configValue == null ? true : configValue.toLocaleLowerCase() !== "false";
+
+    const extractRange = (min: number, max: number, property: string = "range"): { expression: Expression<YangRange> | undefined, min: number, max: number } => {
+      const ranges = this.extractValue(this.extractNodes(cur, "type")[0]!, property) || undefined;
+      const range = ranges ?.replace(/min/i, String(min)).replace(/max/i, String(max)).split("|").map(r => {
+        const [minStr, maxStr] = r.split('..');
+        const minValue = Number(minStr);
+        const maxValue = Number(maxStr);
+
+        if (minValue > min) min = minValue;
+        if (maxValue < max) max = maxValue;
+
+        return {
+          min: minValue,
+          max: maxValue
+        };
+      });
+      return {
+        min: min,
+        max: max,
+        expression: range && range.length === 1
+          ? range[0]
+          : range && range.length > 1
+            ? { operation: "OR", arguments: range }
+            : undefined
+      }
+    };
+
+    const extractPattern = (): Expression<RegExp> | undefined => {
+      const pattern = this.extractNodes(this.extractNodes(cur, "type")[0]!, "pattern").map(p => p.arg!).filter(p => !!p).map(p => `^${p}$`);
+      return pattern && pattern.length == 1
+        ? new RegExp(pattern[0])
+        : pattern && pattern.length > 1
+          ? { operation: "AND", arguments: pattern.map(p => new RegExp(p)) }
+          : undefined;
+    }
 
     const mandatory = this.extractValue(cur, "mandatory") === "true" || false;
 
@@ -729,7 +875,7 @@ export class YangParser {
     }
 
     const element: ViewElementBase = {
-      id: parentId === 0 ? `${module.name}:${cur.arg}`: cur.arg,
+      id: parentId === 0 ? `${module.name}:${cur.arg}` : cur.arg,
       label: cur.arg,
       config: config,
       mandatory: mandatory,
@@ -739,10 +885,12 @@ export class YangParser {
     };
 
     if (type === "string") {
+      const length = extractRange(0, +18446744073709551615, "length");
       return ({
         ...element,
         uiType: "string",
-        pattern: this.extractNodes(this.extractNodes(cur, "type")[0]!, "pattern").map(p => p.arg!).filter(p => !!p),
+        length: length.expression,
+        pattern: extractPattern(),
       });
     } else if (type === "boolean") {
       return ({
@@ -750,106 +898,109 @@ export class YangParser {
         uiType: "boolean"
       });
     } else if (type === "uint8") {
+      const range = extractRange(0, +255);
       return ({
         ...element,
         uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : 0,
-        max: rangeMatch ? Number(rangeMatch[1]) : +255,
+        range: range.expression,
+        min: range.min,
+        max: range.max,
         units: this.extractValue(cur, "units") || undefined,
         format: this.extractValue(cur, "format") || undefined,
       });
     } else if (type === "uint16") {
+      const range = extractRange(0, +65535);
       return ({
         ...element,
         uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : 0,
-        max: rangeMatch ? Number(rangeMatch[1]) : +65535,
+        range: range.expression,
+        min: range.min,
+        max: range.max,
         units: this.extractValue(cur, "units") || undefined,
         format: this.extractValue(cur, "format") || undefined,
       });
     } else if (type === "uint32") {
+      const range = extractRange(0, +4294967295);
       return ({
         ...element,
         uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : 0,
-        max: rangeMatch ? Number(rangeMatch[1]) : +4294967295,
+        range: range.expression,
+        min: range.min,
+        max: range.max,
         units: this.extractValue(cur, "units") || undefined,
         format: this.extractValue(cur, "format") || undefined,
       });
     } else if (type === "uint64") {
+      const range = extractRange(0, +18446744073709551615);
       return ({
         ...element,
         uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : 0,
-        max: rangeMatch ? Number(rangeMatch[1]) : +18446744073709551615,
+        range: range.expression,
+        min: range.min,
+        max: range.max,
         units: this.extractValue(cur, "units") || undefined,
         format: this.extractValue(cur, "format") || undefined,
       });
     } else if (type === "int8") {
+      const range = extractRange(-128, +127);
       return ({
         ...element,
         uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : -128,
-        max: rangeMatch ? Number(rangeMatch[1]) : +127,
+        range: range.expression,
+        min: range.min,
+        max: range.max,
         units: this.extractValue(cur, "units") || undefined,
         format: this.extractValue(cur, "format") || undefined,
       });
     } else if (type === "int16") {
+      const range = extractRange(-32768, +32767);
       return ({
         ...element,
         uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : -32768,
-        max: rangeMatch ? Number(rangeMatch[1]) : +32767,
+        range: range.expression,
+        min: range.min,
+        max: range.max,
         units: this.extractValue(cur, "units") || undefined,
         format: this.extractValue(cur, "format") || undefined,
       });
     } else if (type === "int32") {
+      const range = extractRange(-2147483648, +2147483647);
       return ({
         ...element,
         uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : -2147483648,
-        max: rangeMatch ? Number(rangeMatch[1]) : +2147483647,
+        range: range.expression,
+        min: range.min,
+        max: range.max,
         units: this.extractValue(cur, "units") || undefined,
         format: this.extractValue(cur, "format") || undefined,
       });
     } else if (type === "int64") {
+      const range = extractRange(-9223372036854775808, +9223372036854775807);
       return ({
         ...element,
         uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : 0,
-        max: rangeMatch ? Number(rangeMatch[1]) : +18446744073709551615,
+        range: range.expression,
+        min: range.min,
+        max: range.max,
         units: this.extractValue(cur, "units") || undefined,
         format: this.extractValue(cur, "format") || undefined,
-      });
-    } else if (type === "decimal16") {
-      return ({
-        ...element,
-        uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : 0,
-        max: rangeMatch ? Number(rangeMatch[1]) : +18446744073709551615,
-        units: this.extractValue(cur, "units") || undefined,
-        format: this.extractValue(cur, "format") || undefined,
-        fDigits: Number(this.extractValue(this.extractNodes(cur, "type")[0]!, "fraction-digits")) || -1
-      });
-    } else if (type === "decimal32") {
-      return ({
-        ...element,
-        uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : 0,
-        max: rangeMatch ? Number(rangeMatch[1]) : +18446744073709551615,
-        units: this.extractValue(cur, "units") || undefined,
-        format: this.extractValue(cur, "format") || undefined,
-        fDigits: Number(this.extractValue(this.extractNodes(cur, "type")[0]!, "fraction-digits")) || -1
       });
     } else if (type === "decimal64") {
+      // decimalRange
+      const fDigits = Number(this.extractValue(this.extractNodes(cur, "type")[0]!, "fraction-digits")) || -1;
+      if (fDigits === -1) {
+        throw new Error(`Module: [${module.name}][${currentPath}][${cur.arg}]. Found decimal64 with invalid fraction-digits.`);
+      }
+      const range = extractRange(YangParser.decimalRange[fDigits].min, YangParser.decimalRange[fDigits].max);
       return ({
         ...element,
         uiType: "number",
-        min: rangeMatch ? Number(rangeMatch[0]) : 0,
-        max: rangeMatch ? Number(rangeMatch[1]) : +18446744073709551615,
+        fDigits: fDigits,
+        range: range.expression,
+        min: range.min,
+        max: range.max,
         units: this.extractValue(cur, "units") || undefined,
         format: this.extractValue(cur, "format") || undefined,
-        fDigits: Number(this.extractValue(this.extractNodes(cur, "type")[0]!, "fraction-digits")) || -1
       });
     } else if (type === "enumeration") {
       const typeNode = this.extractNodes(cur, "type")[0]!;
@@ -881,7 +1032,7 @@ export class YangParser {
       }
       const refPath = this.resolveReferencePath(vPath, module);
       const resolve = this.resolveReference.bind(this);
-      const res : ViewElement = {
+      const res: ViewElement = {
         ...element,
         uiType: "reference",
         referencePath: refPath,
@@ -912,7 +1063,7 @@ export class YangParser {
         options: []
       };
       this._identityToResolve.push(() => {
-        const identity : Identity = this.resolveIdentity(base, module);
+        const identity: Identity = this.resolveIdentity(base, module);
         if (!identity) {
           throw new Error(`Module: [${module.name}][${currentPath}][${cur.arg}]. Could not resolve identity [${base}].`);
         }
@@ -925,7 +1076,7 @@ export class YangParser {
           description: val.description
         }));
       });
-      return res ;
+      return res;
     } else if (type === "empty") {
       // todo: ❗ handle empty ⚡
       /*  9.11.  The empty Built-In Type
@@ -939,18 +1090,41 @@ export class YangParser {
     } else if (type === "union") {
       // todo: ❗ handle union ⚡
       /* 9.12.  The union Built-In Type */
-      console.warn(`found type: union in [${module.name}][${currentPath}][${element.label}]`);
-      return {
+      const typeNode = this.extractNodes(cur, "type")[0]!;
+      const typeNodes = this.extractNodes(typeNode, "type");
+
+      const resultingElement = {
         ...element,
-        uiType: "string",
+        uiType: "union",
+        elements: []
+      } as ViewElementUnion;
+
+      const resolveUnion = () => {
+        resultingElement.elements.push(...typeNodes.map(node => {
+          const stm: Statement = {
+            ...cur,
+            sub: [
+              ...(cur.sub ?.filter(s => s.key !== "type") || []),
+              node
+            ]
+          };
+          return {
+            ...this.getViewElement(stm, module, parentId, currentPath, isList),
+            id: node.arg!
+          };
+        }));
       };
+
+      this._unionsToResolve.push(resolveUnion);
+
+      return resultingElement;
     } else if (type === "bits") {
       const typeNode = this.extractNodes(cur, "type")[0]!;
       const bitNodes = this.extractNodes(typeNode, "bit");
       return {
         ...element,
         uiType: "bits",
-        flags: bitNodes.reduce<{[name: string]: number | undefined; }>((acc, bitNode) => {
+        flags: bitNodes.reduce<{ [name: string]: number | undefined; }>((acc, bitNode) => {
           if (!bitNode.arg) {
             throw new Error(`Module: [${module.name}][${currentPath}][${cur.arg}]. Found bit without name.`);
           }
@@ -961,23 +1135,58 @@ export class YangParser {
         }, {})
       };
     } else if (type === "binary") {
-      const typeNode = this.extractNodes(cur, "type")[0]!;
-      const length = Number(this.extractValue(typeNode, "length"));
       return {
         ...element,
         uiType: "binary",
-        length: length === length ? length : undefined
+        length: extractRange(0, +18446744073709551615, "length"),
       };
     } else {
       // not a build in type, have to resolve type
-      const typeRef = this.resolveType(type, module);
+      let typeRef = this.resolveType(type, module);
       if (typeRef == null) console.error(new Error(`Could not resolve type ${type} in [${module.name}][${currentPath}].`));
+
+      if (isViewElementString(typeRef)) {
+        typeRef = this.resolveStringType(typeRef, extractPattern(), extractRange(0, +18446744073709551615));
+
+      } else if (isViewElementNumber(typeRef)) {
+        typeRef = this.resolveNumberType(typeRef, extractRange(typeRef.min, typeRef.max));
+      }
+
       return ({
         ...typeRef,
         ...element,
-        description: description
+        description: description,
       }) as ViewElement;
     }
+  }
+
+  private resolveStringType(parentElement: ViewElementString, pattern: Expression<RegExp> | undefined, length: { expression: Expression<YangRange> | undefined, min: number, max: number }) {
+    return {
+      ...parentElement,
+      pattern: pattern != null && parentElement.pattern
+        ? { operation: "AND", arguments: [pattern, parentElement.pattern] }
+        : parentElement.pattern
+          ? parentElement.pattern
+          : pattern,
+      length: length.expression != null && parentElement.length
+        ? { operation: "AND", arguments: [length.expression, parentElement.length] }
+        : parentElement.length
+          ? parentElement.length
+          : length ?.expression,
+    } as ViewElementString;
+  }
+
+  private resolveNumberType(parentElement: ViewElementNumber, range: { expression: Expression<YangRange> | undefined, min: number, max: number }) {
+    return {
+      ...parentElement,
+      range: range.expression != null && parentElement.range
+        ? { operation: "AND", arguments: [range.expression, parentElement.range] }
+        : parentElement.range
+          ? parentElement.range
+          : range,
+      min: range.min,
+      max: range.max,
+    } as ViewElementNumber;
   }
 
   private resolveReferencePath(vPath: string, module: Module) {
@@ -988,10 +1197,9 @@ export class YangParser {
     });
   }
 
-
   private resolveReference(vPath: string, currentPath: string) {
     const vPathParser = /(?:(?:([^\/\[\]\:]+):)?([^\/\[\]]+)(\[[^\]]+\])?)/g // 1 = opt: namespace / 2 = property / 3 = opt: indexPath
-    let element : ViewElement | null = null;
+    let element: ViewElement | null = null;
     let moduleName = "";
 
     const vPathParts = splitVPath(vPath, vPathParser).map(p => ({ ns: p[1], property: p[2], ind: p[3] }));
@@ -999,7 +1207,7 @@ export class YangParser {
       ? splitVPath(currentPath, vPathParser).map(p => ({ ns: p[1], property: p[2], ind: p[3] }))
       : [];
 
-    for (let i = 0; i < vPathParts.length; ++i){
+    for (let i = 0; i < vPathParts.length; ++i) {
       const vPathPart = vPathParts[i];
       if (vPathPart.property === "..") {
         resultPathParts.pop();
@@ -1009,26 +1217,26 @@ export class YangParser {
     }
 
     // resolve element by path
-    for (let j = 0; j < resultPathParts.length;++j){
+    for (let j = 0; j < resultPathParts.length; ++j) {
       const pathPart = resultPathParts[j];
-        if (j===0) {
+      if (j === 0) {
+        moduleName = pathPart.ns;
+        const rootModule = this._modules[moduleName];
+        if (!rootModule) throw new Error("Could not resolve module [" + moduleName + "].\r\n" + vPath);
+        element = rootModule.elements[`${pathPart.ns}:${pathPart.property}`];
+      } else if (element && isViewElementObjectOrList(element)) {
+        const view: ViewSpecification = this._views[+element.viewId];
+        if (moduleName !== pathPart.ns) {
           moduleName = pathPart.ns;
-          const rootModule = this._modules[moduleName];
-          if (!rootModule) throw new Error("Could not resolve module [" + moduleName +"].\r\n" + vPath);
-          element = rootModule.elements[`${pathPart.ns}:${pathPart.property}`];
-        } else if (element && isViewElementObjectOrList(element)) {
-          const view: ViewSpecification = this._views[+element.viewId];
-          if (moduleName !== pathPart.ns) {
-            moduleName = pathPart.ns;
-            element = view.elements[`${moduleName}:${pathPart.property}`];
-          } else {
-            element = view.elements[pathPart.property] || view.elements[`${moduleName}:${pathPart.property}`];
-          }
+          element = view.elements[`${moduleName}:${pathPart.property}`];
         } else {
-          throw new Error("Could not resolve reference.\r\n" + vPath);
+          element = view.elements[pathPart.property] || view.elements[`${moduleName}:${pathPart.property}`];
         }
-        if (!element) throw new Error("Could not resolve path [" + pathPart.property + "] in ["+ currentPath +"] \r\n" + vPath);
+      } else {
+        throw new Error("Could not resolve reference.\r\n" + vPath);
       }
+      if (!element) throw new Error("Could not resolve path [" + pathPart.property + "] in [" + currentPath + "] \r\n" + vPath);
+    }
 
     return element;
   }

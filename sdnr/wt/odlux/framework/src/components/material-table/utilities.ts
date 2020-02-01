@@ -196,6 +196,29 @@ export function createExternal<TData>(callback: DataCallback<TData>, selectState
     }).catch(error => new AddErrorInfoAction(error));
   };
 
+  const reloadActionAsync = async (dispatch: Dispatch, getAppState: () => IApplicationStoreState) => {
+    dispatch(new RefreshAction());
+    const ownState = selectState(getAppState());
+    const filter = { ...ownState.preFilter, ...(ownState.showFilter && ownState.filter || {}) };
+
+    try {
+      const result = await Promise.resolve(callback(ownState.page, ownState.rowsPerPage, ownState.orderBy, ownState.order, filter));
+
+
+      if (ownState.page > 0 && ownState.rowsPerPage * ownState.page > result.total) { //if result is smaller than the currently shown page, new search and repaginate
+
+        let newPage = Math.floor(result.total / ownState.rowsPerPage);
+
+        const repaginationResult = await Promise.resolve(callback(newPage, ownState.rowsPerPage, ownState.orderBy, ownState.order, filter));
+        dispatch(new SetResultAction(repaginationResult));
+      } else {
+        dispatch(new SetResultAction(result));
+      }
+    } catch (error) {
+      new AddErrorInfoAction(error);
+    }
+  };
+
   const createPreActions = (dispatch: Dispatch, skipRefresh: boolean = false) => {
     return {
       onPreFilterChanged: (preFilter: { [key: string]: string }) => {
@@ -258,6 +281,7 @@ export function createExternal<TData>(callback: DataCallback<TData>, selectState
     createActions: createActions,
     createProperties: createProperties,
     createPreActions: createPreActions,
-    actionHandler: externalTableStateActionHandler
+    actionHandler: externalTableStateActionHandler,
+    reloadActionAsync: reloadActionAsync,
   }
 }

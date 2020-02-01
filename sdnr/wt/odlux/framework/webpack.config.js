@@ -191,7 +191,11 @@ module.exports = (env) => {
       },
       proxy: {
         "/oauth2/**/*": {
-          target: "http://10.20.6.29:48181",
+          target: "http://172.18.0.3:8181",
+          secure: false
+        },
+        "/about": {
+          target: "http://172.18.0.3:8181",
           secure: false
         }
       }

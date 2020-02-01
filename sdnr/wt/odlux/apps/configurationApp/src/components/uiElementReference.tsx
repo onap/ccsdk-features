@@ -16,47 +16,33 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { ViewElement, ViewSpecification } from "./uiModels";
+import React from 'react';
+import { Tooltip, Button, FormControl, Theme, createStyles, makeStyles } from '@material-ui/core';
 
-export type Token = {
-  name: string;
-  value: string;
-  start: number;
-  end: number;
-}
+import { ViewElement } from '../models/uiModels';
 
-export type Statement = {
-  key: string;
-  arg?: string;
-  sub?: Statement[];
-}
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  button: {
+    "justifyContent": "left"
+  },
+}));
 
-export type Identity = {
-  id: string,
-  label: string,
-  base?: string,
-  description?: string,
-  reference?: string,
-  children?: Identity[],
-  values?: Identity[],
-}
-
-export type Revision = {
-  description?: string,
-  reference?: string
+type UIElementReferenceProps = {
+  element: ViewElement;
+  disabled: boolean;
+  onOpenReference(element: ViewElement): void;
 };
 
-export type Module = {
-  name: string;
-  namespace?: string;
-  prefix?: string;
-  identities: { [name: string]: Identity };
-  revisions: { [version: string]: Revision };
-  imports: { [prefix: string]: string };
-  features: { [feature: string]: { description?: string } };
-  typedefs: { [type: string]: ViewElement };
-  augments: { [path: string]: ViewSpecification[] };
-  groupings: { [group: string]: ViewSpecification };
-  views: { [view: string]: ViewSpecification };
-  elements: { [view: string]: ViewElement };
+export const UIElementReference: React.FC<UIElementReferenceProps> = (props) => {
+  const classes = useStyles();
+  const { element } = props;
+  return (
+    <FormControl key={element.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
+      <Tooltip title={element.description || ''}>
+        <Button className={classes.button} color="secondary" disabled={props.disabled} onClick={() => {
+          props.onOpenReference(element);
+        }}>{element.label}</Button>
+      </Tooltip>
+    </FormControl>
+  );
 }

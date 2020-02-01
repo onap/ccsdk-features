@@ -31,11 +31,13 @@ export const {
   createActions: createNetworkElementsActions,
   createProperties: createNetworkElementsProperties,
   reloadAction: networkElementsReloadAction,
+  reloadActionAsync: networkElementsReloadActionAsync
 
   // set value action, to change a value
 } = createExternal<NetworkElementConnection>(networkElementsSearchHandler, appState => {
 
-  const webUris = appState.connect.guiCutThrough.availableWebUris;
+  const webUris = appState.connect.guiCutThrough.searchedElements;
+  // add weburi links, if element is connected & weburi available
   if (appState.connect.networkElements.rows && webUris.length > 0) {
 
     appState.connect.networkElements.rows.forEach(element => {
