@@ -4,19 +4,12 @@ The 'Connect' application on OpenDaylight provides up-to-date connectivity infor
 
 ## Views
 
-The graphical user interfaces is divided in three sections.
+The graphical user interfaces is divided in two sections.
 
-### Required Network Elements
+### Network Elements
 
-Required Network Elements are physical network functions, which are planned or expected in the network. This means the identifier, IP addresses and its required configuration is well-known and available in a planning database or in ONAP A&AI.
-
-This view also offer to manually configure/mount the device with the '+' icon. The SDN controller will then start connecting the Netconf server.
-
-### Unknown Network Elements
-
-Most of the physical network function support an automatic registration procedure to the SDN controller. It may  happen, that devices are connected to the SDN Controller but not available in planning data. 
-
-It might be a normal occurrence for very cheap devices, where an entire planning process to too expensive. But is may also happen that the identifier used in planning process differ from the identifier currently configured in the device. 
+Network Elements are physical network functions (PNFs). A table view show configured and connected NetConf Servers to the SDN-R cluster. 
+This view also offer to manually configure/mount the device with the '+' icon. The SDN controller will start connecting the NetConf server.
 
 ### Connection Status Log
 

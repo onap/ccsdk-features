@@ -28,7 +28,7 @@
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>odlparent-lite</artifactId>
         <version>1.5.2-SNAPSHOT</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
