@@ -1,3 +1,21 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
+
 export type ViewElementBase = {
   "id": string;
   "label": string;
@@ -15,7 +33,7 @@ export type ViewElementBase = {
 // https://tools.ietf.org/html/rfc7950#section-9.8
 export type ViewElementBinary = ViewElementBase & {
   "uiType": "binary";
-  "length"?: number;  // number of octets
+  "length"?: Expression<YangRange>;  // number of octets
 }
 
 // https://tools.ietf.org/html/rfc7950#section-9.7.4
@@ -29,16 +47,17 @@ export type ViewElementBits = ViewElementBase & {
 // https://tools.ietf.org/html/rfc7950#section-9
 export type ViewElementString = ViewElementBase & {
   "uiType": "string";
-  "pattern"?: string[];
-  "length"?: string;
+  "pattern"?: Expression<RegExp>;
+  "length"?: Expression<YangRange>;
   "invertMatch"?: true;
 }
 
 // https://tools.ietf.org/html/rfc7950#section-9.3
 export type ViewElementNumber = ViewElementBase & {
   "uiType": "number";
-  "min"?: number;
-  "max"?: number;
+  "min": number;
+  "max": number;
+  "range"?: Expression<YangRange>;
   "units"?: string;
   "format"?: string;
   "fDigits"?: number;
@@ -85,6 +104,16 @@ export type ViewElementReference = ViewElementBase & {
   "ref": (currentPath: string) => ViewElement | null;
 }
 
+export type ViewElementUnion = ViewElementBase & {
+  "uiType": "union";
+  "elements": ViewElement[];
+}
+
+export type ViewElementChoise = ViewElementBase & {
+  "uiType": "choise";
+  "cases": { [name: string]: { id: string, label: string, description?: string, elements: { [name: string]: ViewElement } } };
+}
+
 export type ViewElement =
   | ViewElementBits
   | ViewElementBinary
@@ -94,14 +123,16 @@ export type ViewElement =
   | ViewElementObject
   | ViewElementList
   | ViewElementSelection
-  | ViewElementReference;
+  | ViewElementReference
+  | ViewElementUnion
+  | ViewElementChoise;
 
 export const isViewElementString = (viewElement: ViewElement): viewElement is ViewElementString => {
   return viewElement && viewElement.uiType === "string";
 }
 
 export const isViewElementNumber = (viewElement: ViewElement): viewElement is ViewElementNumber => {
-  return viewElement && viewElement.uiType === "number" ;
+  return viewElement && viewElement.uiType === "number";
 }
 
 export const isViewElementBoolean = (viewElement: ViewElement): viewElement is ViewElementBoolean => {
@@ -128,6 +159,15 @@ export const isViewElementReference = (viewElement: ViewElement): viewElement is
   return viewElement && viewElement.uiType === "reference";
 }
 
+export const isViewElementUnion = (viewElement: ViewElement): viewElement is ViewElementUnion => {
+  return viewElement && viewElement.uiType === "union";
+}
+
+export const isViewElementChoise = (viewElement: ViewElement): viewElement is ViewElementChoise => {
+  return viewElement && viewElement.uiType === "choise";
+}
+
+
 export type ViewSpecification = {
   "id": string;
   "name": string;
@@ -139,4 +179,18 @@ export type ViewSpecification = {
   "uses"?: string[];
   "elements": { [name: string]: ViewElement };
   readonly "canEdit": boolean;
+}
+
+export type YangRange = {
+  min: number,
+  max: number,
+}
+
+export type Expression<T> =
+  | T
+  | Operator<T>;
+
+export type Operator<T> = {
+  operation: "AND" | "OR";
+  arguments: Expression<T>[];
 }

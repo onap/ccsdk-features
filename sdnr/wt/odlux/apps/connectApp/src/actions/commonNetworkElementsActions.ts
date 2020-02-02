@@ -23,7 +23,7 @@ import { Action } from '../../../../framework/src/flux/action';
 import { Dispatch } from '../../../../framework/src/flux/store';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
-import { networkElementsReloadAction } from '../handlers/networkElementsHandler';
+import { networkElementsReloadAction, networkElementsReloadActionAsync } from '../handlers/networkElementsHandler';
 import { connectionStatusLogReloadAction } from '../handlers/connectionStatusLogHandler';
 
 import { PanelId } from '../models/panelId';
@@ -38,7 +38,7 @@ export class SetPanelAction extends Action {
 }
 
 export class AddWebUriList extends Action {
-  constructor(public element: guiCutThrough[], public knownElements: string[]) {
+  constructor(public searchedElements: guiCutThrough[], public notSearchedElements: string[], public newlySearchedElements?: string[]) {
     super();
   }
 }
@@ -53,58 +53,65 @@ export const removeWebUriAction = (nodeId: string) => {
   return new RemoveWebUri(nodeId);
 }
 
+export class SetWeburiSearchBusy extends Action {
+  constructor(public isbusy: boolean) {
+    super();
+  }
+}
+
 let isBusy = false;
-export const findWebUrisForGuiCutThroughAsyncAction = (dispatcher: Dispatch) => (networkElements: NetworkElementConnection[], knownElements: string[]) => {
+export const findWebUrisForGuiCutThroughAsyncAction = (networkElements: NetworkElementConnection[]) => async (dispatcher: Dispatch, getState: () => IApplicationStoreState) => {
 
   // keep method from executing simultanously; state not used because change of iu isn't needed
   if (isBusy)
     return;
   isBusy = true;
 
-  const nodeIds = networkElements.map(element => { return element.id as string });
+  const { connect: { guiCutThrough } } = getState();
 
-  if (knownElements.length > 0) {
+  let notConnectedElements: string[] = [];
+  let elementsToSearch: string[] = [];
+  let prevFoundElements: string[] = [];
 
-    let elementsToSearch: string[] = [];
 
-    nodeIds.forEach(element => {
-      // find index of nodeId
-      const index = knownElements.indexOf(element);
+  networkElements.forEach(item => {
+    const id = item.id as string;
+    if (item.status === "Connected") {
 
-      // if element dosen't exist, add it to list
-      if (index === -1) {
-        elementsToSearch.push(element)
+      // element is connected and is added to search list, if it doesn't exist already
+      const exists = guiCutThrough.searchedElements.filter(element => element.nodeId === id).length > 0;
+      if (!exists) {
+        elementsToSearch.push(id);
+
+        //element was found previously, but not searched for a weburi
+        if (guiCutThrough.notSearchedElements.length > 0 && guiCutThrough.notSearchedElements.includes(id)) {
+          prevFoundElements.push(id);
+        }
       }
-    });
-
-    // if new elements were found, search for weburi
-    if (elementsToSearch.length > 0) {
-      const foundWebUris = connectService.getAllWebUriExtensionsForNetworkElementListAsync(elementsToSearch);
-      foundWebUris.then(result => {
-        dispatcher(new AddWebUriList(result, elementsToSearch));
-        isBusy = false;
-      })
-
-    } else {
-      isBusy = false;
     }
+    else {
+      // element isn't connected and cannot be searched for a weburi
+      if (!guiCutThrough.notSearchedElements.includes(id)) {
+        notConnectedElements.push(item.id as string);
+      }
+    }
+  });
 
-  } else {
-    connectService.getAllWebUriExtensionsForNetworkElementListAsync(nodeIds).then(result => {
-      dispatcher(new AddWebUriList(result, nodeIds));
-      isBusy = false;
-    })
+  if (elementsToSearch.length > 0 || notConnectedElements.length > 0) {
+    const result = await connectService.getAllWebUriExtensionsForNetworkElementListAsync(elementsToSearch);
+    dispatcher(new AddWebUriList(result, notConnectedElements, prevFoundElements));
   }
+  isBusy = false;
 }
 
 export const setPanelAction = (panelId: PanelId) => {
   return new SetPanelAction(panelId);
 }
 
-export const updateCurrentViewAsyncAction = () => (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
+export const updateCurrentViewAsyncAction = () => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
   const { connect: { currentOpenPanel } } = getState();
   if (currentOpenPanel === "NetworkElements") {
-    return dispatch(networkElementsReloadAction);
+    return await dispatch(networkElementsReloadActionAsync);
   }
   else {
     return dispatch(connectionStatusLogReloadAction);

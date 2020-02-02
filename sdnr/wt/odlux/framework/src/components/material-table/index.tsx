@@ -179,7 +179,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
         <TableToolbar tableId={this.props.tableId} numSelected={selected && selected.length} title={this.props.title} customActionButtons={this.props.customActionButtons} onExportToCsv={this.exportToCsv}
           onToggleFilter={toggleFilter} />
         <div className={classes.tableWrapper}>
-          <Table className={classes.table} aria-labelledby="tableTitle">
+          <Table className={classes.table} aria-label={this.props.tableId ? this.props.tableId : 'tableTitle'}>
             <EnhancedTableHead
               columns={columns}
               numSelected={selected && selected.length}
@@ -193,7 +193,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
             <TableBody>
               {showFilter && <EnhancedTableFilter columns={columns} filter={filter} onFilterChanged={this.onFilterChanged} enableSelection={this.props.enableSelection} /> || null}
               {rows // may need ordering here
-                .map((entry: TData & { [key: string]: any }) => {
+                .map((entry: TData & { [key: string]: any }, index) => {
                   const entryId = getId(entry);
                   const isSelected = this.isSelected(entryId);
                   return (
@@ -202,6 +202,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                       onClick={event => this.handleClick(event, entry, entryId)}
                       role="checkbox"
                       aria-checked={isSelected}
+                      aria-label={`${(this.props.tableId ? this.props.tableId : 'table')}-row-${(index + 1)}`}
                       tabIndex={-1}
                       key={entryId}
                       selected={isSelected}

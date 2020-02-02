@@ -60,8 +60,8 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
     await dispatcher.dispatch(editNetworkElementAsyncActionCreator(element));
     await dispatcher.dispatch(mountNetworkElementAsyncActionCreator(mountElement));
   },
-  removeNetworkElement: (element: UpdateNetworkElement) => {
-    dispatcher.dispatch(removeNetworkElementAsyncActionCreator(element));
+  removeNetworkElement: async (element: UpdateNetworkElement) => {
+    await dispatcher.dispatch(removeNetworkElementAsyncActionCreator(element));
     dispatcher.dispatch(removeWebUriAction(element.id));
   }
 });
@@ -158,7 +158,7 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
     const setting = settings[this.props.mode];
     return (
       <Dialog open={this.props.mode !== EditNetworkElementDialogMode.None}>
-        <DialogTitle id="form-dialog-title">{setting.dialogTitle}</DialogTitle>
+        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, "-").toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
         <DialogContent>
           <DialogContentText>
             {setting.dialogDescription}
@@ -179,7 +179,7 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={(event) => {
+          <Button aria-label="dialog-confirm-button" onClick={(event) => {
             this.onApply({
               isRequired: this.state.isRequired,
               id: this.state.nodeId,
@@ -192,7 +192,7 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
             event.preventDefault();
             event.stopPropagation();
           }} > {setting.applyButtonText} </Button>
-          <Button onClick={(event) => {
+          <Button aria-label="dialog-cancel-button" onClick={(event) => {
             this.onCancel();
             event.preventDefault();
             event.stopPropagation();

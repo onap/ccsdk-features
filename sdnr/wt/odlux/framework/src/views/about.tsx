@@ -16,15 +16,66 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from 'react';
+import * as marked from 'marked';
+import * as hljs from 'highlight.js';
+import { requestRestExt } from '../services/restService';
+const defaultRenderer = new marked.Renderer();
+defaultRenderer.link = (href, title, text) => (
+  `<a target="_blank" rel="noopener noreferrer" href="${href}" title="${title}">${text}</a>`
+);
+interface AboutState {
+  content: string | null;
+}
 
-const AboutComponent = () => {
+class AboutComponent extends React.Component<any, AboutState> {
 
-  return (
-    <div>
-      <h2>About</h2>
-      <div style={{ margin: "0 auto" }}>##odlux.version##</div>
-    </div>
-  );
+
+  constructor(props: any) {
+    super(props);
+    this.state = { content: null }
+    this.loadAboutContent();
+  }
+  private loadAboutContent(): void {
+    requestRestExt<string>('/about').then((response) => {
+      this.setState({ content: response.status == 200 ? response.data : `${response.status} ${response.message}` || "Server error" })
+    }).catch((error) => {
+      this.setState({ content: error })
+    })
+  }
+  render() {
+
+    const markedOptions: marked.MarkedOptions = {
+      gfm: true,
+      breaks: false,
+      pedantic: false,
+      sanitize: true,
+      smartLists: true,
+      smartypants: false,
+      langPrefix: 'hljs ',
+      ...({}),
+      highlight: (code, lang) => {
+        if (!!(lang && hljs.getLanguage(lang))) {
+          return hljs.highlight(lang, code).value;
+        }
+        return code;
+      }
+    };
+
+
+    const className = "about-table"
+    const style: React.CSSProperties = {};
+
+    const html = (marked(this.state.content || 'loading', { renderer: markedOptions && markedOptions.renderer || defaultRenderer }));
+
+    return (
+      <div
+        dangerouslySetInnerHTML={{ __html: html }}
+        className={className}
+        style={style}
+      />
+
+    );
+  }
 };
 
 export const About = AboutComponent;
