@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aab0adc_24f329d5",
+        "filename": "sdnr/northbound/a1Adapter/installer/src/assembly/assemble_mvnrepo_zip.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1219
+      },
+      "writtenOn": "2020-02-03T16:52:23Z",
+      "side": 0,
+      "message": "I thought the update would be 2017-2020 not just 2020",
+      "revId": "6af0ccf62efaa371ff337376115a34c8589ca38e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30d314ac_1cdc0411",
+        "filename": "sdnr/wt/devicemanager/provider/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1219
+      },
+      "writtenOn": "2020-02-03T16:52:23Z",
+      "side": 0,
+      "message": "Is it correct to completely remove highstreet here?",
+      "revId": "6af0ccf62efaa371ff337376115a34c8589ca38e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
