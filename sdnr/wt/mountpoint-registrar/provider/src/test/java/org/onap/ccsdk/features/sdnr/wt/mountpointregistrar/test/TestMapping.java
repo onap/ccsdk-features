@@ -18,16 +18,16 @@
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.yangtools.YangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationInputBuilder;
 
 public class TestMapping {
 
-    private final YangToolsMapper mapper = new YangToolsMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
 
     private static Optional<SeverityType> getSeverity(String faultSeverity) {

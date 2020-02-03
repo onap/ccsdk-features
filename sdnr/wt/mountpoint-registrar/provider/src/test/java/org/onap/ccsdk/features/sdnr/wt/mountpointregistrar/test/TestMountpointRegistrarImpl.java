@@ -123,7 +123,7 @@ public class TestMountpointRegistrarImpl {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
             LOG.warn(e.getMessage());
-            Thread.interrupted();
+            Thread.currentThread().interrupt();
         }
     }
 

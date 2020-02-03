@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import org.junit.After;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.FaultConfig;
@@ -70,6 +71,16 @@ public class TestFaultConfig {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 		}
+	}
+	
+	@After
+	public void cleanUp() {
+		File file = new File("test.properties");
+		if (file.exists()) {
+			System.out.println("File exists, Deleting it");
+			file.delete();
+		}
+		
 	}
 
 }

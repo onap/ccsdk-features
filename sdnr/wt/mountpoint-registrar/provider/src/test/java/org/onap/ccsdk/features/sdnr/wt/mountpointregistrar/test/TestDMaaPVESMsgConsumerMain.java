@@ -107,18 +107,18 @@ public class TestDMaaPVESMsgConsumerMain {
 	Map<String, Configuration> configMap = new HashMap<String, Configuration>();
 	DMaaPVESMsgConsumerMain dmaapMain;
 
-//	@Before
+	//	@Before
 	public void preTest1() {
 		try {
-		Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_GENERAL);
-		ConfigurationFileRepresentation configFileRepresentation = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
+			Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_GENERAL);
+			ConfigurationFileRepresentation configFileRepresentation = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
 
-		generalConfig = new GeneralConfig(configFileRepresentation);
-		PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
-		FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
+			generalConfig = new GeneralConfig(configFileRepresentation);
+			PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
+			FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
 
-		configMap.put("pnfRegistration", pnfRegConfig);
-		configMap.put("fault", faultConfig);
+			configMap.put("pnfRegistration", pnfRegConfig);
+			configMap.put("fault", faultConfig);
 		} catch (Exception e) {
 			System.out.println("Failed in preTest execution "+e.getMessage());
 		}
@@ -126,15 +126,15 @@ public class TestDMaaPVESMsgConsumerMain {
 
 	public void preTest2() {
 		try {
-		Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_GENERAL_INVALID);
-		ConfigurationFileRepresentation configFileRepresentation = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
+			Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_GENERAL_INVALID);
+			ConfigurationFileRepresentation configFileRepresentation = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
 
-		generalConfig = new GeneralConfig(configFileRepresentation);
-		PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
-		FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
+			generalConfig = new GeneralConfig(configFileRepresentation);
+			PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
+			FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
 
-		configMap.put("pnfRegistration", pnfRegConfig);
-		configMap.put("fault", faultConfig);
+			configMap.put("pnfRegistration", pnfRegConfig);
+			configMap.put("fault", faultConfig);
 		} catch (Exception e) {
 			System.out.println("Failed in preTest execution "+e.getMessage());
 		}
@@ -146,7 +146,7 @@ public class TestDMaaPVESMsgConsumerMain {
 		assertNotNull(configMap);
 		dmaapMain = new DMaaPVESMsgConsumerMain(configMap);
 	}
-	
+
 	@Test
 	public void testDMaaPVESMsgConsumerMainMapOfStringConfiguration1() {
 		preTest2();
@@ -156,11 +156,17 @@ public class TestDMaaPVESMsgConsumerMain {
 
 	@After
 	public void postTest() {
+		File file = new File("test.properties");
+		if (file.exists()) {
+			System.out.println("File exists, Deleting it");
+			file.delete();
+		}
 		List<DMaaPVESMsgConsumer> consumers = DMaaPVESMsgConsumerMain.getConsumers();
 		for (DMaaPVESMsgConsumer consumer : consumers) {
 			// stop all consumers
 			consumer.stopConsumer();
 		}
 	}
-
 }
+
+

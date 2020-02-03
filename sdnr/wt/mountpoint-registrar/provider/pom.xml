@@ -17,7 +17,7 @@
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
         <version>1.5.2-SNAPSHOT</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
@@ -25,7 +25,7 @@
     <version>0.7.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
-    <name>ccsdk-features-sdnr-wt :: ${project.artifactId}</name>
+    <name>ccsdk-features :: ${project.artifactId}</name>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -38,7 +38,6 @@
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <buildtime>${maven.build.timestamp} UTC</buildtime>
-        <elasticsearch.version>6.4.3</elasticsearch.version>
     </properties>
 
     <dependencies>
@@ -104,12 +103,6 @@
         <dependency>
             <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
             <artifactId>sdnr-wt-devicemanager-model</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-            <artifactId>sdnr-wt-data-provider-database</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
