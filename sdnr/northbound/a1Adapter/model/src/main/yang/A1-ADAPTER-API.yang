@@ -14,6 +14,17 @@ module A1-ADAPTER-API {
         "A1 adapter for Frankfurt";
     }
 
+    grouping a1-near-ric-input {
+      leaf near-rt-ric-id {
+                type string;
+     }
+      leaf host-ip-address {
+                type string;
+     }
+      description
+        "NearRtRIC Id & Host Address to execute the Policy request";
+    }
+    
     grouping a1-adapter-response {
       leaf response-code {
         type string;
@@ -68,37 +79,13 @@ module A1-ADAPTER-API {
 
 ///Flattend interface using RPC
 
-    //Get a comma separated list of near-rt rics, e.g. domain-name1:port1,domainname2:port2
-    //Each item in the returned list will be regarded as one near-rt-ric-id.
-    rpc getNearRT-RICs {
-        // OpenDaylight Fluorine version of restconf cannot handle RPCs with no input
-        input {
-          leaf dummy {
-            type string;
-          }
-        }
-
-        output {
-            uses a1-adapter-response;
-            leaf-list near-rt-ric-id-list {
-                type string;
-            }
-        }
-    }
-
-    //Get health status for a Near-RT-RIC. true - health ok, false - health is not ok.
+    //Get health status for a Near-RT-RIC.
     rpc getHealthCheck {
          input {
-            leaf near-rt-ric-id {
-                type string;
-            }
+            uses a1-near-ric-input;
         }
-
         output {
             uses a1-adapter-response;
-            leaf health-status {
-                type boolean;
-            }
         }
     }
 
@@ -106,9 +93,7 @@ module A1-ADAPTER-API {
     //Each item in the returned list will be regarded as one policy-type-id.
     rpc getPolicyTypes {
         input {
-            leaf near-rt-ric-id {
-                type string;
-            }
+            uses a1-near-ric-input;
         }
         output {
             uses a1-adapter-response;
@@ -118,56 +103,10 @@ module A1-ADAPTER-API {
         }
     }
 
-    //Create a policy type
-    rpc createPolicyType {
-        input {
-            leaf near-rt-ric-id {
-                type string;
-            }
-            leaf policy-type-id {
-                type uint32;
-            }
-            leaf description {
-                type string;
-            }
-            leaf name {
-                type string;
-            }
-            leaf policy-type {
-                type string;
-            }
-            list properties {
-                key "property-name";
-                leaf property-name {
-                  type string {
-                    length "1..64";
-                  }
-                  description
-                    "Individual property name";
-                }
-                list policy-statements {
-                  key "policy-statement";
-                  uses a1-policy-type-create-schema-property-statement;
-                }
-            }
-          }
-       output {
-            uses a1-adapter-response;
-            leaf status {
-                type string;
-            }
-            leaf code {
-                type string;
-            }
-        }
-    }
-
     //Get a policy type
     rpc getPolicyType {
         input {
-            leaf near-rt-ric-id {
-                type string;
-            }
+            uses a1-near-ric-input;
             leaf policy-type-id {
                 type uint32;
             }
@@ -180,7 +119,10 @@ module A1-ADAPTER-API {
             leaf name {
                 type string;
             }
-            leaf policy-type {
+            leaf policy-type-id {
+                type string;
+            }
+            leaf create-schema {
                 type string;
             }
         }
@@ -189,9 +131,7 @@ module A1-ADAPTER-API {
     //Delete a policy type
     rpc deletePolicyType {
         input {
-            leaf near-rt-ric-id {
-                type string;
-            }
+            uses a1-near-ric-input;
             leaf policy-type-id {
                 type uint32;
             }
@@ -205,14 +145,11 @@ module A1-ADAPTER-API {
     //Each item in the returned list will be regarded as one policy-instance-id.
     rpc getPolicyInstances {
         input {
-            leaf near-rt-ric-id {
-                type string;
-            }
+            uses a1-near-ric-input;
             leaf policy-type-id {
                 type uint32;
             }
         }
-
         output {
             uses a1-adapter-response;
             leaf-list policy-instance-id-list {
@@ -224,9 +161,7 @@ module A1-ADAPTER-API {
     //Create a policy instance
     rpc createPolicyInstance {
         input {
-            leaf near-rt-ric-id {
-                type string;
-            }
+            uses a1-near-ric-input;
             leaf policy-type-id {
                 type uint32;
             }
@@ -236,22 +171,16 @@ module A1-ADAPTER-API {
             leaf policy-instance {
                 type string;
             }
-            list properties {
-                key "property-name";
-                uses a1-policy-instance-property;
-            }
         }
         output {
-        uses a1-adapter-response;
-          }
+           uses a1-adapter-response;
+        }
     }
 
     ///Get a policy instance
     rpc getPolicyInstance {
         input {
-            leaf near-rt-ric-id {
-                type string;
-            }
+            uses a1-near-ric-input;
             leaf policy-type-id {
                 type uint32;
             }
@@ -270,9 +199,7 @@ module A1-ADAPTER-API {
     //Delete a policy instance
     rpc deletePolicyInstance {
         input {
-            leaf near-rt-ric-id {
-                type string;
-            }
+            uses a1-near-ric-input;
             leaf policy-type-id {
                 type uint32;
             }
@@ -288,9 +215,7 @@ module A1-ADAPTER-API {
     //Get the status for a policy instance
     rpc getStatus {
         input {
-            leaf near-rt-ric-id {
-                type string;
-            }
+            uses a1-near-ric-input;
             leaf policy-type-id {
                 type uint32;
             }
@@ -333,8 +258,4 @@ module A1-ADAPTER-API {
             uses a1-adapter-response;
         }
     }
-
-
-
-
 }

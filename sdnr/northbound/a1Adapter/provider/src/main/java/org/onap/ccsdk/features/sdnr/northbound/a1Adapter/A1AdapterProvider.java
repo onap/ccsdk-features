@@ -37,10 +37,6 @@ import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyInstanc
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyInstanceInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyInstanceOutput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyInstanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyTypeInput;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyTypeInputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyTypeOutput;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyTypeOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.DeletePolicyInstanceInput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.DeletePolicyInstanceInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.DeletePolicyInstanceOutput;
@@ -53,10 +49,6 @@ import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetHealthCheckInput
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetHealthCheckInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetHealthCheckOutput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetHealthCheckOutputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetNearRTRICsInput;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetNearRTRICsInputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetNearRTRICsOutput;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetNearRTRICsOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetPolicyInstanceInput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetPolicyInstanceInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetPolicyInstanceOutput;
@@ -146,76 +138,6 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
         executor.shutdown();
         rpcRegistration.close();
         LOG.info("Successfully closed provider for {}", APPLICATION_NAME);
-    }
-
-    // RPC getNearRT-RICs
-
-    @Override
-    public ListenableFuture<RpcResult<GetNearRTRICsOutput>> getNearRTRICs(GetNearRTRICsInput input) {
-        final String svcOperation = "getNearRT-RICs";
-
-        Properties parms = new Properties();
-        GetNearRTRICsOutputBuilder serviceDataBuilder = (GetNearRTRICsOutputBuilder) getServiceData(GET_NEARRT_RICS);
-
-        LOG.info("Reached RPC getNearRT-RICs");
-
-        LOG.info(svcOperation + " called.");
-
-        if (input == null) {
-            LOG.debug("exiting " + svcOperation + " because of invalid input");
-            serviceDataBuilder.setResponseCode("Input is null");
-            RpcResult<GetNearRTRICsOutput> rpcResult =
-                    RpcResultBuilder.<GetNearRTRICsOutput>status(true).withResult(serviceDataBuilder.build()).build();
-            return Futures.immediateFuture(rpcResult);
-        }
-
-        // add input to parms
-        LOG.info("Adding INPUT data for " + svcOperation + " input: " + input);
-        GetNearRTRICsInputBuilder inputBuilder = new GetNearRTRICsInputBuilder(input);
-        MdsalHelper.toProperties(parms, inputBuilder.build());
-
-        LOG.info("Printing SLI parameters to be passed");
-
-        // iterate properties file to get key-value pairs
-        for (String key : parms.stringPropertyNames()) {
-            String value = parms.getProperty(key);
-            LOG.info("The SLI parameter in " + key + " is: " + value);
-        }
-
-        // Call SLI sync method
-        try {
-            if (A1AdapterClient.hasGraph("A1-ADAPTER-API", svcOperation, null, "sync")) {
-                LOG.info("A1AdapterClient has a Directed Graph for '" + svcOperation + "'");
-                try {
-                    A1AdapterClient.execute("A1-ADAPTER-API", svcOperation, null, "sync", serviceDataBuilder, parms);
-                } catch (Exception e) {
-                    LOG.error("Caught exception executing service logic for " + svcOperation, e);
-                    serviceDataBuilder.setResponseCode("500");
-                }
-            } else {
-                LOG.error("No service logic active for A1Adapter: '" + svcOperation + "'");
-                serviceDataBuilder.setResponseCode("503");
-            }
-        } catch (Exception e) {
-            LOG.error("Caught exception looking for service logic", e);
-            serviceDataBuilder.setResponseCode("500");
-        }
-
-        String errorCode = serviceDataBuilder.getResponseCode();
-
-        if (!("0".equals(errorCode) || "200".equals(errorCode))) {
-            LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
-        } else {
-            LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for GetNearRTRICs ");
-        }
-
-        RpcResult<GetNearRTRICsOutput> rpcResult =
-                RpcResultBuilder.<GetNearRTRICsOutput>status(true).withResult(serviceDataBuilder.build()).build();
-
-        LOG.info("Successful exit from getNearRT-RICs ");
-
-        return Futures.immediateFuture(rpcResult);
     }
 
     // RPC getHealthCheck
@@ -354,77 +276,6 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
                 RpcResultBuilder.<GetPolicyTypesOutput>status(true).withResult(serviceDataBuilder.build()).build();
 
         LOG.info("Successful exit from getPolicyTypes ");
-
-        return Futures.immediateFuture(rpcResult);
-    }
-
-    // RPC createPolicyType
-
-    @Override
-    public ListenableFuture<RpcResult<CreatePolicyTypeOutput>> createPolicyType(CreatePolicyTypeInput input) {
-        final String svcOperation = "createPolicyType";
-
-        Properties parms = new Properties();
-        CreatePolicyTypeOutputBuilder serviceDataBuilder =
-                (CreatePolicyTypeOutputBuilder) getServiceData(CREATE_POLICY_TYPE);
-
-        LOG.info("Reached RPC createPolicyType");
-
-        LOG.info(svcOperation + " called.");
-
-        if (input == null) {
-            LOG.debug("exiting " + svcOperation + " because of invalid input");
-            serviceDataBuilder.setResponseCode("Input is null");
-            RpcResult<CreatePolicyTypeOutput> rpcResult = RpcResultBuilder.<CreatePolicyTypeOutput>status(true)
-                    .withResult(serviceDataBuilder.build()).build();
-            return Futures.immediateFuture(rpcResult);
-        }
-
-        // add input to parms
-        LOG.info("Adding INPUT data for " + svcOperation + " input: " + input);
-        CreatePolicyTypeInputBuilder inputBuilder = new CreatePolicyTypeInputBuilder(input);
-        MdsalHelper.toProperties(parms, inputBuilder.build());
-
-        LOG.info("Printing SLI parameters to be passed");
-
-        // iterate properties file to get key-value pairs
-        for (String key : parms.stringPropertyNames()) {
-            String value = parms.getProperty(key);
-            LOG.info("The SLI parameter in " + key + " is: " + value);
-        }
-
-        // Call SLI sync method
-        try {
-            if (A1AdapterClient.hasGraph("A1-ADAPTER-API", svcOperation, null, "sync")) {
-                LOG.info("A1AdapterClient has a Directed Graph for '" + svcOperation + "'");
-                try {
-                    A1AdapterClient.execute("A1-ADAPTER-API", svcOperation, null, "sync", serviceDataBuilder, parms);
-                } catch (Exception e) {
-                    LOG.error("Caught exception executing service logic for " + svcOperation, e);
-                    serviceDataBuilder.setResponseCode("500");
-                }
-            } else {
-                LOG.error("No service logic active for A1Adapter: '" + svcOperation + "'");
-                serviceDataBuilder.setResponseCode("503");
-            }
-        } catch (Exception e) {
-            LOG.error("Caught exception looking for service logic", e);
-            serviceDataBuilder.setResponseCode("500");
-        }
-
-        String errorCode = serviceDataBuilder.getResponseCode();
-
-        if (!("0".equals(errorCode) || "200".equals(errorCode))) {
-            LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
-        } else {
-            LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseMessage("A1 Adapter Executed for CreatePolicyType");
-        }
-
-        RpcResult<CreatePolicyTypeOutput> rpcResult =
-                RpcResultBuilder.<CreatePolicyTypeOutput>status(true).withResult(serviceDataBuilder.build()).build();
-
-        LOG.info("Successful exit from createPolicyType ");
 
         return Futures.immediateFuture(rpcResult);
     }
@@ -1008,14 +859,10 @@ public class A1AdapterProvider implements AutoCloseable, A1ADAPTERAPIService {
 
     protected Builder<?> getServiceData(String svcOperation) {
         switch (svcOperation) {
-            case GET_NEARRT_RICS:
-                return new GetNearRTRICsOutputBuilder();
             case GET_HEALTH_CHECK:
                 return new GetHealthCheckOutputBuilder();
             case GET_POLICY_TYPES:
                 return new GetPolicyTypesOutputBuilder();
-            case CREATE_POLICY_TYPE:
-                return new CreatePolicyTypeOutputBuilder();
             case GET_POLICY_TYPE:
                 return new GetPolicyTypeOutputBuilder();
             case DELETE_POLICY_TYPE:
