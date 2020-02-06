@@ -19,6 +19,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -77,6 +78,8 @@ public class TestBaseHttpClient {
 			fail(e.getMessage());
 		}
 		assertNotNull(response);
+		assertTrue(response.isSuccess());
+		System.out.println(response.toString());
 		assertEquals(RESPONSE_POST, response.body);
 		try {
 			response= httpClient.sendRequest(TESTURI, HTTPMETHOD_PUT, "{}", headers );

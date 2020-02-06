@@ -371,7 +371,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
          * @return QueryBuilder for older elements related to timestamp
          */
         private static QueryBuilder getQueryForTimeStamp(String netconfTimeStamp) {
-            return new RangeQueryBuilder("event.timeStamp").lte(netconfTimeStamp);
+            return new RangeQueryBuilder("timestamp").lte(netconfTimeStamp);
         }
     }
     private static class EsFaultLogDevicemanager {

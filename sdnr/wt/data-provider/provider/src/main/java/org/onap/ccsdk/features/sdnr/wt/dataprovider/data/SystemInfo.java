@@ -163,43 +163,43 @@ public class SystemInfo {
 			printValue(sb, "Garbage collector", maxNameLen, val);
 		}
 
-		if (showMemoryPools) {
-			List<MemoryPoolMXBean> memoryPools = ManagementFactory.getMemoryPoolMXBeans();
-			sb.append("Memory Pools\n");
-			printValue(sb, "Total Memory Pools", maxNameLen, printLong(memoryPools.size()));
-			String spaces4 = "   ";
-			for (MemoryPoolMXBean pool : memoryPools) {
-				String name = pool.getName();
-				MemoryType type = pool.getType();
-				printValue(sb, spaces4 + "Pool (" + type + ")", maxNameLen, name);
-
-				// PeakUsage/CurrentUsage
-				MemoryUsage peakUsage = pool.getPeakUsage();
-				MemoryUsage usage = pool.getUsage();
-
-				if (usage != null && peakUsage != null) {
-					long init = peakUsage.getInit();
-					long used = peakUsage.getUsed();
-					long committed = peakUsage.getCommitted();
-					long max = peakUsage.getMax();
-					sb.append(spaces4 + spaces4 + "Peak Usage\n");
-					printValue(sb, spaces4 + spaces4 + spaces4 + "init", maxNameLen, printLong(init));
-					printValue(sb, spaces4 + spaces4 + spaces4 + "used", maxNameLen, printLong(used));
-					printValue(sb, spaces4 + spaces4 + spaces4 + "committed", maxNameLen, printLong(committed));
-					printValue(sb, spaces4 + spaces4 + spaces4 + "max", maxNameLen, printLong(max));
-
-					init = usage.getInit();
-					used = usage.getUsed();
-					committed = usage.getCommitted();
-					max = usage.getMax();
-					sb.append(spaces4 + spaces4 + "Current Usage\n");
-					printValue(sb, spaces4 + spaces4 + spaces4 + "init", maxNameLen, printLong(init));
-					printValue(sb, spaces4 + spaces4 + spaces4 + "used", maxNameLen, printLong(used));
-					printValue(sb, spaces4 + spaces4 + spaces4 + "committed", maxNameLen, printLong(committed));
-					printValue(sb, spaces4 + spaces4 + spaces4 + "max", maxNameLen, printLong(max));
-				}
-			}
-		}
+//		if (showMemoryPools) {
+//			List<MemoryPoolMXBean> memoryPools = ManagementFactory.getMemoryPoolMXBeans();
+//			sb.append("Memory Pools\n");
+//			printValue(sb, "Total Memory Pools", maxNameLen, printLong(memoryPools.size()));
+//			String spaces4 = "   ";
+//			for (MemoryPoolMXBean pool : memoryPools) {
+//				String name = pool.getName();
+//				MemoryType type = pool.getType();
+//				printValue(sb, spaces4 + "Pool (" + type + ")", maxNameLen, name);
+//
+//				// PeakUsage/CurrentUsage
+//				MemoryUsage peakUsage = pool.getPeakUsage();
+//				MemoryUsage usage = pool.getUsage();
+//
+//				if (usage != null && peakUsage != null) {
+//					long init = peakUsage.getInit();
+//					long used = peakUsage.getUsed();
+//					long committed = peakUsage.getCommitted();
+//					long max = peakUsage.getMax();
+//					sb.append(spaces4 + spaces4 + "Peak Usage\n");
+//					printValue(sb, spaces4 + spaces4 + spaces4 + "init", maxNameLen, printLong(init));
+//					printValue(sb, spaces4 + spaces4 + spaces4 + "used", maxNameLen, printLong(used));
+//					printValue(sb, spaces4 + spaces4 + spaces4 + "committed", maxNameLen, printLong(committed));
+//					printValue(sb, spaces4 + spaces4 + spaces4 + "max", maxNameLen, printLong(max));
+//
+//					init = usage.getInit();
+//					used = usage.getUsed();
+//					committed = usage.getCommitted();
+//					max = usage.getMax();
+//					sb.append(spaces4 + spaces4 + "Current Usage\n");
+//					printValue(sb, spaces4 + spaces4 + spaces4 + "init", maxNameLen, printLong(init));
+//					printValue(sb, spaces4 + spaces4 + spaces4 + "used", maxNameLen, printLong(used));
+//					printValue(sb, spaces4 + spaces4 + spaces4 + "committed", maxNameLen, printLong(committed));
+//					printValue(sb, spaces4 + spaces4 + spaces4 + "max", maxNameLen, printLong(max));
+//				}
+//			}
+//		}
 
 		sb.append("Classes\n");
 		printValue(sb, "Current classes loaded", maxNameLen, printLong(cl.getLoadedClassCount()));

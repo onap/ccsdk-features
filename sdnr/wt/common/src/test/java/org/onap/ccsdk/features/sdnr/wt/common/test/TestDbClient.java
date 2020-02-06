@@ -22,9 +22,11 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.onap.ccsdk.features.sdnr.wt.common.database.IsEsObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
+import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 
 public class TestDbClient {
@@ -56,16 +58,99 @@ public class TestDbClient {
 		//Update
 		esId= dbClient.doUpdateOrCreate(IDX, ID, JSON2);
 		assertEquals("update response not successfull",ID,esId);
-		//Verify
+		//check that update with null fails
+		assertNull("update with id null should not be possible",dbClient.doUpdateOrCreate(IDX,null,JSON2));
+		//Verify update
 		result = dbClient.doReadByQueryJsonData( IDX, QueryBuilders.matchQuery("_id", ID));
 		assertEquals("amount of results is wrong",1,result.getTotal());
 		assertEquals("data not valid", JSON2,result.getHits().get(0).getSourceAsString());
+		//test second read
+		String resStr = dbClient.doReadJsonData(IDX, new IsEsObject() {
+			
+			@Override
+			public void setEsId(String id) {
+				
+			}
+			
+			@Override
+			public String getEsId() {
+				return ID;
+			}
+		});
+		//test all read
+		result = dbClient.doReadAllJsonData(IDX);
+		assertNotNull("all read not working",result);
+		
+		assertEquals("read works not as expected", JSON2,resStr);
 		//Delete
-		boolean del=dbClient.doRemove(IDX, ID);
+		boolean del=dbClient.doRemove(IDX, new IsEsObject() {
+			
+			@Override
+			public void setEsId(String id) {
+			
+			}
+			@Override
+			public String getEsId() {
+				return ID;
+			}
+		});
 		assertTrue("item not deleted",del);
 		//Verify
 		result = dbClient.doReadByQueryJsonData(IDX, QueryBuilders.matchQuery("_id", ID));
 		assertEquals("amount of results is wrong",0,result.getTotal());
+		
+		
+		
+	}
+	@Test
+	public void testCRUD2() {
+		final String IDX = "test23-knmoinsd";
+		final String ID = "abcddd";
+		final String JSON = "{\"data\":{\"inner\":\"more\"}}";
+		final String JSON2 = "{\"data\":{\"inner\":\"more2\"}}";
+		//Create
+		String esId=dbClient.doWriteRaw(IDX, ID, JSON);
+		assertEquals("inserted id is wrong",ID,esId);
+		//Read
+		SearchResult<SearchHit> result = dbClient.doReadByQueryJsonData(IDX, QueryBuilders.matchQuery("_id", ID));
+		assertEquals("amount of results is wrong",1,result.getTotal());
+		assertEquals("data not valid", JSON,result.getHits().get(0).getSourceAsString());
+		QueryBuilder matchQuery = QueryBuilders.matchQuery("_id", ID);
+		//Update
+		assertTrue("update response not successfull",dbClient.doUpdate(IDX, JSON2,matchQuery ));
+		//check that update with null fails
+		assertNull("update with id null should not be possible",dbClient.doUpdateOrCreate(IDX,null,JSON2));
+		//Verify update
+		result = dbClient.doReadByQueryJsonData( IDX, QueryBuilders.matchQuery("_id", ID));
+		assertEquals("amount of results is wrong",1,result.getTotal());
+		assertEquals("data not valid", JSON2,result.getHits().get(0).getSourceAsString());
+		//test second read
+		String resStr = dbClient.doReadJsonData(IDX, new IsEsObject() {
+			
+			@Override
+			public void setEsId(String id) {
+				
+			}
+			
+			@Override
+			public String getEsId() {
+				return ID;
+			}
+		});
+		//test all read
+		result = dbClient.doReadAllJsonData(IDX);
+		assertNotNull("all read not working",result);
+		
+		assertEquals("read works not as expected", JSON2,resStr);
+		//Delete
+		int del=dbClient.doRemove(IDX, matchQuery);
+		assertTrue("item not deleted",del>0);
+		//Verify
+		result = dbClient.doReadByQueryJsonData(IDX, QueryBuilders.matchQuery("_id", ID));
+		assertEquals("amount of results is wrong",0,result.getTotal());
+		
+		
+		
 	}
 
 }
