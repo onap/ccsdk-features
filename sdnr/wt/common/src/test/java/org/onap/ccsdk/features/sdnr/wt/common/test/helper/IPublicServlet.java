@@ -19,8 +19,7 @@
  * ============LICENSE_END=========================================================
  */
 
-
-package org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper;
+package org.onap.ccsdk.features.sdnr.wt.common.test.helper;
 
 import java.io.IOException;
 

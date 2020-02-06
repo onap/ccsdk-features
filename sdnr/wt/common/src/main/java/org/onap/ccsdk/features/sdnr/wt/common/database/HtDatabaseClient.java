@@ -64,19 +64,16 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
  		this(hosts,REFRESH_AFTER_REWRITE_DEFAULT);
  	}
     public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite) {
- 		super(hosts);
- 		this.doRefreshAfterWrite = refreshAfterWrite;
- 	}
-
-    public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite,String username,String password) {
- 		super(hosts,username,password);
- 		this.doRefreshAfterWrite = refreshAfterWrite;
+ 		this(hosts,refreshAfterWrite,null,null);
  	}
     public HtDatabaseClient(HostInfo[] hosts,String username,String password) {
  		this(hosts,REFRESH_AFTER_REWRITE_DEFAULT,username,password);
  	}
-
-
+    public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite,String username,String password) {
+ 		super(hosts,username,password);
+ 		this.doRefreshAfterWrite = refreshAfterWrite;
+ 	}
+   
 
     /*----------------------------------
      * Functions
@@ -236,7 +233,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
    
 	@Override
 	public String doUpdateOrCreate(String dataTypeName, String esId, String json) {
-			return this.doUpdateOrCreate(dataTypeName, esId, json,null);
+		return this.doUpdateOrCreate(dataTypeName, esId, json,null);
 	}
 
 
@@ -262,7 +259,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 		return success ? esId : null;
 	}
 	@Override
-	public String doUpdate(String dataTypeName, String json, QueryBuilder query) {
+	public boolean doUpdate(String dataTypeName, String json, QueryBuilder query) {
 		boolean success = false;
 		UpdateByQueryRequest request = new UpdateByQueryRequest(dataTypeName, dataTypeName );
 		request.source(new JSONObject(json),query);
@@ -275,7 +272,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 		if(this.doRefreshAfterWrite) {
 			this.doRefresh(dataTypeName);
 		}
-		return success?"":null;
+		return success;
 	}
 
 

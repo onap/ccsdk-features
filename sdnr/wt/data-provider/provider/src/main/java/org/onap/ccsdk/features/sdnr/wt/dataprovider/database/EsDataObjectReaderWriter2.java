@@ -204,7 +204,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
      * @param query for write of specific attributes
      * @return json string with new Object
      */
-    public @Nullable <S extends DataObject> String update(S object, QueryBuilder query) {
+    public @Nullable <S extends DataObject> boolean update(S object, QueryBuilder query) {
         if (object != null && writeInterfaceClazz.isInstance(object)) {
             try {
                 String json = yangtoolsMapper.writeValueAsString(object);
@@ -216,7 +216,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
             LOG.error("Type {} does not provide interface {}", object!=null?object.getClass().getName():"null",
                     writeInterfaceClazz.getName());
         }
-        return null;
+        return false;
     }
     /**
      * Write/ update partial child object to database with specific id Write if not

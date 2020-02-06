@@ -21,7 +21,6 @@
  * ============LICENSE_END=======================================================
  *
  */
-
 package org.onap.ccsdk.features.sdnr.wt.common.file;
 
 import java.io.File;

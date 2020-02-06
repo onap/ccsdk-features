@@ -114,7 +114,7 @@ public class TestCRUDforDatabase {
 
     private static ElasticSearchDataProvider dbProvider;
     private static HtDatabaseClient dbRawProvider;
-    private static HostInfo[] hosts = new HostInfo[] { new HostInfo("localhost", Integer
+    public static HostInfo[] hosts = new HostInfo[] { new HostInfo("localhost", Integer
             .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200")) };
 
     @BeforeClass
@@ -125,7 +125,7 @@ public class TestCRUDforDatabase {
         dbRawProvider = new HtDatabaseClient(hosts);
     }
 
-    private static void trySleep(long ms) {
+    public static void trySleep(long ms) {
         try {
             Thread.sleep(ms);
         } catch (Exception e) {
@@ -133,7 +133,7 @@ public class TestCRUDforDatabase {
         }
     }
 
-    private static void trySleep() {
+    public static void trySleep() {
         trySleep(0);
     }
 
@@ -1183,8 +1183,8 @@ public class TestCRUDforDatabase {
 
               // == UPDATE ==============================
 
-              String shouldbeEmpty = dbRawProvider.doUpdate(Entity.Historicalperformance24h.getName(), "{'uuid-interface':'LTP-TEST-MWP-097'}", QueryBuilders.termQuery("_id", aDbId));
-              assertEquals("",shouldbeEmpty);
+              boolean success = dbRawProvider.doUpdate(Entity.Historicalperformance24h.getName(), "{'uuid-interface':'LTP-TEST-MWP-097'}", QueryBuilders.termQuery("_id", aDbId));
+              assertTrue("update dbentry not succeeded",success);
               try {
               readltpResult = dbProvider.readPmdata24hLtpList(readLtp);
         } catch (Exception e) {

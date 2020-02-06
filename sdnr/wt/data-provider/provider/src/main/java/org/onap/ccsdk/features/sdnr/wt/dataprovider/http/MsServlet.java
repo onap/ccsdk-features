@@ -39,9 +39,9 @@ public class MsServlet extends BaseServlet {
 	private static final long serialVersionUID = -5361461082028405171L;
 	private static final String OFFLINE_RESPONSE_MESSAGE = "MediatorServer interface is offline";
 	private static boolean trustAll = false;
-	private MediatorServerDataProvider entryProvider;
+	private static MediatorServerDataProvider entryProvider;
 	public MsServlet() {
-		super(false);
+		super();
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class MsServlet extends BaseServlet {
 
 	public void triggerReloadDatabaseEntries() {
 		LOG.debug("external reload triggered");
-		this.entryProvider.triggerReloadSync();
+		entryProvider.triggerReloadSync();
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class MsServlet extends BaseServlet {
 	}
 
 	protected String getBaseUrl(String dbServerId) {
-		return this.entryProvider.getHostUrl(dbServerId);
+		return entryProvider.getHostUrl(dbServerId);
 	}
 	@Override
 	protected boolean doTrustAll() {
@@ -97,6 +97,16 @@ public class MsServlet extends BaseServlet {
 	}
 
 	public void setDataProvider(MediatorServerDataProvider mediatorServerDataProvider) {
-		this.entryProvider = mediatorServerDataProvider;
+		entryProvider = mediatorServerDataProvider;
+	}
+
+	@Override
+	protected boolean trustInsecure() {
+		return trustAll;
+	}
+
+	@Override
+	protected boolean isCorsEnabled() {
+		return false;
 	}
 }
