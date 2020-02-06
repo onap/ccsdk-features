@@ -146,7 +146,7 @@ public interface DatabaseClient {
      * @param query query to select item to update
      * @return esId which was updated or null if failed
      */
-    public String doUpdate(String dataTypeName, String json, QueryBuilder query);
+    public boolean doUpdate(String dataTypeName, String json, QueryBuilder query);
 
     /**
      * 

@@ -100,10 +100,9 @@ public abstract class BaseServlet extends HttpServlet {
         sc.init(null, trustCerts, new java.security.SecureRandom());
     }
 
-    private boolean trustInsecure;
-	private boolean isCorsEnabled;
-    public BaseServlet(boolean trustInsecure) {
-       this.trustInsecure = trustInsecure;
+    protected abstract boolean trustInsecure();
+	protected abstract boolean isCorsEnabled();
+    public BaseServlet() {
         this.trysslSetup(true);
     }
 
@@ -118,11 +117,11 @@ public abstract class BaseServlet extends HttpServlet {
      */
     private void trysslSetup(boolean force) {
         // if trustall config has changed
-         if (force || this.doTrustAll() != this.trustInsecure) {
-            this.trustAll(this.trustInsecure);
+         if (force || this.doTrustAll() != this.trustInsecure()) {
+            this.trustAll(this.trustInsecure());
             // resetup ssl config
             try {
-                setupSslTrustAll(this.trustInsecure);
+                setupSslTrustAll(this.trustInsecure());
             } catch (Exception e) {
                 LOG.error("problem setting up SSL: {}", e.getMessage());
             }
@@ -347,7 +346,7 @@ public abstract class BaseServlet extends HttpServlet {
                     resp.setHeader(entry.getKey(), v);
                     s += String.format("%s:%s;", entry.getKey(), v);
                 }
-                if (this.isCorsEnabled) {
+                if (this.isCorsEnabled()) {
                     resp.setHeader("Access-Control-Allow-Origin", "*");
                     // resp.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
                     resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");

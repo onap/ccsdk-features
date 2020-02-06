@@ -61,32 +61,35 @@ public class MediatorServerDataProvider implements AutoCloseable {
 		@Override
 		public void run() {
 			isRunning = true;
-			SearchResult<Data> result = MediatorServerDataProvider.this.mediatorserverRW.doReadAll();
-			List<Data> data = result.getHits();
-			for (Data item : data) {
-				MediatorServerDataProvider.this.entries.put(item.getId(), item);
-			}
+			runIt();
 			isRunning = false;
 		}
 
 	};
 
+	private void runIt() {
+		SearchResult<Data> result = MediatorServerDataProvider.this.mediatorserverRW.doReadAll();
+		List<Data> data = result.getHits();
+		for (Data item : data) {
+			MediatorServerDataProvider.this.entries.put(item.getId(), item);
+		}
+	}
+
+	/**
+	 * 
+	 * @param dbServerId
+	 * @return url or null if not exists
+	 */
 	public String getHostUrl(String dbServerId) {
 		Data info = this.entries.getOrDefault(dbServerId, null);
 		return info == null ? null : info.getUrl();
 	}
 
 	public boolean triggerReloadSync() {
-		new Thread(onTick).start();
-		int i = 20;
-		while (isRunning && i-- > 0) {
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
+		if (!isRunning) {
+			runIt();
 		}
-		return i > 0;
+		return true;
 	}
 
 	@Override
