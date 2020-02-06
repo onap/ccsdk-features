@@ -17,23 +17,13 @@
  ******************************************************************************/
 package org.onap.ccsdk.features.sdnr.wt.common.database;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-
-import javax.net.ssl.SSLContext;
-
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.apache.http.ssl.SSLContexts;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
@@ -98,57 +88,57 @@ public class ExtRestClient {
 		}
 
 	}
-	private class SSLCercAuthHttpClientConfigCallback implements HttpClientConfigCallback {
-
-		private final String certFilename;
-
-		SSLCercAuthHttpClientConfigCallback(String certfile) {
-			this.certFilename = certfile;
-		}
-
-		@Override
-		public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-			if (this.certFilename == null) {
-				return httpClientBuilder;
-			}
-
-			char[] keystorePass = "MY PASSWORD".toCharArray();
-
-			FileInputStream fis = null;
-
-			// Loading KEYSTORE in JKS format
-			KeyStore keyStorePci = null;
-			try {
-				keyStorePci = KeyStore.getInstance(KeyStore.getDefaultType());
-			} catch (KeyStoreException e1) {
-				LOG.warn("unable to load keystore: {}",e1);
-			}
-			if (keyStorePci != null) {
-				try {
-					fis = new FileInputStream(this.certFilename);
-					keyStorePci.load(fis, keystorePass);
-				} catch (Exception e) {
-					LOG.error("Error loading keystore: " + this.certFilename);
-				} finally {
-					if (fis != null) {
-						try {
-							fis.close();
-						} catch (IOException e) {
-
-						}
-					}
-				}
-			}
-			SSLContext sslcontext=null;
-			try {
-				sslcontext = SSLContexts.custom().loadKeyMaterial(keyStorePci, keystorePass).build();
-			} catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException
-					| KeyStoreException e) {
-				LOG.warn("unable to load sslcontext: {}",e);
-			}
-			return httpClientBuilder.setSSLContext(sslcontext);
-		}
-	}
+//	private class SSLCercAuthHttpClientConfigCallback implements HttpClientConfigCallback {
+//
+//		private final String certFilename;
+//
+//		SSLCercAuthHttpClientConfigCallback(String certfile) {
+//			this.certFilename = certfile;
+//		}
+//
+//		@Override
+//		public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+//			if (this.certFilename == null) {
+//				return httpClientBuilder;
+//			}
+//
+//			char[] keystorePass = "MY PASSWORD".toCharArray();
+//
+//			FileInputStream fis = null;
+//
+//			// Loading KEYSTORE in JKS format
+//			KeyStore keyStorePci = null;
+//			try {
+//				keyStorePci = KeyStore.getInstance(KeyStore.getDefaultType());
+//			} catch (KeyStoreException e1) {
+//				LOG.warn("unable to load keystore: {}",e1);
+//			}
+//			if (keyStorePci != null) {
+//				try {
+//					fis = new FileInputStream(this.certFilename);
+//					keyStorePci.load(fis, keystorePass);
+//				} catch (Exception e) {
+//					LOG.error("Error loading keystore: " + this.certFilename);
+//				} finally {
+//					if (fis != null) {
+//						try {
+//							fis.close();
+//						} catch (IOException e) {
+//
+//						}
+//					}
+//				}
+//			}
+//			SSLContext sslcontext=null;
+//			try {
+//				sslcontext = SSLContexts.custom().loadKeyMaterial(keyStorePci, keystorePass).build();
+//			} catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException
+//					| KeyStoreException e) {
+//				LOG.warn("unable to load sslcontext: {}",e);
+//			}
+//			return httpClientBuilder.setSSLContext(sslcontext);
+//		}
+//	}
 
 	private RestClient client;
 

@@ -98,7 +98,7 @@ public class EsConfig implements Configuration, IEsConfig {
 
     public boolean hasBasicAuthCredentials() {
     	return this.getBasicAuthUsername()!=null && this.getBasicAuthPassword()!=null &&
-    			this.getBasicAuthUsername()!="" && this.getBasicAuthPassword()!="" ;
+    			!this.getBasicAuthUsername().isEmpty() && !this.getBasicAuthPassword().isEmpty() ;
     }
     public String getBasicAuthUsername() {
     	return this.configuration.getProperty(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_USERNAME);

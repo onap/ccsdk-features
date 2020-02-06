@@ -21,12 +21,14 @@ import org.json.JSONObject;
 
 public class SearchHit {
 
-	private String index;
-	private String type;
-	private String id;
-	private JSONObject source;
+	private final String index;
+	private final String type;
+	private final String id;
+	private final JSONObject source;
+	private final JSONObject raw;
 
 	public SearchHit(JSONObject o) {
+		this.raw = o;
 		this.index=o.getString("_index");
 		this.type = o.getString("_type");
 		this.id = o.getString("_id");
@@ -43,8 +45,18 @@ public class SearchHit {
 		return this.id;
 	}
 
+	public JSONObject getSource() {
+		return this.source;
+	}
 	public String getSourceAsString() {
 		return this.source.toString();
+	}
+
+	/**
+	 * @return
+	 */
+	public JSONObject getRaw() {
+		return this.raw;
 	}
 
 }
