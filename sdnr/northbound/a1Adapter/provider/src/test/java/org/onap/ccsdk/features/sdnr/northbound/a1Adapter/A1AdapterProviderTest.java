@@ -41,10 +41,6 @@ import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyInstanc
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyInstanceInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyInstanceOutput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyInstanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyTypeInput;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyTypeInputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyTypeOutput;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyTypeOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.DeletePolicyInstanceInput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.DeletePolicyInstanceInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.DeletePolicyInstanceOutput;
@@ -57,10 +53,6 @@ import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetHealthCheckInput
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetHealthCheckInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetHealthCheckOutput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetHealthCheckOutputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetNearRTRICsInput;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetNearRTRICsInputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetNearRTRICsOutput;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetNearRTRICsOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetPolicyInstanceInput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetPolicyInstanceInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetPolicyInstanceOutput;
@@ -134,72 +126,7 @@ public class A1AdapterProviderTest {
 
     }
 
-    @Test
-    public void test_GetNearRT_RICs() throws SvcLogicException, InterruptedException, ExecutionException {
-        GetNearRTRICsOutputBuilder nearRTRICsOutputBuilder = new GetNearRTRICsOutputBuilder();
-        nearRTRICsOutputBuilder.setResponseCode("200");
-        String rpc = "getNearRT-RICs";
-        Properties respProps = new Properties();
-        GetNearRTRICsInputBuilder inputBuilder = new GetNearRTRICsInputBuilder();
-        when(a1AdapterClient.hasGraph(module, rpc, null, mode)).thenReturn(true);
-        when(a1AdapterClient.execute(eq(module), eq(rpc), eq(null), eq(mode), any(GetNearRTRICsOutputBuilder.class),
-                any(Properties.class))).thenReturn(respProps);
-        when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) nearRTRICsOutputBuilder);
-        ListenableFuture<RpcResult<GetNearRTRICsOutput>> result =
-                a1AdapterProviderMock.getNearRTRICs(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
-    }
 
-    @Test
-    public void test_GetNearRT_RICs_With_No_Input() throws SvcLogicException, InterruptedException, ExecutionException {
-        GetNearRTRICsInput getNearRTRICsInput = null;
-        String rpc = "getNearRT-RICs";
-        GetNearRTRICsOutputBuilder nearRTRICsOutputBuilder = new GetNearRTRICsOutputBuilder();
-        when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) nearRTRICsOutputBuilder);
-        ListenableFuture<RpcResult<GetNearRTRICsOutput>> result =
-                a1AdapterProviderMock.getNearRTRICs(getNearRTRICsInput);
-        assertEquals("Input is null", result.get().getResult().getResponseCode());
-    }
-
-    @Test
-    public void test_GetNearRT_RICs_With_No_DG() throws SvcLogicException, InterruptedException, ExecutionException {
-        GetNearRTRICsOutputBuilder nearRTRICsOutputBuilder = new GetNearRTRICsOutputBuilder();
-        String rpc = "getNearRT-RICs";
-        when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) nearRTRICsOutputBuilder);
-        GetNearRTRICsInputBuilder inputBuilder = new GetNearRTRICsInputBuilder();
-        when(a1AdapterClient.hasGraph(module, rpc, null, mode)).thenReturn(Boolean.FALSE);
-        ListenableFuture<RpcResult<GetNearRTRICsOutput>> result =
-                a1AdapterProviderMock.getNearRTRICs(inputBuilder.build());
-        assertEquals("503", result.get().getResult().getResponseCode());
-    }
-
-    @Test
-    public void test_GetNearRT_RICs_With_DG_Exception()
-            throws SvcLogicException, InterruptedException, ExecutionException {
-        GetNearRTRICsOutputBuilder nearRTRICsOutputBuilder = new GetNearRTRICsOutputBuilder();
-        String rpc = "getNearRT-RICs";
-        when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) nearRTRICsOutputBuilder);
-        GetNearRTRICsInputBuilder inputBuilder = new GetNearRTRICsInputBuilder();
-        when(a1AdapterClient.hasGraph(module, rpc, null, mode)).thenThrow(new SvcLogicException());
-        ListenableFuture<RpcResult<GetNearRTRICsOutput>> result =
-                a1AdapterProviderMock.getNearRTRICs(inputBuilder.build());
-        assertEquals("500", result.get().getResult().getResponseCode());
-    }
-
-    @Test
-    public void test_GetNearRT_RICs_With_DG_Execute_Exception()
-            throws SvcLogicException, InterruptedException, ExecutionException {
-        GetNearRTRICsOutputBuilder nearRTRICsOutputBuilder = new GetNearRTRICsOutputBuilder();
-        String rpc = "getNearRT-RICs";
-        when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) nearRTRICsOutputBuilder);
-        GetNearRTRICsInputBuilder inputBuilder = new GetNearRTRICsInputBuilder();
-        when(a1AdapterClient.hasGraph(module, rpc, null, mode)).thenReturn(true);
-        when(a1AdapterClient.execute(eq(module), eq(rpc), eq(null), eq(mode), any(GetNearRTRICsOutputBuilder.class),
-                any(Properties.class))).thenThrow(new SvcLogicException());
-        ListenableFuture<RpcResult<GetNearRTRICsOutput>> result =
-                a1AdapterProviderMock.getNearRTRICs(inputBuilder.build());
-        assertEquals("500", result.get().getResult().getResponseCode());
-    }
 
     @Test
     public void test_getHealthCheck() throws SvcLogicException, InterruptedException, ExecutionException {
@@ -214,7 +141,7 @@ public class A1AdapterProviderTest {
                 any(Properties.class))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetHealthCheckOutput>> result =
                 a1AdapterProviderMock.getHealthCheck(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
+        assertEquals("200", result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -281,7 +208,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetPolicyTypesOutput>> result =
                 a1AdapterProviderMock.getPolicyTypes(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
+        assertEquals("200", result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -335,73 +262,6 @@ public class A1AdapterProviderTest {
         assertEquals("500", result.get().getResult().getResponseCode());
     }
 
-    @Test
-    public void test_createPolicyType() throws SvcLogicException, InterruptedException, ExecutionException {
-        CreatePolicyTypeOutputBuilder createPolicyTypeOutputBuilder = new CreatePolicyTypeOutputBuilder();
-        createPolicyTypeOutputBuilder.setResponseCode("200");
-        String rpc = "createPolicyType";
-        when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) createPolicyTypeOutputBuilder);
-        Properties respProps = new Properties();
-        CreatePolicyTypeInputBuilder inputBuilder = new CreatePolicyTypeInputBuilder();
-        when(a1AdapterClient.hasGraph(module, rpc, null, mode)).thenReturn(true);
-        when(a1AdapterClient.execute(eq(module), eq(rpc), eq(null), eq(mode), any(CreatePolicyTypeOutputBuilder.class),
-                eq(null))).thenReturn(respProps);
-        ListenableFuture<RpcResult<CreatePolicyTypeOutput>> result =
-                a1AdapterProviderMock.createPolicyType(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
-    }
-
-    @Test
-    public void test_createPolicyType_With_No_Input()
-            throws SvcLogicException, InterruptedException, ExecutionException {
-        CreatePolicyTypeInput createPolicyTypeInput = null;
-        String rpc = "createPolicyType";
-        CreatePolicyTypeOutputBuilder createPolicyTypeOutputBuilder = new CreatePolicyTypeOutputBuilder();
-        when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) createPolicyTypeOutputBuilder);
-        ListenableFuture<RpcResult<CreatePolicyTypeOutput>> result =
-                a1AdapterProviderMock.createPolicyType(createPolicyTypeInput);
-        assertEquals("Input is null", result.get().getResult().getResponseCode());
-    }
-
-    @Test
-    public void test_createPolicyType_With_No_DG() throws SvcLogicException, InterruptedException, ExecutionException {
-        CreatePolicyTypeOutputBuilder createPolicyTypeOutputBuilder = new CreatePolicyTypeOutputBuilder();
-        String rpc = "createPolicyType";
-        when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) createPolicyTypeOutputBuilder);
-        CreatePolicyTypeInputBuilder inputBuilder = new CreatePolicyTypeInputBuilder();
-        when(a1AdapterClient.hasGraph(module, rpc, null, mode)).thenReturn(Boolean.FALSE);
-        ListenableFuture<RpcResult<CreatePolicyTypeOutput>> result =
-                a1AdapterProviderMock.createPolicyType(inputBuilder.build());
-        assertEquals("503", result.get().getResult().getResponseCode());
-    }
-
-    @Test
-    public void test_createPolicyType_With_DG_Exception()
-            throws SvcLogicException, InterruptedException, ExecutionException {
-        CreatePolicyTypeOutputBuilder createPolicyTypeOutputBuilder = new CreatePolicyTypeOutputBuilder();
-        String rpc = "createPolicyType";
-        when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) createPolicyTypeOutputBuilder);
-        CreatePolicyTypeInputBuilder inputBuilder = new CreatePolicyTypeInputBuilder();
-        when(a1AdapterClient.hasGraph(module, rpc, null, mode)).thenThrow(new SvcLogicException());
-        ListenableFuture<RpcResult<CreatePolicyTypeOutput>> result =
-                a1AdapterProviderMock.createPolicyType(inputBuilder.build());
-        assertEquals("500", result.get().getResult().getResponseCode());
-    }
-
-    @Test
-    public void test_createPolicyType_With_DG_Execute_Exception()
-            throws SvcLogicException, InterruptedException, ExecutionException {
-        CreatePolicyTypeOutputBuilder createPolicyTypeOutputBuilder = new CreatePolicyTypeOutputBuilder();
-        String rpc = "createPolicyType";
-        when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) createPolicyTypeOutputBuilder);
-        CreatePolicyTypeInputBuilder inputBuilder = new CreatePolicyTypeInputBuilder();
-        when(a1AdapterClient.hasGraph(module, rpc, null, mode)).thenReturn(true);
-        when(a1AdapterClient.execute(eq(module), eq(rpc), eq(null), eq(mode), any(CreatePolicyTypeOutputBuilder.class),
-                any(Properties.class))).thenThrow(new SvcLogicException());
-        ListenableFuture<RpcResult<CreatePolicyTypeOutput>> result =
-                a1AdapterProviderMock.createPolicyType(inputBuilder.build());
-        assertEquals("500", result.get().getResult().getResponseCode());
-    }
 
     @Test
     public void test_getPolicyType() throws SvcLogicException, InterruptedException, ExecutionException {
@@ -416,7 +276,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetPolicyTypeOutput>> result =
                 a1AdapterProviderMock.getPolicyType(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
+        assertEquals("200", result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -483,7 +343,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<DeletePolicyTypeOutput>> result =
                 a1AdapterProviderMock.deletePolicyType(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
+        assertEquals("200", result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -551,7 +411,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetPolicyInstancesOutput>> result =
                 a1AdapterProviderMock.getPolicyInstances(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
+        assertEquals("200", result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -620,7 +480,7 @@ public class A1AdapterProviderTest {
                 any(CreatePolicyInstanceOutputBuilder.class), eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<CreatePolicyInstanceOutput>> result =
                 a1AdapterProviderMock.createPolicyInstance(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
+        assertEquals("200", result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -690,7 +550,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetPolicyInstanceOutput>> result =
                 a1AdapterProviderMock.getPolicyInstance(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
+        assertEquals("200", result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -758,7 +618,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<DeletePolicyInstanceOutput>> result =
                 a1AdapterProviderMock.deletePolicyInstance(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
+        assertEquals("200", result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -774,7 +634,8 @@ public class A1AdapterProviderTest {
     }
 
     @Test
-    public void test_deletePolicyInstance_With_No_DG() throws SvcLogicException, InterruptedException, ExecutionException {
+    public void test_deletePolicyInstance_With_No_DG()
+            throws SvcLogicException, InterruptedException, ExecutionException {
         DeletePolicyInstanceOutputBuilder deletePolicyInstanceOutputBuilder = new DeletePolicyInstanceOutputBuilder();
         String rpc = "deletePolicyInstance";
         when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) deletePolicyInstanceOutputBuilder);
@@ -806,8 +667,9 @@ public class A1AdapterProviderTest {
         when(a1AdapterProviderMock.getServiceData(rpc)).thenReturn((Builder) deletePolicyInstanceOutputBuilder);
         DeletePolicyInstanceInputBuilder inputBuilder = new DeletePolicyInstanceInputBuilder();
         when(a1AdapterClient.hasGraph(module, rpc, null, mode)).thenReturn(true);
-        when(a1AdapterClient.execute(eq(module), eq(rpc), eq(null), eq(mode), any(DeletePolicyInstanceOutputBuilder.class),
-                any(Properties.class))).thenThrow(new SvcLogicException());
+        when(a1AdapterClient.execute(eq(module), eq(rpc), eq(null), eq(mode),
+                any(DeletePolicyInstanceOutputBuilder.class), any(Properties.class)))
+                        .thenThrow(new SvcLogicException());
         ListenableFuture<RpcResult<DeletePolicyInstanceOutput>> result =
                 a1AdapterProviderMock.deletePolicyInstance(inputBuilder.build());
         assertEquals("500", result.get().getResult().getResponseCode());
@@ -825,7 +687,7 @@ public class A1AdapterProviderTest {
         when(a1AdapterClient.execute(eq(module), eq(rpc), eq(null), eq(mode), any(GetPolicyTypeOutputBuilder.class),
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<GetStatusOutput>> result = a1AdapterProviderMock.getStatus(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
+        assertEquals("200", result.get().getResult().getResponseCode());
     }
 
     @Test
@@ -844,7 +706,7 @@ public class A1AdapterProviderTest {
                 eq(null))).thenReturn(respProps);
         ListenableFuture<RpcResult<NotifyPolicyEnforcementUpdateOutput>> result =
                 a1AdapterProviderMock.notifyPolicyEnforcementUpdate(inputBuilder.build());
-        assertEquals("200",result.get().getResult().getResponseCode());
+        assertEquals("200", result.get().getResult().getResponseCode());
     }
 
 

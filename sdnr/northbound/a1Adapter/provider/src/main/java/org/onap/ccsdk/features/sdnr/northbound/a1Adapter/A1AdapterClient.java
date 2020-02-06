@@ -27,11 +27,9 @@ import org.onap.ccsdk.sli.core.sli.SvcLogicException;
 import org.onap.ccsdk.sli.core.sli.provider.MdsalHelper;
 import org.onap.ccsdk.sli.core.sli.provider.SvcLogicService;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyInstanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.CreatePolicyTypeOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.DeletePolicyInstanceOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.DeletePolicyTypeOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetHealthCheckOutputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetNearRTRICsOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetPolicyInstanceOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetPolicyInstancesOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev191212.GetPolicyTypeOutputBuilder;
@@ -53,55 +51,6 @@ public class A1AdapterClient {
 
     public boolean hasGraph(String module, String rpc, String version, String mode) throws SvcLogicException {
         return svcLogicService.hasGraph(module, rpc, version, mode);
-    }
-
-    // Client for GetNearRTRICs
-
-    public Properties execute(String module, String rpc, String version, String mode,
-            GetNearRTRICsOutputBuilder serviceData) throws SvcLogicException {
-
-        Properties parms = new Properties();
-
-        return execute(module, rpc, version, mode, serviceData, parms);
-    }
-
-    public Properties execute(String module, String rpc, String version, String mode,
-            GetNearRTRICsOutputBuilder serviceData, Properties parms) throws SvcLogicException {
-        Properties localProp;
-        localProp = MdsalHelper.toProperties(parms, serviceData);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Parameters passed to SLI");
-
-            for (Object key : localProp.keySet()) {
-                String parmName = (String) key;
-                String parmValue = localProp.getProperty(parmName);
-
-                LOG.debug(parmName + " = " + parmValue);
-
-            }
-        }
-
-        Properties respProps = svcLogicService.execute(module, rpc, version, mode, localProp);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Parameters returned by SLI");
-
-            for (Object key : respProps.keySet()) {
-                String parmName = (String) key;
-                String parmValue = respProps.getProperty(parmName);
-
-                LOG.debug(parmName + " = " + parmValue);
-
-            }
-        }
-        if ("failure".equalsIgnoreCase(respProps.getProperty("SvcLogic.status"))) {
-            return respProps;
-        }
-
-        MdsalHelper.toBuilder(respProps, serviceData);
-
-        return respProps;
     }
 
     // Client for GetHealthCheck
@@ -166,57 +115,6 @@ public class A1AdapterClient {
 
     public Properties execute(String module, String rpc, String version, String mode,
             GetPolicyTypesOutputBuilder serviceData, Properties parms) throws SvcLogicException {
-        Properties localProp;
-        localProp = MdsalHelper.toProperties(parms, serviceData);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Parameters passed to SLI");
-
-            for (Object key : localProp.keySet()) {
-                String parmName = (String) key;
-                String parmValue = localProp.getProperty(parmName);
-
-                LOG.debug(parmName + " = " + parmValue);
-
-            }
-        }
-
-        Properties respProps = svcLogicService.execute(module, rpc, version, mode, localProp);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Parameters returned by SLI");
-
-            for (Object key : respProps.keySet()) {
-                String parmName = (String) key;
-                String parmValue = respProps.getProperty(parmName);
-
-                LOG.debug(parmName + " = " + parmValue);
-
-            }
-        }
-        if ("failure".equalsIgnoreCase(respProps.getProperty("SvcLogic.status"))) {
-            return respProps;
-        }
-
-        MdsalHelper.toBuilder(respProps, serviceData);
-
-        return respProps;
-    }
-
-
-    // Client for createPolicyType
-
-
-    public Properties execute(String module, String rpc, String version, String mode,
-            CreatePolicyTypeOutputBuilder serviceData) throws SvcLogicException {
-
-        Properties parms = new Properties();
-
-        return execute(module, rpc, version, mode, serviceData, parms);
-    }
-
-    public Properties execute(String module, String rpc, String version, String mode,
-            CreatePolicyTypeOutputBuilder serviceData, Properties parms) throws SvcLogicException {
         Properties localProp;
         localProp = MdsalHelper.toProperties(parms, serviceData);
 
