@@ -6,30 +6,31 @@ Inventory
 =========
 
 The application offers basic inventory management of devices supporting
-ONF-TR-512.
+ONF-TR-512 and ietf-hardware.
 
-The view displays the inventory data of the network element - basically
-serial-numbers and part-numbers are displaced according to the
-containment of the equipment.
+The view displays the inventory data of the network element – for
+example, serial-numbers and part-numbers according to the containment of
+the equipment.
 
 Inventory Export:
 -----------------
 
-As the default pagination size is set to 10, when you export the data
-only first 10 rows or the first 10 filtered rows shown on the page will
-be exported to a file. The inventory export allows the export of up to
-1000 entries, when the pagination size is increased to 1000.  So, It is
-recommended to change the pagination size 'Rows per page' to 1000 if you
-want to export the complete Inventory data.
+The '︙' button in the upper right corner of the table allows exporting
+the inventory data as a CSV file.
 
-To export the Inventory data: The behaviour is different depending on
-the browser:
+Only the currently viewed table data is exported. As the default
+pagination is set to 10, only the first 10 rows or filtered rows would
+be exported. To increase the number of exported rows change the
+pagination.
 
-a) Some browsers allows you to save the file with the predefined name
+The behavior of the export can vary based on different browsers:
+
+a) Some browsers allow you to save the file with the predefined name
    export.csv. In case your browser does not offer this function please
-   use 'Save as..' option and define the filename with extension csv.
+   use the 'Save as...' option and define the filename with extension
+   csv.
 
-b) Some browsers saves the file automatically with the alphanumeric name
-   without an extension. In such case please go to the downloaded file
-   location and rename the file with the extension after the download.
-   (eg: export\_file.csv)
+b) Some browsers save the file automatically with the alphanumeric name
+   but without an extension. In such a case navigate to the downloaded
+   file location and rename the file. The extension (csv) must be
+   appended to the name. The result should look like export\_file.csv.

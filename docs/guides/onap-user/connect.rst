@@ -7,39 +7,35 @@ Connect
 
 The 'Connect' application on OpenDaylight provides up-to-date
 connectivity information about the wireless devices in the network. It
-automatically displays new network elements and their connection status.
-Despite the network elements usually automatically mount themselves, an
-additional small window allows manually mounting devices/mediators. For
-better understanding alarms and status, a connection status log lists
-all the connection status changes of OpenDaylight mount points.
+automatically displays new Network Elements and their connection status.
+Usually, the Network Elements mount themselves. If necessary, they can
+be mounted manually by right-clicking on the element. For better
+understanding of alarms and status, a connection status log lists all
+the connection status changes of OpenDaylight mount points.
 
 Views
 -----
 
-The graphical user interfaces is divided in three sections.
+The graphical user interface is divided into two sections.
 
-Required Network Elements
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Network Elements
+~~~~~~~~~~~~~~~~
 
-Required Network Elements are physical network functions, which are
-planned or expected in the network. This means the identifier, IP
-addresses and its required configuration is well-known and available in
-a planning database or in ONAP A&AI.
+Network Elements are physical network functions (PNFs). A table view
+shows all configured and connected NetConf Servers of the SDN-R cluster.
+This view also allows to manually configure/mount a device via the '+'
+button. The SDN controller will start connecting to the NetConf server.
 
-This view also offer to manually configure/mount the device with the '+'
-icon. The SDN controller will then start connecting the Netconf server.
+Network Elements can be marked as 'required'. If an element is required,
+it will stay available even if disconnected. If an element is not
+required, it will be deleted once disconnected.
 
-Unknown Network Elements
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Most of the physical network function support an automatic registration
-procedure to the SDN controller. It may happen, that devices are
-connected to the SDN Controller but not available in planning data.
-
-It might be a normal occurrence for very cheap devices, where an entire
-planning process to too expensive. But is may also happen that the
-identifier used in planning process differ from the identifier currently
-configured in the device.
+By right-clicking on an element, an action menu opens. The menu allows
+to mount, unmount, view the details, edit and remove the element.
+Additionally, it links to several applications like
+`Fault <../pnfFault/README.md>`__ and
+`Configure <../pnfConfig/README.md>`__, which will be filtered to
+display information relevant to the selected element.
 
 Connection Status Log
 ~~~~~~~~~~~~~~~~~~~~~

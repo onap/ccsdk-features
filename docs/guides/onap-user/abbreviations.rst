@@ -449,6 +449,23 @@ Abbreviations
 | NS                | (Vendor Specific) |
 |                   | New Start         |
 +-------------------+-------------------+
+| O-RAN             | `O-RAN Alliance,  |
+|                   | Operator Defined  |
+|                   | Next Generation   |
+|                   | Radio Access      |
+|                   | Networks          |
+|                   | Alliance <https:/ |
+|                   | /www.o-ran.org>`_ |
+|                   | _                 |
++-------------------+-------------------+
+| O-RAN-SC          | `O-RAN Software   |
+|                   | Community <https: |
+|                   | //o-ran-sc.org>`_ |
+|                   | _                 |
++-------------------+-------------------+
+| OAM               | Operation and     |
+|                   | Maintenance       |
++-------------------+-------------------+
 | OA&M              | Operations,       |
 |                   | Administration    |
 |                   | and Management    |
@@ -497,6 +514,12 @@ Abbreviations
 |                   | e+Access+Manager+ |
 |                   | %28OSAM%29+Use+Ca |
 |                   | se>`__            |
++-------------------+-------------------+
+| OSC               | O-RAN Software    |
+|                   | Community or      |
+|                   | Optical           |
+|                   | Supervisory       |
+|                   | Channel           |
 +-------------------+-------------------+
 | OSS               | Operations        |
 |                   | Support System    |
@@ -559,7 +582,10 @@ Abbreviations
 |                   | ional_state_trans |
 |                   | fer>`__           |
 +-------------------+-------------------+
-| RESTCONF          | REST + NETCONF    |
+| RESTCONF          | A protocol based  |
+|                   | on HTTP for       |
+|                   | configuring data  |
+|                   | defined in YANG   |
 +-------------------+-------------------+
 | RO                | Resource          |
 |                   | Orchestrator      |
@@ -843,7 +869,13 @@ Abbreviations
 |                   | wiki/WAR_(file_fo |
 |                   | rmat)>`__         |
 +-------------------+-------------------+
-| YANG              | A Data Modeling   |
+| xNF               | The combination   |
+|                   | of PNF and VNF;   |
+|                   | Network Function  |
++-------------------+-------------------+
+| YANG              | Yet Another Next  |
+|                   | Generation - a    |
+|                   | Data Modeling     |
 |                   | Language for the  |
 |                   | Network           |
 |                   | Configuration     |

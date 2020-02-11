@@ -14,7 +14,7 @@ same for each cluster node.
    -  `devicemonitor <#SDN-RWTServiceConfigurationparameters-d>`__
 
 Backgrounds regarding the container inter structure is described
-in \ `SDN-R Docker Image configuration <sdnr_Docker_Image_configuration>`__.
+in \ `SDN-R Docker Image configuration <sdnr_Docker_Image_configuration.html>`__.
 
 The configuration information of sdnr wireless transport parameters are
 in a single file.

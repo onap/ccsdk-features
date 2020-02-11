@@ -5,19 +5,18 @@
 Maintenance
 ===========
 
-The 'Maintenance' application on the OpenDaylight provides the
-information of the Network Elements which are set for Maintenance,
-currently or in the future. User can manage devices to set the
-maintenance mode so that no unnecessary alarms are created. When the
-device is in Maintenace alarms are not forwarded to DCAE and when the
-device maintenance is turned off the alarms will start flowing again.
+The 'Maintenance' application on OpenDaylight provides information about
+planned maintenances of Network Elements, currently or in the future.
+Users can manage devices to set the maintenance mode so that no
+unnecessary alarms are created. When the device is in maintenance mode,
+alarms are not forwarded to DCAE. As soon as the maintenance is
+finished, the alarms will start flowing again.
 
-'Active' field in this application shows if the Network Element is in
-maintenance mode currently or not. If it is 'active' it means the
-Network Element is currently undergoing maintenance, If 'not active' it
-means maintenance might have been set for future or maintenance is
-already completed.
+The 'active' field in the table shows if the Network Element is
+currently in maintenance mode or not. If it is 'active' it means the
+Network Element is currently undergoing maintenance, if 'not active' it
+means maintenance might have been set for a future date or is already
+completed.
 
-Users have access to disable the Maintenance mode or change the
-maintenance start and end dates at any point of time by using the
-available options in actions column.
+Users can disable the maintenance mode or change its start and end dates
+by using the available options in the actions column.
