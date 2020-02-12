@@ -27,11 +27,16 @@ let tickTimer = 15;
 
 export const startForceLogoutService = (store: ApplicationStore) => {
     applicationStore = store;
-    createForceLogoutInterval();
+    if (process.env.NODE_ENV === "development") {
+        console.warn("logout timer not started in development mode");
+    } else {
+        createForceLogoutInterval();
+    }
+
 };
 
 const createForceLogoutInterval = () => {
-    console.log("logout timer running...")
+    console.log("logout timer running...");
 
     return setInterval(function () {
         if (applicationStore && applicationStore.state.framework.authenticationState.user) {

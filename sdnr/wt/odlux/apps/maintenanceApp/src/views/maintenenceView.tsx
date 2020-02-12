@@ -37,7 +37,7 @@ import { MaintenenceEntry, spoofSymbol } from '../models/maintenenceEntryType';
 
 import EditMaintenenceEntryDialog, { EditMaintenenceEntryDialogMode } from '../components/editMaintenenceEntryDialog';
 import { convertToLocaleString } from '../utils/timeUtils';
-import { createmaintenanceEntriesActions, createmaintenanceEntriesProperties, maintenanceEntriesReloadAction } from '../handlers/maintenenceEntriesHandler';
+import { createmaintenanceEntriesActions, createmaintenanceEntriesProperties,maintenanceEntriesReloadAction } from '../handlers/maintenenceEntriesHandler';
 
 const styles = (theme: Theme) => createStyles({
   button: {
@@ -60,7 +60,7 @@ const mapProps = (state: IApplicationStoreState) => ({
 
 const mapDispatcher = (dispatcher: IDispatcher) => ({
   maintenanceEntriesActions: createmaintenanceEntriesActions(dispatcher.dispatch),
-  onLoadMaintenanceEntries: async () => {
+  onLoadMaintenanceEntries: async() => {
     await dispatcher.dispatch(maintenanceEntriesReloadAction)
   }
 });
@@ -104,8 +104,8 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
         this.setState({
           maintenenceEntryToEdit: {
             ...emptyMaintenenceEntry,
-            start: convertToLocaleString(startTime),
-            end: convertToLocaleString(endTime),
+              start: convertToLocaleString(startTime),
+              end: convertToLocaleString(endTime),
           },
           maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.AddMaintenenceEntry
         });
@@ -120,7 +120,7 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
             {
               property: "notifications", title: "Notification", width: 50, align: "center", type: ColumnType.custom, customControl: ({ rowData }) => (
                 rowData.active && (Date.parse(rowData.start).valueOf() <= now) && (Date.parse(rowData.end).valueOf() >= now) && <FontAwesomeIcon icon={faBan} /> || null
-              )
+                )
             },
             { property: "active", title: "Activation State", type: ColumnType.boolean, labels: { "true": "active", "false": "not active" }, },
             { property: "start", title: "Start Date (UTC)", type: ColumnType.text },
@@ -140,7 +140,7 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
               )
             },
           ]
-        } idProperty={'_id'}{...this.props.maintenanceEntriesActions} {...this.props.maintenanceEntriesProperties} asynchronus > </MaintenenceEntriesTable>
+        } idProperty={'_id'}{...this.props.maintenanceEntriesActions} {...this.props.maintenanceEntriesProperties} asynchronus > </MaintenenceEntriesTable>        
         <EditMaintenenceEntryDialog initialMaintenenceEntry={this.state.maintenenceEntryToEdit} mode={this.state.maintenenceEntryEditorMode}
           onClose={this.onCloseEditMaintenenceEntryDialog} />
       </>
@@ -160,8 +160,8 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     this.setState({
       maintenenceEntryToEdit: {
         ...entry,
-        start: convertToLocaleString(startTime),
-        end: convertToLocaleString(endTime),
+          start: convertToLocaleString(startTime),
+          end: convertToLocaleString(endTime),
       },
       maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.EditMaintenenceEntry
     });
@@ -175,8 +175,8 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     this.setState({
       maintenenceEntryToEdit: {
         ...entry,
-        start: convertToLocaleString(startTime),
-        end: convertToLocaleString(endTime),
+          start: convertToLocaleString(startTime),
+          end: convertToLocaleString(endTime),
       },
       maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.EditMaintenenceEntry
     });
@@ -190,7 +190,7 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     this.setState({
       maintenenceEntryToEdit: {
         ...entry,
-        ...(entry.start && endTime)
+          ...(entry.start && endTime)
           ? { start: convertToLocaleString(entry.start), end: convertToLocaleString(entry.end) }
           : { start: convertToLocaleString(startTime), end: convertToLocaleString(endTime) }
       },

@@ -190,12 +190,26 @@ module.exports = (env) => {
         colors: true
       },
       proxy: {
-        "/oauth2/**/*": {
-          target: "http://172.18.0.3:8181",
+        "/oauth2/": {
+          target: "http://localhost:48181",
           secure: false
         },
-        "/about": {
-          target: "http://172.18.0.3:8181",
+        "/database/": {
+          target: "http://localhost:48181",
+          secure: false
+        },
+        "/restconf/": {
+          target: "http://localhost:48181",
+          secure: false
+        },
+        "/help/": {
+          target: "http://localhost:48181",
+          secure: false
+        },
+        "/websocket": {
+          target: "http://localhost:48181",
+          ws: true,
+          changeOrigin: true,
           secure: false
         }
       }

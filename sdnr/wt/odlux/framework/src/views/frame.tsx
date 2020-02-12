@@ -52,7 +52,7 @@ const styles = (theme: Theme) => createStyles({
     padding: theme.spacing(3),
     minWidth: 0, // So the Typography noWrap works
   },
-  toolbar: theme.mixins.toolbar
+  toolbar: theme.mixins.toolbar as any
 });
 
 type FrameProps = WithStyles<typeof styles>;

@@ -21,6 +21,7 @@ import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/s
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
@@ -31,10 +32,13 @@ import { EnhancedTableHead } from './tableHead';
 import { EnhancedTableFilter } from './tableFilter';
 
 import { ColumnModel, ColumnType } from './columnModel';
-import { Omit } from '@material-ui/core';
+import { Omit, Menu } from '@material-ui/core';
+
 import { SvgIconProps } from '@material-ui/core/SvgIcon/SvgIcon';
-import { replaceHyphen } from '../../utilities/yangHelper';
-import { string } from 'prop-types';
+
+import { DividerTypeMap } from '@material-ui/core/Divider';
+import { MenuItemProps } from '@material-ui/core/MenuItem';
+import { flexbox } from '@material-ui/system';
 export { ColumnModel, ColumnType } from './columnModel';
 
 type propType = string | number | null | undefined | (string | number)[];
@@ -70,14 +74,19 @@ function getSorting(order: 'asc' | 'desc' | null, orderBy: string) {
 const styles = (theme: Theme) => createStyles({
   root: {
     width: '100%',
+    overflow: "hidden",
     marginTop: theme.spacing(3),
+    position: "relative",
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
   },
-  table: {
-    minWidth: 1020,
+  container: {
+    flex: "1 1 100%"
   },
-  tableWrapper: {
-    overflowX: 'auto',
-  },
+  pagination: {
+    overflow: "hidden"
+  }
 });
 
 export type MaterialTableComponentState<TData = {}> = {
@@ -100,11 +109,13 @@ type MaterialTableComponentBaseProps<TData> = WithStyles<typeof styles> & {
   idProperty: keyof TData | ((data: TData) => React.Key);
   tableId?: string;
   title?: string;
+  stickyHeader?: boolean;
   enableSelection?: boolean;
   disableSorting?: boolean;
   disableFilter?: boolean;
   customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, onClick: () => void }[];
   onHandleClick?(event: React.MouseEvent<HTMLTableRowElement>, rowData: TData): void;
+  createContextMenu?: (row: TData) => React.ReactElement<MenuItemProps | DividerTypeMap<{}, "hr">, React.ComponentType<MenuItemProps | DividerTypeMap<{}, "hr" >>>[];
 };
 
 type MaterialTableComponentPropsWithRows<TData = {}> = MaterialTableComponentBaseProps<TData> & { rows: TData[]; asynchronus?: boolean; };
@@ -139,7 +150,7 @@ function isMaterialTableComponentPropsWithRowsAndRequestData(props: MaterialTabl
     propsWithExternalState.onHandleRequestSort instanceof Function
 }
 
-class MaterialTableComponent<TData extends {} = {}> extends React.Component<MaterialTableComponentProps, MaterialTableComponentState> {
+class MaterialTableComponent<TData extends {} = {}> extends React.Component<MaterialTableComponentProps, MaterialTableComponentState & { contextMenuInfo: { index: number; mouseX?: number; mouseY?: number }; }> {
 
   constructor(props: MaterialTableComponentProps) {
     super(props);
@@ -148,6 +159,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
     const rowsPerPage = isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.rowsPerPage || 10 : 10;
 
     this.state = {
+      contextMenuInfo: {index : -1 },
       filter: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.filter || {} : {},
       showFilter: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.showFilter : false,
       loading: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.loading : false,
@@ -176,10 +188,10 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
     const toggleFilter = isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.onToggleFilter : () => { !this.props.disableFilter && this.setState({ showFilter: !showFilter }, this.update) }
     return (
       <Paper className={classes.root}>
-        <TableToolbar tableId={this.props.tableId} numSelected={selected && selected.length} title={this.props.title} customActionButtons={this.props.customActionButtons} onExportToCsv={this.exportToCsv}
-          onToggleFilter={toggleFilter} />
-        <div className={classes.tableWrapper}>
-          <Table className={classes.table} aria-label={this.props.tableId ? this.props.tableId : 'tableTitle'}>
+        <TableContainer className={classes.container}>
+          <TableToolbar tableId={this.props.tableId} numSelected={selected && selected.length} title={this.props.title} customActionButtons={this.props.customActionButtons} onExportToCsv={this.exportToCsv}
+            onToggleFilter={toggleFilter} />
+          <Table aria-label={this.props.tableId ? this.props.tableId : 'tableTitle'} stickyHeader={this.props.stickyHeader || false} >
             <EnhancedTableHead
               columns={columns}
               numSelected={selected && selected.length}
@@ -196,10 +208,27 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                 .map((entry: TData & { [key: string]: any }, index) => {
                   const entryId = getId(entry);
                   const isSelected = this.isSelected(entryId);
+                  const contextMenu = (this.props.createContextMenu && this.state.contextMenuInfo.index === index && this.props.createContextMenu(entry)) || null;
                   return (
                     <TableRow
                       hover
-                      onClick={event => this.handleClick(event, entry, entryId)}
+                      onClick={event => {
+                        if (this.props.createContextMenu) {
+                          this.setState({
+                            contextMenuInfo: {
+                              index: -1
+                            }
+                          });
+                        }
+                        this.handleClick(event, entry, entryId);
+                      }}
+                      onContextMenu={event => {
+                        if (this.props.createContextMenu) {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          this.setState({ contextMenuInfo: { index, mouseX: event.clientX - 2, mouseY: event.clientY - 4 } });
+                        }
+                      }}
                       role="checkbox"
                       aria-checked={isSelected}
                       aria-label={`${(this.props.tableId ? this.props.tableId : 'table')}-row-${(index + 1)}`}
@@ -230,6 +259,10 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                           }
                         )
                       }
+                      {<Menu open={!!contextMenu} onClose={() => this.setState({ contextMenuInfo: { index: -1 } })} anchorReference="anchorPosition" keepMounted
+                        anchorPosition={this.state.contextMenuInfo.mouseY != null && this.state.contextMenuInfo.mouseX != null ? { top: this.state.contextMenuInfo.mouseY, left: this.state.contextMenuInfo.mouseX } : undefined}>
+                        {contextMenu}
+                      </Menu> || null}
                     </TableRow>
                   );
                 })}
@@ -240,8 +273,8 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
               )}
             </TableBody>
           </Table>
-        </div>
-        <TablePagination
+        </TableContainer>
+        <TablePagination className={classes.pagination}
           rowsPerPageOptions={[5, 10, 20, 50]}
           component="div"
           count={rowCount}
@@ -489,7 +522,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
     let csv: string[] = [];
 
     if (isMaterialTableComponentPropsWithRequestData(this.props)) {
-      // table with extra request handler 
+      // table with extra request handler
       this.setState({ loading: true });
       const result = await Promise.resolve(
         this.props.onRequestData(0, 1000, this.state.orderBy, this.state.order, this.state.showFilter && this.state.filter || {})

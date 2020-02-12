@@ -28,6 +28,7 @@ import { ConnectionStatusLog } from '../components/connectionStatusLog';
 import { setPanelAction, findWebUrisForGuiCutThroughAsyncAction, SetWeburiSearchBusy } from '../actions/commonNetworkElementsActions';
 import { PanelId } from '../models/panelId';
 import { NetworkElementConnection } from 'models/networkElementConnection';
+import { AppBar, Tabs, Tab } from '@material-ui/core';
 
 const mapProps = (state: IApplicationStoreState) => ({
   panelId: state.connect.currentOpenPanel,
@@ -56,7 +57,15 @@ type ConnectApplicationComponentProps = Connect<typeof mapProps, typeof mapDispa
 
 class ConnectApplicationComponent extends React.Component<ConnectApplicationComponentProps>{
 
-  componentDidUpdate = async () => {
+  public componentDidMount() {
+    if (this.props.panelId === null) { //don't change tabs, if one is selected already
+      this.onTogglePanel("NetworkElements");
+    }
+    this.props.networkElementsActions.onToggleFilter();
+    this.props.connectionStatusLogActions.onToggleFilter();
+  }
+
+  public componentDidUpdate = async () => {
     // search for guicutthroughs after networkelements were found
     const networkElements = this.props.netWorkElements;
 
@@ -66,7 +75,7 @@ class ConnectApplicationComponent extends React.Component<ConnectApplicationComp
   }
 
   private onTogglePanel = (panelId: PanelId) => {
-    const nextActivePanel = panelId === this.props.panelId ? null : panelId;
+    const nextActivePanel = panelId;
     this.props.switchActivePanel(nextActivePanel);
 
     switch (nextActivePanel) {
@@ -86,25 +95,31 @@ class ConnectApplicationComponent extends React.Component<ConnectApplicationComp
 
   };
 
+  private onHandleTabChange = (event: React.ChangeEvent<{}>, newValue: PanelId) => {
+    this.props.switchActivePanel(newValue);
+  }
+
   render(): JSX.Element {
-    const { panelId } = this.props;
+    const { panelId: activePanelId } = this.props;
 
     return (
       <>
-        <Panel activePanel={panelId} panelId={'NetworkElements'} onToggle={this.onTogglePanel} title={"Network Elements"}>
-          <NetworkElementsList />
-        </Panel>
-        <Panel activePanel={panelId} panelId={'ConnectionStatusLog'} onToggle={this.onTogglePanel} title={"Connection Status Log"}>
-          <ConnectionStatusLog />
-        </Panel>
+        <AppBar position="static">
+          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="simple tabs example">
+            <Tab label="Network Elements" value="NetworkElements" />
+            <Tab label="Connection Status Log" value="ConnectionStatusLog" />
+          </Tabs>
+        </AppBar>
+        {activePanelId === 'NetworkElements'
+          ? <NetworkElementsList />
+          : activePanelId === 'ConnectionStatusLog'
+            ? <ConnectionStatusLog />
+            : null}
       </>
     );
   };
-  public componentDidMount() {
-    this.onTogglePanel("NetworkElements");
-    this.props.networkElementsActions.onToggleFilter();
-    this.props.connectionStatusLogActions.onToggleFilter();
-  }
+
+
 }
 
 export const ConnectApplication = (connect(mapProps, mapDispatcher)(ConnectApplicationComponent));

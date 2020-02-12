@@ -24,3 +24,7 @@ export class SetPanelAction extends Action {
   }
 }
 
+export const setPanelAction = (panelId: PanelId) => {
+  return new SetPanelAction(panelId);
+}
+

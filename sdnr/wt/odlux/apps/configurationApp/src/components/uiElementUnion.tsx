@@ -35,7 +35,6 @@ export const UIElementUnion = (props: UiElementUnionProps) => {
 
     const verifyValues = (data: string) => {
 
-        debugger;
         let foundObjectElements = 0;
         let errorMessage = "";
         let isPatternCorrect = null;

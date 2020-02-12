@@ -24,11 +24,6 @@ import LinkOffIcon from '@material-ui/icons/LinkOff';
 import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import Info from '@material-ui/icons/Info';
-import ComputerIcon from '@material-ui/icons/Computer';
-
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
 
 import { MaterialTable, ColumnType, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
@@ -43,6 +38,7 @@ import EditNetworkElementDialog, { EditNetworkElementDialogMode } from './editNe
 import InfoNetworkElementDialog, { InfoNetworkElementDialogMode } from './infoNetworkElementDialog';
 import { loadAllInfoElementAsync } from '../actions/infoNetworkElementActions';
 import { TopologyNode } from '../models/topologyNetconf';
+import { MenuItem, Divider, Typography } from '@material-ui/core';
 
 const styles = (theme: Theme) => createStyles({
   connectionStatusConnected: {
@@ -68,6 +64,7 @@ const styles = (theme: Theme) => createStyles({
 
 const mapProps = (state: IApplicationStoreState) => ({
   networkElementsProperties: createNetworkElementsProperties(state),
+  applicationState: state,
 });
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
@@ -105,6 +102,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
 
   render(): JSX.Element {
     const { classes } = this.props;
+    const { framework, connect, configuration, fault, help, inventory, maintenance, mediator  } = this.props.applicationState as any;
     const { networkElementToEdit } = this.state;
     const addRequireNetworkElementAction = {
       icon: AddIcon, tooltip: 'Add', onClick: () => {
@@ -117,7 +115,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
     let counter = 0;
     return (
       <>
-        <NetworkElementTable tableId="network-element-table" customActionButtons={[addRequireNetworkElementAction]} columns={[
+        <NetworkElementTable stickyHeader tableId="network-element-table" customActionButtons={[addRequireNetworkElementAction]} columns={[
           { property: "nodeId", title: "Node Name", type: ColumnType.text },
           { property: "isRequired", title: "Required", type: ColumnType.boolean },
           { property: "status", title: "Connection Status", type: ColumnType.text },
@@ -125,44 +123,26 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
           { property: "port", title: "Port", type: ColumnType.numeric },
           { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
           { property: "deviceType", title: "Type", type: ColumnType.text },
-          {
-            property: "actions", title: "Actions", type: ColumnType.custom, customControl: ({ rowData }) => {
-              counter++;
-              return (
-                <>
-                  <div className={classes.spacer}>
-                    {
-                      rowData.webUri && <Tooltip title={"Web Client"} ><IconButton aria-label={"web-client-button-" + counter} className={classes.button} onClick={event => { console.log(rowData); window.open(rowData.webUri, "_blank") }}><ComputerIcon /></IconButton></Tooltip>
-                    }
-                    <Tooltip title={"Mount"} >
-                      <IconButton aria-label={"mount-button-" + counter} className={classes.button} onClick={event => this.onOpenMountdNetworkElementsDialog(event, rowData)} >
-                        <LinkIcon /></IconButton>
-                    </Tooltip>
-                    <Tooltip title={"Unmount"} >
-                      <IconButton aria-label={"unmount-button-" + counter} className={classes.button} onClick={event => this.onOpenUnmountdNetworkElementsDialog(event, rowData)} >
-                        <LinkOffIcon /></IconButton>
-                    </Tooltip>
-                    <Tooltip title={"Info"} ><IconButton aria-label={"info-button-" + counter} className={classes.button} onClick={event => this.onOpenInfoNetworkElementDialog(event, rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected"} >
-                      <Info /></IconButton>
-                    </Tooltip>
-                    <Tooltip title={"Edit"} ><IconButton aria-label={"edit-button-" + counter} className={classes.button} onClick={event => this.onOpenEditNetworkElementDialog(event, rowData)} ><EditIcon /></IconButton></Tooltip>
-                    <Tooltip title={"Remove"} ><IconButton aria-label={"remove-button-" + counter} className={classes.button} onClick={event => this.onOpenRemoveNetworkElementDialog(event, rowData)} ><RemoveIcon /></IconButton></Tooltip>
-                  </div>
-                  <div className={classes.spacer}>
-                    <Tooltip title={"Inventory"} ><Button aria-label={"inventory-button-" + counter} className={classes.button} onClick={this.navigateToApplicationHandlerCreator("inventory", rowData)} >I</Button></Tooltip>
-                  </div>
-                  <div className={classes.spacer}>
-                    <Tooltip title={"Fault"} ><Button aria-label={"fault-button-" + counter} className={classes.button} onClick={this.navigateToApplicationHandlerCreator("fault", rowData)} >F</Button></Tooltip>
-                    <Tooltip title={"Configure"} ><Button aria-label={"configure-button-" + counter} className={classes.button} onClick={this.navigateToApplicationHandlerCreator("configuration", rowData)} >C</Button></Tooltip>
-                    <Tooltip title={"Accounting "} ><Button className={classes.button} onClick={this.navigateToApplicationHandlerCreator("accounting", rowData)} disabled={true} >A</Button></Tooltip>
-                    <Tooltip title={"Performance"} ><Button aria-label={"performance-button-" + counter} className={classes.button} onClick={this.navigateToApplicationHandlerCreator("performanceHistory", rowData)}>P</Button></Tooltip>
-                    <Tooltip title={"Security"} ><Button className={classes.button} onClick={this.navigateToApplicationHandlerCreator("security", rowData)} disabled={true} >S</Button></Tooltip>
-                  </div>
-                </>
-              )
-            }
-          },
-        ]} idProperty="id" {...this.props.networkElementsActions} {...this.props.networkElementsProperties} asynchronus >
+        ]} idProperty="id" {...this.props.networkElementsActions} {...this.props.networkElementsProperties} asynchronus createContextMenu={rowData => {
+          return [
+            <MenuItem onClick={event => this.onOpenMountdNetworkElementsDialog(event, rowData)} ><LinkIcon /><Typography>Mount</Typography></MenuItem>,
+            <MenuItem onClick={event => this.onOpenUnmountdNetworkElementsDialog(event, rowData)}><LinkOffIcon /><Typography>Unmount</Typography></MenuItem>,
+            <Divider />,
+            <MenuItem onClick={event => this.onOpenInfoNetworkElementDialog(event, rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected"} ><Info /><Typography>Info</Typography></MenuItem>,
+            <MenuItem onClick={event => this.onOpenEditNetworkElementDialog(event, rowData)}><EditIcon /><Typography>Edit</Typography></MenuItem>,
+            !rowData.isRequired
+              ? <MenuItem onClick={event => this.onOpenAddNetworkElementDialog(event, rowData)} ><AddIcon /><Typography>Add</Typography></MenuItem>
+              : <MenuItem onClick={event => this.onOpenRemoveNetworkElementDialog(event, rowData)} ><RemoveIcon /><Typography>Remove</Typography></MenuItem>,
+            <Divider />,
+            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("inventory", rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected" || !inventory}><Typography>Inventory</Typography></MenuItem>,
+            <Divider />,
+            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("fault", rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected" || !fault}><Typography>Fault</Typography></MenuItem>,
+            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("configuration", rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected" || !configuration}><Typography>Configure</Typography></MenuItem>,
+            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("accounting", rowData)} disabled={true}><Typography>Accounting</Typography></MenuItem>,
+            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("performanceHistory", rowData)} disabled={true}><Typography>Performance</Typography></MenuItem>,
+            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("security", rowData)} disabled={true} ><Typography>Security</Typography></MenuItem>,
+          ];
+        }} >
         </NetworkElementTable>
         <EditNetworkElementDialog
           initialNetworkElement={networkElementToEdit}
@@ -182,13 +162,18 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
     this.props.networkElementsActions.onRefresh();
   }
 
+  private onOpenAddNetworkElementDialog = (event: React.MouseEvent<HTMLElement>, element: NetworkElementConnection) => {
+    this.setState({
+      networkElementToEdit: element,
+      networkElementEditorMode: EditNetworkElementDialogMode.AddNewNetworkElement
+    });
+  }
+
   private onOpenRemoveNetworkElementDialog = (event: React.MouseEvent<HTMLElement>, element: NetworkElementConnection) => {
     this.setState({
       networkElementToEdit: element,
       networkElementEditorMode: EditNetworkElementDialogMode.RemoveNetworkElement
     });
-    event.preventDefault();
-    event.stopPropagation();
   }
 
   private onOpenEditNetworkElementDialog = (event: React.MouseEvent<HTMLElement>, element: NetworkElementConnection) => {
@@ -203,8 +188,6 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       },
       networkElementEditorMode: EditNetworkElementDialogMode.EditNetworkElement
     });
-    event.preventDefault();
-    event.stopPropagation();
   }
 
   private onOpenUnmountdNetworkElementsDialog = (event: React.MouseEvent<HTMLElement>, element: NetworkElementConnection) => {
@@ -212,8 +195,6 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       networkElementToEdit: element,
       networkElementEditorMode: EditNetworkElementDialogMode.UnmountNetworkElement
     });
-    event.preventDefault();
-    event.stopPropagation();
   }
 
   private onOpenMountdNetworkElementsDialog = (event: React.MouseEvent<HTMLElement>, element: NetworkElementConnection) => {
@@ -221,8 +202,6 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       networkElementToEdit: element,
       networkElementEditorMode: EditNetworkElementDialogMode.MountNetworkElement
     });
-    event.preventDefault();
-    event.stopPropagation();
   }
 
   private onOpenInfoNetworkElementDialog = (event: React.MouseEvent<HTMLElement>, element: NetworkElementConnection) => {
@@ -231,8 +210,6 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       networkElementToEdit: element,
       infoNetworkElementEditorMode: InfoNetworkElementDialogMode.InfoNetworkElement,
     });
-    event.preventDefault();
-    event.stopPropagation();
   }
 
   private onCloseEditNetworkElementDialog = () => {
@@ -250,8 +227,6 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
 
   private navigateToApplicationHandlerCreator = (applicationName: string, element: NetworkElementConnection) => (event: React.MouseEvent<HTMLElement>) => {
     this.props.navigateToApplication(applicationName, element.nodeId);
-    event.preventDefault();
-    event.stopPropagation();
   }
 }
 

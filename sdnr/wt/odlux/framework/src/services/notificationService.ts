@@ -179,10 +179,13 @@ export const startWebsocketSession = () => {
 }
 
 export const endWebsocketSession = () => {
-  socketReady.then(websocket => {
-    websocket.close();
-    userLoggedOut = true;
-  })
+  if (socketReady) {
+    socketReady.then(websocket => {
+      websocket.close();
+      userLoggedOut = true;
+    });
+  }
+
 }
 
 

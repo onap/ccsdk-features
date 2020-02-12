@@ -38,7 +38,7 @@ type ConnectionStatusLogComponentProps = Connect<typeof mapProps, typeof mapDisp
 class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogComponentProps> {
   render(): JSX.Element {
     return (
-      <ConnectionStatusTable tableId="connection-status-table" columns={[
+      <ConnectionStatusTable stickyHeader tableId="connection-status-table" columns={[
         { property: "timestamp", title: "Time", type: ColumnType.text },
         { property: "nodeId", title: "Node Name", type: ColumnType.text },
         { property: "status", title: "Connection status", type: ColumnType.text },

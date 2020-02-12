@@ -40,7 +40,7 @@ const styles = (theme: Theme) => createStyles({
     position: 'relative',
     width: drawerWidth,
   },
-  toolbar: theme.mixins.toolbar,
+  toolbar: theme.mixins.toolbar as any,
   drawerOpen: {
     width: drawerWidth,
     transition: theme.transitions.create('width', {

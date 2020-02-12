@@ -127,29 +127,19 @@ module.exports = (env) => {
       },
       proxy: {
         "/oauth2/": {
-          target: "http://10.20.6.29:28181",
+          target: "http://localhost:3000",
           secure: false
         },
         "/database/": {
-          target: "http://10.20.6.29:28181",
+          target: "http://localhost:3000",
           secure: false
         },
         "/restconf/": {
-          target: "http://10.20.6.29:28181",
+          target: "http://localhost:3000",
           secure: false
         },
         "/help/": {
-          target: "http://10.20.6.29:28181",
-          secure: false
-        },
-        "/ms/": {
-          target: "http://10.20.6.29:28181",
-          secure: false
-        },
-        "/websocket": {
-          target: "http://10.20.6.29:28181",
-          ws: true,
-          changeOrigin: true,
+          target: "http://localhost:3000",
           secure: false
         }
       }

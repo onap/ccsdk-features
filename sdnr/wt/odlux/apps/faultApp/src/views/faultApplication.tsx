@@ -33,13 +33,13 @@ import { PanelId } from '../models/panelId';
 
 import { createCurrentProblemsProperties, createCurrentProblemsActions, currentProblemsReloadAction } from '../handlers/currentProblemsHandler';
 import { createAlarmLogEntriesProperties, createAlarmLogEntriesActions, alarmLogEntriesReloadAction } from '../handlers/alarmLogEntriesHandler';
-import { SetPanelAction } from '../actions/panelChangeActions';
-import { Tooltip, IconButton } from '@material-ui/core';
+import { setPanelAction } from '../actions/panelChangeActions';
+import { Tooltip, IconButton, AppBar, Tabs, Tab } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ClearStuckAlarmsDialog, { ClearStuckAlarmsDialogMode } from '../components/clearStuckAlarmsDialog';
 
 const mapProps = (state: IApplicationStoreState) => ({
-  activePanel: state.fault.currentOpenPanel,
+  panelId: state.fault.currentOpenPanel,
   currentProblemsProperties: createCurrentProblemsProperties(state),
   faultNotifications: state.fault.faultNotifications,
   alarmLogEntriesProperties: createAlarmLogEntriesProperties(state)
@@ -50,7 +50,9 @@ const mapDisp = (dispatcher: IDispatcher) => ({
   alarmLogEntriesActions: createAlarmLogEntriesActions(dispatcher.dispatch),
   reloadCurrentProblems: () => dispatcher.dispatch(currentProblemsReloadAction),
   reloadAlarmLogEntries: () => dispatcher.dispatch(alarmLogEntriesReloadAction),
-  setCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new SetPanelAction(panelId)),
+  switchActivePanel: (panelId: PanelId) => {
+    dispatcher.dispatch(setPanelAction(panelId));
+  }
 });
 
 type FaultApplicationComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp>;
@@ -84,6 +86,29 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
     this.setState({ clearAlarmDialogMode: ClearStuckAlarmsDialogMode.Show, stuckAlarms: stuckAlarms })
   }
 
+  private onHandleTabChange = (event: React.ChangeEvent<{}>, newValue: PanelId) => {
+    this.props.switchActivePanel(newValue);
+    //this.onToggleTabs(newValue);
+  }
+
+  private onToggleTabs = (panelId: PanelId) => {
+    const nextActivePanel = panelId;
+    this.props.switchActivePanel(nextActivePanel);
+    switch (nextActivePanel) {
+      case 'CurrentProblem':
+        this.props.reloadCurrentProblems();
+        break;
+      case 'AlarmLog':
+        this.props.reloadAlarmLogEntries();
+        break;
+      case 'AlarmNotifications':
+      case null:
+      default:
+        // nothing to do
+        break;
+    }
+  };
+
 
 
   render(): JSX.Element {
@@ -94,31 +119,19 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
     const areFaultsAvailable = this.props.currentProblemsProperties.rows && this.props.currentProblemsProperties.rows.length > 0
     const customAction = areFaultsAvailable ? [refreshButton] : [];
 
-    const { activePanel } = this.props;
-
-    const onTogglePanel = (panelId: PanelId) => {
-      const nextActivePanel = panelId === this.props.activePanel ? null : panelId;
-      this.props.setCurrentPanel(nextActivePanel);
-
-      switch (nextActivePanel) {
-        case 'CurrentProblem':
-          this.props.reloadCurrentProblems();
-          break;
-        case 'AlarmLog':
-          this.props.reloadAlarmLogEntries();
-          break;
-        case 'AlarmNotifications':
-        case null:
-        default:
-          // nothing to do
-          break;
-      }
-    };
+    const { panelId: activePanelId } = this.props;
 
     return (
       <>
-        <Panel activePanel={activePanel} panelId={'CurrentProblem'} onToggle={onTogglePanel} title={'Current Problem List'}>
-          <FaultTable idProperty={'id'} customActionButtons={customAction} columns={[
+        <AppBar position="static" >
+          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="fault tabs">
+            <Tab label="Current Problem List" value="CurrentProblem" />
+            <Tab label={`Alarm Notifications (${this.props.faultNotifications.faults.length})`} value="AlarmNotifications" />
+            <Tab label="Alarm Log" value="AlarmLog" />
+          </Tabs>
+        </AppBar>
+        {
+          activePanelId === 'CurrentProblem' && <FaultTable stickyHeader idProperty={'id'} customActionButtons={customAction} columns={[
             { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
             { property: "timestamp", type: ColumnType.text, title: "Time Stamp" },
             { property: "nodeId", title: "Node Name", type: ColumnType.text },
@@ -127,9 +140,10 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
             { property: "problem", title: "Alarm Type", type: ColumnType.text },
             { property: "severity", title: "Severity", type: ColumnType.text, width: "140px" },
           ]} {...this.props.currentProblemsProperties} {...this.props.currentProblemsActions} />
-        </Panel>
-        <Panel activePanel={activePanel} panelId={'AlarmNotifications'} onToggle={onTogglePanel} title={`Alarm Notifications ${this.props.faultNotifications.faults.length} since ${this.props.faultNotifications.since}`}>
-          <FaultAlarmNotificationTable rows={this.props.faultNotifications.faults} asynchronus columns={[
+        }
+        {activePanelId === 'AlarmNotifications' &&
+
+          <FaultAlarmNotificationTable stickyHeader rows={this.props.faultNotifications.faults} asynchronus columns={[
             { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
             { property: "timeStamp", title: "Time Stamp" },
             { property: "nodeName", title: "Node Name" },
@@ -138,29 +152,35 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
             { property: "problem", title: "Alarm Type" },
             { property: "severity", title: "Severity", width: "140px" },
           ]} idProperty={'id'} />
-        </Panel>
-        <Panel activePanel={activePanel} panelId={'AlarmLog'} onToggle={onTogglePanel} title={'Alarm Log'}>
-          <FaultTable idProperty={'id'} columns={[
-            { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
-            { property: "timestamp", title: "Time Stamp" },
-            { property: "nodeId", title: "Node Name" },
-            { property: "counter", title: "Count", type: ColumnType.numeric, width: "100px" },
-            { property: "objectId", title: "Object Id" },
-            { property: "problem", title: "Alarm Type" },
-            { property: "severity", title: "Severity", width: "140px" },
-            { property: "sourceType", title: "Source", width: "140px" },
-          ]} {...this.props.alarmLogEntriesProperties} {...this.props.alarmLogEntriesActions} />
-        </Panel>
-        {
-          this.state.clearAlarmDialogMode !== ClearStuckAlarmsDialogMode.None && <ClearStuckAlarmsDialog mode={this.state.clearAlarmDialogMode} numberDevices={this.state.stuckAlarms.length} stuckAlarms={this.state.stuckAlarms} onClose={this.onDialogClose} />
 
         }
 
+        {activePanelId === 'AlarmLog' && <FaultTable stickyHeader idProperty={'id'} columns={[
+          { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
+          { property: "timestamp", title: "Time Stamp" },
+          { property: "nodeId", title: "Node Name" },
+          { property: "counter", title: "Count", type: ColumnType.numeric, width: "100px" },
+          { property: "objectId", title: "Object Id" },
+          { property: "problem", title: "Alarm Type" },
+          { property: "severity", title: "Severity", width: "140px" },
+          { property: "sourceType", title: "Source", width: "140px" },
+        ]} {...this.props.alarmLogEntriesProperties} {...this.props.alarmLogEntriesActions} />
+
+        }
+        {
+          this.state.clearAlarmDialogMode !== ClearStuckAlarmsDialogMode.None && <ClearStuckAlarmsDialog mode={this.state.clearAlarmDialogMode} numberDevices={this.state.stuckAlarms.length} stuckAlarms={this.state.stuckAlarms} onClose={this.onDialogClose} />
+        }
       </>
-    );
+    )
+
   };
 
   public componentDidMount() {
+
+    if (this.props.panelId === null) { //don't change tabs, if one is selected already
+      this.onToggleTabs("CurrentProblem");
+    }
+
     this.props.alarmLogEntriesActions.onToggleFilter();
     this.props.currentProblemsActions.onToggleFilter();
   }
