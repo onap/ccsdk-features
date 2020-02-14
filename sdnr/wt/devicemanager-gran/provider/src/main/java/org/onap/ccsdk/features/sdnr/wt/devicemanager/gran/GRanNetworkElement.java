@@ -39,7 +39,7 @@ public class GRanNetworkElement implements NetworkElement {
     @SuppressWarnings("unused")
     private final DataProvider databaseService;
 
-    GRanNetworkElement(NetconfAccessor netconfAccess, DataProvider databaseService) {
+    public GRanNetworkElement(NetconfAccessor netconfAccess, DataProvider databaseService) {
         log.info("Create {}",GRanNetworkElement.class.getSimpleName());
         this.netconfAccessor = netconfAccess;
         this.databaseService = databaseService;
