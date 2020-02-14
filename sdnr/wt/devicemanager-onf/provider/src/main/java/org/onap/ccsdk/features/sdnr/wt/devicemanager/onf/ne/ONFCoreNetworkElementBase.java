@@ -90,20 +90,21 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
     /**
      * @return the capabilities
      */
-    public Capabilities getCapabilities() {
-        return capabilities;
-    }
+	/*
+	 * public Capabilities getCapabilities() { return capabilities; }
+	 */
 
     /**
      * Update devicetype and let all other field empty
      * @param deviceType that should be updated
      * @return NetworkElementConnectionEntity with related parameter
      */
-    public static NetworkElementConnectionEntity getNetworkConnectionDeviceTpe(NetworkElementDeviceType deviceType) {
-        NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
-        eb.setDeviceType(deviceType);
-        return eb.build();
-    }
+	/*
+	 * public static NetworkElementConnectionEntity
+	 * getNetworkConnectionDeviceTpe(NetworkElementDeviceType deviceType) {
+	 * NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
+	 * eb.setDeviceType(deviceType); return eb.build(); }
+	 */
 
     /**
      * Provide device specific data
@@ -111,39 +112,38 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
      * @param nNode data
      * @return NetworkElementConnectionEntity specific information
      */
-    public static NetworkElementConnectionEntity getNetworkConnection(String nodeId, @Nonnull NetconfNode nNode) {
-
-        NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
-        // -- basics
-        eb.setId(nodeId).setNodeId(nodeId).setDeviceType(NetworkElementDeviceType.Unknown).setIsRequired(false);
-
-        // -- connection status
-        ConnectionLogStatus status = InternalConnectionStatus.statusFromNodeStatus(nNode.getConnectionStatus());
-        eb.setStatus(status);
-
-        // -- capabilites
-        Capabilities availableCapabilities = Capabilities.getAvailableCapabilities(nNode);
-        Capabilities unAvailableCapabilities = Capabilities.getUnavailableCapabilities(nNode);
-        eb.setCoreModelCapability(availableCapabilities.getRevisionForNamespace(NetworkElement.QNAME));
-
-        NodeDetailsBuilder nodeDetails = new NodeDetailsBuilder()
-                .setAvailableCapabilities(availableCapabilities.getCapabilities())
-                .setUnavailableCapabilities(unAvailableCapabilities.getCapabilities());
-        eb.setNodeDetails(nodeDetails.build());
-        // -- host information
-        Host host = nNode.getHost();
-        PortNumber portNumber = nNode.getPort();
-        if (host != null && portNumber != null) {
-            eb.setHost(host.stringValue()).setPort(portNumber.getValue().longValue());
-        }
-
-        Credentials credentials = nNode.getCredentials();
-        if (credentials instanceof LoginPassword) {
-            LoginPassword loginPassword = (LoginPassword) credentials;
-            eb.setUsername(loginPassword.getUsername()).setPassword(loginPassword.getPassword());
-        }
-        return eb.build();
-    }
+	/*
+	 * public static NetworkElementConnectionEntity getNetworkConnection(String
+	 * nodeId, @Nonnull NetconfNode nNode) {
+	 * 
+	 * NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
+	 * // -- basics
+	 * eb.setId(nodeId).setNodeId(nodeId).setDeviceType(NetworkElementDeviceType.
+	 * Unknown).setIsRequired(false);
+	 * 
+	 * // -- connection status ConnectionLogStatus status =
+	 * InternalConnectionStatus.statusFromNodeStatus(nNode.getConnectionStatus());
+	 * eb.setStatus(status);
+	 * 
+	 * // -- capabilites Capabilities availableCapabilities =
+	 * Capabilities.getAvailableCapabilities(nNode); Capabilities
+	 * unAvailableCapabilities = Capabilities.getUnavailableCapabilities(nNode);
+	 * eb.setCoreModelCapability(availableCapabilities.getRevisionForNamespace(
+	 * NetworkElement.QNAME));
+	 * 
+	 * NodeDetailsBuilder nodeDetails = new NodeDetailsBuilder()
+	 * .setAvailableCapabilities(availableCapabilities.getCapabilities())
+	 * .setUnavailableCapabilities(unAvailableCapabilities.getCapabilities());
+	 * eb.setNodeDetails(nodeDetails.build()); // -- host information Host host =
+	 * nNode.getHost(); PortNumber portNumber = nNode.getPort(); if (host != null &&
+	 * portNumber != null) {
+	 * eb.setHost(host.stringValue()).setPort(portNumber.getValue().longValue()); }
+	 * 
+	 * Credentials credentials = nNode.getCredentials(); if (credentials instanceof
+	 * LoginPassword) { LoginPassword loginPassword = (LoginPassword) credentials;
+	 * eb.setUsername(loginPassword.getUsername()).setPassword(loginPassword.
+	 * getPassword()); } return eb.build(); }
+	 */
 
 
     @Override
