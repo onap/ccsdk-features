@@ -43,7 +43,7 @@ public class ORanChangeNotificationListener  implements IetfNetconfNotifications
     private final NetconfAccessor netconfAccessor;
     private final DataProvider databaseService;
 
-    ORanChangeNotificationListener(NetconfAccessor netconfAccessor, DataProvider databaseService) {
+    public ORanChangeNotificationListener(NetconfAccessor netconfAccessor, DataProvider databaseService) {
         this.netconfAccessor = netconfAccessor;
         this.databaseService = databaseService;
     }
