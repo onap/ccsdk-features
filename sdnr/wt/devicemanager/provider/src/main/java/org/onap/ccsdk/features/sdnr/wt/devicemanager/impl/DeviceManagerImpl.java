@@ -28,18 +28,16 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl.AaiProviderClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.archiveservice.ArchiveCleanService;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.datamanager.DeviceManagerDatabaseNotificationService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeForwarderImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeForwarderInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeProviderClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.DeviceMonitor;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.DeviceMonitorImpl;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.DeviceManagerDatabaseNotificationService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.ODLEventListenerHandler;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.RpcPushNotificationsHandler;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.housekeeping.ConnectionStatusHousekeepingService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.housekeeping.ResyncNetworkElementHouskeepingService;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.handler.ODLEventListenerHandler;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.handler.RpcPushNotificationsHandler;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.listener.NetconfChangeListener;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientDummyImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientImpl2;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.maintenance.impl.MaintenanceServiceImpl;
@@ -100,7 +98,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     // Devicemanager common services for network element handler
     private @Nullable WebSocketServiceClientInternal webSocketService;
     private ODLEventListenerHandler odlEventListenerHandler; //EventHandlingService
-    private NetconfChangeListener netconfChangeListener;
+    //private NetconfChangeListener netconfChangeListener;
     private DeviceManagerApiServiceImpl rpcApiService;
     private PerformanceManagerImpl performanceManager;
     private DcaeProviderClient dcaeProviderClient;
@@ -200,14 +198,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         this.maintenanceService = new MaintenanceServiceImpl(iEntityDataProvider.getHtDatabaseMaintenance());
 
         // Websockets
-        try {
-            this.webSocketService = new WebSocketServiceClientImpl2(websocketmanagerService);
-        } catch (Exception e) {
-            LOG.error("Can not start websocket service. Loading mock class.", e);
-            this.webSocketService = new WebSocketServiceClientDummyImpl();
-        }
-
-        this.deviceManagerDatabaseAndNotificationService = new DeviceManagerDatabaseNotificationService(dataProvider, webSocketService);
+        this.webSocketService = new WebSocketServiceClientImpl2(websocketmanagerService);
 
         IEsConfig esConfig = iEntityDataProvider.getEsConfig();
         // DCAE
@@ -218,6 +209,9 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         String myDbKeyNameExtended = MYDBKEYNAMEBASE + "-" + esConfig.getCluster();
 
         this.aotsDcaeForwarder = new DcaeForwarderImpl(null, dcaeProviderClient, maintenanceService);
+
+        this.deviceManagerDatabaseAndNotificationService = new DeviceManagerDatabaseNotificationService(dataProvider, maintenanceService,webSocketService, notificationDelayService, aotsDcaeForwarder);
+
         this.rpcPushNotificationsHandler = new RpcPushNotificationsHandler(webSocketService,
                 dataProvider, aotsDcaeForwarder);
         this.odlEventListenerHandler = new ODLEventListenerHandler(myDbKeyNameExtended, webSocketService,
@@ -279,7 +273,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         close(aaiProviderClient);
         close(deviceMonitor);
         //close(htDatabaseClient);
-        close(netconfChangeListener);
+        //close(netconfChangeListener);
         close(maintenanceService);
         close(rpcApiService);
         close(notificationDelayService);

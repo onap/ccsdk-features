@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InternalConnectionStatus;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
@@ -142,8 +143,8 @@ public class ConnectionStatusHousekeepingService implements ClusterSingletonServ
         @SuppressWarnings("null")
         @NonNull InstanceIdentifier<Node> instanceIdentifier = NETCONF_TOPO_IID.child(Node.class,
                 new NodeKey(new NodeId(nodeId)));
-        FluentFuture<Optional<Node>> optionalNode = this.dataBroker.newReadOnlyTransaction()
-                .read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
+       ReadTransaction trans = this.dataBroker.newReadOnlyTransaction();
+       FluentFuture<Optional<Node>> optionalNode =trans.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
         try {
             Node node = optionalNode.get(5, TimeUnit.SECONDS).get();
             LOG.debug("node is {}", node);
@@ -156,6 +157,9 @@ public class ConnectionStatusHousekeepingService implements ClusterSingletonServ
             return ConnectionLogStatus.Disconnected;
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             LOG.warn("unable to get node info: {}", e);
+        }
+        finally {
+        	trans.close();
         }
 
         return null;

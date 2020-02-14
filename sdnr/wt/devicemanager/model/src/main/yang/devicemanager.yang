@@ -1,157 +1,191 @@
 module devicemanager {
 
-    yang-version 1;
-    namespace "urn:opendaylight:params:xml:ns:yang:devicemanager";
-    prefix "devicemanager";
+  yang-version 1;
+  namespace "urn:opendaylight:params:xml:ns:yang:devicemanager";
+  prefix devicemanager;
 
-    import data-provider { prefix "data-provider"; }
+  import data-provider {
+    prefix data-provider;
+  }
 
+  organization
+    "highstreet technologies GmbH";
+  contact
+    "Web:   <https://highstreet-technologies.com>
+     ONAP:  <https://wiki.onap.org/display/DW/ODLUX+DB+API>";
+
+  description
+    "DeviceManager Api Module
+
+     Copyright 2019 highstreet technologies GmbH Intellectual Property.
+     All rights reserved.
+
+     Licensed under the Apache License, Version 2.0 (the 'License');
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an 'AS IS' BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.";
+
+  revision 2019-01-09 {
     description
-        "DeviceManager Api Module";
+      "Initial revision";
+    reference
+      "https://jira.onap.org/browse/SDNC-877";
+  }
 
-    revision "2019-01-09" {
-        description
-            "Initial revision";
+  rpc set-maintenance-mode {
+    description
+      "Set maintenance mode for network element";
+    input {
+      uses data-provider:maintenance-entity;
     }
+    output {
+      uses data-provider:maintenance-entity;
+    }
+  }
 
-    rpc set-maintenance-mode{
+  rpc get-maintenance-mode {
+    description
+      "Get maintenance mode Configuration";
+    input {
+      leaf mountpoint-name {
+        type string;
         description
-            "Set maintenance mode for network element";
-        input{
-            uses data-provider:maintenance-entity;
-        }
-        output {
-            uses data-provider:maintenance-entity;
-        }
+          "Mountpoint-name as key of node";
+      }
     }
-    rpc get-maintenance-mode{
-        description
-            "Get maintenance mode Configuration";
-        input{
-            leaf mountpoint-name{
-                mandatory true;
-                type string;
-                description
-                    "Mountpoint-name as key of node";
-            }
-        }
-        output {
-            uses data-provider:maintenance-entity;
-        }
+    output {
+      uses data-provider:maintenance-entity;
     }
-    rpc test-maintenance-mode{
-        description
-            "Send test pattern similar to notification that are test from algorithm";
-        input{
-            leaf mountpoint-name {
-                mandatory true;
-                type string;
-                description    "mountpoint for test";
-            }
-            leaf object-id-ref {
-                mandatory true;
-                type string;
-                description    "object id for test";
-            }
-            leaf problem-name {
-                mandatory true;
-                type string;
-                description    "problem for test";
-            }
-            leaf test-date {
-                mandatory true;
-                type string;
-                description    "point in time used for the test";
-            }
+  }
 
-        }
-        output {
-            leaf result-string {
-                mandatory true;
-                type string;
-                description    "Describin if mountpoint was found and result of maintenance mode testing";
-            }
-            uses data-provider:maintenance-entity;
-        }
-    }
-    rpc show-required-network-element {
+  rpc test-maintenance-mode {
+    description
+      "Send test pattern similar to notification that are test from algorithm";
+    input {
+      leaf mountpoint-name {
+        type string;
+        mandatory true;
         description
-          "Get information for required network element";
+          "mountpoint for test";
+      }
+      leaf object-id-ref {
+        type string;
+        mandatory true;
+        description
+          "object id for test";
+      }
+      leaf problem-name {
+        type string;
+        mandatory true;
+        description
+          "problem for test";
+      }
+      leaf test-date {
+        type string;
+        mandatory true;
+        description
+          "point in time used for the test";
+      }
+    }
+    output {
+      leaf result-string {
+        type string;
+        mandatory true;
+        description
+          "Describin if mountpoint was found and result of maintenance mode testing";
+      }
+      uses data-provider:maintenance-entity;
+    }
+  }
 
-        input {
-            leaf mountpoint-name {
-                mandatory true;
-                type string;
-                description
-                    "Mountpoint-name as key of the node to be displayed.";
-            }
-        }
-        output {
-            container required-network-element {
-                leaf mountpoint-name {
-                    type string;
-                    description
-                       "The name of the mountpoint";
-                }
-                leaf status {
-                    type string;
-                    description
-                        "Status: pre-provisoning, installed, end-of-life (Later enum)";
-                }
-                leaf description {
-                    type string;
-                    description "Device description";
-                }
-            }
-        }
+  rpc show-required-network-element {
+    description
+      "Get information for required network element";
+    input {
+      leaf mountpoint-name {
+        type string;
+        mandatory true;
+        description
+          "Mountpoint-name as key of the node to be displayed.";
+      }
     }
+    output {
+      container required-network-element {
+        leaf mountpoint-name {
+          type string;
+          description
+            "The name of the mountpoint";
+        }
+        leaf status {
+          type string;
+          description
+            "Status: pre-provisoning, installed, end-of-life (Later enum)";
+        }
+        leaf description {
+          type string;
+          description
+            "Device description";
+        }
+        description
+          "An output object presenting a network element (or device, NetConf
+           server, network function) which is expected to be connected.";
+      }
+    }
+  }
 
-    rpc get-required-network-element-keys {
+  rpc get-required-network-element-keys {
+    description
+      "Returns a list of netconf nodes for each data store space";
+    output {
+      leaf-list mountpoint-names {
+        type string;
         description
-          "Returns a list of netconf nodes for each data store space";
+          "List of required-network-element keys that are the mountpoint-names";
+      }
+    }
+  }
 
-        output {
-            leaf-list mountpoint-names {
-                type string;
-                description
-                  "List of required-network-element keys that are the mountpoint-names";
-            }
-        }
+  rpc clear-current-fault-by-nodename {
+    description
+      "try to clear alarms and sync the alarm with the devices currently connected";
+    input {
+      leaf-list nodenames {
+        type string;
+        description
+          "list of network-elements to clear alarms for nodenames, if list empty then all";
+      }
     }
+    output {
+      leaf-list nodenames {
+        type string;
+        description
+          "list of network-elements alarms cleared";
+      }
+    }
+  }
 
-    rpc clear-current-fault-by-nodename {
-        description
-            "try to clear alarms and sync the alarm with the devices currently connected";
-        input {
-            leaf-list nodenames {
-                type string;
-                description
-                    "list of network-elements to clear alarms for nodenames, if list empty then all";
-            }
-        }
-        output {
-            leaf-list nodenames {
-                type string;
-                description
-                    "list of network-elements alarms cleared";
-            }
-        }
+  rpc push-fault-notification {
+    description
+      "Forward fault problem notification of a network-element";
+    input {
+      uses data-provider:object-change-reference;
+      uses data-provider:fault;
     }
-    rpc push-fault-notification {
-        description
-            "Forward fault problem notification of a network-element";
-        input {
-        	uses data-provider:object-change-reference;
-        	uses data-provider:fault;
-        }
+  }
+
+  rpc push-attribute-change-notification {
+    description
+      "Forward attribute change notification of a network-element";
+    input {
+      uses data-provider:object-change-reference;
+      uses data-provider:attribute-change;
     }
-    rpc push-attribute-change-notification {
-        description
-            "Forward attribute change notification of a network-element";
-        input {
-	    	uses data-provider:object-change-reference;
-    		uses data-provider:attribute-change;
-        }
-    }
+  }
 }
-

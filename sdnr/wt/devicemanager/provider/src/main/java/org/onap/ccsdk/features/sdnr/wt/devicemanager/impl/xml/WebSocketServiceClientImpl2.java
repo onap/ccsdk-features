@@ -19,7 +19,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
 import java.util.concurrent.Future;
 import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.handler.ODLEventListenerHandler;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.ODLEventListenerHandler;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketEventInputBuilder;

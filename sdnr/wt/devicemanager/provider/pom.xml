@@ -176,40 +176,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generateDTOs</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>bash</executable>
-                            <arguments>
-                                <argument>${basedir}/../../data-provider/provider/src/main/resources/es-init.sh</argument>
-                                <argument>initfile</argument>
-                                <argument>-f</argument>
-                                <argument>${project.build.directory}/EsInit.script</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemProperties>
-                        <property>
-                            <name>databaseport</name>
-                            <value>${databaseport}</value>
-                        </property>
-                    </systemProperties>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>

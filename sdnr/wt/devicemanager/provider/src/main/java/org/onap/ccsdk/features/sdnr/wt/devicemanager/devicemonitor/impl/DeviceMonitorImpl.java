@@ -29,7 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.config.DmConfig;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.handler.ODLEventListenerHandler;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.ODLEventListenerHandler;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.DeviceMonitoredNe;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
@@ -211,6 +211,17 @@ public class DeviceMonitorImpl implements DeviceMonitor, IConfigChangedListener 
         synchronized(queue) {
             for (DeviceMonitorTask task : queue.values()) {
                 task.refreshAlarms();
+            }
+        }
+    }
+
+    /**
+     * For test run the tasks
+     */
+    public void taskTestRun() {
+        synchronized(queue) {
+            for (DeviceMonitorTask task : queue.values()) {
+                task.run();
             }
         }
     }

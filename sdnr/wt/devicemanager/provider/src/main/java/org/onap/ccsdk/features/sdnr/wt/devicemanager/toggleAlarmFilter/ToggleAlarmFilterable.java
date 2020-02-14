@@ -15,31 +15,18 @@
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.conf.odlGeo;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter;
 
-import java.util.ArrayList;
+/**
+ * @author herbert
+ *
+ */
+public interface ToggleAlarmFilterable {
 
-public class ClusterRoleInfoCollection extends ArrayList<ClusterRoleInfo> {
-    private static final long serialVersionUID = 1L;
 
-    public ClusterRoleInfo get(String role) {
-        for (ClusterRoleInfo info : this) {
-            if (info.getRole().equals(role)) {
-                return info;
-            }
-        }
-        return null;
-    }
+    /** Provide id for toggle alarm filter that is unique for the mountpoint/nodeId**/
+    String getUuidForMountpoint();
+    /** Provide indication if cleared **/
+    boolean isCleared();
 
-    public boolean contains(ClusterRoleInfo info) {
-        if (info == null) {
-            return false;
-        }
-        for (ClusterRoleInfo i : this) {
-            if (i.equals(info)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.handler;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler;
 
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;

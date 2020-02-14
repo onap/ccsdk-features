@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.database;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

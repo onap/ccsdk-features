@@ -67,7 +67,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
     private @Nullable
     final ResyncNetworkElementsListener resyncCallbackListener;
 
-    DeviceManagerApiServiceImpl(final RpcProviderService rpcProviderRegistry,
+    public DeviceManagerApiServiceImpl(final RpcProviderService rpcProviderRegistry,
             MaintenanceServiceImpl maintenanceService, ResyncNetworkElementsListener listener,
             PushNotifications pushNotificationsListener) {
         this.maintenanceService = maintenanceService;

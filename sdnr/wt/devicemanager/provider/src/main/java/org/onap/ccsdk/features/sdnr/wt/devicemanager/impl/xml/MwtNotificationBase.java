@@ -38,6 +38,7 @@ public class MwtNotificationBase {
 
     public MwtNotificationBase() {
         // For Jaxb
+    	this.objectId = EMPTY;
     }
 
     public MwtNotificationBase(String nodeName, Integer counter, InternalDateAndTime timeStamp, String objectId) {

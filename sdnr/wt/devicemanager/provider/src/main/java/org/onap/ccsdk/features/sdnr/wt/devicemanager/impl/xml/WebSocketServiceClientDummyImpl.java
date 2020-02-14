@@ -18,7 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.handler.ODLEventListenerHandler;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.ODLEventListenerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

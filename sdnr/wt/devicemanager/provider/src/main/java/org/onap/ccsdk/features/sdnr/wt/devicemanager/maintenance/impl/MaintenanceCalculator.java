@@ -128,7 +128,7 @@ public class MaintenanceCalculator {
      * @param zoneTimeString with time
      * @return ZonedDateTime string
      */
-    static ZonedDateTime valueOf(String zoneTimeString) {
+    public static ZonedDateTime valueOf(String zoneTimeString) {
         if (zoneTimeString == null || zoneTimeString.isEmpty()) {
             LOG.warn("Null or empty zoneTimeString");
             return EMPTYDATETIME;

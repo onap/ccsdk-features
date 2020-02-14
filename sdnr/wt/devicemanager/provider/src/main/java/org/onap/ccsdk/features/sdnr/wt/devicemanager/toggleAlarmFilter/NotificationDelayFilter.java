@@ -22,19 +22,32 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.jdt.annotation.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NotificationDelayFilter<T> implements AutoCloseable {
+public class NotificationDelayFilter<T extends ToggleAlarmFilterable> implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationDelayFilter.class);
+
+    private static long delay;
+    private static boolean enabled;
 
     private final ConcurrentHashMap <String, NotificationWithServerTimeStamp<T>> problemItems;
 //    private final HashMap<String, NotificationWithServerTimeStamp<T>> nonProblemItems;
     private final NotificationDelayedListener<T> timeoutListener;
 
-    private static long delay;
-    private static boolean enabled;
+    private final ScheduledExecutorService scheduler;
+    private final Runnable timerRunner = () -> onTick();
+    private final String nodeName;
+
+    public NotificationDelayFilter(String nodeName, NotificationDelayedListener<T> timeoutListener) {
+        this.nodeName = nodeName;
+        this.timeoutListener = timeoutListener;
+        this.problemItems = new ConcurrentHashMap <>();
+        this.scheduler = Executors.newScheduledThreadPool(1);
+        this.startTimer();
+    }
 
     public static void setDelay(long l) {
         NotificationDelayFilter.delay = l;
@@ -52,30 +65,17 @@ public class NotificationDelayFilter<T> implements AutoCloseable {
         NotificationDelayFilter.enabled = enabled;
     }
 
-    private final ScheduledExecutorService scheduler;
-    private final Runnable timerRunner = () -> onTick();
-
-    private final String nodeName;
-
-    public NotificationDelayFilter(String nodeName, NotificationDelayedListener<T> timeoutListener) {
-        this.nodeName = nodeName;
-        this.timeoutListener = timeoutListener;
-        this.problemItems = new ConcurrentHashMap <>();
-        this.scheduler = Executors.newScheduledThreadPool(1);
-        this.startTimer();
-    }
-
     /**
      * If process the notification
      * @return true if other processing is required, false if not
      */
-    public boolean processNotification(boolean cleared, String problemName, T notificationXml) {
+    public boolean processNotification(@NonNull T notificationXml) {
         // ToggleAlarmFilter functionality
         if (NotificationDelayFilter.isEnabled()) {
-            if (cleared) {
-                clearAlarmNotification(problemName, notificationXml);
+            if (notificationXml.isCleared()) {
+                clearAlarmNotification(notificationXml);
             } else {
-                pushAlarmNotification(problemName, notificationXml);
+                pushAlarmNotification(notificationXml);
             }
             return false;
         } else {
@@ -86,12 +86,11 @@ public class NotificationDelayFilter<T> implements AutoCloseable {
 
     /**
      * Push notification with a specific severity (everything except non-alarmed)
-     * @param problemName key
      * @param notification related notification
      */
-    public void pushAlarmNotification(String problemName, T notification) {
+    public void pushAlarmNotification(@NonNull T notification) {
         synchronized (problemItems) {
-
+            String problemName = notification.getUuidForMountpoint();
             boolean cp = this.problemItems.containsKey(problemName);
             if (!cp) {
                 // no alarm in entries => create entry and push the alarm currently
@@ -101,7 +100,7 @@ public class NotificationDelayFilter<T> implements AutoCloseable {
                         + item.toString());
                 this.problemItems.put(problemName, item);
                 if (this.timeoutListener != null) {
-                    this.timeoutListener.onNotificationDelay(notification);
+                    this.timeoutListener.onNotificationDelay(this.nodeName,notification);
                 }
             } else {
                 LOG.debug("clear contra event for node " + this.nodeName + " for alarm " + problemName);
@@ -113,12 +112,11 @@ public class NotificationDelayFilter<T> implements AutoCloseable {
 
     /**
      * Push notification with severity non-alarmed
-     * @param problemName key
      * @param notification related notification
      */
-    public void clearAlarmNotification(String problemName, T notification) {
+    public void clearAlarmNotification(@NonNull T notification) {
         synchronized (problemItems) {
-
+            String problemName = notification.getUuidForMountpoint();
             boolean cp = this.problemItems.containsKey(problemName);
             if (cp) {
                 LOG.debug("set contra event for alarm " + problemName);
@@ -126,7 +124,7 @@ public class NotificationDelayFilter<T> implements AutoCloseable {
             } else {
                 // not in list => push directly through
                 if (this.timeoutListener != null) {
-                    this.timeoutListener.onNotificationDelay(notification);
+                    this.timeoutListener.onNotificationDelay(this.nodeName,notification);
                 }
             }
         }
@@ -156,7 +154,7 @@ public class NotificationDelayFilter<T> implements AutoCloseable {
                         // send contra Alarm if exists
                         if (value.getContraAlarmNotification() != null) {
                             if (this.timeoutListener != null) {
-                                this.timeoutListener.onNotificationDelay(value.getContraAlarmNotification());
+                                this.timeoutListener.onNotificationDelay(this.nodeName,value.getContraAlarmNotification());
                             }
                         }
                         problemItems.remove(entry.getKey());

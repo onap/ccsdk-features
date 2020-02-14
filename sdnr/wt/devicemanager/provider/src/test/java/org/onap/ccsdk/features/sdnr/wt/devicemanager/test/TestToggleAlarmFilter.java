@@ -18,27 +18,23 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.test.mock;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
-import java.util.Set;
-import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.RpcService;
+import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.NotificationWithServerTimeStamp;
 
-public class RpcProviderRegistryMock implements RpcProviderService {
+public class TestToggleAlarmFilter {
 
-    @Override
-    public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
-            T implementation) {
-        System.out.println("Register class "+implementation);
-        return null;
-    }
+    @Test
+    public void testNotification() {
 
-    @Override
-    public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
-            T implementation, Set<InstanceIdentifier<?>> paths) {
-        return null;
+        NotificationWithServerTimeStamp<Integer> test = new NotificationWithServerTimeStamp<>(1000);
+
+        test.refresh(1000);
+        test.getStartTime();
+
+        System.out.println(test);
+
     }
 
 }

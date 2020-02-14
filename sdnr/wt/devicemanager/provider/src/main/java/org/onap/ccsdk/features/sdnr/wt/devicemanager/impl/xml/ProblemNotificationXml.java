@@ -21,9 +21,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.database.FaultEntityManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalDateAndTime;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalSeverity;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.ToggleAlarmFilterable;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultcurrent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultcurrentBuilder;
@@ -34,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.slf4j.Logger;
 
 @XmlRootElement(name = "ProblemNotification")
-public class ProblemNotificationXml extends MwtNotificationBase implements GetEventType {
+public class ProblemNotificationXml extends MwtNotificationBase implements GetEventType, ToggleAlarmFilterable {
 
     private static String EVENTTYPE = "ProblemNotification";
 
@@ -87,6 +87,17 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
         return severity.isNoAlarmIndication();
     }
 
+    @Override
+    public String getUuidForMountpoint() {
+        return genSpecificEsId();
+    }
+
+    @Override
+    public boolean isCleared() {
+        return !isNotManagedAsCurrentProblem() && isNoAlarmIndication();
+    }
+
+
     /**
      * Create a specific ES id for the current log.
      * @return a string with the generated ES Id
@@ -118,6 +129,7 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
                 + super.toString() + "]";
     }
 
+
     @Override
     public String getEventType() {
         return EVENTTYPE;
@@ -143,4 +155,5 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
             log.debug("Found problems {} {}", uuid, sb.toString());
         }
     }
+
 }

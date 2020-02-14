@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.handler.ODLEventListenerHandler;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.ODLEventListenerHandler;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.DeviceMonitoredNe;
 import org.slf4j.Logger;

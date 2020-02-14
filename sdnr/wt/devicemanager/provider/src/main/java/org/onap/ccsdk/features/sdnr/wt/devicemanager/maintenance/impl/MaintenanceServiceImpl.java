@@ -44,7 +44,7 @@ public class MaintenanceServiceImpl implements MaintenanceService, MaintenanceRP
 
     private final HtDatabaseMaintenance database;
 
-    public MaintenanceServiceImpl(HtDatabaseMaintenance client) throws ClassNotFoundException {
+    public MaintenanceServiceImpl(HtDatabaseMaintenance client) {
 
         LOG.info("Create {} start", MaintenanceServiceImpl.class);
         database = client;

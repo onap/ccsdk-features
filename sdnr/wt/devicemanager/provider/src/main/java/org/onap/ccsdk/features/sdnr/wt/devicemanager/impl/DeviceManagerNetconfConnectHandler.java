@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.HtAssert;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.DeviceMonitor;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.handler.ODLEventListenerHandler;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.ODLEventListenerHandler;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
@@ -149,8 +149,12 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
 
     @Override
     public void close() {
-         registerNetconfNodeConnectListener.close();
-         registerNetconfNodeStateListener.close();
+        if (registerNetconfNodeConnectListener != null) {
+			registerNetconfNodeConnectListener.close();
+		}
+        if (registerNetconfNodeStateListener != null) {
+			registerNetconfNodeStateListener.close();
+		}
     }
 
     /*--------------------------------------------

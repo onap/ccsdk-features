@@ -20,35 +20,35 @@
  ******************************************************************************/
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test.mock;
 
-import java.util.Optional;
-import org.opendaylight.mdsal.binding.api.MountPoint;
-import org.opendaylight.mdsal.binding.api.MountPointService;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import java.util.Set;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.DevicemanagerService;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.RpcService;
 
-/**
- * @author herbert
- *
- */
-public class MountPointServiceMock implements MountPointService {
+public class RpcProviderServiceMock implements RpcProviderService {
 
-    private final MountPoint mountpoint;
-
-    public MountPointServiceMock(MountPoint mountpoint) {
-        this.mountpoint = mountpoint;
-    }
+    private DevicemanagerService deviceManagerApi;
 
     @Override
-    public Optional<MountPoint> getMountPoint(InstanceIdentifier<?> instanceId) {
-
-        Optional<MountPoint> optional = Optional.of(mountpoint);
-        return optional;
-    }
-
-    @Override
-    public <T extends MountPointListener> ListenerRegistration<T> registerListener(InstanceIdentifier<?> path,
-            T listener) {
+    public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
+            T implementation) {
+        System.out.println("Register class "+implementation);
+        if (implementation instanceof DevicemanagerService) {
+            deviceManagerApi = (DevicemanagerService)implementation;
+        }
         return null;
+    }
+
+    @Override
+    public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
+            T implementation, Set<InstanceIdentifier<?>> paths) {
+        return null;
+    }
+
+    public DevicemanagerService getDeviceManagerApiService() {
+        return deviceManagerApi;
     }
 
 }
