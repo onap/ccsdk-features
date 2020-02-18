@@ -45,7 +45,7 @@ public class WrapperEquipmentPacRev170402 implements OnfInterfacePac {
     private final NetconfAccessor acessor;
 
 
-    public WrapperEquipmentPacRev170402(NetconfAccessor acessor, NetworkElementCoreData coreData) {
+    public WrapperEquipmentPacRev170402(NetconfAccessor acessor) {
         this.acessor = acessor;
     }
 
@@ -67,9 +67,7 @@ public class WrapperEquipmentPacRev170402 implements OnfInterfacePac {
         final Class<EquipmentPac> clazzPac = EquipmentPac.class;
         final Class<EquipmentPacKey> clazzPacKey = EquipmentPacKey.class;
         final Class<EquipmentCurrentProblems> clazzProblems = EquipmentCurrentProblems.class;
-        // final Class<ContainerCurrentProblemTypeG> clazzProblem =
-        // ContainerCurrentProblemTypeG.class;
-
+   
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 acessor.getNodeId(), interfacePacUuid.getValue());
 
@@ -83,7 +81,7 @@ public class WrapperEquipmentPacRev170402 implements OnfInterfacePac {
             EquipmentCurrentProblems problems = getGenericTransactionUtils().readData(acessor.getDataBroker(),
                     LogicalDatastoreType.OPERATIONAL, interfaceIID);
             if (problems == null) {
-                LOG.debug("DBRead Id {} no {}", interfacePacUuid, clazzProblems, clazzProblems.getName());
+                LOG.debug("DBRead Id {} no {} name {}", interfacePacUuid, clazzProblems, clazzProblems.getName());
             } else {
                 // -- Specific part 3
                 for (CurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {

@@ -138,7 +138,7 @@ public class TestWrapperMicrowaveModelRev181010 {
 				LogicalDatastoreType.OPERATIONAL, mwAirInterfaceIID)).thenReturn(airInterfaceCurrentProblems);
 
 		WrapperMicrowaveModelRev181010 wrapperMicrowaveModelRev181010 = new WrapperMicrowaveModelRev181010(accessor, serviceProvider);
-		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.MWAirInterface, null, uid, resultList);
+		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.MWAIRINTERFACE, null, uid, resultList);
 	}
 
 	@Test
@@ -147,7 +147,7 @@ public class TestWrapperMicrowaveModelRev181010 {
 				LogicalDatastoreType.OPERATIONAL, mwAirInterfaceIID)).thenReturn(null);
 
 		WrapperMicrowaveModelRev181010 wrapperMicrowaveModelRev181010 = new WrapperMicrowaveModelRev181010(accessor, serviceProvider);
-		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.MWAirInterface, null, uid, resultList);
+		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.MWAIRINTERFACE, null, uid, resultList);
 	}
 
 	@Test
@@ -156,7 +156,7 @@ public class TestWrapperMicrowaveModelRev181010 {
 				LogicalDatastoreType.OPERATIONAL, mwEthInterfaceIID)).thenReturn(ethernetContainerCurrentProblems);
 
 		WrapperMicrowaveModelRev181010 wrapperMicrowaveModelRev181010 = new WrapperMicrowaveModelRev181010(accessor, serviceProvider);
-		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.EthernetContainer12, null, uid, resultList);
+		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.ETHERNETCONTAINER12, null, uid, resultList);
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class TestWrapperMicrowaveModelRev181010 {
 				LogicalDatastoreType.OPERATIONAL, mwEthInterfaceIID)).thenReturn(null);
 
 		WrapperMicrowaveModelRev181010 wrapperMicrowaveModelRev181010 = new WrapperMicrowaveModelRev181010(accessor, serviceProvider);
-		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.EthernetContainer12, null, uid, resultList);
+		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.ETHERNETCONTAINER12, null, uid, resultList);
 	}
 
 	@Test
@@ -185,7 +185,7 @@ public class TestWrapperMicrowaveModelRev181010 {
 				LogicalDatastoreType.OPERATIONAL, mwEthInterfaceIID)).thenReturn(tdmInterfaceCurrentProblems);
 
 		WrapperMicrowaveModelRev181010 wrapperMicrowaveModelRev181010 = new WrapperMicrowaveModelRev181010(accessor, serviceProvider);
-		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.TDMContainer, null, uid, resultList);
+		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.TDMCONTAINER, null, uid, resultList);
 
 	}
 
@@ -204,7 +204,7 @@ public class TestWrapperMicrowaveModelRev181010 {
 				LogicalDatastoreType.OPERATIONAL, mwEthInterfaceIID)).thenReturn(hybridMwStructureCurrentProblems);
 
 		WrapperMicrowaveModelRev181010 wrapperMicrowaveModelRev181010 = new WrapperMicrowaveModelRev181010(accessor, serviceProvider);
-		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.Structure, MwHybridMwStructurePac.class, uid, resultList);
+		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.STRUCTURE, MwHybridMwStructurePac.class, uid, resultList);
 
 	}
 
@@ -223,7 +223,7 @@ public class TestWrapperMicrowaveModelRev181010 {
 				LogicalDatastoreType.OPERATIONAL, mwEthInterfaceIID)).thenReturn(hybridMwStructureCurrentProblems);
 
 		WrapperMicrowaveModelRev181010 wrapperMicrowaveModelRev181010 = new WrapperMicrowaveModelRev181010(accessor, serviceProvider);
-		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.Structure, MwAirInterfaceDiversityPac.class, uid, resultList);
+		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.STRUCTURE, MwAirInterfaceDiversityPac.class, uid, resultList);
 
 	}
 
@@ -242,7 +242,7 @@ public class TestWrapperMicrowaveModelRev181010 {
 				LogicalDatastoreType.OPERATIONAL, mwEthInterfaceIID)).thenReturn(hybridMwStructureCurrentProblems);
 
 		WrapperMicrowaveModelRev181010 wrapperMicrowaveModelRev181010 = new WrapperMicrowaveModelRev181010(accessor, serviceProvider);
-		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.Structure, MwPureEthernetStructurePac.class, uid, resultList);
+		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.STRUCTURE, MwPureEthernetStructurePac.class, uid, resultList);
 
 	}
 
@@ -250,7 +250,7 @@ public class TestWrapperMicrowaveModelRev181010 {
 	public void testNullStructureWithProblems() throws Exception {
 
 		WrapperMicrowaveModelRev181010 wrapperMicrowaveModelRev181010 = new WrapperMicrowaveModelRev181010(accessor, serviceProvider);
-		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.Structure, null, uid, resultList);
+		wrapperMicrowaveModelRev181010.readTheFaultsOfMicrowaveModel(ONFLayerProtocolName.STRUCTURE, null, uid, resultList);
 
 	}
 
@@ -290,6 +290,6 @@ public class TestWrapperMicrowaveModelRev181010 {
 		Lp lp = new LpBuilder().setUuid(uid).build();
 		WrapperMicrowaveModelRev181010 wrapperMicrowaveModelRev181010 = new WrapperMicrowaveModelRev181010(accessor, serviceProvider);
 
-		wrapperMicrowaveModelRev181010.getLtpHistoricalPerformanceData(ONFLayerProtocolName.MWAirInterface, lp);
+		wrapperMicrowaveModelRev181010.getLtpHistoricalPerformanceData(ONFLayerProtocolName.MWAIRINTERFACE, lp);
 	}
 }

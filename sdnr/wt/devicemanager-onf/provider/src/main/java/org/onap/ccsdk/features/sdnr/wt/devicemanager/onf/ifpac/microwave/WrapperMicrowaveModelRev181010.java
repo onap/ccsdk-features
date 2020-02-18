@@ -132,19 +132,19 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         switch (lpName) {
-        case MWAirInterface:
+        case MWAIRINTERFACE:
             readTheFaultsOfMwAirInterfacePac(uuid, resultList);
             break;
 
-        case EthernetContainer12:
+        case ETHERNETCONTAINER12:
             readTheFaultsOfMwEthernetContainerPac(uuid, resultList);
             break;
 
-        case TDMContainer:
+        case TDMCONTAINER:
             readTheFaultsOfMwTdmContainerPac(uuid, resultList);
             break;
 
-        case Structure:
+        case STRUCTURE:
             if (lpClass == MwHybridMwStructurePac.class) {
                 readTheFaultsOfMwHybridMwStructurePac(uuid, resultList);
 
@@ -158,10 +158,10 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
                 LOG.warn("Unassigned lp model {} class {}", lpName, lpClass);
             }
             break;
-        case Ethernet:
+        case ETHERNET:
             // No alarms supported
             break;
-        case EthernetContainer10:
+        case ETHERNETCONTAINER10:
         default:
             LOG.warn("Unassigned or not expected lp in model {}", lpName);
         }
@@ -171,18 +171,18 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     public @NonNull PerformanceDataLtp getLtpHistoricalPerformanceData(@NonNull ONFLayerProtocolName lpName, @NonNull Lp lp) {
         PerformanceDataLtp res = new PerformanceDataLtp();
         switch (lpName) {
-        case MWAirInterface:
+        case MWAIRINTERFACE:
             return readAirInterfacePerformanceData(lp, res);
 
-        case EthernetContainer12:
+        case ETHERNETCONTAINER12:
             return readEthernetContainerPerformanceData(lp, res);
 
-        case EthernetContainer10:
-        case EthernetPhysical:
-        case Ethernet:
-        case TDMContainer:
-        case Structure:
-        case Unknown:
+        case ETHERNETCONTAINER10:
+        case ETHERNETPHYSICAL:
+        case ETHERNET:
+        case TDMCONTAINER:
+        case STRUCTURE:
+        case UNKNOWN:
             LOG.debug("Do not read HistoricalPM data for {} {}", lpName, Helper.nnGetUniversalId(lp.getUuid()).getValue());
         }
         return res;
@@ -263,12 +263,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         final Class<MwAirInterfacePac> clazzPac = MwAirInterfacePac.class;
-        // final Class<MwAirInterfacePacKey> clazzPacKey = MwAirInterfacePacKey.class;
-        // final Class<AirInterfaceCurrentProblems> clazzProblems =
-        // AirInterfaceCurrentProblems.class;
-        // final Class<AirInterfaceCurrentProblemTypeG> clazzProblem =
-        // AirInterfaceCurrentProblemTypeG.class;
-
+    
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -304,13 +299,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         final Class<MwEthernetContainerPac> clazzPac = MwEthernetContainerPac.class;
-        // final Class<MwEthernetContainerPacKey> clazzPacKey =
-        // MwEthernetContainerPacKey.class;
-        // final Class<EthernetContainerCurrentProblems> clazzProblems =
-        // EthernetContainerCurrentProblems.class;
-        // final Class<ContainerCurrentProblemTypeG> clazzProblem =
-        // ContainerCurrentProblemTypeG.class;
-
+    
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -343,12 +332,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         final Class<MwAirInterfaceDiversityPac> clazzPac = MwAirInterfaceDiversityPac.class;
-        // final Class<MwAirInterfaceDiversityPacKey> clazzPacKey =
-        // MwAirInterfaceDiversityPacKey.class;
         final Class<AirInterfaceDiversityCurrentProblems> clazzProblems = AirInterfaceDiversityCurrentProblems.class;
-        // final Class<AirInterfaceDiversityCurrentProblemTypeG> clazzProblem =
-        // AirInterfaceDiversityCurrentProblemTypeG.class;
-
+     
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -380,12 +365,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         final Class<MwPureEthernetStructurePac> clazzPac = MwPureEthernetStructurePac.class;
-        // final Class<MwPureEthernetStructurePacKey> clazzPacKey =
-        // MwPureEthernetStructurePacKey.class;
         final Class<PureEthernetStructureCurrentProblems> clazzProblems = PureEthernetStructureCurrentProblems.class;
-        // final Class<StructureCurrentProblemTypeG> clazzProblem =
-        // StructureCurrentProblemTypeG.class;
-
+     
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -417,12 +398,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         final Class<MwHybridMwStructurePac> clazzPac = MwHybridMwStructurePac.class;
-        // final Class<MwHybridMwStructurePacKey> clazzPacKey =
-        // MwHybridMwStructurePacKey.class;
         final Class<HybridMwStructureCurrentProblems> clazzProblems = HybridMwStructureCurrentProblems.class;
-        // final Class<HybridMwStructureCurrentProblemsG> clazzProblem =
-        // HybridMwStructureCurrentProblemsG.class;
-
+     
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -464,9 +441,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         final Class<MwTdmContainerPac> clazzPac = MwTdmContainerPac.class;
         final Class<MwTdmContainerPacKey> clazzPacKey = MwTdmContainerPacKey.class;
         final Class<TdmContainerCurrentProblems> clazzProblems = TdmContainerCurrentProblems.class;
-        // final Class<ContainerCurrentProblemTypeG> clazzProblem =
-        // ContainerCurrentProblemTypeG.class;
-
+      
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 

@@ -104,7 +104,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
                 int problems = faultService.removeAllCurrentProblemsOfNode(nodeId);
                 FaultData resultList = readAllCurrentProblemsOfNode();
                 faultService.initCurrentProblemStatus(nodeId, resultList);
-                LOG.info("Resync mountpoint {} for device {}. Removed {}. Current problems: {}", getMountPointNodeName(),
+                LOG.info("Resync mountpoint {} for device {}. Removed {}. Current problems: {}", getMountpoint(),
                         getUuId(), problems, resultList.size());
             }
         }
@@ -130,8 +130,8 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
      */
     @Override
     public synchronized void initialReadFromNetworkElement() {
-        // optionalNe.getLtp().get(0).getLp();
-        LOG.debug("Get info about {}", getMountPointNodeName());
+
+        LOG.debug("Get info about {}", getMountpoint());
 
         int problems = faultService.removeAllCurrentProblemsOfNode(nodeId);
         LOG.debug("Removed all {} problems from database at registration", problems);
@@ -150,7 +150,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         faultService.initCurrentProblemStatus(nodeId, resultList);
         equipmentService.writeEquipment(equipment.getEquipmentData());
 
-        LOG.info("Found info at {} for device {} number of problems: {}", getMountPointNodeName(), getUuId(),
+        LOG.info("Found info at {} for device {} number of problems: {}", getMountpoint(), getUuId(),
                 resultList.size());
     }
 
@@ -166,9 +166,6 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
     public void register() {
 
         // Setup microwaveEventListener for notification service
-        // MicrowaveEventListener microwaveEventListener = new
-        // MicrowaveEventListener(mountPointNodeName, websocketmanagerService,
-        // xmlMapper, databaseClientEvents);
         doRegisterEventListener(acessor.getMountpoint());
 
         // Register netconf stream
@@ -201,6 +198,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
     @Override
     public void close() throws Exception {
+    	// Close to be implemented
     }
 
 

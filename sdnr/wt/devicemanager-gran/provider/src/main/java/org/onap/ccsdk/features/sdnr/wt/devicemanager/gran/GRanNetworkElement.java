@@ -52,10 +52,12 @@ public class GRanNetworkElement implements NetworkElement {
 
     @Override
     public void deregister() {
+    	log.info("deRegister actions should be here");
     }
 
     @Override
     public void warmstart() {
+    	log.info("Warmstart actions should be here");
     }
 
     @Override

@@ -63,11 +63,11 @@ public class ONFCoreNetworkElement12Equipment {
     private final @NonNull List<ExtendedEquipment> globalEquipmentList;
 
     public ONFCoreNetworkElement12Equipment(NetconfAccessor acessor, NetworkElementCoreData coreData, Capabilities capabilities) {
-        LOG.debug("Initialize " + ONFCoreNetworkElement12Equipment.class.getName());
+        LOG.debug("Initialize class: {} " + ONFCoreNetworkElement12Equipment.class.getName());
         this.acessor = acessor;
         this.coreData = coreData;
         if (capabilities.isSupportingNamespaceAndRevision(WrapperEquipmentPacRev170402.QNAME)) {
-            this.equipmentPac = new WrapperEquipmentPacRev170402(acessor, coreData);
+            this.equipmentPac = new WrapperEquipmentPacRev170402(acessor);
             LOG.debug("Equipement pac supported {}", WrapperEquipmentPacRev170402.QNAME);
         } else {
             this.equipmentPac = null;
@@ -264,10 +264,9 @@ public class ONFCoreNetworkElement12Equipment {
         InstanceIdentifier<Equipment> equipmentIID =
                 InstanceIdentifier.builder(Equipment.class, new EquipmentKey(interfacePacUuid)).build();
 
-        Equipment res = getGenericTransactionUtils().readData(coreData.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
+        return getGenericTransactionUtils().readData(coreData.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 equipmentIID);
 
-        return res;
     }
 
     /**
@@ -285,10 +284,9 @@ public class ONFCoreNetworkElement12Equipment {
 
         InstanceIdentifier<Equipment> equipmentIID = InstanceIdentifier.builder(Equipment.class).build();
 
-        Equipment res = getGenericTransactionUtils().readData(coreData.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
+        return getGenericTransactionUtils().readData(coreData.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 equipmentIID);
 
-        return res;
     }
 
     /**

@@ -17,24 +17,14 @@
  ******************************************************************************/
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.gran.test;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.gran.GRanNetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.gran.impl.DeviceManagerGRanImpl;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.AaiService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EquipmentService;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EventHandlingService;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.MaintenanceService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
 
 public class TestDeviceManagerGRanImpl {
 	GRanNetworkElementFactory factory = new GRanNetworkElementFactory();

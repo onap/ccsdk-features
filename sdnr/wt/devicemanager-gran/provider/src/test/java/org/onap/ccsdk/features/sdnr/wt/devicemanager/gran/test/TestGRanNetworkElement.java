@@ -39,9 +39,9 @@ public class TestGRanNetworkElement {
 		when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
 		
 		GRanNetworkElement gRanNe = new GRanNetworkElement(netconfAccessor, databaseService);
-		assertEquals(gRanNe.getDeviceType().getIntValue(), 3);
-		assertEquals(gRanNe.getDeviceType().getName(), "RAN3GPP");
-		assertEquals(gRanNe.getNodeId().getValue(), NODEID);
+		assertEquals(3, gRanNe.getDeviceType().getIntValue());
+		assertEquals("RAN3GPP", gRanNe.getDeviceType().getName());
+		assertEquals(NODEID, gRanNe.getNodeId().getValue());
 		
 		gRanNe.register();
 		gRanNe.deregister();
