@@ -23,14 +23,14 @@ import org.slf4j.LoggerFactory;
 
 public enum ONFLayerProtocolName {
 
-    MWAirInterface("MWPS"),                    //V1.0 + V1.2
-    EthernetContainer10("ETH-CTP"),            //V1.0
-    EthernetContainer12("ETC"),                //V1.2 + V1.2.1.1
-    EthernetPhysical("ETY"),                //V1.2
-    TDMContainer("TDM"),                    //V1.2
-    Structure("MWS"),                        //V1.0 + V1.2
-    Ethernet("ETH"),                        //V1.2
-    Unknown("");
+    MWAIRINTERFACE("MWPS"),                    //V1.0 + V1.2
+    ETHERNETCONTAINER10("ETH-CTP"),            //V1.0
+    ETHERNETCONTAINER12("ETC"),                //V1.2 + V1.2.1.1
+    ETHERNETPHYSICAL("ETY"),                //V1.2
+    TDMCONTAINER("TDM"),                    //V1.2
+    STRUCTURE("MWS"),                        //V1.0 + V1.2
+    ETHERNET("ETH"),                        //V1.2
+    UNKNOWN("");
 
     private static final Logger LOG = LoggerFactory.getLogger(ONFLayerProtocolName.class);
 
@@ -51,7 +51,7 @@ public enum ONFLayerProtocolName {
             }
         }
         LOG.info("Can not map {}. Use Unknown",onfName.getValue() );
-        return Unknown;
+        return UNKNOWN;
     }
 
     public String getValue() {

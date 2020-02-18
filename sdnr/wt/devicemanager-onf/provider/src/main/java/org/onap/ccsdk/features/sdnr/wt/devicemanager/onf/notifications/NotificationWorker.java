@@ -54,7 +54,7 @@ public class NotificationWorker<T> implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
     }
 
     private static class Worker<T> implements Runnable {

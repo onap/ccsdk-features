@@ -57,7 +57,6 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
     private final String mountPointNodeName;
     private final NodeId nodeId;
     private final DataBroker netconfNodeDataBroker;
-    private final Capabilities capabilities;
     private final NetconfAccessor acessor;
 
     protected ONFCoreNetworkElementBase(NetconfAccessor acessor) {
@@ -65,7 +64,6 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
         this.mountPointNodeName = acessor.getNodeId().getValue();
         this.nodeId = acessor.getNodeId();
         this.netconfNodeDataBroker = acessor.getDataBroker();
-        this.capabilities = acessor.getCapabilites();
         this.acessor = acessor;
 
     }
@@ -79,73 +77,14 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
     public String getMountPointNodeName() {
         return mountPointNodeName;
     }
-
+    
     /**
      * @return the netconfNodeDataBroker
      */
     public DataBroker getNetconfNodeDataBroker() {
         return netconfNodeDataBroker;
     }
-
-    /**
-     * @return the capabilities
-     */
-	/*
-	 * public Capabilities getCapabilities() { return capabilities; }
-	 */
-
-    /**
-     * Update devicetype and let all other field empty
-     * @param deviceType that should be updated
-     * @return NetworkElementConnectionEntity with related parameter
-     */
-	/*
-	 * public static NetworkElementConnectionEntity
-	 * getNetworkConnectionDeviceTpe(NetworkElementDeviceType deviceType) {
-	 * NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
-	 * eb.setDeviceType(deviceType); return eb.build(); }
-	 */
-
-    /**
-     * Provide device specific data
-     * @param nodeId mountpoint id
-     * @param nNode data
-     * @return NetworkElementConnectionEntity specific information
-     */
-	/*
-	 * public static NetworkElementConnectionEntity getNetworkConnection(String
-	 * nodeId, @Nonnull NetconfNode nNode) {
-	 * 
-	 * NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
-	 * // -- basics
-	 * eb.setId(nodeId).setNodeId(nodeId).setDeviceType(NetworkElementDeviceType.
-	 * Unknown).setIsRequired(false);
-	 * 
-	 * // -- connection status ConnectionLogStatus status =
-	 * InternalConnectionStatus.statusFromNodeStatus(nNode.getConnectionStatus());
-	 * eb.setStatus(status);
-	 * 
-	 * // -- capabilites Capabilities availableCapabilities =
-	 * Capabilities.getAvailableCapabilities(nNode); Capabilities
-	 * unAvailableCapabilities = Capabilities.getUnavailableCapabilities(nNode);
-	 * eb.setCoreModelCapability(availableCapabilities.getRevisionForNamespace(
-	 * NetworkElement.QNAME));
-	 * 
-	 * NodeDetailsBuilder nodeDetails = new NodeDetailsBuilder()
-	 * .setAvailableCapabilities(availableCapabilities.getCapabilities())
-	 * .setUnavailableCapabilities(unAvailableCapabilities.getCapabilities());
-	 * eb.setNodeDetails(nodeDetails.build()); // -- host information Host host =
-	 * nNode.getHost(); PortNumber portNumber = nNode.getPort(); if (host != null &&
-	 * portNumber != null) {
-	 * eb.setHost(host.stringValue()).setPort(portNumber.getValue().longValue()); }
-	 * 
-	 * Credentials credentials = nNode.getCredentials(); if (credentials instanceof
-	 * LoginPassword) { LoginPassword loginPassword = (LoginPassword) credentials;
-	 * eb.setUsername(loginPassword.getUsername()).setPassword(loginPassword.
-	 * getPassword()); } return eb.build(); }
-	 */
-
-
+    
     @Override
     public void warmstart() {
         int problems = removeAllCurrentProblemsOfNode();

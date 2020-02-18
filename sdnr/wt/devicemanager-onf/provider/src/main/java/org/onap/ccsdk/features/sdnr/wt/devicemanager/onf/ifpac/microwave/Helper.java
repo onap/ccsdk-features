@@ -29,10 +29,10 @@ import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.g._874._1.model.r
  */
 public class Helper {
 
-    private static @NonNull UniversalId DEFAULT_UniversalId = new UniversalId("Default");
-    private static @NonNull LayerProtocolName DEFAULT_LayerProtocolName = new LayerProtocolName("default");
-    private static @NonNull GranularityPeriodType DEFAULT_GranularityPeriodType = GranularityPeriodType.Unknown;
-    private static @NonNull String DEFAULT_String = "";
+    private static final @NonNull UniversalId DEFAULT_UniversalId = new UniversalId("Default");
+    private static final @NonNull LayerProtocolName DEFAULT_LayerProtocolName = new LayerProtocolName("default");
+    private static final @NonNull GranularityPeriodType DEFAULT_GranularityPeriodType = GranularityPeriodType.Unknown;
+    private static final @NonNull String DEFAULT_String = "";
 
     public static @NonNull UniversalId nnGetUniversalId(@Nullable UniversalId x) {
         return x == null ? DEFAULT_UniversalId : x;

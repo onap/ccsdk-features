@@ -82,13 +82,13 @@ public class ExtendedEquipment {
         // General
         inventoryBuilder.setNodeId(getNodeId());
         inventoryBuilder.setParentUuid(getParentUuid());
-        inventoryBuilder.setTreeLevel(new Long(getTreeLevel()));
+        inventoryBuilder.setTreeLevel(Long.valueOf(getTreeLevel()));
 
-        if (equipment != null) {
-            inventoryBuilder.setUuid(equipment.getUuid().getValue());
+        if (getEquipment() != null) {
+            inventoryBuilder.setUuid(getEquipment().getUuid().getValue());
             // -- String list with ids of holders
             List<String> containerHolderKeyList = new ArrayList<>();
-            List<ContainedHolder> containerHolderList = equipment.getContainedHolder();
+            List<ContainedHolder> containerHolderList = getEquipment().getContainedHolder();
             if (containerHolderList != null) {
                 for (ContainedHolder containerHolder : containerHolderList) {
                     containerHolderKeyList.add(containerHolder.getUuid().getValue());
@@ -97,7 +97,7 @@ public class ExtendedEquipment {
             inventoryBuilder.setContainedHolder(containerHolderKeyList);
 
             // -- Manufacturer related things
-            ManufacturedThing mThing = equipment.getManufacturedThing();
+            ManufacturedThing mThing = getEquipment().getManufacturedThing();
             if (mThing != null) {
                 ManufacturerProperties mProperties = mThing.getManufacturerProperties();
                 if (mProperties != null) {
@@ -117,7 +117,7 @@ public class ExtendedEquipment {
                     String manufacturedDateString = mInstance.getManufactureDate();
                     if (manufacturedDateString != null && !manufacturedDateString.isEmpty()) {
                         try {
-                            inventoryBuilder.setDate(mInstance.getManufactureDate());
+                            inventoryBuilder.setDate(manufacturedDateString);
                         } catch (IllegalArgumentException e) {
                             LOG.debug("Format problem", e);
                         }

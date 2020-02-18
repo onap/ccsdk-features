@@ -15,55 +15,72 @@
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.gran.impl;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl;
 
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.gran.GRanNetworkElementFactory;
+import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceManagerGRanImpl implements AutoCloseable  {
+public class DeviceManagerOnfImpl implements AutoCloseable  {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerGRanImpl.class);
-    private static final String APPLICATION_NAME = "DeviceManagerGRan";
-    
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerOnfImpl.class);
+    private static final String APPLICATIONNAME = "DeviceManagerOnf";
+
     private NetconfNetworkElementService netconfNetworkElementService;
 
-    private Boolean devicemanagerInitializationOk;
-    private FactoryRegistration<GRanNetworkElementFactory> factoryRegistration;
+    private HtDatabaseClient htDatabaseClient;
+    private Boolean devicemanagerInitializationOk = false;
+    private FactoryRegistration<ONFCoreNetworkElementFactory> resOnf;
 
-    // Blueprint 1
-    public DeviceManagerGRanImpl() {
-        LOG.info("Creating provider for {}", APPLICATION_NAME);
-        devicemanagerInitializationOk = false;
-
-        netconfNetworkElementService = null;
-        factoryRegistration = null;
-    
+    // Blueprint begin
+    public DeviceManagerOnfImpl() {
+        LOG.info("Creating provider for {}", APPLICATIONNAME);
+        resOnf = null;
     }
-   public void setNetconfNetworkElementService(NetconfNetworkElementService netconfNetworkElementService) {
-       this.netconfNetworkElementService = netconfNetworkElementService;
-   }
+
+    public void setNetconfNetworkElementService(NetconfNetworkElementService netconfNetworkElementService) {
+        this.netconfNetworkElementService = netconfNetworkElementService;
+    }
 
     public void init() throws Exception {
 
-        LOG.info("Session Initiated start {}", APPLICATION_NAME);
-        // Intialization
-        factoryRegistration = netconfNetworkElementService.registerNetworkElementFactory(new GRanNetworkElementFactory());
-        netconfNetworkElementService.writeToEventLog(APPLICATION_NAME, "startup", "done");
+        LOG.info("Session Initiated start {}", APPLICATIONNAME);
+
+        resOnf = netconfNetworkElementService.registerNetworkElementFactory(new ONFCoreNetworkElementFactory());
+
+
+        netconfNetworkElementService.writeToEventLog(APPLICATIONNAME, "startup", "done");
         this.devicemanagerInitializationOk = true;
 
         LOG.info("Session Initiated end. Initialization done {}", devicemanagerInitializationOk);
     }
+    // Blueprint end
 
     @Override
     public void close() throws Exception {
         LOG.info("closing ...");
-        if (factoryRegistration != null) {
-            factoryRegistration.close();
-        }
+        close(htDatabaseClient);
+        close(resOnf);
         LOG.info("closing done");
     }
 
+    /**
+     * Used to close all Services, that should support AutoCloseable Pattern
+     *
+     * @param toClose
+     * @throws Exception
+     */
+    private void close(AutoCloseable... toCloseList) {
+        for (AutoCloseable element : toCloseList) {
+            if (element != null) {
+                try {
+                    element.close();
+                } catch (Exception e) {
+                    LOG.warn("Fail during close: ", e);
+                }
+            }
+        }
+    }
 }

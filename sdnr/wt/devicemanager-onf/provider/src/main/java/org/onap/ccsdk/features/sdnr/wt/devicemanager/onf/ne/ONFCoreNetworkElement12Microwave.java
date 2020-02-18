@@ -110,7 +110,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
                 int problems = microwaveEventListener.removeAllCurrentProblemsOfNode(nodeId);
                 FaultData resultList = readAllCurrentProblemsOfNode();
                 microwaveEventListener.initCurrentProblemStatus(nodeId, resultList);
-                LOG.info("Resync mountpoint {} for device {}. Removed {}. Current problems: {}", getMountPointNodeName(),
+                LOG.info("Resync mountpoint {} for device {}. Removed {}. Current problems: {}", getMountpoint(),
                         getUuId(), problems, resultList.size());
             }
         }
@@ -187,8 +187,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
      */
     @Override
     public synchronized void initialReadFromNetworkElement() {
-        // optionalNe.getLtp().get(0).getLp();
-        LOG.debug("Get info about {}", getMountPointNodeName());
+        LOG.debug("Get info about {}", getMountpoint());
 
         int problems = microwaveEventListener.removeAllCurrentProblemsOfNode(nodeId);
         LOG.debug("Removed all {} problems from database at registration", problems);
@@ -207,7 +206,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
         microwaveEventListener.initCurrentProblemStatus(nodeId, resultList);
         equipmentService.writeEquipment(equipment.getEquipmentData());
 
-        LOG.info("Found info at {} for device {} number of problems: {}", getMountPointNodeName(), getUuId(),
+        LOG.info("Found info at {} for device {} number of problems: {}", getMountpoint(), getUuId(),
                 resultList.size());
     }
 
@@ -220,7 +219,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
      */
     private void debugResultList(String uuid, FaultData resultList, int idxStart) {
         if (LOG.isDebugEnabled()) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             int idx = 0;
             for (int t = idxStart; t < resultList.size(); t++) {
                 sb.append(idx++);
@@ -228,7 +227,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
                 sb.append(resultList.get(t));
                 sb.append('}');
             }
-            LOG.debug("Found problems {} {}", uuid, sb.toString());
+            LOG.debug("Found problems {} {}", uuid, sb);
         }
     }
 
@@ -290,7 +289,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
                     if (valueName.contentEquals("capability")) {
                         capability = e.getValue();
                         if (capability != null) {
-                            int idx = capability.indexOf("?");
+                            int idx = capability.indexOf('?');
                             if (idx != -1) {
                                 capability = capability.substring(0, idx);
                             }
@@ -310,7 +309,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
         // "2017-03-24", "mw-air-interface-pac").intern();
         LOG.info("LpExtension capability={} revision={} conditionalPackage={}", capability, revision,
                 conditionalPackage);
-        if (!capability.isEmpty() && !revision.isEmpty() && !conditionalPackage.isEmpty()) {
+        if (capability != null && !capability.isEmpty() && !revision.isEmpty() && !conditionalPackage.isEmpty()) {
             try {
                 QName qName = QName.create(capability, revision, conditionalPackage);
                 res = this.microwaveModel.getClassForLtpExtension(qName);

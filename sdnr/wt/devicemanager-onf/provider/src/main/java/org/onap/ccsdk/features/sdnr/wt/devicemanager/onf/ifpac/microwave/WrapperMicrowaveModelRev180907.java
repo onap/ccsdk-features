@@ -133,19 +133,19 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         switch (lpName) {
-        case MWAirInterface:
+        case MWAIRINTERFACE:
             readTheFaultsOfMwAirInterfacePac(uuid, resultList);
             break;
 
-        case EthernetContainer12:
+        case ETHERNETCONTAINER12:
             readTheFaultsOfMwEthernetContainerPac(uuid, resultList);
             break;
 
-        case TDMContainer:
+        case TDMCONTAINER:
             readTheFaultsOfMwTdmContainerPac(uuid, resultList);
             break;
 
-        case Structure:
+        case STRUCTURE:
             if (lpClass == MwHybridMwStructurePac.class) {
                 readTheFaultsOfMwHybridMwStructurePac(uuid, resultList);
 
@@ -159,10 +159,10 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
                 LOG.warn("Unassigned lp model {} class {}", lpName, lpClass);
             }
             break;
-        case Ethernet:
+        case ETHERNET:
             // No alarms supported
             break;
-        case EthernetContainer10:
+        case ETHERNETCONTAINER10:
         default:
             LOG.warn("Unassigned or not expected lp in model {}", lpName);
         }
@@ -172,46 +172,25 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
     public @NonNull PerformanceDataLtp getLtpHistoricalPerformanceData(@NonNull ONFLayerProtocolName lpName, @NonNull Lp lp) {
         PerformanceDataLtp res = new PerformanceDataLtp();
         switch (lpName) {
-        case MWAirInterface:
-            res = readAirInterfacePerformanceData(lp, res);
+        case MWAIRINTERFACE:
+            readAirInterfacePerformanceData(lp, res);
             break;
 
-        case EthernetContainer12:
-            res = readEthernetContainerPerformanceData(lp, res);
+        case ETHERNETCONTAINER12:
+            readEthernetContainerPerformanceData(lp, res);
             break;
 
-        case EthernetContainer10:
-        case EthernetPhysical:
-        case Ethernet:
-        case TDMContainer:
-        case Structure:
-        case Unknown:
+        case ETHERNETCONTAINER10:
+        case ETHERNETPHYSICAL:
+        case ETHERNET:
+        case TDMCONTAINER:
+        case STRUCTURE:
+        case UNKNOWN:
             LOG.debug("Do not read HistoricalPM data for {} {}", lpName, Helper.nnGetUniversalId(lp.getUuid()).getValue());
             break;
         }
         return res;
     }
-
-//    @Override
-//    public @NonNull List<? extends OtnHistoryDataG> readTheHistoricalPerformanceData(@NonNull ONFLayerProtocolName lpName, @NonNull Lp lp) {
-//        switch (lpName) {
-//        case MWAirInterface:
-//            return readTheHistoricalPerformanceDataOfMwAirInterfacePac(lp);
-//
-//        case EthernetContainer12:
-//            return readTheHistoricalPerformanceDataOfEthernetContainer(lp);
-//
-//        case EthernetContainer10:
-//        case EthernetPhysical:
-//        case Ethernet:
-//        case TDMContainer:
-//        case Structure:
-//        case Unknown:
-//            LOG.debug("Do not read HistoricalPM data for {} {}", lpName, Helper.nnGetUniversalId(lp.getUuid()).getValue());
-//            break;
-//        }
-//        return new ArrayList<>();
-//    }
 
     @Override
     public Class<?> getClassForLtpExtension(QName qName) {
@@ -288,12 +267,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         final Class<MwAirInterfacePac> clazzPac = MwAirInterfacePac.class;
-        // final Class<MwAirInterfacePacKey> clazzPacKey = MwAirInterfacePacKey.class;
-        // final Class<AirInterfaceCurrentProblems> clazzProblems =
-        // AirInterfaceCurrentProblems.class;
-        // final Class<AirInterfaceCurrentProblemTypeG> clazzProblem =
-        // AirInterfaceCurrentProblemTypeG.class;
-
+   
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -327,13 +301,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         final Class<MwEthernetContainerPac> clazzPac = MwEthernetContainerPac.class;
-        // final Class<MwEthernetContainerPacKey> clazzPacKey =
-        // MwEthernetContainerPacKey.class;
-        // final Class<EthernetContainerCurrentProblems> clazzProblems =
-        // EthernetContainerCurrentProblems.class;
-        // final Class<ContainerCurrentProblemTypeG> clazzProblem =
-        // ContainerCurrentProblemTypeG.class;
-
+   
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -364,12 +332,8 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         final Class<MwAirInterfaceDiversityPac> clazzPac = MwAirInterfaceDiversityPac.class;
-        // final Class<MwAirInterfaceDiversityPacKey> clazzPacKey =
-        // MwAirInterfaceDiversityPacKey.class;
         final Class<AirInterfaceDiversityCurrentProblems> clazzProblems = AirInterfaceDiversityCurrentProblems.class;
-        // final Class<AirInterfaceDiversityCurrentProblemTypeG> clazzProblem =
-        // AirInterfaceDiversityCurrentProblemTypeG.class;
-
+     
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -399,12 +363,8 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         final Class<MwPureEthernetStructurePac> clazzPac = MwPureEthernetStructurePac.class;
-        // final Class<MwPureEthernetStructurePacKey> clazzPacKey =
-        // MwPureEthernetStructurePacKey.class;
         final Class<PureEthernetStructureCurrentProblems> clazzProblems = PureEthernetStructureCurrentProblems.class;
-        // final Class<StructureCurrentProblemTypeG> clazzProblem =
-        // StructureCurrentProblemTypeG.class;
-
+     
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -434,12 +394,8 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         final Class<MwHybridMwStructurePac> clazzPac = MwHybridMwStructurePac.class;
-        // final Class<MwHybridMwStructurePacKey> clazzPacKey =
-        // MwHybridMwStructurePacKey.class;
         final Class<HybridMwStructureCurrentProblems> clazzProblems = HybridMwStructureCurrentProblems.class;
-        // final Class<HybridMwStructureCurrentProblemsG> clazzProblem =
-        // HybridMwStructureCurrentProblemsG.class;
-
+      
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -479,9 +435,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
         final Class<MwTdmContainerPac> clazzPac = MwTdmContainerPac.class;
         final Class<MwTdmContainerPacKey> clazzPacKey = MwTdmContainerPacKey.class;
         final Class<TdmContainerCurrentProblems> clazzProblems = TdmContainerCurrentProblems.class;
-        // final Class<ContainerCurrentProblemTypeG> clazzProblem =
-        // ContainerCurrentProblemTypeG.class;
-
+      
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -509,96 +463,6 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
         }
         return resultList;
     }
-
-    /*-----------------------------------------------------------------------------
-     * Performance related data
-     */
-
-//    /**
-//     * PM MwAirInterfacePac
-//     *
-//     * @param lp
-//     * @return
-//     */
-//    private @NonNull List<ExtendedAirInterfaceHistoricalPerformanceType1211> readTheHistoricalPerformanceDataOfMwAirInterfacePac(
-//            Lp lp) {
-//
-//        String uuId = Helper.nnGetUniversalId(lp.getUuid()).getValue();
-//
-//        List<ExtendedAirInterfaceHistoricalPerformanceType1211> resultList = new ArrayList<>();
-//        LOG.debug("DBRead Get {} MWAirInterfacePac: {}", coreData.getMountpoint(), uuId);
-//        // ----
-//        UniversalId mwAirInterfacePacuuId = new UniversalId(uuId);
-//        // Step 2.1: construct data and the relative iid
-//        InstanceIdentifier<AirInterfaceConfiguration> mwAirInterfaceConfigurationIID = InstanceIdentifier
-//                .builder(MwAirInterfacePac.class, new MwAirInterfacePacKey(mwAirInterfacePacuuId))
-//                .child(AirInterfaceConfiguration.class).build();
-//        AirInterfaceConfiguration airConfiguration = genericTransactionUtil.readData(coreData.getDataBroker(),
-//                LogicalDatastoreType.OPERATIONAL, mwAirInterfaceConfigurationIID);
-//
-//        if (airConfiguration == null) {
-//            LOG.debug("DBRead MWAirInterfacePac Id {} no AirInterfaceConfiguration", mwAirInterfacePacuuId);
-//
-//        } else {
-//            // Step 2.2: construct data and the relative iid
-//            InstanceIdentifier<AirInterfaceHistoricalPerformances> mwAirInterfaceHistoricalPerformanceIID = InstanceIdentifier
-//                    .builder(MwAirInterfacePac.class, new MwAirInterfacePacKey(mwAirInterfacePacuuId))
-//                    .child(AirInterfaceHistoricalPerformances.class).build();
-//
-//            // Step 2.3: read to the config data store
-//            AirInterfaceHistoricalPerformances airHistoricalPerformanceData = genericTransactionUtil.readData(
-//                    coreData.getDataBroker(), LogicalDatastoreType.OPERATIONAL, mwAirInterfaceHistoricalPerformanceIID);
-//
-//            if (airHistoricalPerformanceData == null) {
-//                LOG.debug("DBRead MWAirInterfacePac Id {} no AirInterfaceHistoricalPerformances",
-//                        mwAirInterfacePacuuId);
-//            } else {
-//                List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev180907.air._interface.historical.performances.g.HistoricalPerformanceDataList> airHistPMList = airHistoricalPerformanceData
-//                        .nonnullHistoricalPerformanceDataList();
-//                LOG.debug("DBRead MWAirInterfacePac Id {} Records intermediate: {}", mwAirInterfacePacuuId,
-//                        airHistPMList.size());
-//                for (AirInterfaceHistoricalPerformanceTypeG pmRecord : airHistPMList) {
-//                    resultList.add(new ExtendedAirInterfaceHistoricalPerformanceType1211(pmRecord, airConfiguration));
-//                }
-//            }
-//        }
-//        LOG.debug("DBRead MWAirInterfacePac Id {} Records result: {}", mwAirInterfacePacuuId, resultList.size());
-//        return resultList;
-//    }
-
-//    private @NonNull List<ContainerHistoricalPerformanceTypeG> readTheHistoricalPerformanceDataOfEthernetContainer(Lp lp) {
-//
-//        final String myName = "MWEthernetContainerPac";
-//        String uuId = Helper.nnGetUniversalId(lp.getUuid()).getValue();
-//
-//        List<ContainerHistoricalPerformanceTypeG> resultList = new ArrayList<>();
-//        LOG.debug("DBRead Get {} : {}", coreData.getMountpoint(), myName, uuId);
-//        // ----
-//        UniversalId ethContainerPacuuId = new UniversalId(uuId);
-//        // Step 2.2: construct data and the relative iid
-//        InstanceIdentifier<EthernetContainerHistoricalPerformances> ethContainerIID = InstanceIdentifier
-//                .builder(MwEthernetContainerPac.class, new MwEthernetContainerPacKey(ethContainerPacuuId))
-//                .child(EthernetContainerHistoricalPerformances.class).build();
-//
-//        // Step 2.3: read to the config data store
-//        EthernetContainerHistoricalPerformances ethContainerHistoricalPerformanceData = genericTransactionUtil
-//                .readData(coreData.getDataBroker(), LogicalDatastoreType.OPERATIONAL, ethContainerIID);
-//
-//        if (ethContainerHistoricalPerformanceData == null) {
-//            LOG.debug("DBRead {} Id {} no HistoricalPerformances", myName, ethContainerPacuuId);
-//        } else {
-//            // import
-//            // org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170320.ethernet.container.historical.performances.g.HistoricalPerformanceDataList
-//             List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev180907.ethernet.container.historical.performances.g.HistoricalPerformanceDataList> airHistPMList = ethContainerHistoricalPerformanceData
-//                    .nonnullHistoricalPerformanceDataList();
-//            LOG.debug("DBRead {} Id {} Records intermediate: {}", myName, ethContainerPacuuId, airHistPMList.size());
-//            for (ContainerHistoricalPerformanceTypeG pmRecord : airHistPMList) {
-//                resultList.add(pmRecord);
-//            }
-//        }
-//        LOG.debug("DBRead {} Id {} Records result: {}", myName, ethContainerPacuuId, resultList.size());
-//        return resultList;
-//    }
 
     /**
      * Read and add performance data

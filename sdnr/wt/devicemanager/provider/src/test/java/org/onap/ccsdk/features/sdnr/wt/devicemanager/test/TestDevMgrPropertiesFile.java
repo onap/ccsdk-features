@@ -46,16 +46,14 @@ public class TestDevMgrPropertiesFile {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArchiveCleanService.class);
 
-    private static final File FILENAME = new File("test.properties");
-    private static final File AAIPROP_FILE=new File("aaiclient.properties");
+    private static final File FILENAME = new File("testdevmgrpropertiesfile.properties");
+    private static final File AAIPROP_FILE=new File("testdevmgrpropertiesfileaaiclient.properties");
     private int hasChanged;
 
     @Before
     public void init() {
-        //if (! LOG.isDebugEnabled()) {
-            delete(FILENAME);
-            delete(AAIPROP_FILE);
-        //}
+        delete(FILENAME);
+        delete(AAIPROP_FILE);
     }
     @After
     public void deinit() {
@@ -63,51 +61,12 @@ public class TestDevMgrPropertiesFile {
     }
 
     @Test
-    public void test1() {
+    public void testBasicConfiguration() {
 
         writeFile(FILENAME, this.getContent1());
         writeFile(AAIPROP_FILE, this.getAaiPropertiesConfig());
 
-        System.out.println("Read and verify");
-        ConfigurationFileRepresentation cfg = new ConfigurationFileRepresentation(FILENAME.getPath());
-        ConfigurationFileRepresentation cfg2 = cfg;
-
-        AaiConfig aaiConfig = new AaiConfig(cfg2);
-        assertNotNull(aaiConfig);
-        DcaeConfig dcaeConfig = new DcaeConfig(cfg2);
-        assertNotNull(dcaeConfig);
-        PmConfig pmConfig = new PmConfig(cfg2);
-        assertNotNull(pmConfig);
-        ToggleAlarmConfig toggleAlarmConfig = new ToggleAlarmConfig(cfg2);
-        assertNotNull(toggleAlarmConfig);
-
-        System.out.println("Verify\n"+aaiConfig+"\n");
-        @SuppressWarnings("unused")
-        boolean res;
-        /*
-        res = cfg.getAai().equals(AaiConfig.getDefaultConfiguration());
-        res = cfg.getDcae().equals(DcaeConfig.getDefaultConfiguration());
-        res = cfg.getPm().equals(PmConfig.getDefaultConfiguration());
-        res = cfg.getEs().equals(EsConfig.getDefaultConfiguration());
-        res = cfg.getToggleAlarm().equals(ToggleAlarmConfig.getDefaultConfiguration());
-
-        res = cfg.getAai().hashCode() == AaiConfig.getDefaultConfiguration().hashCode();
-        res = cfg.getDcae().hashCode() == DcaeConfig.getDefaultConfiguration().hashCode();
-        res = cfg.getPm().hashCode() == PmConfig.getDefaultConfiguration().hashCode();
-        res = cfg.getEs().hashCode() == EsConfig.getDefaultConfiguration().hashCode();
-        res = cfg.getToggleAlarm().hashCode() == ToggleAlarmConfig.getDefaultConfiguration().hashCode();
-        */
-    }
-
-    //-- Observer not working with all testcases, because config does not support different file types.
-    @Test
-    public void test2() {
-
-        hasChanged=0;
-        writeFile(FILENAME, this.getContent1());
-        writeFile(AAIPROP_FILE, this.getAaiPropertiesConfig());
-
-        System.out.println("Read and verify");
+        LOG.info("Read and verify");
         ConfigurationFileRepresentation cfg2 = new ConfigurationFileRepresentation(FILENAME.getPath());
 
         AaiConfig aaiConfig = new AaiConfig(cfg2);
@@ -119,25 +78,46 @@ public class TestDevMgrPropertiesFile {
         ToggleAlarmConfig toggleAlarmConfig = new ToggleAlarmConfig(cfg2);
         assertNotNull(toggleAlarmConfig);
 
+        LOG.info("Verify {} ", aaiConfig);
+    }
+
+    //-- Observer not working with all testcases, because config does not support different file types.
+    @Test
+    public void testChangeConfiguration() {
+
+        LOG.info("Read and verify");
+
+        writeFile(FILENAME, this.getContent1());
+        writeFile(AAIPROP_FILE, this.getAaiPropertiesConfig());
+
+        ConfigurationFileRepresentation cfg2 = new ConfigurationFileRepresentation(FILENAME.getPath());
+        hasChanged = 0;
         cfg2.registerConfigChangedListener(() -> {
             hasChanged++;
-            System.out.println("file changed listener triggered: "+hasChanged);
+            LOG.info("file changed listener triggered: {}",hasChanged);
         });
 
-        sleep(1000);
-        System.out.println("Write new content. Changes "+hasChanged);
+        AaiConfig aaiConfig = new AaiConfig(cfg2);
+        assertNotNull(aaiConfig);
+        DcaeConfig dcaeConfig = new DcaeConfig(cfg2);
+        assertNotNull(dcaeConfig);
+        PmConfig pmConfig = new PmConfig(cfg2);
+        assertNotNull(pmConfig);
+        ToggleAlarmConfig toggleAlarmConfig = new ToggleAlarmConfig(cfg2);
+        assertNotNull(toggleAlarmConfig);
+
+        LOG.info("Write new content. Changes {}",hasChanged);
         writeFile(FILENAME, this.getContent2());
-        sleep(1000);
 
         int i=10;
         while(hasChanged == 0 && i-- > 0) {
-            System.out.println("Wait for Change indication.");
+            LOG.info("Wait for Change indication.");
             sleep(1000);
         }
-        System.out.println("Changes "+hasChanged);
+        LOG.info("Changes {}",hasChanged);
 
-        assertTrue("fileChanged counter"+hasChanged, hasChanged > 0);
-        System.out.println("Test done");
+        assertTrue("fileChanged counter "+hasChanged, hasChanged > 0);
+        LOG.info("Test done");
 
     }
 
