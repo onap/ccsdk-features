@@ -22,7 +22,7 @@ import * as moment from 'moment';
 import { ITimeStamp } from 'models/chartTypes';
 
 const style: React.CSSProperties = {
-  height: "350px"
+  height: "80%"
 }
 export const lineChart = (chartPagedData: IDataSetsObject) => {
   return (

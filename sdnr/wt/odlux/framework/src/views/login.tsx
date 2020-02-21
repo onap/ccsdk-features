@@ -18,13 +18,9 @@
 import * as React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
+import Alert from '@material-ui/lab/Alert';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -102,7 +98,7 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
   render(): JSX.Element {
     const { classes } = this.props;
     return (
-      <React.Fragment>
+      <>
         <CssBaseline />
         <main className={classes.layout}>
           <Paper className={classes.paper}>
@@ -157,27 +153,10 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
                 Sign in
             </Button>
             </form>
+            {this.state.message && <Alert severity="error">{this.state.message}</Alert>}
           </Paper>
         </main>
-        <Dialog
-          open={!!this.state.message}
-          onClose={() => { this.setState({ message: '' }) }}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{"Error"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {this.state.message}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => { this.setState({ message: '' }) }} color="secondary" autoFocus>
-              OK
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
+      </>
     );
   }
 

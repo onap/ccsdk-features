@@ -44,6 +44,12 @@ export class AllAvailableLtpsLoadedAction extends BaseAction {
   }
 }
 
+export class SetInitialLoadedAction extends BaseAction {
+  constructor(public initialLoaded: boolean) {
+    super();
+  }
+}
+
 
 /** 
  * Represents an asynchronous thunk action to load available distinctLtps by networkElement from the database and set the returned first Ltp as default. 

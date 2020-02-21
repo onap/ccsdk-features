@@ -33,7 +33,7 @@ import {
 } from '../actions/maintenenceActions';
 
 import { MaintenenceEntry } from '../models/maintenenceEntryType';
-import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { FormControl, InputLabel, Select, MenuItem, Typography } from '@material-ui/core';
 
 export enum EditMaintenenceEntryDialogMode {
   None = "none",
@@ -101,14 +101,15 @@ type EditMaintenenceEntryDIalogComponentProps = Connect<undefined, typeof mapDis
   onClose: () => void;
 };
 
-type EditMaintenenceEntryDIalogComponentState = MaintenenceEntry;
+type EditMaintenenceEntryDIalogComponentState = MaintenenceEntry & { isErrorVisible: boolean };
 
 class EditMaintenenceEntryDIalogComponent extends React.Component<EditMaintenenceEntryDIalogComponentProps, EditMaintenenceEntryDIalogComponentState> {
-  constructor (props: EditMaintenenceEntryDIalogComponentProps) {
+  constructor(props: EditMaintenenceEntryDIalogComponentProps) {
     super(props);
 
     this.state = {
-      ...this.props.initialMaintenenceEntry
+      ...this.props.initialMaintenenceEntry,
+      isErrorVisible: false
     };
   }
 
@@ -122,11 +123,12 @@ class EditMaintenenceEntryDIalogComponent extends React.Component<EditMaintenenc
             {setting.dialogDescription}
           </DialogContentText>
           <TextField disabled={!setting.enableMountIdEditor} spellCheck={false} autoFocus margin="dense" id="name" label="Name" type="text" fullWidth value={this.state.nodeId} onChange={(event) => { this.setState({ nodeId: event.target.value }); }} />
+          {this.state.isErrorVisible && <Typography variant="body1" color="error" >Name must not be empty.</Typography>}
           <TextField disabled={!setting.enableTimeEditor} spellCheck={false} autoFocus margin="dense" id="start" label="Start (Local DateTime)" type="datetime-local" fullWidth value={this.state.start} onChange={(event) => { this.setState({ start: event.target.value }); }} />
           <TextField disabled={!setting.enableTimeEditor} spellCheck={false} autoFocus margin="dense" id="end" label="End (Local DateTime)" type="datetime-local" fullWidth value={this.state.end} onChange={(event) => { this.setState({ end: event.target.value }); }} />
           <FormControl fullWidth disabled={!setting.enableTimeEditor}>
             <InputLabel htmlFor="active">Active</InputLabel>
-            <Select value={ this.state.active || false } onChange={(event) => {
+            <Select value={this.state.active || false} onChange={(event) => {
               this.setState({ active: event.target.value as any as boolean });
             }} inputProps={{ name: 'active', id: 'active' }} fullWidth >
               <MenuItem value={true as any as string}>active</MenuItem>
@@ -136,14 +138,21 @@ class EditMaintenenceEntryDIalogComponent extends React.Component<EditMaintenenc
         </DialogContent>
         <DialogActions>
           <Button onClick={(event) => {
-            this.onApply({
-              _id: this.state._id || this.state.nodeId,
-              nodeId: this.state.nodeId,
-              description: this.state.description,
-              start: this.state.start,
-              end: this.state.end,
-              active: this.state.active
-            });
+
+            if (this.props.mode === EditMaintenenceEntryDialogMode.AddMaintenenceEntry && this.state.nodeId.trim().length === 0) {
+              this.setState({ isErrorVisible: true });
+            } else {
+              this.onApply({
+                _id: this.state._id || this.state.nodeId,
+                nodeId: this.state.nodeId,
+                description: this.state.description,
+                start: this.state.start,
+                end: this.state.end,
+                active: this.state.active
+              });
+              this.setState({ isErrorVisible: false });
+            }
+
             event.preventDefault();
             event.stopPropagation();
           }} > {setting.applyButtonText} </Button>
@@ -151,6 +160,7 @@ class EditMaintenenceEntryDIalogComponent extends React.Component<EditMaintenenc
             this.onCancel();
             event.preventDefault();
             event.stopPropagation();
+            this.setState({ isErrorVisible: false });
           }} color="secondary"> {setting.cancelButtonText} </Button>
         </DialogActions>
       </Dialog>

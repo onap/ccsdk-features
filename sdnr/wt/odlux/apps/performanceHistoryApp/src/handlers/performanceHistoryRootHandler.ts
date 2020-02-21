@@ -37,6 +37,8 @@ import { IAvailableLtpsState, availableLtpsActionHandler } from './availableLtps
 import { PmDataInterval } from '../models/performanceDataType';
 import { TimeChangeAction } from '../actions/timeChangeAction';
 import { UpdateMountId } from '../actions/deviceListActions';
+import { SetSubViewAction, ResetAllSubViewsAction } from '../actions/toggleActions';
+import { SubTabType } from '../models/toggleDataType';
 
 export interface IPerformanceHistoryStoreState {
   nodeId: string;
@@ -51,6 +53,7 @@ export interface IPerformanceHistoryStoreState {
   crossPolarDiscrimination: ICrossPolarDiscriminationState;
   currentOpenPanel: string | null;
   pmDataIntervalType: PmDataInterval;
+  subViews: toggleViewDataType;
 }
 
 const mountIdHandler: IActionHandler<string> = (state = "", action) => {
@@ -78,6 +81,29 @@ const currentPMDataIntervalHandler: IActionHandler<PmDataInterval> = (state = Pm
   return state;
 }
 
+
+type toggleViewDataType = { performanceDataSelection: SubTabType, receiveLevelDataSelection: SubTabType, transmissionPower: SubTabType, adaptiveModulation: SubTabType, temperatur: SubTabType, SINR: SubTabType, CPD: SubTabType };
+
+
+const toogleViewDataHandler: IActionHandler<toggleViewDataType> = (state = { performanceDataSelection: "chart", receiveLevelDataSelection: "chart", adaptiveModulation: "chart", transmissionPower: "chart", temperatur: "chart", SINR: "chart", CPD: "chart" }, action) => {
+
+  if (action instanceof SetSubViewAction) {
+    switch (action.currentView) {
+      case "performanceData": state = { ...state, performanceDataSelection: action.selectedTab }; break;
+      case "adaptiveModulation": state = { ...state, adaptiveModulation: action.selectedTab }; break;
+      case "receiveLevel": state = { ...state, receiveLevelDataSelection: action.selectedTab }; break;
+      case "transmissionPower": state = { ...state, transmissionPower: action.selectedTab }; break;
+      case "Temp": state = { ...state, temperatur: action.selectedTab }; break;
+      case "SINR": state = { ...state, SINR: action.selectedTab }; break;
+      case "CPD": state = { ...state, CPD: action.selectedTab }; break;
+    }
+  } else if (action instanceof ResetAllSubViewsAction) {
+    state = { performanceDataSelection: "chart", adaptiveModulation: "chart", receiveLevelDataSelection: "chart", transmissionPower: "chart", temperatur: "chart", SINR: "chart", CPD: "chart" }
+  }
+
+  return state;
+}
+
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
     performanceHistory: IPerformanceHistoryStoreState;
@@ -97,7 +123,8 @@ const actionHandlers = {
   signalToInterference: signalToInterferenceActionHandler,
   crossPolarDiscrimination: crossPolarDiscriminationActionHandler,
   currentOpenPanel: currentOpenPanelHandler,
-  pmDataIntervalType: currentPMDataIntervalHandler
+  pmDataIntervalType: currentPMDataIntervalHandler,
+  subViews: toogleViewDataHandler
 };
 
 const performanceHistoryRootHandler = combineActionHandler<IPerformanceHistoryStoreState>(actionHandlers);

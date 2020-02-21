@@ -87,8 +87,7 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
   }
 
   private onHandleTabChange = (event: React.ChangeEvent<{}>, newValue: PanelId) => {
-    this.props.switchActivePanel(newValue);
-    //this.onToggleTabs(newValue);
+    this.onToggleTabs(newValue);
   }
 
   private onToggleTabs = (panelId: PanelId) => {

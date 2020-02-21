@@ -24,6 +24,7 @@ import LinkOffIcon from '@material-ui/icons/LinkOff';
 import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import Info from '@material-ui/icons/Info';
+import ComputerIcon from '@material-ui/icons/Computer';
 
 import { MaterialTable, ColumnType, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
@@ -98,11 +99,42 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
     };
   }
 
+  getContextMenu(rowData: NetworkElementConnection): JSX.Element[] {
+
+
+
+    const { configuration, fault, inventory } = this.props.applicationState as any;
+    let buttonArray = [
+      <MenuItem aria-label={"mount-button"} onClick={event => this.onOpenMountdNetworkElementsDialog(event, rowData)} ><LinkIcon /><Typography>Mount</Typography></MenuItem>,
+      <MenuItem aria-label={"unmount-button"} onClick={event => this.onOpenUnmountdNetworkElementsDialog(event, rowData)}><LinkOffIcon /><Typography>Unmount</Typography></MenuItem>,
+      <Divider />,
+      <MenuItem aria-label={"info-button"} onClick={event => this.onOpenInfoNetworkElementDialog(event, rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected"} ><Info /><Typography>Info</Typography></MenuItem>,
+      <MenuItem aria-label={"edit-button"} onClick={event => this.onOpenEditNetworkElementDialog(event, rowData)}><EditIcon /><Typography>Edit</Typography></MenuItem>,
+      !rowData.isRequired
+        ? <MenuItem aria-label={"add-button"} onClick={event => this.onOpenAddNetworkElementDialog(event, rowData)} ><AddIcon /><Typography>Add</Typography></MenuItem>
+        : <MenuItem aria-label={"remove-button"} onClick={event => this.onOpenRemoveNetworkElementDialog(event, rowData)} ><RemoveIcon /><Typography>Remove</Typography></MenuItem>,
+      <Divider />,
+      <MenuItem aria-label={"inventory-button"} onClick={event => this.props.navigateToApplication("inventory", rowData.nodeId)}><Typography>Inventory</Typography></MenuItem>,
+      <Divider />,
+      <MenuItem aria-label={"fault-button"} onClick={event => this.props.navigateToApplication("fault", rowData.nodeId)} ><Typography>Fault</Typography></MenuItem>,
+      <MenuItem aria-label={"configure-button"} onClick={event => this.props.navigateToApplication("configuration", rowData.nodeId)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected" || !configuration}><Typography>Configure</Typography></MenuItem>,
+      <MenuItem onClick={event => this.props.navigateToApplication("accounting", rowData.nodeId)} disabled={true}><Typography>Accounting</Typography></MenuItem>,
+      <MenuItem aria-label={"performance-button"} onClick={event => this.props.navigateToApplication("performanceHistory", rowData.nodeId)}><Typography>Performance</Typography></MenuItem>,
+      <MenuItem onClick={event => this.props.navigateToApplication("security", rowData.nodeId)} disabled={true} ><Typography>Security</Typography></MenuItem>,
+    ];
+
+    if (rowData.webUri) {
+      // add an icon for gui cuttrough, if weburi is available
+      return [<MenuItem aria-label={"web-client-button"} onClick={event => window.open(rowData.webUri, "_blank")} ><ComputerIcon /><Typography>Web Client</Typography></MenuItem>].concat(buttonArray)
+    } else {
+      return buttonArray;
+    }
+  }
+
   //  private navigationCreator
 
   render(): JSX.Element {
     const { classes } = this.props;
-    const { framework, connect, configuration, fault, help, inventory, maintenance, mediator  } = this.props.applicationState as any;
     const { networkElementToEdit } = this.state;
     const addRequireNetworkElementAction = {
       icon: AddIcon, tooltip: 'Add', onClick: () => {
@@ -112,7 +144,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
         });
       }
     };
-    let counter = 0;
+
     return (
       <>
         <NetworkElementTable stickyHeader tableId="network-element-table" customActionButtons={[addRequireNetworkElementAction]} columns={[
@@ -124,24 +156,8 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
           { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
           { property: "deviceType", title: "Type", type: ColumnType.text },
         ]} idProperty="id" {...this.props.networkElementsActions} {...this.props.networkElementsProperties} asynchronus createContextMenu={rowData => {
-          return [
-            <MenuItem onClick={event => this.onOpenMountdNetworkElementsDialog(event, rowData)} ><LinkIcon /><Typography>Mount</Typography></MenuItem>,
-            <MenuItem onClick={event => this.onOpenUnmountdNetworkElementsDialog(event, rowData)}><LinkOffIcon /><Typography>Unmount</Typography></MenuItem>,
-            <Divider />,
-            <MenuItem onClick={event => this.onOpenInfoNetworkElementDialog(event, rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected"} ><Info /><Typography>Info</Typography></MenuItem>,
-            <MenuItem onClick={event => this.onOpenEditNetworkElementDialog(event, rowData)}><EditIcon /><Typography>Edit</Typography></MenuItem>,
-            !rowData.isRequired
-              ? <MenuItem onClick={event => this.onOpenAddNetworkElementDialog(event, rowData)} ><AddIcon /><Typography>Add</Typography></MenuItem>
-              : <MenuItem onClick={event => this.onOpenRemoveNetworkElementDialog(event, rowData)} ><RemoveIcon /><Typography>Remove</Typography></MenuItem>,
-            <Divider />,
-            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("inventory", rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected" || !inventory}><Typography>Inventory</Typography></MenuItem>,
-            <Divider />,
-            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("fault", rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected" || !fault}><Typography>Fault</Typography></MenuItem>,
-            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("configuration", rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected" || !configuration}><Typography>Configure</Typography></MenuItem>,
-            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("accounting", rowData)} disabled={true}><Typography>Accounting</Typography></MenuItem>,
-            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("performanceHistory", rowData)} disabled={true}><Typography>Performance</Typography></MenuItem>,
-            <MenuItem onClick={event => this.navigateToApplicationHandlerCreator("security", rowData)} disabled={true} ><Typography>Security</Typography></MenuItem>,
-          ];
+
+          return this.getContextMenu(rowData);
         }} >
         </NetworkElementTable>
         <EditNetworkElementDialog
@@ -223,10 +239,6 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       infoNetworkElementEditorMode: InfoNetworkElementDialogMode.None,
       networkElementToEdit: emptyRequireNetworkElement,
     });
-  }
-
-  private navigateToApplicationHandlerCreator = (applicationName: string, element: NetworkElementConnection) => (event: React.MouseEvent<HTMLElement>) => {
-    this.props.navigateToApplication(applicationName, element.nodeId);
   }
 }
 
