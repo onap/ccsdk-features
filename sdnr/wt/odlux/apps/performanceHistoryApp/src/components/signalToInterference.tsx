@@ -28,13 +28,17 @@ import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createSignalToInterferenceProperties, createSignalToInterferenceActions } from '../handlers/signalToInterferenceHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
+import { SetSubViewAction } from '../actions/toggleActions';
+import ToggleContainer from './toggleContainer';
 
 const mapProps = (state: IApplicationStoreState) => ({
   signalToInterferenceProperties: createSignalToInterferenceProperties(state),
+  currentView: state.performanceHistory.subViews.SINR,
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   signalToInterferenceActions: createSignalToInterferenceActions(dispatcher.dispatch),
+  setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("SINR", value)),
 });
 
 type SignalToInterferenceComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -47,6 +51,11 @@ const SignalToInterferenceTable = MaterialTable as MaterialTableCtorType<SignalT
  * The Component which gets the signal to interference data from the database based on the selected time period.
  */
 class SignalToInterferenceComponent extends React.Component<SignalToInterferenceComponentProps>{
+
+  onChange = (value: "chart" | "table") => {
+    this.props.setSubView(value);
+  }
+
   render(): JSX.Element {
     const properties = this.props.signalToInterferenceProperties;
     const actions = this.props.signalToInterferenceActions;
@@ -70,9 +79,11 @@ class SignalToInterferenceComponent extends React.Component<SignalToInterference
     });
     return (
       <>
-        {lineChart(chartPagedData)}
-        <SignalToInterferenceTable idProperty={"_id"} columns={sinrColumns} {...properties} {...actions}
-        />
+        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+          {lineChart(chartPagedData)}
+          <SignalToInterferenceTable idProperty={"_id"} columns={sinrColumns} {...properties} {...actions}
+          />
+        </ToggleContainer>
       </>
     );
   };

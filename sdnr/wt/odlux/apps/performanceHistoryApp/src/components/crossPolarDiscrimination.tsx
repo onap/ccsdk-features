@@ -28,13 +28,19 @@ import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createCrossPolarDiscriminationProperties, createCrossPolarDiscriminationActions } from '../handlers/crossPolarDiscriminationHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
+import { SetSubViewAction } from '../actions/toggleActions';
+import ToggleContainer from './toggleContainer';
+
 
 const mapProps = (state: IApplicationStoreState) => ({
   crossPolarDiscriminationProperties: createCrossPolarDiscriminationProperties(state),
+  currentView: state.performanceHistory.subViews.CPD,
+
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   crossPolarDiscriminationActions: createCrossPolarDiscriminationActions(dispatcher.dispatch),
+  setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("CPD", value)),
 });
 
 type CrossPolarDiscriminationComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -47,6 +53,11 @@ const CrossPolarDiscriminationTable = MaterialTable as MaterialTableCtorType<Cro
  * The Component which gets the crossPolarDiscrimination data from the database based on the selected time period.
  */
 class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscriminationComponentProps>{
+
+  onChange = (value: "chart" | "table") => {
+    this.props.setSubView(value);
+  }
+
   render(): JSX.Element {
     const properties = this.props.crossPolarDiscriminationProperties;
     const actions = this.props.crossPolarDiscriminationActions;
@@ -70,8 +81,10 @@ class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscri
     });
     return (
       <>
-        {lineChart(chartPagedData)}
-        <CrossPolarDiscriminationTable idProperty={"_id"} columns={cpdColumns} {...properties} {...actions} />
+        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+          {lineChart(chartPagedData)}
+          <CrossPolarDiscriminationTable idProperty={"_id"} columns={cpdColumns} {...properties} {...actions} />
+        </ToggleContainer>
       </>
     );
   };

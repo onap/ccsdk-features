@@ -28,13 +28,17 @@ import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createTransmissionPowerProperties, createTransmissionPowerActions } from '../handlers/transmissionPowerHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
+import { SetSubViewAction } from '../actions/toggleActions';
+import ToggleContainer from './toggleContainer';
 
 const mapProps = (state: IApplicationStoreState) => ({
   transmissionPowerProperties: createTransmissionPowerProperties(state),
+  currentView: state.performanceHistory.subViews.transmissionPower,
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   transmissionPowerActions: createTransmissionPowerActions(dispatcher.dispatch),
+  setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("transmissionPower", value)),
 });
 
 type TransmissionPowerComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -47,6 +51,11 @@ const TransmissionPowerTable = MaterialTable as MaterialTableCtorType<Transmissi
  * The Component which gets the transmission power data from the database based on the selected time period.
  */
 class TransmissionPowerComponent extends React.Component<TransmissionPowerComponentProps>{
+
+  onChange = (value: "chart" | "table") => {
+    this.props.setSubView(value);
+  }
+
   render(): JSX.Element {
     const properties = this.props.transmissionPowerProperties
     const actions = this.props.transmissionPowerActions
@@ -71,8 +80,10 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
 
     return (
       <>
-        {lineChart(chartPagedData)}
-        <TransmissionPowerTable idProperty={"_id"} columns={transmissionColumns} {...properties} {...actions} />
+        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+          {lineChart(chartPagedData)}
+          <TransmissionPowerTable idProperty={"_id"} columns={transmissionColumns} {...properties} {...actions} />
+        </ToggleContainer>
       </>
     );
   };

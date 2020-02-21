@@ -24,7 +24,7 @@ import Select from '@material-ui/core/Select';
 
 import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import { Panel } from '../../../../framework/src/components/material-ui';
+import { Panel, Loader } from '../../../../framework/src/components/material-ui';
 import { NavigateToApplication } from '../../../../framework/src/actions/navigationActions';
 import { Dispatch } from '../../../../framework/src/flux/store';
 
@@ -39,7 +39,7 @@ import SignalToInterference from '../components/signalToInterference';
 import CrossPolarDiscrimination from '../components/crossPolarDiscrimination';
 import { loadAllDeviceListAsync } from '../actions/deviceListActions';
 import { TimeChangeAction } from '../actions/timeChangeAction';
-import { loadDistinctLtpsbyNetworkElementAsync } from '../actions/ltpAction';
+import { loadDistinctLtpsbyNetworkElementAsync, SetInitialLoadedAction } from '../actions/ltpAction';
 import { SetPanelAction } from '../actions/panelChangeActions';
 import { createPerformanceDataPreActions, performanceDataReloadAction, createPerformanceDataActions } from '../handlers/performanceDataHandler';
 import { createReceiveLevelPreActions, receiveLevelReloadAction, createReceiveLevelActions } from '../handlers/receiveLevelHandler';
@@ -50,6 +50,9 @@ import { createSignalToInterferencePreActions, signalToInterferenceReloadAction,
 import { createCrossPolarDiscriminationPreActions, crossPolarDiscriminationReloadAction, createCrossPolarDiscriminationActions } from '../handlers/crossPolarDiscriminationHandler';
 
 import { MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { AppBar, Tabs, Tab } from '@material-ui/core';
+import LtpSelection from '../components/ltpSelection';
+import { ResetAllSubViewsAction } from '../actions/toggleActions';
 
 const PerformanceHistoryComponentStyles = (theme: Theme) => createStyles({
   root: {
@@ -58,19 +61,6 @@ const PerformanceHistoryComponentStyles = (theme: Theme) => createStyles({
   },
   margin: {
     margin: theme.spacing(1),
-  },
-  display: {
-    display: "inline-block"
-  },
-  selectDropdown: {
-    borderRadius: 1,
-    position: "relative",
-    backgroundColor: theme.palette.background.paper,
-    border: "1px solid #ced4da",
-    fontSize: 16,
-    width: "auto",
-    padding: "5px 26px 5px 12px",
-    transition: theme.transitions.create(["border-color", "box-shadow"]),
   }
 });
 
@@ -79,6 +69,7 @@ const mapProps = (state: IApplicationStoreState) => ({
   activePanel: state.performanceHistory.currentOpenPanel,
   availableLtps: state.performanceHistory.ltps.distinctLtps,
   networkElements: state.performanceHistory.networkElements.deviceList,
+  initialLoaded: state.performanceHistory.ltps.loadedOnce
 });
 
 const mapDispatcher = (dispatcher: IDispatcher) => ({
@@ -111,7 +102,9 @@ const mapDispatcher = (dispatcher: IDispatcher) => ({
   timeIntervalChange: (time: PmDataInterval) => dispatcher.dispatch(new TimeChangeAction(time)),
   changeNode: (nodeId: string) => dispatcher.dispatch((dispatch: Dispatch) => {
     dispatch(new NavigateToApplication("performanceHistory", nodeId));
-  })
+  }),
+  setInitialLoaded: (isLoaded: boolean) => dispatcher.dispatch((dispatch: Dispatch) => { dispatch(new SetInitialLoadedAction(isLoaded)); }),
+  resetSubViews: () => dispatcher.dispatch(new ResetAllSubViewsAction())
 });
 
 export type NetworkElementType = {
@@ -127,7 +120,12 @@ type PerformanceHistoryComponentState = {
   selectedLtp: string,
   showNetworkElementsTable: boolean,
   showLtps: boolean,
-  showPanels: boolean
+  showPanels: boolean,
+  preFilter:
+  {
+    "node-name": string,
+    "uuid-interface": string
+  } | {}
 };
 
 /**
@@ -145,34 +143,70 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
       selectedLtp: "-1",
       showNetworkElementsTable: true,
       showLtps: false,
-      showPanels: false
+      showPanels: false,
+      preFilter: {}
     };
   }
 
-  onTogglePanel = (panelId: PanelId) => {
-    const nextActivePanel = panelId === this.props.activePanel ? null : panelId;
+  onChangeTabs = (event: React.ChangeEvent<{}>, newValue: PanelId) => {
+    const nextActivePanel = newValue;
+    this.changeTabs(nextActivePanel);
+  }
+
+  changeTabs = (nextActivePanel: PanelId) => {
     this.props.setCurrentPanel(nextActivePanel);
+    const preFilter = this.state.preFilter;
     switch (nextActivePanel) {
       case "PerformanceData":
-        this.props.reloadPerformanceData();
+        if (this.props.performanceData.preFilter !== {} && this.props.performanceData.preFilter === preFilter) {
+          this.props.reloadPerformanceData();
+        } else {
+          this.props.performanceDataPreActions.onPreFilterChanged(preFilter);
+        }
         break;
       case "ReceiveLevel":
-        this.props.reloadReceiveLevel();
+        if (this.props.receiveLevel.preFilter !== {} && this.props.receiveLevel.preFilter === preFilter) {
+          this.props.reloadReceiveLevel();
+        }
+        else {
+          this.props.receiveLevelPreActions.onPreFilterChanged(preFilter);
+        }
         break;
       case "TransmissionPower":
-        this.props.reloadTransmissionPower();
+        if (this.props.transmissionPower.preFilter !== {} && this.props.transmissionPower.preFilter === preFilter) {
+          this.props.reloadTransmissionPower();
+        }
+        else {
+          this.props.transmissionPowerPreActions.onPreFilterChanged(preFilter);
+        }
         break;
       case "AdaptiveModulation":
-        this.props.reloadAdaptiveModulation();
+        if (this.props.adaptiveModulation.preFilter !== {} && this.props.adaptiveModulation.preFilter === preFilter) {
+          this.props.reloadAdaptiveModulation();
+        } else {
+          this.props.adaptiveModulationPreActions.onPreFilterChanged(preFilter);
+        }
         break;
       case "Temperature":
-        this.props.reloadTemperature();
+        if (this.props.temperature.preFilter !== {} && this.props.temperature.preFilter === preFilter) {
+          this.props.reloadTemperature();
+        } else {
+          this.props.temperaturePreActions.onPreFilterChanged(preFilter);
+        }
         break;
       case "SINR":
-        this.props.reloadSignalToInterference();
+        if (this.props.signalToInterference.preFilter !== {} && this.props.signalToInterference.preFilter === preFilter) {
+          this.props.reloadSignalToInterference();
+        } else {
+          this.props.signalToInterferencePreActions.onPreFilterChanged(preFilter);
+        }
         break;
       case "CPD":
-        this.props.reloadCrossPolarDiscrimination();
+        if (this.props.crossPolarDiscrimination.preFilter !== {} && this.props.crossPolarDiscrimination.preFilter === preFilter) {
+          this.props.reloadCrossPolarDiscrimination();
+        } else {
+          this.props.crossPolarDiscriminationPreActions.onPreFilterChanged(preFilter);
+        }
         break;
       default:
         // do nothing if all panels are closed
@@ -181,7 +215,6 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
   }
 
   render(): JSX.Element {
-    const { classes } = this.props;
     const { activePanel, nodeId } = this.props;
     if (nodeId === "") {
       return (
@@ -194,59 +227,70 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
       )
     }
     else {
-      3
       this.handleURLChange(nodeId);
       return (
         <>
-          <h3>Selected Network Element: {this.state.selectedNetworkElement} </h3>
-          {this.state.showLtps && (
-            <div>
-              <FormControl className={classes.display}>
-                <span>
-                  Select LTP
-                </span>
-                <Select className={classes.selectDropdown} value={this.state.selectedLtp} onChange={this.handleLtpChange}  >
-                  <MenuItem value={"-1"}><em>--Select--</em></MenuItem>
-                  {this.props.availableLtps.map(ltp =>
-                    (<MenuItem value={ltp.key} key={ltp.key}>{ltp.key}</MenuItem>))}
-                </Select>
-                <span> Time-Period </span>
-                <Select className={classes.selectDropdown} value={this.state.selectedTimePeriod} onChange={this.handleTimePeriodChange} >
-                  <MenuItem value={"15min"}>15min</MenuItem>
-                  <MenuItem value={"24hours"}>24hours</MenuItem>
-                </Select>
-              </FormControl>
-              {this.state.showPanels && (
-                <div>
-                  <Panel activePanel={activePanel} panelId={"PerformanceData"} onToggle={this.onTogglePanel} title={"Performance Data"}>
-                    <PerformanceData selectedTimePeriod={this.state.selectedTimePeriod} />
-                  </Panel>
-                  <Panel activePanel={activePanel} panelId={"ReceiveLevel"} onToggle={this.onTogglePanel} title={"Receive Level"}>
-                    <ReceiveLevel selectedTimePeriod={this.state.selectedTimePeriod} />
-                  </Panel>
-                  <Panel activePanel={activePanel} panelId={"TransmissionPower"} onToggle={this.onTogglePanel} title={"Transmission Power"}>
-                    <TransmissionPower selectedTimePeriod={this.state.selectedTimePeriod} />
-                  </Panel>
-                  <Panel activePanel={activePanel} panelId={"AdaptiveModulation"} onToggle={this.onTogglePanel} title={"Adaptive Modulation"}>
-                    <AdaptiveModulation selectedTimePeriod={this.state.selectedTimePeriod} />
-                  </Panel>
-                  <Panel activePanel={activePanel} panelId={"Temperature"} onToggle={this.onTogglePanel} title={"Temperature"}>
-                    <Temperature selectedTimePeriod={this.state.selectedTimePeriod} />
-                  </Panel>
-                  <Panel activePanel={activePanel} panelId={"SINR"} onToggle={this.onTogglePanel} title={"Signal-to-interference-plus-noise ratio (SINR)"}>
-                    <SignalToInterference selectedTimePeriod={this.state.selectedTimePeriod} />
-                  </Panel>
-                  <Panel activePanel={activePanel} panelId={"CPD"} onToggle={this.onTogglePanel} title={"Cross Polar Discrimination"}>
-                    <CrossPolarDiscrimination selectedTimePeriod={this.state.selectedTimePeriod} />
-                  </Panel>
-                </div>
-              )}
-            </div>
-          )}
+          {this.state.showLtps &&
+
+            <LtpSelection selectedNE={this.state.selectedNetworkElement} selectedLtp={this.state.selectedLtp} selectedTimePeriod={this.state.selectedTimePeriod}
+              availableLtps={this.props.availableLtps} finishedLoading={this.props.initialLoaded} onChangeTimePeriod={this.handleTimePeriodChange}
+              onChangeLtp={this.handleLtpChange}
+            />
+          }
+          {this.state.showPanels &&
+            <>
+
+              <AppBar position="static" >
+                <Tabs value={activePanel} onChange={this.onChangeTabs} variant="scrollable" scrollButtons="auto" aria-label="performance data tabs">
+                  <Tab label="Performance Data" value="PerformanceData" />
+                  <Tab label="Receive Level" value="ReceiveLevel" />
+                  <Tab label="Transmission Power" value="TransmissionPower" />
+                  <Tab label="Adaptive Modulation" value="AdaptiveModulation" />
+                  <Tab label="Temperature" value="Temperature" />
+                  <Tab label="Signal-to-interference-plus-noise ratio (SINR)" value="SINR" />
+                  <Tab label="Cross Polar Discrimination" value="CPD" />
+                </Tabs>
+              </AppBar>
+              {
+                activePanel === "PerformanceData" &&
+                <PerformanceData selectedTimePeriod={this.state.selectedTimePeriod} />
+              }
+
+              {
+                activePanel === "ReceiveLevel" &&
+                <ReceiveLevel selectedTimePeriod={this.state.selectedTimePeriod} />
+              }
+
+              {
+                activePanel === "TransmissionPower" &&
+                <TransmissionPower selectedTimePeriod={this.state.selectedTimePeriod} />
+              }
+
+              {
+                activePanel === "AdaptiveModulation" &&
+                <AdaptiveModulation selectedTimePeriod={this.state.selectedTimePeriod} />
+              }
+              {
+                activePanel === "Temperature" &&
+                <Temperature selectedTimePeriod={this.state.selectedTimePeriod} />
+              }
+
+              {
+                activePanel === "SINR" &&
+                <SignalToInterference selectedTimePeriod={this.state.selectedTimePeriod} />
+              }
+
+              {
+                activePanel === "CPD" &&
+                <CrossPolarDiscrimination selectedTimePeriod={this.state.selectedTimePeriod} />
+              }
+            </>
+          }
         </>
-      );
+      )
     }
-  };
+  }
+
 
   public componentDidMount() {
     this.props.getAllDevicesPMdata();
@@ -257,6 +301,8 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
     this.props.enableFilterAdaptiveModulation.onToggleFilter();
     this.props.enableFilterSinr.onToggleFilter();
     this.props.enableFilterCpd.onToggleFilter();
+    this.props.setInitialLoaded(false);
+    this.props.resetSubViews();
   }
 
   /**
@@ -268,23 +314,53 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
       selectedLtp: firstLtp
     });
     this.preFilterChangeAndReload(this.state.selectedNetworkElement, this.state.selectedTimePeriod, firstLtp);
+    this.changeTabs("PerformanceData");
   }
 
   /**
-  * A function which loads the tables based on prefilters defined by network element and ltp on selected time period.
+  * A function which reloads the visible table, if available, based on prefilters defined by network element and ltp on selected time period.
   */
   private preFilterChangeAndReload = (networkElement: string, timePeriod: string, ltp: string) => {
-    const preFilter = {
+    const newPreFilter = {
       "node-name": networkElement,
       "uuid-interface": ltp
     };
-    this.props.performanceDataPreActions.onPreFilterChanged(preFilter);
-    this.props.receiveLevelPreActions.onPreFilterChanged(preFilter);
-    this.props.transmissionPowerPreActions.onPreFilterChanged(preFilter);
-    this.props.adaptiveModulationPreActions.onPreFilterChanged(preFilter);
-    this.props.temperaturePreActions.onPreFilterChanged(preFilter);
-    this.props.signalToInterferencePreActions.onPreFilterChanged(preFilter);
-    this.props.crossPolarDiscriminationPreActions.onPreFilterChanged(preFilter);
+
+    const activePanel = this.props.activePanel;
+
+    if (this.props.activePanel !== null) {
+      // set prefilter and reload data if panel is open
+
+      switch (activePanel) {
+        case "PerformanceData":
+          this.props.performanceDataPreActions.onPreFilterChanged(newPreFilter);
+          break;
+        case "ReceiveLevel":
+          this.props.receiveLevelPreActions.onPreFilterChanged(newPreFilter);
+          break;
+        case "TransmissionPower":
+          this.props.transmissionPowerPreActions.onPreFilterChanged(newPreFilter);
+          break;
+        case "AdaptiveModulation":
+          this.props.adaptiveModulationPreActions.onPreFilterChanged(newPreFilter);
+          break;
+        case "Temperature":
+          this.props.temperaturePreActions.onPreFilterChanged(newPreFilter);
+          break;
+        case "SINR":
+          this.props.signalToInterferencePreActions.onPreFilterChanged(newPreFilter);
+          break;
+        case "CPD":
+          this.props.crossPolarDiscriminationPreActions.onPreFilterChanged(newPreFilter);
+          break;
+        default:
+          // do nothing if all panels are closed
+          break;
+      }
+    }
+
+    // set prefilter
+    this.setState({ preFilter: newPreFilter })
 
   }
 
@@ -300,12 +376,19 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
       showPanels: false,
       selectedLtp: "-1"
     });
+
+    this.props.setInitialLoaded(false);
+    this.props.resetSubViews();
+    this.setState({ preFilter: {} });
     this.props.changeNode(selectedNetworkElement);
     this.props.getDistinctLtpsIds(selectedNetworkElement, this.state.selectedTimePeriod, "-1", this.selectFirstLtp);
   }
 
   private handleURLChange = (selectedNetworkElement: string) => {
+
     if (selectedNetworkElement !== this.state.selectedNetworkElement) {
+      // gets called if page is reloaded / opened with a networkname in the url, 
+      // not if the selected networkelement is changed
       this.setState({
         showLtps: true,
         selectedNetworkElement: selectedNetworkElement,
@@ -324,6 +407,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
     if (ltpNotSelected) {
       this.setState({
         selectedLtp: "-1",
+        showPanels: false
       });
     }
   }
@@ -332,21 +416,16 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
   * Function which handles the time period changes.
   */
   private handleTimePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+
     const selectedTimeInterval = event.target.value === "15min"
       ? PmDataInterval.pmInterval15Min
-      : PmDataInterval.pmInterval24Hours
+      : PmDataInterval.pmInterval24Hours;
 
     this.setState({
       selectedTimePeriod: event.target.value,
     });
+
     this.props.timeIntervalChange(selectedTimeInterval);
-    this.props.reloadPerformanceData();
-    this.props.reloadReceiveLevel();
-    this.props.reloadTransmissionPower();
-    this.props.reloadAdaptiveModulation();
-    this.props.reloadTemperature();
-    this.props.reloadSignalToInterference();
-    this.props.reloadCrossPolarDiscrimination();
     this.props.getDistinctLtpsIds(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp, undefined, this.resetLtpDropdown);
     this.preFilterChangeAndReload(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp);
   }
@@ -355,15 +434,22 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
   * Function which handles the ltp changes.
   */
   private handleLtpChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    var showPanels: boolean = true;
+
     if (event.target.value === "-1") {
-      showPanels = false;
+      this.setState({
+        showPanels: false,
+        selectedLtp: event.target.value
+      });
+      this.props.setCurrentPanel(null);
+
+    } else if (event.target.value !== this.state.selectedLtp) {
+      this.setState({
+        showPanels: true,
+        selectedLtp: event.target.value
+      });
+      this.preFilterChangeAndReload(this.state.selectedNetworkElement, this.state.selectedTimePeriod, event.target.value);
+
     }
-    this.setState({
-      showPanels: showPanels,
-      selectedLtp: event.target.value
-    });
-    this.preFilterChangeAndReload(this.state.selectedNetworkElement, this.state.selectedTimePeriod, event.target.value);
   }
 }
 

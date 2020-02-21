@@ -20,6 +20,7 @@ import { IActionHandler } from '../../../../framework/src/flux/action';
 import {
   AllAvailableLtpsLoadedAction,
   LoadAllAvailableLtpsAction,
+  SetInitialLoadedAction,
 } from '../actions/ltpAction';
 
 import { LtpIds } from '../models/availableLtps';
@@ -27,11 +28,13 @@ import { LtpIds } from '../models/availableLtps';
 export interface IAvailableLtpsState {
   distinctLtps: LtpIds[];
   busy: boolean;
+  loadedOnce: boolean;
 }
 
 const ltpListStateInit: IAvailableLtpsState = {
   distinctLtps: [],
-  busy: false
+  busy: false,
+  loadedOnce: false
 };
 
 export const availableLtpsActionHandler: IActionHandler<IAvailableLtpsState> = (state = ltpListStateInit, action) => {
@@ -47,14 +50,22 @@ export const availableLtpsActionHandler: IActionHandler<IAvailableLtpsState> = (
       state = {
         ...state,
         distinctLtps: action.availableLtps,
-        busy: false
-      };
-    } else {
-      state = {
-        ...state,
-        busy: false
+        busy: false,
+        loadedOnce: true
       };
     }
+  } else if (action instanceof SetInitialLoadedAction) {
+
+    state = {
+      ...state,
+      loadedOnce: action.initialLoaded
+    };
+  } else {
+    state = {
+      ...state,
+      busy: false
+    };
   }
+
   return state;
 };

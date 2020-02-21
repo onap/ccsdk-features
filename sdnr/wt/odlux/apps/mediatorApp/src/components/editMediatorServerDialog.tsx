@@ -161,7 +161,7 @@ class EditMediatorServerDialogComponent extends React.Component<EditMediatorServ
           <Button onClick={(event) => {
 
             if (this.areFieldsValid()) {
-              this.setState({ errorMessage: [] })
+              this.setState({ errorMessage: [] });
               this.onApply({
                 id: this.state.id,
                 name: this.state.name,
@@ -177,6 +177,7 @@ class EditMediatorServerDialogComponent extends React.Component<EditMediatorServ
           }} > {setting.applyButtonText} </Button>
           <Button onClick={(event) => {
             this.onCancel();
+            this.setState({ errorMessage: [] });
             event.preventDefault();
             event.stopPropagation();
           }} color="secondary"> {setting.cancelButtonText} </Button>

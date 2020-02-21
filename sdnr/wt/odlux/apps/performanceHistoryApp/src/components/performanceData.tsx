@@ -27,13 +27,17 @@ import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createPerformanceDataProperties, createPerformanceDataActions } from '../handlers/performanceDataHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
+import ToggleContainer from './toggleContainer';
+import { SetSubViewAction } from '../actions/toggleActions';
 
 const mapProps = (state: IApplicationStoreState) => ({
   performanceDataProperties: createPerformanceDataProperties(state),
+  currentView: state.performanceHistory.subViews.performanceDataSelection,
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   performanceDataActions: createPerformanceDataActions(dispatcher.dispatch),
+  setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("performanceData", value)),
 });
 
 type PerformanceDataComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -46,6 +50,11 @@ const PerformanceDataTable = MaterialTable as MaterialTableCtorType<PerformanceD
  * The Component which gets the performance data from the database based on the selected time period.
  */
 class PerformanceDataComponent extends React.Component<PerformanceDataComponentProps>{
+
+  onChange = (value: "chart" | "table") => {
+    this.props.setSubView(value);
+  }
+
   render(): JSX.Element {
     const properties = this.props.performanceDataProperties;
     const actions = this.props.performanceDataActions;
@@ -68,8 +77,10 @@ class PerformanceDataComponent extends React.Component<PerformanceDataComponentP
     });
     return (
       <>
-        {lineChart(chartPagedData)}
-        <PerformanceDataTable idProperty={"_id"} columns={performanceColumns} {...properties} {...actions} />
+        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+          {lineChart(chartPagedData)}
+          <PerformanceDataTable idProperty={"_id"} columns={performanceColumns} {...properties} {...actions} />
+        </ToggleContainer>
       </>
     );
   };
