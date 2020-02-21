@@ -28,13 +28,17 @@ import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createTemperatureProperties, createTemperatureActions } from '../handlers/temperatureHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
+import ToggleContainer from './toggleContainer';
+import { SetSubViewAction } from '../actions/toggleActions';
 
 const mapProps = (state: IApplicationStoreState) => ({
   temperatureProperties: createTemperatureProperties(state),
+  currentView: state.performanceHistory.subViews.temperatur,
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   temperatureActions: createTemperatureActions(dispatcher.dispatch),
+  setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("Temp", value)),
 });
 
 type TemperatureComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -47,6 +51,11 @@ const TemperatureTable = MaterialTable as MaterialTableCtorType<TemperatureDataT
  * The Component which gets the temperature data from the database based on the selected time period.
  */
 class TemperatureComponent extends React.Component<TemperatureComponentProps>{
+
+  onChange = (value: "chart" | "table") => {
+    this.props.setSubView(value);
+  }
+
   render(): JSX.Element {
     const properties = this.props.temperatureProperties;
     const actions = this.props.temperatureActions;
@@ -69,8 +78,11 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
     });
     return (
       <>
-        {lineChart(chartPagedData)}
-        <TemperatureTable idProperty={"_id"} columns={temperatureColumns} {...properties} {...actions} />
+
+        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+          {lineChart(chartPagedData)}
+          <TemperatureTable idProperty={"_id"} columns={temperatureColumns} {...properties} {...actions} />
+        </ToggleContainer>
       </>
     );
   };

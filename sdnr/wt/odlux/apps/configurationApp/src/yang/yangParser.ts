@@ -115,17 +115,26 @@ class YangLexer {
 
   private _processIdentifier(): Token {
     let endpos = this.pos + 1;
-    while (endpos < this.buf.length &&
-      this._isAlphanum(this.buf.charAt(endpos))) {
-      endpos++;
+    while (endpos < this.buf.length && this._isAlphanum(this.buf.charAt(endpos))) {
+      ++endpos;
+    }
+
+    let name = 'IDENTIFIER'
+    if (this.buf.charAt(endpos) === ":") {
+      name = 'IDENTIFIERREF';
+      ++endpos;
+      while (endpos < this.buf.length && this._isAlphanum(this.buf.charAt(endpos))) {
+        ++endpos;
+      }
     }
 
     const tok = {
-      name: 'IDENTIFIER',
+      name: name,
       value: this.buf.substring(this.pos, endpos),
       start: this.pos,
       end: endpos
     };
+
     this.pos = endpos;
     return tok;
   }
@@ -214,7 +223,7 @@ class YangLexer {
           current = stack.shift() || null;
         }
         this.pos++;
-      } else if (this._isAlpha(char)) {
+      } else if (this._isAlpha(char) || char === "_") {
         const key = this._processIdentifier().value;
         this._skipNontokens();
         let peekChar = this.buf.charAt(this.pos);
@@ -257,7 +266,7 @@ export class YangParser {
   private _groupingsToResolve: (() => void)[] = [];
   private _identityToResolve: (() => void)[] = [];
   private _unionsToResolve: (() => void)[] = [];
-
+  private _modulesToResolve: (() => void)[] = [];
 
   private _modules: { [name: string]: Module } = {};
   private _views: ViewSpecification[] = [{
@@ -398,14 +407,16 @@ export class YangParser {
 
     // create the root elements for this module
     module.elements = currentView.elements;
-    Object.keys(module.elements).forEach(key => {
-      const viewElement = module.elements[key];
-      if (!isViewElementObjectOrList(viewElement)) {
-        throw new Error(`Module: [${module}]. Only List or Object allowed on root level.`);
-      }
-      const viewIdIndex = Number(viewElement.viewId);
-      module.views[key] = this._views[viewIdIndex];
-      this._views[0].elements[key] = module.elements[key];
+    this._modulesToResolve.push(() => {
+      Object.keys(module.elements).forEach(key => {
+        const viewElement = module.elements[key];
+        if (!isViewElementObjectOrList(viewElement)) {
+          throw new Error(`Module: [${module}]. Only List or Object allowed on root level.`);
+        }
+        const viewIdIndex = Number(viewElement.viewId);
+        module.views[key] = this._views[viewIdIndex];
+        this._views[0].elements[key] = module.elements[key];
+      });
     });
     return module;
   }
@@ -478,6 +489,12 @@ export class YangParser {
     });
 
     this._identityToResolve.forEach(cb => {
+      try { cb(); } catch (error) {
+        console.warn(error.message);
+      }
+    });
+
+    this._modulesToResolve.forEach(cb => {
       try { cb(); } catch (error) {
         console.warn(error.message);
       }
@@ -580,8 +597,16 @@ export class YangParser {
   }
 
   private extractSubViews(statement: Statement, parentId: number, module: Module, currentPath: string): [ViewSpecification, ViewSpecification[]] {
-    const subViews: ViewSpecification[] = [];
+    // used for scoped definitions
+    const context: Module = {
+      ...module,
+      typedefs: {
+        ...module.typedefs
+      }
+    };
+
     const currentId = this.nextId;
+    const subViews: ViewSpecification[] = [];
     let elements: ViewElement[] = [];
 
     const configValue = this.extractValue(statement, "config");
@@ -590,18 +615,26 @@ export class YangParser {
     // extract conditions
     const ifFeature = this.extractValue(statement, "if-feature");
     const whenCondition = this.extractValue(statement, "when");
-    if (whenCondition) console.warn("Found in [" + module.name + "]" + currentPath + " when: " + whenCondition);
+    if (whenCondition) console.warn("Found in [" + context.name + "]" + currentPath + " when: " + whenCondition);
+
+    // extract all scoped typedefs
+    this.extractTypeDefinitions(statement, context, currentPath);
+
+    // extract all scoped groupings
+    subViews.push(
+      ...this.extractGroupings(statement, parentId, context, currentPath)
+    );
 
     // extract all container
     const container = this.extractNodes(statement, "container");
     if (container && container.length > 0) {
       subViews.push(...container.reduce<ViewSpecification[]>((acc, cur) => {
         if (!cur.arg) {
-          throw new Error(`Module: [${module.name}]${currentPath}. Found container without name.`);
+          throw new Error(`Module: [${context.name}]${currentPath}. Found container without name.`);
         }
-        const [currentView, subViews] = this.extractSubViews(cur, currentId, module, `${currentPath}/${module.name}:${cur.arg}`);
+        const [currentView, subViews] = this.extractSubViews(cur, currentId, context, `${currentPath}/${context.name}:${cur.arg}`);
         elements.push({
-          id: parentId === 0 ? `${module.name}:${cur.arg}` : cur.arg,
+          id: parentId === 0 ? `${context.name}:${cur.arg}` : cur.arg,
           label: cur.arg,
           uiType: "object",
           viewId: currentView.id,
@@ -618,15 +651,15 @@ export class YangParser {
     if (lists && lists.length > 0) {
       subViews.push(...lists.reduce<ViewSpecification[]>((acc, cur) => {
         if (!cur.arg) {
-          throw new Error(`Module: [${module.name}]${currentPath}. Found list without name.`);
+          throw new Error(`Module: [${context.name}]${currentPath}. Found list without name.`);
         }
         const key = this.extractValue(cur, "key") || undefined;
         if (config && !key) {
-          throw new Error(`Module: [${module.name}]${currentPath}. Found configurable list without key.`);
+          throw new Error(`Module: [${context.name}]${currentPath}. Found configurable list without key.`);
         }
-        const [currentView, subViews] = this.extractSubViews(cur, currentId, module, `${currentPath}/${module.name}:${cur.arg}`);
+        const [currentView, subViews] = this.extractSubViews(cur, currentId, context, `${currentPath}/${context.name}:${cur.arg}`);
         elements.push({
-          id: parentId === 0 ? `${module.name}:${cur.arg}` : cur.arg,
+          id: parentId === 0 ? `${context.name}:${cur.arg}` : cur.arg,
           label: cur.arg,
           isList: true,
           uiType: "object",
@@ -644,7 +677,7 @@ export class YangParser {
     const leafLists = this.extractNodes(statement, "leaf-list");
     if (leafLists && leafLists.length > 0) {
       elements.push(...leafLists.reduce<ViewElement[]>((acc, cur) => {
-        const element = this.getViewElement(cur, module, parentId, currentPath, true);
+        const element = this.getViewElement(cur, context, parentId, currentPath, true);
         element && acc.push(element);
         return acc;
       }, []));
@@ -655,7 +688,7 @@ export class YangParser {
     const leafs = this.extractNodes(statement, "leaf");
     if (leafs && leafs.length > 0) {
       elements.push(...leafs.reduce<ViewElement[]>((acc, cur) => {
-        const element = this.getViewElement(cur, module, parentId, currentPath, false);
+        const element = this.getViewElement(cur, context, parentId, currentPath, false);
         element && acc.push(element);
         return acc;
       }, []));
@@ -666,7 +699,7 @@ export class YangParser {
     if (choiceStms && choiceStms.length > 0) {
       elements.push(...choiceStms.reduce<ViewElementChoise[]>((accChoise, curChoise) => {
         if (!curChoise.arg) {
-          throw new Error(`Module: [${module.name}]${currentPath}. Found choise without name.`);
+          throw new Error(`Module: [${context.name}]${currentPath}. Found choise without name.`);
         }
         // extract all cases like containers
         const cases: { id: string, label: string, description?: string, elements: { [name: string]: ViewElement } }[] = [];
@@ -674,14 +707,14 @@ export class YangParser {
         if (caseStms && caseStms.length > 0) {
           cases.push(...caseStms.reduce((accCase, curCase) => {
             if (!curCase.arg) {
-              throw new Error(`Module: [${module.name}]${currentPath}/${curChoise.arg}. Found case without name.`);
+              throw new Error(`Module: [${context.name}]${currentPath}/${curChoise.arg}. Found case without name.`);
             }
             const description = this.extractValue(curCase, "description") || undefined;
-            const [caseView, caseSubViews] = this.extractSubViews(curCase, parentId, module, `${currentPath}/${module.name}:${curChoise.arg}`);
+            const [caseView, caseSubViews] = this.extractSubViews(curCase, parentId, context, `${currentPath}/${context.name}:${curChoise.arg}`);
             subViews.push(caseView, ...caseSubViews);
 
             const caseDef: { id: string, label: string, description?: string, elements: { [name: string]: ViewElement } } = {
-              id: parentId === 0 ? `${module.name}:${curCase.arg}` : curCase.arg,
+              id: parentId === 0 ? `${context.name}:${curCase.arg}` : curCase.arg,
               label: curCase.arg,
               description: description,
               elements: caseView.elements
@@ -692,7 +725,7 @@ export class YangParser {
         }
 
         // extract all simple cases (one case per leaf, container, etc.)
-        const [choiseView, choiseSubViews] = this.extractSubViews(curChoise, parentId, module, `${currentPath}/${module.name}:${curChoise.arg}`);
+        const [choiseView, choiseSubViews] = this.extractSubViews(curChoise, parentId, context, `${currentPath}/${context.name}:${curChoise.arg}`);
         subViews.push(choiseView, ...choiseSubViews);
         cases.push(...Object.keys(choiseView.elements).reduce((accElm, curElm) => {
           const elm = choiseView.elements[curElm];
@@ -714,7 +747,7 @@ export class YangParser {
 
         const element: ViewElementChoise = {
           uiType: "choise",
-          id: parentId === 0 ? `${module.name}:${curChoise.arg}` : curChoise.arg,
+          id: parentId === 0 ? `${context.name}:${curChoise.arg}` : curChoise.arg,
           label: curChoise.arg,
           config: config,
           mandatory: mandatory,
@@ -736,7 +769,7 @@ export class YangParser {
     }
 
     if (!statement.arg) {
-      throw new Error(`Module: [${module.name}]. Found statement without name.`);
+      throw new Error(`Module: [${context.name}]. Found statement without name.`);
     }
 
     const viewSpec: ViewSpecification = {
@@ -772,13 +805,13 @@ export class YangParser {
       for (let i = 0; i < usesRefs.length; ++i) {
         const groupingName = usesRefs[i].arg;
         if (!groupingName) {
-          throw new Error(`Module: [${module.name}]. Found an uses statement without a grouping name.`);
+          throw new Error(`Module: [${context.name}]. Found an uses statement without a grouping name.`);
         }
 
-        viewSpec.uses.push(this.resolveReferencePath(groupingName, module));
+        viewSpec.uses.push(this.resolveReferencePath(groupingName, context));
 
         this._groupingsToResolve.push(() => {
-          const groupingViewSpec = this.resolveGrouping(groupingName, module);
+          const groupingViewSpec = this.resolveGrouping(groupingName, context);
           if (groupingViewSpec) {
             Object.keys(groupingViewSpec.elements).forEach(key => {
               const elm = groupingViewSpec.elements[key];
@@ -1138,6 +1171,13 @@ export class YangParser {
       return {
         ...element,
         uiType: "binary",
+        length: extractRange(0, +18446744073709551615, "length"),
+      };
+    } else if (type === "instance-identifier") {
+      // https://tools.ietf.org/html/rfc7950#page-168
+      return {
+        ...element,
+        uiType: "string",
         length: extractRange(0, +18446744073709551615, "length"),
       };
     } else {

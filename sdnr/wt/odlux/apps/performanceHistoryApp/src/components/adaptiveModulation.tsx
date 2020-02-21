@@ -28,13 +28,18 @@ import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createAdaptiveModulationProperties, createAdaptiveModulationActions } from '../handlers/adaptiveModulationHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
+import ToggleContainer from './toggleContainer';
+import { SetSubViewAction } from '../actions/toggleActions';
 
 const mapProps = (state: IApplicationStoreState) => ({
   adaptiveModulationProperties: createAdaptiveModulationProperties(state),
+  currentView: state.performanceHistory.subViews.adaptiveModulation,
+
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   adaptiveModulationActions: createAdaptiveModulationActions(dispatcher.dispatch),
+  setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("adaptiveModulation", value)),
 });
 
 type AdaptiveModulationComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -47,6 +52,10 @@ const AdaptiveModulationTable = MaterialTable as MaterialTableCtorType<AdaptiveM
  * The Component which gets the adaptiveModulation data from the database based on the selected time period.
  */
 class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComponentProps>{
+  onChange = (value: "chart" | "table") => {
+    this.props.setSubView(value);
+  }
+
   render(): JSX.Element {
     const properties = this.props.adaptiveModulationProperties;
     const actions = this.props.adaptiveModulationActions;
@@ -69,8 +78,10 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
 
     return (
       <>
-        {lineChart(chartPagedData)}
-        <AdaptiveModulationTable idProperty={"_id"} columns={adaptiveModulationColumns} {...properties} {...actions} />
+        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+          {lineChart(chartPagedData)}
+          <AdaptiveModulationTable idProperty={"_id"} columns={adaptiveModulationColumns} {...properties} {...actions} />
+        </ToggleContainer>
       </>
     );
   };

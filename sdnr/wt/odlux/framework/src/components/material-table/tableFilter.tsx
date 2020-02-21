@@ -35,6 +35,9 @@ const styles = (theme: Theme) => createStyles({
   input: {
     margin: theme.spacing(1),
   },
+  numberInput: {
+    float: "right"
+  }
 });
 
 interface IEnhancedTableFilterComponentProps extends WithStyles<typeof styles> {
@@ -62,6 +65,7 @@ class EnhancedTableFilterComponent extends React.Component<IEnhancedTableFilterC
           const style = col.width ? { width: col.width } : {};
           return (
             <TableCell
+              className={col.type === ColumnType.numeric ? classes.numberInput : ''}
               key={col.property}
               padding={col.disablePadding ? 'none' : 'default'}
               style={style}

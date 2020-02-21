@@ -23,18 +23,24 @@ import { MaterialTable, ColumnType, ColumnModel, MaterialTableCtorType } from '.
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 
-import { ReceiveLevelDataType,ReceiveLevelDatabaseDataType } from '../models/receiveLevelDataType';
+import { ReceiveLevelDataType, ReceiveLevelDatabaseDataType } from '../models/receiveLevelDataType';
 import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createReceiveLevelProperties, createReceiveLevelActions } from '../handlers/receiveLevelHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
+import { SetSubViewAction } from '../actions/toggleActions';
+import ToggleContainer from './toggleContainer';
 
 const mapProps = (state: IApplicationStoreState) => ({
   receiveLevelProperties: createReceiveLevelProperties(state),
+  currentView: state.performanceHistory.subViews.receiveLevelDataSelection,
+
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   receiveLevelActions: createReceiveLevelActions(dispatcher.dispatch),
+  setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("receiveLevel", value)),
+
 });
 
 type ReceiveLevelComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -47,6 +53,11 @@ const ReceiveLevelTable = MaterialTable as MaterialTableCtorType<ReceiveLevelDat
  * The Component which gets the receiveLevel data from the database based on the selected time period.
  */
 class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
+
+  onChange = (value: "chart" | "table") => {
+    this.props.setSubView(value);
+  }
+
   render(): JSX.Element {
     const properties = this.props.receiveLevelProperties;
     const actions = this.props.receiveLevelActions;
@@ -70,8 +81,10 @@ class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
 
     return (
       <>
-        {lineChart(chartPagedData)}
-        <ReceiveLevelTable idProperty={"_id"} columns={receiveLevelColumns} {...properties} {...actions} />
+        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+          {lineChart(chartPagedData)}
+          <ReceiveLevelTable idProperty={"_id"} columns={receiveLevelColumns} {...properties} {...actions} />
+        </ToggleContainer>
       </>
     );
   };
