@@ -29,7 +29,6 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl.AaiProviderClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.archiveservice.ArchiveCleanService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeForwarderImpl;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeForwarderInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeProviderClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.DeviceMonitor;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.DeviceMonitorImpl;
@@ -45,7 +44,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistrat
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl.PerformanceManagerImpl;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl.database.service.MicrowaveHistoricalPerformanceWriterService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.AaiService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EquipmentService;
@@ -58,7 +56,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.DevicemanagerNotificationDelayService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
@@ -83,27 +80,23 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
     @SuppressWarnings("unused")
     private static final String STARTUPLOG_FILENAME = "etc/devicemanager.startup.log";
-    // private static final String STARTUPLOG_FILENAME2 = "data/cache/devicemanager.startup.log";
 
     // MDSAL Services
     private DataBroker dataBroker;
     private MountPointService mountPointService;
     private RpcProviderService rpcProviderRegistry;
-    @SuppressWarnings("unused")
-    private NotificationPublishService notificationPublishService;
     private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     private WebsocketmanagerService websocketmanagerService;
     private IEntityDataProvider iEntityDataProvider;
 
     // Devicemanager common services for network element handler
-    private @Nullable WebSocketServiceClientInternal webSocketService;
+    private WebSocketServiceClientInternal webSocketService;
     private ODLEventListenerHandler odlEventListenerHandler; //EventHandlingService
-    //private NetconfChangeListener netconfChangeListener;
     private DeviceManagerApiServiceImpl rpcApiService;
     private PerformanceManagerImpl performanceManager;
     private DcaeProviderClient dcaeProviderClient;
     private AaiProviderClient aaiProviderClient;
-    private DcaeForwarderInternal aotsDcaeForwarder;
+    private DcaeForwarderImpl aotsDcaeForwarder;
     private DeviceMonitor deviceMonitor;
     private MaintenanceServiceImpl maintenanceService;
     private DevicemanagerNotificationDelayService notificationDelayService;
@@ -112,14 +105,13 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     private ConnectionStatusHousekeepingService housekeepingService;
     private NetconfNodeStateService netconfNodeStateService;
     private DataProvider dataProvider;
-    //private HtDatabaseClient htDatabaseClient;
+
     // Handler
-    private RpcPushNotificationsHandler rpcPushNotificationsHandler;
     private DeviceManagerNetconfConnectHandler forTest;
+
     // Attributes
-    private final Object networkelementLock;
     private final ConcurrentHashMap<String, NetworkElement> networkElementRepresentations;
-    private final List<MyNetworkElementFactory<? extends NetworkElementFactory>> factoryList;
+    private final List<NetworkElementFactory> factoryList;
 
     private DeviceManagerDatabaseNotificationService deviceManagerDatabaseAndNotificationService;
     private ClusterSingletonServiceRegistration cssRegistration;
@@ -133,13 +125,11 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         LOG.info("Creating provider for {}", APPLICATION_NAME);
         this.devicemanagerInitializationOk = false;
         this.factoryList = new CopyOnWriteArrayList<>();
-        this.networkelementLock = new Object();
         this.networkElementRepresentations = new ConcurrentHashMap<>();
 
         this.dataBroker = null;
         this.mountPointService = null;
         this.rpcProviderRegistry = null;
-        this.notificationPublishService = null;
         this.clusterSingletonServiceProvider = null;
         this.websocketmanagerService = null;
         this.iEntityDataProvider = null;
@@ -156,7 +146,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     }
 
     public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
-        this.notificationPublishService = notificationPublishService;
     }
 
     public void setMountPointService(MountPointService mountPointService) {
@@ -175,10 +164,10 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         this.iEntityDataProvider = iEntityDataProvider;
     }
 
-    @SuppressWarnings({ "deprecation", "null" })
-    public void init() throws Exception {
+    public void init() {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
+
         this.iEntityDataProvider.setReadyStatus(false);
 
         this.dataProvider = iEntityDataProvider.getDataProvider();        // Get configuration
@@ -186,13 +175,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         ConfigurationFileRepresentation config = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
 
         this.notificationDelayService = new DevicemanagerNotificationDelayService(config);
-
-        //EsConfig dbConfig = new EsConfig(config);
-        //LOG.debug("esConfig=" + dbConfig.toString());
-        // Start database
-        // TODO Remove this database client
-        //this.htDatabaseClient = new HtDatabaseClient(dbConfig.getHosts());
-        //this.htDatabaseClient.waitForYellowStatus(DATABASE_TIMEOUT_MS);
 
         // start service for device maintenance service
         this.maintenanceService = new MaintenanceServiceImpl(iEntityDataProvider.getHtDatabaseMaintenance());
@@ -210,9 +192,10 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
         this.aotsDcaeForwarder = new DcaeForwarderImpl(null, dcaeProviderClient, maintenanceService);
 
-        this.deviceManagerDatabaseAndNotificationService = new DeviceManagerDatabaseNotificationService(dataProvider, maintenanceService,webSocketService, notificationDelayService, aotsDcaeForwarder);
+        this.deviceManagerDatabaseAndNotificationService = new DeviceManagerDatabaseNotificationService(dataProvider,
+                maintenanceService, webSocketService, notificationDelayService, aotsDcaeForwarder);
 
-        this.rpcPushNotificationsHandler = new RpcPushNotificationsHandler(webSocketService,
+        RpcPushNotificationsHandler rpcPushNotificationsHandler = new RpcPushNotificationsHandler(webSocketService,
                 dataProvider, aotsDcaeForwarder);
         this.odlEventListenerHandler = new ODLEventListenerHandler(myDbKeyNameExtended, webSocketService,
                 dataProvider, aotsDcaeForwarder);
@@ -224,7 +207,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         this.cssRegistration2 = this.clusterSingletonServiceProvider
                 .registerClusterSingletonService(this.housekeepingService);
         // PM
-        this.performanceManager = new PerformanceManagerImpl(60, this, new MicrowaveHistoricalPerformanceWriterService(dataProvider), config);
+        this.performanceManager = new PerformanceManagerImpl(60, this, dataProvider, config);
         // DM
         // DeviceMonitor has to be available before netconfSubscriptionManager is
         // configured
@@ -243,17 +226,9 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
                 resyncNetworkElementHouskeepingService, rpcPushNotificationsHandler);
 
         // netconfSubscriptionManager should be the last one because this is a callback
+
         // service
         LOG.debug("start NetconfSubscriptionManager Service");
-        // this.netconfSubscriptionManager = new
-        // NetconfSubscriptionManagerOfDeviceManager(this, dataBroker);
-        // this.netconfSubscriptionManager.register();
-
-        //---->>>>>>> OLD OLD OLD
-        //this.netconfChangeListener = new NetconfChangeListener(this, dataBroker);
-        //this.netconfChangeListener.register();
-
-        //---->>>>>>> NEW NEW NEW
         this.forTest = new DeviceManagerNetconfConnectHandler(netconfNodeStateService, odlEventListenerHandler,
                 deviceMonitor, this, factoryList);
 
@@ -270,10 +245,9 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         LOG.info("DeviceManagerImpl closing ...");
         close(performanceManager);
         close(dcaeProviderClient);
+        close(aotsDcaeForwarder);
         close(aaiProviderClient);
         close(deviceMonitor);
-        //close(htDatabaseClient);
-        //close(netconfChangeListener);
         close(maintenanceService);
         close(rpcApiService);
         close(notificationDelayService);
@@ -287,43 +261,21 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     @Override
     public @NonNull <L extends NetworkElementFactory> FactoryRegistration<L> registerNetworkElementFactory(@NonNull L factory) {
         LOG.info("Factory registration {}", factory.getClass().getName());
-        MyNetworkElementFactory<L> myFactory = new MyNetworkElementFactory<>(factory, (a,b,c) -> initDefault(a,b,c));
-        factoryList.add(myFactory);
+
+        factoryList.add(factory);
         return new FactoryRegistration<L>() {
 
             @Override
             public @NonNull L getInstance() {
-                return myFactory.getFactory();
+                return factory;
             }
 
             @Override
             public void close() {
-                factoryList.remove(myFactory);
+                factoryList.remove(factory);
             }
 
         };
-    }
-
-    /**
-     * Execute register command, for network element
-     * @param mountPointNodeName  of new network element
-     * @param mountPoint of new network element
-     * @param inNe that needs to register
-     */
-    private void initDefault(String mountPointNodeName, MountPoint mountPoint, NetworkElement inNe) {
-        // sendUpdateNotification(mountPointNodeName, nNode.getConnectionStatus(), nNode);
-
-        NetworkElement result;
-        synchronized (networkelementLock) {
-            result = networkElementRepresentations.put(mountPointNodeName, inNe);
-        }
-        if (result != null) {
-            LOG.warn("NE list was not empty as expected, but contained {} ", result.getNodeId());
-        } else {
-            deviceMonitor.deviceConnectMasterIndication(mountPointNodeName, inNe);
-            inNe.register(); // Call NE specific initialization
-            odlEventListenerHandler.connectIndication(mountPointNodeName, inNe.getDeviceType());
-        }
     }
 
     @SuppressWarnings("null")

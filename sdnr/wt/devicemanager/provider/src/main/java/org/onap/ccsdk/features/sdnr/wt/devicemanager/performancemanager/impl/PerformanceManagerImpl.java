@@ -18,9 +18,9 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl;
 
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl.config.PmConfig;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl.database.service.MicrowaveHistoricalPerformanceWriterService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class PerformanceManagerImpl implements PerformanceManager, AutoCloseable
     private PerformanceManagerTask task;
 
     public PerformanceManagerImpl(long seconds, NetconfNetworkElementService netconfNetworkElementService,
-            MicrowaveHistoricalPerformanceWriterService microwaveHistoricalPerformanceWriterService,
+            DataProvider microwaveHistoricalPerformanceWriterService,
             ConfigurationFileRepresentation config) {
 
         LOG.info("Construct {}", PerformanceManagerImpl.class.getSimpleName());
@@ -65,7 +65,7 @@ public class PerformanceManagerImpl implements PerformanceManager, AutoCloseable
     }
 
     @Override
-	public void registration(String mountPointNodeName, NetworkElement ne) {
+    public void registration(String mountPointNodeName, NetworkElement ne) {
         LOG.debug("Register {}",mountPointNodeName);
         if (task != null) {
             task.registration(mountPointNodeName, ne);

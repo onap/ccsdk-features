@@ -56,7 +56,7 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
     private final MountPointService mountPointService;
     private final ODLEventListenerHandler odlEventListenerHandler;
     private final DataProvider databaseClientEvents;
-    private @Nullable final DeviceMonitor deviceMonitor;
+    private final DeviceMonitor deviceMonitor;
     private final DeviceManagerImpl deviceManager;
 
     /** Thread is started to du the clean up action **/
@@ -87,7 +87,7 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
      * Async RPC Interface implementation
      */
     @Override
-    public @NonNull List<String> doClearCurrentFaultByNodename(@Nullable List<String> nodeNamesInput)
+    public @NonNull List<String> doClearCurrentFaultByNodename(@Nullable List<String> nodeNames)
             throws IllegalStateException {
 
         if (this.databaseClientEvents == null) {
@@ -97,11 +97,14 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
         if (threadDoClearCurrentFaultByNodename != null && threadDoClearCurrentFaultByNodename.isAlive()) {
             throw new IllegalStateException("A clear task is already active");
         } else {
+            List<String> nodeNamesInput;
 
             // Create list of mountpoints if input is empty, using the content in ES
-            if (nodeNamesInput == null || nodeNamesInput.size() <= 0) {
+            if (nodeNames == null || nodeNames.size() <= 0) {
                 nodeNamesInput = this.databaseClientEvents.getAllNodesWithCurrentAlarms();
-            }
+            } else {
+				nodeNamesInput = nodeNames;
+			}
 
             // Filter all mountpoints from input that were found and are known to this Cluster-node instance of
             // DeviceManager

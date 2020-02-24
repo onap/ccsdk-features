@@ -20,6 +20,8 @@
  ******************************************************************************/
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
+import java.io.File;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -66,6 +68,9 @@ public class TestDeviceMonitor extends Mockito {
     @AfterClass
     public static void after() throws Exception {
         deviceMonitor.close();
+        File f = new File(CONFIGURATIONTESTFILE);
+        if (f.exists())
+        	f.delete();
     }
 
 }
