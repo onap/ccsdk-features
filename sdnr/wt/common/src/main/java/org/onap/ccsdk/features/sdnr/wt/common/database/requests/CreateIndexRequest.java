@@ -23,41 +23,42 @@ import org.json.JSONObject;
 //https://github.com/elastic/elasticsearch/blob/6.4/rest-api-spec/src/main/resources/rest-api-spec/api/indices.put_mapping.json
 public class CreateIndexRequest extends BaseRequest{
 
-	private JSONObject settings;
-	private JSONObject mappings;
+    private JSONObject settings;
+    private JSONObject mappings;
 
-	public CreateIndexRequest(String index) {
-		super("PUT","/"+index);
-		this.mappings=new JSONObject();
-	}
+    public CreateIndexRequest(String index) {
+        super("PUT","/"+index);
+        this.mappings=new JSONObject();
+    }
 
-	private void setRequest() {
-	
-		JSONObject o=new JSONObject();
-		if(this.mappings!=null) {
-			o.put("mappings", this.mappings);
-		}
-		if(this.settings!=null) {
-			o.put("settings", this.settings);
-		}
-		super.setQuery(o);
-	}
-	public void mappings(JSONObject mappings) {
-		this.mappings=mappings;
-		this.setRequest();
-	}
+    private void setRequest() {
 
-	public void settings(JSONObject settings) {
-		this.settings = settings;
-		this.setRequest();
-	}
+        JSONObject o=new JSONObject();
+        if(this.mappings!=null) {
+            o.put("mappings", this.mappings);
+        }
+        if(this.settings!=null) {
+            o.put("settings", this.settings);
+        }
+        super.setQuery(o);
+    }
+    @SuppressWarnings("hiding")
+    public void mappings(JSONObject mappings) {
+        this.mappings=mappings;
+        this.setRequest();
+    }
 
-	public boolean hasMappings() {
-		return this.mappings!=null;
-	}
+    public void settings(JSONObject settings) {
+        this.settings = settings;
+        this.setRequest();
+    }
 
-	public boolean hasSettings() {
-		return this.settings!=null;
-	}
+    public boolean hasMappings() {
+        return this.mappings!=null;
+    }
+
+    public boolean hasSettings() {
+        return this.settings!=null;
+    }
 
 }

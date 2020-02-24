@@ -17,6 +17,10 @@
  ******************************************************************************/
 package org.onap.ccsdk.features.sdnr.wt.common.database.config;
 
+import java.text.ParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class HostInfo {
 
 	public enum Protocol{
@@ -74,5 +78,25 @@ public class HostInfo {
 
 	public static HostInfo getDefault() {
 		return new HostInfo("localhost",9200,Protocol.HTTP);
+	}
+
+	/**
+	 * @param dbUrl
+	 * @return
+	 */
+	public static HostInfo parse(String dbUrl) throws ParseException{
+		final String regex = "^(https?):\\/\\/([^:]*):?([0-9]{0,5})$";
+		final Pattern pattern = Pattern.compile(regex);
+		final Matcher matcher = pattern.matcher(dbUrl);
+		if(!matcher.find() || matcher.groupCount()<2) {
+			throw new ParseException("url "+dbUrl+" not parseable", 0);
+		}
+		Protocol p = Protocol.getValueOf(matcher.group(1));
+		String host = matcher.group(2);
+		int port = p==Protocol.HTTP?80:443;
+		if(matcher.groupCount()>2) {
+			port=Integer.parseInt(matcher.group(3));
+		}
+		return new HostInfo(host,port,p);
 	}
 }

@@ -24,7 +24,9 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterHealthRequest;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.CreateAliasRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.CreateIndexRequest;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteAliasRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteRequest;
@@ -36,12 +38,14 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.UpdateByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.UpdateRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterHealthResponse;
+import org.onap.ccsdk.features.sdnr.wt.common.database.responses.CreateAliasResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.CreateIndexResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteByQueryResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteIndexResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.GetResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.IndexResponse;
+import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ListIndicesResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.NodeStatsResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.UpdateByQueryResponse;
@@ -53,6 +57,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -95,6 +100,53 @@ public class TestDbRequests {
 	@Test
 	public void testCount() {
 
+	}
+	@Test
+	public void testIndexAndAliasList() {
+		final String ALIAS="asdoi32kmasd";
+		final String IDX=ALIAS+"-v1";
+		CreateIndexRequest request = new CreateIndexRequest(IDX);
+		CreateIndexResponse response = null;
+		try {
+			response = dbClient.createIndex(request);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		assertNotNull(response);
+
+		CreateAliasRequest request3 = new CreateAliasRequest(IDX,ALIAS);
+		CreateAliasResponse response3 = null;
+		try {
+			response3 = dbClient.createAlias(request3);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		assertNotNull(response3);
+		assertTrue(response3.isResponseSucceeded());
+		
+		assertTrue("index not existing", dbClient.isExistsIndex(IDX));
+		ListIndicesResponse response2=null;
+		try {
+			 response2 = dbClient.getIndices();
+		} catch (ParseException | IOException e) {
+			fail(e.getMessage());
+		}
+		assertNotNull(response2);
+		assertNotNull(response2.getEntries());
+		assertTrue(response2.getEntries().size()>0);
+		
+		DeleteIndexRequest request11 = new DeleteIndexRequest(IDX);
+
+		DeleteIndexResponse response11 = null;
+		try {
+			response11 = dbClient.deleteIndex(request11);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		assertNotNull(response11);
+		assertFalse("index still existing", dbClient.isExistsIndex(IDX));
+		this.deleteAlias(IDX, ALIAS);
+		this.deleteIndex(IDX);
 	}
 
 	@Test
@@ -400,6 +452,13 @@ public class TestDbRequests {
 		assertNotNull(stats);
 		System.out.println(stats.getNodesInfo());
 		System.out.println(stats.getNodeStatistics());
+	}
+	private void deleteAlias(String idx,String alias) {
+		try {
+			dbClient.deleteAlias( new DeleteAliasRequest(idx,alias));
+		} catch (IOException e) {
+
+		}
 	}
 	private void deleteIndex(String idx) {
 		try {

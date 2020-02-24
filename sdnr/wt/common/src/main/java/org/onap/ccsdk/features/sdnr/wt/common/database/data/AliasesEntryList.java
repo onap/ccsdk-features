@@ -2,7 +2,7 @@
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -15,44 +15,32 @@
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.common.database;
+package org.onap.ccsdk.features.sdnr.wt.common.database.data;
 
-import org.json.JSONObject;
+import java.util.ArrayList;
 
-public class SearchHit {
+/**
+ * @author Michael Dürre
+ *
+ */
+public class AliasesEntryList extends ArrayList<AliasesEntry>{
 
-    private final String index;
-    private final String type;
-    private final String id;
-    private final JSONObject source;
-    private final JSONObject raw;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    public SearchHit(JSONObject o) {
-        this.raw = o;
-        this.index=o.getString("_index");
-        this.type = o.getString("_type");
-        this.id = o.getString("_id");
-        this.source = o.getJSONObject("_source");
-    }
-
-    public String getIndex() {
-        return this.index;
-    }
-    public String getType() {
-        return this.type;
-    }
-    public String getId() {
-        return this.id;
-    }
-
-    public JSONObject getSource() {
-        return this.source;
-    }
-    public String getSourceAsString() {
-        return this.source.toString();
-    }
-    public JSONObject getRaw() {
-        return this.raw;
-    }
+	/**
+	 * @param alias
+	 * @return
+	 */
+	public AliasesEntry findByAlias(String alias) {
+		for(AliasesEntry e:this) {
+			if(e.getAlias().equals(alias)) {
+				return e;
+			}
+		}
+		return null;
+	}
 
 }

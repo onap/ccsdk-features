@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.CreateAliasRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.GetIndexRequest;
@@ -35,6 +36,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.RefreshIndexRequ
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.UpdateByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.UpdateRequest;
+import org.onap.ccsdk.features.sdnr.wt.common.database.responses.CreateIndexResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteByQueryResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.GetResponse;
@@ -293,5 +295,5 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 		}
 		return del;
 	}
-
+	
 }

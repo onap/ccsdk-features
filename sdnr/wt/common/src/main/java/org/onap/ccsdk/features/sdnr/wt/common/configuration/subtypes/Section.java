@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.exception.ConversionException;
 import org.slf4j.Logger;
@@ -53,12 +55,36 @@ public class Section {
         return this.getProperty(key, "");
     }
 
-    public String getProperty(String key, String defValue) {
-        if (values.containsKey(key)) {
-            return values.get(key).getValue();
-        }
-        return defValue;
-    }
+	public String getProperty(final String key, final String defValue) {
+		String value=defValue;
+		LOG.debug("try to get property for {} with def {}",key,defValue);
+		if (values.containsKey(key)) {
+			value = values.get(key).getValue();
+		}
+		//try to read env var
+		if (value != null && value.contains("${")) {
+			
+			LOG.debug("try to find env var(s) for {}",value);
+			final String regex = "(\\$\\{[A-Z]+\\})";
+			final Pattern pattern = Pattern.compile(regex);
+			final Matcher matcher = pattern.matcher(value);
+			String tmp=new String(value);
+			while(matcher.find() && matcher.groupCount()>0) {
+				final String mkey = matcher.group(1);
+				if(mkey!=null) {
+					try {
+						LOG.debug("match found for v={} and env key={}",tmp,mkey);
+						String env=System.getenv(mkey.substring(2,mkey.length()-1));
+						tmp = tmp.replace(mkey, env==null?"":env );	
+					} catch (SecurityException e) {
+						LOG.warn("unable to read env {}: {}", value, e);
+					}
+				}
+			}
+			value=tmp;
+		}
+		return value;
+	}
 
     public String getName() {
         return name;

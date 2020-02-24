@@ -24,53 +24,54 @@ import org.json.JSONObject;
 
 public class ClusterHealthResponse extends BaseResponse {
 
-	public static final String HEALTHSTATUS_GREEN = "green";
-	public static final String HEALTHSTATUS_YELLOW = "yellow";
-	public static final String HEALTSTATUS_RED = "red";
+    public static final String HEALTHSTATUS_GREEN = "green";
+    public static final String HEALTHSTATUS_YELLOW = "yellow";
+    public static final String HEALTSTATUS_RED = "red";
 
-	private String status;
-	private boolean timedOut;
+    private String status;
+    private boolean timedOut;
 
-	/*
-	 * "cluster_name": "docker-cluster", "status": "yellow", "timed_out": false,
-	 * "number_of_nodes": 1, "number_of_data_nodes": 1, "active_primary_shards": 5,
-	 * "active_shards": 5, "relocating_shards": 0, "initializing_shards": 0,
-	 * "unassigned_shards": 5, "delayed_unassigned_shards": 0,
-	 * "number_of_pending_tasks": 0, "number_of_in_flight_fetch": 0,
-	 * "task_max_waiting_in_queue_millis": 0, "active_shards_percent_as_number": 50
-	 */
-	public ClusterHealthResponse(Response response) throws UnsupportedOperationException, IOException, JSONException {
-		super(response);
-		
-		JSONObject o = this.getJson(response);
-		if (o != null) {
-			this.status = o.getString("status");
-			this.timedOut = o.getBoolean("timed_out");
-		}
-	}
+    /*
+     * "cluster_name": "docker-cluster", "status": "yellow", "timed_out": false,
+     * "number_of_nodes": 1, "number_of_data_nodes": 1, "active_primary_shards": 5,
+     * "active_shards": 5, "relocating_shards": 0, "initializing_shards": 0,
+     * "unassigned_shards": 5, "delayed_unassigned_shards": 0,
+     * "number_of_pending_tasks": 0, "number_of_in_flight_fetch": 0,
+     * "task_max_waiting_in_queue_millis": 0, "active_shards_percent_as_number": 50
+     */
+    public ClusterHealthResponse(Response response) throws UnsupportedOperationException, IOException, JSONException {
+        super(response);
 
-	public boolean isTimedOut() {
-		return this.timedOut;
-	}
-	public boolean isStatusMinimal(String status) {
-		if (status == null) {
-			return true;
-		}
-		if (this.status.equals(HEALTHSTATUS_GREEN)) {
-			return true;
-		}
-		if (this.status.equals(HEALTHSTATUS_YELLOW) && !status.equals(HEALTHSTATUS_GREEN)) {
-			return true;
-		}
-		if (this.status.equals(status)) {
-			return true;
-		}
-		return false;
+        JSONObject o = this.getJson(response);
+        if (o != null) {
+            this.status = o.getString("status");
+            this.timedOut = o.getBoolean("timed_out");
+        }
+    }
 
-	}
+    public boolean isTimedOut() {
+        return this.timedOut;
+    }
+    @SuppressWarnings("hiding")
+    public boolean isStatusMinimal(String status) {
+        if (status == null) {
+            return true;
+        }
+        if (this.status.equals(HEALTHSTATUS_GREEN)) {
+            return true;
+        }
+        if (this.status.equals(HEALTHSTATUS_YELLOW) && !status.equals(HEALTHSTATUS_GREEN)) {
+            return true;
+        }
+        if (this.status.equals(status)) {
+            return true;
+        }
+        return false;
 
-	public String getStatus() {
-		return this.status;
-	}
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
 
 }

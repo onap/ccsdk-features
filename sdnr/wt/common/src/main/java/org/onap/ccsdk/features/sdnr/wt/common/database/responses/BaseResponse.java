@@ -18,9 +18,11 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database.responses;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -28,48 +30,61 @@ import org.slf4j.LoggerFactory;
 
 public class BaseResponse {
 	private static final Logger LOG = LoggerFactory.getLogger(BaseResponse.class);
-	private int responseCode;
 
-	public int getResponseCode() {
+	private final int responseCode;
+
+	BaseResponse(Response response) {
+		this.responseCode = response != null ? response.getStatusLine().getStatusCode() : 0;
+	}
+
+	int getResponseCode() {
 		return this.responseCode;
 	}
+
 	public boolean isResponseSucceeded() {
-		return this.responseCode<300;
+		return this.responseCode < 300;
 	}
-	public BaseResponse() {
-	}
-	public BaseResponse(Response response) {
-		this.responseCode = response!=null?response.getStatusLine().getStatusCode():0;
-	}
-	protected JSONObject getJson(Response response) {
-		Scanner s;
-		JSONObject o=null;
+
+	JSONObject getJson(Response response) {
 		try {
-			//input stream used because Scanner ignored whitespaces
-			InputStream is = response.getEntity().getContent();
-			long len;
-			int BUFSIZE=1024;
-			byte[] buffer = new byte[BUFSIZE];
-			StringBuffer sresponse = new StringBuffer();
-			 while (true) {
-                 len = is.read(buffer, 0, BUFSIZE);
-                 if (len <= 0) {
-                     break;
-                 }
-
-                 sresponse.append(new String(buffer));
-             }
-
-			LOG.debug("parsing response={}",sresponse);
-			o = new JSONObject(sresponse.toString());
+			String sresponse = EntityUtils.toString(response.getEntity());
+			LOG.debug("parsing response={}", sresponse);
+			return new JSONObject(sresponse);
 		} catch (UnsupportedOperationException | IOException e) {
-			LOG.warn("error parsing es response: {}",e.getMessage());
+			LOG.warn("error parsing es response: {}", e.getMessage());
+			return null;
 		}
 
-		return o;
 	}
-	protected JSONObject getJson(String json) {
+
+	JSONObject getJson(String json) {
 		return new JSONObject(json);
 	}
 
+	/**
+	 * @param response
+	 * @return
+	 */
+	List<String> getLines(Response response){
+		return this.getLines(response,true);
+	}
+	List<String> getLines(Response response,boolean ignoreEmpty) {
+		try {
+			String sresponse = EntityUtils.toString(response.getEntity());
+			LOG.debug("parsing response={}", sresponse);
+			String[] hlp = sresponse.split("\n");
+			List<String> lines=new ArrayList<String>();
+			for(String h:hlp) {
+				if(ignoreEmpty && h.trim().length()==0) {
+					continue;
+				}
+				lines.add(h);
+			}
+			return lines;
+		} catch (UnsupportedOperationException | IOException e) {
+			LOG.warn("error parsing es response: {}", e.getMessage());
+			return null;
+		}
+
+	}
 }

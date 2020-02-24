@@ -2,7 +2,7 @@
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -15,44 +15,35 @@
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.common.database;
+package org.onap.ccsdk.features.sdnr.wt.common.database.data;
 
-import org.json.JSONObject;
+import java.text.ParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class SearchHit {
+/**
+ * @author Michael Dürre
+ *
+ */
+public class AliasesEntry {
+	private static final String regex = "^([^\\ ]+)[\\ ]+([^\\ ]+)[\\ ]+.*$";
+	private static final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 
-    private final String index;
-    private final String type;
-    private final String id;
-    private final JSONObject source;
-    private final JSONObject raw;
-
-    public SearchHit(JSONObject o) {
-        this.raw = o;
-        this.index=o.getString("_index");
-        this.type = o.getString("_type");
-        this.id = o.getString("_id");
-        this.source = o.getJSONObject("_source");
-    }
-
-    public String getIndex() {
-        return this.index;
-    }
-    public String getType() {
-        return this.type;
-    }
-    public String getId() {
-        return this.id;
-    }
-
-    public JSONObject getSource() {
-        return this.source;
-    }
-    public String getSourceAsString() {
-        return this.source.toString();
-    }
-    public JSONObject getRaw() {
-        return this.raw;
-    }
-
+	
+	public String getAlias() {
+		return alias;
+	}
+	public String getIndex() {
+		return index;
+	}
+	private final String alias;
+	private final String index;
+	public AliasesEntry(String line) throws ParseException {
+		final Matcher matcher = pattern.matcher(line);
+		if (!matcher.find() || matcher.groupCount() < 2) {
+			throw new ParseException("unable to parse string:" + line, 0);
+		}
+		this.alias = matcher.group(1);
+		this.index = matcher.group(2);
+	}
 }

@@ -15,44 +15,13 @@
  * the License.
  * ============LICENSE_END==========================================================================
  ******************************************************************************/
-package org.onap.ccsdk.features.sdnr.wt.common.database;
+package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-import org.json.JSONObject;
+//https://github.com/elastic/elasticsearch/blob/6.4/rest-api-spec/src/main/resources/rest-api-spec/api/indices.delete_alias.json
+public class DeleteAliasRequest extends BaseRequest{
 
-public class SearchHit {
-
-    private final String index;
-    private final String type;
-    private final String id;
-    private final JSONObject source;
-    private final JSONObject raw;
-
-    public SearchHit(JSONObject o) {
-        this.raw = o;
-        this.index=o.getString("_index");
-        this.type = o.getString("_type");
-        this.id = o.getString("_id");
-        this.source = o.getJSONObject("_source");
-    }
-
-    public String getIndex() {
-        return this.index;
-    }
-    public String getType() {
-        return this.type;
-    }
-    public String getId() {
-        return this.id;
-    }
-
-    public JSONObject getSource() {
-        return this.source;
-    }
-    public String getSourceAsString() {
-        return this.source.toString();
-    }
-    public JSONObject getRaw() {
-        return this.raw;
-    }
+	public DeleteAliasRequest(String index,String alias) {
+		super("DELETE","/"+index+"/_alias/"+alias);
+	}
 
 }
