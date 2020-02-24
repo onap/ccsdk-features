@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Damian Nowak <damian.nowak@nokia.com>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Code-Review+2: KAPIL SINGAL <ks220y@att.com>
+Submitted-by: KAPIL SINGAL <ks220y@att.com>
+Submitted-at: Mon, 24 Feb 2020 13:29:08 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/102164
+Project: ccsdk/features
+Branch: refs/heads/master
