@@ -24,9 +24,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.PerformanceDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl.database.service.MicrowaveHistoricalPerformanceWriterService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class PerformanceManagerTask implements Runnable {
     private int tickCounter = 0;
 
     private final ConcurrentHashMap<String, PerformanceDataProvider> queue = new ConcurrentHashMap<>();
-    private final MicrowaveHistoricalPerformanceWriterService databaseService;
+    private final DataProvider databaseService;
     private final ScheduledExecutorService scheduler;
     private final long seconds;
 
@@ -57,7 +57,7 @@ public class PerformanceManagerTask implements Runnable {
      */
 
     public PerformanceManagerTask(long seconds,
-            MicrowaveHistoricalPerformanceWriterService microwaveHistoricalPerformanceWriterService,
+            DataProvider microwaveHistoricalPerformanceWriterService,
             NetconfNetworkElementService netconfNetworkElementService) {
 
         LOG.debug("Init task {}", PerformanceManagerTask.class.getSimpleName());
@@ -150,7 +150,7 @@ public class PerformanceManagerTask implements Runnable {
                 Optional<PerformanceDataLtp> allPm = actualNE.getLtpHistoricalPerformanceData();
                 if (allPm.isPresent()) {
                     LOG.debug("{} {} Got PM list. Start write to DB", LOGMARKER, tickCounter);
-                    databaseService.writePM(allPm.get());
+                    databaseService.doWritePerformanceData(allPm.get().getList());
                 }
                 LOG.debug("{} {} PM List end.", LOGMARKER, tickCounter);
             } catch (Exception e) {

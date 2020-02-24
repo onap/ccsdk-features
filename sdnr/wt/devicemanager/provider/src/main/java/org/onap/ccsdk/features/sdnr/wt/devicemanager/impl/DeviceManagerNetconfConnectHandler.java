@@ -48,7 +48,7 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
 
     private final @NonNull ODLEventListenerHandler odlEventListenerHandler;
     private final @NonNull DeviceMonitor deviceMonitor;
-    private final @NonNull List<MyNetworkElementFactory<? extends NetworkElementFactory>> factoryList;
+    private final @NonNull List<NetworkElementFactory> factoryList;
     private final @NonNull DeviceManagerServiceProvider serviceProvider;
 
     private final Object networkelementLock;
@@ -57,7 +57,7 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
     public DeviceManagerNetconfConnectHandler(@NonNull NetconfNodeStateService netconfNodeStateService,
             @NonNull ODLEventListenerHandler odlEventListenerHandler, @NonNull DeviceMonitor deviceMonitor,
             @NonNull DeviceManagerServiceProvider serviceProvider,
-            @NonNull List<MyNetworkElementFactory<? extends NetworkElementFactory>> factoryList) {
+            @NonNull List<NetworkElementFactory> factoryList) {
 
         HtAssert.nonnull(netconfNodeStateService, this.odlEventListenerHandler = odlEventListenerHandler,
                 this.deviceMonitor = deviceMonitor, this.serviceProvider = serviceProvider,
@@ -95,8 +95,8 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
         NetconfNode netconfNode = acessor.getNetconfNode();
         sendUpdateNotification(mountPointNodeName, netconfNode.getConnectionStatus(), netconfNode);
 
-        for ( MyNetworkElementFactory<? extends NetworkElementFactory> f : factoryList) {
-            Optional<NetworkElement> optionalNe = f.getFactory().create(acessor, serviceProvider);
+        for ( NetworkElementFactory f : factoryList) {
+            Optional<NetworkElement> optionalNe = f.create(acessor, serviceProvider);
             if (optionalNe.isPresent()) {
                 // sendUpdateNotification(mountPointNodeName, nNode.getConnectionStatus(), nNode);
                 NetworkElement inNe = optionalNe.get();
@@ -150,11 +150,11 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
     @Override
     public void close() {
         if (registerNetconfNodeConnectListener != null) {
-			registerNetconfNodeConnectListener.close();
-		}
+            registerNetconfNodeConnectListener.close();
+        }
         if (registerNetconfNodeStateListener != null) {
-			registerNetconfNodeStateListener.close();
-		}
+            registerNetconfNodeStateListener.close();
+        }
     }
 
     /*--------------------------------------------

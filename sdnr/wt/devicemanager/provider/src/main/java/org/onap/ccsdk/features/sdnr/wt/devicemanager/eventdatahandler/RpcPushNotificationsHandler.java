@@ -45,7 +45,7 @@ public class RpcPushNotificationsHandler implements PushNotifications {
 
     private static final Logger LOG = LoggerFactory.getLogger(RpcPushNotificationsHandler.class);
 
-    private static String OWNKEYNAME = "VES";
+    private static final String OWNKEYNAME = "VES";
     private final WebSocketServiceClientInternal webSocketService;
     private final DataProvider databaseService;
     private final DcaeForwarderInternal aotsDcaeForwarder;
