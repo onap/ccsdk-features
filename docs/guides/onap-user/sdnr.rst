@@ -2,8 +2,8 @@
    :depth: 3
 ..
 
-SDN controller for 'Radio' (SDN-R)
-==================================
+SDN controller persona for 'Radio' (SDN-R)
+==========================================
 
 SDN-R adds features and functionality to the OpenDaylight-based ONAP
 controller 'CCSDK/SDNC'. It is built on the Common Controller Framework
