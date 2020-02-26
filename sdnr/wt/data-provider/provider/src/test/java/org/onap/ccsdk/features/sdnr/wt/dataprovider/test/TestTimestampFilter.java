@@ -32,8 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.FilterBuilder;
 
 public class TestTimestampFilter {
-
-
 	
 	@Test
 	public void testTimestampRange() {
@@ -121,6 +119,23 @@ public class TestTimestampFilter {
 		filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY_TIMESTAMP).setFiltervalue("2050-10-14T12:42:56*").build());
 		query=  QueryByFilter.fromFilter(filters );
 		assertRange(query.getInner(), PROPERTY_TIMESTAMP, "2050-10-14T12:42:56.0Z", "2050-10-14T12:42:57.0Z");
+	}
+	
+	@Test
+	public void testExtra() {
+		final String PROPERTY_TIMESTAMP = "end";
+		List<Filter> filters = null;
+		QueryBuilder query=  null;
+		filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY_TIMESTAMP).setFiltervalue("2020-02-19T*").build());
+		query=  QueryByFilter.fromFilter(filters );
+		assertRange(query.getInner(), PROPERTY_TIMESTAMP, "2020-02-19T00:00:00.0Z", "2020-02-20T00:00:00.0Z");
+		filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY_TIMESTAMP).setFiltervalue("2020-02-19*").build());
+		query=  QueryByFilter.fromFilter(filters );
+		assertRange(query.getInner(), PROPERTY_TIMESTAMP, "2020-02-19T00:00:00.0Z", "2020-02-20T00:00:00.0Z");
+		filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY_TIMESTAMP).setFiltervalue("2020*").build());
+		query=  QueryByFilter.fromFilter(filters );
+		assertRange(query.getInner(), PROPERTY_TIMESTAMP, "2020-01-01T00:00:00.0Z", "2021-01-01T00:00:00.0Z");
+		
 	}
 	private void assertRange(JSONObject rangeQuery,String property,String lower,String upper) {
 		System.out.println("==test for "+rangeQuery.toString());

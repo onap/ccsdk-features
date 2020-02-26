@@ -17,6 +17,7 @@
  ******************************************************************************/
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 public class QueryByFilter {
 
      private static final Logger LOG = LoggerFactory.getLogger(DataObjectAcessorPm.class);
+	 private static final List<String> timestampValueNames = Arrays.asList("timestamp","start","end");
 
      private QueryByFilter() {
          //Hide
@@ -276,7 +278,7 @@ public class QueryByFilter {
             //    v=v.toLowerCase();
             }
             if (DbFilter.hasSearchParams(v)) {
-                if(p!=null && "timestamp".equals(p.toLowerCase())) {
+                if(p!=null && timestampValueNames.contains(p.toLowerCase())) {
                     query = fromTimestampSearchFilter(p,v);
                     if(query!=null) {
                         return query;
@@ -311,7 +313,7 @@ public class QueryByFilter {
                 //    v=v.toLowerCase();
                 }
                 if(DbFilter.hasSearchParams(v)) {
-                    if(p!=null && "timestamp".equals(p.toLowerCase())) {
+                    if(p!=null && timestampValueNames.contains(p.toLowerCase())) {
                         tmpQuery=fromTimestampSearchFilter(p,v);
                         if(tmpQuery!=null) {
                             query.must(tmpQuery);
