@@ -22,7 +22,7 @@ import java.util.Date;
 public interface ArchiveCleanProvider {
 
     /**
-     * Remove all index data older, than specified
+     * Remove all index data older, than specified from faultlog and eventlog
      * @param olderAreOutdated time to specify older elements
      * @return number of removed elements
      */

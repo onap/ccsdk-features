@@ -120,6 +120,7 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
             }
         }
 
+
     }
 
     /**
@@ -153,6 +154,7 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
      * @param mountPointNodeName
      * @return
      */
+    @SuppressWarnings("null")
     private boolean isRequireNe(String mountPointNodeName) {
         NetworkElementConnectionEntity ne = null;
         if (requiredNeRW != null) {
@@ -161,7 +163,11 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
         } else {
             LOG.warn("cannot read db. no db reader writer initialized");
         }
-        return ne != null;
+        if (ne != null && ne.isIsRequired() != null) {
+            return ne.isIsRequired();
+        } else {
+            return false;
+        }
     }
 
 }

@@ -167,6 +167,16 @@ public interface DatabaseClient {
      */
     SearchResult<SearchHit> doReadAllJsonData(String dataTypeName, boolean ignoreException);
 
+	/**
+	 * @param alias
+	 * @param dataTypeName
+	 * @param queryBuilder
+	 * @param ignoreException
+	 * @return
+	 */
+	SearchResult<SearchHit> doReadByQueryJsonData(String alias, String dataTypeName, QueryBuilder queryBuilder,
+			boolean ignoreException);
+
 
 
 }
