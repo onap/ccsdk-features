@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database.data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Michael Dürre
@@ -41,6 +42,20 @@ public class IndicesEntryList extends ArrayList<IndicesEntry>{
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @param indices
+	 * @return
+	 */
+	public IndicesEntryList subList(List<String> indices) {
+		IndicesEntryList sublist = new IndicesEntryList();
+		for(IndicesEntry e:this) {
+			if(indices.contains(e.getName())) {
+				sublist.add(e);
+			}
+		}
+		return sublist;
 	}
 
 }

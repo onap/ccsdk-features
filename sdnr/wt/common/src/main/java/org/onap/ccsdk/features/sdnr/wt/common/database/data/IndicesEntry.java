@@ -32,7 +32,10 @@ public class IndicesEntry {
 
 	private static final String regex = "^(yellow|red|green)[\\ ]+([^\\ ]*)[\\ ]+([^\\ ]*)[\\ ]+([^\\ ]*)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([^\\ ]+)[\\ ]+([^\\ ]+)$";
 	private static final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-	
+	//for ES 2.2.0
+	private static final String regexOld = "^(yellow|red|green)[\\ ]+([^\\ ]*)[\\ ]+([^\\ ]*)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([^\\ ]+)[\\ ]+([^\\ ]+)$";
+	private static final Pattern patternOld = Pattern.compile(regexOld, Pattern.MULTILINE);
+
 	private final String status;
 	private final String status2;
 	private final String name;
@@ -85,20 +88,33 @@ public class IndicesEntry {
 	}
 
 	public IndicesEntry(String line) throws ParseException {
-		final Matcher matcher = pattern.matcher(line);
-		if(!matcher.find() || matcher.groupCount()<10) {
-			throw new ParseException("unable to parse string:" +line,0);
+		Matcher matcher = pattern.matcher(line.trim());
+		if (!matcher.find() || matcher.groupCount() < 10) {
+			matcher = patternOld.matcher(line.trim());
+			if (!matcher.find() || matcher.groupCount() < 9) {
+				throw new ParseException("unable to parse string:" + line, 0);
+			}
+			this.status = matcher.group(1);
+			this.status2 = matcher.group(2);
+			this.name = matcher.group(3);
+			this.hash = "";
+			this.shards = Integer.parseInt(matcher.group(4));
+			this.replicas = Integer.parseInt(matcher.group(5));
+			this.c1 = Integer.parseInt(matcher.group(6));
+			this.c2 = Integer.parseInt(matcher.group(7));
+			this.size1 = matcher.group(8);
+			this.size2 = matcher.group(9);
+		} else {
+			this.status = matcher.group(1);
+			this.status2 = matcher.group(2);
+			this.name = matcher.group(3);
+			this.hash = matcher.group(4);
+			this.shards = Integer.parseInt(matcher.group(5));
+			this.replicas = Integer.parseInt(matcher.group(6));
+			this.c1 = Integer.parseInt(matcher.group(7));
+			this.c2 = Integer.parseInt(matcher.group(8));
+			this.size1 = matcher.group(9);
+			this.size2 = matcher.group(10);
 		}
-		this.status = matcher.group(1);
-		this.status2 = matcher.group(2);
-		this.name = matcher.group(3);
-		this.hash = matcher.group(4);
-		this.shards = Integer.parseInt(matcher.group(5));
-		this.replicas = Integer.parseInt(matcher.group(6));
-		this.c1 = Integer.parseInt(matcher.group(7));
-		this.c2 = Integer.parseInt(matcher.group(8));
-		this.size1 = matcher.group(9);
-		this.size2 = matcher.group(10);
-		
 	}
 }

@@ -18,18 +18,28 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
+
+import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
+import org.elasticsearch.client.RestClientBuilder.RequestConfigCallback;
 import org.json.JSONException;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo.Protocol;
@@ -70,252 +80,275 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.responses.RefreshIndexRes
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.UpdateByQueryResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.UpdateResponse;
+import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExtRestClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ExtRestClient.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ExtRestClient.class);
 
-    private class BasicAuthHttpClientConfigCallback implements HttpClientConfigCallback {
+	private class BasicAuthHttpClientConfigCallback implements HttpClientConfigCallback {
 
-        private final String basicAuthUsername;
-        private final String basicAuthPassword;
+		private final String basicAuthUsername;
+		private final String basicAuthPassword;
+		private final boolean trustAll;
 
-        BasicAuthHttpClientConfigCallback(String username, String password) {
-            this.basicAuthUsername = username;
-            this.basicAuthPassword = password;
-        }
+		BasicAuthHttpClientConfigCallback(String username, String password, boolean trustAll) {
+			this.basicAuthUsername = username;
+			this.basicAuthPassword = password;
+			this.trustAll = trustAll;
+		}
 
-        @Override
-        public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-            if (basicAuthPassword == null || basicAuthUsername == null) {
-                return httpClientBuilder;
-            }
-            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(AuthScope.ANY,
-                    new UsernamePasswordCredentials(basicAuthUsername, basicAuthPassword));
+		@Override
+		public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+			HttpAsyncClientBuilder httpAsyncClientBuilder = null;
+			try {
+				httpAsyncClientBuilder = httpClientBuilder.setSSLContext(BaseHTTPClient.setupSsl(this.trustAll));
+			} catch (NoSuchAlgorithmException | KeyManagementException | UnrecoverableKeyException | CertificateException | KeyStoreException | InvalidKeySpecException | IOException e) {
+				LOG.warn("unable to init ssl context for db client: {}",e.getMessage());
+			}
+			if (basicAuthPassword == null || basicAuthUsername == null) {
+				return httpAsyncClientBuilder;
+			}
+			final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+			credentialsProvider.setCredentials(AuthScope.ANY,
+					new UsernamePasswordCredentials(basicAuthUsername, basicAuthPassword));
 
-            return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-        }
+			return httpAsyncClientBuilder == null ? httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
+					: httpAsyncClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+		}
 
-    }
-//    private class SSLCercAuthHttpClientConfigCallback implements HttpClientConfigCallback {
-//
-//        private final String certFilename;
-//
-//        SSLCercAuthHttpClientConfigCallback(String certfile) {
-//            this.certFilename = certfile;
-//        }
-//
-//        @Override
-//        public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-//            if (this.certFilename == null) {
-//                return httpClientBuilder;
-//            }
-//
-//            char[] keystorePass = "MY PASSWORD".toCharArray();
-//
-//            FileInputStream fis = null;
-//
-//            // Loading KEYSTORE in JKS format
-//            KeyStore keyStorePci = null;
-//            try {
-//                keyStorePci = KeyStore.getInstance(KeyStore.getDefaultType());
-//            } catch (KeyStoreException e1) {
-//                LOG.warn("unable to load keystore: {}",e1);
-//            }
-//            if (keyStorePci != null) {
-//                try {
-//                    fis = new FileInputStream(this.certFilename);
-//                    keyStorePci.load(fis, keystorePass);
-//                } catch (Exception e) {
-//                    LOG.error("Error loading keystore: " + this.certFilename);
-//                } finally {
-//                    if (fis != null) {
-//                        try {
-//                            fis.close();
-//                        } catch (IOException e) {
-//
-//                        }
-//                    }
-//                }
-//            }
-//            SSLContext sslcontext=null;
-//            try {
-//                sslcontext = SSLContexts.custom().loadKeyMaterial(keyStorePci, keystorePass).build();
-//            } catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException
-//                    | KeyStoreException e) {
-//                LOG.warn("unable to load sslcontext: {}",e);
-//            }
-//            return httpClientBuilder.setSSLContext(sslcontext);
-//        }
-//    }
+	}
+	//    private class SSLCercAuthHttpClientConfigCallback implements HttpClientConfigCallback {
+	//
+	//        private final String certFilename;
+	//
+	//        SSLCercAuthHttpClientConfigCallback(String certfile) {
+	//            this.certFilename = certfile;
+	//        }
+	//
+	//        @Override
+	//        public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+	//            if (this.certFilename == null) {
+	//                return httpClientBuilder;
+	//            }
+	//
+	//            char[] keystorePass = "MY PASSWORD".toCharArray();
+	//
+	//            FileInputStream fis = null;
+	//
+	//            // Loading KEYSTORE in JKS format
+	//            KeyStore keyStorePci = null;
+	//            try {
+	//                keyStorePci = KeyStore.getInstance(KeyStore.getDefaultType());
+	//            } catch (KeyStoreException e1) {
+	//                LOG.warn("unable to load keystore: {}",e1);
+	//            }
+	//            if (keyStorePci != null) {
+	//                try {
+	//                    fis = new FileInputStream(this.certFilename);
+	//                    keyStorePci.load(fis, keystorePass);
+	//                } catch (Exception e) {
+	//                    LOG.error("Error loading keystore: " + this.certFilename);
+	//                } finally {
+	//                    if (fis != null) {
+	//                        try {
+	//                            fis.close();
+	//                        } catch (IOException e) {
+	//
+	//                        }
+	//                    }
+	//                }
+	//            }
+	//            SSLContext sslcontext=null;
+	//            try {
+	//                sslcontext = SSLContexts.custom().loadKeyMaterial(keyStorePci, keystorePass).build();
+	//            } catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException
+	//                    | KeyStoreException e) {
+	//                LOG.warn("unable to load sslcontext: {}",e);
+	//            }
+	//            return httpClientBuilder.setSSLContext(sslcontext);
+	//        }
+	//    }
 
-    private final RestClient client;
+	private final RestClient client;
 
-    protected ExtRestClient(HostInfo[] hosts) {
-        this(hosts, null, null);
-    }
-    protected ExtRestClient(HostInfo[] hosts,String username,String password) {
-        this.client = RestClient.builder(get(hosts)).setHttpClientConfigCallback(new BasicAuthHttpClientConfigCallback(username, password) ).build();
-    }
+	protected ExtRestClient(HostInfo[] hosts) {
+		this(hosts, null, null,false);
+	}
 
-    public ClusterHealthResponse health(ClusterHealthRequest request)
-            throws UnsupportedOperationException, IOException, JSONException {
-        return new ClusterHealthResponse(this.client.performRequest(request.getInner()));
-    }
+	protected ExtRestClient(HostInfo[] hosts, String username, String password, boolean trustAll) {
+		this.client = RestClient.builder(get(hosts))
+				.setHttpClientConfigCallback(new BasicAuthHttpClientConfigCallback(username, password,trustAll))
+				.build();
+	}
 
-    public void close() throws IOException {
-        this.client.close();
+	public ClusterHealthResponse health(ClusterHealthRequest request)
+			throws UnsupportedOperationException, IOException, JSONException {
+		return new ClusterHealthResponse(this.client.performRequest(request.getInner()));
+	}
 
-    }
-    //
-    public boolean indicesExists(GetIndexRequest request) throws IOException {
-        Response response = this.client.performRequest(request.getInner());
-        return response.getStatusLine().getStatusCode()==200;
-    }
+	public void close() throws IOException {
+		this.client.close();
 
-    public AcknowledgedResponse updateAliases(IndicesAliasesRequest request) throws IOException{
-        return new AcknowledgedResponse(this.client.performRequest(request.getInner()));
-    }
+	}
 
-    public CreateIndexResponse createIndex(CreateIndexRequest request) throws IOException {
-        return new CreateIndexResponse(this.client.performRequest(request.getInner()));
-    }
-    public CreateAliasResponse createAlias(CreateAliasRequest request) throws IOException {
+	//
+	public boolean indicesExists(GetIndexRequest request) throws IOException {
+		Response response = this.client.performRequest(request.getInner());
+		return response.getStatusLine().getStatusCode() == 200;
+	}
+
+	public AcknowledgedResponse updateAliases(IndicesAliasesRequest request) throws IOException {
+		return new AcknowledgedResponse(this.client.performRequest(request.getInner()));
+	}
+
+	public CreateIndexResponse createIndex(CreateIndexRequest request) throws IOException {
+		return new CreateIndexResponse(this.client.performRequest(request.getInner()));
+	}
+
+	public CreateAliasResponse createAlias(CreateAliasRequest request) throws IOException {
 		return new CreateAliasResponse(this.client.performRequest(request.getInner()));
 	}
-    public DeleteAliasResponse deleteAlias(DeleteAliasRequest request) throws IOException {
+
+	public DeleteAliasResponse deleteAlias(DeleteAliasRequest request) throws IOException {
 		return new DeleteAliasResponse(this.client.performRequest(request.getInner()));
 	}
-    public DeleteIndexResponse deleteIndex(DeleteIndexRequest request) throws IOException {
-        return new DeleteIndexResponse(this.client.performRequest(request.getInner()));
-    }
-    public IndexResponse index(IndexRequest request) throws IOException{
-        return new IndexResponse(this.client.performRequest(request.getInner()));
-    }
 
-    public DeleteResponse delete(DeleteRequest request) throws IOException{
-        Response response=null;
-        try {
-             response = this.client.performRequest(request.getInner());
-        }
-        catch(ResponseException e) {
-            new DeleteResponse(e.getResponse());
-        }
-        return new DeleteResponse(response);
-    }
-    public DeleteByQueryResponse deleteByQuery(DeleteByQueryRequest request) throws IOException {
-        Response response=null;
-        try {
-             response = this.client.performRequest(request.getInner());
-        }
-        catch(ResponseException e) {
-            new DeleteResponse(e.getResponse());
-        }
-        return new DeleteByQueryResponse(response);
-    }
-    public SearchResponse search(SearchRequest request) throws IOException{
-        return this.search(request,false);
-    }
+	public DeleteIndexResponse deleteIndex(DeleteIndexRequest request) throws IOException {
+		return new DeleteIndexResponse(this.client.performRequest(request.getInner()));
+	}
 
-    /**
-     * Search for database entries
-     * @param request inputRequest
-     * @param ignoreParseException especially for usercreated filters which may cause ES server response exceptions
-     * @return Response with related entries
-     * @throws IOException of client
-     */
-    public SearchResponse search(SearchRequest request, boolean ignoreParseException) throws IOException {
-        if (ignoreParseException) {
-            try {
-                return new SearchResponse(this.client.performRequest(request.getInner()));
-            } catch (ResponseException e) {
-                LOG.debug("ignoring Exception for request {}: {}",request,e.getMessage());
-                return new SearchResponse(e.getResponse());
-            }
-        } else {
-            return new SearchResponse(this.client.performRequest(request.getInner()));
-        }
-    }
+	public IndexResponse index(IndexRequest request) throws IOException {
+		return new IndexResponse(this.client.performRequest(request.getInner()));
+	}
 
-    public GetResponse get(GetRequest request) throws IOException{
-        try {
-            return new GetResponse(this.client.performRequest(request.getInner()));
-        }
-        catch (ResponseException e) {
-            return new GetResponse(e.getResponse());
-        }
-    }
+	public DeleteResponse delete(DeleteRequest request) throws IOException {
+		Response response = null;
+		try {
+			response = this.client.performRequest(request.getInner());
+		} catch (ResponseException e) {
+			new DeleteResponse(e.getResponse());
+		}
+		return new DeleteResponse(response);
+	}
 
+	public DeleteByQueryResponse deleteByQuery(DeleteByQueryRequest request) throws IOException {
+		Response response = null;
+		try {
+			response = this.client.performRequest(request.getInner());
+		} catch (ResponseException e) {
+			new DeleteResponse(e.getResponse());
+		}
+		return new DeleteByQueryResponse(response);
+	}
 
-    public UpdateByQueryResponse update(UpdateByQueryRequest request) throws IOException {
-        return new UpdateByQueryResponse(this.client.performRequest(request.getInner()));
+	public SearchResponse search(SearchRequest request) throws IOException {
+		return this.search(request, false);
+	}
 
-    }
-    public UpdateResponse update(UpdateRequest request) throws IOException {
-        return new UpdateResponse(this.client.performRequest(request.getInner()));
+	/**
+	 * Search for database entries
+	 * @param request inputRequest
+	 * @param ignoreParseException especially for usercreated filters which may cause ES server response exceptions
+	 * @return Response with related entries
+	 * @throws IOException of client
+	 */
+	public SearchResponse search(SearchRequest request, boolean ignoreParseException) throws IOException {
+		if (ignoreParseException) {
+			try {
+				return new SearchResponse(this.client.performRequest(request.getInner()));
+			} catch (ResponseException e) {
+				LOG.debug("ignoring Exception for request {}: {}", request, e.getMessage());
+				return new SearchResponse(e.getResponse());
+			}
+		} else {
+			return new SearchResponse(this.client.performRequest(request.getInner()));
+		}
+	}
 
-    }
-    public RefreshIndexResponse refreshIndex(RefreshIndexRequest request) throws IOException{
-        return new RefreshIndexResponse(this.client.performRequest(request.getInner()));
-    }
+	public GetResponse get(GetRequest request) throws IOException {
+		try {
+			return new GetResponse(this.client.performRequest(request.getInner()));
+		} catch (ResponseException e) {
+			return new GetResponse(e.getResponse());
+		}
+	}
 
-    public NodeStatsResponse stats(NodeStatsRequest request) throws IOException{
-        return new NodeStatsResponse(this.client.performRequest(request.getInner()));
-    }
-    public ListIndicesResponse getIndices() throws ParseException, IOException {
-    	return new ListIndicesResponse(this.client.performRequest(new ListIndicesRequest().getInner()));
-    }
-    public ListAliasesResponse getAliases() throws ParseException, IOException {
-    	return new ListAliasesResponse(this.client.performRequest(new ListAliasesRequest().getInner()));
-    }
-    public GetInfoResponse getInfo() throws IOException, Exception {
-    	return new GetInfoResponse(this.client.performRequest(new GetInfoRequest().getInner()));
-    }
-    public boolean waitForYellowStatus(long timeoutms) {
+	public UpdateByQueryResponse update(UpdateByQueryRequest request) throws IOException {
+		return new UpdateByQueryResponse(this.client.performRequest(request.getInner()));
 
-        ClusterHealthRequest request = new ClusterHealthRequest();
-        request.timeout(timeoutms/1000);
-        ClusterHealthResponse response = null;
-        String status="";
-        try {
-            response = this.health(request);
+	}
 
-        } catch (UnsupportedOperationException | IOException | JSONException e) {
-            LOG.error(e.getMessage());
-        }
-        if(response!=null) {
-            status=response.getStatus();
-            LOG.debug("Elasticsearch service started with status {}", response.getStatus());
+	public UpdateResponse update(UpdateRequest request) throws IOException {
+		return new UpdateResponse(this.client.performRequest(request.getInner()));
 
-        }
-        else {
-            LOG.warn("Elasticsearch service not started yet with status {}. current status is {}",status,"none");
-            return false;
-        }
-        return response.isStatusMinimal(ClusterHealthResponse.HEALTHSTATUS_YELLOW);
+	}
 
-    }
+	public RefreshIndexResponse refreshIndex(RefreshIndexRequest request) throws IOException {
+		return new RefreshIndexResponse(this.client.performRequest(request.getInner()));
+	}
 
-    private static HttpHost[] get(HostInfo[] hosts) {
-        HttpHost[] httphosts = new HttpHost[hosts.length];
-        for(int i=0;i<hosts.length;i++) {
-            httphosts[i]=new HttpHost(hosts[i].hostname, hosts[i].port, hosts[i].protocol.toString());
-        }
-        return httphosts;
-    }
-    public static ExtRestClient createInstance(HostInfo[] hosts) {
-        return new ExtRestClient(hosts);
-    }
-    public static ExtRestClient createInstance(HostInfo[] hosts,String username,String password) {
-        return new ExtRestClient(hosts,username,password);
-    }
-    public static ExtRestClient createInstance(String hostname, int port, Protocol protocol){
-        return createInstance(new HostInfo[] {new HostInfo(hostname,port,protocol)});
+	public NodeStatsResponse stats(NodeStatsRequest request) throws IOException {
+		return new NodeStatsResponse(this.client.performRequest(request.getInner()));
+	}
 
-    }
+	public ListIndicesResponse getIndices() throws ParseException, IOException {
+		return new ListIndicesResponse(this.client.performRequest(new ListIndicesRequest().getInner()));
+	}
 
+	public ListAliasesResponse getAliases() throws ParseException, IOException {
+		return new ListAliasesResponse(this.client.performRequest(new ListAliasesRequest().getInner()));
+	}
+
+	public GetInfoResponse getInfo() throws IOException, Exception {
+		return new GetInfoResponse(this.client.performRequest(new GetInfoRequest().getInner()));
+	}
+
+	public boolean waitForYellowStatus(long timeoutms) {
+
+		ClusterHealthRequest request = new ClusterHealthRequest();
+		request.timeout(timeoutms / 1000);
+		ClusterHealthResponse response = null;
+		String status = "";
+		try {
+			response = this.health(request);
+
+		} catch (UnsupportedOperationException | IOException | JSONException e) {
+			LOG.error(e.getMessage());
+		}
+		if (response != null) {
+			status = response.getStatus();
+			LOG.debug("Elasticsearch service started with status {}", response.getStatus());
+
+		} else {
+			LOG.warn("Elasticsearch service not started yet with status {}. current status is {}", status, "none");
+			return false;
+		}
+		return response.isStatusMinimal(ClusterHealthResponse.HEALTHSTATUS_YELLOW);
+
+	}
+
+	private static HttpHost[] get(HostInfo[] hosts) {
+		HttpHost[] httphosts = new HttpHost[hosts.length];
+		for (int i = 0; i < hosts.length; i++) {
+			httphosts[i] = new HttpHost(hosts[i].hostname, hosts[i].port, hosts[i].protocol.toString());
+		}
+		return httphosts;
+	}
+
+	public static ExtRestClient createInstance(HostInfo[] hosts) {
+		return new ExtRestClient(hosts);
+	}
+
+	public static ExtRestClient createInstance(HostInfo[] hosts, String username, String password,boolean trustAll) {
+		return new ExtRestClient(hosts, username, password, trustAll);
+	}
+
+	public static ExtRestClient createInstance(String hostname, int port, Protocol protocol) {
+		return createInstance(new HostInfo[] { new HostInfo(hostname, port, protocol) });
+
+	}
 
 }
