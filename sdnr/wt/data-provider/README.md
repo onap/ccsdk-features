@@ -3,9 +3,21 @@
 Data-provider bundle manages all access to SDN-R database.
 Database is actually ElasticSearch.
 
-## ES-INIT Script
+## Initilization
 
 Central SDN-R script initializing and preparing the database BEFORE SDN-R usage.
+
+### sdnr-dmt.jar Tool
+
+Initialization and migration tool for elasticsearch database
+
+Reference: https://wiki.onap.org/display/DW/SDN-R+Data+Migration+Tool
+
+Example:
+<code>java -jar $ODL_HOME/system/org/onap/ccsdk/features/sdnr/wt/sdnr-wt-data-provider-setup/0.7.1-SNAPSHOT/sdnr-dmt.jar -c init -db $SDNRDBURL -dbu $SDNRDBUSERNAME -dbp $SDNRDBPASSWORD</code>
+
+
+### ES-INIT Script (deprecated)
 
 Name: es-init.sh
 Dir: provider/src/main/resources

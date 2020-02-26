@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database.data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Michael Dürre
@@ -41,6 +42,17 @@ public class AliasesEntryList extends ArrayList<AliasesEntry>{
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @return
+	 */
+	public List<String> getLinkedIndices() {
+		List<String> list = new ArrayList<String>();
+		for(AliasesEntry e:this) {
+			list.add(e.getIndex());
+		}
+		return list;
 	}
 
 }

@@ -53,7 +53,10 @@ public class EsConfig implements Configuration, IEsConfig {
     private static final String DEFAULT_ARCHIVE_INTERVAL_SEC = "0";
     /** keep data for this time [in seconds] 30 days */
     private static final String DEFAULT_ARCHIVE_LIMIT_SEC = String.valueOf(60L * 60L * 24L * 30L);
-    private static final String DEFAULT_KEY_NODE = "elasticsearchnode";
+    //private static final String DEFAULT_KEY_NODE = "elasticsearchnode";
+	private static final String DEFAULT_VALUE_NODE = "elasticsearchnode";
+	private static final String DEFAULT_VALUE_DBUSERNAME = "${SDNRDBUSERNAME}";
+	private static final String DEFAULT_VALUE_DBPASSWORD = "${SDNRDBPASSWORD}";
 
     private final ConfigurationFileRepresentation configuration;
 
@@ -138,9 +141,9 @@ public class EsConfig implements Configuration, IEsConfig {
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_CLUSTER, DEFAULT_VALUE_CLUSTER);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_ARCHIVE_INTERVAL,
                 DEFAULT_ARCHIVE_INTERVAL_SEC);
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_NODE, DEFAULT_KEY_NODE);
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_USERNAME, "");
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_PASSWORD, "");
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_NODE, DEFAULT_VALUE_NODE);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_USERNAME, DEFAULT_VALUE_DBUSERNAME);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_PASSWORD, DEFAULT_VALUE_DBPASSWORD);
     }
 
     @Override

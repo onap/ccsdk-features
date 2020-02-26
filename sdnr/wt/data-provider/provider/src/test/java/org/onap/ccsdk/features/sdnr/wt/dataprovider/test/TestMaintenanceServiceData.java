@@ -29,8 +29,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.HtDatabaseEventsService;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.HtDatabaseMaintenanceService;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.MaintenanceBuilder;
@@ -39,59 +37,62 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 /**
  * - Handling of inital values for Maintenance mode.
  */
-public class TestMaintenanceService {
-	
-	private static ElasticSearchDataProvider dbProvider;
-	private static HtDatabaseClient dbRawProvider;
-	private static HtDatabaseMaintenance service = null;
+public class TestMaintenanceServiceData {
 
-	private static final String NODEID = "node1";
-	private static final String NODEID2 = "node2";
-	@BeforeClass
-	public static void init() throws Exception {
+    private static ElasticSearchDataProvider dbProvider;
+    private static HtDatabaseClient dbRawProvider;
+    private static HtDatabaseMaintenance service = null;
 
-		dbProvider = new ElasticSearchDataProvider(TestCRUDforDatabase.hosts);
-		dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
-		dbRawProvider = new HtDatabaseClient(TestCRUDforDatabase.hosts);
-		service  = dbProvider.getHtDatabaseMaintenance();
-	}
-	@Test
-	public void test() {
-		clearDbEntity(Entity.Maintenancemode);
-		MaintenanceEntity obj = service.createIfNotExists(NODEID);
-		assertNotNull(obj);
-		obj = service.createIfNotExists(NODEID2);
-		assertNotNull(obj);
-		obj = service.getMaintenance(NODEID);
-		assertNotNull(obj);
-		List<MaintenanceEntity> list = service.getAll();
-		assertEquals(2,list.size());
-		service.deleteIfNotRequired(NODEID);
-		obj = service.getMaintenance(NODEID);
-		assertNull(obj);
-		
-		
-		obj = service.setMaintenance(createMaintenance(NODEID,true));
-		
-		
-	}
-	/**
-	 * @param nodeId 
-	 * @param active 
-	 * @return
-	 */
-	private static MaintenanceEntity createMaintenance(String nodeId, Boolean active) {
-		return new MaintenanceBuilder().setNodeId(nodeId).setActive(active).setProblem("problem").setObjectIdRef("idref").build();
-	}
-	private static void clearDbEntity(Entity entity) {
-		DeleteByQueryRequest query = new DeleteByQueryRequest(entity.getName());
-		query.setQuery(QueryBuilders.matchAllQuery().toJSON());
-		try {
-			dbRawProvider.deleteByQuery(query);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		TestCRUDforDatabase.trySleep(1000);
-	}
+    private static final String NODEID = "tmsnode1";
+    private static final String NODEID2 = "tmsnode2";
+    @BeforeClass
+    public static void init() throws Exception {
+
+        dbProvider = new ElasticSearchDataProvider(TestCRUDforDatabase.hosts);
+        dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
+        dbRawProvider = new HtDatabaseClient(TestCRUDforDatabase.hosts);
+        service  = dbProvider.getHtDatabaseMaintenance();
+    }
+    @Test
+    public void test() throws InterruptedException {
+        clearDbEntity(Entity.Maintenancemode);
+        MaintenanceEntity obj = service.createIfNotExists(NODEID);
+        assertNotNull("Create first id", obj);
+        obj = service.createIfNotExists(NODEID2);
+        assertNotNull("Create second id", obj);
+        obj = service.getMaintenance(NODEID);
+        assertNotNull(obj);
+        List<MaintenanceEntity> list = service.getAll();
+        assertEquals("Verify for two ids", 2,list.size());
+        service.deleteIfNotRequired(NODEID);
+        obj = service.getMaintenance(NODEID);
+        assertNull("Check if first id was removed", obj);
+
+        obj = service.setMaintenance(createMaintenance(NODEID,true));
+
+
+    }
+    /**
+     * @param nodeId
+     * @param active
+     * @return
+     */
+    private static MaintenanceEntity createMaintenance(String nodeId, Boolean active) {
+        return new MaintenanceBuilder().setNodeId(nodeId).setActive(active).setProblem("problem").setObjectIdRef("idref").build();
+    }
+    /**
+     * Delete
+     * @param entity
+     */
+    private static void clearDbEntity(Entity entity) {
+        DeleteByQueryRequest query = new DeleteByQueryRequest(entity.getName());
+        query.setQuery(QueryBuilders.matchAllQuery().toJSON());
+        try {
+            dbRawProvider.deleteByQuery(query);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        TestCRUDforDatabase.trySleep(1000);
+    }
 
 }

@@ -41,6 +41,7 @@
     <name>ccsdk-features :: ${project.artifactId}</name>
 
     <modules>
+        <module>setup</module>
         <module>model</module>
         <module>provider</module>
         <module>feature</module>
