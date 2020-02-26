@@ -35,6 +35,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceInputBuilder;
@@ -52,6 +53,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultlog;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.GranularityPeriodType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadConnectionlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadConnectionlogListInputBuilder;
@@ -105,6 +109,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Pagination;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.PaginationBuilder;
@@ -1338,6 +1343,28 @@ public class TestCRUDforDatabase {
 
     }
 
+    @Test
+    public void testOutputCamelCase() {
+    	try {
+			String jsonString="{\n" + 
+					"\"timestamp\": \"2020-02-20T09:31:22.3Z\",\n" + 
+					"\"object-id\": \"LP-MWPS-RADIO\",\n" + 
+					"\"severity\": \"Critical\",\n" + 
+					"\"counter\": 10,\n" + 
+					"\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultlog\",\n" + 
+					"\"source-type\": \"Netconf\",\n" + 
+					"\"node-id\": \"sim4\",\n" + 
+					"\"problem\": \"signalIsLost\"\n" + 
+					"}";
+			YangToolsMapper yangtoolsMapper = new YangToolsMapper();
+			FaultlogEntity log = yangtoolsMapper.readValue( jsonString, Faultlog.class );
+			System.out.println(log	);
+			System.out.println(yangtoolsMapper.writeValueAsString(log));
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+    	
+    }
 
     private Pagination getPagination(long pageSize, int page) {
         return new PaginationBuilder().setPage(BigInteger.valueOf(page)).setSize(pageSize).build();

@@ -45,8 +45,8 @@ public class TestMaintenanceService {
 	private static HtDatabaseClient dbRawProvider;
 	private static HtDatabaseMaintenance service = null;
 
-	private static final String NODEID = "node1";
-	private static final String NODEID2 = "node2";
+	private static final String NODEID = "tmsnode1";
+	private static final String NODEID2 = "tmsnode2";
 	@BeforeClass
 	public static void init() throws Exception {
 

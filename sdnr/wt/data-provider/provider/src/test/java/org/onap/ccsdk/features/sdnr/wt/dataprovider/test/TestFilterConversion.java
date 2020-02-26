@@ -60,4 +60,11 @@ public class TestFilterConversion {
 		QueryByFilter.setSortOrder(query, sortorder);
 		assertNotNull(QueryByFilter.getSortOrder(sortorder, PROPERTY));
 	}
+	@Test
+	public void testSortorder() {
+		String f = "{\"input\":{\"filter\":[],\"sortorder\":[{\"property\":\"source-type\",\"sortorder\":\"ascending\"}],\"pagination\":{\"size\":10,\"page\":1}}}";
+		
+		QueryBuilder query = QueryByFilter.setSortOrder(QueryByFilter.fromFilter(null), Arrays.asList(new SortorderBuilder().setProperty("source-type").setSortorder(SortOrder.Ascending).build()));
+		System.out.println(query.toJSON());
+	}
 }

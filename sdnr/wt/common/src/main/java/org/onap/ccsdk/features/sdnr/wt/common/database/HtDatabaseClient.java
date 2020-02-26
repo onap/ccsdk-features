@@ -26,7 +26,6 @@ import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
-import org.onap.ccsdk.features.sdnr.wt.common.database.requests.CreateAliasRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.GetIndexRequest;
@@ -36,7 +35,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.RefreshIndexRequ
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.UpdateByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.UpdateRequest;
-import org.onap.ccsdk.features.sdnr.wt.common.database.responses.CreateIndexResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteByQueryResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.GetResponse;
@@ -58,6 +56,7 @@ import org.slf4j.LoggerFactory;
 public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, AutoCloseable {
 
  	private static final boolean REFRESH_AFTER_REWRITE_DEFAULT = true;
+	private static final boolean TRUSTALL_DEFAULT = false;
 
 	private final Logger LOG = LoggerFactory.getLogger(HtDatabaseClient.class);
 
@@ -66,13 +65,16 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
  		this(hosts,REFRESH_AFTER_REWRITE_DEFAULT);
  	}
     public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite) {
- 		this(hosts,refreshAfterWrite,null,null);
+ 		this(hosts,refreshAfterWrite,null,null,TRUSTALL_DEFAULT);
  	}
     public HtDatabaseClient(HostInfo[] hosts,String username,String password) {
- 		this(hosts,REFRESH_AFTER_REWRITE_DEFAULT,username,password);
+    	this(hosts,username,password,TRUSTALL_DEFAULT);
+    }
+    public HtDatabaseClient(HostInfo[] hosts,String username,String password, boolean trustAll) {
+ 		this(hosts,REFRESH_AFTER_REWRITE_DEFAULT,username,password,trustAll);
  	}
-    public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite,String username,String password) {
- 		super(hosts,username,password);
+    public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite,String username,String password, boolean trustAll) {
+ 		super(hosts,username,password,trustAll);
  		this.doRefreshAfterWrite = refreshAfterWrite;
  	}
    
@@ -203,14 +205,17 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 
 		return this.doReadByQueryJsonData(dataTypeName, queryBuilder, false);
 	}
-
 	@Override
-	public @Nonnull SearchResult<SearchHit> doReadByQueryJsonData(String dataTypeName,QueryBuilder queryBuilder, boolean ignoreException) {
+	public @Nonnull SearchResult<SearchHit> doReadByQueryJsonData( String dataTypeName,QueryBuilder queryBuilder, boolean ignoreException) {
+		return this.doReadByQueryJsonData(dataTypeName, dataTypeName,queryBuilder,ignoreException);
+	}
+	@Override
+	public @Nonnull SearchResult<SearchHit> doReadByQueryJsonData(String alias, String dataTypeName,QueryBuilder queryBuilder, boolean ignoreException) {
 
 		long total = 0;
 		LOG.debug("NetworkIndex query and read: {}", dataTypeName);
 
-		SearchRequest searchRequest = new SearchRequest(dataTypeName, dataTypeName);
+		SearchRequest searchRequest = new SearchRequest(alias, dataTypeName);
 		searchRequest.setQuery(queryBuilder);
 		SearchResponse response = null;
 		try {
@@ -228,11 +233,12 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 	}
     @Override
 	public @Nonnull SearchResult<SearchHit> doReadAllJsonData( String dataTypeName,	boolean ignoreException) {
-    	// Use query
-        return doReadByQueryJsonData( dataTypeName, QueryBuilders.matchAllQuery(),ignoreException);
+    	return doReadByQueryJsonData( dataTypeName, QueryBuilders.matchAllQuery(),ignoreException);
 	}
 
-   
+	public @Nonnull SearchResult<SearchHit> doReadAllJsonData(String alias, String dataType,	boolean ignoreException) {
+		return doReadByQueryJsonData( alias, dataType, QueryBuilders.matchAllQuery(),ignoreException);
+	}
 	@Override
 	public String doUpdateOrCreate(String dataTypeName, String esId, String json) {
 		return this.doUpdateOrCreate(dataTypeName, esId, json,null);
@@ -295,5 +301,6 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 		}
 		return del;
 	}
+	
 	
 }
