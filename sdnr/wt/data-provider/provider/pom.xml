@@ -146,7 +146,7 @@
                            <executable>java</executable>
                             <arguments>
                                 <argument>-jar</argument>
-                                <argument>${basedir}/../../data-provider/setup/target/sdnr-dmt.jar</argument>
+                                <argument>${basedir}/../setup/target/sdnr-dmt.jar</argument>
                                 <argument>-c</argument>
                                 <argument>pluginfile</argument>
                                 <argument>-of</argument>
