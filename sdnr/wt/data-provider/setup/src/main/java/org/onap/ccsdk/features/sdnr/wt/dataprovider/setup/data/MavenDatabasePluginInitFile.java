@@ -23,7 +23,6 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,15 +43,20 @@ public class MavenDatabasePluginInitFile {
     "{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}}";
 
 	public static void create(Release release, String filename) throws IOException {
-		
+
 		ReleaseInformation ri = ReleaseInformation.getInstance(release);
 		Set<ComponentName> comps=ri.getComponents();
-		List<String> lines = new ArrayList<String>();
+		List<String> lines = new ArrayList<>();
 		for(ComponentName c:comps) {
 			lines.add(String.format("PUT:%s/:{"+settings+","+mappings+"}",ri.getIndex(c),shards,replicas,ri.getDatabaseMapping(c)));
 			lines.add(String.format("PUT:%s/_alias/%s/:{}", ri.getIndex(c),ri.getAlias(c)));
 		}
-		Files.write(new File(filename).toPath(),lines,StandardCharsets.UTF_8);
-		
+
+		File filePath = new File(filename);
+		if (!filePath.getParentFile().exists()){
+			//Crate Directory if missing
+			filePath.getParentFile().mkdirs();
+		}
+		Files.write(filePath.toPath(), lines);
 	}
 }
