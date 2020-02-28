@@ -23,16 +23,34 @@ import BarChartIcon from '@material-ui/icons/BarChart';
 import TableChartIcon from '@material-ui/icons/TableChart';
 import { makeStyles } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
+import ChartFilter from './chartFilter'
+import FilterListIcon from '@material-ui/icons/FilterList';
 
 const styles = makeStyles({
-    toggleButton: {
+    toggleButtonContainer: {
+        display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "10px",
+    },
+    subViewGroup: {
+        padding: "10px"
+    },
+    filterGroup: {
+        marginLeft: "10px"
     }
 });
 
-type toggleProps = { selectedValue: string, onChange(value: string): void };
+type filterType = {
+    onRefresh: () => void;
+    onHandleRequestSort: (orderBy: string) => void;
+    onToggleFilter: () => void;
+    onFilterChanged: (property: string, filterTerm: string) => void;
+    onHandleChangePage: (page: number) => void;
+    onHandleChangeRowsPerPage: (rowsPerPage: number | null) => void;
+};
+
+type toggleProps = { selectedValue: string, onChange(value: string): void, showFilter: boolean, onToggleFilterButton(): void, onFilterChanged: (property: string, filterTerm: string) => void, existingFilter: any };
 
 const ToggleContainer: React.FunctionComponent<toggleProps> = (props) => {
 
@@ -44,22 +62,46 @@ const ToggleContainer: React.FunctionComponent<toggleProps> = (props) => {
         }
     };
 
+    const handleFilterChange = (event: React.MouseEvent<HTMLElement>, newView: string) => {
+        props.onToggleFilterButton();
+    };
+
     const children = React.Children.toArray(props.children);
+
+    //hide filter if visible + table
+    //put current name into state, let container handle stuff itelf, register for togglestate, get right via set name
 
     return (
         <>
-            <ToggleButtonGroup className={classes.toggleButton} size="medium" value={props.selectedValue} exclusive onChange={handleChange}>
-                <ToggleButton aria-label="display-chart" key={1} value="chart">
-                    <Tooltip title="Chart">
-                        <BarChartIcon />
-                    </Tooltip>
-                </ToggleButton>
-                <ToggleButton aria-label="display-table" key={2} value="table">
-                    <Tooltip title="Table">
-                        <TableChartIcon />
-                    </Tooltip>
-                </ToggleButton>
-            </ToggleButtonGroup>
+            <div className={classes.toggleButtonContainer} >
+                <ToggleButtonGroup className={classes.subViewGroup} size="medium" value={props.selectedValue} exclusive onChange={handleChange}>
+                    <ToggleButton aria-label="display-chart" key={1} value="chart">
+                        <Tooltip title="Chart">
+                            <BarChartIcon />
+                        </Tooltip>
+                    </ToggleButton>
+                    <ToggleButton aria-label="display-table" key={2} value="table">
+                        <Tooltip title="Table">
+                            <TableChartIcon />
+                        </Tooltip>
+                    </ToggleButton>
+                </ToggleButtonGroup>
+
+                <ToggleButtonGroup className={classes.filterGroup} onChange={handleFilterChange} >
+                    <ToggleButton aria-label="show-filter" selected={props.showFilter as boolean} disabled={props.selectedValue !== "chart"}>
+                        <Tooltip title={props.showFilter ? 'Hide filter' : 'Show available filter'}>
+                            <FilterListIcon />
+                        </Tooltip>
+                    </ToggleButton>
+                </ToggleButtonGroup>
+
+
+            </div>
+            {
+                props.selectedValue === "chart" &&
+                <ChartFilter filters={props.existingFilter} onFilterChanged={props.onFilterChanged} isVisible={props.showFilter} />
+
+            }
             {props.selectedValue === "chart" ? children[0] : props.selectedValue === "table" && children[1]}
         </>);
 

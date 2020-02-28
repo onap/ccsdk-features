@@ -21,6 +21,8 @@ import {
   AllAvailableLtpsLoadedAction,
   LoadAllAvailableLtpsAction,
   SetInitialLoadedAction,
+  NoLtpsFoundAction,
+  ResetLtpsAction,
 } from '../actions/ltpAction';
 
 import { LtpIds } from '../models/availableLtps';
@@ -29,12 +31,14 @@ export interface IAvailableLtpsState {
   distinctLtps: LtpIds[];
   busy: boolean;
   loadedOnce: boolean;
+  error: string | undefined;
 }
 
 const ltpListStateInit: IAvailableLtpsState = {
   distinctLtps: [],
   busy: false,
-  loadedOnce: false
+  loadedOnce: false,
+  error: undefined
 };
 
 export const availableLtpsActionHandler: IActionHandler<IAvailableLtpsState> = (state = ltpListStateInit, action) => {
@@ -51,8 +55,16 @@ export const availableLtpsActionHandler: IActionHandler<IAvailableLtpsState> = (
         ...state,
         distinctLtps: action.availableLtps,
         busy: false,
+        error: undefined,
         loadedOnce: true
       };
+    } else if (action.error) {
+      state = {
+        ...state,
+        busy: false,
+        loadedOnce: true,
+        error: action.error
+      }
     }
   } else if (action instanceof SetInitialLoadedAction) {
 
@@ -60,7 +72,25 @@ export const availableLtpsActionHandler: IActionHandler<IAvailableLtpsState> = (
       ...state,
       loadedOnce: action.initialLoaded
     };
-  } else {
+  } else if (action instanceof NoLtpsFoundAction) {
+    state = {
+      ...state,
+      busy: false,
+      error: undefined,
+      loadedOnce: true,
+      distinctLtps: []
+    }
+  } else if (action instanceof ResetLtpsAction) {
+    state = {
+      ...state,
+      busy: false,
+      error: undefined,
+      loadedOnce: false,
+      distinctLtps: []
+    }
+  }
+
+  else {
     state = {
       ...state,
       busy: false

@@ -33,13 +33,14 @@ import { PanelId } from '../models/panelId';
 
 import { createCurrentProblemsProperties, createCurrentProblemsActions, currentProblemsReloadAction } from '../handlers/currentProblemsHandler';
 import { createAlarmLogEntriesProperties, createAlarmLogEntriesActions, alarmLogEntriesReloadAction } from '../handlers/alarmLogEntriesHandler';
-import { setPanelAction } from '../actions/panelChangeActions';
+import { setPanelAction, RememberCurrentPanelAction } from '../actions/panelChangeActions';
 import { Tooltip, IconButton, AppBar, Tabs, Tab } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ClearStuckAlarmsDialog, { ClearStuckAlarmsDialogMode } from '../components/clearStuckAlarmsDialog';
 
 const mapProps = (state: IApplicationStoreState) => ({
-  panelId: state.fault.currentOpenPanel,
+  panelId: state.fault.currentOpenPanel.openPanel,
+  savedPanel: state.fault.currentOpenPanel.savedPanel,
   currentProblemsProperties: createCurrentProblemsProperties(state),
   faultNotifications: state.fault.faultNotifications,
   alarmLogEntriesProperties: createAlarmLogEntriesProperties(state)
@@ -52,7 +53,8 @@ const mapDisp = (dispatcher: IDispatcher) => ({
   reloadAlarmLogEntries: () => dispatcher.dispatch(alarmLogEntriesReloadAction),
   switchActivePanel: (panelId: PanelId) => {
     dispatcher.dispatch(setPanelAction(panelId));
-  }
+  },
+  rememberCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new RememberCurrentPanelAction(panelId))
 });
 
 type FaultApplicationComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp>;
@@ -146,7 +148,7 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
             { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
             { property: "timeStamp", title: "Time Stamp" },
             { property: "nodeName", title: "Node Name" },
-            { property: "counter", title: "Count", width: "100px" },
+            { property: "counter", title: "Count", width: "100px", type: ColumnType.numeric },
             { property: "objectId", title: "Object Id" },
             { property: "problem", title: "Alarm Type" },
             { property: "severity", title: "Severity", width: "140px" },
@@ -174,11 +176,22 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
 
   };
 
+  componentWillUnmount() {
+    if (this.props.panelId) {
+      this.props.rememberCurrentPanel(this.props.panelId as PanelId);
+      this.props.switchActivePanel(null);
+    }
+  }
+
   public componentDidMount() {
 
-    if (this.props.panelId === null) { //don't change tabs, if one is selected already
+    if (this.props.panelId === null && this.props.savedPanel === null) { //set default tab if none is set
       this.onToggleTabs("CurrentProblem");
-    }
+    } else // load saved tab if possible
+      if (this.props.panelId === null && this.props.savedPanel !== null) {
+        this.onToggleTabs(this.props.savedPanel);
+        this.props.rememberCurrentPanel(null);
+      }
 
     this.props.alarmLogEntriesActions.onToggleFilter();
     this.props.currentProblemsActions.onToggleFilter();

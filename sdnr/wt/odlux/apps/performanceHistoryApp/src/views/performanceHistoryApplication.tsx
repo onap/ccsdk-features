@@ -39,7 +39,7 @@ import SignalToInterference from '../components/signalToInterference';
 import CrossPolarDiscrimination from '../components/crossPolarDiscrimination';
 import { loadAllDeviceListAsync } from '../actions/deviceListActions';
 import { TimeChangeAction } from '../actions/timeChangeAction';
-import { loadDistinctLtpsbyNetworkElementAsync, SetInitialLoadedAction } from '../actions/ltpAction';
+import { loadDistinctLtpsbyNetworkElementAsync, ResetLtpsAction } from '../actions/ltpAction';
 import { SetPanelAction } from '../actions/panelChangeActions';
 import { createPerformanceDataPreActions, performanceDataReloadAction, createPerformanceDataActions } from '../handlers/performanceDataHandler';
 import { createReceiveLevelPreActions, receiveLevelReloadAction, createReceiveLevelActions } from '../handlers/receiveLevelHandler';
@@ -69,7 +69,8 @@ const mapProps = (state: IApplicationStoreState) => ({
   activePanel: state.performanceHistory.currentOpenPanel,
   availableLtps: state.performanceHistory.ltps.distinctLtps,
   networkElements: state.performanceHistory.networkElements.deviceList,
-  initialLoaded: state.performanceHistory.ltps.loadedOnce
+  initialLoaded: state.performanceHistory.ltps.loadedOnce,
+  error: state.performanceHistory.ltps.error
 });
 
 const mapDispatcher = (dispatcher: IDispatcher) => ({
@@ -103,7 +104,7 @@ const mapDispatcher = (dispatcher: IDispatcher) => ({
   changeNode: (nodeId: string) => dispatcher.dispatch((dispatch: Dispatch) => {
     dispatch(new NavigateToApplication("performanceHistory", nodeId));
   }),
-  setInitialLoaded: (isLoaded: boolean) => dispatcher.dispatch((dispatch: Dispatch) => { dispatch(new SetInitialLoadedAction(isLoaded)); }),
+  resetLtps: () => dispatcher.dispatch((dispatch: Dispatch) => { dispatch(new ResetLtpsAction()); }),
   resetSubViews: () => dispatcher.dispatch(new ResetAllSubViewsAction())
 });
 
@@ -138,7 +139,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
   constructor(props: PerformanceHistoryComponentProps) {
     super(props);
     this.state = {
-      selectedNetworkElement: "-1",
+      selectedNetworkElement: props.nodeId !== "" ? props.nodeId : "-1",
       selectedTimePeriod: "15min",
       selectedLtp: "-1",
       showNetworkElementsTable: true,
@@ -219,7 +220,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
     if (nodeId === "") {
       return (
         <>
-          <NetworkElementTable title={"Please select the network element!"} idProperty={"nodeId"} rows={this.props.networkElements} asynchronus
+          <NetworkElementTable stickyHeader title={"Please select the network element!"} idProperty={"nodeId"} rows={this.props.networkElements} asynchronus
             onHandleClick={(event, rowData) => { this.handleNetworkElementSelect(rowData.nodeId) }} columns={
               [{ property: "nodeId", title: "Node Name" }]
             } />
@@ -232,7 +233,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
         <>
           {this.state.showLtps &&
 
-            <LtpSelection selectedNE={this.state.selectedNetworkElement} selectedLtp={this.state.selectedLtp} selectedTimePeriod={this.state.selectedTimePeriod}
+            <LtpSelection error={this.props.error} selectedNE={this.state.selectedNetworkElement} selectedLtp={this.state.selectedLtp} selectedTimePeriod={this.state.selectedTimePeriod}
               availableLtps={this.props.availableLtps} finishedLoading={this.props.initialLoaded} onChangeTimePeriod={this.handleTimePeriodChange}
               onChangeLtp={this.handleLtpChange}
             />
@@ -293,6 +294,9 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
 
 
   public componentDidMount() {
+    this.props.resetSubViews();
+    this.props.resetLtps();
+    this.props.setCurrentPanel(null);
     this.props.getAllDevicesPMdata();
     this.props.enableFilterPerformanceData.onToggleFilter();
     this.props.enableFilterReceiveLevel.onToggleFilter();
@@ -301,8 +305,6 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
     this.props.enableFilterAdaptiveModulation.onToggleFilter();
     this.props.enableFilterSinr.onToggleFilter();
     this.props.enableFilterCpd.onToggleFilter();
-    this.props.setInitialLoaded(false);
-    this.props.resetSubViews();
   }
 
   /**
@@ -377,8 +379,8 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
       selectedLtp: "-1"
     });
 
-    this.props.setInitialLoaded(false);
     this.props.resetSubViews();
+    this.props.resetLtps();
     this.setState({ preFilter: {} });
     this.props.changeNode(selectedNetworkElement);
     this.props.getDistinctLtpsIds(selectedNetworkElement, this.state.selectedTimePeriod, "-1", this.selectFirstLtp);
@@ -440,7 +442,6 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
         showPanels: false,
         selectedLtp: event.target.value
       });
-      this.props.setCurrentPanel(null);
 
     } else if (event.target.value !== this.state.selectedLtp) {
       this.setState({

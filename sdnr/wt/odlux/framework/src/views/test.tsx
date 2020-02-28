@@ -27,7 +27,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { MaterialTable, MaterialTableCtorType, ColumnType } from '../components/material-table';
-import { TreeView, ITreeItem, TreeViewCtorType } from '../components/material-ui/treeView';
+import { TreeView, TreeItem, TreeViewCtorType } from '../components/material-ui/treeView';
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
 
 const styles = (theme: Theme) => createStyles({
@@ -814,30 +814,25 @@ const components = {
   'counter': 'demoApp.counter'
 };
 
-class TreeDemoItem implements ITreeItem {
-  title: string;
-  children?: TreeDemoItem[];
-  disabled?: boolean;
-  icon?: React.ComponentType<SvgIconProps>;
-}
+type TreeDemoItem = TreeItem<string>;
 
 const treeData: TreeDemoItem[] = [
   {
-    title: "Erste Ebene", children: [
+    content: "Erste Ebene", children: [
       {
-        title: "Zweite Ebene", children: [
-          { title: "Dritte Ebene" },
+        content: "Zweite Ebene", children: [
+          { content: "Dritte Ebene" },
         ]
       },
-      { title: "Zweite Ebene 2" },
+      { content: "Zweite Ebene 2" },
     ]
   },
-  { title: "Erste Ebene 3" },
+  { content: "Erste Ebene 3" },
 ];
 
 const SampleDataMaterialTable = MaterialTable as MaterialTableCtorType<SampleData>;
 
-const SampleTree = TreeView as any as TreeViewCtorType<TreeDemoItem>;
+const SampleTree = TreeView as any as TreeViewCtorType<string>;
 
 const TestComponent = (props: WithComponents<typeof components> & WithStyles<typeof styles>) => {
 
@@ -867,11 +862,11 @@ const TestComponent = (props: WithComponents<typeof components> & WithStyles<typ
           <Typography className={props.classes.heading}>Tree Demo</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <SampleTree items={treeData} contentProperty={"title"} childrenProperty={"children"} useFolderIcons enableSearchBar />
+          <SampleTree items={treeData} useFolderIcons enableSearchBar />
         </ExpansionPanelDetails>
       </ExpansionPanel>
     </div>
-  )
+  );
 };
 
 export const Test = withComponents(components)(withStyles(styles)(TestComponent));

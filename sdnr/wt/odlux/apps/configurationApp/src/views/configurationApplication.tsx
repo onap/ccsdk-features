@@ -65,13 +65,18 @@ const styles = (theme: Theme) => createStyles({
   },
   outer: {
     "flex": "1",
-    "heigh": "100%",
+    "height": "100%",
     "display": "flex",
     "alignItems": "center",
     "justifyContent": "center",
   },
   inner: {
 
+  },
+  container: {
+    "height": "100%",
+    "display": "flex",
+    "flexDirection": "column",
   },
   "icon": {
     "marginRight": theme.spacing(0.5),
@@ -440,7 +445,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     const { classes } = this.props;
 
     return (
-      <SelectElementTable idProperty={listKeyProperty} rows={listData} customActionButtons={[addNewElementAction]} columns={
+      <SelectElementTable stickyHeader idProperty={listKeyProperty} rows={listData} customActionButtons={[addNewElementAction]} columns={
         Object.keys(listElements).reduce<ColumnModel<{ [key: string]: any }>[]>((acc, cur) => {
           const elm = listElements[cur];
           if (elm.uiType !== "object" && listData.every(entry => entry[elm.label] != null)) {
@@ -571,8 +576,8 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     }
 
     return (
-      <div>
-        <SelectElementTable idProperty={listKeyProperty} rows={listData} columns={
+      <div className={this.props.classes.container}>
+        <SelectElementTable stickyHeader  idProperty={listKeyProperty} rows={listData} columns={
           Object.keys(listSpecification.elements).reduce<ColumnModel<{ [key: string]: any }>[]>((acc, cur) => {
             const elm = listSpecification.elements[cur];
             if (elm.uiType !== "object" && listData.every(entry => entry[elm.label] != null)) {
@@ -594,7 +599,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     const { viewData, editMode, isNew } = this.state;
 
     return (
-      <div>
+      <div className={this.props.classes.container}>
         {this.renderBreadCrumps()}
         {displayAsList && viewData instanceof Array
           ? this.renderUIViewList(viewSpecification, keyProperty!, viewData)

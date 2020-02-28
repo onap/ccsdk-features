@@ -16,33 +16,49 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from 'react';
+import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
 
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import { List, ListItem, TextField, ListItemText, ListItemIcon, WithTheme, withTheme, Omit } from '@material-ui/core';
 
+import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import FileIcon from '@material-ui/icons/InsertDriveFile';
 import CloseIcon from '@material-ui/icons/ExpandLess';
 import OpenIcon from '@material-ui/icons/ExpandMore';
 import FolderIcon from '@material-ui/icons/Folder';
 
-export interface ITreeItem {
+const styles = (theme: Theme) => createStyles({
+  root: {
+    padding: 0,
+    paddingBottom: 8,
+    paddingTop: 8,
+  },
+  search: {
+    padding: `0px ${theme.spacing(1)}px`
+  }
+});
+
+export type TreeItem<TData = { }> = {
   disabled?: boolean;
   icon?: React.ComponentType<SvgIconProps>;
+  iconClass?: string;
+  content: string;
+  contentClass?: string;
+  children?: TreeItem<TData>[];
+  value?: TData;
 }
 
-type TreeViewComponentState<TData extends ITreeItem = ITreeItem> = {
+type TreeViewComponentState<TData = { }> = {
   /** All indices of all expanded Items */
-  expandedItems: TData[];
+  expandedItems: TreeItem<TData>[];
   /** The index of the active iten or undefined if no item is active. */
-  activeItem: undefined | TData;
+  activeItem: undefined | TreeItem<TData>;
   /** The search term or undefined if search is corrently not active. */
   searchTerm: undefined | string;
 }
 
-type TreeViewComponentBaseProps<TData extends ITreeItem = ITreeItem> = WithTheme & {
-  items: TData[];
-  contentProperty: keyof Omit<TData, keyof ITreeItem>;
-  childrenProperty: keyof Omit<TData, keyof ITreeItem>;
+type TreeViewComponentBaseProps<TData = {}> = WithTheme & WithStyles<typeof styles> & {
+  className?: string;
+  items: TreeItem<TData>[];
   useFolderIcons?: boolean;
   enableSearchBar?: boolean;
   autoExpandFolder?: boolean;
@@ -51,23 +67,23 @@ type TreeViewComponentBaseProps<TData extends ITreeItem = ITreeItem> = WithTheme
   depthOffset?: number;
 }
 
-type TreeViewComponentWithInternalStateProps<TData extends ITreeItem = ITreeItem> = TreeViewComponentBaseProps<TData> & {
-  onItemClick?: (item: TData) => void;
-  onFolderClick?: (item: TData) => void;
+type TreeViewComponentWithInternalStateProps<TData = { }> = TreeViewComponentBaseProps<TData> & {
+  onItemClick?: (item: TreeItem<TData>) => void;
+  onFolderClick?: (item: TreeItem<TData>) => void;
 }
 
-type TreeViewComponentWithExternalStateProps<TData extends ITreeItem = ITreeItem> = TreeViewComponentBaseProps<TData> & TreeViewComponentState<TData> & {
+type TreeViewComponentWithExternalStateProps<TData = { }> = TreeViewComponentBaseProps<TData> & TreeViewComponentState<TData> & {
   onSearch: (searchTerm: string) => void;
-  onItemClick: (item: TData) => void;
-  onFolderClick: (item: TData) => void;
+  onItemClick: (item: TreeItem<TData>) => void;
+  onFolderClick: (item: TreeItem<TData>) => void;
 }
 
-type TreeViewComponentProps<TData extends ITreeItem = ITreeItem> =
-  TreeViewComponentWithInternalStateProps<TData> |
-  TreeViewComponentWithExternalStateProps<TData>;
+type TreeViewComponentProps<TData = { }> =
+  | TreeViewComponentWithInternalStateProps<TData>
+  | TreeViewComponentWithExternalStateProps<TData>;
 
-function isTreeViewComponentWithExternalStateProps<TData extends ITreeItem = ITreeItem>(props: TreeViewComponentProps<TData>): props is TreeViewComponentWithExternalStateProps<TData> {
-  const propsWithExternalState = (props as TreeViewComponentWithExternalStateProps<TData>)
+function isTreeViewComponentWithExternalStateProps(props: TreeViewComponentProps): props is TreeViewComponentWithExternalStateProps {
+  const propsWithExternalState = (props as TreeViewComponentWithExternalStateProps)
   return (
     propsWithExternalState.onSearch instanceof Function ||
     propsWithExternalState.expandedItems !== undefined ||
@@ -76,7 +92,7 @@ function isTreeViewComponentWithExternalStateProps<TData extends ITreeItem = ITr
   );
 }
 
-class TreeViewComponent<TData extends ITreeItem> extends React.Component<TreeViewComponentProps<TData>, TreeViewComponentState> {
+class TreeViewComponent<TData = { }> extends React.Component<TreeViewComponentProps<TData>, TreeViewComponentState<TData>> {
 
   /**
     * Initializes a new instance.
@@ -95,21 +111,11 @@ class TreeViewComponent<TData extends ITreeItem> extends React.Component<TreeVie
     this.itemIndex = 0;
     const { searchTerm } = this.state;
     const { children, items, enableSearchBar } = this.props;
-    const styles = {
-      root: {
-        padding: 0,
-        paddingBottom: 8,
-        paddingTop: children ? 0 : 8,
-        ...this.props.style
-      },
-      search: {
-        padding: `0px ${this.props.theme.spacing(1)}px`
-      }
-    };
+
     return (
-      <div style={styles.root}>
+      <div className={this.props.className ? `${this.props.classes.root} ${this.props.className}` : this.props.classes.root} style={this.props.style}>
         {children}
-        {enableSearchBar && <TextField label={"Search"} fullWidth={true} style={styles.search} value={searchTerm} onChange={this.onChangeSearchText} /> || null}
+        {enableSearchBar && <TextField label={"Search"} fullWidth={true} className={ this.props.classes.search } value={searchTerm} onChange={this.onChangeSearchText} /> || null}
         <List>
           {this.renderItems(items, searchTerm && searchTerm.toLowerCase())}
         </List>
@@ -118,30 +124,30 @@ class TreeViewComponent<TData extends ITreeItem> extends React.Component<TreeVie
   }
 
   private itemIndex: number = 0;
-  private renderItems = (items: TData[], searchTerm: string | undefined, depth: number = 1) => {
+  private renderItems = (items: TreeItem<TData>[], searchTerm: string | undefined, depth: number = 1) => {
     return items.reduce((acc, item) => {
 
-      const children = this.props.childrenProperty && ((item as any)[this.props.childrenProperty] as TData[]);
+      const children = item.children; // this.props.childrenProperty && ((item as any)[this.props.childrenProperty] as TData[]);
       const childrenJsx = children && this.renderItems(children, searchTerm, depth + 1);
 
       const expanded = searchTerm
-        ? children && childrenJsx.length > 0
+        ? childrenJsx && childrenJsx.length > 0
         : !children
           ? false
           : this.state.expandedItems.indexOf(item) > -1;
       const isFolder = children !== undefined;
 
-      const itemJsx = this.renderItem(item, searchTerm, depth, isFolder, expanded);
+      const itemJsx = this.renderItem(item, searchTerm, depth, isFolder, expanded || false);
       itemJsx && acc.push(itemJsx);
 
-      if (isFolder && expanded) {
+      if (isFolder && expanded && childrenJsx) {
         acc.push(...childrenJsx);
       }
       return acc;
 
     }, [] as JSX.Element[]);
   }
-  private renderItem = (item: TData, searchTerm: string | undefined, depth: number, isFolder: boolean, expanded: boolean): JSX.Element | null => {
+  private renderItem = (item: TreeItem<TData>, searchTerm: string | undefined, depth: number, isFolder: boolean, expanded: boolean): JSX.Element | null => {
     const styles = {
       item: {
         paddingLeft: (((this.props.depthOffset || 0) + depth) * this.props.theme.spacing(3)),
@@ -154,7 +160,7 @@ class TreeViewComponent<TData extends ITreeItem> extends React.Component<TreeVie
       }
     };
 
-    const text = (item as any)[this.props.contentProperty] as string || ''; // need to keep track of search
+    const text = item.content || ''; // need to keep track of search
     const matchIndex = searchTerm ? text.toLowerCase().indexOf(searchTerm) : -1;
     const searchTermLength = searchTerm && searchTerm.length || 0;
 
@@ -175,7 +181,7 @@ class TreeViewComponent<TData extends ITreeItem> extends React.Component<TreeVie
 
           { // display the left icon
             (this.props.useFolderIcons && <ListItemIcon>{isFolder ? <FolderIcon /> : <FileIcon />}</ListItemIcon>) ||
-            (item.icon && (<ListItemIcon><item.icon /></ListItemIcon>))}
+            (item.icon && (<ListItemIcon className={ item.iconClass }><item.icon /></ListItemIcon>))}
 
 
           { // highlight search result
@@ -193,10 +199,10 @@ class TreeViewComponent<TData extends ITreeItem> extends React.Component<TreeVie
                 </span>
                 {text.substring(matchIndex + searchTermLength)}
               </span>)
-              : (<ListItemText primary={text} />)
+              : (<ListItemText className={ item.contentClass } primary={text} />)
           }
 
-          { // display the right icon, depending on the state 
+          { // display the right icon, depending on the state
             !isFolder ? null : expanded ? (<OpenIcon onClick={handleClickCreator(true)} />) : (<CloseIcon onClick={handleClickCreator(true)} />)}
         </ListItem>
       )
@@ -204,7 +210,7 @@ class TreeViewComponent<TData extends ITreeItem> extends React.Component<TreeVie
     );
   }
 
-  private onFolderClick = (item: TData) => {
+  private onFolderClick = (item: TreeItem<TData>) => {
     // toggle items with children
     if (this.state.searchTerm) return;
     const indexOfItemToToggle = this.state.expandedItems.indexOf(item);
@@ -222,7 +228,7 @@ class TreeViewComponent<TData extends ITreeItem> extends React.Component<TreeVie
     }
   };
 
-  private onItemClick = (item: TData) => {
+  private onItemClick = (item: TreeItem<TData>) => {
     // activate items without children
     this.setState({
       activeItem: item,
@@ -262,7 +268,7 @@ class TreeViewComponent<TData extends ITreeItem> extends React.Component<TreeVie
   }
 }
 
-export type TreeViewCtorType<TData extends ITreeItem = ITreeItem> = new () => React.Component<Omit<TreeViewComponentProps<TData>, 'theme'>>;
+export type TreeViewCtorType<TData = { }> = new () => React.Component<Omit<TreeViewComponentProps<TData>, 'theme'|'classes'>>;
 
-export const TreeView = withTheme(TreeViewComponent);
+export const TreeView = withTheme(withStyles(styles)(TreeViewComponent));
 export default TreeView;

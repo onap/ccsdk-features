@@ -40,6 +40,7 @@ import { AddFaultNotificationAction } from "./actions/notificationActions";
 import { createCurrentProblemsProperties, createCurrentProblemsActions, currentProblemsReloadAction } from "./handlers/currentProblemsHandler";
 import { FaultStatus } from "./components/faultStatus";
 import { refreshFaultStatusAsyncAction } from "./actions/statusActions";
+import { alarmLogEntriesReloadAction } from "./handlers/alarmLogEntriesHandler";
 
 let currentMountId: string | undefined = undefined;
 
@@ -49,7 +50,7 @@ const mapProps = (state: IApplicationStoreState) => ({
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   currentProblemsActions: createCurrentProblemsActions(dispatcher.dispatch, true),
-  setCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new SetPanelAction(panelId))
+  setCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new SetPanelAction(panelId)),
 });
 
 const FaultApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ mountId?: string }> & Connect<typeof mapProps, typeof mapDisp>) => {
@@ -73,9 +74,9 @@ const FaultApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteCom
 
 const App = withRouter((props: RouteComponentProps) => (
   <Switch>
-    <Route path={ `${ props.match.path }/:mountId?` } component={ FaultApplicationRouteAdapter } />
-    <Redirect to={ `${ props.match.path }` } />
-   </Switch>
+    <Route path={`${props.match.path}/:mountId?`} component={FaultApplicationRouteAdapter} />
+    <Redirect to={`${props.match.path}`} />
+  </Switch>
 ));
 
 export function register() {
@@ -93,6 +94,13 @@ export function register() {
     const store = applicationApi && applicationApi.applicationStore;
     if (fault && store) {
       store.dispatch(new AddFaultNotificationAction(fault));
+
+      //reload fault data if tab is open
+      if (store.state.fault.currentOpenPanel.openPanel === "AlarmLog") {
+        store.dispatch(alarmLogEntriesReloadAction);
+      } else if (store.state.fault.currentOpenPanel.openPanel === "CurrentProblem") {
+        store.dispatch(currentProblemsReloadAction);
+      }
     }
   }));
 

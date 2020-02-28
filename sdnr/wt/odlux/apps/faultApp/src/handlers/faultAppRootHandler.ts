@@ -26,21 +26,26 @@ import { IActionHandler } from '../../../../framework/src/flux/action';
 import { IFaultNotifications, faultNotificationsHandler } from './notificationsHandler';
 import { ICurrentProblemsState, currentProblemsActionHandler } from './currentProblemsHandler';
 import { IAlarmLogEntriesState, alarmLogEntriesActionHandler } from './alarmLogEntriesHandler';
-import { SetPanelAction } from '../actions/panelChangeActions';
+import { SetPanelAction, RememberCurrentPanelAction } from '../actions/panelChangeActions';
 import { IFaultStatus, faultStatusHandler } from './faultStatusHandler';
 import { stuckAlarmHandler } from './clearStuckAlarmsHandler';
+import { PanelId } from 'models/panelId';
 
 export interface IFaultAppStoreState {
   currentProblems: ICurrentProblemsState;
   faultNotifications: IFaultNotifications;
   alarmLogEntries: IAlarmLogEntriesState;
-  currentOpenPanel: string | null;
+  currentOpenPanel: ICurrentOpenPanelState;
   faultStatus: IFaultStatus;
 }
 
-const currentOpenPanelHandler: IActionHandler<string | null> = (state = null, action) => {
+type ICurrentOpenPanelState = { openPanel: string | null, savedPanel: PanelId | null };
+const panelInitState = { openPanel: null, savedPanel: null };
+const currentOpenPanelHandler: IActionHandler<ICurrentOpenPanelState> = (state = panelInitState, action) => {
   if (action instanceof SetPanelAction) {
-    state = action.panelId;
+    state = { ...state, openPanel: action.panelId };
+  } else if (action instanceof RememberCurrentPanelAction) {
+    state = { ...state, savedPanel: action.panelId };
   }
   return state;
 }

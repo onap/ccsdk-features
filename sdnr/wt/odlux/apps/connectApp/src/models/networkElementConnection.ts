@@ -52,3 +52,10 @@ export type UpdateNetworkElement = {
 export type ConnectionStatus = {
   status: string
 }
+
+/**
+ * Checks if a object has a given propertyname, if yes, the name is returned as string.
+ * @throws at compile time if property is not available
+ * @param name propertyname
+ */
+export const propertyOf = <TObj>(name: keyof TObj) => name;

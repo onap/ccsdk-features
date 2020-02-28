@@ -28,19 +28,20 @@ import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createReceiveLevelProperties, createReceiveLevelActions } from '../handlers/receiveLevelHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
-import { SetSubViewAction } from '../actions/toggleActions';
+import { SetSubViewAction, SetFilterVisibility } from '../actions/toggleActions';
 import ToggleContainer from './toggleContainer';
 
 const mapProps = (state: IApplicationStoreState) => ({
   receiveLevelProperties: createReceiveLevelProperties(state),
-  currentView: state.performanceHistory.subViews.receiveLevelDataSelection,
-
+  currentView: state.performanceHistory.subViews.receiveLevel.subView,
+  isFilterVisible: state.performanceHistory.subViews.receiveLevel.isFilterVisible,
+  existingFilter: state.performanceHistory.receiveLevel.filter
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   receiveLevelActions: createReceiveLevelActions(dispatcher.dispatch),
   setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("receiveLevel", value)),
-
+  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility("receiveLevel", value)) },
 });
 
 type ReceiveLevelComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -53,6 +54,11 @@ const ReceiveLevelTable = MaterialTable as MaterialTableCtorType<ReceiveLevelDat
  * The Component which gets the receiveLevel data from the database based on the selected time period.
  */
 class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
+
+  onToggleFilterButton = () => {
+    this.props.toggleFilterButton(!this.props.isFilterVisible);
+  }
+
 
   onChange = (value: "chart" | "table") => {
     this.props.setSubView(value);
@@ -68,10 +74,7 @@ class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
       { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
       { property: "timeStamp", title: "End Time", type: ColumnType.text },
       {
-        property: "suspectIntervalFlag", title: "Suspect Interval", customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
-          return <div >{suspectIntervalFlag} </div>
-        }
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.boolean
       }
     ];
 
@@ -81,9 +84,9 @@ class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
 
     return (
       <>
-        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.receiveLevelProperties.filter} onFilterChanged={this.props.receiveLevelActions.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <ReceiveLevelTable idProperty={"_id"} columns={receiveLevelColumns} {...properties} {...actions} />
+          <ReceiveLevelTable stickyHeader idProperty={"_id"} columns={receiveLevelColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

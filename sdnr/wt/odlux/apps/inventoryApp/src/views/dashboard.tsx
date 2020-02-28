@@ -16,13 +16,32 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from "react";
+import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
 
 import { Connect, connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { TreeView, TreeItem, TreeViewCtorType } from '../../../../framework/src/components/material-ui/treeView';
 
 import { InventoryType } from '../models/inventory';
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 import { createInventoryElementsProperties, createInventoryElementsActions } from "../handlers/inventoryElementsHandler";
+
+const styles = (theme: Theme) => createStyles({
+  root: {
+    flex: "1 0 0%",
+    display: "flex",
+    flexDirection: "row",
+  },
+  tree: {
+    flex: "1 0 0%",
+    minWidth: "250px",
+    padding: `0px ${theme.spacing(1)}px`
+  },
+  details: {
+    flex: "5 0 0%",
+    padding: `0px ${theme.spacing(1)}px`
+  }
+});
 
 const InventoryTable = MaterialTable as MaterialTableCtorType<InventoryType & {_id: string}>;
 
@@ -35,9 +54,28 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   inventoryElementsActions: createInventoryElementsActions(dispatcher.dispatch)
 });
 
-class DashboardComponent extends React.Component<Connect<typeof mapProps, typeof mapDispatch>> {
+const SampleTree = TreeView as any as TreeViewCtorType<string>;
+
+
+type TreeDemoItem = TreeItem<string>;
+
+const treeData: TreeDemoItem[] = [
+  {
+    content: "Erste Ebene", children: [
+      {
+        content: "Zweite Ebene", children: [
+          { content: "Dritte Ebene" },
+        ]
+      },
+      { content: "Zweite Ebene 2" },
+    ]
+  },
+  { content: "Erste Ebene 3" },
+];
+
+class DashboardComponent extends React.Component<& WithStyles<typeof styles> & Connect<typeof mapProps, typeof mapDispatch>> {
   render() {
-    return <InventoryTable title="Inventory" idProperty="_id" columns={[
+    return <InventoryTable stickyHeader title="Inventory" idProperty="_id" columns={[
       { property: "nodeId", title: "Node Name" },
       { property: "manufacturerIdentifier", title: "Manufacturer" },
       { property: "parentUuid", title: "Parent" },
@@ -60,5 +98,5 @@ class DashboardComponent extends React.Component<Connect<typeof mapProps, typeof
   }
 }
 
-export const Dashboard = connect(mapProps, mapDispatch)(DashboardComponent);
+export const Dashboard = connect(mapProps, mapDispatch)(withStyles(styles)(DashboardComponent));
 export default Dashboard;

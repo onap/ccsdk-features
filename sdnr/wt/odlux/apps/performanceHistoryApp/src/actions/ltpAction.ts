@@ -50,6 +50,18 @@ export class SetInitialLoadedAction extends BaseAction {
   }
 }
 
+export class NoLtpsFoundAction extends BaseAction {
+  constructor() {
+    super();
+  }
+}
+
+export class ResetLtpsAction extends BaseAction {
+  constructor() {
+    super();
+  }
+}
+
 
 /** 
  * Represents an asynchronous thunk action to load available distinctLtps by networkElement from the database and set the returned first Ltp as default. 
@@ -65,6 +77,10 @@ export const loadDistinctLtpsbyNetworkElementAsync = (networkElement: string, se
     if (distinctLtps) {
       const ltps = getDistinctLtps(distinctLtps, selectedLtp, selectFirstLtp, resetLtp);
       dispatch(new AllAvailableLtpsLoadedAction(ltps));
+    } else {
+      if (resetLtp)
+        resetLtp();
+      dispatch(new NoLtpsFoundAction());
     }
   }).catch(error => {
     dispatch(new AllAvailableLtpsLoadedAction(null, error));

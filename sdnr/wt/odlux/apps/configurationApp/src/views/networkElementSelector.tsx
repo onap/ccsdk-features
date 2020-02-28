@@ -47,7 +47,7 @@ class NetworkElementSelectorComponent extends React.Component<NetworkElementSele
 
   render() {
     return (
-      <ConnectedElementTable onHandleClick={(e, row) => { this.props.history.push(`${this.props.match.path}/${row.nodeId}`) }} columns={[
+      <ConnectedElementTable stickyHeader onHandleClick={(e, row) => { this.props.history.push(`${this.props.match.path}/${row.nodeId}`) }} columns={[
         { property: "nodeId", title: "Name", type: ColumnType.text },
         { property: "isRequired", title: "Required ?", type: ColumnType.boolean },
         { property: "host", title: "Host", type: ColumnType.text },

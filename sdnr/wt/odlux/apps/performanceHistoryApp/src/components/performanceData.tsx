@@ -28,16 +28,19 @@ import { createPerformanceDataProperties, createPerformanceDataActions } from '.
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
 import ToggleContainer from './toggleContainer';
-import { SetSubViewAction } from '../actions/toggleActions';
+import { SetSubViewAction, SetFilterVisibility } from '../actions/toggleActions';
 
 const mapProps = (state: IApplicationStoreState) => ({
   performanceDataProperties: createPerformanceDataProperties(state),
-  currentView: state.performanceHistory.subViews.performanceDataSelection,
+  currentView: state.performanceHistory.subViews.performanceData.subView,
+  isFilterVisible: state.performanceHistory.subViews.performanceData.isFilterVisible,
+  existingFilter: state.performanceHistory.performanceData.filter
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   performanceDataActions: createPerformanceDataActions(dispatcher.dispatch),
   setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("performanceData", value)),
+  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility("performanceData", value)) }
 });
 
 type PerformanceDataComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -51,8 +54,8 @@ const PerformanceDataTable = MaterialTable as MaterialTableCtorType<PerformanceD
  */
 class PerformanceDataComponent extends React.Component<PerformanceDataComponentProps>{
 
-  onChange = (value: "chart" | "table") => {
-    this.props.setSubView(value);
+  onToggleFilterButton = () => {
+    this.props.toggleFilterButton(!this.props.isFilterVisible);
   }
 
   render(): JSX.Element {
@@ -65,10 +68,7 @@ class PerformanceDataComponent extends React.Component<PerformanceDataComponentP
       { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
       { property: "timeStamp", title: "End Time", type: ColumnType.text },
       {
-        property: "suspectIntervalFlag", title: "Suspect Interval", customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
-          return <div >{suspectIntervalFlag} </div>
-        }
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.boolean
       }
     ];
 
@@ -77,9 +77,9 @@ class PerformanceDataComponent extends React.Component<PerformanceDataComponentP
     });
     return (
       <>
-        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={() => this.props.toggleFilterButton(!this.props.isFilterVisible)} existingFilter={this.props.existingFilter} onFilterChanged={this.props.performanceDataActions.onFilterChanged} selectedValue={this.props.currentView} showFilter={this.props.isFilterVisible} onChange={this.props.setSubView}>
           {lineChart(chartPagedData)}
-          <PerformanceDataTable idProperty={"_id"} columns={performanceColumns} {...properties} {...actions} />
+          <PerformanceDataTable stickyHeader idProperty={"_id"} columns={performanceColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

@@ -24,6 +24,12 @@ export class SetPanelAction extends Action {
   }
 }
 
+export class RememberCurrentPanelAction extends Action {
+  constructor(public panelId: PanelId) {
+    super();
+  }
+}
+
 export const setPanelAction = (panelId: PanelId) => {
   return new SetPanelAction(panelId);
 }

@@ -105,6 +105,7 @@ export type MaterialTableComponentState<TData = {}> = {
 export type TableApi = { forceRefresh?: () => Promise<void> };
 
 type MaterialTableComponentBaseProps<TData> = WithStyles<typeof styles> & {
+  className?: string;
   columns: ColumnModel<TData>[];
   idProperty: keyof TData | ((data: TData) => React.Key);
   tableId?: string;
@@ -187,7 +188,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
     const getId = typeof this.props.idProperty !== "function" ? (data: TData) => ((data as { [key: string]: any })[this.props.idProperty as any as string] as string | number) : this.props.idProperty;
     const toggleFilter = isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.onToggleFilter : () => { !this.props.disableFilter && this.setState({ showFilter: !showFilter }, this.update) }
     return (
-      <Paper className={classes.root}>
+      <Paper className={this.props.className ? `${classes.root} ${this.props.className}` : classes.root}>
         <TableContainer className={classes.container}>
           <TableToolbar tableId={this.props.tableId} numSelected={selected && selected.length} title={this.props.title} customActionButtons={this.props.customActionButtons} onExportToCsv={this.exportToCsv}
             onToggleFilter={toggleFilter} />

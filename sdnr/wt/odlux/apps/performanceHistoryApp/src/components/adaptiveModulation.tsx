@@ -29,17 +29,19 @@ import { createAdaptiveModulationProperties, createAdaptiveModulationActions } f
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
 import ToggleContainer from './toggleContainer';
-import { SetSubViewAction } from '../actions/toggleActions';
+import { SetSubViewAction, SetFilterVisibility } from '../actions/toggleActions';
 
 const mapProps = (state: IApplicationStoreState) => ({
   adaptiveModulationProperties: createAdaptiveModulationProperties(state),
-  currentView: state.performanceHistory.subViews.adaptiveModulation,
-
+  currentView: state.performanceHistory.subViews.adaptiveModulation.subView,
+  isFilterVisible: state.performanceHistory.subViews.adaptiveModulation.isFilterVisible,
+  existingFilter: state.performanceHistory.adaptiveModulation.filter
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   adaptiveModulationActions: createAdaptiveModulationActions(dispatcher.dispatch),
   setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("adaptiveModulation", value)),
+  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility("adaptiveModulation", value)) },
 });
 
 type AdaptiveModulationComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -52,6 +54,11 @@ const AdaptiveModulationTable = MaterialTable as MaterialTableCtorType<AdaptiveM
  * The Component which gets the adaptiveModulation data from the database based on the selected time period.
  */
 class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComponentProps>{
+
+  onToggleFilterButton = () => {
+    this.props.toggleFilterButton(!this.props.isFilterVisible);
+  }
+
   onChange = (value: "chart" | "table") => {
     this.props.setSubView(value);
   }
@@ -66,10 +73,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
       { property: "timeStamp", title: "End Time", type: ColumnType.text },
       {
-        property: "suspectIntervalFlag", title: "Suspect Interval", customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
-          return <div >{suspectIntervalFlag} </div>
-        }
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.boolean
       }];
 
     chartPagedData.datasets.forEach(ds => {
@@ -78,9 +82,9 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
 
     return (
       <>
-        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.adaptiveModulationProperties.filter} onFilterChanged={this.props.adaptiveModulationActions.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <AdaptiveModulationTable idProperty={"_id"} columns={adaptiveModulationColumns} {...properties} {...actions} />
+          <AdaptiveModulationTable stickyHeader idProperty={"_id"} columns={adaptiveModulationColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

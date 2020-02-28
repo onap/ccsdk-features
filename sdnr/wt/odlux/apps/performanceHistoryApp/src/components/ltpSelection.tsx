@@ -17,7 +17,7 @@
  */
 
 import * as React from 'react';
-import { MenuItem, Select, FormControl } from '@material-ui/core';
+import { MenuItem, Select, FormControl, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { LtpIds } from 'models/availableLtps';
 import { Loader } from '../../../../framework/src/components/material-ui';
@@ -43,10 +43,11 @@ const useStyles = makeStyles(theme => ({
         "display": "flex",
         "alignItems": "center",
         "justifyContent": "center",
+        flexDirection: "column"
     }
 }));
 
-type LtpSelectionProps = { selectedNE: string, finishedLoading: boolean, selectedLtp: string, availableLtps: LtpIds[], onChangeLtp(event: React.ChangeEvent<HTMLSelectElement>): void, selectedTimePeriod: string, onChangeTimePeriod(event: React.ChangeEvent<HTMLSelectElement>): void };
+type LtpSelectionProps = { selectedNE: string, error?: string, finishedLoading: boolean, selectedLtp: string, availableLtps: LtpIds[], onChangeLtp(event: React.ChangeEvent<HTMLSelectElement>): void, selectedTimePeriod: string, onChangeTimePeriod(event: React.ChangeEvent<HTMLSelectElement>): void };
 
 export const LtpSelection = (props: LtpSelectionProps) => {
     const classes = useStyles();
@@ -69,17 +70,28 @@ export const LtpSelection = (props: LtpSelectionProps) => {
                 </Select>
             </FormControl>
             {
-                !props.finishedLoading &&
+                !props.finishedLoading && !props.error &&
                 <div className={classes.center}>
                     <Loader />
                     <h3>Collecting Data ...</h3>
                 </div>
             }
             {
-                props.selectedLtp === "-1" && props.finishedLoading &&
+                props.finishedLoading && props.error &&
                 <div className={classes.center}>
-                    <h3>Please select a LTP</h3>
+                    <h3>Data couldn't be loaded</h3>
+                    <Typography variant="body1">{props.error}</Typography>
                 </div>
+            }
+            {
+                props.selectedLtp === "-1" && props.finishedLoading && !props.error && (props.availableLtps.length > 0 ?
+                    <div className={classes.center}>
+                        <h3>Please select a LTP</h3>
+                    </div>
+                    :
+                    <div className={classes.center}>
+                        <h3>No performance data found</h3>
+                    </div>)
             }
         </>)
 }

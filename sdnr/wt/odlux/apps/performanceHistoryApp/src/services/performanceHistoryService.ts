@@ -53,7 +53,7 @@ class PerformanceService {
     }
 
     const result = await requestRest<Result<string>>(path, { method: "POST", body: JSON.stringify(convertPropertyNames({ input: query }, replaceUpperCase)) });
-    return result && result.output && result.output.data.map(ne => ({ key: ne })) || null;
+    return result && result.output && result.output.data && result.output.data.map(ne => ({ key: ne })) || null;
   }
 
 

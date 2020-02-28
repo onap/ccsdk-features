@@ -37,8 +37,8 @@ import { IAvailableLtpsState, availableLtpsActionHandler } from './availableLtps
 import { PmDataInterval } from '../models/performanceDataType';
 import { TimeChangeAction } from '../actions/timeChangeAction';
 import { UpdateMountId } from '../actions/deviceListActions';
-import { SetSubViewAction, ResetAllSubViewsAction } from '../actions/toggleActions';
-import { SubTabType } from '../models/toggleDataType';
+import { SetSubViewAction, ResetAllSubViewsAction, SetFilterVisibility } from '../actions/toggleActions';
+import { SubTabType, currentViewType } from '../models/toggleDataType';
 
 export interface IPerformanceHistoryStoreState {
   nodeId: string;
@@ -81,24 +81,46 @@ const currentPMDataIntervalHandler: IActionHandler<PmDataInterval> = (state = Pm
   return state;
 }
 
+type filterableSubview = { subView: SubTabType, isFilterVisible: boolean };
+type toggleViewDataType = { currentSubView: currentViewType, performanceData: filterableSubview, receiveLevel: filterableSubview, transmissionPower: filterableSubview, adaptiveModulation: filterableSubview, temperatur: filterableSubview, SINR: filterableSubview, CPD: filterableSubview };
 
-type toggleViewDataType = { performanceDataSelection: SubTabType, receiveLevelDataSelection: SubTabType, transmissionPower: SubTabType, adaptiveModulation: SubTabType, temperatur: SubTabType, SINR: SubTabType, CPD: SubTabType };
 
-
-const toogleViewDataHandler: IActionHandler<toggleViewDataType> = (state = { performanceDataSelection: "chart", receiveLevelDataSelection: "chart", adaptiveModulation: "chart", transmissionPower: "chart", temperatur: "chart", SINR: "chart", CPD: "chart" }, action) => {
+const toogleViewDataHandler: IActionHandler<toggleViewDataType> = (state = { currentSubView: "performanceData", performanceData: { subView: "chart", isFilterVisible: true }, receiveLevel: { subView: "chart", isFilterVisible: true }, adaptiveModulation: { subView: "chart", isFilterVisible: true }, transmissionPower: { subView: "chart", isFilterVisible: true }, temperatur: { subView: "chart", isFilterVisible: true }, SINR: { subView: "chart", isFilterVisible: true }, CPD: { subView: "chart", isFilterVisible: true } }, action) => {
 
   if (action instanceof SetSubViewAction) {
     switch (action.currentView) {
-      case "performanceData": state = { ...state, performanceDataSelection: action.selectedTab }; break;
-      case "adaptiveModulation": state = { ...state, adaptiveModulation: action.selectedTab }; break;
-      case "receiveLevel": state = { ...state, receiveLevelDataSelection: action.selectedTab }; break;
-      case "transmissionPower": state = { ...state, transmissionPower: action.selectedTab }; break;
-      case "Temp": state = { ...state, temperatur: action.selectedTab }; break;
-      case "SINR": state = { ...state, SINR: action.selectedTab }; break;
-      case "CPD": state = { ...state, CPD: action.selectedTab }; break;
+      case "performanceData": state = { ...state, performanceData: { ...state.performanceData, subView: action.selectedTab } }; break;
+      case "adaptiveModulation": state = { ...state, adaptiveModulation: { ...state.adaptiveModulation, subView: action.selectedTab } }; break;
+      case "receiveLevel": state = { ...state, receiveLevel: { ...state.receiveLevel, subView: action.selectedTab } }; break;
+      case "transmissionPower": state = { ...state, transmissionPower: { ...state.transmissionPower, subView: action.selectedTab } }; break;
+      case "Temp": state = { ...state, temperatur: { ...state.temperatur, subView: action.selectedTab } }; break;
+      case "SINR": state = { ...state, SINR: { ...state.SINR, subView: action.selectedTab } }; break;
+      case "CPD": state = { ...state, CPD: { ...state.CPD, subView: action.selectedTab } }; break;
     }
+  }
+  else if (action instanceof SetFilterVisibility) {
+    switch (action.currentView) {
+      case "performanceData": state = {
+        ...state, performanceData: { ...state.performanceData, isFilterVisible: action.isVisible }
+      }; break;
+      case "adaptiveModulation": state = { ...state, adaptiveModulation: { ...state.performanceData, isFilterVisible: action.isVisible } }; break;
+      case "receiveLevel": state = { ...state, receiveLevel: { ...state.receiveLevel, isFilterVisible: action.isVisible } }; break;
+      case "transmissionPower": state = { ...state, transmissionPower: { ...state.transmissionPower, isFilterVisible: action.isVisible } }; break;
+      case "Temp": state = { ...state, temperatur: { ...state.temperatur, isFilterVisible: action.isVisible } }; break;
+      case "SINR": state = { ...state, SINR: { ...state.SINR, isFilterVisible: action.isVisible } }; break;
+      case "CPD": state = { ...state, CPD: { ...state.CPD, isFilterVisible: action.isVisible } }; break;
+    }
+
   } else if (action instanceof ResetAllSubViewsAction) {
-    state = { performanceDataSelection: "chart", adaptiveModulation: "chart", receiveLevelDataSelection: "chart", transmissionPower: "chart", temperatur: "chart", SINR: "chart", CPD: "chart" }
+    state = {
+      ...state, performanceData: { ...state.performanceData, subView: "chart" },
+      adaptiveModulation: { ...state.adaptiveModulation, subView: "chart" },
+      receiveLevel: { ...state.receiveLevel, subView: "chart" },
+      transmissionPower: { ...state.transmissionPower, subView: "chart" },
+      temperatur: { ...state.temperatur, subView: "chart" },
+      SINR: { ...state.SINR, subView: "chart" },
+      CPD: { ...state.CPD, subView: "chart" }
+    }
   }
 
   return state;

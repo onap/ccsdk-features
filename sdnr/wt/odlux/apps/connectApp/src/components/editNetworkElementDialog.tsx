@@ -24,7 +24,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { FormControl, InputLabel, Select, MenuItem, Typography } from '@material-ui/core';
 
 import { IDispatcher, connect, Connect } from '../../../../framework/src/flux/connect';
 
@@ -35,7 +35,7 @@ import {
 } from '../actions/networkElementsActions';
 
 import { unmountNetworkElementAsyncActionCreator, mountNetworkElementAsyncActionCreator } from '../actions/mountedNetworkElementsActions';
-import { NetworkElementConnection, UpdateNetworkElement } from '../models/networkElementConnection';
+import { NetworkElementConnection, UpdateNetworkElement, propertyOf } from '../models/networkElementConnection';
 import { removeWebUriAction } from '../actions/commonNetworkElementsActions';
 
 export enum EditNetworkElementDialogMode {
@@ -47,6 +47,8 @@ export enum EditNetworkElementDialogMode {
   UnmountNetworkElement = "unmountNetworkElement",
 }
 
+
+
 const mapDispatch = (dispatcher: IDispatcher) => ({
   addNewNetworkElement: async (element: NetworkElementConnection) => {
     await dispatcher.dispatch(addNewNetworkElementAsyncActionCreator(element));
@@ -57,8 +59,21 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
     dispatcher.dispatch(unmountNetworkElementAsyncActionCreator(element && element.nodeId));
   },
   editNetworkElement: async (element: UpdateNetworkElement, mountElement: NetworkElementConnection) => {
-    await dispatcher.dispatch(editNetworkElementAsyncActionCreator(element));
-    await dispatcher.dispatch(mountNetworkElementAsyncActionCreator(mountElement));
+
+    const values = Object.keys(element);
+
+    //make sure properties are there in case they get renamed
+    const idProperty = propertyOf<UpdateNetworkElement>("id");
+    const isRequiredProperty = propertyOf<UpdateNetworkElement>("isRequired");
+
+    if (values.length === 2 && values.includes(idProperty as string) && values.includes(isRequiredProperty as string)) {
+      // do not mount network element, if only isRequired is changed
+      await dispatcher.dispatch(editNetworkElementAsyncActionCreator(element));
+
+    } else {
+      await dispatcher.dispatch(editNetworkElementAsyncActionCreator(element));
+      await dispatcher.dispatch(mountNetworkElementAsyncActionCreator(mountElement));
+    }
   },
   removeNetworkElement: async (element: UpdateNetworkElement) => {
     await dispatcher.dispatch(removeNetworkElementAsyncActionCreator(element));
@@ -140,7 +155,7 @@ type EditNetworkElementDialogComponentProps = Connect<undefined, typeof mapDispa
   onClose: () => void;
 };
 
-type EditNetworkElementDialogComponentState = NetworkElementConnection;
+type EditNetworkElementDialogComponentState = NetworkElementConnection & { isNameValid: boolean, isHostSet: boolean };
 
 class EditNetworkElementDialogComponent extends React.Component<EditNetworkElementDialogComponentProps, EditNetworkElementDialogComponentState> {
   constructor(props: EditNetworkElementDialogComponentProps) {
@@ -151,6 +166,8 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
       isRequired: false,
       host: this.props.initialNetworkElement.host,
       port: this.props.initialNetworkElement.port,
+      isNameValid: true,
+      isHostSet: true
     };
   }
 
@@ -164,7 +181,9 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
             {setting.dialogDescription}
           </DialogContentText>
           <TextField disabled={!setting.enableMountIdEditor} spellCheck={false} autoFocus margin="dense" id="name" label="Name" aria-label="name" type="text" fullWidth value={this.state.nodeId} onChange={(event) => { this.setState({ nodeId: event.target.value }); }} />
+          {!this.state.isNameValid && <Typography variant="body1" color="error">Name cannot be empty.</Typography>}
           <TextField disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="ipaddress" label="IP address" aria-label="ip adress" type="text" fullWidth value={this.state.host} onChange={(event) => { this.setState({ host: event.target.value }); }} />
+          {!this.state.isHostSet && <Typography variant="body1" color="error">IP Adress cannot be empty.</Typography>}
           <TextField disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="netconfport" label="NetConf port" aria-label="netconf port" type="number" fullWidth value={this.state.port.toString()} onChange={(event) => { this.setState({ port: +event.target.value }); }} />
           {setting.enableUsernameEditor && <TextField disabled={!setting.enableUsernameEditor} spellCheck={false} margin="dense" id="username" label="Username" aria-label="username" type="text" fullWidth value={this.state.username} onChange={(event) => { this.setState({ username: event.target.value }); }} /> || null}
           {setting.enableUsernameEditor && <TextField disabled={!setting.enableUsernameEditor} spellCheck={false} margin="dense" id="password" label="Password" aria-label="password" type="password" fullWidth value={this.state.password} onChange={(event) => { this.setState({ password: event.target.value }); }} /> || null}
@@ -180,15 +199,18 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
         </DialogContent>
         <DialogActions>
           <Button aria-label="dialog-confirm-button" onClick={(event) => {
-            this.onApply({
-              isRequired: this.state.isRequired,
-              id: this.state.nodeId,
-              nodeId: this.state.nodeId,
-              host: this.state.host,
-              port: this.state.port,
-              username: this.state.username,
-              password: this.state.password,
-            });
+
+            if (this.areRequieredFieldsValid()) {
+              this.onApply({
+                isRequired: this.state.isRequired,
+                id: this.state.nodeId,
+                nodeId: this.state.nodeId,
+                host: this.state.host,
+                port: this.state.port,
+                username: this.state.username,
+                password: this.state.password,
+              });
+            }
             event.preventDefault();
             event.stopPropagation();
           }} > {setting.applyButtonText} </Button>
@@ -230,10 +252,39 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
         element && this.props.removeNetworkElement(updateElement);
         break;
     }
+
+    this.setState({ password: '', username: '' });
+    this.resetRequieredFields();
   };
 
   private onCancel = () => {
     this.props.onClose && this.props.onClose();
+    this.setState({ password: '', username: '' });
+    this.resetRequieredFields();
+  }
+
+  private resetRequieredFields() {
+    this.setState({ isNameValid: true, isHostSet: true });
+  }
+
+  private areRequieredFieldsValid() {
+    let areFieldsValid = true;
+
+    if (this.state.nodeId == undefined || this.state.nodeId.trim().length === 0) {
+      this.setState({ isNameValid: false });
+      areFieldsValid = false;
+    } else {
+      this.setState({ isNameValid: true });
+    }
+
+    if (this.state.host == undefined || this.state.host.trim().length === 0) {
+      this.setState({ isHostSet: false });
+      areFieldsValid = false;
+    } else {
+      this.setState({ isHostSet: true });
+    }
+
+    return areFieldsValid;
   }
 
   static getDerivedStateFromProps(props: EditNetworkElementDialogComponentProps, state: EditNetworkElementDialogComponentState & { _initialNetworkElement: NetworkElementConnection }): EditNetworkElementDialogComponentState & { _initialNetworkElement: NetworkElementConnection } {

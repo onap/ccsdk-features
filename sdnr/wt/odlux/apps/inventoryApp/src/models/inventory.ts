@@ -16,6 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 export { HitEntry, Result } from '../../../../framework/src/models';
+
 export type InventoryType = {
   treeLevel: number;
   parentUuid: string;
@@ -31,4 +32,14 @@ export type InventoryType = {
   partTypeId: string;
   modelIdentifier: string;
   typeName: string;
+}
+
+export type InventoryTreeNode = {
+  [key: string]: {
+    label: string;
+    children?: InventoryTreeNode;
+    isMatch?: boolean;
+    ownSeverity?: string;
+    childrenSeveritySummary?: string;
+  }
 }

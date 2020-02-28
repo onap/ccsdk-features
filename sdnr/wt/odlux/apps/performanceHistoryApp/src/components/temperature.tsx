@@ -29,16 +29,20 @@ import { createTemperatureProperties, createTemperatureActions } from '../handle
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
 import ToggleContainer from './toggleContainer';
-import { SetSubViewAction } from '../actions/toggleActions';
+import { SetSubViewAction, SetFilterVisibility } from '../actions/toggleActions';
 
 const mapProps = (state: IApplicationStoreState) => ({
   temperatureProperties: createTemperatureProperties(state),
-  currentView: state.performanceHistory.subViews.temperatur,
+  currentView: state.performanceHistory.subViews.temperatur.subView,
+  isFilterVisible: state.performanceHistory.subViews.temperatur.isFilterVisible,
+  existingFilter: state.performanceHistory.temperature.filter
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   temperatureActions: createTemperatureActions(dispatcher.dispatch),
   setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("Temp", value)),
+  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility("Temp", value)) },
+
 });
 
 type TemperatureComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -51,6 +55,11 @@ const TemperatureTable = MaterialTable as MaterialTableCtorType<TemperatureDataT
  * The Component which gets the temperature data from the database based on the selected time period.
  */
 class TemperatureComponent extends React.Component<TemperatureComponentProps>{
+
+  onToggleFilterButton = () => {
+    this.props.toggleFilterButton(!this.props.isFilterVisible);
+  }
+
 
   onChange = (value: "chart" | "table") => {
     this.props.setSubView(value);
@@ -66,10 +75,7 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
       { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
       { property: "timeStamp", title: "End Time", type: ColumnType.text },
       {
-        property: "suspectIntervalFlag", title: "Suspect Interval", customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
-          return <div >{suspectIntervalFlag} </div>
-        }
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.boolean
       }
     ];
 
@@ -79,9 +85,9 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
     return (
       <>
 
-        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.temperatureProperties.filter} onFilterChanged={this.props.temperatureActions.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <TemperatureTable idProperty={"_id"} columns={temperatureColumns} {...properties} {...actions} />
+          <TemperatureTable stickyHeader idProperty={"_id"} columns={temperatureColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

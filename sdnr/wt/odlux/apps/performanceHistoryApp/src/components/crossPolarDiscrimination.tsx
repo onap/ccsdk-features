@@ -28,19 +28,22 @@ import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createCrossPolarDiscriminationProperties, createCrossPolarDiscriminationActions } from '../handlers/crossPolarDiscriminationHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
-import { SetSubViewAction } from '../actions/toggleActions';
+import { SetSubViewAction, SetFilterVisibility } from '../actions/toggleActions';
 import ToggleContainer from './toggleContainer';
 
 
 const mapProps = (state: IApplicationStoreState) => ({
   crossPolarDiscriminationProperties: createCrossPolarDiscriminationProperties(state),
-  currentView: state.performanceHistory.subViews.CPD,
+  currentView: state.performanceHistory.subViews.CPD.subView,
+  isFilterVisible: state.performanceHistory.subViews.CPD.isFilterVisible,
+  existingFilter: state.performanceHistory.crossPolarDiscrimination.filter
 
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   crossPolarDiscriminationActions: createCrossPolarDiscriminationActions(dispatcher.dispatch),
   setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("CPD", value)),
+  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility("CPD", value)) },
 });
 
 type CrossPolarDiscriminationComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -53,6 +56,10 @@ const CrossPolarDiscriminationTable = MaterialTable as MaterialTableCtorType<Cro
  * The Component which gets the crossPolarDiscrimination data from the database based on the selected time period.
  */
 class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscriminationComponentProps>{
+
+  onToggleFilterButton = () => {
+    this.props.toggleFilterButton(!this.props.isFilterVisible);
+  }
 
   onChange = (value: "chart" | "table") => {
     this.props.setSubView(value);
@@ -69,10 +76,7 @@ class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscri
       { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
       { property: "timeStamp", title: "End Time", type: ColumnType.text },
       {
-        property: "suspectIntervalFlag", title: "Suspect Interval", customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
-          return <div >{suspectIntervalFlag} </div>
-        }
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.boolean
       }
     ];
 
@@ -81,9 +85,9 @@ class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscri
     });
     return (
       <>
-        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.crossPolarDiscriminationProperties.filter} onFilterChanged={this.props.crossPolarDiscriminationActions.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <CrossPolarDiscriminationTable idProperty={"_id"} columns={cpdColumns} {...properties} {...actions} />
+          <CrossPolarDiscriminationTable stickyHeader idProperty={"_id"} columns={cpdColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

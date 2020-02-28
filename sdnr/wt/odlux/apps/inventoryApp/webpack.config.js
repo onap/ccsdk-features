@@ -126,8 +126,11 @@ module.exports = (env) => {
         colors: true
       },
       proxy: {
-
         "/oauth2/": {
+          target: "http://localhost:48181",
+          secure: false
+        },
+        "/yang-schema/": {
           target: "http://localhost:48181",
           secure: false
         },
@@ -143,14 +146,13 @@ module.exports = (env) => {
           target: "http://localhost:48181",
           secure: false
         },
-        "/websocket/": {
+        "/websocket": {
           target: "http://localhost:48181",
           ws: true,
-          changeOrigin: true,
+          changeOrigin: false,
           secure: false
         }
       }
-
     }
   }];
 }

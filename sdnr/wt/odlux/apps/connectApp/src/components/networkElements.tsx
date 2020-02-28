@@ -110,9 +110,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       <Divider />,
       <MenuItem aria-label={"info-button"} onClick={event => this.onOpenInfoNetworkElementDialog(event, rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected"} ><Info /><Typography>Info</Typography></MenuItem>,
       <MenuItem aria-label={"edit-button"} onClick={event => this.onOpenEditNetworkElementDialog(event, rowData)}><EditIcon /><Typography>Edit</Typography></MenuItem>,
-      !rowData.isRequired
-        ? <MenuItem aria-label={"add-button"} onClick={event => this.onOpenAddNetworkElementDialog(event, rowData)} ><AddIcon /><Typography>Add</Typography></MenuItem>
-        : <MenuItem aria-label={"remove-button"} onClick={event => this.onOpenRemoveNetworkElementDialog(event, rowData)} ><RemoveIcon /><Typography>Remove</Typography></MenuItem>,
+      <MenuItem aria-label={"remove-button"} onClick={event => this.onOpenRemoveNetworkElementDialog(event, rowData)} ><RemoveIcon /><Typography>Remove</Typography></MenuItem>,
       <Divider />,
       <MenuItem aria-label={"inventory-button"} onClick={event => this.props.navigateToApplication("inventory", rowData.nodeId)}><Typography>Inventory</Typography></MenuItem>,
       <Divider />,

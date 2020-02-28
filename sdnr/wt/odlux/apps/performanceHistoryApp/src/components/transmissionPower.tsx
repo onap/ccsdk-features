@@ -28,17 +28,22 @@ import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createTransmissionPowerProperties, createTransmissionPowerActions } from '../handlers/transmissionPowerHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
-import { SetSubViewAction } from '../actions/toggleActions';
+import { SetSubViewAction, SetFilterVisibility } from '../actions/toggleActions';
 import ToggleContainer from './toggleContainer';
 
 const mapProps = (state: IApplicationStoreState) => ({
   transmissionPowerProperties: createTransmissionPowerProperties(state),
-  currentView: state.performanceHistory.subViews.transmissionPower,
+  currentView: state.performanceHistory.subViews.transmissionPower.subView,
+  isFilterVisible: state.performanceHistory.subViews.transmissionPower.isFilterVisible,
+  existingFilter: state.performanceHistory.transmissionPower.filter
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   transmissionPowerActions: createTransmissionPowerActions(dispatcher.dispatch),
   setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("transmissionPower", value)),
+  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility("transmissionPower", value)) },
+
+
 });
 
 type TransmissionPowerComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -51,6 +56,10 @@ const TransmissionPowerTable = MaterialTable as MaterialTableCtorType<Transmissi
  * The Component which gets the transmission power data from the database based on the selected time period.
  */
 class TransmissionPowerComponent extends React.Component<TransmissionPowerComponentProps>{
+
+  onToggleFilterButton = () => {
+    this.props.toggleFilterButton(!this.props.isFilterVisible);
+  }
 
   onChange = (value: "chart" | "table") => {
     this.props.setSubView(value);
@@ -67,10 +76,7 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
       { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
       { property: "timeStamp", title: "End Time", type: ColumnType.text },
       {
-        property: "suspectIntervalFlag", title: "Suspect Interval", customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
-          return <div >{suspectIntervalFlag} </div>
-        }
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.boolean
       }
     ];
 
@@ -80,9 +86,9 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
 
     return (
       <>
-        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onChange={this.onChange} onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.transmissionPowerProperties.filter} onFilterChanged={this.props.transmissionPowerActions.onFilterChanged} selectedValue={this.props.currentView} >
           {lineChart(chartPagedData)}
-          <TransmissionPowerTable idProperty={"_id"} columns={transmissionColumns} {...properties} {...actions} />
+          <TransmissionPowerTable stickyHeader idProperty={"_id"} columns={transmissionColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

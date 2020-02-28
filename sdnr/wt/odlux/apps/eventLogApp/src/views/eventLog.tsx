@@ -24,7 +24,7 @@ import { EventLogType } from '../models/eventLogType';
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 import { createEventLogProperties, createEventLogActions } from "../handlers/eventLogHandler";
 
-const EventLogTable = MaterialTable as MaterialTableCtorType<EventLogType & {_id: string}>;
+const EventLogTable = MaterialTable as MaterialTableCtorType<EventLogType & { _id: string }>;
 
 const mapProps = (state: IApplicationStoreState) => ({
   eventLogProperties: createEventLogProperties(state),
@@ -37,7 +37,7 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
 
 class EventLogComponent extends React.Component<Connect<typeof mapProps, typeof mapDispatch>> {
   render() {
-    return <EventLogTable title="Event Log" idProperty="_id" columns={[
+    return <EventLogTable stickyHeader title="Event Log" idProperty="_id" columns={[
       { property: "nodeId", title: "Node Name" },
       { property: "counter", title: "Counter" },
       { property: "timestamp", title: "Timestamp" },

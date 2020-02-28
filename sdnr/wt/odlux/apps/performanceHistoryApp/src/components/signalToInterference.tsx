@@ -28,17 +28,20 @@ import { IDataSet, IDataSetsObject } from '../models/chartTypes';
 import { createSignalToInterferenceProperties, createSignalToInterferenceActions } from '../handlers/signalToInterferenceHandler';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
-import { SetSubViewAction } from '../actions/toggleActions';
+import { SetSubViewAction, SetFilterVisibility } from '../actions/toggleActions';
 import ToggleContainer from './toggleContainer';
 
 const mapProps = (state: IApplicationStoreState) => ({
   signalToInterferenceProperties: createSignalToInterferenceProperties(state),
-  currentView: state.performanceHistory.subViews.SINR,
+  currentView: state.performanceHistory.subViews.SINR.subView,
+  isFilterVisible: state.performanceHistory.subViews.SINR.isFilterVisible,
+  existingFilter: state.performanceHistory.signalToInterference.filter
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   signalToInterferenceActions: createSignalToInterferenceActions(dispatcher.dispatch),
   setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("SINR", value)),
+  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility("SINR", value)) },
 });
 
 type SignalToInterferenceComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
@@ -51,6 +54,10 @@ const SignalToInterferenceTable = MaterialTable as MaterialTableCtorType<SignalT
  * The Component which gets the signal to interference data from the database based on the selected time period.
  */
 class SignalToInterferenceComponent extends React.Component<SignalToInterferenceComponentProps>{
+
+  onToggleFilterButton = () => {
+    this.props.toggleFilterButton(!this.props.isFilterVisible);
+  }
 
   onChange = (value: "chart" | "table") => {
     this.props.setSubView(value);
@@ -67,10 +74,7 @@ class SignalToInterferenceComponent extends React.Component<SignalToInterference
       { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
       { property: "timeStamp", title: "End Time", type: ColumnType.text },
       {
-        property: "suspectIntervalFlag", title: "Suspect Interval", customControl: ({ rowData }) => {
-          const suspectIntervalFlag = rowData["suspectIntervalFlag"].toString();
-          return <div >{suspectIntervalFlag} </div>
-        }
+        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.boolean
       }
     ];
 
@@ -79,9 +83,9 @@ class SignalToInterferenceComponent extends React.Component<SignalToInterference
     });
     return (
       <>
-        <ToggleContainer selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.signalToInterferenceProperties.filter} onFilterChanged={this.props.signalToInterferenceActions.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <SignalToInterferenceTable idProperty={"_id"} columns={sinrColumns} {...properties} {...actions}
+          <SignalToInterferenceTable stickyHeader idProperty={"_id"} columns={sinrColumns} {...properties} {...actions}
           />
         </ToggleContainer>
       </>

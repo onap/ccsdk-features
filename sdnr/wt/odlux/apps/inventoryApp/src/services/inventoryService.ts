@@ -15,8 +15,23 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-export { ListItemLink } from './listItemLink';
-export { Panel } from './panel';
-export { ToggleButton, ToggleButtonClassKey } from './toggleButton';
-export { TreeView, TreeItem,  TreeViewCtorType} from './treeView';
-export { Loader } from './loader';
+import { requestRest } from '../../../../framework/src/services/restService';
+
+import { InventoryTreeNode, InventoryType } from '../models/inventory';
+import { getTree, getElement } from '../fakeData';
+
+/**
+ * Represents a web api accessor service for all maintenence entries related actions.
+ */
+class InventoryService {
+  public async getInventoryTree(searchTerm?: string): Promise<InventoryTreeNode> {
+    return await getTree(searchTerm);
+  }
+
+  public async getInventoryEntry(id: string): Promise<InventoryType| undefined> {
+    return await getElement(id);
+  }
+
+}
+
+export const inventoryService = new InventoryService();
