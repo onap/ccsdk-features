@@ -31,21 +31,22 @@ public class DatabaseInfo {
 	private final String mapping;
 	private final String settingsFormat;
 	private final String index;
+
 	public String getIndex(String version) {
 		return this.index + version;
 	}
 
 	public DatabaseInfo(String alias, String doctype, String mapping) {
-		this(alias,alias,doctype,mapping);
+		this(alias, alias, doctype, mapping);
 	}
 
-	public DatabaseInfo(String index,String alias, String doctype, String mapping) {
-		this(index,alias,doctype, mapping,
+	public DatabaseInfo(String index, String alias, String doctype, String mapping) {
+		this(index, alias, doctype, mapping,
 				"{\"index\":{\"number_of_shards\":%d,\"number_of_replicas\":%d},\"analysis\":{\"analyzer\":{\"content\":"
 						+ "{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}}");
 	}
 
-	public DatabaseInfo(String index,String alias,String doctype, String mapping, String settingsformat) {
+	public DatabaseInfo(String index, String alias, String doctype, String mapping, String settingsformat) {
 		this.index = index;
 		this.alias = alias;
 		this.doctype = doctype;
@@ -53,10 +54,14 @@ public class DatabaseInfo {
 		this.settingsFormat = settingsformat;
 	}
 	
-	
 	public String getMapping() {
-		return this.mapping==null?null:String.format("{\"%s\":{\"properties\":%s}}",this.doctype, this.mapping);
+		return this.getMapping(false);
 	}
+	public String getMapping(boolean useStrict) {
+		return this.mapping == null ? null
+				: String.format("{\"%s\":{%s\"properties\":%s}}", this.doctype,useStrict?"\"dynamic\": \"strict\",":"", this.mapping);
+	}
+
 	public String getSettings(int shards, int replicas) {
 		return String.format(this.settingsFormat, shards, replicas);
 	}

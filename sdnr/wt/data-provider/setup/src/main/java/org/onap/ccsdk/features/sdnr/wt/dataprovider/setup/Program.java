@@ -146,7 +146,8 @@ public class Program {
 			System.exit(1);
 		}
 		try {
-			initLog(getOptionOrDefault(cmd, OPTION_SILENT_SHORT, false), null,getOptionOrDefault(cmd, OPTION_DEBUG_SHORT, false)?Level.DEBUG:Level.INFO);
+			initLog(getOptionOrDefault(cmd, OPTION_SILENT_SHORT, false), null,
+					getOptionOrDefault(cmd, OPTION_DEBUG_SHORT, false) ? Level.DEBUG : Level.INFO);
 		} catch (ParseException e2) {
 
 		}
@@ -241,9 +242,12 @@ public class Program {
 			throw new Exception("please add output file parameter");
 		}
 		DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
-				username, password,trustAll);
-		DataMigrationReport report = service.importData(filename,false);
+				username, password, trustAll);
+		DataMigrationReport report = service.importData(filename, false);
 		LOG.info(report);
+		if(!report.completed()) {
+			throw new Exception("db import seems to be not executed completed");
+		}
 	}
 
 	/**
@@ -260,9 +264,13 @@ public class Program {
 			throw new Exception("please add output file parameter");
 		}
 		DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
-				username, password,trustAll);
+				username, password, trustAll);
 		DataMigrationReport report = service.exportData(filename);
 		LOG.info(report);
+		if(!report.completed()) {
+			throw new Exception("db export seems to be not executed completed");
+		}
+
 	}
 
 	/**
@@ -279,10 +287,10 @@ public class Program {
 
 	/**
 	 * @param cmd
-	 * @throws ParseException 
 	 * @throws java.text.ParseException 
+	 * @throws Exception 
 	 */
-	private static void cmd_clear_db(CommandLine cmd) throws ParseException, java.text.ParseException {
+	private static void cmd_clear_db(CommandLine cmd) throws Exception {
 		Release r = getOptionOrDefault(cmd, OPTION_VERSION_SHORT, Release.CURRENT_RELEASE);
 		String dbUrl = getOptionOrDefault(cmd, "db", DEFAULT_DBURL);
 		String dbPrefix = getOptionOrDefault(cmd, "p", DEFAULT_DBPREFIX);
@@ -290,16 +298,18 @@ public class Program {
 		String password = getOptionOrDefault(cmd, "dbp", null);
 		boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, false);
 		DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
-				username, password,trustAll);
-		service.clearDatabase(r, dbPrefix);
+				username, password, trustAll);
+		if (!service.clearDatabase(r, dbPrefix)) {
+			throw new Exception("failed to init database");
+		}
 	}
 
 	/**
 	 * @param cmd
-	 * @throws ParseException 
 	 * @throws java.text.ParseException 
+	 * @throws Exception 
 	 */
-	private static void cmd_init_db(CommandLine cmd) throws ParseException, java.text.ParseException {
+	private static void cmd_init_db(CommandLine cmd) throws Exception {
 		Release r = getOptionOrDefault(cmd, OPTION_VERSION_SHORT, Release.CURRENT_RELEASE);
 		int numShards = getOptionOrDefault(cmd, OPTION_SHARDS_SHORT, DEFAULT_SHARDS);
 		int numReplicas = getOptionOrDefault(cmd, OPTION_REPLICAS_SHORT, DEFAULT_REPLICAS);
@@ -309,9 +319,11 @@ public class Program {
 		String password = getOptionOrDefault(cmd, "dbp", null);
 		boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, false);
 		DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
-				username, password,trustAll);
+				username, password, trustAll);
 		boolean forceRecreate = cmd.hasOption(OPTION_FORCE_RECREATE_SHORT);
-		service.initDatabase(r, numShards, numReplicas, dbPrefix, forceRecreate);
+		if (!service.initDatabase(r, numShards, numReplicas, dbPrefix, forceRecreate)) {
+			throw new Exception("failed to init database");
+		}
 
 	}
 
@@ -329,7 +341,8 @@ public class Program {
 		options.addOption(createOption("p", "prefix", true, "prefix for db indices", false));
 		options.addOption(createOption(OPTION_VERSION_SHORT, "version", true, "version", false));
 		options.addOption(createOption(OPTION_DEBUG_SHORT, "verbose", false, "verbose mode", false));
-		options.addOption(createOption(OPTION_TRUSTINSECURESSL_SHORT, "trust-insecure", false, "trust insecure ssl certs", false));
+		options.addOption(createOption(OPTION_TRUSTINSECURESSL_SHORT, "trust-insecure", false,
+				"trust insecure ssl certs", false));
 		options.addOption(createOption("w", "wait", true, "wait delay for yellow status", false));
 		options.addOption(
 				createOption(OPTION_FORCE_RECREATE_SHORT, "force-recreate", false, "delete if sth exists", false));

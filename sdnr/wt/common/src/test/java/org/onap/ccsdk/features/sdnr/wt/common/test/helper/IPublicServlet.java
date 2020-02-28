@@ -18,7 +18,6 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-
 package org.onap.ccsdk.features.sdnr.wt.common.test.helper;
 
 import java.io.IOException;

@@ -1,20 +1,24 @@
-/*******************************************************************************
- * ============LICENSE_START========================================================================
- * ONAP : ccsdk feature sdnr wt
- * =================================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
- * =================================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+/*
+ * ============LICENSE_START=======================================================
+ * ONAP : ccsdk features
+ * ================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * All rights reserved.
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ============LICENSE_END=========================================================
+ *
+ */
 package org.onap.ccsdk.features.sdnr.wt.common.database;
 
 import java.io.IOException;
@@ -44,6 +48,7 @@ import org.json.JSONException;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo.Protocol;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterHealthRequest;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterSettingsRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.CreateAliasRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.CreateIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteAliasRequest;
@@ -54,7 +59,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.GetIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.GetInfoRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.GetRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.IndexRequest;
-import org.onap.ccsdk.features.sdnr.wt.common.database.requests.IndicesAliasesRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ListAliasesRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ListIndicesRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.NodeStatsRequest;
@@ -64,6 +68,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.UpdateByQueryReq
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.UpdateRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.AcknowledgedResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterHealthResponse;
+import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterSettingsResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.CreateAliasResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.CreateIndexResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteAliasResponse;
@@ -200,8 +205,11 @@ public class ExtRestClient {
 		return response.getStatusLine().getStatusCode() == 200;
 	}
 
-	public AcknowledgedResponse updateAliases(IndicesAliasesRequest request) throws IOException {
-		return new AcknowledgedResponse(this.client.performRequest(request.getInner()));
+	public ClusterSettingsResponse setupClusterSettings(ClusterSettingsRequest request) throws IOException {
+		return new ClusterSettingsResponse(this.client.performRequest(request.getInner()));
+	}
+	public CreateAliasResponse updateAliases(CreateAliasRequest request) throws IOException {
+		return new CreateAliasResponse(this.client.performRequest(request.getInner()));
 	}
 
 	public CreateIndexResponse createIndex(CreateIndexRequest request) throws IOException {

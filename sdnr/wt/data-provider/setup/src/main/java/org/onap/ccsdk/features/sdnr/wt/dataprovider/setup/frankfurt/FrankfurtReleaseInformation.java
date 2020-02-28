@@ -21,18 +21,25 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterSettingsRequest;
+import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterSettingsResponse;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 
 public class FrankfurtReleaseInformation extends ReleaseInformation {
 
+	private final Logger LOG = LoggerFactory.getLogger(FrankfurtReleaseInformation.class);
 	private final Map<Release, Map<ComponentName, SearchHitConverter>> converters = new HashMap<>();
-	
+
 	public FrankfurtReleaseInformation() {
 		super(Release.FRANKFURT_R1, createDBMap());
 	}
@@ -67,11 +74,28 @@ public class FrankfurtReleaseInformation extends ReleaseInformation {
 
 	@Override
 	public SearchHitConverter getConverter(Release dst, ComponentName comp) {
-		SearchHitConverter c=this.converters.containsKey(dst)?this.converters.get(dst).get(comp):null;
-		if(c==null) {
-			c=super.getConverter(dst, comp);
+		SearchHitConverter c = this.converters.containsKey(dst) ? this.converters.get(dst).get(comp) : null;
+		if (c == null) {
+			c = super.getConverter(dst, comp);
 		}
 		return c;
+	}
+
+	@Override
+	protected boolean runPreInitCommands(HtDatabaseClient dbClient) {
+
+		ClusterSettingsResponse response = null;
+		try {
+			response = dbClient.setupClusterSettings(new ClusterSettingsRequest(false));
+		} catch (IOException e) {
+			LOG.warn("problem setting up cluster: {}", e);
+		}
+		return response == null ? false : response.isAcknowledged();
+	}
+
+	@Override
+	protected boolean runPostInitCommands(HtDatabaseClient dbClient) {
+		return true;
 	}
 
 }

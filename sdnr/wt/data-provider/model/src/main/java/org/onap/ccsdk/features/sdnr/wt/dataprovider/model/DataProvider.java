@@ -19,6 +19,8 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 import java.util.Date;
 import java.util.List;
+
+import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultcurrentEntity;
@@ -98,5 +100,10 @@ public interface DataProvider extends ArchiveCleanProvider {
      * @param list
      */
     void doWritePerformanceData(List<PmdataEntity> list);
+
+	/**
+	 * @return
+	 */
+	HtDatabaseClient getRawClient();
 
 }

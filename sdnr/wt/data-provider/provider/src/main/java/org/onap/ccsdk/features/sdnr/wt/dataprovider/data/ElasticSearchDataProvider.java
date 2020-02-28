@@ -1,20 +1,24 @@
-/*******************************************************************************
- * ============LICENSE_START========================================================================
- * ONAP : ccsdk feature sdnr wt
- * =================================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
- * =================================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+/*
+ * ============LICENSE_START=======================================================
+ * ONAP : ccsdk features
+ * ================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * All rights reserved.
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ============LICENSE_END=========================================================
+ *
+ */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
 
 import java.io.IOException;
@@ -26,6 +30,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.DataObjectAcessorPm.Int
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerOutputBuilder;
@@ -89,6 +94,9 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
     private final DataObjectAcessorStatus readStatus;
     private final HtDatabaseEventsService databaseService;
     private final HtDatabaseMaintenanceService databaseMaintenanceService;
+    public HtDatabaseClient getRawClient() {
+    	return this.dbClient;
+    }
     public ElasticSearchDataProvider(HostInfo[] hosts) throws Exception {
     	this(hosts,null,null);
     }
@@ -415,7 +423,7 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
     }
 
     public CreateMaintenanceOutputBuilder createMaintenance(CreateMaintenanceInput input) throws IOException {
-        String id = this.maintenanceRW.write(input, input.getNodeId());
+    	String id = this.maintenanceRW.write(input, input.getNodeId());
         if (id == null) {
             throw new IOException(EXCEPTION_UNABLE_TO_WRITE_IN_DATABASE);
         }

@@ -279,6 +279,9 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
 			return false;
 		}
 		AcknowledgedResponse response = null;
+		if(!ri.runPreInitCommands(this.dbClient)) {
+			return false;
+		}
 		for (ComponentName component : ri.getComponents()) {
 			try {
 				if (ri.hasOwnDbIndex(component)) {
@@ -309,6 +312,9 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
 				return false;
 			}
 		}
+		if(!ri.runPostInitCommands(this.dbClient)) {
+			return false;
+		}
 		return true;
 	}
 
@@ -325,6 +331,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
 		if (entries.size() <= 0) {
 			LOG.info("no aliases to clear");
 		} else {
+			//check for every component of release if alias exists
 			for (ComponentName component : ri.getComponents()) {
 				String aliasToDelete = ri.getAlias(component, dbPrefix);
 				AliasesEntry entryToDelete = entries.findByAlias(aliasToDelete);
@@ -348,6 +355,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
 		if (entries2.size() <= 0) {
 			LOG.info("no indices to clear");
 		} else {
+			//check for every component of release if index exists
 			for (ComponentName component : ri.getComponents()) {
 				String indexToDelete = ri.getIndex(component, dbPrefix);
 				IndicesEntry entryToDelete = entries2.findByIndex(indexToDelete);

@@ -1,20 +1,24 @@
-/*******************************************************************************
- * ============LICENSE_START========================================================================
- * ONAP : ccsdk feature sdnr wt
- * =================================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
- * =================================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+/*
+ * ============LICENSE_START=======================================================
+ * ONAP : ccsdk features
+ * ================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * All rights reserved.
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ============LICENSE_END=========================================================
+ *
+ */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.impl;
 
 import java.net.MalformedURLException;
@@ -39,6 +43,7 @@ public class EsConfig implements Configuration, IEsConfig {
     public static final String SECTION_MARKER_ES = "es";
 
     private static final String PROPERTY_KEY_DBHOSTS = "esHosts";
+    private static final String PROPERTY_KEY_TRUSTALLCERTS = "esTrustAllCerts";
     private static final String PROPERTY_KEY_ARCHIVE_LIMIT = "esArchiveLifetimeSeconds";
     private static final String PROPERTY_KEY_CLUSTER = "esCluster";
     private static final String PROPERTY_KEY_ARCHIVE_INTERVAL = "esArchiveCheckIntervalSeconds";
@@ -47,7 +52,7 @@ public class EsConfig implements Configuration, IEsConfig {
     private static final String PROPERTY_KEY_AUTH_PASSWORD = "esAuthPassword";
 
     
-    private static String defaultHostinfo = printHosts(new HostInfo[] { new HostInfo("sdnrdb", 9200, Protocol.HTTP) });
+    private static String defaultHostinfo = "${SDNRDBURL}";//printHosts(new HostInfo[] { new HostInfo("sdnrdb", 9200, Protocol.HTTP) });
     private static final String DEFAULT_VALUE_CLUSTER = "";
     /** check db data in this interval [in seconds] 0 deactivated */
     private static final String DEFAULT_ARCHIVE_INTERVAL_SEC = "0";
@@ -57,6 +62,7 @@ public class EsConfig implements Configuration, IEsConfig {
 	private static final String DEFAULT_VALUE_NODE = "elasticsearchnode";
 	private static final String DEFAULT_VALUE_DBUSERNAME = "${SDNRDBUSERNAME}";
 	private static final String DEFAULT_VALUE_DBPASSWORD = "${SDNRDBPASSWORD}";
+	private static final String DEFAULT_VALUE_TRUSTALLCERTS = "${SDNRDBTRUSTALLCERTS}";
 
     private final ConfigurationFileRepresentation configuration;
 
@@ -113,7 +119,9 @@ public class EsConfig implements Configuration, IEsConfig {
     public long getArchiveCheckIntervalSeconds() {
         return configuration.getPropertyLong(SECTION_MARKER_ES, PROPERTY_KEY_ARCHIVE_INTERVAL).orElse(0L);
     }
-
+    public boolean trustAllCerts() {
+    	return configuration.getPropertyBoolean(SECTION_MARKER_ES, PROPERTY_KEY_TRUSTALLCERTS);
+    }
     public void setArchiveCheckIntervalSeconds(long seconds) {
         configuration.setProperty(SECTION_MARKER_ES, PROPERTY_KEY_ARCHIVE_INTERVAL, seconds);
     }
@@ -133,7 +141,7 @@ public class EsConfig implements Configuration, IEsConfig {
     }
 
     @Override
-    public void defaults() {
+    public synchronized void defaults() {
         // Add default if not available
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_DBHOSTS, defaultHostinfo);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_ARCHIVE_LIMIT,
@@ -144,6 +152,8 @@ public class EsConfig implements Configuration, IEsConfig {
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_NODE, DEFAULT_VALUE_NODE);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_USERNAME, DEFAULT_VALUE_DBUSERNAME);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_PASSWORD, DEFAULT_VALUE_DBPASSWORD);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_TRUSTALLCERTS, DEFAULT_VALUE_TRUSTALLCERTS);
+        
     }
 
     @Override

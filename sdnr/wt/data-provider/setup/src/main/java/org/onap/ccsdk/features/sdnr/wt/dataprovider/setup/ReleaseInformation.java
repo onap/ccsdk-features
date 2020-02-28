@@ -24,6 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 import java.util.Map;
 import java.util.Set;
 
+import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.IndicesEntryList;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
@@ -76,13 +77,16 @@ public abstract class ReleaseInformation {
 		return dbMap.get(name) == null ? null : dbMap.get(name).doctype;
 	}
 
-	/**
+	public String getDatabaseMapping(ComponentName name) {
+		return dbMap.get(name) == null ? null : dbMap.get(name).getMapping();
+	}
+		/**
 	 * get database doctype definition for component
 	 * @param name
 	 * @return mappings or null if not exists
 	 */
-	public String getDatabaseMapping(ComponentName name) {
-		return dbMap.get(name) == null ? null : dbMap.get(name).getMapping();
+	public String getDatabaseMapping(ComponentName name,boolean useStrict) {
+		return dbMap.get(name) == null ? null : dbMap.get(name).getMapping(useStrict);
 	}
 	/**
 	 * get database settings definition for component
@@ -152,6 +156,20 @@ public abstract class ReleaseInformation {
 		return true;
 		
 	}
+
+	/**
+	 * @param dbClient
+	 * @return if succeeded or not
+	 */
+	protected abstract boolean runPreInitCommands(HtDatabaseClient dbClient);
+
+
+	/**
+	 * 
+	 * @param dbClient
+	 * @return if succeeded or not
+	 */
+	protected abstract boolean runPostInitCommands(HtDatabaseClient dbClient);
 	
 
 }

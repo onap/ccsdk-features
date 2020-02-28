@@ -28,6 +28,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.KeepDataSearchHitConverter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
+import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 
 public class ElAltoReleaseInformation extends ReleaseInformation {
@@ -87,6 +88,15 @@ public class ElAltoReleaseInformation extends ReleaseInformation {
 		}
 		return c;
 	}
-	
+
+	@Override
+	protected boolean runPreInitCommands(HtDatabaseClient dbClient) {
+		return true;
+	}
+
+	@Override
+	protected boolean runPostInitCommands(HtDatabaseClient dbClient) {
+		return true;
+	}
 	
 }
