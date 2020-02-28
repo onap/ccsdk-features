@@ -46,7 +46,7 @@
                 },
                 "label": "Maintenance"
             },
-            "configApp": {
+            "configurationApp": {
                 "versions": {
                     "0.4.0": {
                         "date": "2018-02-24",
@@ -105,6 +105,21 @@
                     }
                 },
                 "label": "Mediator"
+            },
+            "eventLogApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2020-02-03",
+                        "path": "sdnr/pnfEventLog/README.md",
+                        "label": "EventLog"
+                    },
+                    "current": {
+                        "date": "2020-02-03",
+                        "path": "sdnr/pnfEventLog/README.md",
+                        "label": "EventLog"
+                    }
+                },
+                "label": "EventLog"
             }
         },
         "versions": {
@@ -197,5 +212,20 @@
             }
         },
         "label": "Abbreviations"
+    },
+    "general": {
+        "versions": {
+            "0.4.0": {
+                "date": "2018-02-24",
+                "path": "sdnr/general.md",
+                "label": "General Functionality"
+            },
+            "current": {
+                "date": "2018-02-24",
+                "path": "sdnr/general.md",
+                "label": "General Functionality"
+            }
+        },
+        "label": "General Functionality"
     }
 }

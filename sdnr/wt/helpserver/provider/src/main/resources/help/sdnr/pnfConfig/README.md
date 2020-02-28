@@ -6,7 +6,7 @@ A separate window is available for modifying the configuration. All changes made
 
 ## Implementation
 
-The application is implemented as OpenDaylight-DLUX web application using the RestConf northbound interface of the SDN controller. The key frameworks are: Typescript, React and material-ui.
+The application is implemented as ODLUX web application using the RestConf northbound interface of the SDN controller. The key frameworks are: Typescript, React and material-ui.
 
 Connection status information is updated automatically using a web socket for notifications from OpenDaylight to the browser.
 
