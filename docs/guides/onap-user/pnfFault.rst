@@ -15,8 +15,8 @@ Views
 
 The graphical user interface is separated into three views.
 
-Current Alarms
-~~~~~~~~~~~~~~
+Current Problem List
+~~~~~~~~~~~~~~~~~~~~
 
 Lists all current active faults in the network. In addition, it also
 lists alarms sent by the SDN controller itself, which detects connection
@@ -53,6 +53,6 @@ are stored. There is no logic implemented on the client side.
 An alarm status bar in the header of the web application informs the
 operator about the health status of the network.
 
-The OpenDaylight-DLUX web application uses web sockets to update the
-graphical user interface of the Problem Notifications (devices) and
-Connection Status Notifications (ODL) in real-time.
+The ODLUX web application uses web sockets to update the graphical user
+interface of the Alarm Notifications (devices) and Connection Status
+Notifications in real-time.

@@ -6,7 +6,7 @@ To operate a network, it is important to get an overview about the currently rai
 
 The graphical user interface is separated into three views.
 
-### Current Alarms
+### Current Problem List
 
 Lists all current active faults in the network. In addition, it also lists alarms sent by the SDN controller itself, which detects connection losses to the NetConf server (connectionLossOAM) or to a device via a mediator to a device (connectionLossNeOAM).
 
@@ -26,6 +26,6 @@ The server synchronizes with the current alarm lists of the devices. Based on ra
 
 An alarm status bar in the header of the web application informs the operator about the health status of the network.
 
-The OpenDaylight-DLUX web application uses web sockets to update the graphical user interface of the Problem Notifications (devices) and Connection Status Notifications (ODL) in real-time.
+The ODLUX web application uses web sockets to update the graphical user interface of the Alarm Notifications (devices) and Connection Status Notifications in real-time.
 
 

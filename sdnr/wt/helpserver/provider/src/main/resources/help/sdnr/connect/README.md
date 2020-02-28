@@ -1,6 +1,6 @@
 # Connect
 
-The 'Connect' application on OpenDaylight provides up-to-date connectivity information about the wireless devices in the network. It automatically displays new Network Elements and their connection status. Usually, the Network Elements mount themselves. If necessary, they can be mounted manually by right-clicking on the element. For better understanding of alarms and status, a connection status log lists all the connection status changes of OpenDaylight mount points.
+The 'Connect' application on OpenDaylight provides up-to-date connectivity information about the wireless devices in the network. It automatically displays new Network Elements and their connection status. Usually, the Network Elements mount themselves. If necessary, they can be mounted manually by right-clicking on the element and selecting the 'mount' action. For better understanding of alarms and status, a connection status log lists all the connection status changes of OpenDaylight mount points.
 
 ## Views
 
@@ -17,4 +17,4 @@ By right-clicking on an element, an action menu opens. The menu allows to mount,
 
 ### Connection Status Log
 
-The log lists the connections status changes between SDN Controller and NetConf servers (devices).
+The log lists the connection status changes between SDN Controller and NetConf servers (devices).
