@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne;
 
 import java.util.List;
@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.Helper;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.OnfMicrowaveModel;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl.DeviceManagerOnfConfiguration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.notifications.NotificationActor;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.notifications.NotificationWorker;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.util.ONFLayerProtocolName;
@@ -81,10 +82,12 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
      * @param serviceProvider to get services
      * @param onfMicrowaveModel handling ofmicrosoft model data
      */
-    public ONFCoreNetworkElement12Microwave(@NonNull NetconfAccessor acessor,
-            @NonNull DeviceManagerServiceProvider serviceProvider, @NonNull OnfMicrowaveModel onfMicrowaveModel) {
+	public ONFCoreNetworkElement12Microwave(@NonNull NetconfAccessor acessor,
+			@NonNull DeviceManagerServiceProvider serviceProvider,
+			DeviceManagerOnfConfiguration configuration,
+			OnfMicrowaveModel onfMicrowaveModel) {
 
-        super(acessor, serviceProvider);
+        super(acessor, serviceProvider,configuration);
         this.microwaveModel = onfMicrowaveModel;
 
         this.microwaveEventListener = serviceProvider.getFaultService();
@@ -100,6 +103,12 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
      */
 
     /**
+	 * @param acessor
+	 * @param serviceProvider
+	 * @param configuration
+	 * @param onfMicrowaveModel
+	 */
+	/**
      * DeviceMonitor Prepare check by updating NE state and reading all interfaces.
      */
     @Override

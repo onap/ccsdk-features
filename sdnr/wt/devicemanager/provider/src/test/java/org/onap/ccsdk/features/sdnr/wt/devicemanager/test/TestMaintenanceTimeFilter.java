@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk feature sdnr wt
  *  ================================================================================
@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
 import static org.junit.Assert.assertFalse;
@@ -75,7 +75,7 @@ public class TestMaintenanceTimeFilter {
         ZonedDateTime now;
 
         now = MaintenanceCalculator.valueOf("2000-01-01T00:00Z");
-        res = MaintenanceCalculator.isONFObjectInMaintenance(mb.build(), "", "", now);
+        res = MaintenanceCalculator.isONFObjectInMaintenance(mb.build(), "Interface1", "Problem1", now);
         assertTrue("within period",res);
 
         now = MaintenanceCalculator.valueOf("2002-01-01T00:00Z");

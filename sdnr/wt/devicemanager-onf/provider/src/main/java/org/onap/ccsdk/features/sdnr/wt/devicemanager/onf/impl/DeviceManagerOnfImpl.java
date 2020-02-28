@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -33,6 +33,7 @@ public class DeviceManagerOnfImpl implements AutoCloseable  {
     private HtDatabaseClient htDatabaseClient;
     private Boolean devicemanagerInitializationOk = false;
     private FactoryRegistration<ONFCoreNetworkElementFactory> resOnf;
+    private DeviceManagerOnfConfiguration configuration;
 
     // Blueprint begin
     public DeviceManagerOnfImpl() {
@@ -48,7 +49,8 @@ public class DeviceManagerOnfImpl implements AutoCloseable  {
 
         LOG.info("Session Initiated start {}", APPLICATIONNAME);
 
-        resOnf = netconfNetworkElementService.registerNetworkElementFactory(new ONFCoreNetworkElementFactory());
+        configuration = new DeviceManagerOnfConfiguration(netconfNetworkElementService.getServiceProvider().getConfigurationFileRepresentation());
+        resOnf = netconfNetworkElementService.registerNetworkElementFactory(new ONFCoreNetworkElementFactory(configuration));
 
 
         netconfNetworkElementService.writeToEventLog(APPLICATIONNAME, "startup", "done");

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl;
 
@@ -66,8 +66,10 @@ public class DcaeForwarderImpl implements DcaeForwarderInternal, AutoCloseable {
     public void sendProblemNotification(String nodeId, ProblemNotificationXml notificationXml) {
         //to prevent push alarms on reconnect
         //=> only pushed alarms are forwared to dcae
-        //dcaeProvider.sendProblemNotification(nodeName, notificationXml);
-        if(aotsmClient!=null) {
+    	if(dcaeProvider!=null) {
+    		dcaeProvider.sendProblemNotification(nodeId, notificationXml);
+    	}
+    	if(aotsmClient!=null) {
             aotsmClient.sendProblemNotification(nodeId, notificationXml);
         }
 

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk feature sdnr wt
  *  ================================================================================
@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
 import static org.junit.Assert.assertTrue;
@@ -146,7 +146,7 @@ public class TestDevicemanager extends Mockito {
 
         FaultService n = deviceManager.getFaultService();
         FaultlogBuilder faultLogEntityBuilder = new FaultlogBuilder();
-        n.faultNotification(faultLogEntityBuilder.build());
+        n.faultNotification(faultLogEntityBuilder.setNodeId("node1").build());
 
     }
 

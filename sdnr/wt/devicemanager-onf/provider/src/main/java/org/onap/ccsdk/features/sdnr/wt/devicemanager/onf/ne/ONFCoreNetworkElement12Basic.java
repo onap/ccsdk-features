@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,10 +14,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl.DeviceManagerOnfConfiguration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.AaiService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EquipmentService;
@@ -62,6 +63,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
     private final @NonNull String mountPointNodeName;
     private final @NonNull NetconfAccessor acessor;
+    private final @NonNull DeviceManagerOnfConfiguration pollAlarmConfig;
 
     /*-----------------------------------------------------------------------------
      * Construction
@@ -73,11 +75,12 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
      * @param serviceProvider to get devicemanager services
      */
     public ONFCoreNetworkElement12Basic(@NonNull NetconfAccessor acessor,
-            @NonNull DeviceManagerServiceProvider serviceProvider) {
+            @NonNull DeviceManagerServiceProvider serviceProvider, DeviceManagerOnfConfiguration configuration) {
 
         super(acessor);
         this.mountPointNodeName = acessor.getNodeId().getValue();
         this.acessor = acessor;
+        this.pollAlarmConfig = configuration;
 
         this.faultService = serviceProvider.getFaultService();
         this.equipmentService = serviceProvider.getEquipmentService();
@@ -100,7 +103,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
     public void prepareCheck() {
         synchronized (dmLock) {
             boolean change = readNetworkElementAndInterfaces();
-            if (change) {
+            if (change || pollAlarmConfig.isPollAlarmsEnabled()) {
                 int problems = faultService.removeAllCurrentProblemsOfNode(nodeId);
                 FaultData resultList = readAllCurrentProblemsOfNode();
                 faultService.initCurrentProblemStatus(nodeId, resultList);
@@ -198,7 +201,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
     @Override
     public void close() throws Exception {
-    	// Close to be implemented
+        // Close to be implemented
     }
 
 

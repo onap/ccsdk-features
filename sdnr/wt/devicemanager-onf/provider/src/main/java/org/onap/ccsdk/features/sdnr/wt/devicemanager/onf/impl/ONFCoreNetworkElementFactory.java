@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl;
 
 import java.util.Optional;
@@ -43,6 +43,13 @@ public class ONFCoreNetworkElementFactory implements NetworkElementFactory {
 
     private static final Logger log = LoggerFactory.getLogger(ONFCoreNetworkElementFactory.class);
 
+    private final @NonNull DeviceManagerOnfConfiguration configuration;
+
+    public ONFCoreNetworkElementFactory(@NonNull DeviceManagerOnfConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
+
     @Override
     public Optional<org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement> create(
             @NonNull NetconfAccessor acessor, @NonNull DeviceManagerServiceProvider serviceProvider) {
@@ -63,9 +70,9 @@ public class ONFCoreNetworkElementFactory implements NetworkElementFactory {
             }
 
             if (onfMicrowaveModel != null) {
-                return Optional.of(new ONFCoreNetworkElement12Microwave(acessor, serviceProvider, onfMicrowaveModel));
+                return Optional.of(new ONFCoreNetworkElement12Microwave(acessor, serviceProvider, configuration, onfMicrowaveModel));
             } else {
-                return Optional.of(new ONFCoreNetworkElement12Basic(acessor, serviceProvider));
+                return Optional.of(new ONFCoreNetworkElement12Basic(acessor, serviceProvider, configuration));
             }
         }
 

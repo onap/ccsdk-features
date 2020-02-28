@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,21 +14,18 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne.test;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.OnfMicrowaveModel;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne.ONFCoreNetworkElement12Basic;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl.DeviceManagerOnfConfiguration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne.ONFCoreNetworkElement12Microwave;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EquipmentService;
@@ -60,260 +57,262 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class TestONFCoreNetworkElement12Microwave {
 
-	NetconfAccessor accessor;
-	DeviceManagerServiceProvider serviceProvider;
-	Capabilities capabilities;
-	TransactionUtils transactionUtils;
-	NetworkElement optionalNe;
-	OnfMicrowaveModel onfMicrowaveModel;
-	FaultService faultService;
-	EquipmentService equipmentService;
+    NetconfAccessor accessor;
+    DeviceManagerServiceProvider serviceProvider;
+    Capabilities capabilities;
+    TransactionUtils transactionUtils;
+    NetworkElement optionalNe;
+    OnfMicrowaveModel onfMicrowaveModel;
+    FaultService faultService;
+    EquipmentService equipmentService;
+    DeviceManagerOnfConfiguration configuration;
 
-	protected static final InstanceIdentifier<NetworkElement> NETWORKELEMENT_IID = InstanceIdentifier
-			.builder(NetworkElement.class).build();
+    protected static final InstanceIdentifier<NetworkElement> NETWORKELEMENT_IID = InstanceIdentifier
+            .builder(NetworkElement.class).build();
 
-	@Before
-	public void init() {
-		accessor = mock(NetconfAccessor.class);
-		serviceProvider = mock(DeviceManagerServiceProvider.class);
-		capabilities = mock(Capabilities.class);
-		transactionUtils = mock(TransactionUtils.class);
-		onfMicrowaveModel = mock(OnfMicrowaveModel.class);
-		faultService = mock(FaultService.class);
-		equipmentService = mock(EquipmentService.class);
+    @Before
+    public void init() {
+        accessor = mock(NetconfAccessor.class);
+        serviceProvider = mock(DeviceManagerServiceProvider.class);
+        capabilities = mock(Capabilities.class);
+        transactionUtils = mock(TransactionUtils.class);
+        onfMicrowaveModel = mock(OnfMicrowaveModel.class);
+        faultService = mock(FaultService.class);
+        equipmentService = mock(EquipmentService.class);
+        configuration = mock(DeviceManagerOnfConfiguration.class);
 
-		when(accessor.getCapabilites()).thenReturn(capabilities);
-		when(serviceProvider.getFaultService()).thenReturn(faultService);
-		when(serviceProvider.getEquipmentService()).thenReturn(equipmentService);
+        when(accessor.getCapabilites()).thenReturn(capabilities);
+        when(serviceProvider.getFaultService()).thenReturn(faultService);
+        when(serviceProvider.getEquipmentService()).thenReturn(equipmentService);
 
-		NodeId nNodeId = new NodeId("nSky");
-		when(accessor.getNodeId()).thenReturn(nNodeId);
-		when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElementPac.QNAME)).thenReturn(true);
-		when(accessor.getTransactionUtils()).thenReturn(transactionUtils);
+        NodeId nNodeId = new NodeId("nSky");
+        when(accessor.getNodeId()).thenReturn(nNodeId);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElementPac.QNAME)).thenReturn(true);
+        when(accessor.getTransactionUtils()).thenReturn(transactionUtils);
 
-	}
+    }
 
-	@Test
-	public void test() {
-		optionalNe = new NetworkElement() {
+    @Test
+    public void test() {
+        optionalNe = new NetworkElement() {
 
-			@Override
-			public @Nullable List<Label> getLabel() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable List<Label> getLabel() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable List<Extension> getExtension() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable List<Extension> getExtension() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable OperationalState getOperationalState() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable OperationalState getOperationalState() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable LifecycleState getLifecycleState() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable LifecycleState getLifecycleState() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable AdministrativeState getAdministrativeState() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable AdministrativeState getAdministrativeState() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable AdministrativeControl getAdministrativeControl() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable AdministrativeControl getAdministrativeControl() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable List<Name> getName() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable List<Name> getName() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable UniversalId getUuid() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable UniversalId getUuid() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable List<LocalId> getLocalId() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable List<LocalId> getLocalId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public <E$$ extends Augmentation<NetworkElement>> @Nullable E$$ augmentation(Class<E$$> augmentationType) {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public <E$$ extends Augmentation<NetworkElement>> @Nullable E$$ augmentation(Class<E$$> augmentationType) {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public Class<? extends DataContainer> getImplementedInterface() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public Class<? extends DataContainer> getImplementedInterface() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable List<Ltp> getLtp() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable List<Ltp> getLtp() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable List<Fd> getFd() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		};
+            @Override
+            public @Nullable List<Fd> getFd() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
 
-		when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
-				NETWORKELEMENT_IID)).thenReturn(optionalNe);
+        when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
+                NETWORKELEMENT_IID)).thenReturn(optionalNe);
 
-		ONFCoreNetworkElement12Microwave onfCoreNetworkElement12MW = new ONFCoreNetworkElement12Microwave(accessor,
-				serviceProvider, onfMicrowaveModel);
-		onfCoreNetworkElement12MW.prepareCheck();
+        ONFCoreNetworkElement12Microwave onfCoreNetworkElement12MW = new ONFCoreNetworkElement12Microwave(accessor,
+                serviceProvider, configuration, onfMicrowaveModel);
+        onfCoreNetworkElement12MW.prepareCheck();
 
-		EventlogEntity eventlogEntity = new EventlogEntity() {
+        EventlogEntity eventlogEntity = new EventlogEntity() {
 
-			@Override
-			public @Nullable String getId() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable String getId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable DateAndTime getTimestamp() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable DateAndTime getTimestamp() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable String getObjectId() {
-				// TODO Auto-generated method stub
-				return "ABCD";
-			}
+            @Override
+            public @Nullable String getObjectId() {
+                // TODO Auto-generated method stub
+                return "ABCD";
+            }
 
-			@Override
-			public @Nullable String getNodeId() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable String getNodeId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable Integer getCounter() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable Integer getCounter() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable SourceType getSourceType() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable SourceType getSourceType() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable String getNewValue() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public @Nullable String getNewValue() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-			@Override
-			public @Nullable String getAttributeName() {
-				// TODO Auto-generated method stub
-				return "/network-element/extension[value-name=\"top-level-equipment\"]/value"; // "/equipment-pac/equipment-current-problems";
-			}
+            @Override
+            public @Nullable String getAttributeName() {
+                // TODO Auto-generated method stub
+                return "/network-element/extension[value-name=\"top-level-equipment\"]/value"; // "/equipment-pac/equipment-current-problems";
+            }
 
-			@Override
-			public Class<? extends DataContainer> getImplementedInterface() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		};
+            @Override
+            public Class<? extends DataContainer> getImplementedInterface() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
 
-		onfCoreNetworkElement12MW.notificationActor(eventlogEntity);
+        onfCoreNetworkElement12MW.notificationActor(eventlogEntity);
 
-	}
+    }
 
 
-	@Test 
-	public void test1() 
-	{ 
-		when (accessor.getTransactionUtils().readData(accessor.getDataBroker(),
-				LogicalDatastoreType.OPERATIONAL, NETWORKELEMENT_IID)).thenReturn(null);
+    @Test
+    public void test1()
+    {
+        when (accessor.getTransactionUtils().readData(accessor.getDataBroker(),
+                LogicalDatastoreType.OPERATIONAL, NETWORKELEMENT_IID)).thenReturn(null);
 
-		ONFCoreNetworkElement12Microwave onfCoreNetworkElement12MW = 
-				new ONFCoreNetworkElement12Microwave(accessor, serviceProvider,
-						onfMicrowaveModel); onfCoreNetworkElement12MW.prepareCheck(); 
+        ONFCoreNetworkElement12Microwave onfCoreNetworkElement12MW =
+                new ONFCoreNetworkElement12Microwave(accessor, serviceProvider, configuration,
+                        onfMicrowaveModel); onfCoreNetworkElement12MW.prepareCheck();
 
-						EventlogEntity eventlogEntity = new EventlogEntity() {
+                        EventlogEntity eventlogEntity = new EventlogEntity() {
 
-							@Override
-							public @Nullable String getId() {
-								// TODO Auto-generated method stub
-								return null;
-							}
+                            @Override
+                            public @Nullable String getId() {
+                                // TODO Auto-generated method stub
+                                return null;
+                            }
 
-							@Override
-							public @Nullable DateAndTime getTimestamp() {
-								// TODO Auto-generated method stub
-								return null;
-							}
+                            @Override
+                            public @Nullable DateAndTime getTimestamp() {
+                                // TODO Auto-generated method stub
+                                return null;
+                            }
 
-							@Override
-							public @Nullable String getObjectId() {
-								// TODO Auto-generated method stub
-								return "ABCD";
-							}
+                            @Override
+                            public @Nullable String getObjectId() {
+                                // TODO Auto-generated method stub
+                                return "ABCD";
+                            }
 
-							@Override
-							public @Nullable String getNodeId() {
-								// TODO Auto-generated method stub
-								return null;
-							}
+                            @Override
+                            public @Nullable String getNodeId() {
+                                // TODO Auto-generated method stub
+                                return null;
+                            }
 
-							@Override
-							public @Nullable Integer getCounter() {
-								// TODO Auto-generated method stub
-								return null;
-							}
+                            @Override
+                            public @Nullable Integer getCounter() {
+                                // TODO Auto-generated method stub
+                                return null;
+                            }
 
-							@Override
-							public @Nullable SourceType getSourceType() {
-								// TODO Auto-generated method stub
-								return null;
-							}
+                            @Override
+                            public @Nullable SourceType getSourceType() {
+                                // TODO Auto-generated method stub
+                                return null;
+                            }
 
-							@Override
-							public @Nullable String getNewValue() {
-								// TODO Auto-generated method stub
-								return null;
-							}
+                            @Override
+                            public @Nullable String getNewValue() {
+                                // TODO Auto-generated method stub
+                                return null;
+                            }
 
-							@Override
-							public @Nullable String getAttributeName() {
-								// TODO Auto-generated method stub
-								return "/equipment-pac/equipment-current-problems";
-							}
+                            @Override
+                            public @Nullable String getAttributeName() {
+                                // TODO Auto-generated method stub
+                                return "/equipment-pac/equipment-current-problems";
+                            }
 
-							@Override
-							public Class<? extends DataContainer> getImplementedInterface() {
-								// TODO Auto-generated method stub
-								return null;
-							}
-						};
+                            @Override
+                            public Class<? extends DataContainer> getImplementedInterface() {
+                                // TODO Auto-generated method stub
+                                return null;
+                            }
+                        };
 
-						onfCoreNetworkElement12MW.notificationActor(eventlogEntity);
-	}
+                        onfCoreNetworkElement12MW.notificationActor(eventlogEntity);
+    }
 
 
 }

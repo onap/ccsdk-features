@@ -1,4 +1,25 @@
-/*******************************************************************************
+/*
+ * ============LICENSE_START=======================================================
+ * ONAP : ccsdk features
+ * ================================================================================
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
+ * All rights reserved.
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ============LICENSE_END=========================================================
+ *
+ */
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +35,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl;
 
 import java.util.List;
@@ -117,7 +138,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     private ClusterSingletonServiceRegistration cssRegistration;
     private ClusterSingletonServiceRegistration cssRegistration2;
 
-
+    ConfigurationFileRepresentation config;
     private Boolean devicemanagerInitializationOk;
 
     // Blueprint 1
@@ -170,9 +191,10 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
         this.iEntityDataProvider.setReadyStatus(false);
 
-        this.dataProvider = iEntityDataProvider.getDataProvider();        // Get configuration
+        this.dataProvider = iEntityDataProvider.getDataProvider();
 
-        ConfigurationFileRepresentation config = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
+        // Get configuration
+        this.config = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
 
         this.notificationDelayService = new DevicemanagerNotificationDelayService(config);
 
@@ -325,6 +347,13 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     public @NonNull EventHandlingService getEventHandlingService() {
         return this.odlEventListenerHandler;
     }
+
+    @SuppressWarnings("null")
+    @Override
+    public @NonNull ConfigurationFileRepresentation getConfigurationFileRepresentation() {
+        return this.config;
+    }
+
     // Deviceinitialization
 
     /**
@@ -383,5 +412,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     public void writeToEventLog(String objectId, String msg, String value) {
         this.odlEventListenerHandler.writeEventLog(objectId, msg, value);
     }
+
 
 }

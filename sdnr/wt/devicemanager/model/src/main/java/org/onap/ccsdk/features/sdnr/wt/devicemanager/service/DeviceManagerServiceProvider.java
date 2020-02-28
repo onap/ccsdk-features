@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,10 +14,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 
 public interface DeviceManagerServiceProvider {
@@ -47,4 +48,7 @@ public interface DeviceManagerServiceProvider {
     /** @return Event Handling service */
     @NonNull
     EventHandlingService getEventHandlingService();
+
+    /** @return Get configuration descriptor */
+    @NonNull ConfigurationFileRepresentation getConfigurationFileRepresentation();
 }

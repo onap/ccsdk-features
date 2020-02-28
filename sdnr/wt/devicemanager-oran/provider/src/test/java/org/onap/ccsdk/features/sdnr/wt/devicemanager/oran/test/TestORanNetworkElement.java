@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
 
 import static org.junit.Assert.assertEquals;
@@ -23,11 +23,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.io.IOException;
-import java.util.Date;
-
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,13 +34,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanNetworkElemen
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test.mock.TransactionUtilsMock;
 import org.opendaylight.yang.gen.v1.urn.o.ran.hardware._1._0.rev190328.ORANHWCOMPONENT;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.network.topology.simulator.rev191025.SimulatorStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ConnectionlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultcurrentEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Inventory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementConnectionEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.PmdataEntity;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
@@ -52,140 +42,44 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 
 public class TestORanNetworkElement {
 
-	static NetconfAccessorMock accessor;
-	static DeviceManagerServiceProvider serviceProvider;
-	static Capabilities capabilities;
-	QName qCapability;
+    static NetconfAccessorMock accessor;
+    static DeviceManagerServiceProvider serviceProvider;
+    static Capabilities capabilities;
+    QName qCapability;
 
-	@SuppressWarnings("unchecked")
-	@BeforeClass
-	public static void init() throws InterruptedException, IOException {
-		capabilities = mock(Capabilities.class);
-		//accessor = mock(NetconfAccessorMock.class);
-		accessor = spy(new NetconfAccessorMock(null, null, null, null));
-		serviceProvider = mock(DeviceManagerServiceProvider.class);
-		
-		NodeId nNodeId = new NodeId("nSky");
-		when(accessor.getCapabilites()).thenReturn(capabilities);
-		when (accessor.getNodeId()).thenReturn(nNodeId);
-		when (accessor.getTransactionUtils()).thenReturn(new TransactionUtilsMock());
-		
-		when(serviceProvider.getDataProvider()).thenReturn(new DataProvider() {
+    @BeforeClass
+    public static void init() throws InterruptedException, IOException {
+        capabilities = mock(Capabilities.class);
+        //accessor = mock(NetconfAccessorMock.class);
+        accessor = spy(new NetconfAccessorMock(null, null, null, null));
+        serviceProvider = mock(DeviceManagerServiceProvider.class);
 
-			@Override
-			public void writeConnectionLog(ConnectionlogEntity event) {
-				// TODO Auto-generated method stub
+        NodeId nNodeId = new NodeId("nSky");
+        when(accessor.getCapabilites()).thenReturn(capabilities);
+        when (accessor.getNodeId()).thenReturn(nNodeId);
+        when (accessor.getTransactionUtils()).thenReturn(new TransactionUtilsMock());
 
-			}
+        DataProvider dataProvider = mock(DataProvider.class);
+        when(serviceProvider.getDataProvider()).thenReturn(dataProvider);
+    }
 
-			@Override
-			public void writeEventLog(EventlogEntity event) {
-				// TODO Auto-generated method stub
+    @Test
+    public void test() {
+        Optional<NetworkElement> oRanNe;
+        when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(true);
+        when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(false);
+        ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
+        oRanNe = factory.create(accessor, serviceProvider);
+        assertTrue(factory.create(accessor, serviceProvider).isPresent());
+        oRanNe.get().register();
+        oRanNe.get().deregister();
+        oRanNe.get().getAcessor();
+        oRanNe.get().getDeviceType();
+        assertEquals(oRanNe.get().getNodeId().getValue(), "nSky");
+    }
 
-			}
+    @After
+    public void cleanUp() throws Exception {
 
-			@Override
-			public void writeFaultLog(FaultlogEntity fault) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void updateFaultCurrent(FaultcurrentEntity fault) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public int clearFaultsCurrentOfNode(String nodeName) {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public int clearFaultsCurrentOfNodeWithObjectId(String nodeName, String objectId) {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public List<String> getAllNodesWithCurrentAlarms() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public void writeInventory(Inventory internalEquipment) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void updateNetworkConnectionDeviceType(
-					NetworkElementConnectionEntity networkElementConnectionEntitiy, String nodeId) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy,
-					String nodeId) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void removeNetworkConnection(String nodeId) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public int doIndexClean(Date olderAreOutdated) {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public int getNumberOfOldObjects(Date olderAreOutdated) {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public List<NetworkElementConnectionEntity> getNetworkElementConnections() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public void doWritePerformanceData(List<PmdataEntity> list) {
-				// TODO Auto-generated method stub
-
-			}
-
-		});
-
-
-	}
-
-	@Test
-	public void test() {
-		Optional<NetworkElement> oRanNe;
-		when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(true);
-		when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(false);
-		ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
-		oRanNe = factory.create(accessor, serviceProvider);
-		assertTrue((factory.create(accessor, serviceProvider)).isPresent());
-		oRanNe.get().register();
-		oRanNe.get().deregister();
-		oRanNe.get().getAcessor();
-		oRanNe.get().getDeviceType();
-		assertEquals(oRanNe.get().getNodeId().getValue(), "nSky");
-	}
-
-	@After
-	public void cleanUp() throws Exception {
-
-	}
+    }
 }

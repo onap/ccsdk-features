@@ -15,40 +15,39 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl.config;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl;
 
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 
-public class PmConfig implements Configuration {
+public class DeviceManagerOnfConfiguration implements Configuration {
 
-    private static final String SECTION_MARKER_PM = "pm";
+    private static final String SECTION_MARKER_DMONF = "dmonf";
 
-    private static final String PROPERTY_KEY_ENABLED = "pmEnabled";
-    private static final String DEFAULT_VALUE_ENABLED = String.valueOf(true);
+    private static final String DEFAULT_VALUE_ENABLED = String.valueOf(false);
+    private static final String PROPERTY_KEY_POLLALARMS = "pollAlarms";
 
+    private final ConfigurationFileRepresentation configuration;
 
-	private final ConfigurationFileRepresentation configuration;
-
-	public PmConfig(ConfigurationFileRepresentation configuration) {
-		this.configuration = configuration;
-		this.configuration.addSection(SECTION_MARKER_PM);
-		defaults();
-	}
-
-    public boolean isPerformanceManagerEnabled() {
-        return configuration.getPropertyBoolean(SECTION_MARKER_PM, PROPERTY_KEY_ENABLED);
+    public DeviceManagerOnfConfiguration(ConfigurationFileRepresentation configuration) {
+        this.configuration = configuration;
+        this.configuration.addSection(SECTION_MARKER_DMONF);
+        defaults();
     }
 
-	@Override
-	public String getSectionName() {
-		return SECTION_MARKER_PM;
-	}
+    public boolean isPollAlarmsEnabled() {
+        return configuration.getPropertyBoolean(SECTION_MARKER_DMONF, PROPERTY_KEY_POLLALARMS);
+    }
 
-	@Override
-	public void defaults() {
-		//Add default if not available
-		configuration.setPropertyIfNotAvailable(SECTION_MARKER_PM, PROPERTY_KEY_ENABLED, DEFAULT_VALUE_ENABLED);
-	}
+    @Override
+    public String getSectionName() {
+        return SECTION_MARKER_DMONF;
+    }
+
+    @Override
+    public void defaults() {
+        //Add default if not available
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_DMONF, PROPERTY_KEY_POLLALARMS, DEFAULT_VALUE_ENABLED);
+    }
 
 }
