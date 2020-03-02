@@ -1,0 +1,123 @@
+module CM-NOTIFY-API {
+
+    namespace "org:onap:ccsdk";
+
+    prefix cm-notify-api;
+
+    revision "2020-02-24" {
+        description
+        "CM Notification API";
+    }
+
+    grouping cm-notification-response {
+      leaf response-code {
+        type string;
+      }
+      leaf response-message {
+        type string;
+      }
+      description
+        "Response payload for CM Notify RPC's";
+    }
+
+    grouping x-0005b9-lte-g {
+      leaf phy-cell-id-in-use {
+        type uint64;
+        default 0;
+      }
+      leaf pnf-name {
+        type string {
+          length "0..256";
+        }
+        description
+          "PNF name ";
+      }
+    }
+
+    grouping lte-ran-neighbor-list-in-use-lte-cell-g {
+      description
+        "Table containing the LTE EUTRA (i.e. intra-RAT) cell list.";
+      leaf plmnid {
+        type string {
+          length "0..6";
+        }
+        description
+          "PLMN ID consists of Mobile Country Code (MCC) and Mobile Network Code (MNC) {{bibref|3GPP-TS.23.003}}, {{bibref|3GPP-TS.24.008}}. Mobile Country Code consists of three digits and uniquely identifies the country of domicile of the subscriber. Mobile Network Code consists of two or three digits and identifies the Home PLMN within a country. For a 2-digit MNC the total string length of {{param}} is 5.";
+        reference "BBF TR-196 2.0.3 full - FAPService.{i}.CellConfig.LTE.RAN.NeighborListInUse.LTECell.{i}.PLMNID";
+      }
+      leaf cid {
+         type string {
+           length "0..52";
+        }
+        description
+          "Cell Identity. {{bibref|3GPP-TS.36.331|Section 6.3.4}}. Combination of {{param|PLMNID}} and {{param}} constitutes the Cell Global ID (CGI).";
+        reference "BBF TR-196 2.0.3 full - FAPService.{i}.CellConfig.LTE.RAN.NeighborListInUse.LTECell.{i}.CID";
+      }
+
+      leaf phy-cell-id {
+        type uint64 {
+          range "0..503";
+        }
+        description
+          "Physical cell ID, as specified in {{bibref|3GPP-TS.36.211|Section 6.11}}.";
+        reference "BBF TR-196 2.0.3 full - FAPService.{i}.CellConfig.LTE.RAN.NeighborListInUse.LTECell.{i}.PhyCellID";
+      }
+      leaf pnf-name {
+        type string {
+          length "0..256";
+        }
+        description
+          "PNF name ";
+      }
+      leaf blacklisted {
+        type boolean;
+        description
+          "Indicates whether this neighbor cell is allowed for UEs as handover target or not. If {{true}}, handover is prohibited towards this cell. If {{false}}, handover is allowed toward this cell. The {{param}} parameter allows this cell to be prohibited as a handover target, while still allowing this cell to be included in the BCCH SIB4 or 5.";
+        reference "BBF TR-196 2.0.3 full - FAPService.{i}.CellConfig.LTE.RAN.NeighborListInUse.LTECell.{i}.Blacklisted";
+      }
+
+      reference "BBF TR-196 2.0.3 full - FAPService.{i}.CellConfig.LTE.RAN.NeighborListInUse.LTECell.{i}.";
+    }
+
+
+    rpc nbrlist-change-notification {
+      description
+        "RAN Neighbor List change notification to configure RuntimeDB";
+         input {
+             leaf fap-service-number-of-entries-changed {
+               type uint64;
+               description
+                 "Number of cells for which neighbor list has changed";
+             }
+             list fap-service {
+               key "alias";
+               leaf alias {
+                 type string {
+                   length "1..64";
+                 }
+               }
+               leaf cid {
+                 type string {
+                 length "0..52";
+                 }
+               }
+               uses x-0005b9-lte-g;
+               leaf lte-cell-number-of-entries {
+                 type uint64;
+                 description
+                   "Number of cells in a neighbor list that was changed";
+               }
+               list lte-ran-neighbor-list-in-use-lte-cell-changed {
+                 key "plmnid cid";
+                 uses lte-ran-neighbor-list-in-use-lte-cell-g;
+                 description
+                   "Changed/Modified List of cells in a neighbor list for this fap service";
+             }
+           }
+        }
+
+        output {
+            uses cm-notification-response;
+        }
+    }
+}
