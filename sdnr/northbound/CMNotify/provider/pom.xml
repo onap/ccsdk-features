@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>1.5.2-SNAPSHOT</version>
+        <version>1.5.2</version>
         <relativePath/>
     </parent>
 
@@ -190,6 +190,4 @@
       </dependency>
 
     </dependencies>
-
-
 </project>
