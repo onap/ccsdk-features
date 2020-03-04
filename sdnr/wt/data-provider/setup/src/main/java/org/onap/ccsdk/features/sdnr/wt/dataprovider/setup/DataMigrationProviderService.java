@@ -56,15 +56,16 @@ public interface DataMigrationProviderService {
 	 * @param numReplicas
 	 * @param dbPrefix
 	 * @param forceRecreate
+	 * @param timeoutms
 	 * @return
 	 */
-	boolean initDatabase(Release release, int numShards, int numReplicas, String dbPrefix, boolean forceRecreate);
-	
+	boolean initDatabase(Release release, int numShards, int numReplicas, String dbPrefix, boolean forceRecreate,
+			long timeoutms);
 	/**
 	 * clean up the database
 	 *   all data will be removed
 	 *   complete structure will be destroyed
 	 * @return 
 	 */
-	boolean clearDatabase(Release release, String dbPrefix);
+	boolean clearDatabase(Release release, String dbPrefix, long timeoutms);
 }

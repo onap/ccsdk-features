@@ -47,7 +47,7 @@ public class TestMigrationProvider {
 		
 		try {
 			//create el alto db infrastructure
-			provider.initDatabase(Release.FRANKFURT_R1, 5, 1, "", true);
+			provider.initDatabase(Release.FRANKFURT_R1, 5, 1, "", true,10000);
 			//import data into database
 			DataMigrationReport report = provider.importData(FRANKFURT_BACKUP_FILE, false, Release.FRANKFURT_R1);
 			assertTrue(report.completed());

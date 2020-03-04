@@ -260,7 +260,10 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
 
 	@Override
 	public boolean initDatabase(Release release, int numShards, int numReplicas, String dbPrefix,
-			boolean forceRecreate) {
+			boolean forceRecreate,long timeoutms) {
+		if(timeoutms>0) {
+			this.dbClient.waitForYellowStatus(timeoutms);
+		}
 		EsVersion dbVersion = this.readActualVersion();
 		if (dbVersion == null) {
 			return false;
@@ -270,7 +273,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
 			return false;
 		}
 		if (forceRecreate) {
-			this.clearDatabase(release, dbPrefix);
+			this.clearDatabase(release, dbPrefix,0);
 		}
 		ReleaseInformation ri = ReleaseInformation.getInstance(release);
 		AliasesEntryList aliases = this.readAliases();
@@ -319,8 +322,11 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
 	}
 
 	@Override
-	public boolean clearDatabase(Release release, String dbPrefix) {
+	public boolean clearDatabase(Release release, String dbPrefix, long timeoutms) {
 
+		if(timeoutms>0) {
+			this.dbClient.waitForYellowStatus(timeoutms);
+		}
 		//check aliases
 		AliasesEntryList entries = this.readAliases();
 		if (entries == null) {

@@ -68,7 +68,7 @@ public class FrankfurtReleaseInformation extends ReleaseInformation {
 		map.put(ComponentName.MEDIATOR_SERVER, new DatabaseInfo("mediator-server", "mediator-server",
 				"{\"url\":{\"type\": \"keyword\"},\"name\":{\"type\": \"keyword\"}}"));
 		map.put(ComponentName.MAINTENANCE, new DatabaseInfo("maintenancemode", "maintenancemode",
-				"{\"node-id\": {\"type\": \"keyword\"},\"active\": {\"type\": \"boolean\"}},\"date_detection\":false}}"));
+				"{\"node-id\": {\"type\": \"keyword\"},\"start\": {\"type\": \"date\"},\"end\": {\"type\": \"date\"},\"description\": {\"type\": \"keyword\"},\"active\": {\"type\": \"boolean\"}},\"date_detection\":false}}"));
 		return map;
 	}
 
