@@ -650,12 +650,14 @@ export class YangParser {
     const lists = this.extractNodes(statement, "list");
     if (lists && lists.length > 0) {
       subViews.push(...lists.reduce<ViewSpecification[]>((acc, cur) => {
+        let elmConfig = config;
         if (!cur.arg) {
           throw new Error(`Module: [${context.name}]${currentPath}. Found list without name.`);
         }
         const key = this.extractValue(cur, "key") || undefined;
-        if (config && !key) {
-          throw new Error(`Module: [${context.name}]${currentPath}. Found configurable list without key.`);
+        if (elmConfig && !key) {
+          console.error(new Error(`Module: [${context.name}]${currentPath}. Found configurable list without key.`));
+          elmConfig = false;
         }
         const [currentView, subViews] = this.extractSubViews(cur, currentId, context, `${currentPath}/${context.name}:${cur.arg}`);
         elements.push({
@@ -665,7 +667,7 @@ export class YangParser {
           uiType: "object",
           viewId: currentView.id,
           key: key,
-          config: config
+          config: elmConfig
         });
         acc.push(currentView, ...subViews);
         return acc;
