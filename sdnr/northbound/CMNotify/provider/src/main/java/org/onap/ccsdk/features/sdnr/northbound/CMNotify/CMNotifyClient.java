@@ -20,7 +20,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.ccsdk.features.sdnr.northbound.CMNotify;
+package org.onap.ccsdk.features.sdnr.northbound.cmnotify;
 
 import java.util.Properties;
 import org.onap.ccsdk.sli.core.sli.SvcLogicException;
