@@ -19,13 +19,13 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.ccsdk.features.sdnr.northbound.CMNotify;
+package org.onap.ccsdk.features.sdnr.northbound.cmnotify;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import org.onap.ccsdk.features.sdnr.northbound.CMNotify.CMNotifyClient;
-import org.onap.ccsdk.features.sdnr.northbound.CMNotify.CMNotifyProvider;
+import org.onap.ccsdk.features.sdnr.northbound.cmnotify.CMNotifyClient;
+import org.onap.ccsdk.features.sdnr.northbound.cmnotify.CMNotifyProvider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
