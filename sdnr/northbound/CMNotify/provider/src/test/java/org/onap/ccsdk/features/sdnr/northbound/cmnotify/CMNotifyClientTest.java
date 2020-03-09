@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  */
 
- package org.onap.ccsdk.features.sdnr.northbound.CMNotify;
+ package org.onap.ccsdk.features.sdnr.northbound.cmnotify;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -32,7 +32,7 @@ import org.onap.ccsdk.sli.core.sli.SvcLogicException;
 import org.onap.ccsdk.sli.core.sli.provider.MdsalHelper;
 import org.onap.ccsdk.sli.core.sli.provider.SvcLogicService;
 
-import org.onap.ccsdk.features.sdnr.northbound.CMNotify.CMNotifyClient;
+import org.onap.ccsdk.features.sdnr.northbound.cmnotify.CMNotifyClient;
 
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationInput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationInputBuilder;

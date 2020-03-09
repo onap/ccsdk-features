@@ -20,7 +20,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.ccsdk.features.sdnr.northbound.CMNotify;
+package org.onap.ccsdk.features.sdnr.northbound.cmnotify;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
