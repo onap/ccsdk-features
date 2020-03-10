@@ -38,8 +38,9 @@
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
     <properties>
-        <ccsdk.sli.core.version>${project.version}</ccsdk.sli.core.version>
+        <ccsdk.sli.core.version>0.7.1</ccsdk.sli.core.version>
     </properties>
+
 
     <dependencyManagement>
         <dependencies>
