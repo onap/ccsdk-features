@@ -70,6 +70,8 @@ type MediatorServerSelectionComponentState = {
   mediatorServerEditorMode: EditMediatorServerDialogMode
 }
 
+let initialSorted = false;
+
 class MediatorServerSelectionComponent extends React.Component<MediatorServerSelectionComponentProps, MediatorServerSelectionComponentState> {
 
   constructor(props: MediatorServerSelectionComponentProps) {
@@ -116,7 +118,13 @@ class MediatorServerSelectionComponent extends React.Component<MediatorServerSel
   }
 
   public componentDidMount() {
-    this.props.mediatorServersActions.onToggleFilter();
+
+    if (!initialSorted) {
+      initialSorted = true;
+      this.props.mediatorServersActions.onHandleRequestSort("name");
+    } else {
+      this.props.mediatorServersActions.onRefresh();
+    }
   }
 
   private onSelectMediatorServer = (event: React.MouseEvent<HTMLElement>, server: MediatorServer) => {

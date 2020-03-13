@@ -81,7 +81,9 @@ type MaintenenceViewComponentProps = Connect<typeof mapProps, typeof mapDispatch
 type MaintenenceViewComponentState = {
   maintenenceEntryToEdit: MaintenenceEntry;
   maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode;
-}
+};
+
+let initialSorted = false;
 
 class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentProps, MaintenenceViewComponentState> {
 
@@ -148,8 +150,15 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
   }
 
   public componentDidMount() {
-    this.props.maintenanceEntriesActions.onRefresh();
-    this.props.onLoadMaintenanceEntries();
+
+    if (!initialSorted) {
+      initialSorted = true;
+      this.props.maintenanceEntriesActions.onHandleRequestSort("node-id");
+    } else {
+      this.props.onLoadMaintenanceEntries();
+    }
+
+
   }
 
   private onOpenPlus1hEditMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenenceEntry) => {

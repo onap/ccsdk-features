@@ -161,7 +161,7 @@ class MediatorApplicationComponent extends React.Component<MediatorApplicationCo
 
           this.props.isReachable ?
 
-            <MediatorServerConfigurationsTable stickyHeader title={this.props.serverName || ''} customActionButtons={[addMediatorConfigAction]} idProperty={"Name"} rows={this.props.configurations} asynchronus columns={[
+            <MediatorServerConfigurationsTable defaultSortColumn={"Name"} defaultSortOrder="asc" stickyHeader title={this.props.serverName || ''} customActionButtons={[addMediatorConfigAction]} idProperty={"Name"} rows={this.props.configurations} asynchronus columns={[
               { property: "Name", title: "Mediator", type: ColumnType.text },
               { property: "Status", title: "Status", type: ColumnType.custom, customControl: ({ rowData }) => rowData.pid ? (<span>Running</span>) : (<span>Stopped</span>) },
               { property: "DeviceIp", title: "IP Adress", type: ColumnType.text },

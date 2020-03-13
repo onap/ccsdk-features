@@ -32,6 +32,18 @@ const mapProps = (state: IApplicationStoreState) => ({
   currentPath: state.help.currentPath
 });
 
+const containerStyle = {
+  overflow: "auto",
+  height: "100%",
+  width: "100%"
+};
+
+const styles = {
+  maxWidth: "960px",
+  margin: "1.5em auto",
+
+};
+
 type HelpApplicationComponentProps = Connect<typeof mapProps>;
 
 class HelpApplicationComponent extends React.Component<HelpApplicationComponentProps> {
@@ -58,8 +70,10 @@ class HelpApplicationComponent extends React.Component<HelpApplicationComponentP
 
   render(): JSX.Element {
     return this.props.content ? (
-      <Markdown text={this.props.content} markedOptions={{ renderer: this.renderer }} className="markdown-body"
-        style={{ maxWidth: "960px", margin: "1.5em auto" }} />
+      <div style={containerStyle}>
+        <Markdown text={this.props.content} markedOptions={{ renderer: this.renderer }} className="markdown-body"
+          style={styles} />
+      </div>
     ) : (<h2>Loading ...</h2>)
   }
 

@@ -39,10 +39,17 @@ const ConnectedElementTable = MaterialTable as MaterialTableCtorType<NetworkElem
 
 type NetworkElementSelectorComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDispatch>;
 
+let initialSorted = false;
+
 class NetworkElementSelectorComponent extends React.Component<NetworkElementSelectorComponentProps> {
 
   componentDidMount() {
-    this.props.connectedNetworkElementsActions.onRefresh();
+
+    if (!initialSorted) {
+      initialSorted = true;
+      this.props.connectedNetworkElementsActions.onHandleRequestSort("node-id");
+    } else
+      this.props.connectedNetworkElementsActions.onRefresh();
   }
 
   render() {

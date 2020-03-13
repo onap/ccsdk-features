@@ -35,6 +35,9 @@ const ConnectionStatusTable = MaterialTable as MaterialTableCtorType<NetworkElem
 
 type ConnectionStatusLogComponentProps = Connect<typeof mapProps, typeof mapDispatch>;
 
+let initialSorted = false;
+
+
 class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogComponentProps> {
   render(): JSX.Element {
     return (
@@ -46,6 +49,15 @@ class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogCo
       </ConnectionStatusTable>
     );
   };
+
+  componentDidMount() {
+    if (!initialSorted) {
+      initialSorted = true;
+      this.props.connectionStatusLogActions.onHandleExplicitRequestSort("timestamp", "desc");
+    } else {
+      this.props.connectionStatusLogActions.onRefresh();
+    }
+  }
 }
 
 export const ConnectionStatusLog = connect(mapProps, mapDispatch)(ConnectionStatusLogComponent);

@@ -33,14 +33,14 @@ import { PanelId } from '../models/panelId';
 
 import { createCurrentProblemsProperties, createCurrentProblemsActions, currentProblemsReloadAction } from '../handlers/currentProblemsHandler';
 import { createAlarmLogEntriesProperties, createAlarmLogEntriesActions, alarmLogEntriesReloadAction } from '../handlers/alarmLogEntriesHandler';
-import { setPanelAction, RememberCurrentPanelAction } from '../actions/panelChangeActions';
+import { setPanelAction } from '../actions/panelChangeActions';
 import { Tooltip, IconButton, AppBar, Tabs, Tab } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ClearStuckAlarmsDialog, { ClearStuckAlarmsDialogMode } from '../components/clearStuckAlarmsDialog';
+import { SetPartialUpdatesAction } from '../actions/partialUpdatesAction';
 
 const mapProps = (state: IApplicationStoreState) => ({
-  panelId: state.fault.currentOpenPanel.openPanel,
-  savedPanel: state.fault.currentOpenPanel.savedPanel,
+  panelId: state.fault.currentOpenPanel,
   currentProblemsProperties: createCurrentProblemsProperties(state),
   faultNotifications: state.fault.faultNotifications,
   alarmLogEntriesProperties: createAlarmLogEntriesProperties(state)
@@ -54,7 +54,7 @@ const mapDisp = (dispatcher: IDispatcher) => ({
   switchActivePanel: (panelId: PanelId) => {
     dispatcher.dispatch(setPanelAction(panelId));
   },
-  rememberCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new RememberCurrentPanelAction(panelId))
+  setPartialUpdates: (active: boolean) => dispatcher.dispatch(new SetPartialUpdatesAction(active))
 });
 
 type FaultApplicationComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp>;
@@ -68,6 +68,8 @@ type FaultApplicationState = {
 const FaultTable = MaterialTable as MaterialTableCtorType<Fault>;
 const FaultAlarmNotificationTable = MaterialTable as MaterialTableCtorType<FaultAlarmNotification>;
 
+let currentProblemsInitalSorted = false;
+let alarmLogInitialSorted = false;
 
 class FaultApplicationComponent extends React.Component<FaultApplicationComponentProps, FaultApplicationState>{
 
@@ -97,10 +99,20 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
     this.props.switchActivePanel(nextActivePanel);
     switch (nextActivePanel) {
       case 'CurrentProblem':
-        this.props.reloadCurrentProblems();
+        if (!currentProblemsInitalSorted) {
+          currentProblemsInitalSorted = true;
+          this.props.currentProblemsActions.onHandleExplicitRequestSort("timestamp", "desc");
+        } else {
+          this.props.reloadCurrentProblems();
+        }
         break;
       case 'AlarmLog':
-        this.props.reloadAlarmLogEntries();
+        if (!alarmLogInitialSorted) {
+          alarmLogInitialSorted = true;
+          this.props.alarmLogEntriesActions.onHandleExplicitRequestSort("timestamp", "desc");
+        } else {
+          this.props.reloadAlarmLogEntries();
+        }
         break;
       case 'AlarmNotifications':
       case null:
@@ -177,25 +189,16 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
   };
 
   componentWillUnmount() {
-    if (this.props.panelId) {
-      this.props.rememberCurrentPanel(this.props.panelId as PanelId);
-      this.props.switchActivePanel(null);
-    }
+    this.props.setPartialUpdates(false);
   }
 
   public componentDidMount() {
-
-    if (this.props.panelId === null && this.props.savedPanel === null) { //set default tab if none is set
+    if (this.props.panelId === null) { //set default tab if none is set
       this.onToggleTabs("CurrentProblem");
-    } else // load saved tab if possible
-      if (this.props.panelId === null && this.props.savedPanel !== null) {
-        this.onToggleTabs(this.props.savedPanel);
-        this.props.rememberCurrentPanel(null);
-      }
-
-    this.props.alarmLogEntriesActions.onToggleFilter();
-    this.props.currentProblemsActions.onToggleFilter();
+    }
+    this.props.setPartialUpdates(true);
   }
+
   private renderIcon = (props: { rowData: Fault | FaultAlarmNotification }) => {
     return (
       <FontAwesomeIcon icon={faExclamationTriangle} />

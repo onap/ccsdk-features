@@ -29,11 +29,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import ListItemLink from '../components/material-ui/listItemLink';
 
-import connect, { Connect, IDispatcher } from '../flux/connect';
+import connect, { Connect } from '../flux/connect';
 import { MenuAction } from '../actions/menuAction';
 import * as classNames from 'classnames';
 
+
 const drawerWidth = 240;
+
+const extraLinks = (window as any)._odluxExtraLinks as [string, string][];
 
 const styles = (theme: Theme) => createStyles({
   drawerPaper: {
@@ -41,6 +44,7 @@ const styles = (theme: Theme) => createStyles({
     width: drawerWidth,
   },
   toolbar: theme.mixins.toolbar as any,
+
   drawerOpen: {
     width: drawerWidth,
     transition: theme.transitions.create('width', {
@@ -58,7 +62,24 @@ const styles = (theme: Theme) => createStyles({
     [theme.breakpoints.up('sm')]: {
       width: theme.spacing(9) + 1,
     },
-  }
+  },
+  drawer: {
+
+  },
+  menu: {
+    flex: "1 0 0%",
+  },
+  optLinks: {
+    borderTop: "2px solid #cfcfcf",
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around"
+  },
+  link: {
+    margin: theme.spacing(1)+1,
+    fontSize: theme.typography.fontSize-2,
+  },
 });
 
 const tabletWidthBreakpoint = 768;
@@ -103,7 +124,7 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
     <Drawer
       variant="permanent"
       className={
-        classNames({
+        classNames(classes.drawer, {
           [classes.drawerOpen]: isOpen,
           [classes.drawerClose]: !isOpen
         })
@@ -115,7 +136,7 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
       {user && user.isValid && <>
         <div className={classes.toolbar} />
         { /* https://fiffty.github.io/react-treeview-mui/ */}
-        <List component="nav">
+        <List className={classes.menu} component="nav">
           <ListItemLink exact to="/" primary="Home" icon={<FontAwesomeIcon icon={faHome} />} />
           <Divider />
           {
@@ -141,6 +162,9 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
             : null
           }
         </List>
+        {isOpen && extraLinks && <div className={classes.optLinks}>
+          {extraLinks.map(linkInfo => (<a className={classes.link} href={linkInfo[1]}>{linkInfo[0]}</a>))}
+        </div> || null}
       </> || null
       }
     </Drawer>)

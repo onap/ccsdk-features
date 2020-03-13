@@ -64,15 +64,19 @@ class AboutComponent extends React.Component<any, AboutState> {
 
     const className = "about-table"
     const style: React.CSSProperties = {};
+    const containerStyle = { overflow: "auto", paddingRight: "20px" }
 
     const html = (marked(this.state.content || 'loading', { renderer: markedOptions && markedOptions.renderer || defaultRenderer }));
 
     return (
-      <div
-        dangerouslySetInnerHTML={{ __html: html }}
-        className={className}
-        style={style}
-      />
+      <div style={containerStyle}>
+        <div
+          dangerouslySetInnerHTML={{ __html: html }}
+          className={className}
+          style={style}
+        />
+      </div>
+
 
     );
   }
