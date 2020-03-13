@@ -111,6 +111,8 @@ type MaterialTableComponentBaseProps<TData> = WithStyles<typeof styles> & {
   tableId?: string;
   title?: string;
   stickyHeader?: boolean;
+  defaultSortOrder?: 'asc' | 'desc';
+  defaultSortColumn?: keyof TData;
   enableSelection?: boolean;
   disableSorting?: boolean;
   disableFilter?: boolean;
@@ -164,8 +166,8 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
       filter: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.filter || {} : {},
       showFilter: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.showFilter : false,
       loading: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.loading : false,
-      order: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.order : 'asc',
-      orderBy: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.orderBy : null,
+      order: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.order : this.props.defaultSortOrder || 'asc',
+      orderBy: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.orderBy : this.props.defaultSortColumn || null,
       selected: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.selected : null,
       rows: isMaterialTableComponentPropsWithRows(this.props) && this.props.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) || [],
       total: isMaterialTableComponentPropsWithRows(this.props) && this.props.rows.length || 0,

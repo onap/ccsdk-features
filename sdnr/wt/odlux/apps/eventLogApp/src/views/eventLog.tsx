@@ -35,6 +35,8 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   eventLogActions: createEventLogActions(dispatcher.dispatch)
 });
 
+let initalSorted = false;
+
 class EventLogComponent extends React.Component<Connect<typeof mapProps, typeof mapDispatch>> {
   render() {
     return <EventLogTable stickyHeader title="Event Log" idProperty="_id" columns={[
@@ -50,8 +52,13 @@ class EventLogComponent extends React.Component<Connect<typeof mapProps, typeof 
   }
 
   componentDidMount() {
-    this.props.eventLogActions.onToggleFilter();
-    this.props.eventLogActions.onHandleRequestSort("node-id");
+
+    if (!initalSorted) {
+      initalSorted = true;
+      this.props.eventLogActions.onHandleExplicitRequestSort("timestamp", "desc");
+    } else {
+      this.props.eventLogActions.onRefresh();
+    }
   }
 }
 

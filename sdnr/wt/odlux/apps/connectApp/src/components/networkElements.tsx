@@ -83,7 +83,7 @@ type NetworkElementsListComponentState = {
 }
 
 const emptyRequireNetworkElement: NetworkElementConnection = { id: "", nodeId: "", host: "", port: 0, status: "Disconnected", isRequired: false };
-
+let initialSorted = false;
 const NetworkElementTable = MaterialTable as MaterialTableCtorType<NetworkElementConnection>;
 
 export class NetworkElementsListComponent extends React.Component<NetworkElementsListComponentProps, NetworkElementsListComponentState> {
@@ -173,7 +173,12 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
   };
 
   public componentDidMount() {
-    this.props.networkElementsActions.onRefresh();
+    if (!initialSorted) {
+      initialSorted = true;
+      this.props.networkElementsActions.onHandleRequestSort("node-id");
+    } else {
+      this.props.networkElementsActions.onRefresh();
+    }
   }
 
   private onOpenAddNetworkElementDialog = (event: React.MouseEvent<HTMLElement>, element: NetworkElementConnection) => {

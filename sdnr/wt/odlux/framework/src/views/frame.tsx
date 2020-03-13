@@ -114,5 +114,4 @@ class FrameComponent extends React.Component<FrameProps>{
 }
 
 export const Frame = withStyles(styles)(FrameComponent);
-
 export default Frame;

@@ -62,8 +62,12 @@ const FaultApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteCom
       if (currentMountId) {
         props.setCurrentPanel("CurrentProblem");
         props.currentProblemsActions.onFilterChanged("nodeId", currentMountId);
-        props.currentProblemsProperties.showFilter; // || (props.currentProblemsActions.onToggleFilter());
-        props.currentProblemsActions.onRefresh();
+        if (!props.currentProblemsProperties.showFilter) {
+          props.currentProblemsActions.onToggleFilter(false);
+          props.currentProblemsActions.onRefresh();
+        }
+        else
+          props.currentProblemsActions.onRefresh();
       }
     });
   }
@@ -95,11 +99,13 @@ export function register() {
     if (fault && store) {
       store.dispatch(new AddFaultNotificationAction(fault));
 
-      //reload fault data if tab is open
-      if (store.state.fault.currentOpenPanel.openPanel === "AlarmLog") {
-        store.dispatch(alarmLogEntriesReloadAction);
-      } else if (store.state.fault.currentOpenPanel.openPanel === "CurrentProblem") {
-        store.dispatch(currentProblemsReloadAction);
+      // reload fault data if the view is displayed
+      if (store.state.fault.listenForPartialUpdates) {
+        if (store.state.fault.currentOpenPanel === "AlarmLog") {
+          store.dispatch(alarmLogEntriesReloadAction);
+        } else if (store.state.fault.currentOpenPanel === "CurrentProblem") {
+          store.dispatch(currentProblemsReloadAction);
+        }
       }
     }
   }));

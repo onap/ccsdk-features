@@ -26,26 +26,31 @@ import { IActionHandler } from '../../../../framework/src/flux/action';
 import { IFaultNotifications, faultNotificationsHandler } from './notificationsHandler';
 import { ICurrentProblemsState, currentProblemsActionHandler } from './currentProblemsHandler';
 import { IAlarmLogEntriesState, alarmLogEntriesActionHandler } from './alarmLogEntriesHandler';
-import { SetPanelAction, RememberCurrentPanelAction } from '../actions/panelChangeActions';
+import { SetPanelAction } from '../actions/panelChangeActions';
 import { IFaultStatus, faultStatusHandler } from './faultStatusHandler';
 import { stuckAlarmHandler } from './clearStuckAlarmsHandler';
 import { PanelId } from 'models/panelId';
+import { SetPartialUpdatesAction } from '../actions/partialUpdatesAction';
 
 export interface IFaultAppStoreState {
   currentProblems: ICurrentProblemsState;
   faultNotifications: IFaultNotifications;
   alarmLogEntries: IAlarmLogEntriesState;
-  currentOpenPanel: ICurrentOpenPanelState;
+  currentOpenPanel: PanelId | null;
   faultStatus: IFaultStatus;
+  listenForPartialUpdates: boolean;
 }
 
-type ICurrentOpenPanelState = { openPanel: string | null, savedPanel: PanelId | null };
-const panelInitState = { openPanel: null, savedPanel: null };
-const currentOpenPanelHandler: IActionHandler<ICurrentOpenPanelState> = (state = panelInitState, action) => {
+const currentOpenPanelHandler: IActionHandler<PanelId | null> = (state = null, action) => {
   if (action instanceof SetPanelAction) {
-    state = { ...state, openPanel: action.panelId };
-  } else if (action instanceof RememberCurrentPanelAction) {
-    state = { ...state, savedPanel: action.panelId };
+    state = action.panelId;
+  }
+  return state;
+}
+
+const arePartialUpdatesActiveHandler: IActionHandler<boolean> = (state = false, action) => {
+  if (action instanceof SetPartialUpdatesAction) {
+    state = action.isActive;
   }
   return state;
 }
@@ -62,7 +67,8 @@ const actionHandlers = {
   alarmLogEntries: alarmLogEntriesActionHandler,
   currentOpenPanel: currentOpenPanelHandler,
   faultStatus: faultStatusHandler,
-  stuckAlarms: stuckAlarmHandler
+  stuckAlarms: stuckAlarmHandler,
+  listenForPartialUpdates: arePartialUpdatesActiveHandler
 };
 
 export const faultAppRootHandler = combineActionHandler<IFaultAppStoreState>(actionHandlers);

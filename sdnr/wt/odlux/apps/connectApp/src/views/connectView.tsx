@@ -61,8 +61,8 @@ class ConnectApplicationComponent extends React.Component<ConnectApplicationComp
     if (this.props.panelId === null) { //don't change tabs, if one is selected already
       this.onTogglePanel("NetworkElements");
     }
-    this.props.networkElementsActions.onToggleFilter();
-    this.props.connectionStatusLogActions.onToggleFilter();
+    //this.props.networkElementsActions.onToggleFilter();
+    //this.props.connectionStatusLogActions.onToggleFilter();
   }
 
   public componentDidUpdate = async () => {

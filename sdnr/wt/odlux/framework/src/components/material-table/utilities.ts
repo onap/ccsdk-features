@@ -49,6 +49,12 @@ export function createExternal<TData>(callback: DataCallback<TData>, selectState
     }
   }
 
+  class RequestExplicitSortAction extends TableAction {
+    constructor(public propertyName: string, public sortOrder: "asc" | "desc") {
+      super();
+    }
+  }
+
   class SetSelectedAction extends TableAction {
     constructor(public selected: TData[] | null) {
       super();
@@ -136,7 +142,15 @@ export function createExternal<TData>(callback: DataCallback<TData>, selectState
         orderBy: state.orderBy === action.orderBy && state.order === 'desc' ? null : action.orderBy,
         order: state.orderBy === action.orderBy && state.order === 'asc' ? 'desc' : 'asc',
       }
-    } else if (action instanceof SetShowFilterAction) {
+    } else if (action instanceof RequestExplicitSortAction) {
+      state = {
+        ...state,
+        loading: true,
+        orderBy: action.propertyName,
+        order: action.sortOrder
+      }
+    }
+    else if (action instanceof SetShowFilterAction) {
       state = {
         ...state,
         loading: true,
@@ -239,11 +253,18 @@ export function createExternal<TData>(callback: DataCallback<TData>, selectState
           (!skipRefresh) && dispatch(reloadAction);
         });
       },
-      onToggleFilter: () => {
+      onHandleExplicitRequestSort: (property: string, sortOrder: "asc" | "desc") => {
+        dispatch((dispatch: Dispatch) => {
+          dispatch(new RequestExplicitSortAction(property, sortOrder));
+          (!skipRefresh) && dispatch(reloadAction);
+        });
+      },
+      onToggleFilter: (refresh?: boolean) => {
         dispatch((dispatch: Dispatch, getAppState: () => IApplicationStoreState) => {
           const { showFilter } = selectState(getAppState());
           dispatch(new SetShowFilterAction(!showFilter));
-          (!skipRefresh) && dispatch(reloadAction);
+          if (!skipRefresh && (refresh === undefined || refresh))
+            dispatch(reloadAction);
         });
       },
       onFilterChanged: (property: string, filterTerm: string) => {
