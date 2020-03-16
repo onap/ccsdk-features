@@ -58,6 +58,12 @@ class PerformanceDataComponent extends React.Component<PerformanceDataComponentP
     this.props.toggleFilterButton(!this.props.isFilterVisible);
   }
 
+  onFilterChanged = (property: string, filterTerm: string) => {
+    this.props.performanceDataActions.onFilterChanged(property, filterTerm);
+    if (!this.props.performanceDataProperties.showFilter)
+      this.props.performanceDataActions.onToggleFilter(false);
+  }
+
   render(): JSX.Element {
     const properties = this.props.performanceDataProperties;
     const actions = this.props.performanceDataActions;
@@ -77,7 +83,7 @@ class PerformanceDataComponent extends React.Component<PerformanceDataComponentP
     });
     return (
       <>
-        <ToggleContainer onToggleFilterButton={() => this.props.toggleFilterButton(!this.props.isFilterVisible)} existingFilter={this.props.existingFilter} onFilterChanged={this.props.performanceDataActions.onFilterChanged} selectedValue={this.props.currentView} showFilter={this.props.isFilterVisible} onChange={this.props.setSubView}>
+        <ToggleContainer onToggleFilterButton={() => this.props.toggleFilterButton(!this.props.isFilterVisible)} existingFilter={this.props.existingFilter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} showFilter={this.props.isFilterVisible} onChange={this.props.setSubView}>
           {lineChart(chartPagedData)}
           <PerformanceDataTable stickyHeader idProperty={"_id"} columns={performanceColumns} {...properties} {...actions} />
         </ToggleContainer>

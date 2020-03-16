@@ -1,3 +1,22 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
+
+
 import * as React from 'react';
 import { makeStyles, TextField, Typography, Select, MenuItem, FormControl, InputLabel } from '@material-ui/core';
 
@@ -11,12 +30,15 @@ const styles = makeStyles({
 });
 
 type filterProps = { isVisible: boolean, onFilterChanged: (property: string, filterTerm: string) => void, filters: any };
-//put chart visibility into redux
+
 const ChartFilter: React.FunctionComponent<filterProps> = (props) => {
 
-    //get filter from redux state (just pass da object?), onfilterchange
+
     const classes = styles();
 
+    // make sure suspectIntervalFlag is a string to show the correct value in the select element
+
+    const suspectIntervalFlag = props.filters.suspectIntervalFlag === undefined ? undefined : props.filters.suspectIntervalFlag.toString();
     return (
         <>
             {
@@ -34,7 +56,7 @@ const ChartFilter: React.FunctionComponent<filterProps> = (props) => {
                     <FormControl>
                         <InputLabel id="suspect-interval-label" shrink>Suspect Interval</InputLabel>
 
-                        <Select labelId="suspect-interval-label" value={props.filters.suspectIntervalFlag || ''} onChange={(event) => props.onFilterChanged("suspectIntervalFlag", event.target.value as string)}>
+                        <Select labelId="suspect-interval-label" value={suspectIntervalFlag || ''} onChange={(event) => props.onFilterChanged("suspectIntervalFlag", event.target.value as string)}>
                             <MenuItem value={undefined}>None</MenuItem>
                             <MenuItem value={"true"}>true</MenuItem>
                             <MenuItem value={"false"}>false</MenuItem>

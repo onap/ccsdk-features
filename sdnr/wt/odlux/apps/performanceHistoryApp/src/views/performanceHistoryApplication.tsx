@@ -53,6 +53,7 @@ import { MaterialTable, MaterialTableCtorType } from '../../../../framework/src/
 import { AppBar, Tabs, Tab } from '@material-ui/core';
 import LtpSelection from '../components/ltpSelection';
 import { ResetAllSubViewsAction } from '../actions/toggleActions';
+import { ReloadAction } from '../actions/reloadAction';
 
 const PerformanceHistoryComponentStyles = (theme: Theme) => createStyles({
   root: {
@@ -70,7 +71,8 @@ const mapProps = (state: IApplicationStoreState) => ({
   availableLtps: state.performanceHistory.ltps.distinctLtps,
   networkElements: state.performanceHistory.networkElements.deviceList,
   initialLoaded: state.performanceHistory.ltps.loadedOnce,
-  error: state.performanceHistory.ltps.error
+  error: state.performanceHistory.ltps.error,
+  shouldReload: state.performanceHistory.isReloadSchedueled
 });
 
 const mapDispatcher = (dispatcher: IDispatcher) => ({
@@ -105,7 +107,8 @@ const mapDispatcher = (dispatcher: IDispatcher) => ({
     dispatch(new NavigateToApplication("performanceHistory", nodeId));
   }),
   resetLtps: () => dispatcher.dispatch((dispatch: Dispatch) => { dispatch(new ResetLtpsAction()); }),
-  resetSubViews: () => dispatcher.dispatch(new ResetAllSubViewsAction())
+  resetSubViews: () => dispatcher.dispatch(new ResetAllSubViewsAction()),
+  setShouldReload: (show: boolean) => dispatcher.dispatch(new ReloadAction(show))
 });
 
 export type NetworkElementType = {
@@ -220,7 +223,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
     if (nodeId === "") {
       return (
         <>
-          <NetworkElementTable stickyHeader title={"Please select the network element!"} idProperty={"nodeId"} rows={this.props.networkElements} asynchronus
+          <NetworkElementTable defaultSortColumn={"nodeId"} defaultSortOrder="asc" stickyHeader title={"Please select the network element!"} idProperty={"nodeId"} rows={this.props.networkElements} asynchronus
             onHandleClick={(event, rowData) => { this.handleNetworkElementSelect(rowData.nodeId) }} columns={
               [{ property: "nodeId", title: "Node Name" }]
             } />
@@ -294,17 +297,8 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
 
 
   public componentDidMount() {
-    this.props.resetSubViews();
-    this.props.resetLtps();
     this.props.setCurrentPanel(null);
     this.props.getAllDevicesPMdata();
-    this.props.enableFilterPerformanceData.onToggleFilter();
-    this.props.enableFilterReceiveLevel.onToggleFilter();
-    this.props.enableFilterTransmissionPower.onToggleFilter();
-    this.props.enableFilterTemperature.onToggleFilter();
-    this.props.enableFilterAdaptiveModulation.onToggleFilter();
-    this.props.enableFilterSinr.onToggleFilter();
-    this.props.enableFilterCpd.onToggleFilter();
   }
 
   /**
@@ -388,9 +382,8 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
 
   private handleURLChange = (selectedNetworkElement: string) => {
 
-    if (selectedNetworkElement !== this.state.selectedNetworkElement) {
-      // gets called if page is reloaded / opened with a networkname in the url, 
-      // not if the selected networkelement is changed
+    if (this.props.shouldReload) {
+
       this.setState({
         showLtps: true,
         selectedNetworkElement: selectedNetworkElement,
@@ -398,6 +391,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
         selectedLtp: "-1"
       });
       this.props.getDistinctLtpsIds(selectedNetworkElement, this.state.selectedTimePeriod, "-1", this.selectFirstLtp);
+      this.props.setShouldReload(false);
     }
   }
 
