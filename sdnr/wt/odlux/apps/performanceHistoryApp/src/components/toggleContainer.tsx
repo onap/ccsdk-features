@@ -41,15 +41,6 @@ const styles = makeStyles({
     }
 });
 
-type filterType = {
-    onRefresh: () => void;
-    onHandleRequestSort: (orderBy: string) => void;
-    onToggleFilter: () => void;
-    onFilterChanged: (property: string, filterTerm: string) => void;
-    onHandleChangePage: (page: number) => void;
-    onHandleChangeRowsPerPage: (rowsPerPage: number | null) => void;
-};
-
 type toggleProps = { selectedValue: string, onChange(value: string): void, showFilter: boolean, onToggleFilterButton(): void, onFilterChanged: (property: string, filterTerm: string) => void, existingFilter: any };
 
 const ToggleContainer: React.FunctionComponent<toggleProps> = (props) => {
@@ -67,9 +58,6 @@ const ToggleContainer: React.FunctionComponent<toggleProps> = (props) => {
     };
 
     const children = React.Children.toArray(props.children);
-
-    //hide filter if visible + table
-    //put current name into state, let container handle stuff itelf, register for togglestate, get right via set name
 
     return (
         <>

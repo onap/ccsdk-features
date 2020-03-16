@@ -65,6 +65,12 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
     this.props.setSubView(value);
   }
 
+  onFilterChanged = (property: string, filterTerm: string) => {
+    this.props.temperatureActions.onFilterChanged(property, filterTerm);
+    if (!this.props.temperatureProperties.showFilter)
+      this.props.temperatureActions.onToggleFilter(false);
+  }
+
   render(): JSX.Element {
     const properties = this.props.temperatureProperties;
     const actions = this.props.temperatureActions;
@@ -85,7 +91,7 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
     return (
       <>
 
-        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.temperatureProperties.filter} onFilterChanged={this.props.temperatureActions.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.temperatureProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
           <TemperatureTable stickyHeader idProperty={"_id"} columns={temperatureColumns} {...properties} {...actions} />
         </ToggleContainer>

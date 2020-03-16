@@ -39,6 +39,7 @@ import { TimeChangeAction } from '../actions/timeChangeAction';
 import { UpdateMountId } from '../actions/deviceListActions';
 import { SetSubViewAction, ResetAllSubViewsAction, SetFilterVisibility } from '../actions/toggleActions';
 import { SubTabType, currentViewType } from '../models/toggleDataType';
+import { ReloadAction } from '../actions/reloadAction';
 
 export interface IPerformanceHistoryStoreState {
   nodeId: string;
@@ -54,6 +55,7 @@ export interface IPerformanceHistoryStoreState {
   currentOpenPanel: string | null;
   pmDataIntervalType: PmDataInterval;
   subViews: toggleViewDataType;
+  isReloadSchedueled: boolean;
 }
 
 const mountIdHandler: IActionHandler<string> = (state = "", action) => {
@@ -62,6 +64,14 @@ const mountIdHandler: IActionHandler<string> = (state = "", action) => {
     if (action.nodeId) {
       state = action.nodeId;
     }
+  }
+  return state;
+}
+
+const reloadHandler: IActionHandler<boolean> = (state = false, action) => {
+
+  if (action instanceof ReloadAction) {
+    state = action.show;
   }
   return state;
 }
@@ -146,7 +156,8 @@ const actionHandlers = {
   crossPolarDiscrimination: crossPolarDiscriminationActionHandler,
   currentOpenPanel: currentOpenPanelHandler,
   pmDataIntervalType: currentPMDataIntervalHandler,
-  subViews: toogleViewDataHandler
+  subViews: toogleViewDataHandler,
+  isReloadSchedueled: reloadHandler
 };
 
 const performanceHistoryRootHandler = combineActionHandler<IPerformanceHistoryStoreState>(actionHandlers);
