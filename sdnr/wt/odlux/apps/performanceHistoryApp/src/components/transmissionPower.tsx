@@ -65,6 +65,12 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
     this.props.setSubView(value);
   }
 
+  onFilterChanged = (property: string, filterTerm: string) => {
+    this.props.transmissionPowerActions.onFilterChanged(property, filterTerm);
+    if (!this.props.transmissionPowerProperties.showFilter)
+      this.props.transmissionPowerActions.onToggleFilter(false);
+  }
+
   render(): JSX.Element {
     const properties = this.props.transmissionPowerProperties
     const actions = this.props.transmissionPowerActions
@@ -86,7 +92,7 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
 
     return (
       <>
-        <ToggleContainer onChange={this.onChange} onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.transmissionPowerProperties.filter} onFilterChanged={this.props.transmissionPowerActions.onFilterChanged} selectedValue={this.props.currentView} >
+        <ToggleContainer onChange={this.onChange} onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.transmissionPowerProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} >
           {lineChart(chartPagedData)}
           <TransmissionPowerTable stickyHeader idProperty={"_id"} columns={transmissionColumns} {...properties} {...actions} />
         </ToggleContainer>

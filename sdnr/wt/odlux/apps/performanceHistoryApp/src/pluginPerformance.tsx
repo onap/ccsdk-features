@@ -30,6 +30,9 @@ import { ApplicationStore } from '../../../framework/src/store/applicationStore'
 import connect, { Connect, IDispatcher } from '../../../framework/src/flux/connect';
 import { IApplicationStoreState } from "../../../framework/src/store/applicationStore";
 import { updateMountIdActionCreator } from "./actions/deviceListActions";
+import { ResetAllSubViewsAction } from "./actions/toggleActions";
+import { ResetLtpsAction } from "./actions/ltpAction";
+import { ReloadAction } from "./actions/reloadAction";
 
 let api: {
   readonly applicationStore: ApplicationStore | null;
@@ -40,31 +43,63 @@ const mapProps = (state: IApplicationStoreState) => ({
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
-  updateMountId: (mountId: string) => dispatcher.dispatch(updateMountIdActionCreator(mountId))
+  updateMountId: (mountId: string) => dispatcher.dispatch(updateMountIdActionCreator(mountId)),
+  resetLtps: () => dispatcher.dispatch(new ResetLtpsAction()),
+  resetSubViews: () => dispatcher.dispatch(new ResetAllSubViewsAction()),
+  setScheduleReload: (show: boolean) => dispatcher.dispatch(new ReloadAction(show))
 });
 
 let currentMountId: string | null = null;
 let lastUrl: string = "/performanceHistory";
-const PerformanceHistoryApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ mountId?: string}> & Connect<typeof mapProps, typeof mapDisp>) => {
+const PerformanceHistoryApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ mountId?: string }> & Connect<typeof mapProps, typeof mapDisp>) => {
   let mountId: string = "";
-  if (props.location.pathname !== lastUrl) {
-    // ensure the asynchronus update will only be called once per path
+
+  // called when component finshed mounting
+  React.useEffect(() => {
+
     lastUrl = props.location.pathname;
+    mountId = getMountId(lastUrl);
+
+    if (currentMountId !== mountId) { // new element is loaded
+      currentMountId = mountId;
+      schedueleReload(currentMountId);
+    } else
+      if (currentMountId !== "") { // same element is loaded again
+        schedueleReload(currentMountId);
+      }
+  }, []);
+
+  // called when component gets updated
+  React.useEffect(() => {
+
+    lastUrl = props.location.pathname;
+    mountId = getMountId(lastUrl);
+
+    if (currentMountId !== mountId) {
+      currentMountId = mountId;
+      schedueleReload(currentMountId);
+    }
+
+  });
+
+  const getMountId = (lastUrl: string) => {
     let index = lastUrl.lastIndexOf("performanceHistory/");
-    if(index >= 0) {
-      mountId = lastUrl.substr(index+19);
+    if (index >= 0) {
+      mountId = lastUrl.substr(index + 19);
     } else {
       mountId = "";
     }
 
-    window.setTimeout(async () => {
-      // check if the mountId has changed
-      if (currentMountId !== mountId) {
-        currentMountId = mountId;
-        await props.updateMountId(currentMountId);
-      }
-    });
+    return mountId;
   }
+
+  const schedueleReload = (currentMountId: string) => {
+    props.updateMountId(currentMountId);
+    props.resetLtps();
+    props.resetSubViews();
+    props.setScheduleReload(true);
+  }
+
   return (
     <PerformanceHistoryApplication />
   );
@@ -73,11 +108,11 @@ const PerformanceHistoryApplicationRouteAdapter = connect(mapProps, mapDisp)((pr
 const PerformanceHistoryRouterApp = withRouter((props: RouteComponentProps) => {
   props.history.action = "POP";
   return (
-  <Switch>
-    <Route path={`${props.match.path}/:mountId`} component={PerformanceHistoryApplicationRouteAdapter} />
-    <Route path={`${props.match.path}`} component={PerformanceHistoryApplicationRouteAdapter} />
-    <Redirect to={`${props.match.path}`} />
-  </Switch>
+    <Switch>
+      <Route path={`${props.match.path}/:mountId`} component={PerformanceHistoryApplicationRouteAdapter} />
+      <Route path={`${props.match.path}`} component={PerformanceHistoryApplicationRouteAdapter} />
+      <Redirect to={`${props.match.path}`} />
+    </Switch>
   )
 });
 

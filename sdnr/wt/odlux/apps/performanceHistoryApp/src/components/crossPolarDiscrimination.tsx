@@ -65,6 +65,12 @@ class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscri
     this.props.setSubView(value);
   }
 
+  onFilterChanged = (property: string, filterTerm: string) => {
+    this.props.crossPolarDiscriminationActions.onFilterChanged(property, filterTerm);
+    if (!this.props.crossPolarDiscriminationProperties.showFilter)
+      this.props.crossPolarDiscriminationActions.onToggleFilter(false);
+  }
+
   render(): JSX.Element {
     const properties = this.props.crossPolarDiscriminationProperties;
     const actions = this.props.crossPolarDiscriminationActions;
@@ -85,7 +91,7 @@ class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscri
     });
     return (
       <>
-        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.crossPolarDiscriminationProperties.filter} onFilterChanged={this.props.crossPolarDiscriminationActions.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.crossPolarDiscriminationProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
           <CrossPolarDiscriminationTable stickyHeader idProperty={"_id"} columns={cpdColumns} {...properties} {...actions} />
         </ToggleContainer>

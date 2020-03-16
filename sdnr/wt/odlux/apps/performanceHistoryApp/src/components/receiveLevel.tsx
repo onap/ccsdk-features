@@ -64,6 +64,12 @@ class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
     this.props.setSubView(value);
   }
 
+  onFilterChanged = (property: string, filterTerm: string) => {
+    this.props.receiveLevelActions.onFilterChanged(property, filterTerm);
+    if (!this.props.receiveLevelProperties.showFilter)
+      this.props.receiveLevelActions.onToggleFilter(false);
+  }
+
   render(): JSX.Element {
     const properties = this.props.receiveLevelProperties;
     const actions = this.props.receiveLevelActions;
@@ -84,7 +90,7 @@ class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
 
     return (
       <>
-        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.receiveLevelProperties.filter} onFilterChanged={this.props.receiveLevelActions.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.receiveLevelProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
           <ReceiveLevelTable stickyHeader idProperty={"_id"} columns={receiveLevelColumns} {...properties} {...actions} />
         </ToggleContainer>

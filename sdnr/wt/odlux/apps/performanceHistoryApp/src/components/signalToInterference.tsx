@@ -63,6 +63,12 @@ class SignalToInterferenceComponent extends React.Component<SignalToInterference
     this.props.setSubView(value);
   }
 
+  onFilterChanged = (property: string, filterTerm: string) => {
+    this.props.signalToInterferenceActions.onFilterChanged(property, filterTerm);
+    if (!this.props.signalToInterferenceProperties.showFilter)
+      this.props.signalToInterferenceActions.onToggleFilter(false);
+  }
+
   render(): JSX.Element {
     const properties = this.props.signalToInterferenceProperties;
     const actions = this.props.signalToInterferenceActions;
@@ -83,7 +89,7 @@ class SignalToInterferenceComponent extends React.Component<SignalToInterference
     });
     return (
       <>
-        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.signalToInterferenceProperties.filter} onFilterChanged={this.props.signalToInterferenceActions.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.signalToInterferenceProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
           <SignalToInterferenceTable stickyHeader idProperty={"_id"} columns={sinrColumns} {...properties} {...actions}
           />
