@@ -43,12 +43,15 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
  */
 public class Program {
 
+	// constants
     private static final String CMD_INITDB = "init";
     private static final String CMD_CLEAR_DB = "delete";
+    private static final String CMD_CLEAR_DB_COMPLETE = "clear";
     private static final String CMD_CREATE_PLUGIN_INIT_FILE = "pluginfile";
     private static final String CMD_IMPORT = "import";
     private static final String CMD_EXPORT = "export";
     private static final String CMD_LIST_VERSION = "list";
+
     private static final String CMD_INITDB_DESCRIPTION = "initialize databse indices and aliases";
     private static final String CMD_CLEAR_DB_DESCRIPTION = "clear database indices and aliases";
     private static final String CMD_CREATE_PLUGIN_INIT_FILE_DESCRIPTION = "create maven plugin file";
@@ -76,12 +79,27 @@ public class Program {
     private static final String OPTION_INPUTFILE_SHORT = "if";
     private static final String OPTION_DEBUG_SHORT = "x";
     private static final String OPTION_TRUSTINSECURESSL_SHORT = "k";
-    private static final String OPTION_DATABSE_SHORT = "db";
-
+    private static final String OPTION_DATABASE_SHORT = "db";
+    private static final String OPTION_COMMAND_SHORT = "c";
+	private static final String OPTION_DATABASEUSER_SHORT = "dbu";
+	private static final String OPTION_DATABASEPASSWORD_SHORT = "dbp";
+	private static final String OPTION_DATABASEPREFIX_SHORT = "p";
+	private static final String OPTION_DATABASEWAIT_SHORT = "w";
+	private static final String OPTION_HELP_SHORT = "h";
+    // end of constants
+	
+	// variables
     private static Options options = init();
-
     private static Log LOG = null;
-
+    // end of variables
+    
+    // public methods
+    public static void main(String[] args) {
+        System.exit( main2(args) );
+    }
+    // end of public methods
+    
+    // private methods
     @SuppressWarnings("unchecked")
     private static <T> T getOptionOrDefault(CommandLine cmd, String option, T def) throws ParseException {
         if (def instanceof Boolean) {
@@ -133,20 +151,22 @@ public class Program {
         // repeat with all other desired appenders
     }
 
-    public static void main(String[] args) {
+    private static int main2(String[] args) {
+
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd = null;
+       
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             printHelp(formatter);
-            System.exit(1);
+            return 1;
         }
         if (cmd == null) {
             printHelp(formatter);
-            System.exit(1);
+            return 1;
         }
         try {
             initLog(getOptionOrDefault(cmd, OPTION_SILENT_SHORT, false), null,
@@ -154,54 +174,75 @@ public class Program {
         } catch (ParseException e2) {
 
         }
-        switch (cmd.getOptionValue("c")) {
+        try {
+			if(getOptionOrDefault(cmd, OPTION_HELP_SHORT, false)) {
+			    printHelp(formatter);
+			    return 0;
+			}
+		} catch (ParseException e2) {
+			return exit(e2);
+		}
+        final String command = cmd.getOptionValue(OPTION_COMMAND_SHORT);
+        if(command==null) {
+        	printHelp(formatter);
+            return 1;
+        }
+        switch (command) {
         case CMD_INITDB:
             try {
                 cmd_init_db(cmd);
             } catch (Exception e1) {
-                exit(e1);
+                return exit(e1);
             }
             break;
         case CMD_CLEAR_DB:
             try {
                 cmd_clear_db(cmd);
             } catch (Exception e1) {
-                exit(e1);
+                return exit(e1);
+            }
+            break;
+        case CMD_CLEAR_DB_COMPLETE:
+        	try {
+                cmd_clear_db_complete(cmd);
+            } catch (Exception e1) {
+                return exit(e1);
             }
             break;
         case CMD_CREATE_PLUGIN_INIT_FILE:
             try {
-                String of = getOptionOrDefault(cmd, "of", null);
+                String of = getOptionOrDefault(cmd, OPTION_OUTPUTFILE_SHORT, null);
                 if (of == null) {
                     throw new Exception("please add the parameter output-file");
                 }
                 MavenDatabasePluginInitFile.create(Release.CURRENT_RELEASE, of);
             } catch (Exception e) {
-                exit(e);
+                return exit(e);
             }
             break;
         case CMD_IMPORT:
             try {
                 cmd_dbimport(cmd);
             } catch (Exception e1) {
-                exit(e1);
+                return exit(e1);
             }
             break;
         case CMD_EXPORT:
             try {
                 cmd_dbexport(cmd);
             } catch (Exception e) {
-                exit(e);
+                return exit(e);
             }
             break;
         case CMD_LIST_VERSION:
             cmd_listversion();
             break;
+
         default:
             printHelp(formatter);
-            break;
+            return 1;
         }
-        System.exit(0);
+        return 0;
     }
 
     private static void printHelp(HelpFormatter formatter) {
@@ -226,16 +267,17 @@ public class Program {
     }
 
    private static void cmd_dbimport(CommandLine cmd) throws Exception {
-        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABSE_SHORT, DEFAULT_DBURL);
-        String username = getOptionOrDefault(cmd, "dbu", null);
-        String password = getOptionOrDefault(cmd, "dbp", null);
+        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
+        String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
+        String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
         String filename = getOptionOrDefault(cmd, OPTION_OUTPUTFILE_SHORT, null);
         boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, false);
         if (filename == null) {
             throw new Exception("please add output file parameter");
         }
+        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30)*1000;
         DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
-                username, password, trustAll);
+                username, password, trustAll, timeoutms);
         DataMigrationReport report = service.importData(filename, false);
         LOG.info(report);
         if(!report.completed()) {
@@ -244,16 +286,17 @@ public class Program {
     }
 
     private static void cmd_dbexport(CommandLine cmd) throws Exception {
-        String dbUrl = getOptionOrDefault(cmd, "db", DEFAULT_DBURL);
-        String username = getOptionOrDefault(cmd, "dbu", null);
-        String password = getOptionOrDefault(cmd, "dbp", null);
+        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
+        String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
+        String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
         String filename = getOptionOrDefault(cmd, OPTION_OUTPUTFILE_SHORT, null);
         boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, false);
         if (filename == null) {
             throw new Exception("please add output file parameter");
         }
+        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30)*1000;
         DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
-                username, password, trustAll);
+                username, password, trustAll, timeoutms);
         DataMigrationReport report = service.exportData(filename);
         LOG.info(report);
         if(!report.completed()) {
@@ -262,27 +305,39 @@ public class Program {
 
     }
 
-    private static void exit(Exception e) {
+    private static int exit(Exception e) {
         if (LOG != null) {
             LOG.error("Error during execution: {}", e);
         } else {
             System.err.println(e);
         }
-        System.exit(1);
+        return 1;
     }
 
     private static void cmd_clear_db(CommandLine cmd) throws Exception {
         Release r = getOptionOrDefault(cmd, OPTION_VERSION_SHORT, Release.CURRENT_RELEASE);
-        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABSE_SHORT, DEFAULT_DBURL);
-        String dbPrefix = getOptionOrDefault(cmd, "p", DEFAULT_DBPREFIX);
-        String username = getOptionOrDefault(cmd, "dbu", null);
-        String password = getOptionOrDefault(cmd, "dbp", null);
+        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
+        String dbPrefix = getOptionOrDefault(cmd, OPTION_DATABASEPREFIX_SHORT, DEFAULT_DBPREFIX);
+        String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
+        String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
         boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, false);
+        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30)*1000;
         DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
-                username, password, trustAll);
-        long timeoutms = getOptionOrDefault(cmd, "w", 30)*1000;
+                username, password, trustAll, timeoutms);
         if (!service.clearDatabase(r, dbPrefix,timeoutms)) {
             throw new Exception("failed to init database");
+        }
+    }
+    private static void cmd_clear_db_complete(CommandLine cmd) throws Exception {
+        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
+        String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
+        String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
+        boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, false);
+        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30)*1000;
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
+                username, password, trustAll, timeoutms);
+        if (!service.clearCompleteDatabase(timeoutms)) {
+        	throw new Exception("failed to init database");
         }
     }
 
@@ -290,14 +345,14 @@ public class Program {
         Release r = getOptionOrDefault(cmd, OPTION_VERSION_SHORT, Release.CURRENT_RELEASE);
         int numShards = getOptionOrDefault(cmd, OPTION_SHARDS_SHORT, DEFAULT_SHARDS);
         int numReplicas = getOptionOrDefault(cmd, OPTION_REPLICAS_SHORT, DEFAULT_REPLICAS);
-        String dbUrl = getOptionOrDefault(cmd, "db", DEFAULT_DBURL);
-        String dbPrefix = getOptionOrDefault(cmd, "p", DEFAULT_DBPREFIX);
-        String username = getOptionOrDefault(cmd, "dbu", null);
-        String password = getOptionOrDefault(cmd, "dbp", null);
+        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
+        String dbPrefix = getOptionOrDefault(cmd, OPTION_DATABASEPREFIX_SHORT, DEFAULT_DBPREFIX);
+        String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
+        String password = getOptionOrDefault(cmd,OPTION_DATABASEPASSWORD_SHORT, null);
         boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, false);
+        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30)*1000;
         DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
-                username, password, trustAll);
-        long timeoutms = getOptionOrDefault(cmd, "w", 30)*1000;
+                username, password, trustAll, timeoutms);
         boolean forceRecreate = cmd.hasOption(OPTION_FORCE_RECREATE_SHORT);
         if (!service.initDatabase(r, numShards, numReplicas, dbPrefix, forceRecreate,timeoutms)) {
             throw new Exception("failed to init database");
@@ -307,24 +362,24 @@ public class Program {
 
     private static Options init() {
         Options result = new Options();
-        result.addOption(createOption("c", "cmd", true, "command to execute", true));
-        result.addOption(createOption(OPTION_DATABSE_SHORT, "dburl", true, "database url", false));
-        result.addOption(createOption("dbu", "db-username", true, "database basic auth username", false));
-        result.addOption(createOption("dbp", "db-password", true, "database basic auth password", false));
+        result.addOption(createOption(OPTION_COMMAND_SHORT, "cmd", true, "command to execute", false));
+        result.addOption(createOption(OPTION_DATABASE_SHORT, "dburl", true, "database url", false));
+        result.addOption(createOption(OPTION_DATABASEUSER_SHORT, "db-username", true, "database basic auth username", false));
+        result.addOption(createOption(OPTION_DATABASEPASSWORD_SHORT, "db-password", true, "database basic auth password", false));
         result.addOption(createOption(OPTION_REPLICAS_SHORT, "replicas", true, "amount of replicas", false));
         result.addOption(createOption(OPTION_SHARDS_SHORT, "shards", true, "amount of shards", false));
-        result.addOption(createOption("p", "prefix", true, "prefix for db indices", false));
+        result.addOption(createOption(OPTION_DATABASEPREFIX_SHORT, "prefix", true, "prefix for db indices", false));
         result.addOption(createOption(OPTION_VERSION_SHORT, "version", true, "version", false));
         result.addOption(createOption(OPTION_DEBUG_SHORT, "verbose", false, "verbose mode", false));
         result.addOption(createOption(OPTION_TRUSTINSECURESSL_SHORT, "trust-insecure", false,
                 "trust insecure ssl certs", false));
-        result.addOption(createOption("w", "wait", true, "wait for yellow status with timeout in seconds", false));
+        result.addOption(createOption(OPTION_DATABASEWAIT_SHORT, "wait", true, "wait for yellow status with timeout in seconds", false));
         result.addOption(
                 createOption(OPTION_FORCE_RECREATE_SHORT, "force-recreate", false, "delete if sth exists", false));
         result.addOption(createOption(OPTION_SILENT_SHORT, OPTION_SILENT, false, "prevent console output", false));
         result.addOption(createOption(OPTION_OUTPUTFILE_SHORT, "output-file", true, "file to write into", false));
         result.addOption(createOption(OPTION_INPUTFILE_SHORT, "input-file", true, "file to read from", false));
-
+        result.addOption(createOption(OPTION_HELP_SHORT,"help",false,"show help",false));
         return result;
     }
 
@@ -342,4 +397,5 @@ public class Program {
         o.setRequired(required);
         return o;
     }
+    // end of private methods
 }
