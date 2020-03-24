@@ -256,6 +256,13 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         if (assertIfClientNullForNodeName(internalEquipment.getNodeId())) {
             return;
         }
+        if(internalEquipment.getManufacturerIdentifier()==null) {
+        	internalEquipment = new InventoryBuilder(internalEquipment).setManufacturerIdentifier("").build();
+        }
+        if(internalEquipment.getDate()==null) {
+        	internalEquipment = new InventoryBuilder(internalEquipment).setDate("").build();
+        }
+        
         eventRWEquipment.write(internalEquipment, internalEquipment.getNodeId()+"/"+internalEquipment.getUuid());
     }
 
