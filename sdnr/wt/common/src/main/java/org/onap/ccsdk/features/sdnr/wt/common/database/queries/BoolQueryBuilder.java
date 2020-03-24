@@ -39,25 +39,51 @@ public class BoolQueryBuilder extends QueryBuilder {
 		return "BoolQueryBuilder [inner=" + inner + "]";
 	}
 
+	public static boolean isEmpty(JSONObject o) {
+		return o.keySet().size() <= 0;
+	}
+
 	public BoolQueryBuilder must(QueryBuilder query) {
-		
-		if(this.inner.has("must") || this.inner.has("match") || this.inner.has("regexp") || this.inner.has("range")) {
-			Object x = this.inner.has("must") ?this.inner.get("must"):this.inner;
-			if(x instanceof JSONArray) {
-				((JSONArray)x).put(query.getInner());
-			}
-			else {
+
+		if (!isEmpty(this.inner)) {
+			Object x = this.inner.has("must") ? this.inner.get("must") : this.inner;
+			if (x instanceof JSONArray) {
+				((JSONArray) x).put(query.getInner());
+			} else {
 				this.inner = new JSONObject();
 				this.inner.put("must", new JSONObject());
-				JSONArray a=new JSONArray();
+				JSONArray a = new JSONArray();
 				a.put(x);
 				a.put(query.getInner());
 				this.inner.put("must", a);
 			}
+		} else {
+			this.inner.put("must", query.getInner());
 		}
-		
-		else {
-			this.inner = query.getInner();
+		this.setQuery("bool", this.inner);
+		return this;
+	}
+
+	/**
+	 * @param query
+	 */
+	public BoolQueryBuilder should(QueryBuilder query) {
+		if (!isEmpty(this.inner)) {
+			Object x = this.inner.has("should") ? this.inner.get("should") : this.inner;
+			if (x instanceof JSONArray) {
+				((JSONArray) x).put(query.getInner());
+			} else {
+				this.inner = new JSONObject();
+				//				this.inner.put("should", new JSONObject());
+				JSONArray a = new JSONArray();
+				if (!x.toString().equals("{}")) {
+					a.put(x);
+				}
+				a.put(query.getInner());
+				this.inner.put("should", a);
+			}
+		} else {
+			this.inner.put("should", query.getInner());
 		}
 		this.setQuery("bool", this.inner);
 		return this;

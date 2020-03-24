@@ -43,20 +43,25 @@ import org.slf4j.LoggerFactory;
  */
 public class ConfigurationFileRepresentation implements IConfigChangedListener {
 
+	// constants
 	private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFileRepresentation.class);
 
 	private static final long FILE_POLL_INTERVAL_MS = 1000;
 	private static final String SECTIONNAME_ROOT = "";
 	private static final String LR = "\n";
 	private static final String EMPTY = "";
+	// end of constants
 
+	// variables
 	/** Related configuration file **/
 	private final File mFile;
 	/** Monitor changes of file **/
 	private final ConfigFileObserver fileObserver;
 	/** List of sections **/
 	private final HashMap<String, Section> sections;
+	// end of variables
 
+	// constructors
 	public ConfigurationFileRepresentation(File f) {
 
 		this.mFile = f;
@@ -80,11 +85,67 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
 	public ConfigurationFileRepresentation(String configurationfile) {
 		this(new File(configurationfile));
 	}
+	// end of constructors
 
+	// getters and setters
 	public synchronized Optional<Section> getSection(String name) {
 		return Optional.ofNullable(sections.get(name));
 	}
+	// end of getters and setters
 
+	// private methods
+	private synchronized void reLoad() {
+		sections.clear();
+		addSection(SECTIONNAME_ROOT);
+		load();
+	}
+
+	private synchronized void load() {
+		LOG.debug("loading file {}", getMFileName());
+		String curSectionName = SECTIONNAME_ROOT;
+		Optional<Section> sectionOptional = this.getSection(curSectionName);
+		Section curSection = sectionOptional.isPresent() ? sectionOptional.get() : this.addSection(curSectionName);
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(this.mFile));
+			for (String line; (line = br.readLine()) != null;) {
+				line = line.trim();
+				if (line.isEmpty()) {
+					continue;
+				}
+				if (line.startsWith("[") && line.endsWith("]")) {
+					curSectionName = line.substring(1, line.length() - 1);
+					curSection = this.addSection(curSectionName);
+				} else {
+					curSection.addLine(line);
+				}
+			}
+
+		} catch (Exception e) {
+			LOG.info("Problem loading configuration file. {} {}", getMFileName(), e);
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
+			}
+		}
+		LOG.debug("finished loading file");
+		LOG.debug("start parsing sections");
+		for (Section section : this.sections.values()) {
+			section.parseLines();
+		}
+		LOG.debug("finished parsing " + this.sections.size() + " sections");
+	}
+
+	private String getMFileName() {
+		return mFile.getAbsolutePath();
+	}
+
+	// end of private methods
+
+	// public methods
 	public synchronized Section addSection(String name) {
 		if (this.sections.containsKey(name)) {
 			return this.sections.get(name);
@@ -92,12 +153,6 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
 		Section s = new Section(name);
 		this.sections.put(name, s);
 		return s;
-	}
-
-	private synchronized void reLoad() {
-		sections.clear();
-		addSection(SECTIONNAME_ROOT);
-		load();
 	}
 
 	public synchronized void save() {
@@ -188,50 +243,6 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
 	public synchronized boolean getPropertyBoolean(String section, String propertyKey) {
 		return getProperty(section, propertyKey).equalsIgnoreCase("true");
 	}
+	// end of public methods
 
-	/*
-	 * Private
-	 */
-	private synchronized void load() {
-		LOG.debug("loading file {}", getMFileName());
-		String curSectionName = SECTIONNAME_ROOT;
-		Optional<Section> sectionOptional = this.getSection(curSectionName);
-		Section curSection = sectionOptional.isPresent() ? sectionOptional.get() : this.addSection(curSectionName);
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(this.mFile));
-			for (String line; (line = br.readLine()) != null;) {
-				line = line.trim();
-				if (line.isEmpty()) {
-					continue;
-				}
-				if (line.startsWith("[") && line.endsWith("]")) {
-					curSectionName = line.substring(1, line.length() - 1);
-					curSection = this.addSection(curSectionName);
-				} else {
-					curSection.addLine(line);
-				}
-			}
-
-		} catch (Exception e) {
-			LOG.info("Problem loading configuration file. {} {}", getMFileName(), e);
-		} finally {
-			try {
-				if (br != null) {
-					br.close();
-				}
-			} catch (IOException e) {
-			}
-		}
-		LOG.debug("finished loading file");
-		LOG.debug("start parsing sections");
-		for (Section section : this.sections.values()) {
-			section.parseLines();
-		}
-		LOG.debug("finished parsing " + this.sections.size() + " sections");
-	}
-
-	private String getMFileName() {
-		return mFile.getAbsolutePath();
-	}
 }

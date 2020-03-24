@@ -32,24 +32,53 @@ import java.util.regex.Pattern;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.exception.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * 
+ * @author Michael Dürre, Herbert Eiselt
+ *
+ * subset of configuration identified by its name
+ */
 public class Section {
 
+	// constants
     private static final Logger LOG = LoggerFactory.getLogger(Section.class);
     private static final String DELIMITER = "=";
     private static final String COMMENTCHARS[] = {"#", ";"};
-
+    // end of constants
+    
+    // variables
     private final String name;
     private final List<String> rawLines;
     private final LinkedHashMap<String, SectionValue> values;
-
+    // end of variables
+    
+    // constructors
     public Section(String name) {
         LOG.debug("new section created: '{}'", name);
         this.name = name;
         this.rawLines = new ArrayList<>();
         this.values = new LinkedHashMap<>();
     }
+    //end of constructors
+    
+    // getters and setters
+    public String getName() {
+        return name;
+    }
+    // end of getters and setters
 
+    // private methods
+    private boolean isCommentLine(String line) {
+        for (String c : COMMENTCHARS) {
+            if (line.startsWith(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    // end of private methods
+    
+    // public methods
     public void addLine(String line) {
         LOG.trace("adding raw line:" + line);
         this.rawLines.add(line);
@@ -90,9 +119,7 @@ public class Section {
 		return value;
 	}
 
-    public String getName() {
-        return name;
-    }
+    
 
     public void setProperty(String key, String value) {
         boolean isuncommented = this.isCommentLine(key);
@@ -143,14 +170,7 @@ public class Section {
         }
     }
 
-    private boolean isCommentLine(String line) {
-        for (String c : COMMENTCHARS) {
-            if (line.startsWith(c)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    
 
     public String[] toLines() {
         List<String> lines = new ArrayList<>();
@@ -222,5 +242,6 @@ public class Section {
     public String toString() {
         return "Section [name=" + name + ", rawLines=" + rawLines + ", values=" + values + "]";
     }
+    // end of public methods
 
 }
