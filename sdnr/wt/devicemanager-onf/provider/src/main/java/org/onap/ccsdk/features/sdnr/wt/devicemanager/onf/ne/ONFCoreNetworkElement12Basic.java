@@ -185,8 +185,10 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         // -- Register NE to performance manager
         performanceManager.registration(mountPointNodeName, this);
 
-        eventListenerHandler.registration(mountPointNodeName, acessor.getNetconfNode());
-        eventListenerHandler.connectIndication(mountPointNodeName, getDeviceType());
+        //events will be already pushed by base devmgr (needs more clarification SDNC-1123)  
+        //eventListenerHandler.registration(mountPointNodeName, acessor.getNetconfNode());
+        //LOG.debug("refresh necon entry for {} with type {} not",mountPointNodeName,this.getDeviceType());
+        //eventListenerHandler.connectIndication(mountPointNodeName, getDeviceType());
         LOG.info("Starting Event listener finished. Added Netconf device:{} type:{}", mountPointNodeName, getDeviceType());
 
     }

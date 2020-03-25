@@ -179,7 +179,7 @@ public class TestNetconfNodeStateService {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void test5OnConnect() {
+    public void test5OnConnect() throws InterruptedException {
         System.out.println("Test5: On Connect");
         NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();
         netconfNodeBuilder.setConnectionStatus(ConnectionStatus.Connected);
@@ -208,7 +208,7 @@ public class TestNetconfNodeStateService {
         Collection<DataTreeModification<Node>> changes = Arrays.asList(ntn);
         dataBrokerNetconf.sendClusteredChanges(changes);
         dataBrokerNetconf.sendChanges(changes);
-
+        Thread.sleep(300);
         //verify that it was called one time and nodeId is the expected
         ArgumentCaptor<NetconfAccessor> varArgs = ArgumentCaptor.forClass(NetconfAccessor.class);
         verify(nCL).onEnterConnected(varArgs.capture());

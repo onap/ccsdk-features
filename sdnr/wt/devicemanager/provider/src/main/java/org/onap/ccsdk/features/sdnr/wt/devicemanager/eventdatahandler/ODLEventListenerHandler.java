@@ -32,6 +32,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceCl
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EventHandlingService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementConnectionEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
@@ -114,6 +115,15 @@ public class ODLEventListenerHandler implements EventHandlingService {
     }
 
     /**
+     * mountpoint created, connection state not connected
+	 * @param mountpointNodeName uuid that is nodeId or mountpointId
+	 * @param netconfNode
+	 */
+	public void mountpointCreatedIndication(String mountpointNodeName, NetconfNode netconfNode) {
+		LOG.debug("mountpoint create indication for {}", mountpointNodeName);
+		this.registration(mountpointNodeName, netconfNode);
+	}
+    /**
      * After registration
      * @param mountpointNodeName uuid that is nodeId or mountpointId
      * @param deviceType according to assessement
@@ -132,7 +142,18 @@ public class ODLEventListenerHandler implements EventHandlingService {
         webSocketService.sendViaWebsockets(mountpointNodeName, notificationXml);
     }
 
-
+    /**
+     * mountpoint state changed
+	 * @param mountpointNodeName
+	 * @param netconfNode
+	 */
+	public void onStateChangeIndication(String mountpointNodeName, NetconfNode netconfNode) {
+		LOG.debug("mountpoint state changed indication for {}", mountpointNodeName);
+		ConnectionStatus csts = netconfNode.getConnectionStatus();
+		this.updateRegistration(mountpointNodeName, ConnectionStatus.class.getSimpleName(),
+                csts != null ? csts.getName() : "null", netconfNode);
+		
+	}
     /**
      * A deregistration of a mountpoint occured.
      * @param registrationName Name of the event that is used as key in the database.
@@ -155,7 +176,6 @@ public class ODLEventListenerHandler implements EventHandlingService {
      * Mountpoint state changed .. from connected -> connecting or unable-to-connect or vis-e-versa.
      * @param registrationName Name of the event that is used as key in the database.
      */
-
     @Override
     public void updateRegistration(String registrationName, String attribute, String attributeNewValue, NetconfNode nNode) {
         AttributeValueChangedNotificationXml notificationXml = new AttributeValueChangedNotificationXml(ownKeyName,
@@ -237,5 +257,9 @@ public class ODLEventListenerHandler implements EventHandlingService {
     private Integer popEvntNumber() {
         return eventNumber++;
     }
+
+	
+
+	
 
 }
