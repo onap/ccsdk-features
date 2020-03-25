@@ -22,9 +22,14 @@
 package org.onap.ccsdk.features.sdnr.wt.common;
 
 import java.util.Arrays;
-
+/**
+ * 
+ * @author Michael Dürre
+ *
+ */
 public class HtAssert {
 
+	
 	public static class HtNullable<T> {
 	}
 

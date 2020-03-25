@@ -47,4 +47,14 @@ public class QueryBuilders {
 	public static RegexQueryBuilder regex(String propertyName, String re) {
 		return new RegexQueryBuilder().add(propertyName, re);
 	}
+	/**
+	 * @param object
+	 * @return
+	 */
+	public static QueryBuilder searchAllFieldsQuery(String filter) {
+		JSONObject inner = new JSONObject();
+		inner.put("default_field", "*");
+		inner.put("query", filter==null?"":filter);
+		return new QueryBuilder().setQuery("query_string", inner);
+	}
 }

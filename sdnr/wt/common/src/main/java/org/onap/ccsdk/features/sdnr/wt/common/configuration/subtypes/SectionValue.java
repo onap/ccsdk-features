@@ -23,13 +23,20 @@ package org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * 
+ * @author Michael Dürre, Herbert Eiselt
+ *
+ */
 class SectionValue {
 
+	// variables
     private String value;
     private final List<String> comments;
     private boolean isUncommented;
+    // end of variables    
 
+    // constructors
     public SectionValue(String value, List<String> commentsForValue, boolean isuncommented) {
         this.comments = commentsForValue;
         this.value = value;
@@ -43,9 +50,9 @@ class SectionValue {
     public SectionValue(String value, boolean isUncommented) {
     	this(value, new ArrayList<String>(), isUncommented);
 	}
-
-    /* Getter / Setter */
-
+    // end of constructors
+    
+    // getters and setters
 	public String getValue() {
 		return value;
 	}
@@ -67,11 +74,14 @@ class SectionValue {
 	public List<String> getComments() {
 		return comments;
 	}
-
+	// end of getters and setters
+	
+	// public methods
 	@Override
 	public String toString() {
 		return "SectionValue [value=" + value + ", comments=" + comments + ", isUncommented=" + isUncommented + "]";
 	}
+	// end of public methods
 
 
 }
