@@ -130,11 +130,14 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
     @Override
     public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
         LOG.info("onCreated {}", nNodeId);
+        odlEventListenerHandler.mountpointCreatedIndication(nNodeId.getValue(), netconfNode);
+        
     }
 
     @Override
     public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
         LOG.info("onStateChange {}", nNodeId);
+        odlEventListenerHandler.onStateChangeIndication(nNodeId.getValue(),netconfNode);
     }
 
     @Override
@@ -181,6 +184,7 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
         if (result != null) {
             LOG.warn("NE list was not empty as expected, but contained {} ", result.getNodeId());
         } else {
+        	LOG.debug("refresh necon entry for {} with type {}",mountPointNodeName,ne.getDeviceType());
             odlEventListenerHandler.connectIndication(mountPointNodeName, ne.getDeviceType());
         }
     }
