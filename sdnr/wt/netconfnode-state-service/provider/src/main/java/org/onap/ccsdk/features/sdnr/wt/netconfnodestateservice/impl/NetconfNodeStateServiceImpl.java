@@ -460,7 +460,7 @@ public class NetconfNodeStateServiceImpl implements NetconfNodeStateService, Rpc
                                 // enterConnected state.after == connected
                                 // => Here create or update by checking root.getDataBefore() != null
 
-                                boolean connectedBefore, connectedAfter;
+                                boolean connectedBefore, connectedAfter, created=false;
                                 NetconfNode nNodeAfter = getNetconfNode(root.getDataAfter());
                                 connectedAfter = isConnected(nNodeAfter);
                                 if (root.getDataBefore() != null) {
@@ -470,6 +470,7 @@ public class NetconfNodeStateServiceImpl implements NetconfNodeStateService, Rpc
                                 } else {
                                     // It is a create
                                     connectedBefore = false;
+                                    created = true;
                                 }
 
                                 LOG.info(
@@ -477,14 +478,16 @@ public class NetconfNodeStateServiceImpl implements NetconfNodeStateService, Rpc
                                         nodeId, connectedBefore, connectedAfter,
                                         getClusteredConnectionStatus(nNodeAfter), isCluster);
 
+                                if(created) {
+                                	 netconfNodeStateListenerList.forEach(item -> {
+                                         try {
+                                             item.onCreated(nodeId, nNodeAfter);
+                                         } catch (Exception e) {
+                                             LOG.info("Exception during onCreated listener call", e);
+                                         }
+                                     });
+                                }
                                 if (!connectedBefore && connectedAfter) {
-                                    netconfNodeStateListenerList.forEach(item -> {
-                                        try {
-                                            item.onCreated(nodeId, nNodeAfter);
-                                        } catch (Exception e) {
-                                            LOG.info("Exception during onCreated listener call", e);
-                                        }
-                                    });
                                     enterConnectedState(nodeId, nNodeAfter);
                                 } else {
                                     LOG.debug("State change {} {}", connectedBefore, connectedAfter);
@@ -534,7 +537,7 @@ public class NetconfNodeStateServiceImpl implements NetconfNodeStateService, Rpc
         @Override
         public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Node>> changes) {
             LOG.info("L1 TreeChange enter changes:{}", changes.size());
-            onDataTreeChangedHandler(changes);
+            new Thread( () -> onDataTreeChangedHandler(changes)).start();
             LOG.info("L1 TreeChange leave");
         }
     }
