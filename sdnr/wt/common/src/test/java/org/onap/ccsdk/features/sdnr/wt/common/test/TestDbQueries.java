@@ -52,7 +52,7 @@ public class TestDbQueries {
 			"}";
 	private static final String MATCH_QUERY_KEY2 = "node-id";
 	private static final Object MATCH_QUERY_VALUE2 = "sim2";
-	private static final String BOOL_QUERY = "{\n" + 
+	private static final String BOOL_QUERY_MUST = "{\n" + 
 			"    \"query\": {\n" + 
 			"        \"bool\": {\n" + 
 			"            \"must\": [\n" + 
@@ -70,6 +70,46 @@ public class TestDbQueries {
 			"        }\n" + 
 			"    }\n" + 
 			"}";
+	private static final String BOOL_QUERY_MUST_SINGLE = "{\n" + 
+					"    \"query\": {\n" + 
+					"        \"bool\": {\n" + 
+					"            \"must\": {\n" + 
+					"                    \"match\": {\n" + 
+					"                        \""+MATCH_QUERY_KEY+"\": "+MATCH_QUERY_VALUE+"\n" + 
+					"                    }\n" + 
+					"                }\n" + 
+					"        }\n" + 
+					"    }\n" + 
+					"}";
+	private static final String BOOL_QUERY_SHOULD = "{\n" + 
+			"    \"query\": {\n" + 
+			"        \"bool\": {\n" + 
+			"            \"should\": [\n" + 
+			"                {\n" + 
+			"                    \"match\": {\n" + 
+			"                        \""+MATCH_QUERY_KEY+"\": "+MATCH_QUERY_VALUE+"\n" + 
+			"                    }\n" + 
+			"                },\n" + 
+			"                {\n" + 
+			"                    \"match\": {\n" + 
+			"                        \""+MATCH_QUERY_KEY2+"\":"+MATCH_QUERY_VALUE2+" \n" + 
+			"                    }\n" + 
+			"                }\n" + 
+			"            ]\n" + 
+			"        }\n" + 
+			"    }\n" + 
+			"}";
+	private static final String BOOL_QUERY_SHOULD_SINGLE = "{\n" + 
+					"    \"query\": {\n" + 
+					"        \"bool\": {\n" + 
+					"            \"should\": {\n" + 
+					"                    \"match\": {\n" + 
+					"                        \""+MATCH_QUERY_KEY+"\": "+MATCH_QUERY_VALUE+"\n" + 
+					"                    }\n" + 
+					"                }\n" + 
+					"        }\n" + 
+					"    }\n" + 
+					"}";
 	private static final String RANGE_QUERY_KEY = "timestamp";
 	private static final String RANGE_QUERY_LTEND = "2017-08-10T20:00:00.0Z";
 	private static final String RANGE_QUERY = "{\n" + 
@@ -189,11 +229,30 @@ public class TestDbQueries {
 		testEquals("match query is wrong", MATCH_QUERY, QueryBuilders.matchQuery(MATCH_QUERY_KEY, MATCH_QUERY_VALUE));
 	}
 	@Test
-	public void testBool() {
-		testEquals("bool query is wrong", BOOL_QUERY, 
+	public void testBoolMust() {
+		testEquals("bool query is wrong", BOOL_QUERY_MUST, 
 				QueryBuilders.boolQuery().
 				must(QueryBuilders.matchQuery(MATCH_QUERY_KEY, MATCH_QUERY_VALUE)).
 				must(QueryBuilders.matchQuery(MATCH_QUERY_KEY2, MATCH_QUERY_VALUE2)));
+	}
+	@Test
+	public void testBoolMustSingle() {
+		testEquals("bool single query is wrong", BOOL_QUERY_MUST_SINGLE, 
+				QueryBuilders.boolQuery().
+				must(QueryBuilders.matchQuery(MATCH_QUERY_KEY, MATCH_QUERY_VALUE)));
+	}
+	@Test
+	public void testBoolShould() {
+		testEquals("bool query is wrong", BOOL_QUERY_SHOULD, 
+				QueryBuilders.boolQuery().
+				should(QueryBuilders.matchQuery(MATCH_QUERY_KEY, MATCH_QUERY_VALUE)).
+				should(QueryBuilders.matchQuery(MATCH_QUERY_KEY2, MATCH_QUERY_VALUE2)));
+	}
+	@Test
+	public void testBoolShouldSingle() {
+		testEquals("bool single query is wrong", BOOL_QUERY_SHOULD_SINGLE, 
+				QueryBuilders.boolQuery().
+				should(QueryBuilders.matchQuery(MATCH_QUERY_KEY, MATCH_QUERY_VALUE)));
 	}
 	@Test
 	public void testRange() {
