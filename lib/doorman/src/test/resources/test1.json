@@ -1,0 +1,36 @@
+{
+	"struct": {
+		"simple-list": [
+			"val1",
+			"val2",
+			null,
+			false,
+			true,
+			123,
+			0.123,
+			1.2334e-5
+		],
+		"list": [
+			{
+				"name1": "val1",
+				"name2": "val2"
+			},
+			{
+				"name1": "val1",
+				"name2": "val2"
+			},
+			{
+				"integer": 34,
+				"fraction": 0.2145,
+				"exponent": 6.61789e+0,
+				"boolean": true
+			},
+			[ "val1", "val2", "blah \"string\" \t\t\t\n" ]		]
+	},
+	"types": {
+		"integer": 34,
+		"fraction": 0.2145,
+		"exponent": 6.61789e+0,
+		"boolean": true
+	}
+}
