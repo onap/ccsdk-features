@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "37c97000_ef748c36",
+        "filename": "lib/doorman/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2020-03-30T19:24:04Z",
+      "side": 1,
+      "message": "Fixed",
+      "parentUuid": "9cd55e16_f27d394f",
+      "range": {
+        "startLine": 15,
+        "startChar": 32,
+        "endLine": 15,
+        "endChar": 49
+      },
+      "revId": "33ac055fc14f9543343631546e8e1a96d43b6771",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "749c988f_92879051",
         "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/dao/MessageDaoImpl.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2020-03-30T18:43:01Z",
       "side": 1,
       "message": "Shouldn\u0027t this use ? as well? I don\u0027t like leaving it this way.",
+      "range": {
+        "startLine": 80,
+        "startChar": 41,
+        "endLine": 80,
+        "endChar": 57
+      },
+      "revId": "33ac055fc14f9543343631546e8e1a96d43b6771",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ddb92d4_da8fac39",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/dao/MessageDaoImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2020-03-30T19:24:04Z",
+      "side": 1,
+      "message": "Apparently ? doesn\u0027t work on column names",
+      "parentUuid": "749c988f_92879051",
       "range": {
         "startLine": 80,
         "startChar": 41,
@@ -65,6 +113,24 @@
     },
     {
       "key": {
+        "uuid": "b55f0e3e_5ad51c6c",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/dao/MessageDaoImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2020-03-30T19:24:04Z",
+      "side": 1,
+      "message": "Fixed",
+      "parentUuid": "ee151a79_32e01256",
+      "revId": "33ac055fc14f9543343631546e8e1a96d43b6771",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2d8b4ce0_08564f04",
         "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/Message.java",
         "patchSetId": 1
@@ -76,6 +142,24 @@
       "writtenOn": "2020-03-30T18:43:01Z",
       "side": 1,
       "message": "Should everything really be public? A constructor should take the required fields and getters can provide any fields which are needs by outside packages.",
+      "revId": "33ac055fc14f9543343631546e8e1a96d43b6771",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f619851c_3d89c71f",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/Message.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2020-03-30T19:24:04Z",
+      "side": 1,
+      "message": "This is a data structure. Having constructors and getters and setters makes it harder to work with and code more bloated.",
+      "parentUuid": "2d8b4ce0_08564f04",
       "revId": "33ac055fc14f9543343631546e8e1a96d43b6771",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
