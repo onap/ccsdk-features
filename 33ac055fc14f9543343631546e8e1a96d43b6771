@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "0a9773d6_2dad103e",
+        "filename": "lib/doorman/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2020-03-31T15:46:55Z",
+      "side": 1,
+      "message": "will fix",
+      "parentUuid": "f63c1af2_49969a3c",
+      "range": {
+        "startLine": 15,
+        "startChar": 32,
+        "endLine": 15,
+        "endChar": 49
+      },
+      "revId": "33ac055fc14f9543343631546e8e1a96d43b6771",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "749c988f_92879051",
         "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/dao/MessageDaoImpl.java",
         "patchSetId": 1
@@ -226,6 +250,24 @@
       "side": 1,
       "message": "Is it valid for classes outside of this package to modify things like messageId?",
       "parentUuid": "f619851c_3d89c71f",
+      "revId": "33ac055fc14f9543343631546e8e1a96d43b6771",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd32507a_29c02667",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/Message.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2020-03-31T15:46:55Z",
+      "side": 1,
+      "message": "OK, I\u0027m going to change this, thought I think it would be of little benefit (I wouldn\u0027t really expect outside classes to do something just because they can).",
+      "parentUuid": "2eca25bd_7505a09f",
       "revId": "33ac055fc14f9543343631546e8e1a96d43b6771",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
