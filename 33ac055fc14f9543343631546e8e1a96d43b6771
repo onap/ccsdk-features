@@ -274,6 +274,24 @@
     },
     {
       "key": {
+        "uuid": "15ffebdb_25b3c70b",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/Message.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1219
+      },
+      "writtenOn": "2020-03-31T20:53:54Z",
+      "side": 1,
+      "message": "Making everything public violates encapsulation",
+      "parentUuid": "dd32507a_29c02667",
+      "revId": "33ac055fc14f9543343631546e8e1a96d43b6771",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d09a79b5_25f9b28a",
         "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/MessageAction.java",
         "patchSetId": 1
