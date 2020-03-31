@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6325042b_34a546e0",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/MessageData.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1219
+      },
+      "writtenOn": "2020-03-31T13:48:41Z",
+      "side": 1,
+      "message": "Should everything really be public? A constructor should take the required fields and getters can provide any fields which are needs by outside packages.",
+      "revId": "2e236195d8d7a07a4b774181b2f67d160f0b592e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0dfd8bdd_dd13a155",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/MessageStatus.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1219
+      },
+      "writtenOn": "2020-03-31T13:48:41Z",
+      "side": 1,
+      "message": "Should everything really be public? A constructor should take the required fields and getters can provide any fields which are needs by outside packages.",
+      "revId": "2e236195d8d7a07a4b774181b2f67d160f0b592e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f70cf67d_0ec27506",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/Queue.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1219
+      },
+      "writtenOn": "2020-03-31T13:48:41Z",
+      "side": 1,
+      "message": "Should everything really be public? A constructor should take the required fields and getters can provide any fields which are needs by outside packages.",
+      "revId": "2e236195d8d7a07a4b774181b2f67d160f0b592e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4713dd9e_999aa471",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/impl/MessageHandlerBaseImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1219
+      },
+      "writtenOn": "2020-03-31T13:48:41Z",
+      "side": 1,
+      "message": "Can the name be more descriptive than ll?",
+      "revId": "2e236195d8d7a07a4b774181b2f67d160f0b592e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f49e375f_74a0edc2",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/impl/MessageHandlerBaseImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1219
+      },
+      "writtenOn": "2020-03-31T13:48:41Z",
+      "side": 1,
+      "message": "can a more descriptive name be used here instead of good?",
+      "revId": "2e236195d8d7a07a4b774181b2f67d160f0b592e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
