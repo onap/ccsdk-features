@@ -292,6 +292,24 @@
     },
     {
       "key": {
+        "uuid": "3fb5ca56_2959d7d5",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/Message.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 3163
+      },
+      "writtenOn": "2020-04-01T08:42:19Z",
+      "side": 1,
+      "message": "\u003e  (I wouldn\u0027t really expect outside classes to do something just because they can).\n\nIt\u0027s not about classes, it\u0027s about developers. If you allow developer to do something not good, you can bet, that at some point in time, someone will do it...\nYou may also consider to do it immutable. If you do it immutable, you decrease potential unwanted change (again by someone who simple can). You can have simple builder, which will allows you to do copies of a Message if it\u0027s needed...",
+      "parentUuid": "15ffebdb_25b3c70b",
+      "revId": "33ac055fc14f9543343631546e8e1a96d43b6771",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d09a79b5_25f9b28a",
         "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/MessageAction.java",
         "patchSetId": 1
