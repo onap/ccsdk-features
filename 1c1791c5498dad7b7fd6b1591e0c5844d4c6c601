@@ -1,0 +1,361 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "16334e46_a5ff8e56",
+        "filename": "lib/doorman/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Please do not use tabs for indentation in all your files.\nIt should be also preferred by community: https://wiki.onap.org/display/DW/Java+code+style",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "948f4edd_9c3d6b06",
+        "filename": "lib/doorman/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Your code is directly using slf4j-api so do not use provided scope.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8d94b51_0c2a3140",
+        "filename": "lib/doorman/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "I walked through the code and found that this is used in tests only, isn\u0027t it ? Please doble check and update the scope accordingly if the provided is not appropriate.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5747f51_d1cd2133",
+        "filename": "lib/doorman/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "I think that slf4j-log4j12 is used so if your code doesn\u0027t require strictly sl4j-simple, please use the log4j12.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd668ce2_93b73b5f",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/MessageClassifier.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Seems like important interface, plese add javadoc for the interface and methods. It will help with understanding the code.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf2efb98_6cf4b5d9",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/MessageInterceptor.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Seems like important interface, plese add javadoc for the interface and methods. It will help with understanding the code.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d43e9f87_416bc893",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/MessageQueueHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Seems like important interface, plese add javadoc for the interface and methods. It will help with understanding the code.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "04fa1f39_8f4d2c19",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/dao/MessageDaoImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "I would recommend to keep max 120 chars per line if possible. It is defined by the coding style.\nSpecifically SQL commands would be more readable.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "457957b1_8d6b2881",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/Event.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Could you add comments describing the meaning of each value ?",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9241f35_0872f350",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/MessageAction.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Seems like an important class so please add a javadoc describing purpose of this class and also description of fields would help.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76ee4ac4_5c435025",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/MessageAction.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "What\u0027s the purpose of this field ?",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af7ec7e6_0abb1b2f",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/MessageAction.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Can be used equals method instead ?",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb146280_7cbcd52c",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/data/MessageActionValue.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Could you add comments describing the meaning of each value ?",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "02b2708c_2f98975b",
+        "filename": "lib/doorman/src/main/java/org/onap/ccsdk/features/lib/doorman/util/JsonUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "What\u0027s the purpose of these utilities ? Does it implement some functionality which is not provided by some JSON processing lib e.g. GSON, Jackson etc. ? \nPlease add javadocs for the class and public methods.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72d7cac2_ae5e985f",
+        "filename": "lib/doorman/src/test/java/org/onap/ccsdk/features/lib/doorman/it/MessageQueueDataItem.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "I know that this is probably just a utility for testing but please add some description for this class.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d9f826f_ca0285c4",
+        "filename": "lib/doorman/src/test/java/org/onap/ccsdk/features/lib/doorman/it/MessageQueueTestResult.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "I know that this is probably just a utility for testing but please add some description for this class and public methods.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "086cf6d8_df48ea52",
+        "filename": "lib/rlock/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Your code is directly using slf4j-api so do not use provided scope.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2ac734f_631ba52f",
+        "filename": "lib/rlock/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "I think that slf4j-log4j12 is used so if your code doesn\u0027t require strictly sl4j-simple, please use the log4j12.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e700a8ab_037a238b",
+        "filename": "lib/rlock/src/main/java/org/onap/ccsdk/features/lib/rlock/LockHelper.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Please add javadocs for the interface and methods.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d604376c_d8c83d3c",
+        "filename": "lib/rlock/src/main/java/org/onap/ccsdk/features/lib/rlock/ResourceLock.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Please add description as well as describe meaning of the fields",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c485905_2211568d",
+        "filename": "lib/rlock/src/main/java/org/onap/ccsdk/features/lib/rlock/SynchronizedFunction.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 5378
+      },
+      "writtenOn": "2020-04-01T07:31:44Z",
+      "side": 1,
+      "message": "Please add javadocs for the class and methods.",
+      "revId": "1c1791c5498dad7b7fd6b1591e0c5844d4c6c601",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
