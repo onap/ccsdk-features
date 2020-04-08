@@ -22,6 +22,13 @@ import { convertPropertyNames, replaceHyphen } from "../../../../framework/src/u
 import { NetworkElementConnection } from "../models/networkElementConnection";
 
 class RestService {
+  public async getCapabilitiesByMoutId(nodeId: string): Promise<{ "capabilityOrigin": string, "capability": string }[] | null> {
+    const path = `/restconf/operational/network-topology:network-topology/topology/topology-netconf/node/${nodeId}`;
+    const capabilitiesResult = await requestRest<{ node: { "node-id": string, "netconf-node-topology:available-capabilities": { "available-capability": { "capabilityOrigin": string, "capability": string }[] }}[] }>(path, { method: "GET" });
+    return capabilitiesResult && capabilitiesResult.node && capabilitiesResult.node.length > 0 &&
+      capabilitiesResult.node[0]["netconf-node-topology:available-capabilities"]["available-capability"].map(obj => convertPropertyNames(obj, replaceHyphen)) || null;
+  }
+
   public async getMountedNetworkElementByMountId(nodeId: string): Promise<NetworkElementConnection | null> {
     // const path = 'restconf/operational/network-topology:network-topology/topology/topology-netconf/node/' + nodeId;
     // const connectedNetworkElement = await requestRest<NetworkElementConnection>(path, { method: "GET" });
