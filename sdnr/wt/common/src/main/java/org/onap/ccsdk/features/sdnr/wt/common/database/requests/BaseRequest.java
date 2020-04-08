@@ -35,12 +35,31 @@ public abstract class BaseRequest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BaseRequest.class);
 
+	public static final int DEFAULT_RETRIES = 1;
+
 	protected final Request request;
 	private String query;
+	private final boolean refresh;
+
 	public BaseRequest(String method, String endpoint) {
-		LOG.debug("create request {} {}", method, endpoint);
-		this.request = new Request(method, endpoint);
-		query=null;
+		LOG.debug("create request {} {}" ,method, endpoint);
+		this.refresh = false;
+		this.request = new Request(method,  endpoint);
+		query = null;
+	}
+
+	public BaseRequest(String method, String endpoint, boolean refresh) {
+		LOG.debug("create request {} {} with refresh={}", method, endpoint, refresh);
+		this.refresh = refresh;
+		this.request = new Request(method, String.format("%s?refresh=%s", endpoint, String.valueOf(refresh)));
+		query = null;
+	}
+
+	public BaseRequest(String method, String endpoint, boolean refresh, int retries) {
+		LOG.debug("create request {} {} with refresh={}", method, endpoint, refresh);
+		this.refresh = refresh;
+		this.request = new Request(method, String.format("%s?refresh=%s&retry_on_conflict=%d", endpoint, String.valueOf(refresh),retries));
+		query = null;
 	}
 
 	public Request getInner() {
@@ -58,9 +77,11 @@ public abstract class BaseRequest {
 		}
 		return value;
 	}
+
 	@Override
 	public String toString() {
-		return this.request.getMethod() + " "+this.request.getEndpoint()+ " : "+(this.query!=null?this.query:"no query");
+		return this.request.getMethod() + " " + this.request.getEndpoint() + " : "
+				+ (this.query != null ? this.query : "no query");
 	}
 
 	protected void setQuery(QueryBuilder query) {
@@ -72,8 +93,16 @@ public abstract class BaseRequest {
 	}
 
 	public void setQuery(String content) {
-		this.query=content;
-		LOG.trace("query={}",content);
+		this.query = content;
+		LOG.trace("query={}", content);
 		this.request.setJsonEntity(this.query);
+	}
+
+	protected String getQuery() {
+		return this.query;
+	}
+
+	protected boolean doRefresh() {
+		return this.refresh;
 	}
 }

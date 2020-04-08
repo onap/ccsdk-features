@@ -29,9 +29,15 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 public class UpdateByQueryRequest extends BaseRequest {
 
 	private JSONObject params;
-
+	private final String alias;
+	
 	public UpdateByQueryRequest(String alias, String dataType) {
-		super("POST", String.format("/%s/%s/_update_by_query", alias, dataType));
+		this(alias, dataType, false);
+	}
+
+	public UpdateByQueryRequest(String alias, String dataType, boolean refresh) {
+		super("POST", String.format("/%s/%s/_update_by_query", alias, dataType), refresh);
+		this.alias = alias;
 		this.params = null;
 	}
 
@@ -101,6 +107,10 @@ public class UpdateByQueryRequest extends BaseRequest {
 		}
 		return s;
 
+	}
+
+	protected String getAlias() {
+		return this.alias;
 	}
 
 }
