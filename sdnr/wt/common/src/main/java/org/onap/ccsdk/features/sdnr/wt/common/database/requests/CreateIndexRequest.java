@@ -47,9 +47,10 @@ public class CreateIndexRequest extends BaseRequest{
         super.setQuery(o);
     }
     @SuppressWarnings("hiding")
-    public void mappings(JSONObject mappings) {
+    public CreateIndexRequest mappings(JSONObject mappings) {
         this.mappings=mappings;
         this.setRequest();
+        return this;
     }
 
     public void settings(JSONObject settings) {

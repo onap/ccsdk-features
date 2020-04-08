@@ -33,11 +33,35 @@ public class UpdateRequest extends BaseRequest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UpdateRequest.class);
 	private JSONObject params;
+	private String alias;
+	private String esId;
+	private int retries;
 
 	public UpdateRequest(String alias, String dataType, String esId) {
-		super("POST", String.format("/%s/%s/%s/_update", alias, dataType, BaseRequest.urlEncodeValue(esId)));
-		this.params = null;
+		this(alias, dataType, esId, BaseRequest.DEFAULT_RETRIES);
 	}
+	public UpdateRequest(String alias, String dataType, String esId, boolean refresh) {
+		this(alias, dataType, esId, BaseRequest.DEFAULT_RETRIES, refresh);
+	}
+	public UpdateRequest(String alias, String dataType, String esId, int retries) {
+		this(alias, dataType, esId, retries, false);
+	}
+
+	public UpdateRequest(String alias, String dataType, String esId, int retries, boolean refresh) {
+		this(String.format("/%s/%s/%s/_update", alias, dataType, BaseRequest.urlEncodeValue(esId)), refresh);
+		this.alias = alias;
+		this.esId = esId;
+		this.retries = retries;
+	}
+
+	public UpdateRequest(String uri, boolean refresh) {
+		super("POST", uri, refresh,  BaseRequest.DEFAULT_RETRIES);
+		this.params = null;
+		this.retries = 1;
+
+	}
+
+	
 
 	private UpdateRequest withParam(String key, JSONObject p) {
 		if (this.params == null) {
@@ -54,16 +78,18 @@ public class UpdateRequest extends BaseRequest {
 		this.params.put(key, p);
 		return this;
 	}
+
 	public void source(JSONObject map) {
-		this.source(map,null);
+		this.source(map, null);
 	}
+
 	public void source(JSONObject map, List<String> onlyForInsert) {
 		JSONObject outer = new JSONObject();
 		JSONObject script = new JSONObject();
 		script.put("lang", "painless");
-		script.put("source", this.createInline(map,onlyForInsert));
-		if(this.params!=null) {
-			script.put("params",this.params);
+		script.put("source", this.createInline(map, onlyForInsert));
+		if (this.params != null) {
+			script.put("params", this.params);
 		}
 		outer.put("script", script);
 		outer.put("upsert", map);
@@ -72,16 +98,16 @@ public class UpdateRequest extends BaseRequest {
 	}
 
 	private String createInline(JSONObject map, List<String> onlyForInsert) {
-		if(onlyForInsert==null) {
+		if (onlyForInsert == null) {
 			onlyForInsert = new ArrayList<String>();
 		}
-		String s = "",k="";
+		String s = "", k = "";
 		Object value;
 		String pkey;
 		int i = 0;
 		for (Object key : map.keySet()) {
-			k=String.valueOf(key);
-			if(onlyForInsert.contains(k)) {
+			k = String.valueOf(key);
+			if (onlyForInsert.contains(k)) {
 				continue;
 			}
 			value = map.get(k);
@@ -93,7 +119,7 @@ public class UpdateRequest extends BaseRequest {
 					this.withParam(pkey, (JSONArray) value);
 				}
 
-				s += String.format("ctx._source['%s']=%s;", key, "params."+pkey);
+				s += String.format("ctx._source['%s']=%s;", key, "params." + pkey);
 			} else {
 				s += String.format("ctx._source['%s']=%s;", key, escpaped(value));
 			}
@@ -113,4 +139,15 @@ public class UpdateRequest extends BaseRequest {
 
 	}
 
+	protected String getAlias() {
+		return this.alias;
+	}
+
+	protected String getEsId() {
+		return this.esId;
+	}
+
+	protected int getRetries() {
+		return this.retries;
+	}
 }

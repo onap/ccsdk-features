@@ -130,7 +130,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
     public @Nullable String doWriteRaw(String indexName,String dataTypeName, @Nullable String esId, String json) {
     		   
         IndexResponse response = null;
-        IndexRequest indexRequest = new IndexRequest(indexName,dataTypeName,esId);
+        IndexRequest indexRequest = new IndexRequest(indexName,dataTypeName,esId,this.doRefreshAfterWrite);
         indexRequest.source(json);
         try {
             response = this.index(indexRequest );
@@ -142,9 +142,9 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
             LOG.warn("Response null during write: {} {}", esId, json);
             return null;
         }
-		if(this.doRefreshAfterWrite) {
-			this.doRefresh(dataTypeName);
-		}
+//		if(this.doRefreshAfterWrite) {
+//			this.doRefresh(dataTypeName);
+//		}
 		return response.getId();
     }
 
@@ -167,16 +167,16 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 
     @Override
     public boolean doRemove(String dataTypeName, String esId) {
-        DeleteRequest deleteRequest = new DeleteRequest(dataTypeName,dataTypeName,esId);
+        DeleteRequest deleteRequest = new DeleteRequest(dataTypeName,dataTypeName,esId,this.doRefreshAfterWrite);
 		DeleteResponse response = null;
 		try {
 			response = this.delete(deleteRequest);
 		} catch (IOException e) {
 			LOG.warn("Problem deleting from db: {}",e.getMessage());
 		}
-		if(this.doRefreshAfterWrite) {
-			this.doRefresh(dataTypeName);
-		}
+//		if(this.doRefreshAfterWrite) {
+//			this.doRefresh(dataTypeName);
+//		}
         return response!=null?response.isDeleted():false;
     }
 
@@ -257,7 +257,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 			return null;
 		}
 		boolean success = false;
-		UpdateRequest request = new UpdateRequest(dataTypeName, dataTypeName, esId);
+		UpdateRequest request = new UpdateRequest(dataTypeName, dataTypeName, esId,this.doRefreshAfterWrite);
 		request.source(new JSONObject(json),onlyForInsert);
 		try {
 			UpdateResponse response = this.update(request);
@@ -265,15 +265,15 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 		} catch (IOException e) {
 			LOG.warn("Problem updating {} with id {} and data {}: {}", dataTypeName, esId, json, e);
 		}
-		if(this.doRefreshAfterWrite) {
-			this.doRefresh(dataTypeName);
-		}
+//		if(this.doRefreshAfterWrite) {
+//			this.doRefresh(dataTypeName);
+//		}
 		return success ? esId : null;
 	}
 	@Override
 	public boolean doUpdate(String dataTypeName, String json, QueryBuilder query) {
 		boolean success = false;
-		UpdateByQueryRequest request = new UpdateByQueryRequest(dataTypeName, dataTypeName );
+		UpdateByQueryRequest request = new UpdateByQueryRequest(dataTypeName, dataTypeName ,this.doRefreshAfterWrite);
 		request.source(new JSONObject(json),query);
 		try {
 			UpdateByQueryResponse response = this.update(request);
@@ -281,9 +281,9 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 		} catch (IOException e) {
 			LOG.warn("Problem updating items in {} with query {} and data {}: {}", dataTypeName, query, json, e);
 		}
-		if(this.doRefreshAfterWrite) {
-			this.doRefresh(dataTypeName);
-		}
+//		if(this.doRefreshAfterWrite) {
+//			this.doRefresh(dataTypeName);
+//		}
 		return success;
 	}
 
@@ -292,7 +292,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 	@Override
 	public int doRemove(String dataTypeName, QueryBuilder query) {
 		int del=0;
-		DeleteByQueryRequest request = new DeleteByQueryRequest(dataTypeName);
+		DeleteByQueryRequest request = new DeleteByQueryRequest(dataTypeName,this.doRefreshAfterWrite);
 		request.source(query);
 		try {
 			DeleteByQueryResponse response = this.deleteByQuery(request);
@@ -300,9 +300,9 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 		} catch (IOException e) {
 			LOG.warn("Problem delete in {} with query {}:{} ", dataTypeName, query.toJSON(), e);
 		}
-		if(this.doRefreshAfterWrite) {
-			this.doRefresh(dataTypeName);
-		}
+//		if(this.doRefreshAfterWrite) {
+//			this.doRefresh(dataTypeName);
+//		}
 		return del;
 	}
 	
