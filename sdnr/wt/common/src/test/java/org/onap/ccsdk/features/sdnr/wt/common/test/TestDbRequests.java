@@ -35,6 +35,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteAliasReque
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteRequest;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.GetIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.GetRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.IndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.NodeStatsRequest;
@@ -50,7 +51,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteByQueryRe
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteIndexResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.GetResponse;
-import org.onap.ccsdk.features.sdnr.wt.common.database.responses.IndexResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ListIndicesResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.NodeStatsResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
@@ -78,17 +78,19 @@ public class TestDbRequests {
 			.valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200")) };
 
 	@BeforeClass
-	public static void init() {
+	public static void init() throws Exception {
 
 		dbClient = new HtDatabaseClient(hosts);
 
 	}
+
 	@AfterClass
 	public static void deinit() {
-		if(dbClient!=null) {
+		if (dbClient != null) {
 			dbClient.close();
 		}
 	}
+
 	@Test
 	public void testHealth() {
 
@@ -108,10 +110,11 @@ public class TestDbRequests {
 	public void testCount() {
 
 	}
+
 	@Test
 	public void testIndexAndAliasList() {
-		final String ALIAS="asdoi32kmasd";
-		final String IDX=ALIAS+"-v1";
+		final String ALIAS = "asdoi32kmsasd";
+		final String IDX = ALIAS + "-v1";
 		CreateIndexRequest request = new CreateIndexRequest(IDX);
 		CreateIndexResponse response = null;
 		try {
@@ -121,7 +124,7 @@ public class TestDbRequests {
 		}
 		assertNotNull(response);
 
-		CreateAliasRequest request3 = new CreateAliasRequest(IDX,ALIAS);
+		CreateAliasRequest request3 = new CreateAliasRequest(IDX, ALIAS);
 		CreateAliasResponse response3 = null;
 		try {
 			response3 = dbClient.createAlias(request3);
@@ -130,18 +133,18 @@ public class TestDbRequests {
 		}
 		assertNotNull(response3);
 		assertTrue(response3.isResponseSucceeded());
-		
+
 		assertTrue("index not existing", dbClient.isExistsIndex(IDX));
-		ListIndicesResponse response2=null;
+		ListIndicesResponse response2 = null;
 		try {
-			 response2 = dbClient.getIndices();
+			response2 = dbClient.getIndices();
 		} catch (ParseException | IOException e) {
 			fail(e.getMessage());
 		}
 		assertNotNull(response2);
 		assertNotNull(response2.getEntries());
-		assertTrue(response2.getEntries().size()>0);
-		
+		assertTrue(response2.getEntries().size() > 0);
+
 		DeleteIndexRequest request11 = new DeleteIndexRequest(IDX);
 
 		DeleteIndexResponse response11 = null;
@@ -185,9 +188,16 @@ public class TestDbRequests {
 
 	@Test
 	public void testInsertAndDelete() {
-		final String IDX = "test23-knmoinsd";
+		final String IDX = "tesnt23-knmoinsd";
 		final String ID = "abcddd";
 		final String JSON = "{\"data\":{\"inner\":\"more\"}}";
+		try {
+			if (!dbClient.indicesExists(new GetIndexRequest(IDX))) {
+				dbClient.createIndex(new CreateIndexRequest(IDX).mappings(defaultMappings(IDX, false)));
+			}
+		} catch (IOException e) {
+			fail("unable to create index");
+		}
 		this.insert(IDX, ID, JSON);
 		// delete data
 		DeleteRequest request2 = new DeleteRequest(IDX, IDX, ID);
@@ -217,11 +227,28 @@ public class TestDbRequests {
 		this.deleteIndex(IDX);
 	}
 
+	/**
+	 * @param b
+	 * @return
+	 */
+	private JSONObject defaultMappings(String idx, boolean useStrict) {
+		String mapping = "{}";
+		return new JSONObject(String.format("{\"%s\":{%s\"properties\":%s}}", idx,
+				useStrict ? "\"dynamic\": false," : "\"dynamic\": true,", mapping));
+	}
+
 	@Test
 	public void testInsertAndDeleteByQuery() {
-		final String IDX = "test34-knmoinsd";
+		final String IDX = "test534-knmoinsd";
 		final String ID = "abcdddseae";
 		final String JSON = "{\"data\":{\"inner\":\"more\"}}";
+		try {
+			if (!dbClient.indicesExists(new GetIndexRequest(IDX))) {
+				dbClient.createIndex(new CreateIndexRequest(IDX));
+			}
+		} catch (IOException e) {
+			fail("unable to create index");
+		}
 		this.insert(IDX, ID, JSON);
 
 		// delete data
@@ -258,17 +285,13 @@ public class TestDbRequests {
 		// create data
 		IndexRequest request = new IndexRequest(IDX, IDX, ID);
 		request.source(JSON);
-		IndexResponse response = null;
-		try {
-			response = dbClient.index(request);
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-		assertNotNull(response);
+		String responseId = null;
+		responseId = dbClient.doWriteRaw(IDX, ID, JSON);
+		assertNotNull(responseId);
 		if (ID != null) {
-			assertEquals("id not correct", ID, response.getId());
+			assertEquals("id not correct", ID, responseId);
 		} else {
-			ID = response.getId();
+			ID = responseId;
 		}
 		// do db refresh
 		try {
@@ -277,26 +300,28 @@ public class TestDbRequests {
 			fail(e.getMessage());
 		}
 		// verify data exists
-		GetRequest request3 = new GetRequest(IDX, IDX, ID);
-		GetResponse response3 = null;
-		try {
-			response3 = dbClient.get(request3);
-		} catch (IOException e1) {
-			fail(e1.getMessage());
-		}
+		String response3 = null;
+		response3 = dbClient.doReadJsonData(IDX, ID);
 		assertNotNull(response3);
-		JSONAssert.assertEquals("could not verify update", JSON, response3.getSourceAsBytesRef(), true);
+		JSONAssert.assertEquals("could not verify update", JSON, response3, true);
 	}
 
 	@Test
 	public void testSearch() {
-		final String IDX = "test44-moinsd";
+		final String IDX = "testb44-moinsd";
 		final String ID = "abe";
 		final String JSON = "{\"data\":{\"inner\":\"more\"}}";
 		final String ID2 = "abe2";
 		final String JSON2 = "{\"data\":{\"inner\":\"more2\"}}";
 		final String ID3 = "abe3";
 		final String JSON3 = "{\"data\":{\"inner\":\"more3\"}}";
+		try {
+			if (!dbClient.indicesExists(new GetIndexRequest(IDX))) {
+				dbClient.createIndex(new CreateIndexRequest(IDX));
+			}
+		} catch (IOException e) {
+			fail("unable to create index");
+		}
 		this.insert(IDX, ID, JSON);
 		this.insert(IDX, ID2, JSON2);
 		this.insert(IDX, ID3, JSON3);
@@ -310,18 +335,24 @@ public class TestDbRequests {
 		}
 		assertNotNull(response);
 		assertEquals("not all items found", 3, response.getHits().length);
-		assertEquals("incorrect index",IDX,response.getHits()[0].getIndex());
-		assertEquals("incorrect type",IDX,response.getHits()[0].getType());
+		assertEquals("incorrect index", IDX, response.getHits()[0].getIndex());
+		assertEquals("incorrect type", IDX, response.getHits()[0].getType());
 		this.deleteIndex(IDX);
 	}
 
 	@Test
 	public void testUpdate() {
-		final String IDX = "test4534-moinsd";
+		final String IDX = "test45134-moinsd";
 		final String ID = "assbe";
 		final String JSON = "{\"data\":{\"inner\":\"more\"}}";
 		final String JSON2 = "{\"data\":{\"inner\":\"more2\"},\"data2\":\"value2\",\"data3\":true}";
-
+		try {
+			if (!dbClient.indicesExists(new GetIndexRequest(IDX))) {
+				dbClient.createIndex(new CreateIndexRequest(IDX));
+			}
+		} catch (IOException e) {
+			fail("unable to create index");
+		}
 		this.insert(IDX, ID, JSON);
 		UpdateRequest request = new UpdateRequest(IDX, IDX, ID);
 		UpdateResponse response = null;
@@ -354,11 +385,17 @@ public class TestDbRequests {
 
 	@Test
 	public void testUpdateByQuery() {
-		final String IDX = "test224534-moinsd";
+		final String IDX = "test224534k-moinsd";
 		final String ID = "asssabe";
 		final String JSON = "{\"data\":{\"inner\":\"more\"}}";
 		final String JSON2 = "{\"data\":{\"inner\":\"more2\"},\"data2\":\"value2\",\"data3\":true}";
-
+		try {
+			if (!dbClient.indicesExists(new GetIndexRequest(IDX))) {
+				dbClient.createIndex(new CreateIndexRequest(IDX));
+			}
+		} catch (IOException e) {
+			fail("unable to create index");
+		}
 		this.insert(IDX, ID, JSON);
 		UpdateByQueryRequest request = new UpdateByQueryRequest(IDX, IDX);
 		UpdateByQueryResponse response = null;
@@ -397,18 +434,21 @@ public class TestDbRequests {
 		final String JSON3 = "{ \"node-id\":\"sim3\",\"severity\":\"minor\"}";
 		final String JSON4 = "{ \"node-id\":\"sim4\",\"severity\":\"warning\"}";
 		final String JSON5 = "{ \"node-id\":\"sim5\",\"severity\":\"major\"}";
-		final String MAPPINGS = "{\""+IDX+"\":{\"properties\":{\"node-id\": {\"type\": \"keyword\"},\"severity\": {\"type\": \"keyword\"}}}}";
-		//create index with mapping keyword
-		CreateIndexRequest irequest = new CreateIndexRequest(IDX);
-		irequest.mappings(new JSONObject(MAPPINGS));
+		final String MAPPINGS = String.format("{\"" + IDX + "\":{\"properties\":%s}}",
+				"{\"node-id\":{\"type\": \"keyword\"},\"severity\": {\"type\": \"keyword\"}}");
+		// create index with mapping keyword
 		CreateIndexResponse iresponse = null;
 		try {
-			iresponse = dbClient.createIndex(irequest);
+			if (!dbClient.isExistsIndex(IDX)) {
+				iresponse = dbClient.createIndex(new CreateIndexRequest(IDX).mappings(new JSONObject(MAPPINGS)));
+				assertNotNull(iresponse);
+				assertTrue(iresponse.isAcknowledged());
+			}
 		} catch (IOException e1) {
-			fail("unable to create index: "+e1.getMessage());
+			this.deleteIndex(IDX);
+			fail("unable to create index: " + e1.getMessage());
 		}
-		assertNotNull(iresponse);
-		assertTrue(iresponse.isAcknowledged());
+
 		// fill index
 		this.insert(IDX, null, JSON);
 		this.insert(IDX, null, JSON2);
@@ -436,21 +476,21 @@ public class TestDbRequests {
 
 		List<String> items1 = Arrays.asList(response.getAggregations("severity").getKeysAsPagedStringList(2, 0));
 		List<String> items2 = Arrays.asList(response.getAggregations("severity").getKeysAsPagedStringList(2, 2));
-		assertEquals("pagination does not work", 2,items1.size());
-		assertEquals("pagination does not work", 2,items2.size());
-		for(String s:items1) {
-			assertFalse("pagination overlap is not allowed",items2.contains(s));
+		assertEquals("pagination does not work", 2, items1.size());
+		assertEquals("pagination does not work", 2, items2.size());
+		for (String s : items1) {
+			assertFalse("pagination overlap is not allowed", items2.contains(s));
 		}
-		for(String s:items2) {
-			assertFalse("pagination overlap is not allowed",items1.contains(s));
+		for (String s : items2) {
+			assertFalse("pagination overlap is not allowed", items1.contains(s));
 		}
 
 		this.deleteIndex(IDX);
 	}
-	
+
 	@Test
 	public void testStatistics() {
-		NodeStatsResponse stats=null;
+		NodeStatsResponse stats = null;
 		try {
 			stats = dbClient.stats(new NodeStatsRequest());
 		} catch (IOException e) {
@@ -460,18 +500,18 @@ public class TestDbRequests {
 		System.out.println(stats.getNodesInfo());
 		System.out.println(stats.getNodeStatistics());
 	}
-	
-	//@Test
+
+	// @Test
 	public void testPreventAutoCreateIndex() {
-		final String IDX1="acidx1";
-		final String ID1="acid1";
-		final String IDX2="acidx2";
-		final String ID2="acid2";
-		final String OBJ="{\"test\":5}";
-		
-		ClusterSettingsResponse settingsResponse=null;
-		String esId=null;
-		//set setting to allow autocreate
+		final String IDX1 = "acidx1";
+		final String ID1 = "acid1";
+		final String IDX2 = "acidx2";
+		final String ID2 = "acid2";
+		final String OBJ = "{\"test\":5}";
+
+		ClusterSettingsResponse settingsResponse = null;
+		String esId = null;
+		// set setting to allow autocreate
 		try {
 			settingsResponse = dbClient.setupClusterSettings(new ClusterSettingsRequest(true));
 		} catch (IOException e) {
@@ -479,10 +519,10 @@ public class TestDbRequests {
 		}
 		assertNotNull(settingsResponse);
 		assertTrue(settingsResponse.isAcknowledged());
-		//test if something new can be created
+		// test if something new can be created
 		esId = dbClient.doWriteRaw(IDX1, IDX1, ID1, OBJ);
 		assertEquals(ID1, esId);
-		//set setting to deny autocreate
+		// set setting to deny autocreate
 		try {
 			settingsResponse = dbClient.setupClusterSettings(new ClusterSettingsRequest(false));
 		} catch (IOException e) {
@@ -490,10 +530,10 @@ public class TestDbRequests {
 		}
 		assertNotNull(settingsResponse);
 		assertTrue(settingsResponse.isAcknowledged());
-		//test if something new cannot be created
+		// test if something new cannot be created
 		esId = dbClient.doWriteRaw(IDX2, IDX2, ID2, OBJ);
 		assertNull(esId);
-		//set setting to allow autocreate
+		// set setting to allow autocreate
 		try {
 			settingsResponse = dbClient.setupClusterSettings(new ClusterSettingsRequest(true));
 		} catch (IOException e) {
@@ -501,22 +541,23 @@ public class TestDbRequests {
 		}
 		assertNotNull(settingsResponse);
 		assertTrue(settingsResponse.isAcknowledged());
-		
+
 	}
-	private void deleteAlias(String idx,String alias) {
+
+	private void deleteAlias(String idx, String alias) {
 		try {
-			dbClient.deleteAlias( new DeleteAliasRequest(idx,alias));
+			dbClient.deleteAlias(new DeleteAliasRequest(idx, alias));
 		} catch (IOException e) {
 
 		}
 	}
+
 	private void deleteIndex(String idx) {
 		try {
-			dbClient.deleteIndex( new DeleteIndexRequest(idx));
+			dbClient.deleteIndex(new DeleteIndexRequest(idx));
 		} catch (IOException e) {
 
 		}
 	}
-	
 
 }

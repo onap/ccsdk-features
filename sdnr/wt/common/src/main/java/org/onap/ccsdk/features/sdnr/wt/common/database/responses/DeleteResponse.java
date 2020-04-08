@@ -30,12 +30,14 @@ public class DeleteResponse extends BaseResponse {
 
 	public DeleteResponse(Response response) {
 		super(response);
-		int code = response.getStatusLine().getStatusCode();
-		if (code < 210) {
+		if (this.isResponseSucceeded()) {
 
 			JSONObject o = this.getJson(response);
 			if (o != null) {
 				this.isDeleted = "deleted".equals(o.getString("result"));
+			}
+			else {
+				this.isDeleted=false;
 			}
 		}
 		else {

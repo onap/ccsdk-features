@@ -49,6 +49,10 @@ public class BaseResponse {
 	}
 
 	JSONObject getJson(Response response) {
+		if(response==null) {
+			LOG.warn("unable to parse response. response is null.");
+			return null;
+		}
 		try {
 			String sresponse = EntityUtils.toString(response.getEntity());
 			LOG.debug("parsing response={}", sresponse);

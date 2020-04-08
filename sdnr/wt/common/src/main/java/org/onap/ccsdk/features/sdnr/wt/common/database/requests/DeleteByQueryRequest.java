@@ -26,11 +26,16 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 public class DeleteByQueryRequest  extends BaseRequest {
 
 	public DeleteByQueryRequest(String alias) {
-		super("POST",String.format("/%s/_delete_by_query",alias));
+		this(alias, false);
 	}
 
-	public void source(QueryBuilder query) {
+	public DeleteByQueryRequest(String alias, boolean refresh) {
+		super("POST",String.format("/%s/_delete_by_query",alias), refresh);
+	}
+
+	public DeleteByQueryRequest source(QueryBuilder query) {
 		this.setQuery(query);
+		return this;
 	}
 
 	
