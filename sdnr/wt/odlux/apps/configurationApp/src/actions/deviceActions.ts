@@ -40,23 +40,19 @@ export class UpdatViewDescription extends Action {
 }
 
 export const updateNodeIdAsyncActionCreator = (nodeId: string) => async (dispatch: Dispatch, getState: () => IApplicationStoreState ) => {
-  const { configuration: { connectedNetworkElements : { rows }} } = getState();
-  dispatch(new SetCollectingSelectionData(true));
-  const networkElement = rows.find(r => r.nodeId === nodeId) || await restService.getMountedNetworkElementByMountId(nodeId);
-  if (!networkElement) {
-    console.error(new Error(`NetworkElement : [${nodeId}] does not exist.`));
-    return dispatch(new UpdateDeviceDescription("", { }, [ ]));
-  }
 
-  if (!networkElement.nodeDetails || !networkElement.nodeDetails.availableCapabilities) {
+  const availableCapabilities = await restService.getCapabilitiesByMoutId(nodeId);
+
+  if (!availableCapabilities || availableCapabilities.length <= 0) {
     throw new Error(`NetworkElement : [${nodeId}] has no capabilities.`);
   }
+
   const parser = new YangParser();
 
   const capParser = /^\(.*\?revision=(\d{4}-\d{2}-\d{2})\)(\S+)$/i;
-  for (let i = 0; i < networkElement.nodeDetails.availableCapabilities.length; ++i){
-    const capRaw = networkElement.nodeDetails.availableCapabilities[i];
-    const capMatch = capRaw && capParser.exec(capRaw);
+  for (let i = 0; i < availableCapabilities.length; ++i){
+    const capRaw = availableCapabilities[i];
+    const capMatch = capRaw && capParser.exec(capRaw.capability);
     try {
       capMatch && await parser.addCapability(capMatch[2], capMatch[1]);
     } catch (err) {
