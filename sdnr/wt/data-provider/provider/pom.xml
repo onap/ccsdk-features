@@ -52,7 +52,7 @@
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <buildtime>${maven.build.timestamp}</buildtime>
         <databaseport>49402</databaseport>
-        <odlux.buildno>50.53aa73a(20/03/12)</odlux.buildno>
+        <odlux.buildno>52.3b24c2d(20/04/08)</odlux.buildno>
     </properties>
 
     <dependencies>
