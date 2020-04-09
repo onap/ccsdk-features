@@ -43,14 +43,17 @@ const currentOpenPanelHandler: IActionHandler<PanelId> = (state = null, action) 
 interface guiCutThroughState {
   searchedElements: guiCutThrough[];
   notSearchedElements: string[];
+  unsupportedElements: string[];
 }
 
-const guiCutThroughHandler: IActionHandler<guiCutThroughState> = (state = { searchedElements: [], notSearchedElements: [] }, action) => {
+const guiCutThroughHandler: IActionHandler<guiCutThroughState> = (state = { searchedElements: [], notSearchedElements: [], unsupportedElements:[] }, action) => {
   if (action instanceof AddWebUriList) {
     let notSearchedElements: string[];
     let searchedElements: guiCutThrough[];
+    let unsupportedElements: string[];
 
     notSearchedElements = state.notSearchedElements.concat(action.notSearchedElements);
+    unsupportedElements = state.unsupportedElements.concat(action.unsupportedElements);
 
     //remove elements, which were just searched
     if (action.newlySearchedElements) {
@@ -61,13 +64,14 @@ const guiCutThroughHandler: IActionHandler<guiCutThroughState> = (state = { sear
 
     searchedElements = state.searchedElements.concat(action.searchedElements);
 
-    state = { searchedElements: searchedElements, notSearchedElements: notSearchedElements }
+    state = { searchedElements: searchedElements, notSearchedElements: notSearchedElements, unsupportedElements: unsupportedElements }
 
   } else if (action instanceof RemoveWebUri) {
     const nodeId = action.element;
     const webUris = state.searchedElements.filter(item => item.nodeId !== nodeId);
     const knownElements = state.notSearchedElements.filter(item => item !== nodeId);
-    state = { notSearchedElements: knownElements, searchedElements: webUris };
+    const unsupportedElement = state.unsupportedElements.filter(item => item != nodeId);
+    state = { notSearchedElements: knownElements, searchedElements: webUris, unsupportedElements: unsupportedElement  };
   }
   return state;
 }
