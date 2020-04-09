@@ -38,7 +38,7 @@ export class SetPanelAction extends Action {
 }
 
 export class AddWebUriList extends Action {
-  constructor(public searchedElements: guiCutThrough[], public notSearchedElements: string[], public newlySearchedElements?: string[]) {
+  constructor(public searchedElements: guiCutThrough[], public notSearchedElements: string[], public unsupportedElements: string[], public newlySearchedElements?: string[] ) {
     super();
   }
 }
@@ -72,35 +72,52 @@ export const findWebUrisForGuiCutThroughAsyncAction = (networkElements: NetworkE
   let notConnectedElements: string[] = [];
   let elementsToSearch: string[] = [];
   let prevFoundElements: string[] = [];
+  let unsupportedElements: string[]= [];
 
 
   networkElements.forEach(item => {
-    const id = item.id as string;
-    if (item.status === "Connected") {
+      const id = item.id as string;
+      if (item.status === "Connected") {
 
-      // element is connected and is added to search list, if it doesn't exist already
-      const exists = guiCutThrough.searchedElements.filter(element => element.nodeId === id).length > 0;
-      if (!exists) {
-        elementsToSearch.push(id);
+        if(item.coreModelCapability!== "Unsupported"){
+          // element is connected and is added to search list, if it doesn't exist already
+          const exists = guiCutThrough.searchedElements.filter(element => element.nodeId === id).length > 0;
+          if (!exists) {
+            elementsToSearch.push(id);
+    
+            //element was found previously, but wasn't connected
+            if (guiCutThrough.notSearchedElements.length > 0 && guiCutThrough.notSearchedElements.includes(id)) {
+              prevFoundElements.push(id);
+            }
+        }
+        }else{
+          // element does not support core model and must not be searched for a weburi
+          const id = item.id as string;
+          const exists = guiCutThrough.unsupportedElements.filter(element => element === id).length > 0;
+          if(!exists){
+            unsupportedElements.push(id);
 
-        //element was found previously, but not searched for a weburi
-        if (guiCutThrough.notSearchedElements.length > 0 && guiCutThrough.notSearchedElements.includes(id)) {
-          prevFoundElements.push(id);
+             //element was found previously, but wasn't connected
+          if (guiCutThrough.notSearchedElements.length > 0 && guiCutThrough.notSearchedElements.includes(id)) {
+            prevFoundElements.push(id);
+          }
+          }
         }
       }
-    }
-    else {
-      // element isn't connected and cannot be searched for a weburi
-      if (!guiCutThrough.notSearchedElements.includes(id)) {
-        notConnectedElements.push(item.id as string);
+      else {
+        // element isn't connected and cannot be searched for a weburi
+        if (!guiCutThrough.notSearchedElements.includes(id)) {
+          notConnectedElements.push(item.id as string);
+        }
       }
-    }
   });
 
-  if (elementsToSearch.length > 0 || notConnectedElements.length > 0) {
+  
+  if (elementsToSearch.length > 0 || notConnectedElements.length > 0 || unsupportedElements.length>0 ) {
     const result = await connectService.getAllWebUriExtensionsForNetworkElementListAsync(elementsToSearch);
-    dispatcher(new AddWebUriList(result, notConnectedElements, prevFoundElements));
+  dispatcher(new AddWebUriList(result, notConnectedElements, unsupportedElements, prevFoundElements));
   }
+
   isBusy = false;
 }
 
