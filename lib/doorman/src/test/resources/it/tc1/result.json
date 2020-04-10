@@ -8,22 +8,32 @@
 					"STATUS | req-1                | ARRIVED",
 					"ACTION | req-1                | PROCESS",
 					"STATUS | req-1                | PROCESSING_SYNC",
+					"ACTION | req-1                | RETURN_COMPLETE | PROCESSED",
+					"STATUS | req-1                | COMPLETED"
+				],
+				[
 					"STATUS | req-2                | ARRIVED",
 					"ACTION | req-2                | HOLD | 60",
 					"STATUS | req-2                | IN_QUEUE",
+					"ACTION | req-2                | PROCESS",
+					"STATUS | req-2                | PROCESSING_SYNC",
+					"ACTION | req-2                | RETURN_COMPLETE | PROCESSED",
+					"STATUS | req-2                | COMPLETED"
+				],
+				[
 					"STATUS | req-3                | ARRIVED",
 					"ACTION | req-3                | HOLD | 60",
 					"STATUS | req-3                | IN_QUEUE",
-					"ACTION | req-1                | RETURN_COMPLETE | PROCESSED",
-					"ACTION | req-2                | PROCESS",
-					"STATUS | req-1                | COMPLETED",
-					"STATUS | req-2                | PROCESSING_SYNC",
-					"ACTION | req-2                | RETURN_COMPLETE | PROCESSED",
 					"ACTION | req-3                | PROCESS",
-					"STATUS | req-2                | COMPLETED",
 					"STATUS | req-3                | PROCESSING_SYNC",
 					"ACTION | req-3                | RETURN_COMPLETE | PROCESSED",
 					"STATUS | req-3                | COMPLETED"
+				],
+				[
+					"ACTION | req-1                | RETURN_COMPLETE | PROCESSED",
+					"STATUS | req-2                | PROCESSING_SYNC",
+					"ACTION | req-2                | RETURN_COMPLETE | PROCESSED",
+					"STATUS | req-3                | PROCESSING_SYNC"
 				]
 			]
 		}
