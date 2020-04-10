@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review-1: Tomas Janciga <tomas.janciga@pantheon.tech>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Fri, 10 Apr 2020 12:39:06 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/104707
+Project: ccsdk/features
+Branch: refs/heads/master
