@@ -1,0 +1,67 @@
+{
+	"handler_list": [
+		{
+			"queue_type": "QQ",
+			"handler_class": "Handler"
+		}
+	],
+	"request_list": [
+		{
+			"request_param": {
+				"request_id": "req-1",
+				"queue_type": "QQ",
+				"queue_id": "ALL",
+				"http_method": "POST"
+			},
+			"request_body": {
+				"siid": "test-siid-1"
+			},
+			"response_param": {
+				"http_code": 200
+			},
+			"response_body": {
+				"status": "success"
+			},
+			"start_time": 100,
+			"process_time": 5000
+		},
+		{
+			"request_param": {
+				"request_id": "req-2",
+				"queue_type": "QQ",
+				"queue_id": "ALL",
+				"http_method": "POST"
+			},
+			"request_body": {
+				"siid": "test-siid-2"
+			},
+			"response_param": {
+				"http_code": 200
+			},
+			"response_body": {
+				"status": "success"
+			},
+			"start_time": 500,
+			"process_time": 5000
+		},
+		{
+			"request_param": {
+				"request_id": "req-3",
+				"queue_type": "QQ",
+				"queue_id": "ALL",
+				"http_method": "POST"
+			},
+			"request_body": {
+				"siid": "test-siid-3"
+			},
+			"response_param": {
+				"http_code": 200
+			},
+			"response_body": {
+				"status": "success"
+			},
+			"start_time": 900,
+			"process_time": 5000
+		}
+	]
+}
