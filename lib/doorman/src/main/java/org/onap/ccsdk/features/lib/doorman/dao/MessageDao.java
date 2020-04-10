@@ -10,21 +10,21 @@ import org.onap.ccsdk.features.lib.doorman.data.Queue;
 
 public interface MessageDao {
 
-	long addArrivedMessage(String extMessageId, MessageData request, Queue queue, Date timestamp);
+    long addArrivedMessage(String extMessageId, MessageData request, Queue queue, Date timestamp);
 
-	void updateMessageStarted(long messageId, Date timestamp);
+    void updateMessageStarted(long messageId, Date timestamp);
 
-	void updateMessageCompleted(long messageId, String resolution, Date timestamp);
+    void updateMessageCompleted(long messageId, String resolution, Date timestamp);
 
-	void updateMessageResponse(long messageId, Date timestamp, MessageData response);
+    void updateMessageResponse(long messageId, Date timestamp, MessageData response);
 
-	void addStatus(long messageId, MessageStatus status);
+    void addStatus(long messageId, MessageStatus status);
 
-	void addAction(long messageId, MessageAction action);
+    void addAction(long messageId, MessageAction action);
 
-	void updateActionDone(long actionId, Date now);
+    void updateActionDone(long actionId, Date now);
 
-	List<Message> readMessageQueue(Queue queue);
+    List<Message> readMessageQueue(Queue queue);
 
-	MessageAction getNextAction(long messageId);
+    MessageAction getNextAction(long messageId);
 }

@@ -8,5 +8,5 @@ import org.onap.ccsdk.features.lib.doorman.data.MessageAction;
 
 public interface MessageQueueHandler {
 
-	Map<Long, MessageAction> nextAction(Event event, Message msg, List<Message> queue);
+    Map<Long, MessageAction> nextAction(Event event, Message msg, List<Message> queue);
 }
