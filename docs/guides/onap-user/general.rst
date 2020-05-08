@@ -38,8 +38,8 @@ of the column.
 | Data type  | Possible Filter  | Example    |
 +============+==================+============+
 | Text       | Any characters   | Test,      |
-|            | or numbers,      | Tes\ *,    |
-|            | matches exactly  | *\ t       |
+|            | or numbers,      | Tes\ \*,   |
+|            | matches exactly  | \*\ t      |
 |            | unless a \* is   |            |
 |            | used. The \*     |            |
 |            | acts as a        |            |
