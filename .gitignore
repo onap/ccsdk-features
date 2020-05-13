@@ -30,5 +30,6 @@
 **/*.class
 **/*.prefs
 **/*.iml
+**/.DS_Store
 
 direct-dependencies.txt
