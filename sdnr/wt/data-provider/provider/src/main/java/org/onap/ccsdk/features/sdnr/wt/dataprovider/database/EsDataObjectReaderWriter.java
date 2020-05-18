@@ -51,187 +51,187 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  */
 public class EsDataObjectReaderWriter<T extends DataObject> {
 
- 	private final Logger LOG = LoggerFactory.getLogger(EsDataObjectReaderWriter.class);
+   private final Logger LOG = LoggerFactory.getLogger(EsDataObjectReaderWriter.class);
 
- 	/** Typename for elastic search data schema **/
-	private String dataTypeName;
+   /** Typename for elastic search data schema **/
+  private String dataTypeName;
 
-	/** Elasticsearch Database client to be used **/
-	private DatabaseClient db;
+  /** Elasticsearch Database client to be used **/
+  private DatabaseClient db;
 
-	/** Mapper with configuration to use opendaylight yang-tools builder pattern for object creation **/
-	private YangToolsMapper yangtoolsMapper;
+  /** Mapper with configuration to use opendaylight yang-tools builder pattern for object creation **/
+  private YangToolsMapper yangtoolsMapper;
 
-	/** Class of T as attribute to allow JSON to Class object mapping **/
-	private Class<T> clazz;
+  /** Class of T as attribute to allow JSON to Class object mapping **/
+  private Class<T> clazz;
 
-	/** Field is used to write id. If null no id handling **/
-	private @Nullable Field field;
+  /** Field is used to write id. If null no id handling **/
+  private @Nullable Field field;
 
-	/** Attribute that is used as id field for the database object **/
-	private @Nullable String esIdAddAtributteName;
+  /** Attribute that is used as id field for the database object **/
+  private @Nullable String esIdAddAtributteName;
 
-	/** Interface to be used for write operations. Rule for write: T extends S and  **/
-	private Class<? extends DataObject> writeInterfaceClazz; // == "S"
+  /** Interface to be used for write operations. Rule for write: T extends S and  **/
+  private Class<? extends DataObject> writeInterfaceClazz; // == "S"
 
-	/**
-	 * Elasticsearch database read and write for specific class, defined by opendaylight yang-tools.
-	 *
-	 * @param db Database access client
-	 * @param dataTypeName typename in database schema
-	 * @param clazz class of type to be handled
-	 * @throws ClassNotFoundException
-	 */
-	public EsDataObjectReaderWriter(DatabaseClient db, Entity dataTypeName, Class<T> clazz) throws ClassNotFoundException {
-		this(db, dataTypeName.getName(), clazz);
-	}
-	public EsDataObjectReaderWriter(DatabaseClient db, String dataTypeName, Class<T> clazz) throws ClassNotFoundException {
-		LOG.info("Create {} for datatype {} class {}", this.getClass().getName(), dataTypeName, clazz.getName());
+  /**
+   * Elasticsearch database read and write for specific class, defined by opendaylight yang-tools.
+   *
+   * @param db Database access client
+   * @param dataTypeName typename in database schema
+   * @param clazz class of type to be handled
+   * @throws ClassNotFoundException
+   */
+  public EsDataObjectReaderWriter(DatabaseClient db, Entity dataTypeName, Class<T> clazz) throws ClassNotFoundException {
+    this(db, dataTypeName.getName(), clazz);
+  }
+  public EsDataObjectReaderWriter(DatabaseClient db, String dataTypeName, Class<T> clazz) throws ClassNotFoundException {
+    LOG.info("Create {} for datatype {} class {}", this.getClass().getName(), dataTypeName, clazz.getName());
 
-		this.esIdAddAtributteName = null;
-		this.field = null;
-		this.writeInterfaceClazz = clazz;
-		this.db = db;
-		this.dataTypeName = dataTypeName;
-		this.yangtoolsMapper = new YangToolsMapper();
-		//this.yangtoolsMapper.assertBuilderClass(clazz);
-		this.clazz = clazz;
+    this.esIdAddAtributteName = null;
+    this.field = null;
+    this.writeInterfaceClazz = clazz;
+    this.db = db;
+    this.dataTypeName = dataTypeName;
+    this.yangtoolsMapper = new YangToolsMapper();
+    //this.yangtoolsMapper.assertBuilderClass(clazz);
+    this.clazz = clazz;
 //
 //		if (! db.isExistsIndex(dataTypeName)) {
 //			throw new IllegalArgumentException("Index "+dataTypeName+" not existing.");
 //		}
-	}
+  }
 
-	public String getDataTypeName() {
-		return dataTypeName;
-	}
-	public Class<T> getClazz() {
-		return clazz;
-	}
-	/**
-	 * Simlar to {@link #setEsIdAttributeName()}, but adapts the parameter to yangtools attribute naming schema
-	 * @param esIdAttributeName is converted to UnderscoreCamelCase
-	 * @return this for further operations.
-	 */
-	public EsDataObjectReaderWriter<T> setEsIdAttributeNameCamelized(String esIdAttributeName) {
-		return setEsIdAttributeName(YangToolsMapper.toCamelCaseAttributeName(esIdAttributeName));
-	}
+  public String getDataTypeName() {
+    return dataTypeName;
+  }
+  public Class<T> getClazz() {
+    return clazz;
+  }
+  /**
+   * Simlar to {@link #setEsIdAttributeName()}, but adapts the parameter to yangtools attribute naming schema
+   * @param esIdAttributeName is converted to UnderscoreCamelCase
+   * @return this for further operations.
+   */
+  public EsDataObjectReaderWriter<T> setEsIdAttributeNameCamelized(String esIdAttributeName) {
+    return setEsIdAttributeName(YangToolsMapper.toCamelCaseAttributeName(esIdAttributeName));
+  }
 
-	/**
-	 * Attribute name of class that is containing the object id
-	 * @param esIdAttributeName of the implementation class for the yangtools interface.
-	 *        Expected attribute name format is CamelCase with leading underline. @
-	 * @return this for further operations.
-	 * @throws SecurityException if no access or IllegalArgumentException if wrong type or no attribute with this name.
-	 */
-	public EsDataObjectReaderWriter<T> setEsIdAttributeName(String esIdAttributeName) {
-		LOG.debug("Set attribute '{}'", esIdAttributeName);
-		this.esIdAddAtributteName = null; // Reset status
-		this.field = null;
+  /**
+   * Attribute name of class that is containing the object id
+   * @param esIdAttributeName of the implementation class for the yangtools interface.
+   *        Expected attribute name format is CamelCase with leading underline. @
+   * @return this for further operations.
+   * @throws SecurityException if no access or IllegalArgumentException if wrong type or no attribute with this name.
+   */
+  public EsDataObjectReaderWriter<T> setEsIdAttributeName(String esIdAttributeName) {
+    LOG.debug("Set attribute '{}'", esIdAttributeName);
+    this.esIdAddAtributteName = null; // Reset status
+    this.field = null;
 
-		Field attributeField;
-		try {
-			Builder<T> builder = yangtoolsMapper.getBuilder(clazz);
-			T object = builder.build();
-			attributeField = object.getClass().getDeclaredField(esIdAttributeName);
-			if (attributeField.getType().equals(String.class)) {
-				attributeField.setAccessible(true);
-				this.esIdAddAtributteName = esIdAttributeName; //Set new status if everything OK
-				this.field = attributeField;
-			} else {
-				String msg = "Wrong field type " + attributeField.getType().getName() + " of " + esIdAttributeName;
-				LOG.debug(msg);
-				throw new IllegalArgumentException(msg);
-			}
-		} catch (NoSuchFieldException e) {
-			// Convert to run-time exception
-			String msg = "NoSuchFieldException for '" + esIdAttributeName + "' in class " + clazz.getName();
-			LOG.debug(msg);
-			throw new IllegalArgumentException(msg);
-		} catch (SecurityException e) {
-			LOG.debug("Access problem "+esIdAttributeName,e);
-			throw e;
-		}
-		return this;
-	}
+    Field attributeField;
+    try {
+      Builder<T> builder = yangtoolsMapper.getBuilder(clazz);
+      T object = builder.build();
+      attributeField = object.getClass().getDeclaredField(esIdAttributeName);
+      if (attributeField.getType().equals(String.class)) {
+        attributeField.setAccessible(true);
+        this.esIdAddAtributteName = esIdAttributeName; //Set new status if everything OK
+        this.field = attributeField;
+      } else {
+        String msg = "Wrong field type " + attributeField.getType().getName() + " of " + esIdAttributeName;
+        LOG.debug(msg);
+        throw new IllegalArgumentException(msg);
+      }
+    } catch (NoSuchFieldException e) {
+      // Convert to run-time exception
+      String msg = "NoSuchFieldException for '" + esIdAttributeName + "' in class " + clazz.getName();
+      LOG.debug(msg);
+      throw new IllegalArgumentException(msg);
+    } catch (SecurityException e) {
+      LOG.debug("Access problem "+esIdAttributeName,e);
+      throw e;
+    }
+    return this;
+  }
 
-	/**
-	 * Specify subclass of T for write operations.
-	 * @param writeInterfaceClazz
-	 */
-	public EsDataObjectReaderWriter<T> setWriteInterface( @Nonnull Class<? extends DataObject> writeInterfaceClazz ) {
-		LOG.debug("Set write interface to {}", writeInterfaceClazz);
-		if (writeInterfaceClazz == null)
-			throw new IllegalArgumentException("Null not allowed here.");
+  /**
+   * Specify subclass of T for write operations.
+   * @param writeInterfaceClazz
+   */
+  public EsDataObjectReaderWriter<T> setWriteInterface( @Nonnull Class<? extends DataObject> writeInterfaceClazz ) {
+    LOG.debug("Set write interface to {}", writeInterfaceClazz);
+    if (writeInterfaceClazz == null)
+      throw new IllegalArgumentException("Null not allowed here.");
 
-		this.writeInterfaceClazz = writeInterfaceClazz;
-		return this;
-	}
+    this.writeInterfaceClazz = writeInterfaceClazz;
+    return this;
+  }
 
-	/**
-	 * Write child object to database with specific id
-	 * @param object
-	 * @param @Nullable esId use the id or if null generate unique id
-	 * @return String with id or null
-	 */
-	public @Nullable <S extends DataObject> String write(S object, @Nullable String esId) {
-		if (writeInterfaceClazz.isInstance(object)) {
-			try {
-				String json = yangtoolsMapper.writeValueAsString(object);
-				return db.doWriteRaw(dataTypeName, esId, json);
-			} catch (JsonProcessingException e) {
-				LOG.error("Write problem: ", e);
-			}
-		} else {
-			LOG.error("Type {} does not provide interface {}", object!=null?object.getClass().getName():"null",
-					writeInterfaceClazz.getName());
-		}
-		return null;
-	}
-	/**
-	 * Update partial child object to database with match/term query
-	 * @param object
-	 * @param esId
-	 * @return String with esId or null
-	 */
-	public @Nullable <S extends DataObject> boolean update(S object, QueryBuilder query) {
-		if (writeInterfaceClazz.isInstance(object)) {
-			try {
-				String json = yangtoolsMapper.writeValueAsString(object);
-				return db.doUpdate(this.dataTypeName,json,query);
-			} catch (JsonProcessingException e) {
-				LOG.error("Update problem: ", e);
-			}
-		} else {
-			LOG.error("Type {} does not provide interface {}", object!=null?object.getClass().getName():"null",
-					writeInterfaceClazz.getName());
-		}
-		return false;
-	}
-	/**
-	 * Write/ update partial child object to database with specific id Write if not
-	 * exists, else update
-	 * @param object
-	 * @param esId
-	 * @return String with esId or null
-	 */
-	public @Nullable <S extends DataObject> String update(S object, String esId) {
-		return this.update(object, esId,null);
-	}
-	public @Nullable <S extends DataObject> String update(S object, String esId,List<String> onylForInsert) {
-		if (writeInterfaceClazz.isInstance(object)) {
-			try {
-				String json = yangtoolsMapper.writeValueAsString(object);
-				return db.doUpdateOrCreate(dataTypeName, esId, json,onylForInsert);
-			} catch (JsonProcessingException e) {
-				LOG.error("Update problem: ", e);
-			}
-		} else {
-			LOG.error("Type {} does not provide interface {}", object!=null?object.getClass().getName():"null",
-					writeInterfaceClazz.getName());
-		}
-		return null;
-	}
+  /**
+   * Write child object to database with specific id
+   * @param object
+   * @param @Nullable esId use the id or if null generate unique id
+   * @return String with id or null
+   */
+  public @Nullable <S extends DataObject> String write(S object, @Nullable String esId) {
+    if (writeInterfaceClazz.isInstance(object)) {
+      try {
+        String json = yangtoolsMapper.writeValueAsString(object);
+        return db.doWriteRaw(dataTypeName, esId, json);
+      } catch (JsonProcessingException e) {
+        LOG.error("Write problem: ", e);
+      }
+    } else {
+      LOG.error("Type {} does not provide interface {}", object!=null?object.getClass().getName():"null",
+          writeInterfaceClazz.getName());
+    }
+    return null;
+  }
+  /**
+   * Update partial child object to database with match/term query
+   * @param object
+   * @param esId
+   * @return String with esId or null
+   */
+  public @Nullable <S extends DataObject> boolean update(S object, QueryBuilder query) {
+    if (writeInterfaceClazz.isInstance(object)) {
+      try {
+        String json = yangtoolsMapper.writeValueAsString(object);
+        return db.doUpdate(this.dataTypeName,json,query);
+      } catch (JsonProcessingException e) {
+        LOG.error("Update problem: ", e);
+      }
+    } else {
+      LOG.error("Type {} does not provide interface {}", object!=null?object.getClass().getName():"null",
+          writeInterfaceClazz.getName());
+    }
+    return false;
+  }
+  /**
+   * Write/ update partial child object to database with specific id Write if not
+   * exists, else update
+   * @param object
+   * @param esId
+   * @return String with esId or null
+   */
+  public @Nullable <S extends DataObject> String update(S object, String esId) {
+    return this.update(object, esId,null);
+  }
+  public @Nullable <S extends DataObject> String update(S object, String esId,List<String> onylForInsert) {
+    if (writeInterfaceClazz.isInstance(object)) {
+      try {
+        String json = yangtoolsMapper.writeValueAsString(object);
+        return db.doUpdateOrCreate(dataTypeName, esId, json,onylForInsert);
+      } catch (JsonProcessingException e) {
+        LOG.error("Update problem: ", e);
+      }
+    } else {
+      LOG.error("Type {} does not provide interface {}", object!=null?object.getClass().getName():"null",
+          writeInterfaceClazz.getName());
+    }
+    return null;
+  }
 
     /**
      * Read object from database, by using the id field
@@ -239,15 +239,15 @@ public class EsDataObjectReaderWriter<T extends DataObject> {
      * @return
      */
     public @Nullable T read(String esId) {
-    	@Nullable T res = (T)null;
-		if (esId != null) {
-			String json = db.doReadJsonData(dataTypeName, esId);
-			try {
-				res = yangtoolsMapper.readValue(json.getBytes(), clazz);
-			} catch (IOException e) {
-				LOG.error("Problem: ", e);
-			}
-		}
+      @Nullable T res = (T)null;
+    if (esId != null) {
+      String json = db.doReadJsonData(dataTypeName, esId);
+      try {
+        res = yangtoolsMapper.readValue(json.getBytes(), clazz);
+      } catch (IOException e) {
+        LOG.error("Problem: ", e);
+      }
+    }
         return res;
     }
 
@@ -257,12 +257,12 @@ public class EsDataObjectReaderWriter<T extends DataObject> {
      * @return success
      */
     public boolean remove(String esId) {
-    	return db.doRemove(this.dataTypeName, esId);
+      return db.doRemove(this.dataTypeName, esId);
     }
 
-	public int remove(QueryBuilder query) {
-		return this.db.doRemove(this.dataTypeName, query);
-	}
+  public int remove(QueryBuilder query) {
+    return this.db.doRemove(this.dataTypeName, query);
+  }
     /**
      * Get all elements of related type
      * @return all Elements
@@ -271,8 +271,8 @@ public class EsDataObjectReaderWriter<T extends DataObject> {
         return doReadAll(null);
     }
     public SearchResult<T> doReadAll(QueryBuilder query) {
-    	return this.doReadAll(query,false);
-	}
+      return this.doReadAll(query,false);
+  }
     /**
      * Read all existing objects of a type
      * @param query for the elements
@@ -281,63 +281,55 @@ public class EsDataObjectReaderWriter<T extends DataObject> {
 
     public SearchResult<T> doReadAll(QueryBuilder query, boolean ignoreException) {
 
-    	SearchResult<T> res = new SearchResult<T>();
-        int idx = 0;                //Idx for getAll
-        int iterateLength = 100;    //Step width for iterate
-
+        SearchResult<T> res = new SearchResult<T>();
         SearchResult<SearchHit> result;
         List<SearchHit> hits;
-        do {
-            if(query!=null) {
-                LOG.debug("read data in {} with query {}",dataTypeName,query.toJSON());
-                result=db.doReadByQueryJsonData( dataTypeName, query,ignoreException);
-            }
-            else {
-            	result = db.doReadAllJsonData(dataTypeName,ignoreException);
-            }
-            hits=result.getHits();
-            LOG.debug("Read: {} elements: {}  Failures: {}",dataTypeName,hits.size(), yangtoolsMapper.getMappingFailures());
+        if (query != null) {
+            LOG.debug("read data in {} with query {}", dataTypeName, query.toJSON());
+            result = db.doReadByQueryJsonData(dataTypeName, query, ignoreException);
+        } else {
+            result = db.doReadAllJsonData(dataTypeName, ignoreException);
+        }
+        hits = result.getHits();
+        LOG.debug("Read: {} elements: {}  Failures: {}", dataTypeName, hits.size(),
+                yangtoolsMapper.getMappingFailures());
 
-            T object;
-            idx += result.getHits().size();
-			for (SearchHit hit : hits) {
-				object = getT(hit.getSourceAsString());
-				LOG.debug("Mapp Object: {}\nSource: '{}'\nResult: '{}'\n Failures: {}", hit.getId(),
-						hit.getSourceAsString(), object, yangtoolsMapper.getMappingFailures());
-				if (object != null) {
-					setEsId(object, hit.getId());
-					res.add(object);
-				} else {
-					LOG.warn("Mapp result null Object: {}\n Source: '{}'\n : '", hit.getId(), hit.getSourceAsString());
-				}
-			}
-
-		} while (hits.size() == iterateLength); // Do it until end indicated, because less hits than iterateLength
-												// allows.
+        T object;
+        for (SearchHit hit : hits) {
+            object = getT(hit.getSourceAsString());
+            LOG.debug("Mapp Object: {}\nSource: '{}'\nResult: '{}'\n Failures: {}", hit.getId(),
+                    hit.getSourceAsString(), object, yangtoolsMapper.getMappingFailures());
+            if (object != null) {
+                setEsId(object, hit.getId());
+                res.add(object);
+            } else {
+                LOG.warn("Mapp result null Object: {}\n Source: '{}'\n : '", hit.getId(), hit.getSourceAsString());
+            }
+        }
         res.setTotal(result.getTotal());
         return res;
     }
 
-	/* ---------------------------------------------
+  /* ---------------------------------------------
      * Private functions
      */
 
-	private void setEsId(T object, String esId) {
-		if (field != null) {
-			try {
-				field.set(object, esId);
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				LOG.debug("Field set problem.", e);			}
-		}
-	}
+  private void setEsId(T object, String esId) {
+    if (field != null) {
+      try {
+        field.set(object, esId);
+      } catch (IllegalArgumentException | IllegalAccessException e) {
+        LOG.debug("Field set problem.", e);			}
+    }
+  }
 
     private @Nullable T getT(String jsonString) {
-    	try {
-			return yangtoolsMapper.readValue( jsonString, clazz );
-		} catch (IOException e) {
-			LOG.info("Mapping problem", e);
-			return (T)null;
-		}
+      try {
+      return yangtoolsMapper.readValue( jsonString, clazz );
+    } catch (IOException e) {
+      LOG.info("Mapping problem", e);
+      return (T)null;
+    }
     }
 
 }
