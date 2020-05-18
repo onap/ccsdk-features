@@ -92,7 +92,7 @@ public final class GenericTransactionUtils implements TransactionUtils {
 
         int retry = 0;
         int retryDelayMilliseconds = 2000;
-        int maxRetries = 5; // 0 no Retry
+        int maxRetries = 0; // 0 no Retry
 
         do {
             if (retry > 0) {
@@ -107,8 +107,8 @@ public final class GenericTransactionUtils implements TransactionUtils {
 
             LOG.debug("Sending message with retry {} ", retry);
             statusIndicator.set("Create Read Transaction");
-
-            try (ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction();) {
+            ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction();
+            try {
                 @NonNull FluentFuture<Optional<T>> od = readTransaction.read(dataStoreType, iid);
                 statusIndicator.set("Read done");
                 if (od != null) {
@@ -119,18 +119,23 @@ public final class GenericTransactionUtils implements TransactionUtils {
                         data = optionalData.orElse(null);
                         statusIndicator.set("Read transaction done");
                         noErrorIndication.set(true);
+                    } else {
+                        statusIndicator.set("optional Data is null");
                     }
+                } else {
+                    statusIndicator.set("od feature is null");
                 }
-
-                readTransaction.close();
             } catch (CancellationException | ExecutionException | InterruptedException | NoSuchElementException e) {
                 statusIndicator.set(StackTrace.toString(e));
                 if (e instanceof InterruptedException) {
                     Thread.currentThread().interrupt();
                 }
+                LOG.debug("Exception during read", e);
             }
 
         } while (noErrorIndication.get() == false && retry++ < maxRetries);
+
+        LOG.debug("stage 2 noErrorIndication {} status text {}", noErrorIndication.get(), statusIndicator.get());
 
         return data;
     }
