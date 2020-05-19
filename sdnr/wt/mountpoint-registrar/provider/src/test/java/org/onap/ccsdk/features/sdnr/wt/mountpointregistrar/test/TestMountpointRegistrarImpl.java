@@ -28,29 +28,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MountpointRegistrarImpl;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.mock.odlapi.ClusterSingletonServiceProviderMock;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.mock.odlapi.DataBrokerNetconfMock;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.mock.odlapi.MountPointServiceMock;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.mock.odlapi.NotificationPublishServiceMock;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.mock.odlapi.RpcProviderRegistryMock;
-import org.opendaylight.controller.md.sal.binding.api.MountPointService;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("deprecation")
 public class TestMountpointRegistrarImpl {
 
     private static Path KARAF_ETC = Paths.get("etc");
     private static MountpointRegistrarImpl mountpointRegistrar;
-    private static DataBrokerNetconfMock dataBrokerNetconf;
 
     private static final Logger LOG = LoggerFactory.getLogger(TestMountpointRegistrarImpl.class);
 
@@ -68,21 +55,10 @@ public class TestMountpointRegistrarImpl {
         Files.createDirectories(etc);
 
         // Create mocks
-        dataBrokerNetconf = new DataBrokerNetconfMock();
-        ClusterSingletonServiceProvider clusterSingletonService = new ClusterSingletonServiceProviderMock();
-		MountPointService mountPointService = new MountPointServiceMock(null);
-        NotificationPublishService notificationPublishService = new NotificationPublishServiceMock();
-        RpcProviderRegistry rpcProviderRegistry = new RpcProviderRegistryMock();
 
         // start using blueprint interface
         try {
         	mountpointRegistrar = new MountpointRegistrarImpl();
-
-        	mountpointRegistrar.setDataBroker(dataBrokerNetconf);
-        	mountpointRegistrar.setMountPointService(mountPointService);
-        	mountpointRegistrar.setNotificationPublishService(notificationPublishService);
-        	mountpointRegistrar.setRpcProviderRegistry(rpcProviderRegistry);
-        	mountpointRegistrar.setClusterSingletonService(clusterSingletonService);
         	mountpointRegistrar.init();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();

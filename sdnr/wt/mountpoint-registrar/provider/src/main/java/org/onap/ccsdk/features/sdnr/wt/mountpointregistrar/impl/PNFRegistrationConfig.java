@@ -29,9 +29,18 @@ public class PNFRegistrationConfig implements Configuration {
 
     public static final String PROPERTY_KEY_CONSUMER_TRANSPORTTYPE = "TransportType";
     private static final String DEFAULT_VALUE_CONSUMER_TRANSPORTTYPE = "HTTPNOAUTH";
+    
+    public static final String PROPERTY_KEY_CONSUMER_PROTOCOL = "Protocol";
+    private static final String DEFAULT_VALUE_CONSUMER_PROTOCOL = "http";
+    
+    public static final String PROPERTY_KEY_CONSUMER_USERNAME = "username";
+    private static final String DEFAULT_VALUE_CONSUMER_USERNAME = "username";
+    
+    public static final String PROPERTY_KEY_CONSUMER_PASSWORD = "password";
+    private static final String DEFAULT_VALUE_CONSUMER_PASSWORD = "password";
 
     public static final String PROPERTY_KEY_CONSUMER_HOST_PORT = "host";
-    private static final String DEFAULT_VALUE_CONSUMER_HOST_PORT = "onap-dmap:3904";
+    private static final String DEFAULT_VALUE_CONSUMER_HOST_PORT = "onap-dmaap:3904";
 
     public static final String PROPERTY_KEY_CONSUMER_TOPIC = "topic";
     private static final String DEFAULT_VALUE_CONSUMER_TOPIC = "unauthenticated.VES_PNFREG_OUTPUT";
@@ -71,6 +80,9 @@ public class PNFRegistrationConfig implements Configuration {
 
    		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLASS, DEFAULT_VALUE_CONSUMER_CLASS);
    		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TRANSPORTTYPE, DEFAULT_VALUE_CONSUMER_TRANSPORTTYPE);
+   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PROTOCOL, DEFAULT_VALUE_CONSUMER_PROTOCOL);
+   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_USERNAME, DEFAULT_VALUE_CONSUMER_USERNAME);
+   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PASSWORD, DEFAULT_VALUE_CONSUMER_PASSWORD);
    		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_HOST_PORT, DEFAULT_VALUE_CONSUMER_HOST_PORT);
    		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TOPIC, DEFAULT_VALUE_CONSUMER_TOPIC);
    		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CONTENTTYPE, DEFAULT_VALUE_CONSUMER_CONTENTTYPE);
@@ -92,6 +104,18 @@ public class PNFRegistrationConfig implements Configuration {
 
 	public String getTransportType() {
 		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TRANSPORTTYPE);
+	}
+
+	public String getProtocol() {
+		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PROTOCOL);
+	}
+
+	public String getUsername() {
+		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_USERNAME);
+	}
+
+	public String getPassword() {
+		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PASSWORD);
 	}
 
 	public String getTopic() {

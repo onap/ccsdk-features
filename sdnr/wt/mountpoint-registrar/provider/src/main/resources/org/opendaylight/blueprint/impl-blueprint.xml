@@ -26,29 +26,7 @@
 <blueprint xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
            xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" odl:use-default-for-reference-types="true">
 
-    <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
-               odl:type="default"/>
-
-    <reference id="notificationPublishService"
-               interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"
-               odl:type="default"/>
-
-    <reference id="mountPointService"
-               interface="org.opendaylight.controller.md.sal.binding.api.MountPointService"
-               odl:type="default"/>
-
-    <reference id="rpcProviderRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"
-               odl:type="default"/>
-
-    <reference id="clusterSingletonService"
-               interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
-
     <bean id="provider" class="org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MountpointRegistrarImpl" init-method="init" destroy-method="close">
-        <property name="dataBroker" ref="dataBroker"/>
-        <property name="rpcProviderRegistry" ref="rpcProviderRegistry"/>
-        <property name="notificationPublishService" ref="notificationPublishService"/>
-        <property name="mountPointService" ref="mountPointService"/>
-        <property name="clusterSingletonService" ref="clusterSingletonService"/>
     </bean>
 
 </blueprint>

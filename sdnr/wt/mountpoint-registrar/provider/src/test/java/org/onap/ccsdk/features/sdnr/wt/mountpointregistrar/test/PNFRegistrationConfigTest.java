@@ -18,7 +18,7 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +36,9 @@ public class PNFRegistrationConfigTest {
 	private static final String TESTCONFIG_CONTENT="[pnfRegistration]\n" +
 			"pnfRegConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer\n" +
 			"TransportType=HTTPNOAUTH\n" +
+			"Protocol=http\n" +
+			"username=username\n" +
+			"password=password\n" +
 			"host=onap-dmap:3904\n" +
 			"topic=unauthenticated.VES_PNFREG_OUTPUT\n" +
 			"contenttype=application/json\n" +
@@ -65,6 +68,10 @@ public class PNFRegistrationConfigTest {
 			assertEquals("20000", pnfCfg.getTimeout());
 			assertEquals("10000", pnfCfg.getLimit());
 			assertEquals("5000", pnfCfg.getFetchPause());
+			assertEquals("http", pnfCfg.getProtocol());
+			assertEquals("username", pnfCfg.getUsername());
+			assertEquals("password", pnfCfg.getPassword());
+
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

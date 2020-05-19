@@ -18,7 +18,7 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.FaultConfig;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.PNFRegistrationConfig;
 
 import com.google.common.io.Files;
 
@@ -37,6 +36,9 @@ public class TestFaultConfig {
 	private static final String TESTCONFIG_CONTENT="[fault]\n" +
 			"faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer\n" +
 			"TransportType=HTTPNOAUTH\n" +
+			"Protocol=http\n" +
+			"username=username\n" +
+			"password=password\n" +
 			"host=onap-dmap:3904\n" +
 			"topic=unauthenticated.SEC_FAULT_OUTPUT\n" +
 			"contenttype=application/json\n" +
@@ -67,6 +69,9 @@ public class TestFaultConfig {
 			assertEquals("20000", faultCfg.getTimeout());
 			assertEquals("10000", faultCfg.getLimit());
 			assertEquals("5000", faultCfg.getFetchPause());
+			assertEquals("http", faultCfg.getProtocol());
+			assertEquals("username", faultCfg.getUsername());
+			assertEquals("password", faultCfg.getPassword());
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

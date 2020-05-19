@@ -18,7 +18,7 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;

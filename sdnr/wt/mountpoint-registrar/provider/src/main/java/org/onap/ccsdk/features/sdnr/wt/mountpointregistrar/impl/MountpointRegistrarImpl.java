@@ -25,15 +25,10 @@ import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.MountPointService;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("deprecation")
 public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MountpointRegistrarImpl.class);
@@ -41,16 +36,6 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
 	private static final String CONFIGURATIONFILE = "etc/mountpoint-registrar.properties";
 
 	private Thread dmaapVESMsgConsumerMain = null;
-	@SuppressWarnings("unused")
-	private DataBroker dataBroker = null;
-	@SuppressWarnings("unused")
-	private MountPointService mountPointService = null;
-	@SuppressWarnings("unused")
-	private RpcProviderRegistry rpcProviderRegistry = null;
-	@SuppressWarnings("unused")
-	private NotificationPublishService notificationPublishService = null;
-	@SuppressWarnings("unused")
-	private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
 
 	private GeneralConfig generalConfig;
 	private boolean dmaapEnabled = false;
@@ -59,26 +44,6 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
 	// Blueprint 1
 	public MountpointRegistrarImpl() {
 		LOG.info("Creating provider class for {}", APPLICATION_NAME);
-	}
-
-	public void setDataBroker(DataBroker dataBroker) {
-		this.dataBroker = dataBroker;
-	}
-
-	public void setRpcProviderRegistry(RpcProviderRegistry rpcProviderRegistry) {
-		this.rpcProviderRegistry = rpcProviderRegistry;
-	}
-
-	public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
-		this.notificationPublishService = notificationPublishService;
-	}
-
-	public void setMountPointService(MountPointService mountPointService) {
-		this.mountPointService = mountPointService;
-	}
-
-	public void setClusterSingletonService(ClusterSingletonServiceProvider clusterSingletonService) {
-		this.clusterSingletonServiceProvider = clusterSingletonService;
 	}
 
 	public void init() {

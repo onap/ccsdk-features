@@ -18,13 +18,9 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.FaultNotificationClient;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.PNFMountPointClient;
 
 public class TestDMaaPFaultVESMsgConsumer extends DMaaPFaultVESMsgConsumer {
 

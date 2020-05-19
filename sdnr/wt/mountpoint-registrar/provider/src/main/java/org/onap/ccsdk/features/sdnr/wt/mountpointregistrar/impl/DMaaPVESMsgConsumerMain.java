@@ -18,8 +18,6 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +60,9 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
 			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_TIMEOUT, pnfRegistrationConfig.getTimeout());
 			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_LIMIT, pnfRegistrationConfig.getLimit());
 			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_FETCHPAUSE, pnfRegistrationConfig.getFetchPause());
+			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_PROTOCOL, pnfRegistrationConfig.getProtocol());
+			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_USERNAME, pnfRegistrationConfig.getUsername());
+			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_PASSWORD, pnfRegistrationConfig.getPassword());
 		} else if (domain.equalsIgnoreCase("fault")) {
 			this.faultConfig = (FaultConfig) domainConfig;
 			consumerClass = faultConfig.getConsumerClass();
@@ -75,6 +76,9 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
 			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_TIMEOUT, faultConfig.getTimeout());
 			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_LIMIT, faultConfig.getLimit());
 			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_FETCHPAUSE, faultConfig.getFetchPause());
+			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_PROTOCOL, faultConfig.getProtocol());
+			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_USERNAME, faultConfig.getUsername());
+			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_PASSWORD, faultConfig.getPassword());
 		}
 
 		if (consumerClass != null) {
