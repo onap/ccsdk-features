@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Code-Review+2: Gaurav Agrawal <gaurav.agrawal@huawei.com>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Thu, 21 May 2020 17:25:52 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/108088
+Project: ccsdk/features
+Branch: refs/heads/frankfurt
