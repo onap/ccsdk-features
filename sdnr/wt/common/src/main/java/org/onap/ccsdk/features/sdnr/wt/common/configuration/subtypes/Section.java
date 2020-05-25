@@ -98,7 +98,7 @@ public class Section {
 		if (value != null && value.contains("${")) {
 			
 			LOG.debug("try to find env var(s) for {}",value);
-			final String regex = "(\\$\\{[A-Z]+\\})";
+			final String regex = "(\\$\\{[A-Z0-9_-]+\\})";
 			final Pattern pattern = Pattern.compile(regex);
 			final Matcher matcher = pattern.matcher(value);
 			String tmp=new String(value);
