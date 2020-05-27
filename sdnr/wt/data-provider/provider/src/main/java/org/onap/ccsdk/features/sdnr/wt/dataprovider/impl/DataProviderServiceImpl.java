@@ -111,7 +111,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     DataProviderServiceImpl(final RpcProviderService rpcProviderService,MsServlet mediatorServerServlet) throws Exception {
         this.configuration = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
         this.esConfig = new EsConfig(configuration);
-        this.dataProvider = new ElasticSearchDataProvider(esConfig.getHosts(),esConfig.getBasicAuthUsername(),esConfig.getBasicAuthPassword());
+        this.dataProvider = new ElasticSearchDataProvider(esConfig.getHosts(),esConfig.getBasicAuthUsername(),esConfig.getBasicAuthPassword(),esConfig.trustAllCerts());
         this.dataProvider.waitForYellowDatabaseStatus(DATABASE_TIMEOUT_MS,TimeUnit.MILLISECONDS);
         this.mediatorServerDataProvider = new MediatorServerDataProvider(esConfig.getHosts(),esConfig.getBasicAuthUsername(),esConfig.getBasicAuthPassword());
         mediatorServerServlet.setDataProvider(this.mediatorServerDataProvider);

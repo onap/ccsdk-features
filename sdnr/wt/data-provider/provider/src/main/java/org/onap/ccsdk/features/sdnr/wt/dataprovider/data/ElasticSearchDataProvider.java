@@ -79,6 +79,8 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
 	private static final String EXCEPTION_UNABLE_TO_UPDATE_IN_DATABASE = "unable to update data in database";
 	private static final String EXCEPTION_UNABLE_TO_REMOVE_FROM_DATABASE = "unable to remove data from database";
 
+	private static final boolean DEFAULT_TRUSTALLCERTS = false;
+
     private final HtDatabaseClient dbClient;
     private final DataObjectAcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultcurrent.list.output.Data> eventRWFaultCurrent;
     private final DataObjectAcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultlog.list.output.Data> eventRWFaultLog;
@@ -98,13 +100,13 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
     	return this.dbClient;
     }
     public ElasticSearchDataProvider(HostInfo[] hosts) throws Exception {
-    	this(hosts,null,null);
+    	this(hosts,null,null,DEFAULT_TRUSTALLCERTS);
     }
-    public ElasticSearchDataProvider(HostInfo[] hosts,String authUsername,String authPassword) throws Exception {
+    public ElasticSearchDataProvider(HostInfo[] hosts,String authUsername,String authPassword, boolean trustAllCerts) throws Exception {
          super();
          LOG.info("Start {}", this.getClass().getName());
 
-         this.dbClient = new HtDatabaseClient(hosts,authUsername,authPassword);
+         this.dbClient = new HtDatabaseClient(hosts,authUsername,authPassword,trustAllCerts);
          this.mediatorserverRW = new DataObjectAcessor<>(dbClient, Entity.MediatorServer,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data.class);
              this.mediatorserverRW.setWriteInterface(MediatorServerEntity.class);
