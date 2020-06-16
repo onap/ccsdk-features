@@ -63,6 +63,8 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
 			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_PROTOCOL, pnfRegistrationConfig.getProtocol());
 			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_USERNAME, pnfRegistrationConfig.getUsername());
 			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_PASSWORD, pnfRegistrationConfig.getPassword());
+			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT, pnfRegistrationConfig.getClientReadTimeout());
+			consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT, pnfRegistrationConfig.getClientConnectTimeout());
 		} else if (domain.equalsIgnoreCase("fault")) {
 			this.faultConfig = (FaultConfig) domainConfig;
 			consumerClass = faultConfig.getConsumerClass();
@@ -79,6 +81,8 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
 			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_PROTOCOL, faultConfig.getProtocol());
 			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_USERNAME, faultConfig.getUsername());
 			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_PASSWORD, faultConfig.getPassword());
+			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT, faultConfig.getClientReadTimeout());
+			consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT, faultConfig.getClientConnectTimeout());
 		}
 
 		if (consumerClass != null) {

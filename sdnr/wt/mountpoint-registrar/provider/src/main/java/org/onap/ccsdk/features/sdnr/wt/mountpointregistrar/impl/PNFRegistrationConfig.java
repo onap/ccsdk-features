@@ -63,6 +63,12 @@ public class PNFRegistrationConfig implements Configuration {
     public static final String PROPERTY_KEY_CONSUMER_FETCHPAUSE = "fetchPause";
     private static final String DEFAULT_VALUE_CONSUMER_FETCHPAUSE = "5000";
     
+    public static final String PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT="jersey.config.client.readTimeout";
+    private static final String DEFAULT_VALUE_CONSUMER_CLIENT_READTIMEOUT="25000";
+    
+    public static final String PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT="jersey.config.client.connectTimeout";
+    private static final String DEFAULT_VALUE_CONSUMER_CLIENT_CONNECTTIMEOUT="25000";
+        
 	private final ConfigurationFileRepresentation configuration;
 
 	public PNFRegistrationConfig(ConfigurationFileRepresentation configuration) {
@@ -91,7 +97,8 @@ public class PNFRegistrationConfig implements Configuration {
    		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TIMEOUT, DEFAULT_VALUE_CONSUMER_TIMEOUT);
    		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_LIMIT, DEFAULT_VALUE_CONSUMER_LIMIT);
    		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_FETCHPAUSE, DEFAULT_VALUE_CONSUMER_FETCHPAUSE);
-
+   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT, DEFAULT_VALUE_CONSUMER_CLIENT_READTIMEOUT);
+   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT, DEFAULT_VALUE_CONSUMER_CLIENT_CONNECTTIMEOUT);
 	}
 
 	public String getConsumerClass() {
@@ -144,5 +151,13 @@ public class PNFRegistrationConfig implements Configuration {
 	
 	public String getContenttype() {
 		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CONTENTTYPE);
+	}
+	
+	public String getClientReadTimeout() {
+		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT);
+	}
+	
+	public String getClientConnectTimeout() {
+		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT);
 	}
 }
