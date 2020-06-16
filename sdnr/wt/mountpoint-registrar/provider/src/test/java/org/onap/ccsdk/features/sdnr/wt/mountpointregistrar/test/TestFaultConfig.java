@@ -47,6 +47,8 @@ public class TestFaultConfig {
 			"timeout=20000\n" +
 			"limit=10000\n" +
 			"fetchPause=5000\n" +
+			"jersey.config.client.readTimeout=25000\n" +
+			"jersey.config.client.connectTimeout=25000\n" +
 			"\n" +
 			"";
 
@@ -72,6 +74,8 @@ public class TestFaultConfig {
 			assertEquals("http", faultCfg.getProtocol());
 			assertEquals("username", faultCfg.getUsername());
 			assertEquals("password", faultCfg.getPassword());
+			assertEquals("25000", faultCfg.getClientReadTimeout());
+			assertEquals("25000", faultCfg.getClientConnectTimeout());
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -39,7 +39,7 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
 
 	private GeneralConfig generalConfig;
 	private boolean dmaapEnabled = false;
-	Map<String, Configuration> configMap = new HashMap<>();
+	private Map<String, Configuration> configMap = new HashMap<>();
 
 	// Blueprint 1
 	public MountpointRegistrarImpl() {

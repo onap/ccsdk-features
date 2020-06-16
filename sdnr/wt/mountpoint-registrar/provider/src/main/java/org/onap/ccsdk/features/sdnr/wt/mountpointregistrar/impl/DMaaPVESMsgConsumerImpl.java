@@ -66,6 +66,9 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
 					if (noData) {
 						LOG.debug(name + " received ResponseCode: " + consumerResponse.getResponseCode());
 						LOG.debug(name + " received ResponseMessage: " + consumerResponse.getResponseMessage());
+						if ((consumerResponse.getResponseCode() == null) && (consumerResponse.getResponseMessage().contains("SocketTimeoutException"))) {
+							LOG.warn("Client timeout while waiting for response from Server {}", consumerResponse.getResponseMessage());
+						}
 						pauseThread();
 					}
 				} catch (Exception e) {

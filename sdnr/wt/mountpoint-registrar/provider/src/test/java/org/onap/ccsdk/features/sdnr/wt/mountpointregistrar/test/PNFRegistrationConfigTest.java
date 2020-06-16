@@ -47,6 +47,8 @@ public class PNFRegistrationConfigTest {
 			"timeout=20000\n" +
 			"limit=10000\n" +
 			"fetchPause=5000\n" +
+			"jersey.config.client.readTimeout=25000\n" +
+			"jersey.config.client.connectTimeout=25000\n" +
 			"";
 
 	private ConfigurationFileRepresentation cfg;
@@ -71,7 +73,8 @@ public class PNFRegistrationConfigTest {
 			assertEquals("http", pnfCfg.getProtocol());
 			assertEquals("username", pnfCfg.getUsername());
 			assertEquals("password", pnfCfg.getPassword());
-
+			assertEquals("25000", pnfCfg.getClientReadTimeout());
+			assertEquals("25000", pnfCfg.getClientConnectTimeout());
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
