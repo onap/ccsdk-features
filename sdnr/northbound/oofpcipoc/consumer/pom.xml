@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>1.5.9</version>
+        <version>1.5.10-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
     <artifactId>oofpcipoc-consumer</artifactId>
-    <version>0.7.6-SNAPSHOT</version>
+    <version>0.7.7-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>

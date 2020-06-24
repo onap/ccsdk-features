@@ -28,13 +28,13 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.5.9</version>
+        <version>1.5.10-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.onap.ccsdk.features</groupId>
     <artifactId>ccsdk-features-all</artifactId>
-    <version>0.7.6-SNAPSHOT</version>
+    <version>0.7.7-SNAPSHOT</version>
     <packaging>feature</packaging>
 
     <name>ccsdk-features :: features :: ${project.artifactId}</name>
