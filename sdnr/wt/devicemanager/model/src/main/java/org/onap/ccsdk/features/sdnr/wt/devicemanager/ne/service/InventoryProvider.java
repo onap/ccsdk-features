@@ -21,6 +21,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationD
 
 /**
  * Provide Inventory information
+ * 
  * @author herbert
  *
  */

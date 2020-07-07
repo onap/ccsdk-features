@@ -26,23 +26,32 @@ public interface NetconfNodeStateService extends Registration {
 
     /**
      * Register for indication that Master NetconNode is entering or leaving Connected state.
+     * 
      * @param netconfNodeConnectListener
      * @return managing object for listener
      */
-    @NonNull <L extends NetconfNodeConnectListener> ListenerRegistration<L> registerNetconfNodeConnectListener(@NonNull L netconfNodeConnectListener);
+    @NonNull
+    <L extends NetconfNodeConnectListener> ListenerRegistration<L> registerNetconfNodeConnectListener(
+            @NonNull L netconfNodeConnectListener);
 
     /**
      * Register for all NetconfNode specific state changes
+     * 
      * @param netconfNodeStateListener
      * @return managing object for listener
      */
-    @NonNull <L extends NetconfNodeStateListener> ListenerRegistration<L> registerNetconfNodeStateListener(@NonNull L netconfNodeStateListener);
+    @NonNull
+    <L extends NetconfNodeStateListener> ListenerRegistration<L> registerNetconfNodeStateListener(
+            @NonNull L netconfNodeStateListener);
 
     /**
      * Register for Ves/DmaaP provided messages
+     * 
      * @param netconfNodeStateListener
      * @return managing object for listener
      */
-    @NonNull <L extends VesNotificationListener> ListenerRegistration<L> registerVesNotifications(@NonNull L netconfNodeStateListener);
+    @NonNull
+    <L extends VesNotificationListener> ListenerRegistration<L> registerVesNotifications(
+            @NonNull L netconfNodeStateListener);
 
 }

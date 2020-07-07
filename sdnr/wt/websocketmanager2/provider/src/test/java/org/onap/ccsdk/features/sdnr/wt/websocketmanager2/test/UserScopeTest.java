@@ -25,15 +25,15 @@ import org.onap.ccsdk.features.sdnr.wt.websocketmanager2.utils.UserScopes;
 
 public class UserScopeTest {
 
-    private static final String SCOPE1 ="scope1";
-    private static final String SCOPE2 ="scope2";
-    private static final String SCOPE3 ="scope3";
-    private static final String SCOPE4 ="scope4";
+    private static final String SCOPE1 = "scope1";
+    private static final String SCOPE2 = "scope2";
+    private static final String SCOPE3 = "scope3";
+    private static final String SCOPE4 = "scope4";
 
     @Test
     public void test() {
         UserScopes scopes1 = new UserScopes();
-        JSONArray json1=new JSONArray();
+        JSONArray json1 = new JSONArray();
         json1.put(SCOPE1);
         json1.put(SCOPE2);
         json1.put(SCOPE3);

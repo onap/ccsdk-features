@@ -113,9 +113,11 @@ public class NetconfnodeStateServiceRpcApiImpl implements NetconfnodeStateServic
             PushAttributeChangeNotificationInput input) {
         RpcResultBuilder<PushAttributeChangeNotificationOutput> result;
         try {
-            AttributeChangeNotificationBuilder attributeChangeNotificationBuilder = new AttributeChangeNotificationBuilder();
+            AttributeChangeNotificationBuilder attributeChangeNotificationBuilder =
+                    new AttributeChangeNotificationBuilder();
             attributeChangeNotificationBuilder.fieldsFrom(input);
-            vesNotificationListenerList.forEach(item -> item.onNotification(attributeChangeNotificationBuilder.build()));
+            vesNotificationListenerList
+                    .forEach(item -> item.onNotification(attributeChangeNotificationBuilder.build()));
             result = RpcResultBuilder.success();
         } catch (Exception e) {
             result = RpcResultBuilder.failed();

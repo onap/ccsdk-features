@@ -108,7 +108,7 @@ public class TestAkkaConfig {
             String failMessage = "failed: " + e.getMessage();
             System.out.println(failMessage);
             fail(failMessage);
-       }
+        }
     }
 
     @Test
@@ -123,7 +123,7 @@ public class TestAkkaConfig {
             System.out.println("testing clusternode config1");
             System.out.println("===========================");
             cfg = AkkaConfig.load(file.getAbsolutePath());
-            System.out.println("succeeded: "+cfg.hashCode());
+            System.out.println("succeeded: " + cfg.hashCode());
             System.out.println(cfg.toString());
             System.out.println(String.format("found %d cluster nodes", cfg.getClusterConfig().getSeedNodes().size()));
             for (ClusterNodeInfo n : cfg.getClusterConfig().getSeedNodes()) {

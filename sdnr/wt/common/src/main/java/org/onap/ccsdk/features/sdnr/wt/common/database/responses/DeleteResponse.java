@@ -26,28 +26,24 @@ import org.json.JSONObject;
 
 public class DeleteResponse extends BaseResponse {
 
-	private boolean isDeleted;
+    private boolean isDeleted;
 
-	public DeleteResponse(Response response) {
-		super(response);
-		if (this.isResponseSucceeded()) {
+    public DeleteResponse(Response response) {
+        super(response);
+        if (this.isResponseSucceeded()) {
 
-			JSONObject o = this.getJson(response);
-			if (o != null) {
-				this.isDeleted = "deleted".equals(o.getString("result"));
-			}
-			else {
-				this.isDeleted=false;
-			}
-		}
-		else {
-			this.isDeleted=false;
-		}
+            JSONObject o = this.getJson(response);
+            if (o != null) {
+                this.isDeleted = "deleted".equals(o.getString("result"));
+            }
+        } else {
+            this.isDeleted = false;
+        }
 
-	}
+    }
 
-	public boolean isDeleted() {
-		return this.isDeleted;
-	}
+    public boolean isDeleted() {
+        return this.isDeleted;
+    }
 
 }

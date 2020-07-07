@@ -41,7 +41,7 @@ public class WebsocketClientTest extends Mockito {
             client.close();
         } catch (Exception e) {
             e.printStackTrace();
-            fail("Exception "+e.getMessage());
+            fail("Exception " + e.getMessage());
         }
     }
 

@@ -42,26 +42,27 @@ public class ListIndicesResponse extends BaseResponse {
      * yellow open networkelement-connection-v1  YT3lj0AKRoOmtN30Zbdfqw 5 1 0 0 1.2kb 1.2kb
      * yellow open connectionlog-v1              7yrVaaM1QjyO5eMsCUHNHQ 5 1 0 0 1.2kb 1.2kb
      */
-	private final IndicesEntryList entries;
-    public ListIndicesResponse(Response response) throws ParseException  {
-        super(response);
-        List<String> lines=this.getLines(response);
-        this.entries = new IndicesEntryList();
-        if(lines!=null) {
-        	for(String line:lines) {
-        		this.entries.add(new IndicesEntry(line));
-        	}
-        }
-        
-    }
-	/**
-	 * @return
-	 */
-	public IndicesEntryList getEntries() {
-		return this.entries;
-	}
-	
+    private final IndicesEntryList entries;
 
-   
-   
+    public ListIndicesResponse(Response response) throws ParseException {
+        super(response);
+        List<String> lines = this.getLines(response);
+        this.entries = new IndicesEntryList();
+        if (lines != null) {
+            for (String line : lines) {
+                this.entries.add(new IndicesEntry(line));
+            }
+        }
+
+    }
+
+    /**
+     * @return
+     */
+    public IndicesEntryList getEntries() {
+        return this.entries;
+    }
+
+
+
 }

@@ -45,48 +45,51 @@ public class TestNetconfTimestamp {
     private static final String NETCONF_DEF4_MILLIS_STRING_MALFORMAED = "2020-01-09T05:40:41.0000Z";
     private static final long NETCONF_DEF_MILLIS_LONG = 1578548441100L;
 
-     private static NetconfTimeStamp converter =NetconfTimeStampImpl.getConverter();
+    private static NetconfTimeStamp converter = NetconfTimeStampImpl.getConverter();
 
-     @Test
+    @Test
     public void test() {
         String ts = converter.getTimeStampAsNetconfString();
         final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
         final Matcher matcher = pattern.matcher(ts);
         assertTrue(matcher.find());
     }
-     @Test
-     public void testMillis() {
-         long millis=converter.getTimeStampFromNetconfAsMilliseconds(NETCONF_DEF_MILLIS_STRING);
-         assertEquals(NETCONF_DEF_MILLIS_LONG,millis);
 
-     }
-     @Test(expected = IllegalArgumentException.class)
-     public void testMillisMalformed() {
-         long millis=converter.getTimeStampFromNetconfAsMilliseconds(NETCONF_DEF_MILLIS_STRING_MALFORMAED);
+    @Test
+    public void testMillis() {
+        long millis = converter.getTimeStampFromNetconfAsMilliseconds(NETCONF_DEF_MILLIS_STRING);
+        assertEquals(NETCONF_DEF_MILLIS_LONG, millis);
 
-     }
+    }
 
-     @Test
-     public void test2() {
-         assertEquals(NETCONF_DEF_MILLIS_STRING,converter.getTimeStampFromNetconf(NETCONF_DEF2_MILLIS_STRING));
-         assertEquals(NETCONF_DEF3_MILLIS_STRING_CORRECTED,converter.getTimeStampFromNetconf(NETCONF_DEF3_MILLIS_STRING));
-         assertTrue(converter.getTimeStampFromNetconf(NETCONF_DEF4_MILLIS_STRING_MALFORMAED).startsWith("Malformed"));
-     }
+    @Test(expected = IllegalArgumentException.class)
+    public void testMillisMalformed() {
+        long millis = converter.getTimeStampFromNetconfAsMilliseconds(NETCONF_DEF_MILLIS_STRING_MALFORMAED);
 
-     @Test
-     public void test3() {
-         Date dt = converter.getDateFromNetconf(NETCONF_DEF_MILLIS_STRING);
-         final Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-         c.setTime(dt);
-         assertEquals(2020,c.get(Calendar.YEAR));
-         assertEquals(0,c.get(Calendar.MONTH));
-         assertEquals(9,c.get(Calendar.DAY_OF_MONTH));
-         assertEquals(5,c.get(Calendar.HOUR_OF_DAY));
-         assertEquals(40,c.get(Calendar.MINUTE));
-         assertEquals(41,c.get(Calendar.SECOND));
-         assertEquals(100,c.get(Calendar.MILLISECOND));
+    }
+
+    @Test
+    public void test2() {
+        assertEquals(NETCONF_DEF_MILLIS_STRING, converter.getTimeStampFromNetconf(NETCONF_DEF2_MILLIS_STRING));
+        assertEquals(NETCONF_DEF3_MILLIS_STRING_CORRECTED,
+                converter.getTimeStampFromNetconf(NETCONF_DEF3_MILLIS_STRING));
+        assertTrue(converter.getTimeStampFromNetconf(NETCONF_DEF4_MILLIS_STRING_MALFORMAED).startsWith("Malformed"));
+    }
+
+    @Test
+    public void test3() {
+        Date dt = converter.getDateFromNetconf(NETCONF_DEF_MILLIS_STRING);
+        final Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        c.setTime(dt);
+        assertEquals(2020, c.get(Calendar.YEAR));
+        assertEquals(0, c.get(Calendar.MONTH));
+        assertEquals(9, c.get(Calendar.DAY_OF_MONTH));
+        assertEquals(5, c.get(Calendar.HOUR_OF_DAY));
+        assertEquals(40, c.get(Calendar.MINUTE));
+        assertEquals(41, c.get(Calendar.SECOND));
+        assertEquals(100, c.get(Calendar.MILLISECOND));
 
 
-         assertEquals(NETCONF_DEF_MILLIS_STRING,converter.getTimeStampAsNetconfString(dt));
-     }
+        assertEquals(NETCONF_DEF_MILLIS_STRING, converter.getTimeStampAsNetconfString(dt));
+    }
 }

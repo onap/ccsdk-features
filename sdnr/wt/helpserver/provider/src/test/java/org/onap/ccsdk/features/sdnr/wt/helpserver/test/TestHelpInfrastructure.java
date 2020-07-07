@@ -36,7 +36,7 @@ public class TestHelpInfrastructure {
         try {
             path = Paths.get(url.toURI());
             HelpInfrastructureObject helpInfrastuctureObject = new HelpInfrastructureObject(path);
-            System.out.println("Help: "+helpInfrastuctureObject);
+            System.out.println("Help: " + helpInfrastuctureObject);
         } catch (URISyntaxException e) {
             fail(e.getMessage());
         }

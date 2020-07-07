@@ -46,17 +46,18 @@ public class TestMyServlet extends Mockito {
     private static final String GETHELPDIRECTORYBASE = "data";
     private static final String CONTENT = "abbccdfkamaosie aksdmais";
 
-    public static void createHelpFile(String filename,String content) {
-        File file=new File(HelpInfrastructureObject.getHelpDirectoryBase() + filename);
+    public static void createHelpFile(String filename, String content) {
+        File file = new File(HelpInfrastructureObject.getHelpDirectoryBase() + filename);
         File folder = file.getParentFile();
-        if(!folder.exists()) {
+        if (!folder.exists()) {
             folder.mkdirs();
         }
         try {
-            if(file.exists()) {
+            if (file.exists()) {
                 file.delete();
             }
-            Files.write( file.toPath(),content.getBytes(),new OpenOption[] { WRITE, CREATE_NEW , CREATE, TRUNCATE_EXISTING});
+            Files.write(file.toPath(), content.getBytes(),
+                    new OpenOption[] {WRITE, CREATE_NEW, CREATE, TRUNCATE_EXISTING});
         } catch (IOException e1) {
             fail(e1.getMessage());
         }
@@ -70,6 +71,7 @@ public class TestMyServlet extends Mockito {
             e.printStackTrace();
         }
     }
+
     @After
     public void deinit() {
         this.init();
@@ -87,7 +89,7 @@ public class TestMyServlet extends Mockito {
         when(request.getQueryString()).thenReturn("?meta");
 
         StringWriter stringWriter = new StringWriter();
-        ServletOutputStream out=new ServletOutputStream() {
+        ServletOutputStream out = new ServletOutputStream() {
 
             @Override
             public void write(int arg0) throws IOException {
@@ -96,11 +98,11 @@ public class TestMyServlet extends Mockito {
         };
         when(response.getOutputStream()).thenReturn(out);
 
-        HelpServlet helpServlet=null;
+        HelpServlet helpServlet = null;
         try {
             helpServlet = new HelpServlet();
             System.out.println("Server created");
-            createHelpFile("/meta.json",CONTENT);
+            createHelpFile("/meta.json", CONTENT);
 
             helpServlet.doOptions(request, response);
             System.out.println("Get calling");
@@ -115,7 +117,7 @@ public class TestMyServlet extends Mockito {
 
         String result = stringWriter.toString().trim();
         System.out.println("Result: '" + result + "'");
-        assertEquals(CONTENT,result);
+        assertEquals(CONTENT, result);
     }
 
     @Test
@@ -128,11 +130,11 @@ public class TestMyServlet extends Mockito {
 
     private void testGetRequest(String fn) {
         HelpServlet helpServlet = new HelpServlet();
-        createHelpFile("/"+fn,CONTENT);
+        createHelpFile("/" + fn, CONTENT);
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
 
-        when(request.getRequestURI()).thenReturn("help/"+fn);
+        when(request.getRequestURI()).thenReturn("help/" + fn);
         StringWriter sw = new StringWriter();
         ServletOutputStream out = new ServletOutputStream() {
 
@@ -156,6 +158,6 @@ public class TestMyServlet extends Mockito {
         } catch (Exception e) {
         }
 
-        assertEquals("compare content for "+fn,CONTENT,sw.toString().trim());
+        assertEquals("compare content for " + fn, CONTENT, sw.toString().trim());
     }
 }

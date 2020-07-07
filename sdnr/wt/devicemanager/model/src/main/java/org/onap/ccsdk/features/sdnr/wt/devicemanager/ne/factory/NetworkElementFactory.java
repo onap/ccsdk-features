@@ -26,6 +26,7 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 
 public interface NetworkElementFactory {
 
-    Optional<NetworkElement> create(@NonNull NetconfAccessor acessor, @NonNull DeviceManagerServiceProvider serviceProvider);
+    Optional<NetworkElement> create(@NonNull NetconfAccessor acessor,
+            @NonNull DeviceManagerServiceProvider serviceProvider);
 
 }

@@ -56,8 +56,8 @@ public class TestORanNetworkElement {
 
         NodeId nNodeId = new NodeId("nSky");
         when(accessor.getCapabilites()).thenReturn(capabilities);
-        when (accessor.getNodeId()).thenReturn(nNodeId);
-        when (accessor.getTransactionUtils()).thenReturn(new TransactionUtilsMock());
+        when(accessor.getNodeId()).thenReturn(nNodeId);
+        when(accessor.getTransactionUtils()).thenReturn(new TransactionUtilsMock());
 
         DataProvider dataProvider = mock(DataProvider.class);
         when(serviceProvider.getDataProvider()).thenReturn(dataProvider);

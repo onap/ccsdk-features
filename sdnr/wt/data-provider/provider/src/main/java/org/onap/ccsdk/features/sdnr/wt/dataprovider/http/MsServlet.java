@@ -33,81 +33,86 @@ import org.slf4j.LoggerFactory;
 
 public class MsServlet extends BaseServlet {
 
-	/**
-	 *
-	 */
-	private static Logger LOG = LoggerFactory.getLogger(MsServlet.class);
-	private static final long serialVersionUID = -5361461082028405171L;
-	private static final String OFFLINE_RESPONSE_MESSAGE = "MediatorServer interface is offline";
-	private static boolean trustAll = false;
-	private static MediatorServerDataProvider entryProvider;
-	public MsServlet() {
-		super();
-	}
+    /**
+     *
+     */
+    private static Logger LOG = LoggerFactory.getLogger(MsServlet.class);
+    private static final long serialVersionUID = -5361461082028405171L;
+    private static final String OFFLINE_RESPONSE_MESSAGE = "MediatorServer interface is offline";
+    private static boolean trustAll = false;
+    private static MediatorServerDataProvider entryProvider;
 
-	@Override
-	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setStatus(200);
-	}
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doGet(req, resp);
-	}
-	@Override
-	protected String getOfflineResponse() {
-		return OFFLINE_RESPONSE_MESSAGE;
-	}
+    public MsServlet() {
+        super();
+    }
 
-	public void triggerReloadDatabaseEntries() {
-		LOG.debug("external reload triggered");
-		entryProvider.triggerReloadSync();
-	}
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setStatus(200);
+    }
 
-	@Override
-	protected boolean isOff() {
-		return false;
-	}
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doGet(req, resp);
+    }
 
-	@Override
-	protected String getRemoteUrl(String uri) {
-		String dbServerId = "0";
-		if (uri == null)
-			uri = "";
-		if (uri.length() > 0) {
-			uri = uri.substring("/ms/".length());
-			int idx= uri.indexOf("/");
-			dbServerId = uri.substring(0,idx);
-			uri=uri.substring(idx);
-		}
-		LOG.debug("request for ms server with id={}",dbServerId);
-		String url= this.getBaseUrl(dbServerId) + uri;
-		LOG.debug("dest-url: {}",url);
-		return url;
-	}
+    @Override
+    protected String getOfflineResponse() {
+        return OFFLINE_RESPONSE_MESSAGE;
+    }
 
-	protected String getBaseUrl(String dbServerId) {
-		return entryProvider.getHostUrl(dbServerId);
-	}
-	@Override
-	protected boolean doTrustAll() {
-		return trustAll;
-	}
-	@Override
-	protected void trustAll(boolean trust) {
-		trustAll = trust;
-	}
+    public void triggerReloadDatabaseEntries() {
+        LOG.debug("external reload triggered");
+        entryProvider.triggerReloadSync();
+    }
 
-	public void setDataProvider(MediatorServerDataProvider mediatorServerDataProvider) {
-		entryProvider = mediatorServerDataProvider;
-	}
+    @Override
+    protected boolean isOff() {
+        return false;
+    }
 
-	@Override
-	protected boolean trustInsecure() {
-		return trustAll;
-	}
+    @Override
+    protected String getRemoteUrl(String uri) {
+        String dbServerId = "0";
+        if (uri == null)
+            uri = "";
+        if (uri.length() > 0) {
+            uri = uri.substring("/ms/".length());
+            int idx = uri.indexOf("/");
+            dbServerId = uri.substring(0, idx);
+            uri = uri.substring(idx);
+        }
+        LOG.debug("request for ms server with id={}", dbServerId);
+        String url = this.getBaseUrl(dbServerId) + uri;
+        LOG.debug("dest-url: {}", url);
+        return url;
+    }
 
-	@Override
-	protected boolean isCorsEnabled() {
-		return false;
-	}
+    protected String getBaseUrl(String dbServerId) {
+        return entryProvider.getHostUrl(dbServerId);
+    }
+
+    @Override
+    protected boolean doTrustAll() {
+        return trustAll;
+    }
+
+    @Override
+    protected void trustAll(boolean trust) {
+        trustAll = trust;
+    }
+
+    public void setDataProvider(MediatorServerDataProvider mediatorServerDataProvider) {
+        entryProvider = mediatorServerDataProvider;
+    }
+
+    @Override
+    protected boolean trustInsecure() {
+        return trustAll;
+    }
+
+    @Override
+    protected boolean isCorsEnabled() {
+        return false;
+    }
 }

@@ -21,26 +21,26 @@ import org.json.JSONArray;
 
 public class UserScopes {
 
-	private JSONArray scopes;
+    private JSONArray scopes;
 
-	/**
-	 * 
-	 * @param jsonArray array of Strings
-	 */
-	public void setScopes(JSONArray jsonArray) {
-		this.scopes = jsonArray;
-	}
+    /**
+     * 
+     * @param jsonArray array of Strings
+     */
+    public void setScopes(JSONArray jsonArray) {
+        this.scopes = jsonArray;
+    }
 
-	public boolean hasScope(String scope) {
-		if (this.scopes == null)
-			return false;
-		for (int i = 0, l = this.scopes.length(); i < l; i++) {
-			if (this.scopes.get(i).toString().equals(scope)) {
-				return true;
-			}
-		}
+    public boolean hasScope(String scope) {
+        if (this.scopes == null)
+            return false;
+        for (int i = 0, l = this.scopes.length(); i < l; i++) {
+            if (this.scopes.get(i).toString().equals(scope)) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
 }

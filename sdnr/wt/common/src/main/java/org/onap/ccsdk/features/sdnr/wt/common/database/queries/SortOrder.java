@@ -23,15 +23,15 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.queries;
 
 public enum SortOrder {
 
-	ASCENDING("asc"),
-	DESCENDING("desc");
-	
-	private final String value;
+    ASCENDING("asc"), DESCENDING("desc");
 
-	SortOrder(String so){
-		this.value=so;
-	}
-	public String getValue() {
-		return  this.value;
-	}
+    private final String value;
+
+    SortOrder(String so) {
+        this.value = so;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
 }

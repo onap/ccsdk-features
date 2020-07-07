@@ -22,10 +22,10 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
 //https://github.com/elastic/elasticsearch/blob/6.4/rest-api-spec/src/main/resources/rest-api-spec/api/indices.delete.json
-public class DeleteIndexRequest extends BaseRequest{
+public class DeleteIndexRequest extends BaseRequest {
 
-	public DeleteIndexRequest(String index) {
-		super("DELETE","/"+index);
-	}
+    public DeleteIndexRequest(String index) {
+        super("DELETE", "/" + index);
+    }
 
 }

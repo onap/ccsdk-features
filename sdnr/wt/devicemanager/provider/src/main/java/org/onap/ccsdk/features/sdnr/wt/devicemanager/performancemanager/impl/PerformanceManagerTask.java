@@ -51,13 +51,13 @@ public class PerformanceManagerTask implements Runnable {
 
     /**
      * Constructor of PM Task
+     * 
      * @param seconds seconds to call PM Task
      * @param microwaveHistoricalPerformanceWriterService DB Service to load PM data to
      * @param netconfNetworkElementService to write into log
      */
 
-    public PerformanceManagerTask(long seconds,
-            DataProvider microwaveHistoricalPerformanceWriterService,
+    public PerformanceManagerTask(long seconds, DataProvider microwaveHistoricalPerformanceWriterService,
             NetconfNetworkElementService netconfNetworkElementService) {
 
         LOG.debug("Init task {}", PerformanceManagerTask.class.getSimpleName());
@@ -86,16 +86,17 @@ public class PerformanceManagerTask implements Runnable {
             taskHandle.cancel(true);
             try {
                 scheduler.awaitTermination(10, TimeUnit.SECONDS);
-             } catch (InterruptedException e) {
-                 LOG.debug("Schdule stopped.",e);
-                 // Restore interrupted state...
-                 Thread.currentThread().interrupt();
-             }
+            } catch (InterruptedException e) {
+                LOG.debug("Schdule stopped.", e);
+                // Restore interrupted state...
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
     /**
      * Add NE/Mountpoint to PM Processig
+     * 
      * @param mountPointNodeName to be added
      * @param ne that is connected to the mountpoint
      */
@@ -109,14 +110,15 @@ public class PerformanceManagerTask implements Runnable {
 
     /**
      * Remove mountpoint/NE from PM process
+     * 
      * @param mountPointNodeName that has to be removed
      */
     public void deRegistration(String mountPointNodeName) {
-        LOG.debug("Deregister {}",mountPointNodeName);
+        LOG.debug("Deregister {}", mountPointNodeName);
         PerformanceDataProvider removedNE = queue.remove(mountPointNodeName);
 
-        if ( removedNE == null) {
-            LOG.warn("Couldn't delete {}",mountPointNodeName);
+        if (removedNE == null) {
+            LOG.warn("Couldn't delete {}", mountPointNodeName);
         }
     }
 
@@ -126,8 +128,8 @@ public class PerformanceManagerTask implements Runnable {
      */
 
     /**
-     * Task runner to read all performance data from Network Elements.
-     * Catch exceptions to make sure, that the Task is not stopped.
+     * Task runner to read all performance data from Network Elements. Catch exceptions to make sure, that the Task is
+     * not stopped.
      */
     @Override
     public void run() {
@@ -136,7 +138,7 @@ public class PerformanceManagerTask implements Runnable {
         if (actualNE != null && actualNE.getAcessor().isPresent()) {
             mountpointName = actualNE.getAcessor().get().getNodeId().getValue();
         }
-        LOG.debug("{} start {} Start with mountpoint {}",LOGMARKER, tickCounter, mountpointName);
+        LOG.debug("{} start {} Start with mountpoint {}", LOGMARKER, tickCounter, mountpointName);
 
         //Proceed to next NE/Interface
         getNextInterface(mountpointName);
@@ -166,7 +168,7 @@ public class PerformanceManagerTask implements Runnable {
             }
         }
 
-        LOG.debug("{} end {}",LOGMARKER, tickCounter);
+        LOG.debug("{} end {}", LOGMARKER, tickCounter);
         tickCounter++;
     }
 
@@ -179,10 +181,8 @@ public class PerformanceManagerTask implements Runnable {
     }
 
     /**
-     * Get then next interface in the list.
-     * First try to find a next on the actual NE.
-     * If not available search next interface at a NE
-     * Special Situations to handle: Empty queue, NEs, but no interfaces
+     * Get then next interface in the list. First try to find a next on the actual NE. If not available search next
+     * interface at a NE Special Situations to handle: Empty queue, NEs, but no interfaces
      */
     private void getNextInterface(String mountpointName) {
         boolean started = false;
@@ -191,7 +191,7 @@ public class PerformanceManagerTask implements Runnable {
         LOG.debug("{} {} getNextInterface enter. Queue size {} ", LOGMARKER, tickCounter, queue.size());
 
         if (actualNE != null && !queue.containsValue(actualNE)) {
-            LOG.debug("{} {} NE Removed duringprocessing A",LOGMARKER, tickCounter);
+            LOG.debug("{} {} NE Removed duringprocessing A", LOGMARKER, tickCounter);
             resetQueue();
         }
 
@@ -203,17 +203,13 @@ public class PerformanceManagerTask implements Runnable {
                 break;
             }
 
-            LOG.debug("{} {} Loop ne {}:neiterator {}:Interfaceiterator:{} Loop:{}",
-                    LOGMARKER,
-                    tickCounter,
-                    actualNE == null? "null" : mountpointName,
-                    neIterator == null ? "null" : neIterator.hasNext(),
-                    actualNE == null ? "null" : actualNE.hasNext(),
-                    loopCounter);
+            LOG.debug("{} {} Loop ne {}:neiterator {}:Interfaceiterator:{} Loop:{}", LOGMARKER, tickCounter,
+                    actualNE == null ? "null" : mountpointName, neIterator == null ? "null" : neIterator.hasNext(),
+                    actualNE == null ? "null" : actualNE.hasNext(), loopCounter);
 
             if (actualNE != null && actualNE.hasNext()) {
                 // Yes, there is an interface, deliver back
-                LOG.debug("{} {} getNextInterface yes A",LOGMARKER, tickCounter);
+                LOG.debug("{} {} getNextInterface yes A", LOGMARKER, tickCounter);
                 actualNE.next();
                 break;
 
@@ -221,24 +217,24 @@ public class PerformanceManagerTask implements Runnable {
                 // No element in neInterfaceInterator .. get next NE and try
                 if (neIterator != null && neIterator.hasNext()) {
                     // Set a new NE
-                    LOG.debug("{} {} Next NE A",LOGMARKER, tickCounter);
+                    LOG.debug("{} {} Next NE A", LOGMARKER, tickCounter);
                     actualNE = neIterator.next();
                     actualNE.resetPMIterator();
 
                 } else {
                     // Goto start condition 1) first entry 2) end of queue reached
-                    LOG.debug("{} {} Reset",LOGMARKER, tickCounter);
+                    LOG.debug("{} {} Reset", LOGMARKER, tickCounter);
                     resetQueue();
 
                     if (queue.isEmpty()) {
-                        LOG.debug("{} {} no nextInterfac. queue empty",LOGMARKER, tickCounter);
+                        LOG.debug("{} {} no nextInterfac. queue empty", LOGMARKER, tickCounter);
                         break;
-                    } else if (!started){
-                        LOG.debug("{} {} getNextInterface start condition. Get interator.",LOGMARKER, tickCounter);
+                    } else if (!started) {
+                        LOG.debug("{} {} getNextInterface start condition. Get interator.", LOGMARKER, tickCounter);
                         neIterator = queue.values().iterator();
                         started = true;
                     } else {
-                        LOG.debug("{} {} no nextInterface",LOGMARKER, tickCounter);
+                        LOG.debug("{} {} no nextInterface", LOGMARKER, tickCounter);
                         break;
                     }
                 }
@@ -246,7 +242,7 @@ public class PerformanceManagerTask implements Runnable {
         } //while
 
         if (actualNE != null && !queue.containsValue(actualNE)) {
-            LOG.debug("{} {} NE Removed duringprocessing B",LOGMARKER, tickCounter);
+            LOG.debug("{} {} NE Removed duringprocessing B", LOGMARKER, tickCounter);
             resetQueue();
         }
 

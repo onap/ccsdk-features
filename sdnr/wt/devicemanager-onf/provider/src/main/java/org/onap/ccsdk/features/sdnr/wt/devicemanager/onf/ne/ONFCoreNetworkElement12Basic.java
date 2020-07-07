@@ -33,13 +33,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Get information over NETCONF device according to ONF Coremodel. Read networkelement and
- * conditional packages.
+ * Get information over NETCONF device according to ONF Coremodel. Read networkelement and conditional packages.
  *
- * Get conditional packages from Networkelement Possible interfaces are: MWPS, LTP(MWPS-TTP),
- * MWAirInterfacePac, MicrowaveModel-ObjectClasses-AirInterface ETH-CTP,LTP(Client),
- * MW_EthernetContainer_Pac MWS, LTP(MWS-CTP-xD), MWAirInterfaceDiversityPac,
- * MicrowaveModel-ObjectClasses-AirInterfaceDiversity MWS, LTP(MWS-TTP),
+ * Get conditional packages from Networkelement Possible interfaces are: MWPS, LTP(MWPS-TTP), MWAirInterfacePac,
+ * MicrowaveModel-ObjectClasses-AirInterface ETH-CTP,LTP(Client), MW_EthernetContainer_Pac MWS, LTP(MWS-CTP-xD),
+ * MWAirInterfaceDiversityPac, MicrowaveModel-ObjectClasses-AirInterfaceDiversity MWS, LTP(MWS-TTP),
  * ,MicrowaveModel-ObjectClasses-HybridMwStructure MWS, LTP(MWS-TTP),
  * ,MicrowaveModel-ObjectClasses-PureEthernetStructure
  *
@@ -71,6 +69,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
     /**
      * Basic element for netconf device with ONF Core model V1.2
+     * 
      * @param acessor to manage device connection
      * @param serviceProvider to get devicemanager services
      */
@@ -132,7 +131,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
      * Read during startup all relevant structure and status parameters from device
      */
     @Override
-    public synchronized void initialReadFromNetworkElement() {
+    public void initialReadFromNetworkElement() {
 
         LOG.debug("Get info about {}", getMountpoint());
 
@@ -144,13 +143,18 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
         // Step 2.2: read ne from data store
         readNetworkElementAndInterfaces();
+        LOG.debug("NETCONF read network element and interfaces completed");
         equipment.readNetworkElementEquipment();
+        LOG.debug("NETCONF read equipment completed");
 
         // Step 2.3: read the existing faults and add to DB
         FaultData resultList = readAllCurrentProblemsOfNode();
+        LOG.debug("NETCONF read current problems completed");
         equipment.addProblemsofNode(resultList);
 
         faultService.initCurrentProblemStatus(nodeId, resultList);
+        LOG.debug("DB write current problems completed");
+
         equipmentService.writeEquipment(equipment.getEquipmentData());
 
         LOG.info("Found info at {} for device {} number of problems: {}", getMountpoint(), getUuId(),
@@ -185,11 +189,12 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         // -- Register NE to performance manager
         performanceManager.registration(mountPointNodeName, this);
 
-        //events will be already pushed by base devmgr (needs more clarification SDNC-1123)  
+        //events will be already pushed by base devmgr (needs more clarification SDNC-1123)
         //eventListenerHandler.registration(mountPointNodeName, acessor.getNetconfNode());
         //LOG.debug("refresh necon entry for {} with type {} not",mountPointNodeName,this.getDeviceType());
         //eventListenerHandler.connectIndication(mountPointNodeName, getDeviceType());
-        LOG.info("Starting Event listener finished. Added Netconf device:{} type:{}", mountPointNodeName, getDeviceType());
+        LOG.info("Starting Event listener finished. Added Netconf device:{} type:{}", mountPointNodeName,
+                getDeviceType());
 
     }
 

@@ -27,9 +27,8 @@ public interface ONFCoreNetworkElementRepresentation
         extends DeviceMonitoredNe, PerformanceDataProvider, NetworkElementCoreData, InventoryProvider, NetworkElement {
 
     /**
-     * Read during startup all relevant structure and status parameters from device.
-     * Remove all currentAlarms, read structure from networkElement with all
-     * interfacePacs, read current alarm status
+     * Read during startup all relevant structure and status parameters from device. Remove all currentAlarms, read
+     * structure from networkElement with all interfacePacs, read current alarm status
      */
     public void initialReadFromNetworkElement();
 

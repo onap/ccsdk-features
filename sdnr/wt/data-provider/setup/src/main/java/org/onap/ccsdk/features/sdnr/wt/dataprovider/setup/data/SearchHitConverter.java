@@ -22,43 +22,37 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.elalto.ElAltoReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformationR2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin.GuilinReleaseInformation;
 
 public interface SearchHitConverter {
 
-	/**
-	 * convert single entry of database
-	 * @param source
-	 * @return
-	 */
-	public SearchHit convert(SearchHit source);
-	
-	/**
-	 * @param component destination component
-	 * @param container source data
-	 * @return data for destination component
-	 */
-	public ComponentData convert(DataContainer container);
+    /**
+     * convert single entry of database
+     * 
+     * @param source
+     * @return
+     */
+    public SearchHit convert(SearchHit source);
 
-	
-	public static class Factory{
-		public static SearchHitConverter getInstance(Release src,Release dst, ComponentName component) {
-			switch(src) {
-			case EL_ALTO:
-				return new ElAltoReleaseInformation().getConverter(dst, component);
-			case FRANKFURT_R1:
-				return new FrankfurtReleaseInformation().getConverter(dst, component);
-			case GUILIN:
-				return new GuilinReleaseInformation().getConverter(dst, component);
-			default:
-				return null;
-			
-			}
-		}
-	}
+    /**
+     * @param component destination component
+     * @param container source data
+     * @return data for destination component
+     */
+    public ComponentData convert(DataContainer container);
 
 
-	
+    public static class Factory {
+        public static SearchHitConverter getInstance(Release src, Release dst, ComponentName component) {
+            ReleaseInformation ri = ReleaseInformation.getInstance(src);
+            return ri != null ? ri.getConverter(dst, component) : null;
+        }
+    }
+
+
+
 }

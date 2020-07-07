@@ -28,7 +28,7 @@ public class WebsockerProviderTest extends Mockito {
 
     @Test
     public void test() {
-       RpcProviderService rpcProviderServiceMock = mock(RpcProviderService.class);
+        RpcProviderService rpcProviderServiceMock = mock(RpcProviderService.class);
         HttpService httpService = mock(HttpService.class);
 
         try (WebSocketManagerProvider provider = new WebSocketManagerProvider();) {

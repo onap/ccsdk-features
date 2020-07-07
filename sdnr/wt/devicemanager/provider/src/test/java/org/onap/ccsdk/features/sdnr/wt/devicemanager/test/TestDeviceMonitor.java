@@ -70,7 +70,7 @@ public class TestDeviceMonitor extends Mockito {
         deviceMonitor.close();
         File f = new File(CONFIGURATIONTESTFILE);
         if (f.exists())
-        	f.delete();
+            f.delete();
     }
 
 }

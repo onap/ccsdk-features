@@ -20,10 +20,11 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 public interface StatusChangedHandler {
 
-	public enum StatusKey {
-		CLUSTER_SIZE,
-		
-	}
-	public void onStatusChanged(StatusKey key,String newValue);
-	
+    public enum StatusKey {
+        CLUSTER_SIZE,
+
+    }
+
+    public void onStatusChanged(StatusKey key, String newValue);
+
 }

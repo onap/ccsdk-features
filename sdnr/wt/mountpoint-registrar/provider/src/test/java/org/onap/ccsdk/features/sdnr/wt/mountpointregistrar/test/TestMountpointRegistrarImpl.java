@@ -58,12 +58,12 @@ public class TestMountpointRegistrarImpl {
 
         // start using blueprint interface
         try {
-        	mountpointRegistrar = new MountpointRegistrarImpl();
-        	mountpointRegistrar.init();
+            mountpointRegistrar = new MountpointRegistrarImpl();
+            mountpointRegistrar.init();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
-            fail("Not initialized" +sw.toString());
+            fail("Not initialized" + sw.toString());
         }
         System.out.println("Initialization status: " + mountpointRegistrar.isInitializationOk());
         System.out.println("Initialization done");
@@ -75,7 +75,7 @@ public class TestMountpointRegistrarImpl {
         System.out.println("Start shutdown");
         // close using blueprint interface
         try {
-        	mountpointRegistrar.close();
+            mountpointRegistrar.close();
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -94,7 +94,7 @@ public class TestMountpointRegistrarImpl {
     // ********************* Private
 
     @SuppressWarnings("unused")
-	private static void sleep(int millis) {
+    private static void sleep(int millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {

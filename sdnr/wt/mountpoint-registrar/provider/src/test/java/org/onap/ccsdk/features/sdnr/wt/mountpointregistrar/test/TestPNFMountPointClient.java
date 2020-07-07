@@ -31,28 +31,30 @@ import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.PNFMountPointCli
 
 public class TestPNFMountPointClient extends PNFMountPointClient {
 
-	public static String baseUrl = "http://localhost:8181";
-	PNFMountPointClient testClient ;
+    public static String baseUrl = "http://localhost:8181";
+    PNFMountPointClient testClient;
 
 
-	public TestPNFMountPointClient() {
-		super(baseUrl);
+    public TestPNFMountPointClient() {
+        super(baseUrl);
 
-	}
+    }
 
-	@Test
-	public void testPNFMountPointClient() {
-		 testClient = new TestPNFMountPointClient();
-		testClient.setAuthorization("admin", "admin");
-		assertEquals(true, testClient.pnfMountPointCreate("TEST_50001", "127.0.0.1", "TLS", "key_id", "admin", "admin", "17380"));
+    @Test
+    public void testPNFMountPointClient() {
+        testClient = new TestPNFMountPointClient();
+        testClient.setAuthorization("admin", "admin");
+        assertEquals(true,
+                testClient.pnfMountPointCreate("TEST_50001", "127.0.0.1", "TLS", "key_id", "admin", "admin", "17380"));
 
-		assertEquals(true, testClient.pnfMountPointCreate("TEST_50001", "127.0.0.1", "SSH", "key_id", "admin", "admin", "17380"));
-	}
+        assertEquals(true,
+                testClient.pnfMountPointCreate("TEST_50001", "127.0.0.1", "SSH", "key_id", "admin", "admin", "17380"));
+    }
 
-	@Override
-	protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
+    @Override
+    protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
             throws IOException {
-		System.out.println("In overridden sendRequest in TestPNFMountPointClient");
+        System.out.println("In overridden sendRequest in TestPNFMountPointClient");
         return new BaseHTTPResponse(200, body);
     }
 

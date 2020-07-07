@@ -24,14 +24,14 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegist
 
 public class ClusterSingletonServiceProviderMock implements ClusterSingletonServiceProvider {
 
-	@Override
-	public void close() throws Exception {
+    @Override
+    public void close() throws Exception {
 
-	}
+    }
 
-	@Override
-	public ClusterSingletonServiceRegistration registerClusterSingletonService(ClusterSingletonService service) {
-		return null;
-	}
+    @Override
+    public ClusterSingletonServiceRegistration registerClusterSingletonService(ClusterSingletonService service) {
+        return null;
+    }
 
 }

@@ -18,10 +18,9 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
 import java.util.concurrent.Future;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.ODLEventListenerHandler;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketEventInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketEventOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketmanagerService;
@@ -30,10 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wrapper for forwarding web-socket notifications to the web-socket service, that is running as
- * bundle.
+ * Wrapper for forwarding web-socket notifications to the web-socket service, that is running as bundle.
  */
-@SuppressWarnings("deprecation")
 public class WebSocketServiceClientImpl2 implements WebSocketServiceClientInternal {
 
     private static final Logger LOG = LoggerFactory.getLogger(ODLEventListenerHandler.class);
@@ -42,18 +39,8 @@ public class WebSocketServiceClientImpl2 implements WebSocketServiceClientIntern
     private final XmlMapper xmlMapper;
 
     /**
-     * Implementation of Websocket notification processor.
-     * @param rpcProviderRegistry to get MDSAL services.
-     */
-    @Deprecated
-    public WebSocketServiceClientImpl2(@NonNull RpcProviderRegistry rpcProviderRegistry) {
-        super();
-        this.websocketmanagerService = rpcProviderRegistry.getRpcService(WebsocketmanagerService.class);
-        this.xmlMapper = new XmlMapper();
-    }
-
-    /**
      * New: Implementation of Websocket notification processor.
+     * 
      * @param websocketmanagerService2 to be used
      */
     public WebSocketServiceClientImpl2(WebsocketmanagerService websocketmanagerService2) {
@@ -63,7 +50,8 @@ public class WebSocketServiceClientImpl2 implements WebSocketServiceClientIntern
     }
 
     @Override
-    public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(@NonNull String nodeName, @NonNull T notificationXml) {
+    public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(@NonNull String nodeName,
+            @NonNull T notificationXml) {
         LOG.info("Send websocket event {} for mountpoint {}", notificationXml.getClass().getSimpleName(), nodeName);
 
         try {
@@ -80,7 +68,6 @@ public class WebSocketServiceClientImpl2 implements WebSocketServiceClientIntern
     }
 
     @Override
-    public void close() throws Exception {
-    }
+    public void close() throws Exception {}
 
 }

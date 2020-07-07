@@ -44,44 +44,38 @@ import org.slf4j.LoggerFactory;
 
 public class TestExtendedEquipment {
 
-	UniversalId id = new UniversalId("1234567");
-	private static final String NODEID = "NODE1";
-	private static final Logger LOG = LoggerFactory.getLogger(TestExtendedEquipment.class);
-	
-	@Test
-	public void test() {
-		final @NonNull List<ContainedHolder> holder = Arrays.asList(new ContainedHolderBuilder().setUuid(id).build());
-		final @NonNull ManufacturerProperties manufacturerProps = new ManufacturerPropertiesBuilder()
-																				.setManufacturerIdentifier("NOK")
-																				.setManufacturerName("Nokia").build();
-		
-		final @NonNull EquipmentType eqptType = new EquipmentTypeBuilder()
-																	.setDescription("5G RAN Equipment")
-																	.setModelIdentifier("NOK-987-1T")
-																	.setPartTypeIdentifier("ABCDEF")
-																	.setTypeName("12345")
-																	.setVersion("5T9V4567")
-																	.build();
-		
-		final @NonNull EquipmentInstance eqptInstance = new EquipmentInstanceBuilder()
-																	.setAssetInstanceIdentifier("NOK1234-ABCD")
-																	.setManufactureDate("2020-02-11")
-																	.setSerialNumber("123456ABCD").build();
-		
-		final @NonNull ManufacturedThing manufacturedThing = new ManufacturedThingBuilder()
-																		.setManufacturerProperties(manufacturerProps)
-																		.setEquipmentType(eqptType)
-																		.setEquipmentInstance(eqptInstance).build(); 
-		
-		Equipment equipment = new EquipmentBuilder().setUuid(id).setContainedHolder(holder).setManufacturedThing(manufacturedThing).build();
-		
-		ExtendedEquipment extEqpt = new ExtendedEquipment(NODEID, "1234567890", equipment, "/var/opt", 3);
-		assertEquals(extEqpt.getNodeId(), NODEID);
-		assertEquals(extEqpt.getParentUuid(), "1234567890");
-		assertEquals(extEqpt.getEquipment(), equipment);
-		LOG.info(extEqpt.toString());
-		extEqpt.getCreateInventoryInput();
-		
-	}
+    UniversalId id = new UniversalId("1234567");
+    private static final String NODEID = "NODE1";
+    private static final Logger LOG = LoggerFactory.getLogger(TestExtendedEquipment.class);
+
+    @Test
+    public void test() {
+        final @NonNull List<ContainedHolder> holder = Arrays.asList(new ContainedHolderBuilder().setUuid(id).build());
+        final @NonNull ManufacturerProperties manufacturerProps = new ManufacturerPropertiesBuilder()
+                .setManufacturerIdentifier("NOK").setManufacturerName("Nokia").build();
+
+        final @NonNull EquipmentType eqptType =
+                new EquipmentTypeBuilder().setDescription("5G RAN Equipment").setModelIdentifier("NOK-987-1T")
+                        .setPartTypeIdentifier("ABCDEF").setTypeName("12345").setVersion("5T9V4567").build();
+
+        final @NonNull EquipmentInstance eqptInstance =
+                new EquipmentInstanceBuilder().setAssetInstanceIdentifier("NOK1234-ABCD")
+                        .setManufactureDate("2020-02-11").setSerialNumber("123456ABCD").build();
+
+        final @NonNull ManufacturedThing manufacturedThing =
+                new ManufacturedThingBuilder().setManufacturerProperties(manufacturerProps).setEquipmentType(eqptType)
+                        .setEquipmentInstance(eqptInstance).build();
+
+        Equipment equipment = new EquipmentBuilder().setUuid(id).setContainedHolder(holder)
+                .setManufacturedThing(manufacturedThing).build();
+
+        ExtendedEquipment extEqpt = new ExtendedEquipment(NODEID, "1234567890", equipment, "/var/opt", 3);
+        assertEquals(extEqpt.getNodeId(), NODEID);
+        assertEquals(extEqpt.getParentUuid(), "1234567890");
+        assertEquals(extEqpt.getEquipment(), equipment);
+        LOG.info(extEqpt.toString());
+        extEqpt.getCreateInventoryInput();
+
+    }
 
 }

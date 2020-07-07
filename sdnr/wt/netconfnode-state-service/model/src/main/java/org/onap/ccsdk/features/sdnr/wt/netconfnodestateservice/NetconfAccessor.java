@@ -29,7 +29,7 @@ import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
-  * Interface handling netconf connection.
+ * Interface handling netconf connection.
  */
 public interface NetconfAccessor {
 
@@ -69,8 +69,8 @@ public interface NetconfAccessor {
     /**
      * Register netconf notification listener for related mountpoint
      *
-     * @param <T>        specific child class of NotificationListener
-     * @param listener   listener to be called
+     * @param <T> specific child class of NotificationListener
+     * @param listener listener to be called
      * @return handler to manager registration
      */
     <T extends NotificationListener> ListenerRegistration<NotificationListener> doRegisterNotificationListener(
@@ -78,6 +78,7 @@ public interface NetconfAccessor {
 
     /**
      * Register notifications stream for the connection.
+     * 
      * @param streamName that should be "NETCONF" as default.
      * @return progress indication
      */

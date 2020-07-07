@@ -22,10 +22,10 @@ import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPVESMsgConsu
 
 public class DummyFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
 
-	@Override
-	public void processMsg(String msg) throws Exception {
-		System.out.println("Message received is - "+msg);
+    @Override
+    public void processMsg(String msg) throws Exception {
+        System.out.println("Message received is - " + msg);
 
-	}
+    }
 
 }

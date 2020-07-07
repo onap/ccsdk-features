@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Listener for change notifications
  */
-public class ORanChangeNotificationListener  implements IetfNetconfNotificationsListener {
+public class ORanChangeNotificationListener implements IetfNetconfNotificationsListener {
 
     private static final Logger log = LoggerFactory.getLogger(ORanChangeNotificationListener.class);
 
@@ -50,22 +50,22 @@ public class ORanChangeNotificationListener  implements IetfNetconfNotifications
 
     @Override
     public void onNetconfConfirmedCommit(NetconfConfirmedCommit notification) {
-        log.info("onNetconfConfirmedCommit ", notification);
+        log.info("onNetconfConfirmedCommit {}", notification);
     }
 
     @Override
     public void onNetconfSessionStart(NetconfSessionStart notification) {
-        log.info("onNetconfSessionStart ", notification);
+        log.info("onNetconfSessionStart {}", notification);
     }
 
     @Override
     public void onNetconfSessionEnd(NetconfSessionEnd notification) {
-        log.info("onNetconfSessionEnd ", notification);
+        log.info("onNetconfSessionEnd {}", notification);
     }
 
     @Override
     public void onNetconfCapabilityChange(NetconfCapabilityChange notification) {
-        log.info("onNetconfCapabilityChange ", notification);
+        log.info("onNetconfCapabilityChange {}", notification);
     }
 
     @Override

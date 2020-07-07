@@ -22,7 +22,7 @@ public class UnkownDevicemanagerServiceException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public UnkownDevicemanagerServiceException(String string, Class<?> serviceInterface) {
-        super(string+" "+serviceInterface.getName());
+        super(string + " " + serviceInterface.getName());
     }
 
 

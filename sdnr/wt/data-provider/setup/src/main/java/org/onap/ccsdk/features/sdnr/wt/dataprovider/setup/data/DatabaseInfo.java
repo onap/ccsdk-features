@@ -26,43 +26,45 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
  *
  */
 public class DatabaseInfo {
-	public final String doctype;
-	public final String alias;
-	private final String mapping;
-	private final String settingsFormat;
-	private final String index;
+    public final String doctype;
+    public final String alias;
+    protected final String mapping;
+    private final String settingsFormat;
+    private final String index;
 
-	public String getIndex(String version) {
-		return this.index + version;
-	}
+    public String getIndex(String version) {
+        return this.index + version;
+    }
 
-	public DatabaseInfo(String alias, String doctype, String mapping) {
-		this(alias, alias, doctype, mapping);
-	}
+    public DatabaseInfo(String alias, String doctype, String mapping) {
+        this(alias, alias, doctype, mapping);
+    }
 
-	public DatabaseInfo(String index, String alias, String doctype, String mapping) {
-		this(index, alias, doctype, mapping,
-				"{\"index\":{\"number_of_shards\":%d,\"number_of_replicas\":%d},\"analysis\":{\"analyzer\":{\"content\":"
-						+ "{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}}");
-	}
+    public DatabaseInfo(String index, String alias, String doctype, String mapping) {
+        this(index, alias, doctype, mapping,
+                "{\"index\":{\"number_of_shards\":%d,\"number_of_replicas\":%d},\"analysis\":{\"analyzer\":{\"content\":"
+                        + "{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}}");
+    }
 
-	public DatabaseInfo(String index, String alias, String doctype, String mapping, String settingsformat) {
-		this.index = index;
-		this.alias = alias;
-		this.doctype = doctype;
-		this.mapping = mapping;
-		this.settingsFormat = settingsformat;
-	}
-	
-	public String getMapping() {
-		return this.getMapping(false);
-	}
-	public String getMapping(boolean useStrict) {
-		return this.mapping == null ? null
-				: String.format("{\"%s\":{%s\"properties\":%s}}", this.doctype,useStrict?"\"dynamic\": \"strict\",":"", this.mapping);
-	}
+    public DatabaseInfo(String index, String alias, String doctype, String mapping, String settingsformat) {
+        this.index = index;
+        this.alias = alias;
+        this.doctype = doctype;
+        this.mapping = mapping;
+        this.settingsFormat = settingsformat;
+    }
 
-	public String getSettings(int shards, int replicas) {
-		return String.format(this.settingsFormat, shards, replicas);
-	}
+    public String getMapping() {
+        return this.getMapping(false);
+    }
+
+    public String getMapping(boolean useStrict) {
+        return this.mapping == null ? null
+                : String.format("{\"%s\":{%s\"properties\":%s}}", this.doctype,
+                        useStrict ? "\"dynamic\": \"strict\"," : "", this.mapping);
+    }
+
+    public String getSettings(int shards, int replicas) {
+        return String.format(this.settingsFormat, shards, replicas);
+    }
 }

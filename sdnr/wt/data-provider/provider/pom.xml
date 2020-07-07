@@ -47,12 +47,11 @@
     </licenses>
 
     <properties>
-        <checkstyle.skip>true</checkstyle.skip> <!-- POM configuration -->
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <buildtime>${maven.build.timestamp}</buildtime>
         <databaseport>49402</databaseport>
-        <odlux.buildno>52.3b24c2d(20/04/08)</odlux.buildno>
+        <odlux.buildno>54.139cd6d(20/06/19)</odlux.buildno>
     </properties>
 
     <dependencies>
@@ -91,6 +90,11 @@
             <artifactId>org.apache.karaf.shell.core</artifactId>
             <scope>provided</scope>
         </dependency>
+<!--          <dependency> -->
+<!--             <groupId>org.apache.karaf.bundle</groupId> -->
+<!--             <artifactId>org.apache.karaf.bundle.core</artifactId> -->
+<!--             <scope>provided</scope> -->
+<!--         </dependency> -->
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>sal-netconf-connector</artifactId>
@@ -146,9 +150,11 @@
                             <executable>java</executable>
                             <arguments>
                                 <argument>-jar</argument>
-                                <argument>${basedir}/../setup/target/sdnr-dmt.jar</argument>
+                                <argument>${basedir}/../../data-provider/setup/target/sdnr-dmt.jar</argument>
                                 <argument>-c</argument>
                                 <argument>pluginfile</argument>
+                                <argument>-v</argument>
+                                <argument>v3</argument>
                                 <argument>-of</argument>
                                 <argument>${project.build.directory}/EsInit.script</argument>
                             </arguments>
@@ -165,7 +171,7 @@
                     <clusterName>testCluster</clusterName>
                     <transportPort>9500</transportPort>
                     <httpPort>${databaseport}</httpPort>
-                    <version>6.5.0</version>
+                    <version>7.1.1</version>
                     <timeout>120</timeout>
                     <pathInitScript>${project.build.directory}/EsInit.script</pathInitScript>
                 </configuration>

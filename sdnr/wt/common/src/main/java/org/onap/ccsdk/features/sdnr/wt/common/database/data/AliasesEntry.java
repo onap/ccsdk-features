@@ -30,24 +30,27 @@ import java.util.regex.Pattern;
  *
  */
 public class AliasesEntry {
-	private static final String regex = "^([^\\ ]+)[\\ ]+([^\\ ]+)[\\ ]+.*$";
-	private static final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+    private static final String regex = "^([^\\ ]+)[\\ ]+([^\\ ]+)[\\ ]+.*$";
+    private static final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 
-	
-	public String getAlias() {
-		return alias;
-	}
-	public String getIndex() {
-		return index;
-	}
-	private final String alias;
-	private final String index;
-	public AliasesEntry(String line) throws ParseException {
-		final Matcher matcher = pattern.matcher(line);
-		if (!matcher.find() || matcher.groupCount() < 2) {
-			throw new ParseException("unable to parse string:" + line, 0);
-		}
-		this.alias = matcher.group(1);
-		this.index = matcher.group(2);
-	}
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public String getIndex() {
+        return index;
+    }
+
+    private final String alias;
+    private final String index;
+
+    public AliasesEntry(String line) throws ParseException {
+        final Matcher matcher = pattern.matcher(line);
+        if (!matcher.find() || matcher.groupCount() < 2) {
+            throw new ParseException("unable to parse string:" + line, 0);
+        }
+        this.alias = matcher.group(1);
+        this.index = matcher.group(2);
+    }
 }

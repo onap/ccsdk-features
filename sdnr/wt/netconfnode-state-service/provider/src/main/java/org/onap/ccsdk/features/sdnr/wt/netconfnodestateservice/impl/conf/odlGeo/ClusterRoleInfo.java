@@ -29,24 +29,25 @@ public class ClusterRoleInfo {
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(s);
         if (!matcher.find()) {
-            throw new Exception("unexpected role format:"+s);
+            throw new Exception("unexpected role format:" + s);
         }
         this.Role = matcher.group(1);
         this.Index = Integer.parseInt(matcher.group(2));
     }
 
     private ClusterRoleInfo(String role, int idx) {
-        this.Role=role;
-        this.Index=idx;
+        this.Role = role;
+        this.Index = idx;
     }
 
     public static ClusterRoleInfo defaultSingleNodeRole() {
-        return new ClusterRoleInfo("member",1);
+        return new ClusterRoleInfo("member", 1);
     }
 
     public String getRole() {
         return Role;
     }
+
     public int getIndex() {
         return Index;
     }
@@ -84,6 +85,7 @@ public class ClusterRoleInfo {
         }
         return true;
     }
+
     @Override
     public String toString() {
         return "ClusterRoleInfo [Role=" + Role + ", Index=" + Index + "]";

@@ -19,7 +19,10 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database;
 
 import java.io.IOException;
-import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.channels.SocketChannel;
+
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 
 public class Portstatus {
@@ -37,16 +40,16 @@ public class Portstatus {
             throw new IllegalArgumentException("Invalid start port: " + port);
         }
 
-        Socket ss = null;
+        SocketChannel channel = null;
+        SocketAddress socketAddress = new InetSocketAddress(dnsName, port);
         try {
-            ss = new Socket(dnsName, port);
-            ss.setReuseAddress(true);
+            channel = SocketChannel.open(socketAddress);
             return true;
         } catch (IOException e) {
         } finally {
-            if (ss != null) {
+            if (channel != null) {
                 try {
-                    ss.close();
+                    channel.close();
                 } catch (IOException e) {
                     /* should not be thrown */
                 }
@@ -58,11 +61,11 @@ public class Portstatus {
 
     public static boolean isAvailable(HostInfo... hosts) {
         for (HostInfo host : hosts) {
-           if (!isAvailable(host.hostname, host.port)) {
-               return false;
-           }
-       }
-       return true;
+            if (!isAvailable(host.hostname, host.port)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static boolean waitSecondsTillAvailable(long timeoutSeconds, HostInfo... hosts) {
@@ -72,7 +75,7 @@ public class Portstatus {
         }
         long waitSeconds = 0;
         boolean res = false;
-        while ( (timeoutSeconds == 0 || ++waitSeconds < timeoutSeconds) && !(res = isAvailable(hosts))) {
+        while ((timeoutSeconds == 0 || ++waitSeconds < timeoutSeconds) && !(res = isAvailable(hosts))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -82,7 +85,7 @@ public class Portstatus {
         return res;
     }
 
-    public static boolean waitSecondsTillAvailable(long timeoutSeconds, String dnsName, int port ) {
+    public static boolean waitSecondsTillAvailable(long timeoutSeconds, String dnsName, int port) {
         return waitSecondsTillAvailable(timeoutSeconds, new HostInfo(dnsName, port));
     }
 

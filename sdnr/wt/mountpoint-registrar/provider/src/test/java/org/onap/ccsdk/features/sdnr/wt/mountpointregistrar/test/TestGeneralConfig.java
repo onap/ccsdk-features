@@ -33,39 +33,35 @@ import com.google.common.io.Files;
 
 public class TestGeneralConfig {
 
-	private static final String TESTCONFIG_CONTENT="[general]\n" +
-			"dmaapEnabled=false\n" +
-			"baseUrl=http://localhost:8181\n" +
-			"sdnrUser=admin\n" +
-			"sdnrPasswd=admin\n" +
-			"";
+    private static final String TESTCONFIG_CONTENT = "[general]\n" + "dmaapEnabled=false\n"
+            + "baseUrl=http://localhost:8181\n" + "sdnrUser=admin\n" + "sdnrPasswd=admin\n" + "";
 
-	private ConfigurationFileRepresentation globalCfg;
+    private ConfigurationFileRepresentation globalCfg;
 
-	@Test
-	public void test() {
-		try {
-			Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
-			globalCfg = new ConfigurationFileRepresentation("test.properties");
-			GeneralConfig cfg = new GeneralConfig(globalCfg);
-			assertEquals(false, cfg.getEnabled());
-			assertEquals("http://localhost:8181", GeneralConfig.getBaseUrl());
-			assertEquals("admin", GeneralConfig.getSDNRUser());
-			assertEquals("admin", GeneralConfig.getSDNRPasswd());
-			assertEquals("general", cfg.getSectionName());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	@After
-	public void cleanUp() {
-		File file = new File("test.properties");
-		if (file.exists()) {
-			System.out.println("File exists, Deleting it");
-			file.delete();
-		}
-		
-	}
+    @Test
+    public void test() {
+        try {
+            Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
+            globalCfg = new ConfigurationFileRepresentation("test.properties");
+            GeneralConfig cfg = new GeneralConfig(globalCfg);
+            assertEquals(false, cfg.getEnabled());
+            assertEquals("http://localhost:8181", GeneralConfig.getBaseUrl());
+            assertEquals("admin", GeneralConfig.getSDNRUser());
+            assertEquals("admin", GeneralConfig.getSDNRPasswd());
+            assertEquals("general", cfg.getSectionName());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @After
+    public void cleanUp() {
+        File file = new File("test.properties");
+        if (file.exists()) {
+            System.out.println("File exists, Deleting it");
+            file.delete();
+        }
+
+    }
 }

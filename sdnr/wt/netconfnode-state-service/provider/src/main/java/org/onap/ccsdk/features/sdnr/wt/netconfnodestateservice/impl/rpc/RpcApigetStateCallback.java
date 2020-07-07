@@ -23,5 +23,5 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfn
 
 public interface RpcApigetStateCallback {
 
-	GetStatusOutputBuilder getStatus(GetStatusInput input);
+    GetStatusOutputBuilder getStatus(GetStatusInput input);
 }

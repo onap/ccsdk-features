@@ -21,7 +21,12 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -56,7 +61,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultlog;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.GranularityPeriodType;
@@ -112,7 +116,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Pagination;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.PaginationBuilder;
@@ -122,8 +125,8 @@ public class TestCRUDforDatabase {
 
     private static ElasticSearchDataProvider dbProvider;
     private static HtDatabaseClient dbRawProvider;
-    public static HostInfo[] hosts = new HostInfo[] { new HostInfo("localhost", Integer
-            .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200")) };
+    public static HostInfo[] hosts = new HostInfo[] {new HostInfo("localhost", Integer
+            .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200"))};
 
     @BeforeClass
     public static void init() throws Exception {
@@ -149,40 +152,49 @@ public class TestCRUDforDatabase {
     public void testStatus() throws IOException {
 
         //== CLEAR AND CREATE ================================
-        clearAndCreatefaultEntity("1", Entity.Faultcurrent.getName(), "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput", SeverityType.Critical);
-        createFaultEntity("Lorem Ipsum", Entity.Faultcurrent.getName(), "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput", SeverityType.Major);
-        createFaultEntity("3", Entity.Faultcurrent.getName(), "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput", SeverityType.Minor);
-        createFaultEntity("4", Entity.Faultcurrent.getName(), "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput", SeverityType.Warning);
+        clearAndCreatefaultEntity("1", Entity.Faultcurrent.getName(),
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                SeverityType.Critical);
+        createFaultEntity("Lorem Ipsum", Entity.Faultcurrent.getName(),
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                SeverityType.Major);
+        createFaultEntity("3", Entity.Faultcurrent.getName(),
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                SeverityType.Minor);
+        createFaultEntity("4", Entity.Faultcurrent.getName(),
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                SeverityType.Warning);
 
         //== READ ================================
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.status.output.Data> readOutput = dbProvider.readStatus().getData();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.status.output.Data> readOutput =
+                dbProvider.readStatus().getData();
         System.out.println(readOutput);
 
-        assertEquals(1,readOutput.get(0).getFaults().getMajors().intValue());
-        assertEquals(1,readOutput.get(0).getFaults().getMinors().intValue());
-        assertEquals(1,readOutput.get(0).getFaults().getWarnings().intValue());
-        assertEquals(1,readOutput.get(0).getFaults().getCriticals().intValue());
+        assertEquals(1, readOutput.get(0).getFaults().getMajors().intValue());
+        assertEquals(1, readOutput.get(0).getFaults().getMinors().intValue());
+        assertEquals(1, readOutput.get(0).getFaults().getWarnings().intValue());
+        assertEquals(1, readOutput.get(0).getFaults().getCriticals().intValue());
 
         //== DELETE ================================
 
-         System.out.println("try to delete entries");
-         try {
-             dbRawProvider.doRemove(Entity.Faultcurrent.getName(), QueryBuilders.matchAllQuery());
-         } catch (Exception e) {
-             fail("problem deleting entry: " + e.getMessage());
-         }
+        System.out.println("try to delete entries");
+        try {
+            dbRawProvider.doRemove(Entity.Faultcurrent.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting entry: " + e.getMessage());
+        }
 
-       //== VERIFY DELETE ===========================
-         System.out.println("verify entries were deleted");
-         readOutput = dbProvider.readStatus().getData();
-         assertEquals(0,readOutput.get(0).getFaults().getMajors().intValue());
-         assertEquals(0,readOutput.get(0).getFaults().getMinors().intValue());
-         assertEquals(0,readOutput.get(0).getFaults().getWarnings().intValue());
-         assertEquals(0,readOutput.get(0).getFaults().getCriticals().intValue());
+        //== VERIFY DELETE ===========================
+        System.out.println("verify entries were deleted");
+        readOutput = dbProvider.readStatus().getData();
+        assertEquals(0, readOutput.get(0).getFaults().getMajors().intValue());
+        assertEquals(0, readOutput.get(0).getFaults().getMinors().intValue());
+        assertEquals(0, readOutput.get(0).getFaults().getWarnings().intValue());
+        assertEquals(0, readOutput.get(0).getFaults().getCriticals().intValue());
     }
 
-     @Test
+    @Test
     public void testMediatorServer() {
         final String NAME = "ms1";
         final String URL = "http://11.23.45.55:4599";
@@ -229,8 +241,8 @@ public class TestCRUDforDatabase {
         System.out.println(data);
         // ==UPDATE============================
         System.out.println("try to update entry");
-        UpdateMediatorServerInput updateInput = new UpdateMediatorServerInputBuilder().setId(dbId2).setName(NAME2)
-                .setUrl(URL2).build();
+        UpdateMediatorServerInput updateInput =
+                new UpdateMediatorServerInputBuilder().setId(dbId2).setName(NAME2).setUrl(URL2).build();
         UpdateMediatorServerOutputBuilder updateOutput = null;
         try {
             updateOutput = dbProvider.updateMediatorServer(updateInput);
@@ -274,7 +286,7 @@ public class TestCRUDforDatabase {
         assertEquals("delete not verifiied", 0, data.size());
     }
 
-     @Test
+    @Test
     public void testNetworkElementConnectionCurrent() {
 
         System.out.println("networkElementConnection test start");
@@ -314,10 +326,10 @@ public class TestCRUDforDatabase {
                 .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
 
-        ReadNetworkElementConnectionListOutputBuilder readOperation = dbProvider
-                .readNetworkElementConnectionList(readInput);
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.network.element.connection.list.output.Data> data = readOperation
-                .getData();
+        ReadNetworkElementConnectionListOutputBuilder readOperation =
+                dbProvider.readNetworkElementConnectionList(readInput);
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.network.element.connection.list.output.Data> data =
+                readOperation.getData();
 
         assertNotNull(data);
         assertEquals(dbId, data.get(0).getId());
@@ -327,11 +339,11 @@ public class TestCRUDforDatabase {
 
         // ==UPDATE============================
         System.out.println("Trying to update...");
-        final String name2 = "sim88";
         final String url2 = "10.5.10.2";
         final long port2 = 5960;
 
-        UpdateNetworkElementConnectionInput updateInput = new UpdateNetworkElementConnectionInputBuilder().setId(dbId).setHost(url2).setPort(port2).setIsRequired(false).build();
+        UpdateNetworkElementConnectionInput updateInput = new UpdateNetworkElementConnectionInputBuilder().setId(dbId)
+                .setHost(url2).setPort(port2).setIsRequired(false).build();
         UpdateNetworkElementConnectionOutputBuilder updateOutput = null;
         try {
             updateOutput = dbProvider.updateNetworkElementConnection(updateInput);
@@ -373,12 +385,12 @@ public class TestCRUDforDatabase {
         // ==DELETE============================
         System.out.println("Try delete...");
 
-        DeleteNetworkElementConnectionInput deleteInput = new DeleteNetworkElementConnectionInputBuilder().setId(dbId)
-                .build();
+        DeleteNetworkElementConnectionInput deleteInput =
+                new DeleteNetworkElementConnectionInputBuilder().setId(dbId).build();
         try {
             dbProvider.deleteNetworkElementConnection(deleteInput);
         } catch (Exception e) {
-            fail("problem deleting "+e.getMessage());
+            fail("problem deleting " + e.getMessage());
         }
 
         readInput = new ReadNetworkElementConnectionListInputBuilder()
@@ -390,7 +402,7 @@ public class TestCRUDforDatabase {
 
     }
 
-     @Test
+    @Test
     public void testMaintenance() {
         System.out.println("Starting Maintenance tests...");
 
@@ -408,8 +420,8 @@ public class TestCRUDforDatabase {
         final boolean isActive = true;
 
         CreateMaintenanceOutputBuilder create = null;
-        CreateMaintenanceInput input = new CreateMaintenanceInputBuilder().setNodeId(nodeId).setActive(isActive)
-                .build();
+        CreateMaintenanceInput input =
+                new CreateMaintenanceInputBuilder().setNodeId(nodeId).setActive(isActive).build();
         String dbId = null;
         try {
             create = dbProvider.createMaintenance(input);
@@ -429,8 +441,8 @@ public class TestCRUDforDatabase {
                 .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         ReadMaintenanceListOutputBuilder readResult = dbProvider.readMaintenanceList(readinput);
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.maintenance.list.output.Data> data = readResult
-                .getData();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.maintenance.list.output.Data> data =
+                readResult.getData();
 
         assertNotEquals(0, data.size());
         assertNotNull(data);
@@ -443,8 +455,8 @@ public class TestCRUDforDatabase {
         final String nodeId2 = "Name2";
         final boolean isActive2 = false;
 
-        UpdateMaintenanceInput updateInput = new UpdateMaintenanceInputBuilder().setId(dbId).setNodeId(nodeId2)
-                .setActive(isActive2).build();
+        UpdateMaintenanceInput updateInput =
+                new UpdateMaintenanceInputBuilder().setId(dbId).setNodeId(nodeId2).setActive(isActive2).build();
         UpdateMaintenanceOutputBuilder updateResult = null;
         try {
             updateResult = dbProvider.updateMaintenance(updateInput);
@@ -483,7 +495,9 @@ public class TestCRUDforDatabase {
     public void testFaultLog() {
 
         System.out.println("Starting fault log tests...");
-        String dbId = clearAndCreatefaultEntity("1", Entity.Faultlog.getName(), "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultlogInput", SeverityType.Critical);
+        String dbId = clearAndCreatefaultEntity("1", Entity.Faultlog.getName(),
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultlogInput",
+                SeverityType.Critical);
 
         // ==READ===========================
         System.out.println("try to read entry");
@@ -500,8 +514,8 @@ public class TestCRUDforDatabase {
             fail("Fault log not read: " + e.getMessage());
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultlog.list.output.Data> data = readResult
-                .getData();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultlog.list.output.Data> data =
+                readResult.getData();
 
         assertNotNull(data);
         assertEquals(1, data.size());
@@ -509,17 +523,18 @@ public class TestCRUDforDatabase {
         assertEquals("Critical", data.get(0).getSeverity().toString());
         assertEquals("s1", data.get(0).getNodeId());
 
-      //== UPDATE ================================
+        //== UPDATE ================================
         System.out.println("try to update entry");
 
-        dbRawProvider.doUpdateOrCreate(Entity.Faultlog.getName(), "1", "{'problem': 'CableLOS', 'severity': 'Major', 'node-id': 'test4657-78'}");
+        dbRawProvider.doUpdateOrCreate(Entity.Faultlog.getName(), "1",
+                "{'problem': 'CableLOS', 'severity': 'Major', 'node-id': 'test4657-78'}");
 
         System.out.println("try to search entry 1");
         readinput = new ReadFaultlogListInputBuilder()
                 .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-id").setFiltervalue("test").build()))
                 .setPagination(getPagination(20, 1)).build();
 
-      //== VERIFY UPDATE ================================
+        //== VERIFY UPDATE ================================
         readResult = dbProvider.readFaultLogList(readinput);
         data = readResult.getData();
 
@@ -544,7 +559,7 @@ public class TestCRUDforDatabase {
         assertEquals("Major", data.get(0).getSeverity().toString());
         assertEquals("test4657-78", data.get(0).getNodeId());
 
-      //== DELETE ================================
+        //== DELETE ================================
 
         System.out.println("try to clear entry");
         try {
@@ -553,9 +568,10 @@ public class TestCRUDforDatabase {
             fail("problem deleting entry: " + e.getMessage());
         }
 
-      //== VERIFY DELETE ===========================
+        //== VERIFY DELETE ===========================
         System.out.println("verify entries deleted");
-        readResult = dbProvider.readFaultLogList(new ReadFaultlogListInputBuilder().setPagination(getPagination(20, 1)).build());
+        readResult = dbProvider
+                .readFaultLogList(new ReadFaultlogListInputBuilder().setPagination(getPagination(20, 1)).build());
         data = readResult.getData();
         assertEquals(0, data.size());
     }
@@ -563,12 +579,14 @@ public class TestCRUDforDatabase {
     @Test
     public void testFaultCurrent() {
         System.out.println("Starting faultCurrent test...");
-         String dbId = null;
-         dbId = clearAndCreatefaultEntity("1", Entity.Faultcurrent.getName(), "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput", SeverityType.NonAlarmed);
-         assertEquals("1", dbId);
+        String dbId = null;
+        dbId = clearAndCreatefaultEntity("1", Entity.Faultcurrent.getName(),
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                SeverityType.NonAlarmed);
+        assertEquals("1", dbId);
 
         // ==READ===========================
-         System.out.println("Trying to read...");
+        System.out.println("Trying to read...");
 
 
         ReadFaultcurrentListInput readinput = new ReadFaultcurrentListInputBuilder()
@@ -583,8 +601,8 @@ public class TestCRUDforDatabase {
             fail("Fault log not read: " + e.getMessage());
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultcurrent.list.output.Data> data = readResult
-                .getData();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultcurrent.list.output.Data> data =
+                readResult.getData();
 
 
         assertNotNull(data);
@@ -601,12 +619,8 @@ public class TestCRUDforDatabase {
         // ==UPDATE============================
         System.out.println("Trying to update...");
 
-        String json = "{\n" +
-                "\"timestamp\": \"2019-12-28T11:55:58.3Z\",\n" +
-                "\"node-id\": \"SDN-Controller-0\",\n" +
-                "\"counter\": 75,\n" +
-                "\"problem\": \"connectionLossNeOAM\",\n" +
-                "}";
+        String json = "{\n" + "\"timestamp\": \"2019-12-28T11:55:58.3Z\",\n" + "\"node-id\": \"SDN-Controller-0\",\n"
+                + "\"counter\": 75,\n" + "\"problem\": \"connectionLossNeOAM\",\n" + "}";
 
         String updatedDbId = dbRawProvider.doUpdateOrCreate(Entity.Faultcurrent.getName(), dbId, json);
         assertEquals(dbId, updatedDbId);
@@ -656,23 +670,21 @@ public class TestCRUDforDatabase {
 
         // ==CLEAR================================
         System.out.println("Clear before test");
-         try {
-             dbRawProvider.doRemove(Entity.Connectionlog.getName(), QueryBuilders.matchAllQuery());
-         } catch (Exception e) {
-             fail("problem deleting: " + e.getMessage());
-         }
+        try {
+            dbRawProvider.doRemove(Entity.Connectionlog.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting: " + e.getMessage());
+        }
 
         // ==CREATE================================
 
         System.out.println("Try create entry");
         final String initialDbId = "1";
         String dbId = null;
-        String json ="{\n" +
-                "\"timestamp\": \"2019-11-01T11:28:34.7Z\",\n" +
-                "\"status\": \"Connecting\",\n" +
-                "\"node-id\": \"sim2230\",\n" +
-                "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateConnectionlogInput\"\n" +
-                "}";
+        String json = "{\n" + "\"timestamp\": \"2019-11-01T11:28:34.7Z\",\n" + "\"status\": \"Connecting\",\n"
+                + "\"node-id\": \"sim2230\",\n"
+                + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateConnectionlogInput\"\n"
+                + "}";
 
         dbId = dbRawProvider.doUpdateOrCreate(Entity.Connectionlog.getName(), initialDbId, json);
 
@@ -693,8 +705,8 @@ public class TestCRUDforDatabase {
             fail("Connection log not read: " + e.getMessage());
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.connectionlog.list.output.Data> data = readResult
-                .getData();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.connectionlog.list.output.Data> data =
+                readResult.getData();
 
         assertNotNull(data);
         assertEquals(1, data.size());
@@ -728,46 +740,42 @@ public class TestCRUDforDatabase {
         assertEquals("Connected", data.get(0).getStatus().toString());
         assertEquals("sim2230", data.get(0).getNodeId());
 
-      //== DELETE ================================
+        //== DELETE ================================
 
-           System.out.println("try to clear entry");
-           try {
-               dbRawProvider.doRemove(Entity.Connectionlog.getName(), dbId);
-           } catch (Exception e) {
-               fail("problem deleting entry: " + e.getMessage());
-           }
+        System.out.println("try to clear entry");
+        try {
+            dbRawProvider.doRemove(Entity.Connectionlog.getName(), dbId);
+        } catch (Exception e) {
+            fail("problem deleting entry: " + e.getMessage());
+        }
 
-         //== VERIFY DELETE ===========================
-           System.out.println("verify entries deleted");
-           readResult = dbProvider.readConnectionlogList(new ReadConnectionlogListInputBuilder().setPagination(getPagination(20, 1)).build());
-           data = readResult.getData();
-           assertEquals(0, data.size());
+        //== VERIFY DELETE ===========================
+        System.out.println("verify entries deleted");
+        readResult = dbProvider.readConnectionlogList(
+                new ReadConnectionlogListInputBuilder().setPagination(getPagination(20, 1)).build());
+        data = readResult.getData();
+        assertEquals(0, data.size());
 
     }
 
-     @Test
+    @Test
     public void testEventLog() {
         System.out.println("Test event log starting...");
 
         // ==CLEAR================================
         System.out.println("Clear before test");
-         try {
-             dbRawProvider.doRemove(Entity.Eventlog.getName(), QueryBuilders.matchAllQuery());
-         } catch (Exception e) {
-             fail("problem deleting: " + e.getMessage());
-         }
+        try {
+            dbRawProvider.doRemove(Entity.Eventlog.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting: " + e.getMessage());
+        }
         // ==CREATE============================
 
-         String dbId = null;
-        String json = " {\n" +
-                "\"timestamp\": \"2019-11-08T16:39:23.0Z\",\n" +
-                "\"new-value\": \"done\",\n" +
-                "\"object-id\": \"SDN-Controller-0\",\n" +
-                "\"attribute-name\": \"startup\",\n" +
-                "\"counter\": 0,\n" +
-                "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Eventlog\",\n" +
-                "\"node-id\": \"SDN-Controller-0\"\n" +
-                "}";
+        String dbId = null;
+        String json = " {\n" + "\"timestamp\": \"2019-11-08T16:39:23.0Z\",\n" + "\"new-value\": \"done\",\n"
+                + "\"object-id\": \"SDN-Controller-0\",\n" + "\"attribute-name\": \"startup\",\n" + "\"counter\": 0,\n"
+                + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Eventlog\",\n"
+                + "\"node-id\": \"SDN-Controller-0\"\n" + "}";
 
         dbId = dbRawProvider.doUpdateOrCreate(Entity.Eventlog.getName(), "1", json);
         assertNotNull(dbId);
@@ -779,86 +787,83 @@ public class TestCRUDforDatabase {
                 .setPagination(getPagination(20, 1)).build();
         ReadEventlogListOutputBuilder readResult = null;
         try {
-             readResult = dbProvider.readEventlogList(readinput);
+            readResult = dbProvider.readEventlogList(readinput);
 
         } catch (Exception e) {
             fail("problem reading eventlog");
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.eventlog.list.output.Data> data = readResult.getData();
-        assertEquals(1,data.size());
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.eventlog.list.output.Data> data =
+                readResult.getData();
+        assertEquals(1, data.size());
 
         //== DELETE ================================
 
-          System.out.println("try to clear entry");
-          try {
-              dbRawProvider.doRemove(Entity.Eventlog.getName(), dbId);
-          } catch (Exception e) {
-              fail("problem deleting entry: " + e.getMessage());
-          }
+        System.out.println("try to clear entry");
+        try {
+            dbRawProvider.doRemove(Entity.Eventlog.getName(), dbId);
+        } catch (Exception e) {
+            fail("problem deleting entry: " + e.getMessage());
+        }
 
         //== VERIFY DELETE ===========================
-          System.out.println("verify entries deleted");
-          try {
-            readResult = dbProvider.readEventlogList(new ReadEventlogListInputBuilder().setPagination(getPagination(20, 1)).build());
+        System.out.println("verify entries deleted");
+        try {
+            readResult = dbProvider
+                    .readEventlogList(new ReadEventlogListInputBuilder().setPagination(getPagination(20, 1)).build());
         } catch (IOException e) {
             fail("problem reading eventlog");
         }
-          data = readResult.getData();
-          assertEquals(0, data.size());
+        data = readResult.getData();
+        assertEquals(0, data.size());
 
     }
 
-     @Test
+    @Test
     public void testInventory() {
 
-         System.out.println("Test inventory starting...");
+        System.out.println("Test inventory starting...");
 
-         // ==CLEAR================================
-         System.out.println("Clear before test");
-          try {
-              dbRawProvider.doRemove(Entity.Inventoryequipment.getName(), QueryBuilders.matchAllQuery());
-          } catch (Exception e) {
-              fail("problem deleting: " + e.getMessage());
-          }
+        // ==CLEAR================================
+        System.out.println("Clear before test");
+        try {
+            dbRawProvider.doRemove(Entity.Inventoryequipment.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting: " + e.getMessage());
+        }
 
 
         // ==CREATE============================
 
-         String dbId = null;
-         String json = " {\"tree-level\": 1,\n" +
-                 "    \"parent-uuid\": \"SHELF-1.1.0.0\",\n" +
-                 "    \"node-id\": \"sim2\",\n" +
-                 "    \"uuid\": \"CARD-1.1.8.0\",\n" +
-                 "    \"contained-holder\": [ ],\n" +
-                 "    \"manufacturer-name\": \"Lorem Ipsum\",\n" +
-                 "    \"manufacturer-identifier\": \"ONF-Wireless-Transport\",\n" +
-                 "    \"serial\": \"sd-dsa-eqw\",\n" +
-                 "    \"date\": \"2008-10-21T00:00:00.0Z\",\n" +
-                 "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Inventory\",\n" +
-                 "    \"version\": \"unknown\",\n" +
-                 "    \"description\": \"WS/DS3\",\n" +
-                 "    \"part-type-id\": \"unknown\",\n" +
-                 "    \"model-identifier\": \"model-id-s3s\",\n" +
-                 "    \"type-name\": \"p4.module\"}";
+        String dbId = null;
+        String json = " {\"tree-level\": 1,\n" + "    \"parent-uuid\": \"SHELF-1.1.0.0\",\n"
+                + "    \"node-id\": \"sim2\",\n" + "    \"uuid\": \"CARD-1.1.8.0\",\n"
+                + "    \"contained-holder\": [ ],\n" + "    \"manufacturer-name\": \"Lorem Ipsum\",\n"
+                + "    \"manufacturer-identifier\": \"ONF-Wireless-Transport\",\n" + "    \"serial\": \"sd-dsa-eqw\",\n"
+                + "    \"date\": \"2008-10-21T00:00:00.0Z\",\n"
+                + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Inventory\",\n"
+                + "    \"version\": \"unknown\",\n" + "    \"description\": \"WS/DS3\",\n"
+                + "    \"part-type-id\": \"unknown\",\n" + "    \"model-identifier\": \"model-id-s3s\",\n"
+                + "    \"type-name\": \"p4.module\"}";
 
-         dbId = dbRawProvider.doUpdateOrCreate(Entity.Inventoryequipment.getName(), "1 1", json);
-         assertNotNull(dbId);
+        dbId = dbRawProvider.doUpdateOrCreate(Entity.Inventoryequipment.getName(), "1 1", json);
+        assertNotNull(dbId);
 
         // ==READ===========================
-         ReadInventoryListInput readinput = new ReadInventoryListInputBuilder()
+        ReadInventoryListInput readinput = new ReadInventoryListInputBuilder()
                 .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         ReadInventoryListOutputBuilder readResult = null;
         try {
-             readResult = dbProvider.readInventoryList(readinput);
+            readResult = dbProvider.readInventoryList(readinput);
 
         } catch (Exception e) {
-            fail("Problem reading inventory list"+e.getMessage());
+            fail("Problem reading inventory list" + e.getMessage());
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data> data = readResult.getData();
-        assertEquals(1,data.size());
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data> data =
+                readResult.getData();
+        assertEquals(1, data.size());
         assertEquals("Lorem Ipsum", data.get(0).getManufacturerName());
         assertEquals("ONF-Wireless-Transport", data.get(0).getManufacturerIdentifier());
         assertEquals("sim2", data.get(0).getNodeId());
@@ -869,15 +874,12 @@ public class TestCRUDforDatabase {
         System.out.println(data.get(0).getDate());
 
         // ==UPDATE============================
-        String updatedDbId=null;
+        String updatedDbId = null;
         final String[] holderArray = {"Lorem Ipsum 1", "Lorem Ipsum 2", "Lorem Ipsum &%/$_2"};
-        String updatejson = " {" +
-                 "    \"node-id\": \"sim5\",\n" +
-                 "    \"contained-holder\": [ \"Lorem Ipsum 1\", \"Lorem Ipsum 2\", \"Lorem Ipsum &%/$_2\" ],\n" +
-                 "    \"serial\": \"sd-dsa-eww\",\n" +
-                 "    \"date\": \"2008-11-21T00:00:00.0Z\",\n" +
-                 "    \"part-type-id\": \"not unknown\",\n" +
-                 "}";
+        String updatejson = " {" + "    \"node-id\": \"sim5\",\n"
+                + "    \"contained-holder\": [ \"Lorem Ipsum 1\", \"Lorem Ipsum 2\", \"Lorem Ipsum &%/$_2\" ],\n"
+                + "    \"serial\": \"sd-dsa-eww\",\n" + "    \"date\": \"2008-11-21T00:00:00.0Z\",\n"
+                + "    \"part-type-id\": \"not unknown\",\n" + "}";
 
         updatedDbId = dbRawProvider.doUpdateOrCreate(Entity.Inventoryequipment.getName(), dbId, updatejson);
         assertEquals(dbId, updatedDbId);
@@ -886,12 +888,12 @@ public class TestCRUDforDatabase {
             readResult = dbProvider.readInventoryList(readinput);
 
         } catch (Exception e) {
-            fail("Problem reading inventory list"+e.getMessage());
+            fail("Problem reading inventory list" + e.getMessage());
         }
 
         data = readResult.getData();
 
-        assertEquals(1,data.size());
+        assertEquals(1, data.size());
         assertEquals("Lorem Ipsum", data.get(0).getManufacturerName());
         assertEquals("ONF-Wireless-Transport", data.get(0).getManufacturerIdentifier());
         assertEquals("sim5", data.get(0).getNodeId());
@@ -899,10 +901,10 @@ public class TestCRUDforDatabase {
         assertEquals("WS/DS3", data.get(0).getDescription());
         assertEquals("2008-11-21T00:00:00.0Z", data.get(0).getDate());
         assertEquals("sd-dsa-eww", data.get(0).getSerial());
-        assertEquals(holderArray.length,data.get(0).getContainedHolder().size());
-        assertEquals(holderArray[0],data.get(0).getContainedHolder().get(0));
-        assertEquals(holderArray[1],data.get(0).getContainedHolder().get(1));
-        assertEquals(holderArray[2],data.get(0).getContainedHolder().get(2));
+        assertEquals(holderArray.length, data.get(0).getContainedHolder().size());
+        assertEquals(holderArray[0], data.get(0).getContainedHolder().get(0));
+        assertEquals(holderArray[1], data.get(0).getContainedHolder().get(1));
+        assertEquals(holderArray[2], data.get(0).getContainedHolder().get(2));
 
         // ==DELETE============================
 
@@ -913,50 +915,50 @@ public class TestCRUDforDatabase {
             fail("problem deleting: " + e.getMessage());
         }
 
-     // ==VERIFY DELETE ============================
+        // ==VERIFY DELETE ============================
 
         try {
-               readResult = dbProvider.readInventoryList(readinput);
+            readResult = dbProvider.readInventoryList(readinput);
 
-           } catch (Exception e) {
-               fail("Problem reading inventory list"+e.getMessage());
-           }
+        } catch (Exception e) {
+            fail("Problem reading inventory list" + e.getMessage());
+        }
 
-           data = readResult.getData();
-           assertEquals(0,data.size());
+        data = readResult.getData();
+        assertEquals(0, data.size());
 
     }
 
-     @Test
-     public void test15MinPerformanceReadLtpListWithoutNodeIdSetThrowsException() {
+    @Test
+    public void test15MinPerformanceReadLtpListWithoutNodeIdSetThrowsException() {
 
-         System.out.println("Reading 15m ltp list without node id filter set throws an exception test start...");
+        System.out.println("Reading 15m ltp list without node id filter set throws an exception test start...");
 
-         try {
-             dbRawProvider.doRemove(Entity.Historicalperformance15min.getName(), QueryBuilders.matchAllQuery());
-         } catch (Exception e) {
-             fail("problem deleting: " + e.getMessage());
-         }
+        try {
+            dbRawProvider.doRemove(Entity.Historicalperformance15min.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting: " + e.getMessage());
+        }
 
-         System.out.println("create entries...");
+        System.out.println("create entries...");
 
-         createPerformanceData("1", GranularityPeriodType.Period15Min, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a2");
-         createPerformanceData("2", GranularityPeriodType.Period15Min, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a2");
+        createPerformanceData("1", GranularityPeriodType.Period15Min, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a2");
+        createPerformanceData("2", GranularityPeriodType.Period15Min, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a2");
 
-         createPerformanceData("4", GranularityPeriodType.Period15Min, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a3");
-         createPerformanceData("5", GranularityPeriodType.Period15Min, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a3");
-         createPerformanceData("6", GranularityPeriodType.Period15Min, "PM_RADIO_15M_7", "LP-MWPS-TTP-03", "a3");
-         createPerformanceData("3", GranularityPeriodType.Period15Min, "PM_RADIO_15M_7", "LP-MWPS-TTP-05", "a3");
+        createPerformanceData("4", GranularityPeriodType.Period15Min, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a3");
+        createPerformanceData("5", GranularityPeriodType.Period15Min, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a3");
+        createPerformanceData("6", GranularityPeriodType.Period15Min, "PM_RADIO_15M_7", "LP-MWPS-TTP-03", "a3");
+        createPerformanceData("3", GranularityPeriodType.Period15Min, "PM_RADIO_15M_7", "LP-MWPS-TTP-05", "a3");
 
-         System.out.println("trying to read, should throw exception...");
+        System.out.println("trying to read, should throw exception...");
 
 
-         ReadPmdata15mLtpListInput readLtp = new ReadPmdata15mLtpListInputBuilder()
-                 .setPagination(getPagination(20, 1)).build();
+        ReadPmdata15mLtpListInput readLtp =
+                new ReadPmdata15mLtpListInputBuilder().setPagination(getPagination(20, 1)).build();
 
-         ReadPmdata15mLtpListOutputBuilder readltpResult = null;
+        ReadPmdata15mLtpListOutputBuilder readltpResult = null;
 
-         try {
+        try {
             readltpResult = dbProvider.readPmdata15mLtpList(readLtp);
             fail("No exception thrown!");
         } catch (Exception e) {
@@ -965,299 +967,302 @@ public class TestCRUDforDatabase {
             assertEquals("no nodename in filter found ", e.getMessage());
         }
 
-         assertNull(readltpResult);
+        assertNull(readltpResult);
 
-          //== DELETE ================================
+        //== DELETE ================================
 
-            System.out.println("try to clear entry");
-            try {
-                dbRawProvider.doRemove(Entity.Historicalperformance15min.getName(), QueryBuilders.matchAllQuery());
-            } catch (Exception e) {
-                fail("problem deleting entry: " + e.getMessage());
-            }
+        System.out.println("try to clear entry");
+        try {
+            dbRawProvider.doRemove(Entity.Historicalperformance15min.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting entry: " + e.getMessage());
+        }
 
-          //== VERIFY DELETE ===========================
-            System.out.println("verify entries deleted");
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> data = dbProvider.readPmdata15mList(new ReadPmdata15mListInputBuilder()
-                    .setPagination(getPagination(20, 1)).build()).getData();
+        //== VERIFY DELETE ===========================
+        System.out.println("verify entries deleted");
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> data =
+                dbProvider
+                        .readPmdata15mList(
+                                new ReadPmdata15mListInputBuilder().setPagination(getPagination(20, 1)).build())
+                        .getData();
 
-            assertEquals(0, data.size());
-     }
+        assertEquals(0, data.size());
+    }
 
-     @Test
-     public void test15MinPerformanceData() {
+    @Test
+    public void test15MinPerformanceData() {
         // == CLEAR BEFORE TESTS ============================
-         System.out.println("Test 15 min performance...");
+        System.out.println("Test 15 min performance...");
 
-         try {
-             dbRawProvider.doRemove(Entity.Historicalperformance15min.getName(), QueryBuilders.matchAllQuery());
-         } catch (Exception e) {
-             fail("problem deleting: " + e.getMessage());
-         }
+        try {
+            dbRawProvider.doRemove(Entity.Historicalperformance15min.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting: " + e.getMessage());
+        }
 
         // == CREATE ============================
 
-         System.out.println("create entries...");
+        System.out.println("create entries...");
 
-         createPerformanceData("1", GranularityPeriodType.Period15Min, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a2");
-         createPerformanceData("2", GranularityPeriodType.Period15Min, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a2");
+        createPerformanceData("1", GranularityPeriodType.Period15Min, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a2");
+        createPerformanceData("2", GranularityPeriodType.Period15Min, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a2");
 
-         createPerformanceData("4", GranularityPeriodType.Period15Min, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a3");
-         createPerformanceData("5", GranularityPeriodType.Period15Min, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a3");
-         createPerformanceData("6", GranularityPeriodType.Period15Min, "PM_RADIO_15M_7", "LP-MWPS-TTP-03", "a3");
-         createPerformanceData("3", GranularityPeriodType.Period15Min, "PM_RADIO_15M_7", "LP-MWPS-TTP-05", "a3");
+        createPerformanceData("4", GranularityPeriodType.Period15Min, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a3");
+        createPerformanceData("5", GranularityPeriodType.Period15Min, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a3");
+        createPerformanceData("6", GranularityPeriodType.Period15Min, "PM_RADIO_15M_7", "LP-MWPS-TTP-03", "a3");
+        createPerformanceData("3", GranularityPeriodType.Period15Min, "PM_RADIO_15M_7", "LP-MWPS-TTP-05", "a3");
 
         // == READ ============================
-         System.out.println("read list entries...");
+        System.out.println("read list entries...");
 
-         ReadPmdata15mListInput read = new ReadPmdata15mListInputBuilder()
-                 .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
-                 .setPagination(getPagination(20, 1)).build();
+        ReadPmdata15mListInput read = new ReadPmdata15mListInputBuilder()
+                .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setPagination(getPagination(20, 1)).build();
 
-         ReadPmdata15mListOutputBuilder readResult = null;
+        ReadPmdata15mListOutputBuilder readResult = null;
 
-         try {
-             readResult = dbProvider.readPmdata15mList(read);
+        try {
+            readResult = dbProvider.readPmdata15mList(read);
         } catch (Exception e) {
             fail("Problem reading 15m data");
         }
 
-          List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> data = readResult
-                  .getData();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> data =
+                readResult.getData();
 
-          assertNotNull(data);
-          assertEquals(2, data.size());
+        assertNotNull(data);
+        assertEquals(2, data.size());
 
-          System.out.println("read ltp entries with node name set...");
+        System.out.println("read ltp entries with node name set...");
 
-          ReadPmdata15mLtpListInput readLtp = new ReadPmdata15mLtpListInputBuilder()
-                  .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
-                  .setPagination(getPagination(20, 1)).build();
+        ReadPmdata15mLtpListInput readLtp = new ReadPmdata15mLtpListInputBuilder()
+                .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setPagination(getPagination(20, 1)).build();
 
-          ReadPmdata15mLtpListOutputBuilder readltpResult = null;
+        ReadPmdata15mLtpListOutputBuilder readltpResult = null;
 
-          try {
-             readltpResult = dbProvider.readPmdata15mLtpList(readLtp);
-         } catch (Exception e) {
-             fail("Problem reading 15m ltp data");
-         }
+        try {
+            readltpResult = dbProvider.readPmdata15mLtpList(readLtp);
+        } catch (Exception e) {
+            fail("Problem reading 15m ltp data");
+        }
 
-          List<String> dataLtp = readltpResult.getData();
+        List<String> dataLtp = readltpResult.getData();
 
-          assertNotNull(dataLtp);
-         assertEquals(2, dataLtp.size());
-         assertTrue(dataLtp.contains("LP-MWPS-TTP-02"));
-         assertTrue(dataLtp.contains("LP-MWPS-TTP-01"));
+        assertNotNull(dataLtp);
+        assertEquals(2, dataLtp.size());
+        assertTrue(dataLtp.contains("LP-MWPS-TTP-02"));
+        assertTrue(dataLtp.contains("LP-MWPS-TTP-01"));
 
-         System.out.println("read device entries...");
+        System.out.println("read device entries...");
 
-         ReadPmdata15mDeviceListInput readDevices = new ReadPmdata15mDeviceListInputBuilder()
-                   .setPagination(getPagination(20, 1)).build();
+        ReadPmdata15mDeviceListInput readDevices =
+                new ReadPmdata15mDeviceListInputBuilder().setPagination(getPagination(20, 1)).build();
 
-           ReadPmdata15mDeviceListOutputBuilder readDeviceResult = null;
+        ReadPmdata15mDeviceListOutputBuilder readDeviceResult = null;
 
-           try {
-              readDeviceResult = dbProvider.readPmdata15mDeviceList(readDevices);
-          } catch (Exception e) {
-              fail("Problem reading 15m device data");
-          }
+        try {
+            readDeviceResult = dbProvider.readPmdata15mDeviceList(readDevices);
+        } catch (Exception e) {
+            fail("Problem reading 15m device data");
+        }
 
-            List<String> dataDevice = readDeviceResult.getData();
+        List<String> dataDevice = readDeviceResult.getData();
 
-            assertNotNull(dataDevice);
-          assertEquals(2, dataDevice.size());
-          assertTrue(dataDevice.contains("a2"));
-          assertTrue(dataDevice.contains("a3"));
+        assertNotNull(dataDevice);
+        assertEquals(2, dataDevice.size());
+        assertTrue(dataDevice.contains("a2"));
+        assertTrue(dataDevice.contains("a3"));
 
-          //== DELETE ================================
+        //== DELETE ================================
 
-            System.out.println("try to clear entry");
-            try {
-                dbRawProvider.doRemove(Entity.Historicalperformance15min.getName(), QueryBuilders.matchAllQuery());
-            } catch (Exception e) {
-                fail("problem deleting entry: " + e.getMessage());
-            }
+        System.out.println("try to clear entry");
+        try {
+            dbRawProvider.doRemove(Entity.Historicalperformance15min.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting entry: " + e.getMessage());
+        }
 
-          //== VERIFY DELETE ===========================
-            System.out.println("verify entries deleted");
-            readResult = dbProvider.readPmdata15mList(new ReadPmdata15mListInputBuilder()
-                    .setPagination(getPagination(20, 1)).build());
-            data = readResult.getData();
-            assertEquals(0, data.size());
+        //== VERIFY DELETE ===========================
+        System.out.println("verify entries deleted");
+        readResult = dbProvider
+                .readPmdata15mList(new ReadPmdata15mListInputBuilder().setPagination(getPagination(20, 1)).build());
+        data = readResult.getData();
+        assertEquals(0, data.size());
 
-     }
+    }
 
-     @Test
-     public void test24hPerformanceData() {
-         System.out.println("Test 24h performance...");
+    @Test
+    public void test24hPerformanceData() {
+        System.out.println("Test 24h performance...");
 
-         try {
-             dbRawProvider.doRemove(Entity.Historicalperformance24h.getName(), QueryBuilders.matchAllQuery());
-         } catch (Exception e) {
-             fail("problem deleting: " + e.getMessage());
-         }
+        try {
+            dbRawProvider.doRemove(Entity.Historicalperformance24h.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting: " + e.getMessage());
+        }
 
-         System.out.println("create entries...");
-         GranularityPeriodType timeInterval = GranularityPeriodType.Period24Hours;
-         createPerformanceData("1", timeInterval, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a2");
-         createPerformanceData("2", timeInterval, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a2");
-         String aDbId = createPerformanceData("4", timeInterval, "PM_RADIO_15M_6", "LP-MWPS-TTP-06", "a2");
+        System.out.println("create entries...");
+        GranularityPeriodType timeInterval = GranularityPeriodType.Period24Hours;
+        createPerformanceData("1", timeInterval, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a2");
+        createPerformanceData("2", timeInterval, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a2");
+        String aDbId = createPerformanceData("4", timeInterval, "PM_RADIO_15M_6", "LP-MWPS-TTP-06", "a2");
 
-         createPerformanceData("5", timeInterval, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a3");
-         createPerformanceData("6", timeInterval, "PM_RADIO_15M_7", "LP-MWPS-TTP-03", "a3");
-         createPerformanceData("3", timeInterval, "PM_RADIO_15M_7", "LP-MWPS-TTP-05", "a3");
+        createPerformanceData("5", timeInterval, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a3");
+        createPerformanceData("6", timeInterval, "PM_RADIO_15M_7", "LP-MWPS-TTP-03", "a3");
+        createPerformanceData("3", timeInterval, "PM_RADIO_15M_7", "LP-MWPS-TTP-05", "a3");
 
-         System.out.println("read all list entries...");
+        System.out.println("read all list entries...");
 
-         ReadPmdata24hListInput read = new ReadPmdata24hListInputBuilder()
-                 .setPagination(getPagination(20, 1)).build();
+        ReadPmdata24hListInput read = new ReadPmdata24hListInputBuilder().setPagination(getPagination(20, 1)).build();
 
-         ReadPmdata24hListOutputBuilder readResult = null;
+        ReadPmdata24hListOutputBuilder readResult = null;
 
-         try {
-             readResult = dbProvider.readPmdata24hList(read);
+        try {
+            readResult = dbProvider.readPmdata24hList(read);
         } catch (Exception e) {
             fail("Problem reading 24h data");
         }
 
-         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._24h.list.output.Data> data = readResult
-                 .getData();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._24h.list.output.Data> data =
+                readResult.getData();
 
-         assertNotNull(data);
-         assertEquals(6, data.size());
+        assertNotNull(data);
+        assertEquals(6, data.size());
 
 
-         System.out.println("filter list entries...");
+        System.out.println("filter list entries...");
 
-          read = new ReadPmdata24hListInputBuilder()
-                 .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
-                 .setPagination(getPagination(20, 1)).build();
+        read = new ReadPmdata24hListInputBuilder()
+                .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setPagination(getPagination(20, 1)).build();
 
-          readResult = null;
+        readResult = null;
 
-         try {
-             readResult = dbProvider.readPmdata24hList(read);
+        try {
+            readResult = dbProvider.readPmdata24hList(read);
         } catch (Exception e) {
             fail("Problem reading 24h data");
         }
 
-         data = readResult.getData();
+        data = readResult.getData();
 
-          assertNotNull(data);
-          assertEquals(3, data.size());
+        assertNotNull(data);
+        assertEquals(3, data.size());
 
-          System.out.println("read ltp entries with node name set...");
+        System.out.println("read ltp entries with node name set...");
 
-          ReadPmdata24hLtpListInput readLtp = new ReadPmdata24hLtpListInputBuilder()
-                   .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
-                   .setPagination(getPagination(20, 1)).build();
+        ReadPmdata24hLtpListInput readLtp = new ReadPmdata24hLtpListInputBuilder()
+                .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setPagination(getPagination(20, 1)).build();
 
-           ReadPmdata24hLtpListOutputBuilder readltpResult = null;
+        ReadPmdata24hLtpListOutputBuilder readltpResult = null;
 
-           try {
-              readltpResult = dbProvider.readPmdata24hLtpList(readLtp);
-          } catch (Exception e) {
-              fail("Problem reading 24h ltp data");
-          }
-
-           List<String> dataLtp = readltpResult.getData();
-
-            assertNotNull(dataLtp);
-            assertEquals(3, dataLtp.size());
-            assertTrue(dataLtp.contains("LP-MWPS-TTP-02"));
-            assertTrue(dataLtp.contains("LP-MWPS-TTP-01"));
-            assertTrue(dataLtp.contains("LP-MWPS-TTP-06"));
-
-
-            System.out.println("read device entries...");
-
-            ReadPmdata24hDeviceListInput readDevices = new ReadPmdata24hDeviceListInputBuilder()
-                       .setPagination(getPagination(20, 1)).build();
-
-               ReadPmdata24hDeviceListOutputBuilder readDeviceResult = null;
-
-               try {
-                  readDeviceResult = dbProvider.readPmdata24hDeviceList(readDevices);
-              } catch (Exception e) {
-                  fail("Problem reading 24h device data");
-              }
-
-                List<String> dataDevice = readDeviceResult.getData();
-
-                assertNotNull(dataDevice);
-              assertEquals(2, dataDevice.size());
-              assertTrue(dataDevice.contains("a2"));
-              assertTrue(dataDevice.contains("a3"));
-
-              // == UPDATE ==============================
-
-              boolean success = dbRawProvider.doUpdate(Entity.Historicalperformance24h.getName(), "{'uuid-interface':'LTP-TEST-MWP-097'}", QueryBuilders.termQuery("_id", aDbId));
-              assertTrue("update dbentry not succeeded",success);
-              try {
-              readltpResult = dbProvider.readPmdata24hLtpList(readLtp);
+        try {
+            readltpResult = dbProvider.readPmdata24hLtpList(readLtp);
         } catch (Exception e) {
             fail("Problem reading 24h ltp data");
         }
 
-              // == VERIFY UPDATE ==============================
+        List<String> dataLtp = readltpResult.getData();
 
-              dataLtp = readltpResult.getData();
-
-              assertNotNull(dataLtp);
-             assertEquals(3, dataLtp.size());
-             assertTrue(dataLtp.contains("LP-MWPS-TTP-02"));
-             assertTrue(dataLtp.contains("LP-MWPS-TTP-01"));
-             assertTrue(dataLtp.contains("LTP-TEST-MWP-097"));
+        assertNotNull(dataLtp);
+        assertEquals(3, dataLtp.size());
+        assertTrue(dataLtp.contains("LP-MWPS-TTP-02"));
+        assertTrue(dataLtp.contains("LP-MWPS-TTP-01"));
+        assertTrue(dataLtp.contains("LP-MWPS-TTP-06"));
 
 
+        System.out.println("read device entries...");
 
-              //== DELETE ===========================
+        ReadPmdata24hDeviceListInput readDevices =
+                new ReadPmdata24hDeviceListInputBuilder().setPagination(getPagination(20, 1)).build();
 
-              System.out.println("try to clear entries");
-              try {
-                  dbRawProvider.doRemove(Entity.Historicalperformance24h.getName(), QueryBuilders.matchAllQuery());
-              } catch (Exception e) {
-                  fail("problem deleting entry: " + e.getMessage());
-              }
+        ReadPmdata24hDeviceListOutputBuilder readDeviceResult = null;
 
-            //== VERIFY DELETE ===========================
-              System.out.println("verify entries deleted");
-              readResult = dbProvider.readPmdata24hList(new ReadPmdata24hListInputBuilder()
-                      .setPagination(getPagination(20, 1)).build());
-              data = readResult.getData();
-              assertEquals(0, data.size());
-     }
+        try {
+            readDeviceResult = dbProvider.readPmdata24hDeviceList(readDevices);
+        } catch (Exception e) {
+            fail("Problem reading 24h device data");
+        }
 
-     @Test
-     public void test24hPerformanceDataReadLtpListWithoutNodeIdSetThrowsException() {
-         System.out.println("Test 24 hour tp list without node id filter set throws an exception test start...\"...");
+        List<String> dataDevice = readDeviceResult.getData();
 
-         try {
-             dbRawProvider.doRemove(Entity.Historicalperformance24h.getName(), QueryBuilders.matchAllQuery());
-         } catch (Exception e) {
-             fail("problem deleting: " + e.getMessage());
-         }
+        assertNotNull(dataDevice);
+        assertEquals(2, dataDevice.size());
+        assertTrue(dataDevice.contains("a2"));
+        assertTrue(dataDevice.contains("a3"));
 
-         System.out.println("create entries...");
+        // == UPDATE ==============================
 
-         GranularityPeriodType timeInterval = GranularityPeriodType.Period24Hours;
-         createPerformanceData("1", timeInterval, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a2");
-         createPerformanceData("2", timeInterval, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a2");
+        boolean success = dbRawProvider.doUpdate(Entity.Historicalperformance24h.getName(),
+                "{'uuid-interface':'LTP-TEST-MWP-097'}", QueryBuilders.termQuery("_id", aDbId));
+        assertTrue("update dbentry not succeeded", success);
+        try {
+            readltpResult = dbProvider.readPmdata24hLtpList(readLtp);
+        } catch (Exception e) {
+            fail("Problem reading 24h ltp data");
+        }
 
-         createPerformanceData("4", timeInterval, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a3");
-         createPerformanceData("5", timeInterval, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a3");
-         createPerformanceData("6", timeInterval, "PM_RADIO_15M_7", "LP-MWPS-TTP-03", "a3");
-         createPerformanceData("3", timeInterval, "PM_RADIO_15M_7", "LP-MWPS-TTP-05", "a3");
+        // == VERIFY UPDATE ==============================
 
-         System.out.println("trying to read, should throw exception...");
+        dataLtp = readltpResult.getData();
+
+        assertNotNull(dataLtp);
+        assertEquals(3, dataLtp.size());
+        assertTrue(dataLtp.contains("LP-MWPS-TTP-02"));
+        assertTrue(dataLtp.contains("LP-MWPS-TTP-01"));
+        assertTrue(dataLtp.contains("LTP-TEST-MWP-097"));
 
 
-         ReadPmdata24hLtpListInput readLtp = new ReadPmdata24hLtpListInputBuilder()
-                 .setPagination(getPagination(20, 1)).build();
 
-         ReadPmdata24hLtpListOutputBuilder readltpResult = null;
+        //== DELETE ===========================
 
-         try {
+        System.out.println("try to clear entries");
+        try {
+            dbRawProvider.doRemove(Entity.Historicalperformance24h.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting entry: " + e.getMessage());
+        }
+
+        //== VERIFY DELETE ===========================
+        System.out.println("verify entries deleted");
+        readResult = dbProvider
+                .readPmdata24hList(new ReadPmdata24hListInputBuilder().setPagination(getPagination(20, 1)).build());
+        data = readResult.getData();
+        assertEquals(0, data.size());
+    }
+
+    @Test
+    public void test24hPerformanceDataReadLtpListWithoutNodeIdSetThrowsException() {
+        System.out.println("Test 24 hour tp list without node id filter set throws an exception test start...\"...");
+
+        try {
+            dbRawProvider.doRemove(Entity.Historicalperformance24h.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting: " + e.getMessage());
+        }
+
+        System.out.println("create entries...");
+
+        GranularityPeriodType timeInterval = GranularityPeriodType.Period24Hours;
+        createPerformanceData("1", timeInterval, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a2");
+        createPerformanceData("2", timeInterval, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a2");
+
+        createPerformanceData("4", timeInterval, "PM_RADIO_15M_6", "LP-MWPS-TTP-02", "a3");
+        createPerformanceData("5", timeInterval, "PM_RADIO_15M_4", "LP-MWPS-TTP-01", "a3");
+        createPerformanceData("6", timeInterval, "PM_RADIO_15M_7", "LP-MWPS-TTP-03", "a3");
+        createPerformanceData("3", timeInterval, "PM_RADIO_15M_7", "LP-MWPS-TTP-05", "a3");
+
+        System.out.println("trying to read, should throw exception...");
+
+
+        ReadPmdata24hLtpListInput readLtp =
+                new ReadPmdata24hLtpListInputBuilder().setPagination(getPagination(20, 1)).build();
+
+        ReadPmdata24hLtpListOutputBuilder readltpResult = null;
+
+        try {
             readltpResult = dbProvider.readPmdata24hLtpList(readLtp);
             fail("No exception thrown!");
         } catch (Exception e) {
@@ -1266,14 +1271,14 @@ public class TestCRUDforDatabase {
             assertEquals("no nodename in filter found ", e.getMessage());
         }
 
-         assertNull(readltpResult);
+        assertNull(readltpResult);
 
-         try {
-             dbRawProvider.doRemove(Entity.Historicalperformance24h.getName(), QueryBuilders.matchAllQuery());
-         } catch (Exception e) {
-             fail("problem deleting: " + e.getMessage());
-         }
-     }
+        try {
+            dbRawProvider.doRemove(Entity.Historicalperformance24h.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting: " + e.getMessage());
+        }
+    }
 
     @Test
     public void testUrlEncoding() {
@@ -1294,7 +1299,9 @@ public class TestCRUDforDatabase {
     public void testDoUpdateOrCreateWithNullId() {
         System.out.println("Test DoUpdateOrCreate doesn't create new database entry if null is passed");
 
-        String dbId = clearAndCreatefaultEntity(null, Entity.Faultlog.getName(), "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultlogInput", SeverityType.Critical);
+        String dbId = clearAndCreatefaultEntity(null, Entity.Faultlog.getName(),
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultlogInput",
+                SeverityType.Critical);
         assertNull(dbId);
     }
 
@@ -1302,44 +1309,47 @@ public class TestCRUDforDatabase {
     public void readTestFaultCurrentViaRawDbProvider() {
         System.out.println("Starting faultCurrent test...");
         String dbId = null;
-        dbId = clearAndCreatefaultEntity("1", Entity.Faultcurrent.getName(), "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput", SeverityType.Critical);
+        dbId = clearAndCreatefaultEntity("1", Entity.Faultcurrent.getName(),
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                SeverityType.Critical);
         assertEquals("1", dbId);
 
-       // ==READ===========================
+        // ==READ===========================
         System.out.println("Trying to read...");
 
-       String readResult = null;
-       try {
-           readResult = dbRawProvider.doReadJsonData(Entity.Faultcurrent.getName(), dbId);
+        String readResult = null;
+        try {
+            readResult = dbRawProvider.doReadJsonData(Entity.Faultcurrent.getName(), dbId);
 
-       } catch (Exception e) {
-           fail("Fault log not read: " + e.getMessage());
-       }
+        } catch (Exception e) {
+            fail("Fault log not read: " + e.getMessage());
+        }
 
 
-       String expectedDbResult ="{\"severity\":\"Critical\",\"node-id\":\"s1\",\"problem\":\"signalIsLost\",\"counter\":4340,\"object-id\":\"LP-MWPS-RADIO\",\"implemented-interface\":\"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput\",\"type\":\"ProblemNotificationXml\",\"timestamp\":\"2019-10-28T11:55:58.3Z\"}";
+        String expectedDbResult =
+                "{\"severity\":\"Critical\",\"node-id\":\"s1\",\"problem\":\"signalIsLost\",\"counter\":4340,\"object-id\":\"LP-MWPS-RADIO\",\"implemented-interface\":\"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput\",\"type\":\"ProblemNotificationXml\",\"timestamp\":\"2019-10-28T11:55:58.3Z\"}";
 
-       System.out.println(readResult);
-       assertNotNull(readResult);
-       assertEquals(expectedDbResult, readResult);
+        System.out.println(readResult);
+        assertNotNull(readResult);
+        assertEquals(expectedDbResult, readResult);
 
-       SearchResult<SearchHit> searchResult = dbRawProvider.doReadAllJsonData(Entity.Faultcurrent.getName());
-       assertNotNull(searchResult);
+        SearchResult<SearchHit> searchResult = dbRawProvider.doReadAllJsonData(Entity.Faultcurrent.getName());
+        assertNotNull(searchResult);
 
-       List<SearchHit> hits = searchResult.getHits();
+        List<SearchHit> hits = searchResult.getHits();
 
-       assertNotNull(hits);
-       assertEquals(1, searchResult.getTotal());
-       assertEquals(expectedDbResult, hits.get(0).getSourceAsString());
+        assertNotNull(hits);
+        assertEquals(1, searchResult.getTotal());
+        assertEquals(expectedDbResult, hits.get(0).getSourceAsString());
 
-       //== DELETE ==============================
-       try {
-           dbRawProvider.doRemove(Entity.Faultcurrent.getName(), QueryBuilders.matchAllQuery());
-       } catch (Exception e) {
-           fail("problem deleting: " + e.getMessage());
-       }
-       //== VERIFY DELETE ========================
-       searchResult = dbRawProvider.doReadAllJsonData(Entity.Faultcurrent.getName());
+        //== DELETE ==============================
+        try {
+            dbRawProvider.doRemove(Entity.Faultcurrent.getName(), QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting: " + e.getMessage());
+        }
+        //== VERIFY DELETE ========================
+        searchResult = dbRawProvider.doReadAllJsonData(Entity.Faultcurrent.getName());
         hits = searchResult.getHits();
         assertNotNull(hits);
         assertEquals(0, searchResult.getTotal());
@@ -1348,25 +1358,20 @@ public class TestCRUDforDatabase {
 
     @Test
     public void testOutputCamelCase() {
-    	try {
-			String jsonString="{\n" + 
-					"\"timestamp\": \"2020-02-20T09:31:22.3Z\",\n" + 
-					"\"object-id\": \"LP-MWPS-RADIO\",\n" + 
-					"\"severity\": \"Critical\",\n" + 
-					"\"counter\": 10,\n" + 
-					"\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultlog\",\n" + 
-					"\"source-type\": \"Netconf\",\n" + 
-					"\"node-id\": \"sim4\",\n" + 
-					"\"problem\": \"signalIsLost\"\n" + 
-					"}";
-			YangToolsMapper yangtoolsMapper = new YangToolsMapper();
-			FaultlogEntity log = yangtoolsMapper.readValue( jsonString, Faultlog.class );
-			System.out.println(log	);
-			System.out.println(yangtoolsMapper.writeValueAsString(log));
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-    	
+        try {
+            String jsonString = "{\n" + "\"timestamp\": \"2020-02-20T09:31:22.3Z\",\n"
+                    + "\"object-id\": \"LP-MWPS-RADIO\",\n" + "\"severity\": \"Critical\",\n" + "\"counter\": 10,\n"
+                    + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultlog\",\n"
+                    + "\"source-type\": \"Netconf\",\n" + "\"node-id\": \"sim4\",\n" + "\"problem\": \"signalIsLost\"\n"
+                    + "}";
+            YangToolsMapper yangtoolsMapper = new YangToolsMapper();
+            FaultlogEntity log = yangtoolsMapper.readValue(jsonString, Faultlog.class);
+            System.out.println(log);
+            System.out.println(yangtoolsMapper.writeValueAsString(log));
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+
     }
 
     private Pagination getPagination(long pageSize, int page) {
@@ -1374,7 +1379,8 @@ public class TestCRUDforDatabase {
     }
 
 
-    private String clearAndCreatefaultEntity(String initialDbId,  String entityType, String implementedInterface, SeverityType severity) {
+    private String clearAndCreatefaultEntity(String initialDbId, String entityType, String implementedInterface,
+            SeverityType severity) {
         // ==CLEAR BEFORE TEST============================
         System.out.println("try to clear entry");
         try {
@@ -1387,23 +1393,19 @@ public class TestCRUDforDatabase {
         return createFaultEntity(initialDbId, entityType, implementedInterface, severity);
     }
 
-    private String createFaultEntity(String initialDbId,  String entityType, String implementedInterface, SeverityType severity) {
-         // ==CREATE============================
+    private String createFaultEntity(String initialDbId, String entityType, String implementedInterface,
+            SeverityType severity) {
+        // ==CREATE============================
         System.out.println("try to create entry");
         String dbId = null;
 
         try {
 
-            dbId = dbRawProvider.doUpdateOrCreate(entityType, initialDbId,"{\n" +
-                    "\"timestamp\": \"2019-10-28T11:55:58.3Z\",\n" +
-                    "\"object-id\": \"LP-MWPS-RADIO\",\n" +
-                    "\"severity\": \""+severity.toString()+"\",\n" +
-                    "\"node-id\": \"s1\",\n" +
-                    "\"implemented-interface\": \""+implementedInterface+"\",\n" +
-                    "\"counter\": 4340,\n" +
-                    "\"problem\": \"signalIsLost\",\n" +
-                    "\"type\": \"ProblemNotificationXml\"\n" +
-                    "}");
+            dbId = dbRawProvider.doUpdateOrCreate(entityType, initialDbId,
+                    "{\n" + "\"timestamp\": \"2019-10-28T11:55:58.3Z\",\n" + "\"object-id\": \"LP-MWPS-RADIO\",\n"
+                            + "\"severity\": \"" + severity.toString() + "\",\n" + "\"node-id\": \"s1\",\n"
+                            + "\"implemented-interface\": \"" + implementedInterface + "\",\n" + "\"counter\": 4340,\n"
+                            + "\"problem\": \"signalIsLost\",\n" + "\"type\": \"ProblemNotificationXml\"\n" + "}");
 
 
 
@@ -1414,65 +1416,31 @@ public class TestCRUDforDatabase {
         return dbId;
     }
 
-    private String createPerformanceData(String initialDbId, GranularityPeriodType timeInterval, String scannerId, String uuidInterface, String nodename) {
+    private String createPerformanceData(String initialDbId, GranularityPeriodType timeInterval, String scannerId,
+            String uuidInterface, String nodename) {
 
-        String json = "{\n" +
-                "\"node-name\": \""+nodename+"\",\n" +
-                "\"uuid-interface\": \""+uuidInterface+"\",\n" +
-                "\"layer-protocol-name\": \"MWPS\",\n" +
-                "\"radio-signal-id\": \"Test8\",\n" +
-                "\"time-stamp\": \"2017-03-01T06:15:00.0Z\",\n" +
-                "\"granularity-period\": \""+timeInterval.toString()+"\",\n" +
-                "\"scanner-id\": \""+scannerId+"\",\n" +
-                "\"performance-data\": {\n" +
-                "\"cses\": 0,\n" +
-                "\"ses\": 0,\n" +
-                "\"es\": 0,\n" +
-                "\"tx-level-max\": 3,\n" +
-                "\"tx-level-avg\": 3,\n" +
-                "\"rx-level-min\": -44,\n" +
-                "\"rx-level-max\": -45,\n" +
-                "\"rx-level-avg\": -44,\n" +
-                "\"time2-states\": 0,\n" +
-                "\"time4-states-s\": 0,\n" +
-                "\"time4-states\": 0,\n" +
-                "\"time8-states\": -1,\n" +
-                "\"time16-states-s\": -1,\n" +
-                "\"time16-states\": 0,\n" +
-                "\"time32-states\": -1,\n" +
-                "\"time64-states\": 900,\n" +
-                "\"time128-states\": -1,\n" +
-                "\"time256-states\": -1,\n" +
-                "\"time512-states\": -1,\n" +
-                "\"time512-states-l\": -1,\n" +
-                "\"unavailability\": 0,\n" +
-                "\"tx-level-min\": 3,\n" +
-                "\"time1024-states\": -1,\n" +
-                "\"time1024-states-l\": -1,\n" +
-                "\"time2048-states\": -1,\n" +
-                "\"time2048-states-l\": -1,\n" +
-                "\"time4096-states\": -1,\n" +
-                "\"time4096-states-l\": -1,\n" +
-                "\"time8192-states\": -1,\n" +
-                "\"time8192-states-l\": -1,\n" +
-                "\"snir-min\": -99,\n" +
-                "\"snir-max\": -99,\n" +
-                "\"snir-avg\": -99,\n" +
-                "\"xpd-min\": -99,\n" +
-                "\"xpd-max\": -99,\n" +
-                "\"xpd-avg\": -99,\n" +
-                "\"rf-temp-min\": -99,\n" +
-                "\"rf-temp-max\": -99,\n" +
-                "\"rf-temp-avg\": -99,\n" +
-                "\"defect-blocks-sum\": -1,\n" +
-                "\"time-period\": 900\n" +
-                "},\n" +
-                "\"suspect-interval-flag\": false\n" +
-                "}";
+        String json = "{\n" + "\"node-name\": \"" + nodename + "\",\n" + "\"uuid-interface\": \"" + uuidInterface
+                + "\",\n" + "\"layer-protocol-name\": \"MWPS\",\n" + "\"radio-signal-id\": \"Test8\",\n"
+                + "\"time-stamp\": \"2017-03-01T06:15:00.0Z\",\n" + "\"granularity-period\": \""
+                + timeInterval.toString() + "\",\n" + "\"scanner-id\": \"" + scannerId + "\",\n"
+                + "\"performance-data\": {\n" + "\"cses\": 0,\n" + "\"ses\": 0,\n" + "\"es\": 0,\n"
+                + "\"tx-level-max\": 3,\n" + "\"tx-level-avg\": 3,\n" + "\"rx-level-min\": -44,\n"
+                + "\"rx-level-max\": -45,\n" + "\"rx-level-avg\": -44,\n" + "\"time2-states\": 0,\n"
+                + "\"time4-states-s\": 0,\n" + "\"time4-states\": 0,\n" + "\"time8-states\": -1,\n"
+                + "\"time16-states-s\": -1,\n" + "\"time16-states\": 0,\n" + "\"time32-states\": -1,\n"
+                + "\"time64-states\": 900,\n" + "\"time128-states\": -1,\n" + "\"time256-states\": -1,\n"
+                + "\"time512-states\": -1,\n" + "\"time512-states-l\": -1,\n" + "\"unavailability\": 0,\n"
+                + "\"tx-level-min\": 3,\n" + "\"time1024-states\": -1,\n" + "\"time1024-states-l\": -1,\n"
+                + "\"time2048-states\": -1,\n" + "\"time2048-states-l\": -1,\n" + "\"time4096-states\": -1,\n"
+                + "\"time4096-states-l\": -1,\n" + "\"time8192-states\": -1,\n" + "\"time8192-states-l\": -1,\n"
+                + "\"snir-min\": -99,\n" + "\"snir-max\": -99,\n" + "\"snir-avg\": -99,\n" + "\"xpd-min\": -99,\n"
+                + "\"xpd-max\": -99,\n" + "\"xpd-avg\": -99,\n" + "\"rf-temp-min\": -99,\n" + "\"rf-temp-max\": -99,\n"
+                + "\"rf-temp-avg\": -99,\n" + "\"defect-blocks-sum\": -1,\n" + "\"time-period\": 900\n" + "},\n"
+                + "\"suspect-interval-flag\": false\n" + "}";
 
-        if(timeInterval.equals(GranularityPeriodType.Period15Min)) {
+        if (timeInterval.equals(GranularityPeriodType.Period15Min)) {
             return dbRawProvider.doUpdateOrCreate(Entity.Historicalperformance15min.getName(), initialDbId, json);
-        }else {
+        } else {
             return dbRawProvider.doUpdateOrCreate(Entity.Historicalperformance24h.getName(), initialDbId, json);
         }
     }

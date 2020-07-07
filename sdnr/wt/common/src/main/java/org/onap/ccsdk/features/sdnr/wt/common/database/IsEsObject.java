@@ -28,12 +28,14 @@ public interface IsEsObject {
 
     /**
      * Set the ES Id
+     * 
      * @param id Set the ID, created by ES for this Object
      */
-    void setEsId( String id );
+    void setEsId(String id);
 
     /**
      * Get Id content as string that is used in ES
+     * 
      * @return Related ID, that was specified by set command.
      */
     String getEsId();

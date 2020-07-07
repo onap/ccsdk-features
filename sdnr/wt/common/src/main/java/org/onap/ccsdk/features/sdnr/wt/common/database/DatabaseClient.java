@@ -36,14 +36,16 @@ public interface DatabaseClient {
 
     /**
      * Read JSON Object from database
+     * 
      * @param dataTypeName to read
      * @param esId to provide id to read
      * @return String with json structure
      */
-    public @Nullable String doReadJsonData(String dataTypeName, @Nonnull IsEsObject esId );
+    public @Nullable String doReadJsonData(String dataTypeName, @Nonnull IsEsObject esId);
 
     /**
      * Read JSON Object from database
+     * 
      * @param dataTypeName to read
      * @param esId of object to read
      * @return String with json structure
@@ -52,6 +54,7 @@ public interface DatabaseClient {
 
     /**
      * Provide all Objects of the specified dataTypeName.
+     * 
      * @param dataTypeName to be used
      * @return SearchResult with list of elements
      */
@@ -59,11 +62,13 @@ public interface DatabaseClient {
 
     /**
      * Provide all Objects that are covered by query.
+     * 
      * @param dataTypeName to be used
      * @param queryBuilder with the query to be used.
      * @return SearchResult with list of elements
      */
     public @Nonnull SearchResult<SearchHit> doReadByQueryJsonData(String dataTypeName, QueryBuilder queryBuilder);
+
     /**
      * Write one object into Database
      *
@@ -72,37 +77,65 @@ public interface DatabaseClient {
      * @param json String in JSON format.
      * @return esId String of the database object or null in case of write problems.
      */
-    public @Nullable String doWriteJsonString( String dataTypeName, @Nonnull IsEsObject esId, String json);
+    public @Nullable String doWriteJsonString(String dataTypeName, @Nonnull IsEsObject esId, String json);
 
     /**
      * Write one object into Database
+     * 
      * @param dataTypeName Name of datatype
      * @param esId of object to be replaced or null for new entry.
      * @param json String in JSON format.
      * @return esId String of the database object or null in case of write problems.
      */
-    public @Nullable String doWriteRaw( String dataTypeName, @Nullable  String esId, String json);
+    public @Nullable String doWriteRaw(String dataTypeName, @Nullable String esId, String json);
 
     /**
      * Write one object into Database
+     * 
      * @param indexName Name of index
      * @param dataTypeName Name of datatype
      * @param esId of object to be replaced or null for new entry.
      * @param json String in JSON format.
      * @return esId String of the database object or null in case of write problems.
      */
-    public @Nullable String doWriteRaw(String indexName,String dataTypeName, @Nullable String esId, String json);
-        
+    public @Nullable String doWriteRaw(String indexName, String dataTypeName, @Nullable String esId, String json);
+
+    /**
+     * Write one object into Database
+     * 
+     * @param indexName Name of index
+     * @param dataTypeName Name of datatype
+     * @param esId of object to be replaced or null for new entry.
+     * @param json String in JSON format.
+     * @param syncAfterRewrite trigger ES to sync after insert data
+     * @return esId String of the database object or null in case of write problems.
+     */
+    public @Nullable String doWriteRaw(String indexName, String dataTypeName, String esId, String json,
+            boolean syncAfterWrite);
+
+    /**
+     * Write one object into Database
+     * 
+     * @param dataTypeName Name of datatype
+     * @param esId of object to be replaced or null for new entry.
+     * @param json String in JSON format.
+     * @param syncAfterRewrite trigger ES to sync after insert data
+     * @return esId String of the database object or null in case of write problems.
+     */
+    public @Nullable String doWriteRaw(String dataTypeName, String esId, String json, boolean syncAfterWrite);
+
     /**
      * Remove Object from database
+     * 
      * @param dataTypeName of object
      * @param esId of object to be deleted
      * @return success
      */
-    public boolean doRemove( String dataTypeName, IsEsObject esId );
+    public boolean doRemove(String dataTypeName, IsEsObject esId);
 
     /**
      * Remove Object from database
+     * 
      * @param dataTypeName of object
      * @param esId as String of object to be deleted
      * @return success
@@ -111,6 +144,7 @@ public interface DatabaseClient {
 
     /**
      * Verify if index already created
+     * 
      * @param dataTypeName to be verified.
      * @return boolean accordingly
      */
@@ -118,6 +152,7 @@ public interface DatabaseClient {
 
     /**
      * Update one object in Database with id=esId or create if not exists.
+     * 
      * @param dataTypeName Name of datatype
      * @param esId of object to be replaced or null for new entry.
      * @param json String in JSON format.
@@ -127,6 +162,7 @@ public interface DatabaseClient {
 
     /**
      * Update one object in Database with id=esId or create if not exists.
+     * 
      * @param dataTypeName Name of datatype
      * @param esId to use for DB object
      * @param json object to write
@@ -137,6 +173,7 @@ public interface DatabaseClient {
 
     /**
      * remove items from database by query
+     * 
      * @param dataTypeName Name of datatype
      * @param query query to select items to remove
      * @return count of removed items
@@ -145,6 +182,7 @@ public interface DatabaseClient {
 
     /**
      * update object in database
+     * 
      * @param dataTypeName Name of datatype
      * @param json dataobject
      * @param query query to select item to update
@@ -156,7 +194,8 @@ public interface DatabaseClient {
      * 
      * @param dataTypeName Name of datatype
      * @param queryBuilder query to select items to read
-     * @param ignoreException flag if serverside exception will be thrown if query is not valid (needed for user entered filters)
+     * @param ignoreException flag if serverside exception will be thrown if query is not valid (needed for user entered
+     *        filters)
      * @return results
      */
     SearchResult<SearchHit> doReadByQueryJsonData(String dataTypeName, QueryBuilder queryBuilder,
@@ -165,21 +204,23 @@ public interface DatabaseClient {
 
     /**
      * read all data
+     * 
      * @param dataTypeName Name of datatype
-     * @param ignoreException flag if serverside exception will be thrown if query is not valid (needed for user entered filters)
+     * @param ignoreException flag if serverside exception will be thrown if query is not valid (needed for user entered
+     *        filters)
      * @return results
      */
     SearchResult<SearchHit> doReadAllJsonData(String dataTypeName, boolean ignoreException);
 
-	/**
-	 * @param alias
-	 * @param dataTypeName
-	 * @param queryBuilder
-	 * @param ignoreException
-	 * @return
-	 */
-	SearchResult<SearchHit> doReadByQueryJsonData(String alias, String dataTypeName, QueryBuilder queryBuilder,
-			boolean ignoreException);
+    /**
+     * @param alias
+     * @param dataTypeName
+     * @param queryBuilder
+     * @param ignoreException
+     * @return
+     */
+    SearchResult<SearchHit> doReadByQueryJsonData(String alias, String dataTypeName, QueryBuilder queryBuilder,
+            boolean ignoreException);
 
 
 

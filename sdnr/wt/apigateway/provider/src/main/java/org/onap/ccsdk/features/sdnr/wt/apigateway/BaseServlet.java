@@ -32,7 +32,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -41,15 +40,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class BaseServlet extends HttpServlet {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 7403047480257892794L;
     private static Logger LOG = LoggerFactory.getLogger(BaseServlet.class);
     private static SSLContext sc;
@@ -61,20 +56,17 @@ public abstract class BaseServlet extends HttpServlet {
     protected abstract boolean isOff();
 
     protected abstract boolean doTrustAll();
+
     protected abstract void trustAll(boolean trust);
+
     protected abstract String getRemoteUrl(String uri);
 
-    /**
-     *
-     * @throws NoSuchAlgorithmException
-     * @throws KeyManagementException
-     */
     private static void setupSslTrustAll(boolean trustall) throws NoSuchAlgorithmException, KeyManagementException {
 
         sc = SSLContext.getInstance("TLSv1.2");
         if (trustall) {
             if (trustCerts == null) {
-                trustCerts = new TrustManager[] { new javax.net.ssl.X509TrustManager() {
+                trustCerts = new TrustManager[] {new javax.net.ssl.X509TrustManager() {
                     @Override
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                         return new java.security.cert.X509Certificate[] {};
@@ -89,7 +81,7 @@ public abstract class BaseServlet extends HttpServlet {
                     public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
                         // do not check anything when trust all
                     }
-                } };
+                }};
             }
         } else {
             if (trustCerts != null) {
@@ -162,8 +154,7 @@ public abstract class BaseServlet extends HttpServlet {
                     LOG.warn(e.getMessage());
                 }
                 http.disconnect();
-            }
-            else {
+            } else {
                 this.set404Response(resp);
             }
         }
@@ -188,8 +179,7 @@ public abstract class BaseServlet extends HttpServlet {
                     LOG.warn(e.getMessage());
                 }
                 http.disconnect();
-            }
-            else {
+            } else {
                 this.set404Response(resp);
             }
         }
@@ -214,8 +204,7 @@ public abstract class BaseServlet extends HttpServlet {
                     LOG.warn(e.getMessage());
                 }
                 http.disconnect();
-            }
-            else {
+            } else {
                 this.set404Response(resp);
             }
         }
@@ -240,8 +229,7 @@ public abstract class BaseServlet extends HttpServlet {
                     LOG.warn(e.getMessage());
                 }
                 http.disconnect();
-            }
-            else {
+            } else {
                 this.set404Response(resp);
             }
         }
@@ -253,24 +241,24 @@ public abstract class BaseServlet extends HttpServlet {
 
     private URLConnection getConnection(HttpServletRequest req, final String method) throws IOException {
 
-        LOG.debug("{} Request to {}", method,req.getRequestURL());
+        LOG.debug("{} Request to {}", method, req.getRequestURL());
         String surl = this.getRemoteUrl(req.getRequestURI());
-        if("GET".equals(method)) {
+        if ("GET".equals(method)) {
             Enumeration<?> params = req.getParameterNames();
-            if(params!=null) {
+            if (params != null) {
                 String param;
-                if(params.hasMoreElements()) {
-                    param=(String)params.nextElement();
-                    surl+="?"+param+"="+req.getParameter(param);
+                if (params.hasMoreElements()) {
+                    param = (String) params.nextElement();
+                    surl += "?" + param + "=" + req.getParameter(param);
                 }
-                while(params.hasMoreElements()) {
-                    param=(String)params.nextElement();
-                    surl+="&"+param+"="+req.getParameter(param);
+                while (params.hasMoreElements()) {
+                    param = (String) params.nextElement();
+                    surl += "&" + param + "=" + req.getParameter(param);
                 }
             }
         }
         LOG.debug("RemoteURL: {}", surl);
-        if(surl==null) {
+        if (surl == null) {
             return null;
         }
         URL url = new URL(surl);
@@ -288,7 +276,7 @@ public abstract class BaseServlet extends HttpServlet {
         String s = "";
         Enumeration<?> headers = req.getHeaderNames();
         while (headers.hasMoreElements()) {
-            String h = (String)headers.nextElement();
+            String h = (String) headers.nextElement();
             String v = req.getHeader(h);
             if (h != null && h.equals("Host")) {
                 v = url.getAuthority();

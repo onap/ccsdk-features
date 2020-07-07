@@ -1,0 +1,1674 @@
+module data-provider {
+
+  yang-version 1.1;
+  namespace "urn:opendaylight:params:xml:ns:yang:data-provider";
+  prefix odluxprovider;
+
+  import ietf-yang-types {
+    prefix yang;
+    reference
+      "RFC 6991: Common YANG Data Types.";
+  }
+
+  organization
+    "highstreet technologies GmbH";
+  contact
+    "Web:   <https://highstreet-technologies.com>
+     ONAP:  <https://wiki.onap.org/display/DW/ODLUX+DB+API>";
+
+  description
+    "This module defines the API for the data-provider component.
+
+     Copyright 2019 highstreet technologies GmbH Intellectual Property.
+     All rights reserved.
+
+     Licensed under the Apache License, Version 2.0 (the 'License');
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an 'AS IS' BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.";
+
+  revision 2019-08-01 {
+    description
+      "Initial revision";
+    reference
+      "https://jira.onap.org/browse/SDNC-879";
+  }
+
+  // --- typedef
+
+  typedef Entity {
+    type enumeration {
+      enum connectionlog {
+        description
+          "logs mountpoint connection state changes";
+      }
+      enum faultcurrent {
+        description
+          "current faults";
+      }
+      enum eventlog {
+        description
+          "logs for all notifications e.g. NetConf, ves and internal events";
+      }
+      enum faultlog {
+        description
+          "faultlog information";
+      }
+      enum historicalperformance15min {
+        description
+          "performance data";
+      }
+      enum historicalperformance24h {
+        description
+          "performance data";
+      }
+      enum mediator-server {
+        description
+          "list of mediator servers";
+      }
+      enum networkelement-connection {
+        description
+          "list of mountpoints for NetConf devices (joint required-network-element+mdsal
+              state";
+      }
+      enum inventoryequipment {
+        description
+          "list of equipment inventory";
+      }
+      enum maintenancemode {
+        description
+          "list of maintenance setting";
+      }
+    }
+    description
+      "Data type and alias for elasticsearch or table name for SQL database.";
+  }
+
+  typedef SortOrder {
+    type enumeration {
+      enum ascending {
+        description
+          "Self explaining.";
+      }
+      enum descending {
+        description
+          "Self explaining.";
+      }
+    }
+    description
+      "Entities for odlux clients";
+  }
+
+  typedef FilterProperty {
+    type string;
+    description
+      "A string type describing a property (attribute, column, parameter)
+       filter";
+  }
+
+  typedef NotificationType {
+    type enumeration {
+      enum ProblemNotificationXml {
+        description
+          "A fault (alarm, problem) notification type in XML format.";
+      }
+      enum AttributeValueChangedNotificationXml {
+        description
+          "An attribute value change notification type in XML format.";
+      }
+    }
+    description
+      "An enumeration describing the found notification type.";
+  }
+
+  typedef ConnectionLogStatus {
+    type enumeration {
+      enum Mounted {
+        description
+          "Mountpoint created";
+      }
+      enum Unmounted {
+        description
+          "Mountpoint removed";
+      }
+      enum Connecting {
+        description
+          "Mountpoint establishing connection";
+      }
+      enum Connected {
+        description
+          "Mountpoint connection established";
+      }
+      enum UnableToConnect {
+        description
+          "Mountpoint connection not possible";
+      }
+      enum Disconnected {
+        description
+          "Required and mountpoint removed";
+      }
+      enum Undefined {
+        description
+          "Status not available";
+      }
+    }
+    description
+      "An enumeration describing connection states.";
+  }
+
+  typedef NetworkElementDeviceType {
+    type enumeration {
+      enum Wireless {
+        description
+          "implements microwave-model.yang or air-interface.yang";
+      }
+      enum RAN {
+        description
+          "implements sth. like o-ran*.yang";
+      }
+      enum ORAN {
+        description
+          "implements RAN according to o-ran*.yang";
+      }
+      enum RAN3GPP {
+        description
+          "implements RAN according to _3gpp-ran*.yang";
+      }
+      enum Optical {
+        description
+          "implements tapi-*.yang or org-openroadm*.yang";
+      }
+      enum Router {
+        description
+          "implements vlan-interface.yang";
+      }
+      enum NtsManager {
+        description
+          "Manage adapter to simulate devices";
+      }
+      enum Nonsupported {
+        description
+          "Device type known, but not support";
+      }
+      enum Unknown {
+        description
+          "Device type at this point of time unknown";
+      }
+      enum O-RAN-FH {
+        description
+          "implements RAN according to o-ran*.yang fro for fronthaule";
+      }
+      enum O-ROADM {
+          description
+            "implements Open ROADM";
+        }
+      enum O1-TR069 {
+          description
+            "implements O1 RAN interface according to TR069";
+      }
+    }
+    description
+      "An enumeration as identification of the device.";
+  }
+
+  typedef severity-type {
+    type enumeration {
+      enum NonAlarmed {
+        description
+          "problem cleared indication";
+      }
+      enum Warning {
+        description
+          "problem level";
+      }
+      enum Minor {
+        description
+          "problem level";
+      }
+      enum Major {
+        description
+          "problem level";
+      }
+      enum Critical {
+        description
+          "problem level";
+      }
+    }
+    description
+      "According to ITU-T M.3160";
+  }
+
+  typedef source-type {
+    type enumeration {
+      enum Ves {
+        description
+          "VES Interface";
+      }
+      enum Netconf {
+        description
+          "NetConf Interface";
+      }
+      enum Controller {
+        description
+          "SDN Controller";
+      }
+      enum Unknown {
+        description
+          "Unknown source";
+      }
+    }
+    description
+      "An enumeration for the information source of an event/notification.";
+  }
+
+  typedef granularity-period-type {
+    type enumeration {
+      enum unknown {
+        description
+          "none";
+      }
+      enum period-15-min {
+        description
+          "none";
+      }
+      enum period-24-hours {
+        description
+          "none";
+      }
+    }
+    description
+      "The enumeration with the options for granularity period of the
+       performance data similar to g.874.1-model";
+  }
+
+  // --- grouping and builder-container
+
+  grouping connectionlog-entity {
+    leaf id {
+      type string;
+      description
+        "database id";
+    }
+    leaf node-id {
+      type string;
+      description
+        "the node/mountpoint which connection state has changed";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      description
+        "timestamp when event happened, preferred in UTC time format.";
+    }
+    leaf status {
+      type ConnectionLogStatus;
+      description
+        "new state of the connection of the device";
+    }
+    description
+      "An object class describing an entry in the connection status log.";
+  }
+
+  container connectionlog {
+    description
+      "builder";
+    uses connectionlog-entity;
+  }
+
+  grouping object-change-reference {
+    description
+      "Reference of of object (e.g. Interface pack) owned by a node";
+    leaf node-id {
+      type string;
+      description
+        "A network wide unique identifier of the NetConf server.";
+    }
+    leaf counter {
+      type int32;
+      description
+        "An arbitrary counter value.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      description
+        "The time of the reported change, preferred in UTC time format. ";
+    }
+    leaf object-id {
+      type string;
+      description
+        "The identifier of the reporting object (resource).";
+    }
+  }
+
+  grouping source-reference {
+    description
+      "Identify a source";
+    leaf source-type {
+      type source-type;
+      description
+        "The source type.";
+    }
+  }
+
+  grouping fault {
+    description
+      "Fault event of an object";
+    leaf problem {
+      type string;
+      description
+        "The alarm type identifier.";
+    }
+    leaf severity {
+      type severity-type;
+      description
+        "The reported severity of the fault (alarm).";
+    }
+  }
+
+  grouping attribute-change {
+    description
+      "update change of an attribute";
+    leaf attribute-name {
+      type string;
+      description
+        "The attribute name which was changed.";
+    }
+    leaf new-value {
+      type string;
+      description
+        "The new value of the attribute converted to a string format.";
+    }
+  }
+
+  grouping entity-id {
+    description
+      "Unique database id of entity";
+    leaf id {
+      type string;
+      description
+        "The unique identifier of the entity.";
+    }
+  }
+
+  grouping faultcurrent-entity {
+    description
+      "Current fault status";
+    uses object-change-reference;
+    uses fault;
+    uses entity-id;
+  }
+
+  container faultcurrent {
+    description
+      "builder";
+    uses faultcurrent-entity;
+  }
+
+  grouping faultlog-entity {
+    description
+      "Changed fault indication";
+    uses source-reference;
+    uses object-change-reference;
+    uses fault;
+    uses entity-id;
+  }
+
+  container faultlog {
+    description
+      "builder";
+    uses faultlog-entity;
+  }
+
+  grouping eventlog-entity {
+    description
+      "One change event of devices";
+    uses source-reference;
+    uses object-change-reference;
+    uses attribute-change;
+    uses entity-id;
+  }
+
+  container eventlog {
+    description
+      "builder";
+    uses eventlog-entity;
+  }
+
+  grouping filter {
+    leaf description {
+      type string;
+      description
+        "Filter specific description";
+    }
+    leaf start {
+      type yang:date-and-time;
+      description
+        "begin of maintenance-mode";
+    }
+    leaf end {
+      type yang:date-and-time;
+      description
+        "end of maintenance-mode";
+    }
+    leaf object-id-ref {
+      type string;
+      description
+        "object id to filter on, or empty for all";
+    }
+    leaf problem {
+      type string;
+      description
+        "name of the problem to filter or empty for all";
+    }
+    description
+      "An object class describing a generic filter of an interval for
+       faults (alarms).";
+  }
+
+  grouping maintenance-entity {
+    description
+      "Maintenance mode for a device. ";
+    leaf id {
+      type string;
+      mandatory true;
+      description
+        "Key to get/set configuration entry in database. Normally Mountpoint
+         name is used as key id of node.";
+    }
+    leaf node-id {
+      type string;
+      mandatory true;
+      description
+        "A network wide unique identifier of the NetConf server.";
+    }
+    leaf active {
+      type boolean;
+      description
+        "Configuration to activate or deactivate this entry";
+    }
+    uses filter;
+  }
+
+  container maintenance {
+    presence "false";
+    description
+      "builder";
+    uses maintenance-entity;
+  }
+
+  grouping mediator-server-entity {
+    leaf id {
+      type string;
+      mandatory true;
+      description
+        "A network unique identifier of the mediator server.";
+    }
+    leaf url {
+      type string;
+      description
+        "The ULR to reach the REST interface of the mediator server.";
+    }
+    leaf name {
+      type string;
+      description
+        "A human readable name of the mediator server.";
+    }
+    description
+      "An object class describing a mediator server entity.";
+  }
+
+  grouping pmdata-base {
+    description
+      "Performance data base information";
+    leaf node-name {
+      type string;
+      description
+        "A network unique identifier of reporting NetConf server.";
+    }
+    leaf uuid-interface {
+      type string;
+      description
+        "A universal unique identifier of the performance monitoring point.";
+    }
+    leaf layer-protocol-name {
+      type string;
+      description
+        "The name of the measured transport layer.";
+    }
+    leaf radio-signal-id {
+      type string;
+      description
+        "The value exists only of wireless transport devices.";
+    }
+    leaf time-stamp {
+      type yang:date-and-time;
+      description
+        "The time-stamp of the measurement, preferred in UTC format.";
+    }
+    leaf suspect-interval-flag {
+      type boolean;
+      description
+        "If false, the measurement is not completed and should not be used
+         for performance analysis. ";
+    }
+    leaf granularity-period {
+      type granularity-period-type;
+      description
+        "The expected measurement interval.";
+    }
+    leaf scanner-id {
+      type string;
+      description
+        "See ITU-T X.739 chapter 8.1.1.2.";
+    }
+  }
+
+  grouping pmdata-microwave {
+    description
+      "Consolidated performance information of all microwave model interface
+       PACs";
+    leaf es {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Number of errored seconds.";
+    }
+    leaf ses {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Number of severely errored seconds.";
+    }
+    leaf cses {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Number of consecutive severely errored seconds.";
+    }
+    leaf unavailability {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Total time of unavailability in seconds.";
+    }
+    leaf tx-level-min {
+      type int8;
+      units "dBm";
+      default "99";
+      config false;
+      description
+        "Minimum transmit power. Signed integers are required.";
+    }
+    leaf tx-level-max {
+      type int8;
+      units "dBm";
+      default "99";
+      config false;
+      description
+        "Maximum transmit power. Signed integers are required.";
+    }
+    leaf tx-level-avg {
+      type int8;
+      units "dBm";
+      default "99";
+      config false;
+      description
+        "Averaged transmit power. Signed integers are required.";
+    }
+    leaf rx-level-min {
+      type int8;
+      units "dBm";
+      default "99";
+      config false;
+      description
+        "Minimum receive level. Signed integers are required.";
+    }
+    leaf rx-level-max {
+      type int8;
+      units "dBm";
+      default "99";
+      config false;
+      description
+        "Maximum receive level. Signed integers are required.";
+    }
+    leaf rx-level-avg {
+      type int8;
+      units "dBm";
+      default "99";
+      config false;
+      description
+        "Averaged receive level. Signed integers are required.";
+    }
+    leaf time2-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Sum of all seconds the transmitter operated in e.g. BPSK.";
+    }
+    leaf time4-states-s {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time4-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time8-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time16-states-s {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time16-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time32-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time64-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time128-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time256-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time512-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time512-states-l {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time1024-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time1024-states-l {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time2048-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time2048-states-l {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time4096-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time4096-states-l {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time8192-states {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf time8192-states-l {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "none";
+    }
+    leaf snir-min {
+      type int8;
+      units "dB";
+      default "-99";
+      config false;
+      description
+        "Minimum signal to (noise+interference) ratio.";
+    }
+    leaf snir-max {
+      type int8;
+      units "dB";
+      default "-99";
+      config false;
+      description
+        "Maximum signal to (noise+interference) ratio.";
+    }
+    leaf snir-avg {
+      type int8;
+      units "dB";
+      default "-99";
+      config false;
+      description
+        "Averaged signal to (noise+interference) ratio.";
+    }
+    leaf xpd-min {
+      type int8;
+      units "dB";
+      default "-99";
+      config false;
+      description
+        "Minimum cross polarization discrimination.";
+    }
+    leaf xpd-max {
+      type int8;
+      units "dB";
+      default "-99";
+      config false;
+      description
+        "Maximum cross polarization discrimination.";
+    }
+    leaf xpd-avg {
+      type int8;
+      units "dB";
+      default "-99";
+      config false;
+      description
+        "Averaged cross polarization discrimination.";
+    }
+    leaf rf-temp-min {
+      type int8;
+      units "C";
+      default "-99";
+      config false;
+      description
+        "Lowest temperature (in degree Celsius) of the radio module inside the
+         outdoor unit.";
+    }
+    leaf rf-temp-max {
+      type int8;
+      units "C";
+      default "-99";
+      config false;
+      description
+        "Highest temperature (in degree Celsius) of the radio module inside the
+         outdoor unit.";
+    }
+    leaf rf-temp-avg {
+      type int8;
+      units "C";
+      default "-99";
+      config false;
+      description
+        "Averaged temperature (in degree Celsius) of the radio module inside
+         the outdoor unit.";
+    }
+    leaf defect-blocks-sum {
+      type int16;
+      units "blocks";
+      default "-1";
+      config false;
+      description
+        "Total number of blocks that were defect after receiving and could not
+         be corrected by the FEC.";
+    }
+    leaf time-period {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Total length of the measurement period.";
+    }
+  }
+
+  grouping pmdata-ethernet {
+    description
+      "Consolidated performance information for Ethernet.";
+    leaf tx-ethernet-bytes-max-s {
+      type int32;
+      units "Bytes/s";
+      default "-1";
+      config false;
+      description
+        "Counts the number of Bytes of Ethernet traffic (before header
+         compression) transmitted within a second and keeps the highest value
+         within the measurement period. Field to be left blank for all types of
+         TDM containers.";
+    }
+    leaf tx-ethernet-bytes-max-m {
+      type int64;
+      units "Bytes/min";
+      default "-1";
+      config false;
+      description
+        "Counts the number of Bytes of Ethernet traffic (before header
+         compression) transmitted within a minute and keeps the highest value
+         with in the measurement period. Field to be left blank for all types
+         of TDM containers.";
+    }
+    leaf tx-ethernet-bytes-sum {
+      type int64;
+      units "Bytes";
+      default "-1";
+      config false;
+      description
+        "Total number of Bytes of Ethernet traffic (before header compression)
+         transmitted (in direction out of the device) during the measurement
+        period. Field to be left blank for all types of TDM containers.";
+    }
+  }
+
+  container pmdata-entity {
+    description
+      "builder";
+    uses pmdata-base;
+    container performance-data {
+      uses pmdata-microwave;
+      uses pmdata-ethernet;
+      description
+        "An object combining different performance monitoring data.";
+    }
+  }
+
+  grouping pmdata15m-entity {
+    uses pmdata-base;
+    container performance-data {
+      uses pmdata-microwave;
+      uses pmdata-ethernet;
+      description
+        "An object combining different performance monitoring data.";
+    }
+    description
+      "An object class describing a 15 minute performance monitoring entity.";
+  }
+
+  grouping pmdata24h-entity {
+    uses pmdata-base;
+    container performance-data {
+      uses pmdata-microwave;
+      uses pmdata-ethernet;
+      description
+        "An object combining different performance monitoring data.";
+    }
+    description
+      "An object class describing a 24 hour performance monitoring entity.";
+  }
+
+  grouping inventory-entity {
+    description
+      "One equipment entity in a list of a network element that could be rack,
+       card, backplane, module";
+    leaf id {
+      type string;
+      mandatory true;
+      description
+        "Unique database id, node-id/uuid";
+    }
+    leaf tree-level {
+      type uint32;
+      description
+        "Containment level, starting with 0..";
+    }
+    leaf parent-uuid {
+      type string;
+      description
+        "Unique inventory id of holder";
+    }
+    leaf node-id {
+      type string;
+      description
+        "Unique node id of network element";
+    }
+    leaf uuid {
+      type string;
+      description
+        "Unique inventory id of this node for this equipment, provided by
+         network element";
+    }
+    leaf-list contained-holder {
+      type string;
+      description
+        "List of uuid of contained equipment";
+    }
+    leaf manufacturer-name {
+      type string;
+      description
+        "manufactured-thing/manufacturer-properties/manufacturer-name";
+    }
+    leaf manufacturer-identifier {
+      type string;
+      description
+        "manufactured-thing/manufacturer-properties/manufacturer-identifier";
+    }
+    leaf serial {
+      type string;
+      description
+        "manufactured-thing/equipment-instance/serial";
+    }
+    leaf date {
+      type string;
+      description
+        "manufactured-thing/equipment-instance/manufacture-date: Date
+         information provided by manufacturer. No specific format. ()";
+    }
+    leaf version {
+      type string;
+      description
+        "manufactured-thing/equipment-type/version";
+    }
+    leaf description {
+      type string;
+      description
+        "manufactured-thing/equipment-type/description";
+    }
+    leaf part-type-id {
+      type string;
+      description
+        "manufactured-thing/equipment-type/part-type-identifier";
+    }
+    leaf model-identifier {
+      type string;
+      description
+        "manufactured-thing/equipment-type/model-identifier";
+    }
+    leaf type-name {
+      type string;
+      description
+        "manufactured-thing/equipment-type/type-name";
+    }
+  }
+
+  container inventory {
+    presence "false";
+    description
+      "builder";
+    uses inventory-entity;
+  }
+
+  grouping node-details-g {
+    leaf-list available-capabilities {
+      type string;
+      description
+        "The list of available yang capabilities.";
+    }
+    leaf-list unavailable-capabilities {
+      type string;
+      description
+        "The list of unavailable yang capabilities.";
+    }
+    description
+      "An object class description the available and unavailable yang
+       capabilities.";
+  }
+
+  grouping network-element-connection-entity {
+    leaf id {
+      type string;
+      description
+        "database id/key. here is equal to node-id";
+    }
+    leaf node-id {
+      type string;
+      description
+        "mountpoint name of device in controller";
+    }
+    leaf host {
+      type string;
+      description
+        "NetConf server host name or IP address of device";
+    }
+    leaf port {
+      type uint32;
+      description
+        "NetConf port of device";
+    }
+    leaf username {
+      type string;
+      description
+        "NetConf user name";
+    }
+    leaf password {
+      type string;
+      description
+        "NetConf password. should be removed asap";
+    }
+    leaf core-model-capability {
+      type string;
+      description
+        "revision of core-model capability";
+    }
+    leaf device-type {
+      type NetworkElementDeviceType;
+      description
+        "categorized type of device based on implemented yang specs";
+    }
+    leaf is-required {
+      type boolean;
+      description
+        "entry exists in db index required-networkelement";
+    }
+    container node-details {
+      uses node-details-g;
+      description
+        "holder of available and unavailable capabilities";
+    }
+    leaf status {
+      type ConnectionLogStatus;
+      description
+        "current connection status. default Disconnected";
+    }
+    description
+      "An object class defining the NetConf connection towards a
+       NetConf server. ";
+  }
+
+  container network-element-connection {
+    description
+      "builder";
+    uses network-element-connection-entity;
+  }
+
+  grouping status-entity {
+    container faults {
+      leaf criticals {
+        type uint32;
+        description
+          "The number of current faults (active alarms) with severity
+           'critical'.";
+      }
+      leaf majors {
+        type uint32;
+        description
+          "The number of current faults (active alarms) with severity
+           'major'.";
+      }
+      leaf minors {
+        type uint32;
+        description
+          "The number of current faults (active alarms) with severity
+           'minor'.";
+      }
+      leaf warnings {
+        type uint32;
+        description
+          "The number of current faults (active alarms) with severity
+           'warning'.";
+      }
+      description
+        "An object containing the number of current faults per its severity.";
+    }
+    description
+      "An object class defining an status entity for current faults
+       (also called active alarms).";
+  }
+
+  container status {
+    description
+      "builder";
+    uses status-entity;
+  }
+
+  grouping entity-input {
+    list filter {
+      key "property";
+      leaf property {
+        type string;
+        description
+          "The property (parameter, column, field) identifier.";
+      }
+      leaf filtervalue {
+        type string;
+        description
+          "The filter information for the corresponding property.";
+      }
+      description
+        "List with filter criteria. Not listed means all.";
+    }
+    list sortorder {
+      key "property";
+      leaf property {
+        type string;
+        description
+          "The property (parameter, column, field) identifier.";
+      }
+      leaf sortorder {
+        type SortOrder;
+        description
+          "The definition of the sort order for the corresponding property.";
+      }
+      description
+        "List with sort order. Not listed means default";
+    }
+    container pagination {
+      leaf size {
+        type uint32 {
+          range "1..max";
+        }
+        default "20";
+        description
+          "Number of entries to be delivered";
+      }
+      leaf page {
+        type uint64 {
+          range "1..max";
+        }
+        default "1";
+        description
+          "Number to be used to calculate starting entry to deliver";
+      }
+      description
+        "An object defining the pagination details.";
+    }
+    description
+      "An object class defining a request input entity.";
+  }
+
+  grouping pagination-output-g {
+    leaf size {
+      type uint32 {
+        range "1..max";
+      }
+      default "20";
+      description
+        "Number of entries to be delivered";
+    }
+    leaf page {
+      type uint64 {
+        range "1..max";
+      }
+      default "1";
+      description
+        "Number to be used to calculate starting entry to deliver";
+    }
+    leaf total {
+      type uint64 {
+        range "0..max";
+      }
+      default "0";
+      description
+        "Number to be used to calculate starting entry to deliver";
+    }
+    description
+      "An object class defining the filter information for pagination.";
+  }
+
+  container pagination-output {
+    description
+      "builder";
+    uses pagination-output-g;
+  }
+
+  // --- rpc
+
+  rpc read-faultcurrent-list {
+    description
+      "Get list of current fault (active alarm) entries according to filter";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses faultcurrent-entity;
+        description
+          "The output data as list of current fault (or active alarm)
+           entities.";
+      }
+    }
+  }
+
+  rpc read-faultlog-list {
+    description
+      "Get list of faultlog entries according to filter";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses faultlog-entity;
+        description
+          "The output data as list of fault entities.";
+      }
+    }
+  }
+
+  rpc read-eventlog-list {
+    description
+      "Get list of event log entities according to filter";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses eventlog-entity;
+        description
+          "The output data as list of event log entities.";
+      }
+    }
+  }
+
+  rpc read-connectionlog-list {
+    description
+      "Get list of event log entities according to filter";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses connectionlog-entity;
+        description
+          "The output data as list of connection log entities.";
+      }
+    }
+  }
+
+  rpc read-maintenance-list {
+    description
+      "Get list of maintenance entries according to filter";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses maintenance-entity;
+        description
+          "The output data as list of maintenance entities.";
+      }
+    }
+  }
+
+  rpc create-maintenance {
+    description
+      "insert new entry of maintenance";
+    input {
+      uses maintenance-entity;
+    }
+    output {
+      uses maintenance-entity;
+    }
+  }
+
+  rpc update-maintenance {
+    description
+      "update existing entity of maintenance";
+    input {
+      uses maintenance-entity;
+    }
+    output {
+      uses maintenance-entity;
+    }
+  }
+
+  rpc delete-maintenance {
+    description
+      "delete entity of maintenance";
+    input {
+      uses maintenance-entity;
+    }
+  }
+
+  rpc read-mediator-server-list {
+    description
+      "Get list of mediator-servers according to filter";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses mediator-server-entity;
+        description
+          "The list of found mediator server entities.";
+      }
+    }
+  }
+
+  rpc create-mediator-server {
+    description
+      "create new entry of entity mediator-server";
+    input {
+      uses mediator-server-entity;
+    }
+    output {
+      uses mediator-server-entity;
+    }
+  }
+
+  rpc update-mediator-server {
+    description
+      "update entry of entity mediator-server";
+    input {
+      uses mediator-server-entity;
+    }
+    output {
+      uses mediator-server-entity;
+    }
+  }
+
+  rpc delete-mediator-server {
+    description
+      "delete entry of entity mediator-server";
+    input {
+      uses mediator-server-entity;
+    }
+  }
+
+  rpc read-network-element-connection-list {
+    description
+      "Get list of networkelement-connections according to filter";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses network-element-connection-entity;
+        description
+          "The output data as list of found network-element (or mountpoint,
+           or network functions) connection entities.";
+      }
+    }
+  }
+
+  rpc create-network-element-connection {
+    description
+      "create entry in networkelement-connection";
+    input {
+      uses network-element-connection-entity;
+    }
+    output {
+      uses network-element-connection-entity;
+    }
+  }
+
+  rpc update-network-element-connection {
+    description
+      "Put an element to ne-entity";
+    input {
+      uses network-element-connection-entity;
+    }
+    output {
+      uses network-element-connection-entity;
+    }
+  }
+
+  rpc delete-network-element-connection {
+    description
+      "!ONLY FOR TESTING! Put an element to ne-entity";
+    input {
+      uses network-element-connection-entity;
+    }
+  }
+
+  rpc read-pmdata-15m-ltp-list {
+    description
+      "Get list of ltps for one mountpoint with historical pmdata";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      leaf-list data {
+        type string;
+        description
+          "The list of found mountpoint names.";
+      }
+    }
+  }
+
+  rpc read-pmdata-24h-ltp-list {
+    description
+      "Get list of ltps for one mountpoint with historical pmdata";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      leaf-list data {
+        type string;
+        description
+          "The list of found logical-termination-point identifiers.";
+      }
+    }
+  }
+
+  rpc read-pmdata-15m-device-list {
+    description
+      "Get list of mountpoints with historical pmdata";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      leaf-list data {
+        type string;
+        description
+          "The list of found mountpoint names.";
+      }
+    }
+  }
+
+  rpc read-pmdata-24h-device-list {
+    description
+      "Get list of mountpoints with historical pmdata";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      leaf-list data {
+        type string;
+        description
+          "The list of found mountpoint names.";
+      }
+    }
+  }
+
+  rpc read-pmdata-15m-list {
+    description
+      "Get list of entities according to filter";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses pmdata15m-entity;
+        description
+          "The output data as list of 15 minutes performance monitoring
+           entities.";
+      }
+    }
+  }
+
+  rpc read-pmdata-24h-list {
+    description
+      "Get list of historical pmdata according to filter";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses pmdata24h-entity;
+        description
+          "The output data as list of 24 hours performance monitoring
+           entities.";
+      }
+    }
+  }
+
+  rpc read-inventory-list {
+    description
+      "Get list of inventory according to filter";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses inventory-entity;
+        description
+          "The output data as list of inventory entities.";
+      }
+    }
+  }
+
+  rpc read-status {
+    description
+      "Read status information of controller";
+    output {
+      list data {
+        uses status-entity;
+        description
+          "The output data as list of status entities.";
+      }
+    }
+  }
+}

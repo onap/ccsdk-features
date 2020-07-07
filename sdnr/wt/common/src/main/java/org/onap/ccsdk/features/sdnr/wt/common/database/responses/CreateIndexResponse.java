@@ -25,8 +25,8 @@ import org.elasticsearch.client.Response;
 
 public class CreateIndexResponse extends AcknowledgedResponse {
 
-	public CreateIndexResponse(Response response) {
-		super(response);
-	}
+    public CreateIndexResponse(Response response) {
+        super(response);
+    }
 
 }

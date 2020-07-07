@@ -24,51 +24,89 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.QueryByFilter;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryByFilter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SortOrder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Sortorder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.SortorderBuilder;
 
-public class TestFilterConversion {
+public class TestFilterConversion extends Mockito {
 
-	private static final String PROPERTY = "node-id";
-	private static final String PROPERTY2 = "_id";
-	private static final String PROPERTY3 = "timestamp";
+    private static final String PROPERTY = "node-id";
+    private static final String PROPERTY2 = "_id";
+    private static final String PROPERTY3 = "timestamp";
 
-	@Test
-	public void testQuestionMark() {
-		List<Filter> filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build());
-		QueryBuilder query = QueryByFilter.fromFilter(filters);
-		System.out.println(query.toJSON());
-		assertTrue(query.toJSON().contains("{1,1}"));
-		assertNotNull(QueryByFilter.getFilter(filters, PROPERTY));
-		assertNull(QueryByFilter.getFilter(filters, PROPERTY2));
-		filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build(),
-				new FilterBuilder().setProperty(PROPERTY2).setFiltervalue("abc").build());
-		query = QueryByFilter.fromFilter(filters);
-		System.out.println(query.toJSON());
-		assertNotNull(QueryByFilter.getFilter(filters, PROPERTY2));
-		filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build(),
-				new FilterBuilder().setProperty(PROPERTY3).setFiltervalue("<2019-06-13T15:00:12.0Z").build());
-		query = QueryByFilter.fromFilter(filters);
-		List<Sortorder> sortorder = Arrays
-				.asList(new SortorderBuilder().setProperty(PROPERTY).setSortorder(SortOrder.Ascending).build());
-		QueryByFilter.setSortOrder(query, sortorder);
-		assertNotNull(QueryByFilter.getSortOrder(sortorder, PROPERTY));
-	}
-	@Test
-	public void testSortorder() {
-		String f = "{\"input\":{\"filter\":[],\"sortorder\":[{\"property\":\"source-type\",\"sortorder\":\"ascending\"}],\"pagination\":{\"size\":10,\"page\":1}}}";
-		
-		QueryBuilder query = QueryByFilter.setSortOrder(QueryByFilter.fromFilter(null), Arrays.asList(new SortorderBuilder().setProperty("source-type").setSortorder(SortOrder.Ascending).build()));
-		System.out.println(query.toJSON());
-	}
+    @Test
+    public void testQuestionMark1() {
+        EntityInput input = mock(EntityInput.class);
+        List<Filter> filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build());
+        when(input.getFilter()).thenReturn(filters);
+
+        QueryBuilder query = new QueryByFilter(input).getQueryBuilderByFilter();
+        System.out.println(query.toJSON());
+
+        assertTrue(query.toJSON().contains("{1,1}"));
+        assertNotNull(new QueryByFilter(input).getQueryBuilderByFilter(PROPERTY));
+
+    }
+
+    @Test
+    public void testQuestionMarkExcpetion() {
+        EntityInput input = mock(EntityInput.class);
+        List<Filter> filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build());
+        when(input.getFilter()).thenReturn(filters);
+        try {
+            new QueryByFilter(input).getSearchRequestByFilter("test1", "test2", "test3", "test4");
+            fail();
+        } catch (IllegalArgumentException e) { // fails if type not correct
+
+        }
+
+    }
+
+    @Test
+    public void testQuestionMark2() {
+        EntityInput input = mock(EntityInput.class);
+        List<Filter> filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build(),
+                new FilterBuilder().setProperty(PROPERTY2).setFiltervalue("abc").build());
+        when(input.getFilter()).thenReturn(filters);
+        QueryBuilder query = new QueryByFilter(input).getQueryBuilderByFilter();
+        System.out.println(query.toJSON());
+        assertNotNull(new QueryByFilter(input).getQueryBuilderByFilter(PROPERTY2));
+    }
+
+    @Test
+    public void testQuestionMark3() {
+        EntityInput input = mock(EntityInput.class);
+        List<Filter> filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build(),
+                new FilterBuilder().setProperty(PROPERTY3).setFiltervalue("<2019-06-13T15:00:12.0Z").build());
+        List<Sortorder> sortorder =
+                Arrays.asList(new SortorderBuilder().setProperty(PROPERTY).setSortorder(SortOrder.Ascending).build());
+        when(input.getFilter()).thenReturn(filters);
+        when(input.getSortorder()).thenReturn(sortorder);
+
+        assertNotNull(new QueryByFilter(input).getQueryBuilderByFilter(PROPERTY));
+    }
+
+    @Test
+    public void testSortorder() {
+        EntityInput input = mock(EntityInput.class);
+        List<Sortorder> sortorder = Arrays
+                .asList(new SortorderBuilder().setProperty("source-type").setSortorder(SortOrder.Ascending).build());
+        when(input.getSortorder()).thenReturn(sortorder);
+        QueryBuilder query = new QueryByFilter(input).getQueryBuilderByFilter();
+        System.out.println(query.toJSON());
+    }
 }

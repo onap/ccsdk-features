@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock;
 
 import java.util.Optional;
+import org.mockito.Mockito;
 import org.opendaylight.mdsal.binding.api.BindingService;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPoint;
@@ -37,16 +38,20 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * @author herbert
  *
  */
-public class MountPointMock implements MountPoint {
+public class MountPointMock extends Mockito implements MountPoint {
 
     private boolean databrokerAbsent = true;
-    private final DataBrokerMountpointMock dataBroker = new DataBrokerMountpointMock();
     private final RpcConsumerRegistryMock rpcConsumerRegistry = new RpcConsumerRegistryMock();
     private NotificationService setReadTransaction;
+    private DataBroker dataBroker;
 
     private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
             InstanceIdentifier.create(NetworkTopology.class).child(Topology.class,
                     new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
+
+    public MountPointMock() {
+        this.dataBroker = mock(DataBroker.class);
+    }
 
     @Override
     public InstanceIdentifier<?> getIdentifier() {
@@ -57,12 +62,13 @@ public class MountPointMock implements MountPoint {
     @Override
     public <T extends BindingService> Optional<T> getService(Class<T> service) {
 
-        System.out.println("Requested mountpoint service: "+service.getSimpleName()+" databrokerAbsent state: "+databrokerAbsent);
+        System.out.println("Requested mountpoint service: " + service.getSimpleName() + " databrokerAbsent state: "
+                + databrokerAbsent);
 
         Optional<? extends BindingService> res;
         if (service.isInstance(dataBroker)) {
             System.out.println("Delivering databroker");
-            res =  databrokerAbsent ? Optional.empty() : Optional.of(dataBroker);
+            res = databrokerAbsent ? Optional.empty() : Optional.of(dataBroker);
         } else if (service.isInstance(rpcConsumerRegistry)) {
             System.out.println("Delivering RpcConsumerRegistryMock");
             res = Optional.of(rpcConsumerRegistry);
@@ -76,7 +82,7 @@ public class MountPointMock implements MountPoint {
         return (Optional<T>) res;
     }
 
-    public void setDatabrokerAbsent( boolean state) {
+    public void setDatabrokerAbsent(boolean state) {
         this.databrokerAbsent = state;
     }
 

@@ -65,7 +65,7 @@ public class HelpServlet extends HttpServlet implements AutoCloseable {
         resp.addHeader("Access-Control-Allow-Methods", "OPTIONS, HEAD, GET, POST, PUT, DELETE");
         resp.addHeader("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Content-Length");
         if (query != null && query.contains("meta")) {
-          
+
             File f = new File(HelpInfrastructureObject.KARAFHELPDIRECTORY, "meta.json");
             if (f.exists()) {
                 LOG.debug("found local meta file");
@@ -114,19 +114,19 @@ public class HelpServlet extends HttpServlet implements AutoCloseable {
                 }
                 LOG.debug("delivering file");
                 OutputStream out = resp.getOutputStream();
-//                if (this.isTextFile(f) && REDIRECT_LINKS) {
-//                    String line;
-//                    try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-//                        line = br.readLine();
-//                        while (line != null) {
-//                        	out.write((line + "\n").getBytes());
-//                            line = br.readLine();
-//                        }
-//                        out.flush();
-//                        out.close();
-//                        br.close();
-//                    }
-//                } else 
+                //                if (this.isTextFile(f) && REDIRECT_LINKS) {
+                //                    String line;
+                //                    try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+                //                        line = br.readLine();
+                //                        while (line != null) {
+                //                        	out.write((line + "\n").getBytes());
+                //                            line = br.readLine();
+                //                        }
+                //                        out.flush();
+                //                        out.close();
+                //                        br.close();
+                //                    }
+                //                } else 
                 {
                     try (FileInputStream in = new FileInputStream(f)) {
 

@@ -23,30 +23,31 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
 public enum ConfigName {
 
-	APIGATEWAY("apigateway"),
-	DEVICEMANAGER("devicemanager"),
-	DATAPROVIDER("dataprovider");
-	
-	
-	private final String value;
+    APIGATEWAY("apigateway"), DEVICEMANAGER("devicemanager"), DATAPROVIDER("dataprovider");
 
-	private ConfigName(String s) {
-		this.value = s;
-	}
-	@Override
-	public String toString() {
-		return this.value;
-	}
-	public String getValue() {
-		return value;
-	}
-	public static ConfigName getValueOf(String s) throws Exception  {
-		s = s.toLowerCase();
-		for(ConfigName p:ConfigName.values()) {
-			if(p.value.equals(s)) {
-				return p;
-			}
-		}
-		throw new Exception("value not found");
-	}
+
+    private final String value;
+
+    private ConfigName(String s) {
+        this.value = s;
+    }
+
+    @Override
+    public String toString() {
+        return this.value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public static ConfigName getValueOf(String s) throws Exception {
+        s = s.toLowerCase();
+        for (ConfigName p : ConfigName.values()) {
+            if (p.value.equals(s)) {
+                return p;
+            }
+        }
+        throw new Exception("value not found");
+    }
 }

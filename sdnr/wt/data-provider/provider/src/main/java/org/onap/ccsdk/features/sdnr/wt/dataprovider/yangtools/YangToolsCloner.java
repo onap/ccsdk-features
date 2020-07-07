@@ -46,12 +46,15 @@ public class YangToolsCloner {
     private YangToolsCloner(int ac) {
         this.accessor = ac;
     }
+
     public static YangToolsCloner instance() {
         return instance(ACCESSOR_METHOD);
     }
+
     public static YangToolsCloner instance(int ac) {
         return new YangToolsCloner(ac);
     }
+
     /**
      *
      * @param source source object
@@ -88,9 +91,10 @@ public class YangToolsCloner {
      * @param clazz Class of return object
      * @return cloned object
      */
-    public <S , T extends DataObject> T clone(S source, Class<T> clazz) {
+    public <S, T extends DataObject> T clone(S source, Class<T> clazz) {
         return clone(source, clazz, null);
     }
+
     /**
      *
      * @param source source object
@@ -98,10 +102,9 @@ public class YangToolsCloner {
      * @attrList if empty copy all else list of attribute Names to clone
      * @return cloned object
      */
-    public <S, T extends DataObject> T clone(S source, Class<T> clazz,
-            @Nullable List<String> attrList) {
+    public <S, T extends DataObject> T clone(S source, Class<T> clazz, @Nullable List<String> attrList) {
         if (source == null) {
-            return (T)null;
+            return (T) null;
         }
         Field[] attributeFields;
         Field sourceField;
@@ -121,7 +124,7 @@ public class YangToolsCloner {
 
             attributeField.setAccessible(true);
             try {
-                if(accessor==ACCESSOR_FIELD) {
+                if (accessor == ACCESSOR_FIELD) {
                     sourceField = source.getClass().getDeclaredField(attributeField.getName());
                     sourceField.setAccessible(true);
                     if (attributeField.getType().equals(String.class) && !sourceField.getType().equals(String.class)) {
@@ -129,10 +132,9 @@ public class YangToolsCloner {
                     } else {
                         attributeField.set(object, sourceField.get(source));
                     }
-                }
-                else if(accessor==ACCESSOR_METHOD) {
+                } else if (accessor == ACCESSOR_METHOD) {
                     String getter = getter(attributeField.getName());
-                    System.out.println("getter="+getter);
+                    System.out.println("getter=" + getter);
                     m = source.getClass().getDeclaredMethod(getter);
                     m.setAccessible(true);
                     if (attributeField.getType().equals(String.class) && !m.getReturnType().equals(String.class)) {
@@ -147,7 +149,7 @@ public class YangToolsCloner {
                 String msg = "no such field " + attributeField.getName() + " in class " + source.getClass().getName();
                 LOG.debug(msg);
                 // throw new IllegalArgumentException(msg);
-            } catch (IllegalAccessException|SecurityException e) {
+            } catch (IllegalAccessException | SecurityException e) {
                 LOG.debug("Access problem " + attributeField.getName(), e);
             } catch (IllegalArgumentException e) {
                 LOG.debug("argument problem " + attributeField.getName(), e);
@@ -160,12 +162,14 @@ public class YangToolsCloner {
     }
 
     private static String getter(String name) {
-        return String.format("%s%s%s","get",name.substring(1, 2).toUpperCase(),name.substring(2));
+        return String.format("%s%s%s", "get", name.substring(1, 2).toUpperCase(), name.substring(2));
     }
-    public <S extends DataObject, T extends DataObject,B extends Builder<T>> B cloneToBuilder(S source, B builder){
-        return cloneToBuilder(source, builder,null);
+
+    public <S extends DataObject, T extends DataObject, B extends Builder<T>> B cloneToBuilder(S source, B builder) {
+        return cloneToBuilder(source, builder, null);
     }
-    public <S extends DataObject, T extends DataObject,B extends Builder<T>> B  cloneToBuilder(S source, B builder,
+
+    public <S extends DataObject, T extends DataObject, B extends Builder<T>> B cloneToBuilder(S source, B builder,
             @Nullable List<String> attrList) {
         Field[] attributeFields;
         Field sourceField;
@@ -183,7 +187,7 @@ public class YangToolsCloner {
 
             attributeField.setAccessible(true);
             try {
-                if(accessor==ACCESSOR_FIELD) {
+                if (accessor == ACCESSOR_FIELD) {
                     sourceField = source.getClass().getDeclaredField(attributeField.getName());
                     sourceField.setAccessible(true);
                     if (attributeField.getType().equals(String.class) && !sourceField.getType().equals(String.class)) {
@@ -191,8 +195,7 @@ public class YangToolsCloner {
                     } else {
                         attributeField.set(builder, sourceField.get(source));
                     }
-                }
-                else if(accessor==ACCESSOR_METHOD) {
+                } else if (accessor == ACCESSOR_METHOD) {
                     m = source.getClass().getDeclaredMethod(getter(attributeField.getName()));
                     m.setAccessible(true);
                     if (attributeField.getType().equals(String.class) && !m.getReturnType().equals(String.class)) {
@@ -207,7 +210,7 @@ public class YangToolsCloner {
                 String msg = "no such field " + attributeField.getName() + " in class " + source.getClass().getName();
                 LOG.debug(msg);
                 // throw new IllegalArgumentException(msg);
-            } catch (IllegalAccessException|SecurityException e) {
+            } catch (IllegalAccessException | SecurityException e) {
                 LOG.debug("Access problem " + attributeField.getName(), e);
             } catch (IllegalArgumentException e) {
                 LOG.debug("argument problem " + attributeField.getName(), e);

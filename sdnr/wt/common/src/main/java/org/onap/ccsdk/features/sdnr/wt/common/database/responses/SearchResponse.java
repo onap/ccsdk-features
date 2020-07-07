@@ -28,58 +28,74 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 
 public class SearchResponse extends BaseResponse {
 
-	private long total;
-	private SearchHit[] searchHits;
-	private JSONObject aggregations;
+    private long total;
+    private SearchHit[] searchHits;
+    private JSONObject aggregations;
 
-	public SearchResponse(Response response) {
-		super(response);
-		this.handleResult(this.getJson(response));
-	}
+    public SearchResponse(Response response) {
+        super(response);
+        this.handleResult(this.getJson(response));
+    }
 
-	public SearchResponse(String json) {
-		super(null);
-		this.handleResult(this.getJson(json));
-	}
+    public SearchResponse(String json) {
+        super(null);
+        this.handleResult(this.getJson(json));
+    }
 
-	private void handleResult(JSONObject result) {
-		if(result!=null && this.isResponseSucceeded()) {
-			JSONObject hitsouter=result.getJSONObject("hits");
-			this.total = hitsouter.getLong("total");
-			JSONArray a=hitsouter.getJSONArray("hits");
-			SearchHit[] hits=new SearchHit[a.length()];
-			for(int i=0;i<a.length();i++) {
-				hits[i]=new SearchHit(a.getJSONObject(i));
-			}
-			this.searchHits=hits;
-			if(result.has("aggregations")) {
-				this.aggregations = result.getJSONObject("aggregations");
-			}
-			else {
-				this.aggregations=null;
-			}
-		}
-		else {
-			this.searchHits=new SearchHit[0];
-		}
-	}
-	public SearchHit[] getHits() {
-		return this.searchHits;
-	}
-	public long getTotal() {
-		return this.total;
-	}
-	public boolean hasAggregations() {
-		return this.aggregations!=null;
-	}
-	public AggregationEntries getAggregations(String property) {
-		AggregationEntries entries=new AggregationEntries();
-		if(this.aggregations!=null && this.aggregations.has(property)) {
-			JSONArray a=this.aggregations.getJSONObject(property).getJSONArray("buckets");
-			for(int i=0;i<a.length();i++) {
-				entries.put(a.getJSONObject(i).getString("key"),a.getJSONObject(i).getLong("doc_count") );
-			}
-		}
-		return entries;
-	}
+    private void handleResult(JSONObject result) {
+        if (result != null && this.isResponseSucceeded()) {
+            JSONObject hitsouter = result.getJSONObject("hits");
+            this.total = this.getTotalFromHits(hitsouter);
+            JSONArray a = hitsouter.getJSONArray("hits");
+            SearchHit[] hits = new SearchHit[a.length()];
+            for (int i = 0; i < a.length(); i++) {
+                hits[i] = new SearchHit(a.getJSONObject(i));
+            }
+            this.searchHits = hits;
+            if (result.has("aggregations")) {
+                this.aggregations = result.getJSONObject("aggregations");
+            } else {
+                this.aggregations = null;
+            }
+        } else {
+            this.searchHits = new SearchHit[0];
+        }
+    }
+
+    public SearchHit[] getHits() {
+        return this.searchHits;
+    }
+
+    public long getTotal() {
+        return this.total;
+    }
+
+    public boolean hasAggregations() {
+        return this.aggregations != null;
+    }
+
+    public AggregationEntries getAggregations(String property) {
+        AggregationEntries entries = new AggregationEntries();
+        if (this.aggregations != null && this.aggregations.has(property)) {
+            JSONArray a = this.aggregations.getJSONObject(property).getJSONArray("buckets");
+            for (int i = 0; i < a.length(); i++) {
+                entries.put(a.getJSONObject(i).getString("key"), a.getJSONObject(i).getLong("doc_count"));
+            }
+        }
+        return entries;
+    }
+
+    /**
+     * @param hits
+     * @return
+     */
+    private long getTotalFromHits(JSONObject hits) {
+        Object o = hits.get("total");
+        if (o instanceof Long || o instanceof Integer) {
+            return hits.getLong("total");
+        } else if (o instanceof JSONObject) {
+            return hits.getJSONObject("total").getLong("value");
+        }
+        return 0;
+    }
 }

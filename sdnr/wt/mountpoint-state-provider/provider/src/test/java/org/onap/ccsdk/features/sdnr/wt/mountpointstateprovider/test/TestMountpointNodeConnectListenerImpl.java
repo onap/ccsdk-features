@@ -20,40 +20,65 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test;
 
 import static org.junit.Assert.assertNotEquals;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
+import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.GeneralConfig;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointNodeConnectListenerImpl;
-import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStatePublisher;
+import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStatePublisherMain;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.NetconfAccessorMock;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.NetconfNodeMock;
-import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.odlapi.DataBrokerMountpointMock;
-import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.odlapi.MountPointMockNew;
+import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.NetconfNodeStateServiceMock;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
-import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
+import com.google.common.io.Files;
+
 public class TestMountpointNodeConnectListenerImpl {
 
-    MountpointNodeConnectListenerImpl nodeConnectListener = new MountpointNodeConnectListenerImpl();
+    private static final String TESTCONFIG_CONTENT =
+            "[general]\n" + "dmaapEnabled=false\n" + "TransportType=HTTPNOAUTH\n" + "host=onap-dmap:3904\n"
+                    + "topic=unauthenticated.SDNR_MOUNTPOINT_STATE_INFO\n" + "contenttype=application/json\n"
+                    + "timeout=20000\n" + "limit=10000\n" + "maxBatchSize=100\n" + "maxAgeMs=250\n"
+                    + "MessageSentThreadOccurance=50\n";
+
+    private ConfigurationFileRepresentation globalCfg;
+
+
+    NetconfNodeStateServiceMock netconfNodeStateServiceMock = new NetconfNodeStateServiceMock();
+    MountpointNodeConnectListenerImpl nodeConnectListener =
+            new MountpointNodeConnectListenerImpl(netconfNodeStateServiceMock);
+    MountpointStatePublisherMain mountpointStatePublisher;
     NetconfNodeMock netconfNodeMock = new NetconfNodeMock();
     NetconfNode netconfNode = netconfNodeMock.getNetconfNode();
     NodeId nNodeId = new NodeId("nSky");
-    DataBroker netconfNodeDataBroker = new DataBrokerMountpointMock();
-    MountPoint mountpoint = new MountPointMockNew();
-    NetconfAccessor accessor = new NetconfAccessorMock(nNodeId, netconfNode, mountpoint, netconfNodeDataBroker);
+    NetconfAccessor accessor = new NetconfAccessorMock(nNodeId, netconfNode);
+
+    @Before
+    public void initialize() throws IOException {
+        Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
+        globalCfg = new ConfigurationFileRepresentation("test.properties");
+        GeneralConfig cfg = new GeneralConfig(globalCfg);
+        mountpointStatePublisher = new MountpointStatePublisherMain(cfg);
+        nodeConnectListener.start(mountpointStatePublisher);
+    }
 
     @Test
     public void testOnEnterConnected() {
         nodeConnectListener.onEnterConnected(accessor);
-        assertNotEquals(MountpointStatePublisher.stateObjects.size(), 0);
+        assertNotEquals(mountpointStatePublisher.stateObjects.size(), 0);
     }
 
     @Test
     public void testOnLeaveConnected() {
         nodeConnectListener.onLeaveConnected(nNodeId, Optional.of(netconfNode));
-        assertNotEquals(MountpointStatePublisher.stateObjects.size(), 0);
+        assertNotEquals(MountpointStatePublisherMain.stateObjects.size(), 0);
     }
 
     @Test

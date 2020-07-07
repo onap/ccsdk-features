@@ -29,172 +29,173 @@ import org.json.JSONObject;
 
 public class JSONAssert {
 
-	/**
-	 * nonstrict comparison means that json array items can be in different orders
-	 */
-	private static Comparator<JSONObject> nonStrictComarator = new Comparator<JSONObject>() {
+    /**
+     * nonstrict comparison means that json array items can be in different orders
+     */
+    private static Comparator<JSONObject> nonStrictComarator = new Comparator<JSONObject>() {
 
-		@Override
-		public int compare(JSONObject o1, JSONObject o2) {
-			if (o1.equals(o2)) {
-				return 0;
-			}
-			Iterator<?> keys = o1.keys();
-			while (keys.hasNext()) {
-				String key = String.valueOf(keys.next());
-				int x = this.test(o1.get(key), o2.get(key));
-				if (x != 0) {
-					return x;
-				}
-			}
-			return 0;
-		}
+        @Override
+        public int compare(JSONObject o1, JSONObject o2) {
+            if (o1.equals(o2)) {
+                return 0;
+            }
+            Iterator<?> keys = o1.keys();
+            while (keys.hasNext()) {
+                String key = String.valueOf(keys.next());
+                int x = this.test(o1.get(key), o2.get(key));
+                if (x != 0) {
+                    return x;
+                }
+            }
+            return 0;
+        }
 
-		private int test(Object o1, Object o2) {
-			int x;
-			if ((o1 instanceof Double) && (o2 instanceof Double)) {
+        private int test(Object o1, Object o2) {
+            int x;
+            if ((o1 instanceof Double) && (o2 instanceof Double)) {
 
-				return (((Double) o1).doubleValue() - ((Double) o2).doubleValue()) < 0 ? -1 : 1;
-			} else if ((o1 instanceof Boolean) && (o2 instanceof Boolean)) {
-				return ((Boolean) o1).booleanValue() == ((Boolean) o2).booleanValue() ? 0 : -1;
+                return (((Double) o1).doubleValue() - ((Double) o2).doubleValue()) < 0 ? -1 : 1;
+            } else if ((o1 instanceof Boolean) && (o2 instanceof Boolean)) {
+                return ((Boolean) o1).booleanValue() == ((Boolean) o2).booleanValue() ? 0 : -1;
 
-			} else if ((o1 instanceof String) && (o2 instanceof String)) {
+            } else if ((o1 instanceof String) && (o2 instanceof String)) {
 
-				return ((String) o1).equals(((String) o2)) ? 0 : -1;
-			} else if ((o1 instanceof JSONObject) && (o2 instanceof JSONObject)) {
-				if (((JSONObject) o1).length() != ((JSONObject) o2).length()) {
-					return ((JSONObject) o1).length() - ((JSONObject) o2).length() < 0 ? -1 : 1;
-				}
-				Iterator<?> keys = ((JSONObject) o1).keys();
-				while (keys.hasNext()) {
-					String key = String.valueOf(keys.next());
-					if (!((JSONObject) o2).has(key)) {
-						return -1;
-					}
-					x = this.test(((JSONObject) o1).get(key), ((JSONObject) o2).get(key));
-					if (x != 0) {
-						return x;
-					}
-				}
-			} else if ((o1 instanceof JSONArray) && (o2 instanceof JSONArray)) {
-				if (((JSONArray) o1).length() != ((JSONArray) o2).length()) {
-					return ((JSONArray) o1).length() - ((JSONArray) o2).length() < 0 ? -1 : 1;
-				}
-				for (int i = 0; i < ((JSONArray) o1).length(); i++) {
-					x = this.findInArray(((JSONArray) o1).get(i), (JSONArray) o2);
-					if (x != 0) {
-						return x;
-					}
-				}
-				for (int i = 0; i < ((JSONArray) o2).length(); i++) {
-					x = this.findInArray(((JSONArray) o2).get(i), (JSONArray) o1);
-					if (x != 0) {
-						return x;
-					}
-				}
-			}
-			return 0;
+                return ((String) o1).equals(((String) o2)) ? 0 : -1;
+            } else if ((o1 instanceof JSONObject) && (o2 instanceof JSONObject)) {
+                if (((JSONObject) o1).length() != ((JSONObject) o2).length()) {
+                    return ((JSONObject) o1).length() - ((JSONObject) o2).length() < 0 ? -1 : 1;
+                }
+                Iterator<?> keys = ((JSONObject) o1).keys();
+                while (keys.hasNext()) {
+                    String key = String.valueOf(keys.next());
+                    if (!((JSONObject) o2).has(key)) {
+                        return -1;
+                    }
+                    x = this.test(((JSONObject) o1).get(key), ((JSONObject) o2).get(key));
+                    if (x != 0) {
+                        return x;
+                    }
+                }
+            } else if ((o1 instanceof JSONArray) && (o2 instanceof JSONArray)) {
+                if (((JSONArray) o1).length() != ((JSONArray) o2).length()) {
+                    return ((JSONArray) o1).length() - ((JSONArray) o2).length() < 0 ? -1 : 1;
+                }
+                for (int i = 0; i < ((JSONArray) o1).length(); i++) {
+                    x = this.findInArray(((JSONArray) o1).get(i), (JSONArray) o2);
+                    if (x != 0) {
+                        return x;
+                    }
+                }
+                for (int i = 0; i < ((JSONArray) o2).length(); i++) {
+                    x = this.findInArray(((JSONArray) o2).get(i), (JSONArray) o1);
+                    if (x != 0) {
+                        return x;
+                    }
+                }
+            }
+            return 0;
 
-		}
+        }
 
-		private int findInArray(Object node, JSONArray o) {
-			for (int i = 0; i < o.length(); i++) {
-				if (this.test(o.get(i), node) == 0) {
-					return 0;
-				}
-			}
-			return -1;
-		}
-	};
-	/**
-	 * strict comparison means that json array items have to be in the same order
-	 */
-	private static Comparator<JSONObject> strictComarator = new Comparator<JSONObject>() {
+        private int findInArray(Object node, JSONArray o) {
+            for (int i = 0; i < o.length(); i++) {
+                if (this.test(o.get(i), node) == 0) {
+                    return 0;
+                }
+            }
+            return -1;
+        }
+    };
+    /**
+     * strict comparison means that json array items have to be in the same order
+     */
+    private static Comparator<JSONObject> strictComarator = new Comparator<JSONObject>() {
 
-		@Override
-		public int compare(JSONObject o1, JSONObject o2) {
-			if (o1.equals(o2)) {
-				return 0;
-			}
-			Iterator<?> keys = o1.keys();
-			while (keys.hasNext()) {
-				String key = String.valueOf(keys.next());
-				int x = this.test(o1.get(key), o2.get(key));
-				if (x != 0) {
-					return x;
-				}
-			}
-			return 0;
-		}
+        @Override
+        public int compare(JSONObject o1, JSONObject o2) {
+            if (o1.equals(o2)) {
+                return 0;
+            }
+            Iterator<?> keys = o1.keys();
+            while (keys.hasNext()) {
+                String key = String.valueOf(keys.next());
+                int x = this.test(o1.get(key), o2.get(key));
+                if (x != 0) {
+                    return x;
+                }
+            }
+            return 0;
+        }
 
-		private int test(Object o1, Object o2) {
-			int x;
-			if ((o1 instanceof Double) && (o2 instanceof Double)) {
+        private int test(Object o1, Object o2) {
+            int x;
+            if ((o1 instanceof Double) && (o2 instanceof Double)) {
 
-				return (((Double) o1).doubleValue() - ((Double) o2).doubleValue()) < 0 ? -1 : 1;
-			} else if ((o1 instanceof Boolean) && (o2 instanceof Boolean)) {
-				return ((Boolean) o1).booleanValue() == ((Boolean) o2).booleanValue() ? 0 : -1;
+                return (((Double) o1).doubleValue() - ((Double) o2).doubleValue()) < 0 ? -1 : 1;
+            } else if ((o1 instanceof Boolean) && (o2 instanceof Boolean)) {
+                return ((Boolean) o1).booleanValue() == ((Boolean) o2).booleanValue() ? 0 : -1;
 
-			} else if ((o1 instanceof String) && (o2 instanceof String)) {
+            } else if ((o1 instanceof String) && (o2 instanceof String)) {
 
-				return ((String) o1).equals(((String) o2)) ? 0 : -1;
-			} else if ((o1 instanceof JSONObject) && (o2 instanceof JSONObject)) {
-				if (((JSONObject) o1).length() == 0 && ((JSONObject) o2).length() == 0) {
-					return 0;
-				}
-				Iterator<?> keys = ((JSONObject) o1).keys();
-				while (keys.hasNext()) {
-					String key = String.valueOf(keys.next());
-					if (!((JSONObject) o2).has(key)) {
-						return -1;
-					}
-					x = this.test(((JSONObject) o1).get(key), ((JSONObject) o2).get(key));
-					if (x != 0) {
-						return x;
-					}
-				}
-			} else if ((o1 instanceof JSONArray) && (o2 instanceof JSONArray)) {
-				if (((JSONArray) o1).length() != ((JSONArray) o2).length()) {
-					return ((JSONArray) o1).length() - ((JSONArray) o2).length() < 0 ? -1 : 1;
-				}
-				for (int i = 0; i < ((JSONArray) o1).length(); i++) {
-					x = this.test(((JSONArray) o1).get(i), ((JSONArray) o2).get(i));
-					if (x != 0) {
-						return x;
-					}
-				}
-			}
-			return 0;
+                return ((String) o1).equals(((String) o2)) ? 0 : -1;
+            } else if ((o1 instanceof JSONObject) && (o2 instanceof JSONObject)) {
+                if (((JSONObject) o1).length() == 0 && ((JSONObject) o2).length() == 0) {
+                    return 0;
+                }
+                Iterator<?> keys = ((JSONObject) o1).keys();
+                while (keys.hasNext()) {
+                    String key = String.valueOf(keys.next());
+                    if (!((JSONObject) o2).has(key)) {
+                        return -1;
+                    }
+                    x = this.test(((JSONObject) o1).get(key), ((JSONObject) o2).get(key));
+                    if (x != 0) {
+                        return x;
+                    }
+                }
+            } else if ((o1 instanceof JSONArray) && (o2 instanceof JSONArray)) {
+                if (((JSONArray) o1).length() != ((JSONArray) o2).length()) {
+                    return ((JSONArray) o1).length() - ((JSONArray) o2).length() < 0 ? -1 : 1;
+                }
+                for (int i = 0; i < ((JSONArray) o1).length(); i++) {
+                    x = this.test(((JSONArray) o1).get(i), ((JSONArray) o2).get(i));
+                    if (x != 0) {
+                        return x;
+                    }
+                }
+            }
+            return 0;
 
-		}
-	};
-	public static void assertEquals(String def, String toTest, boolean strict) throws JSONException {
-		assertEquals(null, def, toTest, strict);
-	}
+        }
+    };
 
-	public static void assertEquals(String message, String def, String toTest, boolean strict) throws JSONException {
-		if (strict) {
-			assertEqualsStrict(message, def, toTest);
-		} else {
-			assertEqualsNonStrict(message, def, toTest);
-		}
-	}
-	
-	private static void assertEqualsNonStrict(String message, String def, String toTest) throws JSONException  {
+    public static void assertEquals(String def, String toTest, boolean strict) throws JSONException {
+        assertEquals(null, def, toTest, strict);
+    }
 
-		JSONObject d1 = new JSONObject(def);
-		JSONObject d2 = new JSONObject(toTest);
-		if (nonStrictComarator.compare(d1, d2) != 0) {
-			throw new AssertionError(message);
-		}
-	}
+    public static void assertEquals(String message, String def, String toTest, boolean strict) throws JSONException {
+        if (strict) {
+            assertEqualsStrict(message, def, toTest);
+        } else {
+            assertEqualsNonStrict(message, def, toTest);
+        }
+    }
 
-	private static void assertEqualsStrict(String message, String def, String toTest) throws JSONException {
-		JSONObject d1 = new JSONObject(def);
-		JSONObject d2 = new JSONObject(toTest);
-		if (strictComarator.compare(d1, d2) != 0) {
-			throw new AssertionError(message);
-		}
-	}
+    private static void assertEqualsNonStrict(String message, String def, String toTest) throws JSONException {
+
+        JSONObject d1 = new JSONObject(def);
+        JSONObject d2 = new JSONObject(toTest);
+        if (nonStrictComarator.compare(d1, d2) != 0) {
+            throw new AssertionError(message);
+        }
+    }
+
+    private static void assertEqualsStrict(String message, String def, String toTest) throws JSONException {
+        JSONObject d1 = new JSONObject(def);
+        JSONObject d2 = new JSONObject(toTest);
+        if (strictComarator.compare(d1, d2) != 0) {
+            throw new AssertionError(message);
+        }
+    }
 
 }

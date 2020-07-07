@@ -17,10 +17,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.Optional;
+
 import javax.annotation.Nonnull;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
@@ -36,18 +36,31 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.StreamNameType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
+import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 
 public class NetconfAccessorImpl implements NetconfAccessor {
 
     private static final Logger log = LoggerFactory.getLogger(NetconfAccessorImpl.class);
+
+    private static final @NonNull InstanceIdentifier<Topology> NETCONF_TOPO_IID =
+            InstanceIdentifier.create(NetworkTopology.class).child(Topology.class,
+                    new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
     private final NodeId nodeId;
     private final DataBroker dataBroker;
@@ -58,7 +71,8 @@ public class NetconfAccessorImpl implements NetconfAccessor {
 
     /**
      * Contains all data to access and manage netconf device
-     * @param nodeId  of managed netconf node
+     * 
+     * @param nodeId of managed netconf node
      * @param netconfNode information
      * @param dataBroker to access node
      * @param mountpoint of netconfNode
@@ -74,11 +88,18 @@ public class NetconfAccessorImpl implements NetconfAccessor {
         this.transactionUtils = transactionUtils;
 
         ConnectionStatus csts = netconfNode != null ? netconfNode.getConnectionStatus() : null;
-        this.capabilities = Capabilities.getAvailableCapabilities(csts != null ? netconfNode : null);
+        if (csts == null) {
+            throw new IllegalStateException(String.format("connection status for %s is not connected", nodeId));
+        }
+        Capabilities tmp = Capabilities.getAvailableCapabilities(netconfNode);
+        if (tmp.getCapabilities().size() <= 0) {
+            throw new IllegalStateException(String.format("no capabilities found for %s", nodeId));
+        }
+        this.capabilities = tmp;
     }
 
     /**
-     * @param nodeId     with uuid of managed netconf node
+     * @param nodeId with uuid of managed netconf node
      * @param dataBroker to access node
      */
     public NetconfAccessorImpl(String nodeId, NetconfNode netconfNode, DataBroker dataBroker, MountPoint mountpoint,
@@ -95,31 +116,36 @@ public class NetconfAccessorImpl implements NetconfAccessor {
     public DataBroker getDataBroker() {
         return dataBroker;
     }
+
     @Override
     public MountPoint getMountpoint() {
         return mountpoint;
     }
+
     @Override
     public TransactionUtils getTransactionUtils() {
         return transactionUtils;
     }
+
     @Override
     public NetconfNode getNetconfNode() {
         return netconfNode;
     }
+
     @Override
     public Capabilities getCapabilites() {
         return capabilities;
     }
 
     @Override
-    public @NonNull <T extends NotificationListener> ListenerRegistration<NotificationListener> doRegisterNotificationListener(@NonNull T listener) {
+    public @NonNull <T extends NotificationListener> ListenerRegistration<NotificationListener> doRegisterNotificationListener(
+            @NonNull T listener) {
         log.info("Begin register listener for Mountpoint {}", mountpoint.getIdentifier().toString());
-        final Optional<NotificationService> optionalNotificationService = mountpoint
-                .getService(NotificationService.class);
+        final Optional<NotificationService> optionalNotificationService =
+                mountpoint.getService(NotificationService.class);
         final NotificationService notificationService = optionalNotificationService.get();
-        final ListenerRegistration<NotificationListener> ranListenerRegistration = notificationService
-                .registerNotificationListener(listener);
+        final ListenerRegistration<NotificationListener> ranListenerRegistration =
+                notificationService.registerNotificationListener(listener);
         log.info("End registration listener for Mountpoint {} Listener: {} Result: {}",
                 mountpoint.getIdentifier().toString(), optionalNotificationService, ranListenerRegistration);
         return ranListenerRegistration;

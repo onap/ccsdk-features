@@ -25,7 +25,7 @@ import org.elasticsearch.client.Response;
 
 public class ClusterSettingsResponse extends AcknowledgedResponse {
 
-	public ClusterSettingsResponse(Response response)   {
+    public ClusterSettingsResponse(Response response) {
         super(response);
 
     }

@@ -25,38 +25,38 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 
-public class ComponentData extends ArrayList<SearchHit>{
+public class ComponentData extends ArrayList<SearchHit> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private final ComponentName name;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private final ComponentName name;
 
-	public ComponentData(ComponentName name) {
-		this(name,null);
-	}
+    public ComponentData(ComponentName name) {
+        this(name, null);
+    }
 
-	public ComponentData(ComponentName name,JSONArray a) {
-		this.name = name;
-		if(a!=null) {
-			for(int i=0;i<a.length();i++) {
-				this.add(new SearchHit(a.getJSONObject(i)));
-			}
-		}
-	
-	}
+    public ComponentData(ComponentName name, JSONArray a) {
+        this.name = name;
+        if (a != null) {
+            for (int i = 0; i < a.length(); i++) {
+                this.add(new SearchHit(a.getJSONObject(i)));
+            }
+        }
 
-	public ComponentName getName() {
-		return this.name;
-	}
+    }
 
-	public JSONArray toJsonArray() {
-		JSONArray a = new JSONArray();
-		for(SearchHit h:this) {
-			a.put(h.getRaw());
-		}
-		return a;
-	}
-	
+    public ComponentName getName() {
+        return this.name;
+    }
+
+    public JSONArray toJsonArray() {
+        JSONArray a = new JSONArray();
+        for (SearchHit h : this) {
+            a.put(h.getRaw());
+        }
+        return a;
+    }
+
 }

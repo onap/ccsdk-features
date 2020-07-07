@@ -32,14 +32,13 @@ public class NotificationPublishServiceMock implements NotificationPublishServic
         return null;
     }
 
-   @Override
+    @Override
     public ListenableFuture<?> offerNotification(Notification notification, int timeout, TimeUnit unit)
             throws InterruptedException {
         return null;
     }
 
     @Override
-    public void putNotification(Notification notification) throws InterruptedException {
-   }
+    public void putNotification(Notification notification) throws InterruptedException {}
 
 }

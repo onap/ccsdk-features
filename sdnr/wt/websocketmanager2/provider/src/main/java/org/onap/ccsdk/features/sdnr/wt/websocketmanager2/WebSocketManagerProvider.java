@@ -107,8 +107,8 @@ public class WebSocketManagerProvider extends Blueprint implements Websocketmana
     @Override
     public ListenableFuture<RpcResult<WebsocketEventOutput>> websocketEvent(WebsocketEventInput input) {
         if (wsServlet != null) {
-			return wsServlet.websocketEvent(input);
-		} else {
+            return wsServlet.websocketEvent(input);
+        } else {
             RpcResultBuilder<WebsocketEventOutput> result = RpcResultBuilder.failed();
             return result.withError(ErrorType.APPLICATION, "Not intialized").buildFuture();
         }

@@ -32,54 +32,60 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.data.DbFilter;
 
 public class TestDatabaseFilterConversion {
 
-	@Test
-	public void testStartsWith() {
-		String re=DbFilter.createDatabaseRegex("abc*");
-		assertEquals("abc.*", re);
-	}
-	@Test
-	public void testEndsWith() {
-		String re=DbFilter.createDatabaseRegex("*abc");
-		assertEquals(".*abc", re);
-	}
-	@Test
-	public void testMultiple() {
-		String re=DbFilter.createDatabaseRegex("abc*ff*fa");
-		assertEquals("abc.*ff.*fa", re);
-	}
-	
-	@Test
-	public void testPlaceholder() {
-		String re=DbFilter.createDatabaseRegex("abc?ef");
-		assertEquals("abc.{1,1}ef", re);
-	}
-	@Test
-	public void testCombined() {
-		String re=DbFilter.createDatabaseRegex("abc?ff*fa");
-		assertEquals("abc.{1,1}ff.*fa", re);
-	}
-	@Test
-	public void testFilterCheck() {
-		assertTrue(DbFilter.hasSearchParams("abc?"));
-		assertTrue(DbFilter.hasSearchParams("bac*"));
-		assertFalse(DbFilter.hasSearchParams("abc+"));
-	}
-	@Test
-	public void testRangeConversion() {
-		try {
-			JSONAssert.assertEquals("", "{\"query\":{\"range\":{\"port\":{\"gte\":2230,\"boost\":2}}}}",
-					DbFilter.getRangeQuery("port", ">=2230").toJSON(),true);
-			JSONAssert.assertEquals("", "{\"query\":{\"range\":{\"port\":{\"gt\":2230,\"boost\":2}}}}",
-					DbFilter.getRangeQuery("port", ">2230").toJSON(),true);
-			JSONAssert.assertEquals("", "{\"query\":{\"range\":{\"port\":{\"lte\":2230,\"boost\":2}}}}",
-					DbFilter.getRangeQuery("port", "<=2230").toJSON(),true);
-			JSONAssert.assertEquals("", "{\"query\":{\"range\":{\"port\":{\"lt\":2230,\"boost\":2}}}}",
-					DbFilter.getRangeQuery("port", "<2230").toJSON(),true);
-			JSONAssert.assertEquals("", "{\"query\":{\"range\":{\"timestamp\":{\"lt\":\"2018-01-01T23:59:59.0Z\",\"boost\":2}}}}",
-					DbFilter.getRangeQuery("timestamp", "<2018-01-01T23:59:59.0Z").toJSON(),true);
-		} catch (JSONException e) {
-			fail(e.getMessage());
-		}
-	}
-	
+    @Test
+    public void testStartsWith() {
+        String re = DbFilter.createDatabaseRegex("abc*");
+        assertEquals("abc.*", re);
+    }
+
+    @Test
+    public void testEndsWith() {
+        String re = DbFilter.createDatabaseRegex("*abc");
+        assertEquals(".*abc", re);
+    }
+
+    @Test
+    public void testMultiple() {
+        String re = DbFilter.createDatabaseRegex("abc*ff*fa");
+        assertEquals("abc.*ff.*fa", re);
+    }
+
+    @Test
+    public void testPlaceholder() {
+        String re = DbFilter.createDatabaseRegex("abc?ef");
+        assertEquals("abc.{1,1}ef", re);
+    }
+
+    @Test
+    public void testCombined() {
+        String re = DbFilter.createDatabaseRegex("abc?ff*fa");
+        assertEquals("abc.{1,1}ff.*fa", re);
+    }
+
+    @Test
+    public void testFilterCheck() {
+        assertTrue(DbFilter.hasSearchParams("abc?"));
+        assertTrue(DbFilter.hasSearchParams("bac*"));
+        assertFalse(DbFilter.hasSearchParams("abc+"));
+    }
+
+    @Test
+    public void testRangeConversion() {
+        try {
+            JSONAssert.assertEquals("", "{\"query\":{\"range\":{\"port\":{\"gte\":2230,\"boost\":2}}}}",
+                    DbFilter.getRangeQuery("port", ">=2230").toJSON(), true);
+            JSONAssert.assertEquals("", "{\"query\":{\"range\":{\"port\":{\"gt\":2230,\"boost\":2}}}}",
+                    DbFilter.getRangeQuery("port", ">2230").toJSON(), true);
+            JSONAssert.assertEquals("", "{\"query\":{\"range\":{\"port\":{\"lte\":2230,\"boost\":2}}}}",
+                    DbFilter.getRangeQuery("port", "<=2230").toJSON(), true);
+            JSONAssert.assertEquals("", "{\"query\":{\"range\":{\"port\":{\"lt\":2230,\"boost\":2}}}}",
+                    DbFilter.getRangeQuery("port", "<2230").toJSON(), true);
+            JSONAssert.assertEquals("",
+                    "{\"query\":{\"range\":{\"timestamp\":{\"lt\":\"2018-01-01T23:59:59.0Z\",\"boost\":2}}}}",
+                    DbFilter.getRangeQuery("timestamp", "<2018-01-01T23:59:59.0Z").toJSON(), true);
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }

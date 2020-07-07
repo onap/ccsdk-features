@@ -45,9 +45,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.YangFileProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.YangFilename;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.YangSchemaHttpServlet;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangFileProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangFilename;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangSchemaHttpServlet;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -55,145 +55,150 @@ import static org.mockito.Mockito.when;
 
 public class TestYangProvider {
 
-	private static final String TESTPATH = "cache/schema/";
+    private static final String TESTPATH = "cache/schema/";
 
 
-	@BeforeClass
-	public static void init() {
-		Set<PosixFilePermission> perms;
-		FileAttribute<?> attr;
-		perms     = EnumSet.noneOf(PosixFilePermission.class);
+    @BeforeClass
+    public static void init() {
+        Set<PosixFilePermission> perms;
+        FileAttribute<?> attr;
+        perms = EnumSet.noneOf(PosixFilePermission.class);
 
-		perms.add(PosixFilePermission.OWNER_READ);
-		perms.add(PosixFilePermission.OWNER_WRITE);
-		perms.add(PosixFilePermission.OWNER_EXECUTE);
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.OWNER_EXECUTE);
 
-		attr = PosixFilePermissions.asFileAttribute(perms);
-		try {
-			Files.createDirectories(new File(TESTPATH).toPath(),attr);
-			new File(TESTPATH+new YangFilename("module1","2010-01-01").getFilename()).createNewFile();
-			new File(TESTPATH+new YangFilename("module2","2010-01-01").getFilename()).createNewFile();
-			new File(TESTPATH+new YangFilename("module2","2010-04-01").getFilename()).createNewFile();
-			new File(TESTPATH+new YangFilename("module3","2010-01-01").getFilename()).createNewFile();
-			new File(TESTPATH+new YangFilename("module4","2010-05-01").getFilename()).createNewFile();
-			new File(TESTPATH+new YangFilename("module5","2010-01-11").getFilename()).createNewFile();
-			new File(TESTPATH+new YangFilename("module6","2010-01-01").getFilename()).createNewFile();
-		} catch (IOException | ParseException e) {
+        attr = PosixFilePermissions.asFileAttribute(perms);
+        try {
+            Files.createDirectories(new File(TESTPATH).toPath(), attr);
+            new File(TESTPATH + new YangFilename("module1", "2010-01-01").getFilename()).createNewFile();
+            new File(TESTPATH + new YangFilename("module2", "2010-01-01").getFilename()).createNewFile();
+            new File(TESTPATH + new YangFilename("module2", "2010-04-01").getFilename()).createNewFile();
+            new File(TESTPATH + new YangFilename("module3", "2010-01-01").getFilename()).createNewFile();
+            new File(TESTPATH + new YangFilename("module4", "2010-05-01").getFilename()).createNewFile();
+            new File(TESTPATH + new YangFilename("module5", "2010-01-11").getFilename()).createNewFile();
+            new File(TESTPATH + new YangFilename("module6", "2010-01-01").getFilename()).createNewFile();
+        } catch (IOException | ParseException e) {
 
-		}
-	}
-	@AfterClass
-	public static void deinit() {
-		try {
-			Files.walk(new File("cache").toPath())
-		      .sorted(Comparator.reverseOrder())
-		      .map(Path::toFile)
-		      .forEach(File::delete);
-		} catch (IOException e) {
-			System.err.println(e);
-		}
-	}
-	@Test
-	public void testExisting() {
-		YangFileProvider provider= new YangFileProvider(TESTPATH);
-		assertTrue(provider.hasFileForModule("module1","2010-01-01"));
-		assertTrue(provider.hasFileForModule("module2"));
-		assertTrue(provider.hasFileForModule("module3"));
-		assertFalse(provider.hasFileForModule("module5","2010-01-01"));
-	}
-	@Test
-	public void testRevision() throws ParseException {
-		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
-		YangFileProvider provider= new YangFileProvider(TESTPATH);
-		YangFilename f1 = provider.getFileForModule("module1","2010-01-01");
-		assertEquals("module1",f1.getModule());
-		assertEquals(sdf.parse("2010-01-01"),f1.getRevision());
-		YangFilename f2 = provider.getFileForModule("module2");
-		assertEquals("module2",f2.getModule());
-		assertEquals(sdf.parse("2010-04-01"),f2.getRevision());
-		f2 = provider.getFileForModule("module2","2010-02-01");
-		assertEquals("module2",f2.getModule());
-		assertEquals(sdf.parse("2010-04-01"),f2.getRevision());
-		YangFilename f3 = provider.getFileForModule("module3");
-		assertEquals("module3",f3.getModule());
-		assertEquals(sdf.parse("2010-01-01"),f3.getRevision());
-		f3 = provider.getFileForModule("module3","2010-04-01");
-		assertNull(f3);
-	}
-	@Test
-	public void testServlet() throws IOException, ServletException {
-		HelpYangSchemaHttpServlet servlet = new HelpYangSchemaHttpServlet();
-		HttpServletRequest req = mock(HttpServletRequest.class);
-		HttpServletResponse resp = mock(HttpServletResponse.class);
+        }
+    }
 
-		when(req.getRequestURI()).thenReturn("/yang-schema/module1");
-		StringWriter out = new StringWriter();
-		ServletOutputStream printOut = new ServletOutputStream() {
+    @AfterClass
+    public static void deinit() {
+        try {
+            Files.walk(new File("cache").toPath()).sorted(Comparator.reverseOrder()).map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+    }
 
-			@Override
-			public void write(int arg0) throws IOException {
-				out.write(arg0);
-			}
-		};
-		when(resp.getOutputStream()).thenReturn(printOut);
-		servlet.doGet(req,resp);
-		verify(resp).setStatus(200);
-		verify(resp).setContentType("text/plain");
+    @Test
+    public void testExisting() {
+        YangFileProvider provider = new YangFileProvider(TESTPATH);
+        assertTrue(provider.hasFileForModule("module1", "2010-01-01"));
+        assertTrue(provider.hasFileForModule("module2"));
+        assertTrue(provider.hasFileForModule("module3"));
+        assertFalse(provider.hasFileForModule("module5", "2010-01-01"));
+    }
 
-	}
-	@Test
-	public void testServletBad() throws IOException, ServletException {
-		HelpYangSchemaHttpServlet servlet = new HelpYangSchemaHttpServlet();
-		HttpServletRequest req = mock(HttpServletRequest.class);
-		HttpServletResponse resp = mock(HttpServletResponse.class);
+    @Test
+    public void testRevision() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        YangFileProvider provider = new YangFileProvider(TESTPATH);
+        YangFilename f1 = provider.getFileForModule("module1", "2010-01-01");
+        assertEquals("module1", f1.getModule());
+        assertEquals(sdf.parse("2010-01-01"), f1.getRevision());
+        YangFilename f2 = provider.getFileForModule("module2");
+        assertEquals("module2", f2.getModule());
+        assertEquals(sdf.parse("2010-04-01"), f2.getRevision());
+        f2 = provider.getFileForModule("module2", "2010-02-01");
+        assertEquals("module2", f2.getModule());
+        assertEquals(sdf.parse("2010-04-01"), f2.getRevision());
+        YangFilename f3 = provider.getFileForModule("module3");
+        assertEquals("module3", f3.getModule());
+        assertEquals(sdf.parse("2010-01-01"), f3.getRevision());
+        f3 = provider.getFileForModule("module3", "2010-04-01");
+        assertNull(f3);
+    }
 
-		when(req.getRequestURI()).thenReturn("/yang-schema/module1/2020-01-01");
-		StringWriter out = new StringWriter();
-		ServletOutputStream printOut = new ServletOutputStream() {
+    @Test
+    public void testServlet() throws IOException, ServletException {
+        HelpYangSchemaHttpServlet servlet = new HelpYangSchemaHttpServlet();
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
 
-			@Override
-			public void write(int arg0) throws IOException {
-				out.write(arg0);
-			}
-		};
-		when(resp.getOutputStream()).thenReturn(printOut);
-		servlet.doGet(req,resp);
-		verify(resp).sendError(HttpServletResponse.SC_NOT_FOUND);
+        when(req.getRequestURI()).thenReturn("/yang-schema/module1");
+        StringWriter out = new StringWriter();
+        ServletOutputStream printOut = new ServletOutputStream() {
 
-	}
-	@Test
-	public void testServletNear() throws IOException, ServletException {
-		HelpYangSchemaHttpServlet servlet = new HelpYangSchemaHttpServlet();
-		HttpServletRequest req = mock(HttpServletRequest.class);
-		HttpServletResponse resp = mock(HttpServletResponse.class);
+            @Override
+            public void write(int arg0) throws IOException {
+                out.write(arg0);
+            }
+        };
+        when(resp.getOutputStream()).thenReturn(printOut);
+        servlet.doGet(req, resp);
+        verify(resp).setStatus(200);
+        verify(resp).setContentType("text/plain");
 
-		when(req.getRequestURI()).thenReturn("/yang-schema/module2/2010-03-01");
-		StringWriter out = new StringWriter();
-		ServletOutputStream printOut = new ServletOutputStream() {
+    }
 
-			@Override
-			public void write(int arg0) throws IOException {
-				out.write(arg0);
-			}
-		};
-		when(resp.getOutputStream()).thenReturn(printOut);
-		servlet.doGet(req,resp);
-		verify(resp).setStatus(200);
-		verify(resp).setContentType("text/plain");
+    @Test
+    public void testServletBad() throws IOException, ServletException {
+        HelpYangSchemaHttpServlet servlet = new HelpYangSchemaHttpServlet();
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
 
-	}
-	private static class HelpYangSchemaHttpServlet extends YangSchemaHttpServlet{
+        when(req.getRequestURI()).thenReturn("/yang-schema/module1/2020-01-01");
+        StringWriter out = new StringWriter();
+        ServletOutputStream printOut = new ServletOutputStream() {
 
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
+            @Override
+            public void write(int arg0) throws IOException {
+                out.write(arg0);
+            }
+        };
+        when(resp.getOutputStream()).thenReturn(printOut);
+        servlet.doGet(req, resp);
+        verify(resp).sendError(HttpServletResponse.SC_NOT_FOUND);
 
-		@Override
-		public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-			super.doGet(req, resp);
-		}
-	}
+    }
+
+    @Test
+    public void testServletNear() throws IOException, ServletException {
+        HelpYangSchemaHttpServlet servlet = new HelpYangSchemaHttpServlet();
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+
+        when(req.getRequestURI()).thenReturn("/yang-schema/module2/2010-03-01");
+        StringWriter out = new StringWriter();
+        ServletOutputStream printOut = new ServletOutputStream() {
+
+            @Override
+            public void write(int arg0) throws IOException {
+                out.write(arg0);
+            }
+        };
+        when(resp.getOutputStream()).thenReturn(printOut);
+        servlet.doGet(req, resp);
+        verify(resp).setStatus(200);
+        verify(resp).setContentType("text/plain");
+
+    }
+
+    private static class HelpYangSchemaHttpServlet extends YangSchemaHttpServlet {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            super.doGet(req, resp);
+        }
+    }
 
 
 }

@@ -32,7 +32,6 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateS
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("deprecation")
 public class MountpointStateProviderImpl implements AutoCloseable, IConfigChangedListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(MountpointStateProviderImpl.class);
@@ -40,16 +39,17 @@ public class MountpointStateProviderImpl implements AutoCloseable, IConfigChange
     private static final String CONFIGURATIONFILE = "etc/mountpoint-state-provider.properties";
 
     private NetconfNodeStateService netconfNodeStateService;
-
     private GeneralConfig generalConfig;
     private boolean dmaapEnabled = false;
-    private Thread mountpointStatePublisher = null;
 
-    MountpointNodeConnectListenerImpl nodeConnectListener = new MountpointNodeConnectListenerImpl();
-    MountpointNodeStateListenerImpl nodeStateListener = new MountpointNodeStateListenerImpl();
+    private MountpointNodeConnectListenerImpl nodeConnectListener;
+    private MountpointNodeStateListenerImpl nodeStateListener;
+    private MountpointStatePublisherMain mountpointStatePublisher;
 
     public MountpointStateProviderImpl() {
         LOG.info("Creating provider class for {}", APPLICATION_NAME);
+        nodeConnectListener = null;
+        nodeStateListener = null;
     }
 
     public void setNetconfNodeStateService(NetconfNodeStateService netconfNodeStateService) {
@@ -58,20 +58,22 @@ public class MountpointStateProviderImpl implements AutoCloseable, IConfigChange
 
     public void init() {
         LOG.info("Init call for {}", APPLICATION_NAME);
-        ConfigurationFileRepresentation configFileRepresentation = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
+        ConfigurationFileRepresentation configFileRepresentation =
+                new ConfigurationFileRepresentation(CONFIGURATIONFILE);
         configFileRepresentation.registerConfigChangedListener(this);
+
+        nodeConnectListener = new MountpointNodeConnectListenerImpl(netconfNodeStateService);
+        nodeStateListener = new MountpointNodeStateListenerImpl(netconfNodeStateService);
 
         generalConfig = new GeneralConfig(configFileRepresentation);
         if (generalConfig.getEnabled()) { //dmaapEnabled
-            mountpointStatePublisher = new Thread(new MountpointStatePublisher(generalConfig));
-            mountpointStatePublisher.start();
-            netconfNodeStateService.registerNetconfNodeConnectListener(nodeConnectListener);
-            netconfNodeStateService.registerNetconfNodeStateListener(nodeStateListener);
+            startPublishing();
         }
     }
 
     /**
      * Reflect status for Unit Tests
+     * 
      * @return Text with status
      */
     public String isInitializationOk() {
@@ -83,36 +85,46 @@ public class MountpointStateProviderImpl implements AutoCloseable, IConfigChange
         LOG.info("Service configuration state changed. Enabled: {}", generalConfig.getEnabled());
         boolean dmaapEnabledNewVal = generalConfig.getEnabled();
 
-        // DMaap disabled earlier (or during bundle startup) but enabled later, start Consumer(s)
+        // DMaap disabled earlier (or during bundle startup) but enabled later, start publisher(s)
         if (!dmaapEnabled && dmaapEnabledNewVal) {
             LOG.info("DMaaP is enabled, starting Publisher");
-            mountpointStatePublisher = new Thread(new MountpointStatePublisher(generalConfig));
-            mountpointStatePublisher.start();
-            netconfNodeStateService.registerNetconfNodeConnectListener(nodeConnectListener);
-            netconfNodeStateService.registerNetconfNodeStateListener(nodeStateListener);
+            startPublishing();
         } else if (dmaapEnabled && !dmaapEnabledNewVal) {
-        	// DMaap enabled earlier (or during bundle startup) but disabled later, stop consumer(s)
+            // DMaap enabled earlier (or during bundle startup) but disabled later, stop publisher(s)
             LOG.info("DMaaP is disabled, stop publisher");
-            try {
-				MountpointStatePublisher.stopPublisher();
-			} catch (IOException | InterruptedException e) {
-				LOG.error("Exception while stopping publisher ", e);
-			}
+            stopPublishing();
         }
         dmaapEnabled = dmaapEnabledNewVal;
+    }
+
+    public void startPublishing() {
+        mountpointStatePublisher = new MountpointStatePublisherMain(generalConfig);
+        mountpointStatePublisher.start();
+
+        nodeConnectListener.start(mountpointStatePublisher);
+        nodeStateListener.start(mountpointStatePublisher);
+    }
+
+    public void stopPublishing() {
+        try {
+            nodeConnectListener.stop();
+            nodeStateListener.stop();
+            mountpointStatePublisher.stop();
+        } catch (Exception e) {
+            LOG.error("Exception while stopping publisher ", e);
+        }
     }
 
     @Override
     public void close() throws Exception {
         LOG.info("{} closing ...", this.getClass().getName());
-        //close(updateService, configService, mwtnService); issue#1
         try {
-			MountpointStatePublisher.stopPublisher();
-		} catch (IOException | InterruptedException e) {
-			LOG.error("Exception while stopping publisher ", e);
-		}
-        //close(updateService, mwtnService);
-        LOG.info("{} closing done",APPLICATION_NAME);
+            mountpointStatePublisher.stop();
+        } catch (IOException | InterruptedException e) {
+            LOG.error("Exception while stopping publisher ", e);
+        }
+        close(nodeConnectListener, nodeStateListener);
+        LOG.info("{} closing done", APPLICATION_NAME);
     }
 
     /**
@@ -121,7 +133,6 @@ public class MountpointStateProviderImpl implements AutoCloseable, IConfigChange
      * @param toClose
      * @throws Exception
      */
-    @SuppressWarnings("unused")
     private void close(AutoCloseable... toCloseList) throws Exception {
         for (AutoCloseable element : toCloseList) {
             if (element != null) {
@@ -129,5 +140,4 @@ public class MountpointStateProviderImpl implements AutoCloseable, IConfigChange
             }
         }
     }
-
 }

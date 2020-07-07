@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * 
  * @author Michael Dürre, Herbert Eiselt
@@ -30,7 +31,7 @@ import java.util.List;
  */
 class SectionValue {
 
-	// variables
+    // variables
     private String value;
     private final List<String> comments;
     private boolean isUncommented;
@@ -48,40 +49,40 @@ class SectionValue {
     }
 
     public SectionValue(String value, boolean isUncommented) {
-    	this(value, new ArrayList<String>(), isUncommented);
-	}
+        this(value, new ArrayList<String>(), isUncommented);
+    }
     // end of constructors
-    
+
     // getters and setters
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public SectionValue setValue(String value) {
-		this.value = value;
-		return this;
-	}
+    public SectionValue setValue(String value) {
+        this.value = value;
+        return this;
+    }
 
-	public boolean isUncommented() {
-		return isUncommented;
-	}
+    public boolean isUncommented() {
+        return isUncommented;
+    }
 
-	public SectionValue setIsUncommented(boolean isUncommented) {
-		this.isUncommented = isUncommented;
-		return this;
-	}
+    public SectionValue setIsUncommented(boolean isUncommented) {
+        this.isUncommented = isUncommented;
+        return this;
+    }
 
-	public List<String> getComments() {
-		return comments;
-	}
-	// end of getters and setters
-	
-	// public methods
-	@Override
-	public String toString() {
-		return "SectionValue [value=" + value + ", comments=" + comments + ", isUncommented=" + isUncommented + "]";
-	}
-	// end of public methods
+    public List<String> getComments() {
+        return comments;
+    }
+    // end of getters and setters
+
+    // public methods
+    @Override
+    public String toString() {
+        return "SectionValue [value=" + value + ", comments=" + comments + ", isUncommented=" + isUncommented + "]";
+    }
+    // end of public methods
 
 
 }

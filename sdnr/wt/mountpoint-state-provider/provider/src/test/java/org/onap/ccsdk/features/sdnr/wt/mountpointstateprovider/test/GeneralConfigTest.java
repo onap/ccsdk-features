@@ -33,51 +33,45 @@ import com.google.common.io.Files;
 
 public class GeneralConfigTest {
 
-	private static final String TESTCONFIG_CONTENT="[general]\n" +
-			"dmaapEnabled=false\n" +
-			"TransportType=HTTPNOAUTH\n" +
-            "host=onap-dmap:3904\n" +
-			"topic=unauthenticated.SDNR_MOUNTPOINT_STATE_INFO\n" +
-            "contenttype=application/json\n" +
-            "timeout=20000\n" +
-            "limit=10000\n" +
-            "maxBatchSize=100\n" +
-            "maxAgeMs=250\n" +
-            "MessageSentThreadOccurance=50\n";
+    private static final String TESTCONFIG_CONTENT =
+            "[general]\n" + "dmaapEnabled=false\n" + "TransportType=HTTPNOAUTH\n" + "host=onap-dmap:3904\n"
+                    + "topic=unauthenticated.SDNR_MOUNTPOINT_STATE_INFO\n" + "contenttype=application/json\n"
+                    + "timeout=20000\n" + "limit=10000\n" + "maxBatchSize=100\n" + "maxAgeMs=250\n"
+                    + "MessageSentThreadOccurance=50\n";
 
-	private ConfigurationFileRepresentation globalCfg;
+    private ConfigurationFileRepresentation globalCfg;
 
-	@Test
-	public void test() {
-		try {
-			Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
-			globalCfg = new ConfigurationFileRepresentation("test.properties");
-			GeneralConfig cfg = new GeneralConfig(globalCfg);
-			assertEquals("onap-dmap:3904", cfg.getHostPort());
-			assertEquals(false, cfg.getEnabled());
-			assertEquals("unauthenticated.SDNR_MOUNTPOINT_STATE_INFO", cfg.getTopic());
-			assertEquals("application/json", cfg.getContenttype());
-			assertEquals("20000", cfg.getTimeout());
-			assertEquals("10000", cfg.getLimit());
-			assertEquals("100", cfg.getMaxBatchSize());
-			assertEquals("250", cfg.getMaxAgeMs());
-			assertEquals("50", cfg.getMessageSentThreadOccurrence());
-			assertEquals("HTTPNOAUTH", cfg.getTransportType());
-			assertEquals("general", cfg.getSectionName());
+    @Test
+    public void test() {
+        try {
+            Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
+            globalCfg = new ConfigurationFileRepresentation("test.properties");
+            GeneralConfig cfg = new GeneralConfig(globalCfg);
+            assertEquals("onap-dmap:3904", cfg.getHostPort());
+            assertEquals(false, cfg.getEnabled());
+            assertEquals("unauthenticated.SDNR_MOUNTPOINT_STATE_INFO", cfg.getTopic());
+            assertEquals("application/json", cfg.getContenttype());
+            assertEquals("20000", cfg.getTimeout());
+            assertEquals("10000", cfg.getLimit());
+            assertEquals("100", cfg.getMaxBatchSize());
+            assertEquals("250", cfg.getMaxAgeMs());
+            assertEquals("50", cfg.getMessageSentThreadOccurrence());
+            assertEquals("HTTPNOAUTH", cfg.getTransportType());
+            assertEquals("general", cfg.getSectionName());
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	@After
-	public void cleanUp() {
-		File file = new File("test.properties");
-		if (file.exists()) {
-			System.out.println("File exists, Deleting it");
-			file.delete();
-		}
-		
-	}
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @After
+    public void cleanUp() {
+        File file = new File("test.properties");
+        if (file.exists()) {
+            System.out.println("File exists, Deleting it");
+            file.delete();
+        }
+
+    }
 }

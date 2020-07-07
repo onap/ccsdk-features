@@ -22,20 +22,21 @@ import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 
 public class PNFRegistrationConfig implements Configuration {
-	private static final String SECTION_MARKER = "pnfRegistration";
+    private static final String SECTION_MARKER = "pnfRegistration";
 
-	private static final String PROPERTY_KEY_CONSUMER_CLASS = "pnfRegConsumerClass";
-    private static final String DEFAULT_VALUE_CONSUMER_CLASS = "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer";
+    private static final String PROPERTY_KEY_CONSUMER_CLASS = "pnfRegConsumerClass";
+    private static final String DEFAULT_VALUE_CONSUMER_CLASS =
+            "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer";
 
     public static final String PROPERTY_KEY_CONSUMER_TRANSPORTTYPE = "TransportType";
     private static final String DEFAULT_VALUE_CONSUMER_TRANSPORTTYPE = "HTTPNOAUTH";
-    
+
     public static final String PROPERTY_KEY_CONSUMER_PROTOCOL = "Protocol";
     private static final String DEFAULT_VALUE_CONSUMER_PROTOCOL = "http";
-    
+
     public static final String PROPERTY_KEY_CONSUMER_USERNAME = "username";
     private static final String DEFAULT_VALUE_CONSUMER_USERNAME = "username";
-    
+
     public static final String PROPERTY_KEY_CONSUMER_PASSWORD = "password";
     private static final String DEFAULT_VALUE_CONSUMER_PASSWORD = "password";
 
@@ -62,102 +63,117 @@ public class PNFRegistrationConfig implements Configuration {
 
     public static final String PROPERTY_KEY_CONSUMER_FETCHPAUSE = "fetchPause";
     private static final String DEFAULT_VALUE_CONSUMER_FETCHPAUSE = "5000";
-    
-    public static final String PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT="jersey.config.client.readTimeout";
-    private static final String DEFAULT_VALUE_CONSUMER_CLIENT_READTIMEOUT="25000";
-    
-    public static final String PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT="jersey.config.client.connectTimeout";
-    private static final String DEFAULT_VALUE_CONSUMER_CLIENT_CONNECTTIMEOUT="25000";
-        
-	private final ConfigurationFileRepresentation configuration;
 
-	public PNFRegistrationConfig(ConfigurationFileRepresentation configuration) {
-		this.configuration = configuration;
-		this.configuration.addSection(SECTION_MARKER);
-		defaults();
-	}
-	@Override
-	public String getSectionName() {
-		return SECTION_MARKER;
-	}
+    public static final String PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT = "jersey.config.client.readTimeout";
+    private static final String DEFAULT_VALUE_CONSUMER_CLIENT_READTIMEOUT = "25000";
 
-	@Override
-	public void defaults() {
+    public static final String PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT = "jersey.config.client.connectTimeout";
+    private static final String DEFAULT_VALUE_CONSUMER_CLIENT_CONNECTTIMEOUT = "25000";
 
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLASS, DEFAULT_VALUE_CONSUMER_CLASS);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TRANSPORTTYPE, DEFAULT_VALUE_CONSUMER_TRANSPORTTYPE);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PROTOCOL, DEFAULT_VALUE_CONSUMER_PROTOCOL);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_USERNAME, DEFAULT_VALUE_CONSUMER_USERNAME);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PASSWORD, DEFAULT_VALUE_CONSUMER_PASSWORD);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_HOST_PORT, DEFAULT_VALUE_CONSUMER_HOST_PORT);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TOPIC, DEFAULT_VALUE_CONSUMER_TOPIC);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CONTENTTYPE, DEFAULT_VALUE_CONSUMER_CONTENTTYPE);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_GROUP, DEFAULT_VALUE_CONSUMER_GROUP);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_ID, DEFAULT_VALUE_CONSUMER_ID);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TIMEOUT, DEFAULT_VALUE_CONSUMER_TIMEOUT);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_LIMIT, DEFAULT_VALUE_CONSUMER_LIMIT);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_FETCHPAUSE, DEFAULT_VALUE_CONSUMER_FETCHPAUSE);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT, DEFAULT_VALUE_CONSUMER_CLIENT_READTIMEOUT);
-   		configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT, DEFAULT_VALUE_CONSUMER_CLIENT_CONNECTTIMEOUT);
-	}
+    private final ConfigurationFileRepresentation configuration;
 
-	public String getConsumerClass() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLASS);
-	}
+    public PNFRegistrationConfig(ConfigurationFileRepresentation configuration) {
+        this.configuration = configuration;
+        this.configuration.addSection(SECTION_MARKER);
+        defaults();
+    }
 
-	public String getHostPort() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_HOST_PORT);
-	}
+    @Override
+    public String getSectionName() {
+        return SECTION_MARKER;
+    }
 
-	public String getTransportType() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TRANSPORTTYPE);
-	}
+    @Override
+    public void defaults() {
 
-	public String getProtocol() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PROTOCOL);
-	}
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLASS,
+                DEFAULT_VALUE_CONSUMER_CLASS);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TRANSPORTTYPE,
+                DEFAULT_VALUE_CONSUMER_TRANSPORTTYPE);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PROTOCOL,
+                DEFAULT_VALUE_CONSUMER_PROTOCOL);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_USERNAME,
+                DEFAULT_VALUE_CONSUMER_USERNAME);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PASSWORD,
+                DEFAULT_VALUE_CONSUMER_PASSWORD);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_HOST_PORT,
+                DEFAULT_VALUE_CONSUMER_HOST_PORT);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TOPIC,
+                DEFAULT_VALUE_CONSUMER_TOPIC);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CONTENTTYPE,
+                DEFAULT_VALUE_CONSUMER_CONTENTTYPE);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_GROUP,
+                DEFAULT_VALUE_CONSUMER_GROUP);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_ID, DEFAULT_VALUE_CONSUMER_ID);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TIMEOUT,
+                DEFAULT_VALUE_CONSUMER_TIMEOUT);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_LIMIT,
+                DEFAULT_VALUE_CONSUMER_LIMIT);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_FETCHPAUSE,
+                DEFAULT_VALUE_CONSUMER_FETCHPAUSE);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT,
+                DEFAULT_VALUE_CONSUMER_CLIENT_READTIMEOUT);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT,
+                DEFAULT_VALUE_CONSUMER_CLIENT_CONNECTTIMEOUT);
+    }
 
-	public String getUsername() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_USERNAME);
-	}
+    public String getConsumerClass() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLASS);
+    }
 
-	public String getPassword() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PASSWORD);
-	}
+    public String getHostPort() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_HOST_PORT);
+    }
 
-	public String getTopic() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TOPIC);
-	}
+    public String getTransportType() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TRANSPORTTYPE);
+    }
 
-	public String getConsumerGroup() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_GROUP);
-	}
+    public String getProtocol() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PROTOCOL);
+    }
 
-	public String getConsumerId() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_ID);
-	}
+    public String getUsername() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_USERNAME);
+    }
 
-	public String getTimeout() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TIMEOUT);
-	}
+    public String getPassword() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PASSWORD);
+    }
 
-	public String getLimit() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_LIMIT);
-	}
+    public String getTopic() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TOPIC);
+    }
 
-	public String getFetchPause() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_FETCHPAUSE);
-	}
-	
-	public String getContenttype() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CONTENTTYPE);
-	}
-	
-	public String getClientReadTimeout() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT);
-	}
-	
-	public String getClientConnectTimeout() {
-		return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT);
-	}
+    public String getConsumerGroup() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_GROUP);
+    }
+
+    public String getConsumerId() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_ID);
+    }
+
+    public String getTimeout() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TIMEOUT);
+    }
+
+    public String getLimit() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_LIMIT);
+    }
+
+    public String getFetchPause() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_FETCHPAUSE);
+    }
+
+    public String getContenttype() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CONTENTTYPE);
+    }
+
+    public String getClientReadTimeout() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT);
+    }
+
+    public String getClientConnectTimeout() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT);
+    }
 }

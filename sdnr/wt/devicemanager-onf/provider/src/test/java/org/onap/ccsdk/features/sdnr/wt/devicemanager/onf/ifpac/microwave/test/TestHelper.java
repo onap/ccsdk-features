@@ -27,21 +27,23 @@ import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.g._874._1.model.r
 
 public class TestHelper {
 
-	@Test
-	public void test() {
-		
-		assertEquals(GranularityPeriodType.Period24Hours, Helper.nnGetGranularityPeriodType(GranularityPeriodType.Period24Hours));
-		assertEquals(GranularityPeriodType.Unknown, Helper.nnGetGranularityPeriodType(null));
-		
-		assertEquals(new LayerProtocolName("TDM"), Helper.nnGetLayerProtocolName(LayerProtocolName.getDefaultInstance("TDM")));
-		assertEquals(new LayerProtocolName("default"), Helper.nnGetLayerProtocolName(null));
-		
-		assertEquals("TEST", Helper.nnGetString("TEST"));
-		assertEquals("", Helper.nnGetString(null));
-		
-		assertEquals(new UniversalId("ABC"), Helper.nnGetUniversalId(new UniversalId("ABC")));
-		assertEquals(new UniversalId("Default"), Helper.nnGetUniversalId(null));
-		
-	}
+    @Test
+    public void test() {
+
+        assertEquals(GranularityPeriodType.Period24Hours,
+                Helper.nnGetGranularityPeriodType(GranularityPeriodType.Period24Hours));
+        assertEquals(GranularityPeriodType.Unknown, Helper.nnGetGranularityPeriodType(null));
+
+        assertEquals(new LayerProtocolName("TDM"),
+                Helper.nnGetLayerProtocolName(LayerProtocolName.getDefaultInstance("TDM")));
+        assertEquals(new LayerProtocolName("default"), Helper.nnGetLayerProtocolName(null));
+
+        assertEquals("TEST", Helper.nnGetString("TEST"));
+        assertEquals("", Helper.nnGetString(null));
+
+        assertEquals(new UniversalId("ABC"), Helper.nnGetUniversalId(new UniversalId("ABC")));
+        assertEquals(new UniversalId("Default"), Helper.nnGetUniversalId(null));
+
+    }
 
 }

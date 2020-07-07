@@ -21,7 +21,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
+
 /**
  * 
  * @author Michael Dürre
@@ -29,28 +32,41 @@ import java.util.Arrays;
  */
 public class HtAssert {
 
-	
-	public static class HtNullable<T> {
-	}
 
-	public static void nonnull(Object... oList) {
-		for (Object o : oList) {
-			if (o == null) {
-				throw new IllegalArgumentException(
-						"One of the date parameters in ["+whoCalledMe()+"] is null (" + Arrays.toString(oList) + ")");
+    public static class HtNullable<T> {
+    }
 
-			}
-		}
+    public static void nonnull(Object... oList) {
+        for (Object o : oList) {
+            if (o == null) {
+                throw new IllegalArgumentException("One of the date parameters in [" + whoCalledMe() + "] is null ("
+                        + Arrays.toString(oList) + ")");
 
-	};
+            }
+        }
 
-	private static String whoCalledMe() {
-		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-		StackTraceElement caller = stackTraceElements[3];
-		String classname = caller.getClassName();
-		String methodName = caller.getMethodName();
-		int lineNumber = caller.getLineNumber();
-		return classname + "." + methodName + ":" + lineNumber;
-	}
+    };
+
+    public static String whoCalledMe() {
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        StackTraceElement caller = stackTraceElements[3];
+        String classname = caller.getClassName();
+        String methodName = caller.getMethodName();
+        int lineNumber = caller.getLineNumber();
+        return classname + "." + methodName + ":" + lineNumber;
+    }
+
+    public static String whoCalledMeAll() {
+        //		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        //		StringBuilder line =new StringBuilder();
+        //		for(StackTraceElement caller:stackTraceElements) {
+        //			line.append(String.format("%s | %s:%d\n",caller.getClassName(),caller.getMethodName(),caller.getLineNumber()));
+        //		}
+        //		return line.toString();
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        new Throwable().printStackTrace(pw);
+        return sw.toString();
+    }
 
 }

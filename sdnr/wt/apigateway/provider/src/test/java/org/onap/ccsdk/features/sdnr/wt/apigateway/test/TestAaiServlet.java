@@ -34,53 +34,56 @@ import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpAaiServlet;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpEsServlet;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpServletBase;
 
-public class TestAaiServlet extends HelpServletBase{
+public class TestAaiServlet extends HelpServletBase {
 
-	private static final int PORT = 40001;
-	public TestAaiServlet() {
-		super("/aai",PORT);
-	}
-	
-	@Test
-	public void test() throws ServletException, IOException {
-		
-		String tmpFilename = "tmp.cfg";
-		File tmpFile = new File(tmpFilename);
-		if (tmpFile.exists())
-			tmpFile.delete();
-		MyProperties properties = MyProperties.Instantiate(tmpFile,true);
-		String query = "{\"query\":{\"match_all\":{}}}";
-		String tmpconfigcontent = "aai=off" + LR + "aaiHeaders=[]" + LR + "database=off" + LR + "insecure=0" + LR
-				+ "cors=0";
-		String tmpconfigcontent2 = "aai=http://" + HOST + ":" + PORT + LR + "aaiHeaders=[]" + LR + "database=off"+ LR
-				+ "insecure=1" + LR + "cors=1";
-		this.setServlet(new HelpAaiServlet());
-		// test disabled message
-		properties.load(new ByteArrayInputStream(tmpconfigcontent.getBytes()));
-		String expectedResponse = "offline";
-		testrequest(HTTPMETHOD_GET, query, expectedResponse, false);
-		testrequest(HTTPMETHOD_POST, query, expectedResponse, false);
-		testrequest(HTTPMETHOD_PUT, query, expectedResponse, false);
-		testrequest(HTTPMETHOD_DELETE, query, expectedResponse, false);
-		
-		// initEsTestWebserver(port);
-		properties.load(new ByteArrayInputStream(tmpconfigcontent2.getBytes()));
-		testrequest(HTTPMETHOD_GET, query, HelpEsServlet.RESPONSE_GET, true);
-		testrequest(HTTPMETHOD_POST, query, HelpEsServlet.RESPONSE_POST, true);
-		testrequest(HTTPMETHOD_PUT, query, HelpEsServlet.RESPONSE_PUT, true);
-		testrequest(HTTPMETHOD_DELETE, query, HelpEsServlet.RESPONSE_DELETE, true);
-		testrequest(HTTPMETHOD_OPTIONS, query, "", false);
-		// stopTestWebserver();
-		if (tmpFile.exists())
-			tmpFile.delete();
-		
-	}
-	@Before
-	public void init() throws IOException{	
-		HelpServletBase.initEsTestWebserver(PORT);
-	}
-	@After
-	public void deinit() {
-		HelpServletBase.stopTestWebserver();
-	}
+    private static final int PORT = 40001;
+
+    public TestAaiServlet() {
+        super("/aai", PORT);
+    }
+
+    @Test
+    public void test() throws ServletException, IOException {
+
+        String tmpFilename = "tmp.cfg";
+        File tmpFile = new File(tmpFilename);
+        if (tmpFile.exists())
+            tmpFile.delete();
+        MyProperties properties = MyProperties.Instantiate(tmpFile, true);
+        String query = "{\"query\":{\"match_all\":{}}}";
+        String tmpconfigcontent =
+                "aai=off" + LR + "aaiHeaders=[]" + LR + "database=off" + LR + "insecure=0" + LR + "cors=0";
+        String tmpconfigcontent2 = "aai=http://" + HOST + ":" + PORT + LR + "aaiHeaders=[]" + LR + "database=off" + LR
+                + "insecure=1" + LR + "cors=1";
+        this.setServlet(new HelpAaiServlet());
+        // test disabled message
+        properties.load(new ByteArrayInputStream(tmpconfigcontent.getBytes()));
+        String expectedResponse = "offline";
+        testrequest(HTTPMETHOD_GET, query, expectedResponse, false);
+        testrequest(HTTPMETHOD_POST, query, expectedResponse, false);
+        testrequest(HTTPMETHOD_PUT, query, expectedResponse, false);
+        testrequest(HTTPMETHOD_DELETE, query, expectedResponse, false);
+
+        // initEsTestWebserver(port);
+        properties.load(new ByteArrayInputStream(tmpconfigcontent2.getBytes()));
+        testrequest(HTTPMETHOD_GET, query, HelpEsServlet.RESPONSE_GET, true);
+        testrequest(HTTPMETHOD_POST, query, HelpEsServlet.RESPONSE_POST, true);
+        testrequest(HTTPMETHOD_PUT, query, HelpEsServlet.RESPONSE_PUT, true);
+        testrequest(HTTPMETHOD_DELETE, query, HelpEsServlet.RESPONSE_DELETE, true);
+        testrequest(HTTPMETHOD_OPTIONS, query, "", false);
+        // stopTestWebserver();
+        if (tmpFile.exists())
+            tmpFile.delete();
+
+    }
+
+    @Before
+    public void init() throws IOException {
+        HelpServletBase.initEsTestWebserver(PORT);
+    }
+
+    @After
+    public void deinit() {
+        HelpServletBase.stopTestWebserver();
+    }
 }

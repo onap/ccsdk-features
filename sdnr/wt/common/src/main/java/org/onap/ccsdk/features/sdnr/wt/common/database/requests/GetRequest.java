@@ -23,12 +23,22 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
 import javax.annotation.Nonnull;
 
-public class GetRequest extends BaseRequest{
+public class GetRequest extends BaseRequest {
 
-	public GetRequest(String alias,String dataType,@Nonnull String esId) {
-		super("GET",String.format("/%s/%s/%s",alias,dataType,BaseRequest.urlEncodeValue(esId)));
-	}
+    private final String alias;
+    private final String esId;
 
+    public GetRequest(String alias, String dataType, @Nonnull String esId) {
+        super("GET", String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId)));
+        this.alias = alias;
+        this.esId = esId;
+    }
 
+    protected String getAlias() {
+        return this.alias;
+    }
 
+    protected String getEsId() {
+        return this.esId;
+    }
 }

@@ -25,42 +25,42 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.RangeQueryBuilder
 
 public class DbFilter {
 
-	public static String createDatabaseRegex(String restFilterValue) {
-		return restFilterValue == null ? null : restFilterValue.replace("?", ".{1,1}").replace("*", ".*");
-	}
+    public static String createDatabaseRegex(String restFilterValue) {
+        return restFilterValue == null ? null : restFilterValue.replace("?", ".{1,1}").replace("*", ".*");
+    }
 
-	public static boolean hasSearchParams(String restFilterValue) {
-		return restFilterValue == null ? false : restFilterValue.contains("*") || restFilterValue.contains("?");
-	}
+    public static boolean hasSearchParams(String restFilterValue) {
+        return restFilterValue == null ? false : restFilterValue.contains("*") || restFilterValue.contains("?");
+    }
 
-	public static boolean isComparisonValid(String restFilterValue) {
-		return restFilterValue == null ? false : restFilterValue.contains(">") || restFilterValue.contains("<");
-	}
+    public static boolean isComparisonValid(String restFilterValue) {
+        return restFilterValue == null ? false : restFilterValue.contains(">") || restFilterValue.contains("<");
+    }
 
-	public static RangeQueryBuilder getRangeQuery(String key, String restFilterValue) {
-		RangeQueryBuilder query = new RangeQueryBuilder(key);
-		restFilterValue = restFilterValue.trim();
-		if (restFilterValue.startsWith(">=")) {
-			query.gte(getObjectFromString(restFilterValue.substring(2).trim()));
-		} else if (restFilterValue.startsWith(">")) {
-			query.gt(getObjectFromString(restFilterValue.substring(1).trim()));
-		} else if (restFilterValue.startsWith("<=")) {
-			query.lte(getObjectFromString(restFilterValue.substring(2).trim()));
-		}  else if (restFilterValue.startsWith("<")) {
-			query.lt(getObjectFromString(restFilterValue.substring(1).trim()));
-		} else {
-			return null;
-		}
+    public static RangeQueryBuilder getRangeQuery(String key, String restFilterValue) {
+        RangeQueryBuilder query = new RangeQueryBuilder(key);
+        restFilterValue = restFilterValue.trim();
+        if (restFilterValue.startsWith(">=")) {
+            query.gte(getObjectFromString(restFilterValue.substring(2).trim()));
+        } else if (restFilterValue.startsWith(">")) {
+            query.gt(getObjectFromString(restFilterValue.substring(1).trim()));
+        } else if (restFilterValue.startsWith("<=")) {
+            query.lte(getObjectFromString(restFilterValue.substring(2).trim()));
+        } else if (restFilterValue.startsWith("<")) {
+            query.lt(getObjectFromString(restFilterValue.substring(1).trim()));
+        } else {
+            return null;
+        }
 
-		return query;
-	}
+        return query;
+    }
 
-	private static Object getObjectFromString(String str) {
-		try {
-	        return Double.parseDouble(str);
-	    } catch (NumberFormatException | NullPointerException nfe) {
-	    	return str;
-	    }
-		
-	}
+    private static Object getObjectFromString(String str) {
+        try {
+            return Double.parseDouble(str);
+        } catch (NumberFormatException | NullPointerException nfe) {
+            return str;
+        }
+
+    }
 }

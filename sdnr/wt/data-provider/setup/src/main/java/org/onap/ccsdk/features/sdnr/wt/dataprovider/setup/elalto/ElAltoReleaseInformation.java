@@ -33,70 +33,76 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 
 public class ElAltoReleaseInformation extends ReleaseInformation {
 
-	
-	private Map<Release, Map<ComponentName, SearchHitConverter>> converters;
 
-	public ElAltoReleaseInformation() {
-		super(Release.EL_ALTO, createDbInfos());
-		this.converters = generateConverters();
-	}
+    private Map<Release, Map<ComponentName, SearchHitConverter>> converters;
 
-	private static Map<ComponentName, DatabaseInfo> createDbInfos() {
-		Map<ComponentName,DatabaseInfo> map = new HashMap<>();
-		map.put(ComponentName.EVENTLOG, new DatabaseInfo("sdnevents","eventlog",""));
-		map.put(ComponentName.FAULTCURRENT, new DatabaseInfo("sdnevents","faultcurrent",""));
-		map.put(ComponentName.FAULTLOG, new DatabaseInfo("sdnevents","faultlog",""));
-		map.put(ComponentName.INVENTORY, new DatabaseInfo("sdnevents","inventoryequipment",""));
-		map.put(ComponentName.INVENTORYTOPLEVEL, new DatabaseInfo("sdnevents","inventorytoplevel",""));
-		map.put(ComponentName.HISTORICAL_PERFORMANCE_15M, new DatabaseInfo("sdnperformance","historicalperformance15min",""));
-		map.put(ComponentName.HISTORICAL_PERFORMANCE_24H, new DatabaseInfo("sdnperformance","historicalperformance24h",""));
-		map.put(ComponentName.REQUIRED_NETWORKELEMENT, new DatabaseInfo("mwtn","required-networkelement","{\"required-networkelement\": {\"date_detection\": false }}"));
-		map.put(ComponentName.MEDIATOR_SERVER, new DatabaseInfo("mwtn","mediator-server",""));
-		map.put(ComponentName.MAINTENANCE, new DatabaseInfo("mwtn","maintenancemode",""));
-		return map;
-	}
+    public ElAltoReleaseInformation() {
+        super(Release.EL_ALTO, createDbInfos());
+        this.converters = generateConverters();
+    }
 
-	/**
-	 * @return components used in el alto
-	 */
-	
-	
-	private static Map<Release, Map<ComponentName, SearchHitConverter>> generateConverters() {
-		Map<Release, Map<ComponentName, SearchHitConverter>> c = new HashMap<>();
-		Map<ComponentName, SearchHitConverter> frankfurtConverters = new HashMap<>();
-		frankfurtConverters.put(ComponentName.EVENTLOG, new FrankfurtEventlogConverter());
-		frankfurtConverters.put(ComponentName.FAULTCURRENT, new FrankfurtFaultcurrentConverter());
-		frankfurtConverters.put(ComponentName.FAULTLOG, new FrankfurtFaultlogConverter());
-		frankfurtConverters.put(ComponentName.INVENTORY, new KeepDataSearchHitConverter(ComponentName.INVENTORY));
-		//obsolete in frankfurt
-		//frankfurtConverters.put(ComponentName.INVENTORYTOPLEVEL, new KeepDataSearchHitConverter(ComponentName.INVENTORYTOPLEVEL));
-		frankfurtConverters.put(ComponentName.HISTORICAL_PERFORMANCE_15M, new KeepDataSearchHitConverter(ComponentName.HISTORICAL_PERFORMANCE_15M));
-		frankfurtConverters.put(ComponentName.HISTORICAL_PERFORMANCE_24H, new KeepDataSearchHitConverter(ComponentName.HISTORICAL_PERFORMANCE_24H));
-		frankfurtConverters.put(ComponentName.MAINTENANCE, new FrankfurtMaintenanceConverter());
-		frankfurtConverters.put(ComponentName.MEDIATOR_SERVER, new KeepDataSearchHitConverter(ComponentName.MEDIATOR_SERVER));
-		frankfurtConverters.put(ComponentName.REQUIRED_NETWORKELEMENT, new FrankfurtRequiredNetworkElementConverter());
-		frankfurtConverters.put(ComponentName.CONNECTIONLOG,new FrankfurtConnectionlogConverter());
-		c.put(Release.FRANKFURT_R1,frankfurtConverters);
-		return c;
-	}
+    private static Map<ComponentName, DatabaseInfo> createDbInfos() {
+        Map<ComponentName, DatabaseInfo> map = new HashMap<>();
+        map.put(ComponentName.EVENTLOG, new DatabaseInfo("sdnevents", "eventlog", ""));
+        map.put(ComponentName.FAULTCURRENT, new DatabaseInfo("sdnevents", "faultcurrent", ""));
+        map.put(ComponentName.FAULTLOG, new DatabaseInfo("sdnevents", "faultlog", ""));
+        map.put(ComponentName.INVENTORY, new DatabaseInfo("sdnevents", "inventoryequipment", ""));
+        map.put(ComponentName.INVENTORYTOPLEVEL, new DatabaseInfo("sdnevents", "inventorytoplevel", ""));
+        map.put(ComponentName.HISTORICAL_PERFORMANCE_15M,
+                new DatabaseInfo("sdnperformance", "historicalperformance15min", ""));
+        map.put(ComponentName.HISTORICAL_PERFORMANCE_24H,
+                new DatabaseInfo("sdnperformance", "historicalperformance24h", ""));
+        map.put(ComponentName.REQUIRED_NETWORKELEMENT, new DatabaseInfo("mwtn", "required-networkelement",
+                "{\"required-networkelement\": {\"date_detection\": false }}"));
+        map.put(ComponentName.MEDIATOR_SERVER, new DatabaseInfo("mwtn", "mediator-server", ""));
+        map.put(ComponentName.MAINTENANCE, new DatabaseInfo("mwtn", "maintenancemode", ""));
+        return map;
+    }
 
-	@Override
-	public SearchHitConverter getConverter(Release dst, ComponentName comp) {
-		SearchHitConverter c=this.converters.containsKey(dst)?this.converters.get(dst).get(comp):null;
-		if(c==null) {
-			c=super.getConverter(dst, comp);
-		}
-		return c;
-	}
+    /**
+     * @return components used in el alto
+     */
 
-	@Override
-	protected boolean runPreInitCommands(HtDatabaseClient dbClient) {
-		return true;
-	}
 
-	@Override
-	protected boolean runPostInitCommands(HtDatabaseClient dbClient) {
-		return true;
-	}
-	
+    private static Map<Release, Map<ComponentName, SearchHitConverter>> generateConverters() {
+        Map<Release, Map<ComponentName, SearchHitConverter>> c = new HashMap<>();
+        Map<ComponentName, SearchHitConverter> frankfurtConverters = new HashMap<>();
+        frankfurtConverters.put(ComponentName.EVENTLOG, new FrankfurtEventlogConverter());
+        frankfurtConverters.put(ComponentName.FAULTCURRENT, new FrankfurtFaultcurrentConverter());
+        frankfurtConverters.put(ComponentName.FAULTLOG, new FrankfurtFaultlogConverter());
+        frankfurtConverters.put(ComponentName.INVENTORY, new KeepDataSearchHitConverter(ComponentName.INVENTORY));
+        //obsolete in frankfurt
+        //frankfurtConverters.put(ComponentName.INVENTORYTOPLEVEL, new KeepDataSearchHitConverter(ComponentName.INVENTORYTOPLEVEL));
+        frankfurtConverters.put(ComponentName.HISTORICAL_PERFORMANCE_15M,
+                new KeepDataSearchHitConverter(ComponentName.HISTORICAL_PERFORMANCE_15M));
+        frankfurtConverters.put(ComponentName.HISTORICAL_PERFORMANCE_24H,
+                new KeepDataSearchHitConverter(ComponentName.HISTORICAL_PERFORMANCE_24H));
+        frankfurtConverters.put(ComponentName.MAINTENANCE, new FrankfurtMaintenanceConverter());
+        frankfurtConverters.put(ComponentName.MEDIATOR_SERVER,
+                new KeepDataSearchHitConverter(ComponentName.MEDIATOR_SERVER));
+        frankfurtConverters.put(ComponentName.REQUIRED_NETWORKELEMENT, new FrankfurtRequiredNetworkElementConverter());
+        frankfurtConverters.put(ComponentName.CONNECTIONLOG, new FrankfurtConnectionlogConverter());
+        c.put(Release.FRANKFURT_R1, frankfurtConverters);
+        return c;
+    }
+
+    @Override
+    public SearchHitConverter getConverter(Release dst, ComponentName comp) {
+        SearchHitConverter c = this.converters.containsKey(dst) ? this.converters.get(dst).get(comp) : null;
+        if (c == null) {
+            c = super.getConverter(dst, comp);
+        }
+        return c;
+    }
+
+    @Override
+    protected boolean runPreInitCommands(HtDatabaseClient dbClient) {
+        return true;
+    }
+
+    @Override
+    protected boolean runPostInitCommands(HtDatabaseClient dbClient) {
+        return true;
+    }
+
 }

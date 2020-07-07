@@ -30,26 +30,13 @@ import org.slf4j.LoggerFactory;
 public class AaiWebApiClient extends BaseHTTPClient {
 
     private static Logger LOG = LoggerFactory.getLogger(AaiWebApiClient.class);
-    private static final String PNF_JSON_INTERFACE_TEMPLATE = "        {\n"
-            + "            \"interface-name\": \"@interface@\",\n" + "            \"speed-value\": \"300\",\n"
-            + "            \"speed-units\": \"MBit/s\",\n"
-            + "            \"port-description\": \"Air Interface (MWPS)\",\n"
-            + "            \"equipment-identifier\": \"@pnfId@-@interface@\",\n"
-            + "            \"interface-role\": \"Wireless\",\n"
-            + "            \"interface-type\": \"Air Interface (MWPS)\",\n"
-            + "            \"resource-version\": \"@model@\",\n" + "            \"relationship-list\": [\n"
-            + "                {\n"
-            + "                    \"related-to\": \"A keyword provided by A&AI to indicate type of node.\",\n"
-            + "                    \"related-link\": \"URL to the object in A&AI.\",\n"
-            + "                    \"relationship-data\": [\n" + "                        {\n"
-            + "                            \"relationship-key\": \"A keyword provided by A&AI to indicate an attribute.\",\n"
-            + "                            \"relationship-value\": \"Value of the attribute\"\n"
-            + "                        }\n" + "                    ],\n"
-            + "                    \"related-to-property\": [\n" + "                        {\n"
-            + "                            \"property-key\": \"Key part of a key/value pair\",\n"
-            + "                            \"property-value\": \"Value part of a key/value pair\"\n"
-            + "                        }\n" + "                    ]\n" + "                }\n" + "            ]\n"
-            + "        }\n";
+    private static final String PNF_JSON_INTERFACE_TEMPLATE =
+            "        {\n" + "            \"interface-name\": \"@interface@\",\n"
+                    + "            \"speed-value\": \"300\",\n" + "            \"speed-units\": \"MBit/s\",\n"
+                    + "            \"port-description\": \"Air Interface (MWPS)\",\n"
+                    + "            \"equipment-identifier\": \"@pnfId@-@interface@\",\n"
+                    + "            \"interface-role\": \"Wireless\",\n"
+                    + "            \"interface-type\": \"Air Interface (MWPS)\"\n" + "        }\n";
     private static final String PNF_JSON_TEMPLATE = "{\n" + "    \"pnf-name\": \"@pnfId@\",\n"
             + "    \"pnf-id\": \"@pnfId@\",\n" + "    \"equip-type\": \"@type@\",\n"
             + "    \"equip-model\": \"@model@\",\n" + "    \"equip-vendor\": \"@vendor@\",\n"
@@ -77,6 +64,7 @@ public class AaiWebApiClient extends BaseHTTPClient {
 
     /**
      * Create and specify defition parametrs of pnf
+     * 
      * @param pnfId name
      * @param type type
      * @param model model
@@ -94,6 +82,7 @@ public class AaiWebApiClient extends BaseHTTPClient {
 
     /**
      * Unregister
+     * 
      * @param pnfId name
      * @return true if http response code was 200 or false if not.
      */
@@ -104,6 +93,7 @@ public class AaiWebApiClient extends BaseHTTPClient {
 
     /**
      * Send registration request
+     * 
      * @param pnfId name
      * @return error accoring to http response code or -1
      */

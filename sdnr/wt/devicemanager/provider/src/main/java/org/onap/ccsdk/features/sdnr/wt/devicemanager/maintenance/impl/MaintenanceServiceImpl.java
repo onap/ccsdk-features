@@ -48,7 +48,8 @@ public class MaintenanceServiceImpl implements MaintenanceService, MaintenanceRP
 
         LOG.info("Create {} start", MaintenanceServiceImpl.class);
         database = client;
-        LOG.info("Create {} finished. DB Service {} started.", MaintenanceServiceImpl.class,  client != null ? "sucessfully" : "not" );
+        LOG.info("Create {} finished. DB Service {} started.", MaintenanceServiceImpl.class,
+                client != null ? "sucessfully" : "not");
 
     }
 
@@ -67,8 +68,7 @@ public class MaintenanceServiceImpl implements MaintenanceService, MaintenanceRP
      */
 
     @Override
-    public void close() throws Exception {
-    }
+    public void close() throws Exception {}
 
     /*-------------------------------------------------
      * Interface MaintenanceRPCServiceAPI
@@ -96,11 +96,12 @@ public class MaintenanceServiceImpl implements MaintenanceService, MaintenanceRP
             RequiredNetworkElementBuilder valueBuilder = new RequiredNetworkElementBuilder();
 
             valueBuilder.setMountpointName(maintenanceMode.getNodeId());
-            valueBuilder.setStatus(String.valueOf(MaintenanceCalculator.isONFObjectInMaintenance(maintenanceMode, "","")));
+            valueBuilder
+                    .setStatus(String.valueOf(MaintenanceCalculator.isONFObjectInMaintenance(maintenanceMode, "", "")));
             valueBuilder.setDescription("Pretty description here");
             outputBuilder.setRequiredNetworkElement(valueBuilder.build());
         } else {
-            LOG.warn("No info in database for {}",input.getMountpointName());
+            LOG.warn("No info in database for {}", input.getMountpointName());
         }
         return outputBuilder;
     }
@@ -113,7 +114,7 @@ public class MaintenanceServiceImpl implements MaintenanceService, MaintenanceRP
         if (maintenanceMode != null) {
             outputBuilder = new GetMaintenanceModeOutputBuilder(maintenanceMode);
         } else {
-            throw new IllegalArgumentException("No info in database for "+input.getMountpointName());
+            throw new IllegalArgumentException("No info in database for " + input.getMountpointName());
         }
         return outputBuilder;
     }
@@ -145,9 +146,9 @@ public class MaintenanceServiceImpl implements MaintenanceService, MaintenanceRP
                 input.getProblemName(), now));
         resultString.append(" at Timestamp: ");
         resultString.append(now);
-        TestMaintenanceModeOutputBuilder outputBuilder = maintenanceMode != null
-                ? new TestMaintenanceModeOutputBuilder(maintenanceMode)
-                : new TestMaintenanceModeOutputBuilder();
+        TestMaintenanceModeOutputBuilder outputBuilder =
+                maintenanceMode != null ? new TestMaintenanceModeOutputBuilder(maintenanceMode)
+                        : new TestMaintenanceModeOutputBuilder();
         outputBuilder.setResultString(resultString.toString());
         return outputBuilder;
 
@@ -161,7 +162,8 @@ public class MaintenanceServiceImpl implements MaintenanceService, MaintenanceRP
     public boolean isONFObjectInMaintenance(String mountpointReference, String objectIdRef, String problem) {
         MaintenanceEntity maintenanceMode = database.getMaintenance(mountpointReference);
         boolean res = MaintenanceCalculator.isONFObjectInMaintenance(maintenanceMode, objectIdRef, problem);
-        LOG.debug("inMaintenance={} for mountpoint/id/problem:{} {} {} Definition: {}",res, mountpointReference, objectIdRef, problem, this );
+        LOG.debug("inMaintenance={} for mountpoint/id/problem:{} {} {} Definition: {}", res, mountpointReference,
+                objectIdRef, problem, this);
         return res;
     }
 

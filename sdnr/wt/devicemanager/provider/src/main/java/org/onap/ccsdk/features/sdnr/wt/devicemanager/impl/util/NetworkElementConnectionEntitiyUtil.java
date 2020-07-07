@@ -42,11 +42,12 @@ public class NetworkElementConnectionEntitiyUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(NetworkElementConnectionEntitiyUtil.class);
 
-    private static final QName QNAME_COREMODEL = QName.create("urn:onf:params:xml:ns:yang:core-model", "2017-03-20", "core-model").intern();
-
+    private static final QName QNAME_COREMODEL =
+            QName.create("urn:onf:params:xml:ns:yang:core-model", "2017-03-20", "core-model").intern();
 
     /**
      * Update devicetype and let all other field empty
+     * 
      * @param deviceType that should be updated
      * @return NetworkElementConnectionEntity with related parameter
      */
@@ -58,6 +59,7 @@ public class NetworkElementConnectionEntitiyUtil {
 
     /**
      * Provide device specific data
+     * 
      * @param nodeId mountpoint id
      * @param nNode data
      * @return NetworkElementConnectionEntity specific information
@@ -78,9 +80,9 @@ public class NetworkElementConnectionEntitiyUtil {
 
         eb.setCoreModelCapability(availableCapabilities.getRevisionForNamespace(QNAME_COREMODEL));
 
-        NodeDetailsBuilder nodeDetails = new NodeDetailsBuilder()
-                .setAvailableCapabilities(availableCapabilities.getCapabilities())
-                .setUnavailableCapabilities(unAvailableCapabilities.getCapabilities());
+        NodeDetailsBuilder nodeDetails =
+                new NodeDetailsBuilder().setAvailableCapabilities(availableCapabilities.getCapabilities())
+                        .setUnavailableCapabilities(unAvailableCapabilities.getCapabilities());
         eb.setNodeDetails(nodeDetails.build());
         // -- host information
         Host host = nNode.getHost();

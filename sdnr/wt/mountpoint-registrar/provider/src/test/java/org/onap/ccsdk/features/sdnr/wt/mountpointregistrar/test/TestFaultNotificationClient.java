@@ -31,27 +31,29 @@ import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.FaultNotificatio
 
 public class TestFaultNotificationClient extends FaultNotificationClient {
 
-	public static String baseUrl = "http://localhost:8181";
-	FaultNotificationClient testClient ;
+    public static String baseUrl = "http://localhost:8181";
+    FaultNotificationClient testClient;
 
 
-	public TestFaultNotificationClient() {
-		super(baseUrl);
+    public TestFaultNotificationClient() {
+        super(baseUrl);
 
-	}
+    }
 
-	@Test
-	public void testFaultNotificationClient() {
-		 testClient = new TestFaultNotificationClient();
-		testClient.setAuthorization("admin", "admin");
-		assertEquals(true, testClient.sendFaultNotification("TEST_50001", "1", "2019-11-20T09:25:19.948Z", "SEDNKSAHQ01M01nSky01", "lossOfSignal", "Critical"));
-		assertEquals(true, testClient.sendFaultNotification("TEST_50001", "1", "2019-11-20T09:25:19.948Z", "SEDNKSAHQ01M01nSky01", "lossOfSignal", "Critical"));
-	}
+    @Test
+    public void testFaultNotificationClient() {
+        testClient = new TestFaultNotificationClient();
+        testClient.setAuthorization("admin", "admin");
+        assertEquals(true, testClient.sendFaultNotification("TEST_50001", "1", "2019-11-20T09:25:19.948Z",
+                "SEDNKSAHQ01M01nSky01", "lossOfSignal", "Critical"));
+        assertEquals(true, testClient.sendFaultNotification("TEST_50001", "1", "2019-11-20T09:25:19.948Z",
+                "SEDNKSAHQ01M01nSky01", "lossOfSignal", "Critical"));
+    }
 
-	@Override
-	protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
+    @Override
+    protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
             throws IOException {
-		System.out.println("In overridden sendRequest in TestFaultNotificationClient");
+        System.out.println("In overridden sendRequest in TestFaultNotificationClient");
         return new BaseHTTPResponse(200, body);
     }
 }

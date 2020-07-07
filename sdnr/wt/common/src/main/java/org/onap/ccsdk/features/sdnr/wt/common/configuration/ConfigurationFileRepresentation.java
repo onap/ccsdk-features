@@ -43,206 +43,206 @@ import org.slf4j.LoggerFactory;
  */
 public class ConfigurationFileRepresentation implements IConfigChangedListener {
 
-	// constants
-	private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFileRepresentation.class);
+    // constants
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFileRepresentation.class);
 
-	private static final long FILE_POLL_INTERVAL_MS = 1000;
-	private static final String SECTIONNAME_ROOT = "";
-	private static final String LR = "\n";
-	private static final String EMPTY = "";
-	// end of constants
+    private static final long FILE_POLL_INTERVAL_MS = 1000;
+    private static final String SECTIONNAME_ROOT = "";
+    private static final String LR = "\n";
+    private static final String EMPTY = "";
+    // end of constants
 
-	// variables
-	/** Related configuration file **/
-	private final File mFile;
-	/** Monitor changes of file **/
-	private final ConfigFileObserver fileObserver;
-	/** List of sections **/
-	private final HashMap<String, Section> sections;
-	// end of variables
+    // variables
+    /** Related configuration file **/
+    private final File mFile;
+    /** Monitor changes of file **/
+    private final ConfigFileObserver fileObserver;
+    /** List of sections **/
+    private final HashMap<String, Section> sections;
+    // end of variables
 
-	// constructors
-	public ConfigurationFileRepresentation(File f) {
+    // constructors
+    public ConfigurationFileRepresentation(File f) {
 
-		this.mFile = f;
-		this.sections = new HashMap<String, Section>();
-		try {
-			if (!this.mFile.exists()) {
-				if (!this.mFile.createNewFile()) {
-					LOG.error("Can not create file {}", f.getAbsolutePath());
-				}
-			}
-			reLoad();
+        this.mFile = f;
+        this.sections = new HashMap<String, Section>();
+        try {
+            if (!this.mFile.exists()) {
+                if (!this.mFile.createNewFile()) {
+                    LOG.error("Can not create file {}", f.getAbsolutePath());
+                }
+            }
+            reLoad();
 
-		} catch (IOException e) {
-			LOG.error("Problem loading config file {} : {}", f.getAbsolutePath(), e.getMessage());
-		}
-		this.fileObserver = new ConfigFileObserver(f.getAbsolutePath(), FILE_POLL_INTERVAL_MS);
-		this.fileObserver.start();
-		this.fileObserver.registerConfigChangedListener(this);
-	}
+        } catch (IOException e) {
+            LOG.error("Problem loading config file {} : {}", f.getAbsolutePath(), e.getMessage());
+        }
+        this.fileObserver = new ConfigFileObserver(f.getAbsolutePath(), FILE_POLL_INTERVAL_MS);
+        this.fileObserver.start();
+        this.fileObserver.registerConfigChangedListener(this);
+    }
 
-	public ConfigurationFileRepresentation(String configurationfile) {
-		this(new File(configurationfile));
-	}
-	// end of constructors
+    public ConfigurationFileRepresentation(String configurationfile) {
+        this(new File(configurationfile));
+    }
+    // end of constructors
 
-	// getters and setters
-	public synchronized Optional<Section> getSection(String name) {
-		return Optional.ofNullable(sections.get(name));
-	}
-	// end of getters and setters
+    // getters and setters
+    public synchronized Optional<Section> getSection(String name) {
+        return Optional.ofNullable(sections.get(name));
+    }
+    // end of getters and setters
 
-	// private methods
-	private synchronized void reLoad() {
-		sections.clear();
-		addSection(SECTIONNAME_ROOT);
-		load();
-	}
+    // private methods
+    private synchronized void reLoad() {
+        sections.clear();
+        addSection(SECTIONNAME_ROOT);
+        load();
+    }
 
-	private synchronized void load() {
-		LOG.debug("loading file {}", getMFileName());
-		String curSectionName = SECTIONNAME_ROOT;
-		Optional<Section> sectionOptional = this.getSection(curSectionName);
-		Section curSection = sectionOptional.isPresent() ? sectionOptional.get() : this.addSection(curSectionName);
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(this.mFile));
-			for (String line; (line = br.readLine()) != null;) {
-				line = line.trim();
-				if (line.isEmpty()) {
-					continue;
-				}
-				if (line.startsWith("[") && line.endsWith("]")) {
-					curSectionName = line.substring(1, line.length() - 1);
-					curSection = this.addSection(curSectionName);
-				} else {
-					curSection.addLine(line);
-				}
-			}
+    private synchronized void load() {
+        LOG.debug("loading file {}", getMFileName());
+        String curSectionName = SECTIONNAME_ROOT;
+        Optional<Section> sectionOptional = this.getSection(curSectionName);
+        Section curSection = sectionOptional.isPresent() ? sectionOptional.get() : this.addSection(curSectionName);
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(this.mFile));
+            for (String line; (line = br.readLine()) != null;) {
+                line = line.trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+                if (line.startsWith("[") && line.endsWith("]")) {
+                    curSectionName = line.substring(1, line.length() - 1);
+                    curSection = this.addSection(curSectionName);
+                } else {
+                    curSection.addLine(line);
+                }
+            }
 
-		} catch (Exception e) {
-			LOG.info("Problem loading configuration file. {} {}", getMFileName(), e);
-		} finally {
-			try {
-				if (br != null) {
-					br.close();
-				}
-			} catch (IOException e) {
-			}
-		}
-		LOG.debug("finished loading file");
-		LOG.debug("start parsing sections");
-		for (Section section : this.sections.values()) {
-			section.parseLines();
-		}
-		LOG.debug("finished parsing " + this.sections.size() + " sections");
-	}
+        } catch (Exception e) {
+            LOG.info("Problem loading configuration file. {} {}", getMFileName(), e);
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException e) {
+            }
+        }
+        LOG.debug("finished loading file");
+        LOG.debug("start parsing sections");
+        for (Section section : this.sections.values()) {
+            section.parseLines();
+        }
+        LOG.debug("finished parsing " + this.sections.size() + " sections");
+    }
 
-	private String getMFileName() {
-		return mFile.getAbsolutePath();
-	}
+    private String getMFileName() {
+        return mFile.getAbsolutePath();
+    }
 
-	// end of private methods
+    // end of private methods
 
-	// public methods
-	public synchronized Section addSection(String name) {
-		if (this.sections.containsKey(name)) {
-			return this.sections.get(name);
-		}
-		Section s = new Section(name);
-		this.sections.put(name, s);
-		return s;
-	}
+    // public methods
+    public synchronized Section addSection(String name) {
+        if (this.sections.containsKey(name)) {
+            return this.sections.get(name);
+        }
+        Section s = new Section(name);
+        this.sections.put(name, s);
+        return s;
+    }
 
-	public synchronized void save() {
-		LOG.debug("Write configuration to {}", getMFileName());
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.mFile, false))) {
-			for (Section section : this.sections.values()) {
-				if (section.hasValues()) {
-					bw.write(String.join(LR, section.toLines()) + LR + LR);
-				}
-			}
-			bw.close();
-		} catch (Exception e) {
-			LOG.warn("problem saving value: " + e.getMessage());
-		}
-	}
+    public synchronized void save() {
+        LOG.debug("Write configuration to {}", getMFileName());
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.mFile, false))) {
+            for (Section section : this.sections.values()) {
+                if (section.hasValues()) {
+                    bw.write(String.join(LR, section.toLines()) + LR + LR);
+                }
+            }
+            bw.close();
+        } catch (Exception e) {
+            LOG.warn("problem saving value: " + e.getMessage());
+        }
+    }
 
-	public void registerConfigChangedListener(IConfigChangedListener l) {
-		this.fileObserver.registerConfigChangedListener(l);
-	}
+    public void registerConfigChangedListener(IConfigChangedListener l) {
+        this.fileObserver.registerConfigChangedListener(l);
+    }
 
-	public void unregisterConfigChangedListener(IConfigChangedListener l) {
-		this.fileObserver.unregisterConfigChangedListener(l);
-	}
+    public void unregisterConfigChangedListener(IConfigChangedListener l) {
+        this.fileObserver.unregisterConfigChangedListener(l);
+    }
 
-	@Override
-	public void onConfigChanged() {
-		LOG.debug("Reload on change {}", getMFileName());
-		reLoad();
-	}
+    @Override
+    public void onConfigChanged() {
+        LOG.debug("Reload on change {}", getMFileName());
+        reLoad();
+    }
 
-	@Override
-	public String toString() {
-		return "ConfigurationFileRepresentation [mFile=" + mFile + ", sections=" + sections + "]";
-	}
+    @Override
+    public String toString() {
+        return "ConfigurationFileRepresentation [mFile=" + mFile + ", sections=" + sections + "]";
+    }
 
-	@Override
-	protected void finalize() throws Throwable {
-		if (this.fileObserver != null) {
-			this.fileObserver.interrupt();
-		}
-		super.finalize();
-	}
+    @Override
+    protected void finalize() throws Throwable {
+        if (this.fileObserver != null) {
+            this.fileObserver.interrupt();
+        }
+        super.finalize();
+    }
 
-	/*
-	 * Property access set/get
-	 */
-	public synchronized void setProperty(String section, String key, Object value) {
-		Optional<Section> os = this.getSection(section);
-		if (os.isPresent()) {
-			os.get().setProperty(key, value == null ? "null" : value.toString());
-			save();
-		} else {
-			LOG.info("Unknown configuration section {}", section);
-		}
-	}
+    /*
+     * Property access set/get
+     */
+    public synchronized void setProperty(String section, String key, Object value) {
+        Optional<Section> os = this.getSection(section);
+        if (os.isPresent()) {
+            os.get().setProperty(key, value == null ? "null" : value.toString());
+            save();
+        } else {
+            LOG.info("Unknown configuration section {}", section);
+        }
+    }
 
-	public synchronized String getProperty(String section, String propertyKey) {
-		Optional<Section> os = this.getSection(section);
-		if (os.isPresent()) {
-			return os.get().getProperty(propertyKey);
-		} else {
-			LOG.debug("Unknown configuration section {}", section);
-			return EMPTY;
-		}
-	}
+    public synchronized String getProperty(String section, String propertyKey) {
+        Optional<Section> os = this.getSection(section);
+        if (os.isPresent()) {
+            return os.get().getProperty(propertyKey);
+        } else {
+            LOG.debug("Unknown configuration section {}", section);
+            return EMPTY;
+        }
+    }
 
-	public synchronized Optional<Long> getPropertyLong(String section, String propertyKey) {
-		Optional<Section> os = this.getSection(section);
-		if (os.isPresent()) {
-			return os.get().getLong(propertyKey);
-		} else {
-			LOG.debug("Unknown configuration section {}", section);
-			return Optional.empty();
-		}
-	}
+    public synchronized Optional<Long> getPropertyLong(String section, String propertyKey) {
+        Optional<Section> os = this.getSection(section);
+        if (os.isPresent()) {
+            return os.get().getLong(propertyKey);
+        } else {
+            LOG.debug("Unknown configuration section {}", section);
+            return Optional.empty();
+        }
+    }
 
-	public synchronized boolean isPropertyAvailable(String section, String propertyKey) {
-		Optional<Section> s = this.getSection(section);
-		return s.isPresent() && s.get().hasKey(propertyKey);
-	}
+    public synchronized boolean isPropertyAvailable(String section, String propertyKey) {
+        Optional<Section> s = this.getSection(section);
+        return s.isPresent() && s.get().hasKey(propertyKey);
+    }
 
-	public synchronized void setPropertyIfNotAvailable(String section, String propertyKey, Object propertyValue) {
-		if (!isPropertyAvailable(section, propertyKey)) {
-			setProperty(section, propertyKey, propertyValue.toString());
-		}
-	}
+    public synchronized void setPropertyIfNotAvailable(String section, String propertyKey, Object propertyValue) {
+        if (!isPropertyAvailable(section, propertyKey)) {
+            setProperty(section, propertyKey, propertyValue.toString());
+        }
+    }
 
-	public synchronized boolean getPropertyBoolean(String section, String propertyKey) {
-		return getProperty(section, propertyKey).equalsIgnoreCase("true");
-	}
-	// end of public methods
+    public synchronized boolean getPropertyBoolean(String section, String propertyKey) {
+        return getProperty(section, propertyKey).equalsIgnoreCase("true");
+    }
+    // end of public methods
 
 }

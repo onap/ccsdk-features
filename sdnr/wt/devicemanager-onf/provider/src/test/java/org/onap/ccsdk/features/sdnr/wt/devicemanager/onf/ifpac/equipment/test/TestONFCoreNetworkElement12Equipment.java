@@ -45,56 +45,57 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class TestONFCoreNetworkElement12Equipment {
 
-	NetconfAccessor netconfAccessor;
-	Capabilities capabilities;
-	NetworkElementCoreData coreData;
-	FaultData faultData;
-	TransactionUtils transactionUtils;
-	EquipmentCurrentProblems eqptCurrProblems;
-	DataBroker dataBroker;
-	UniversalId uid = new UniversalId("ID");
-	
-	
-	@Before
-	public void init() throws Exception {
-		netconfAccessor = mock(NetconfAccessor.class);
-		capabilities = mock(Capabilities.class);
-		coreData = mock(NetworkElementCoreData.class);
-		faultData = mock(FaultData.class);
-		eqptCurrProblems = mock(EquipmentCurrentProblems.class);
-		dataBroker = mock(DataBroker.class);
-		transactionUtils = mock(TransactionUtils.class);
-	
-		final Class<EquipmentPac> clazzPac = EquipmentPac.class;
+    NetconfAccessor netconfAccessor;
+    Capabilities capabilities;
+    NetworkElementCoreData coreData;
+    FaultData faultData;
+    TransactionUtils transactionUtils;
+    EquipmentCurrentProblems eqptCurrProblems;
+    DataBroker dataBroker;
+    UniversalId uid = new UniversalId("ID");
+
+
+    @Before
+    public void init() throws Exception {
+        netconfAccessor = mock(NetconfAccessor.class);
+        capabilities = mock(Capabilities.class);
+        coreData = mock(NetworkElementCoreData.class);
+        faultData = mock(FaultData.class);
+        eqptCurrProblems = mock(EquipmentCurrentProblems.class);
+        dataBroker = mock(DataBroker.class);
+        transactionUtils = mock(TransactionUtils.class);
+
+        final Class<EquipmentPac> clazzPac = EquipmentPac.class;
         final Class<EquipmentPacKey> clazzPacKey = EquipmentPacKey.class;
         final Class<EquipmentCurrentProblems> clazzProblems = EquipmentCurrentProblems.class;
         Constructor<EquipmentPacKey> cons = clazzPacKey.getConstructor(UniversalId.class);
-        InstanceIdentifier<EquipmentCurrentProblems> interfaceIID = InstanceIdentifier
-                .builder(clazzPac, cons.newInstance(uid)).child(clazzProblems).build();
-		when(netconfAccessor.getCapabilites()).thenReturn(capabilities);
-		when(netconfAccessor.getTransactionUtils()).thenReturn(transactionUtils);
-		when(netconfAccessor.getDataBroker()).thenReturn(dataBroker);
-		when(netconfAccessor.getTransactionUtils().readData(netconfAccessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL, interfaceIID)).thenReturn(eqptCurrProblems);
-	}
-	
-	@Test
-	public void test() {
-		when(capabilities.isSupportingNamespaceAndRevision(WrapperEquipmentPacRev170402.QNAME)).thenReturn(true);
-		ONFCoreNetworkElement12Equipment onfCoreEqpt = new ONFCoreNetworkElement12Equipment(netconfAccessor, coreData, capabilities);
-		onfCoreEqpt.addProblemsofNode(faultData);
-		onfCoreEqpt.addProblemsofNodeObject("ABCD");
-		onfCoreEqpt.getInventoryInformation(Arrays.asList("TESTINV"));
-		onfCoreEqpt.getEquipmentAll();
-		onfCoreEqpt.getEquipmentData();
-		onfCoreEqpt.getEquipmentPac();
-		onfCoreEqpt.readNetworkElementEquipment();
-		
-	}
-	
-	@Test
-	public void test1() {
-		when(capabilities.isSupportingNamespaceAndRevision(WrapperEquipmentPacRev170402.QNAME)).thenReturn(false);
-		ONFCoreNetworkElement12Equipment onfCoreEqpt = new ONFCoreNetworkElement12Equipment(netconfAccessor, coreData, capabilities);
-	}
+        InstanceIdentifier<EquipmentCurrentProblems> interfaceIID =
+                InstanceIdentifier.builder(clazzPac, cons.newInstance(uid)).child(clazzProblems).build();
+        when(netconfAccessor.getCapabilites()).thenReturn(capabilities);
+        when(netconfAccessor.getTransactionUtils()).thenReturn(transactionUtils);
+        when(netconfAccessor.getDataBroker()).thenReturn(dataBroker);
+        when(netconfAccessor.getTransactionUtils().readData(netconfAccessor.getDataBroker(),
+                LogicalDatastoreType.OPERATIONAL, interfaceIID)).thenReturn(eqptCurrProblems);
+    }
+
+    @Test
+    public void test() {
+        when(capabilities.isSupportingNamespaceAndRevision(WrapperEquipmentPacRev170402.QNAME)).thenReturn(true);
+        ONFCoreNetworkElement12Equipment onfCoreEqpt = new ONFCoreNetworkElement12Equipment(netconfAccessor, coreData);
+        onfCoreEqpt.addProblemsofNode(faultData);
+        onfCoreEqpt.addProblemsofNodeObject("ABCD");
+        onfCoreEqpt.getInventoryInformation(Arrays.asList("TESTINV"));
+        onfCoreEqpt.getEquipmentAll();
+        onfCoreEqpt.getEquipmentData();
+        onfCoreEqpt.getEquipmentPac();
+        onfCoreEqpt.readNetworkElementEquipment();
+
+    }
+
+    @Test
+    public void test1() {
+        when(capabilities.isSupportingNamespaceAndRevision(WrapperEquipmentPacRev170402.QNAME)).thenReturn(false);
+        ONFCoreNetworkElement12Equipment onfCoreEqpt = new ONFCoreNetworkElement12Equipment(netconfAccessor, coreData);
+    }
 
 }

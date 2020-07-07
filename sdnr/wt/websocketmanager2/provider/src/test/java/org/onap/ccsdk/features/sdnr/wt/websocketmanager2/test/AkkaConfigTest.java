@@ -34,7 +34,7 @@ public class AkkaConfigTest {
     @Test
     public void test() throws URISyntaxException, IOException {
 
-        AkkaConfig config=null;
+        AkkaConfig config = null;
         try {
             //config = AkkaConfig.load("akka-singlenode.cfg", true);
             config = AkkaConfig.loadContent(loadResourceContentAsString("akka-singlenode.cfg"));
@@ -42,25 +42,26 @@ public class AkkaConfigTest {
             e.printStackTrace();
             fail("error loading singlenode config");
         }
-        assertEquals("no singlenode config detected",false,config.isCluster());
-        assertEquals("more than one node detected",1,config.getClusterConfig().getSeedNodes().size());
+        assertEquals("no singlenode config detected", false, config.isCluster());
+        assertEquals("more than one node detected", 1, config.getClusterConfig().getSeedNodes().size());
 
         try {
             config = AkkaConfig.loadContent(loadResourceContentAsString("akka-cluster.cfg"));
         } catch (Exception e) {
             fail("error loading cluster config");
         }
-        assertEquals("no cluster config detected",true,config.isCluster());
-        assertTrue("only one node detected",config.getClusterConfig().getSeedNodes().size()>1);
+        assertEquals("no cluster config detected", true, config.isCluster());
+        assertTrue("only one node detected", config.getClusterConfig().getSeedNodes().size() > 1);
     }
 
-    public static String loadResourceContentAsString(String resourceName) throws URISyntaxException, FileNotFoundException, IOException {
+    public static String loadResourceContentAsString(String resourceName)
+            throws URISyntaxException, FileNotFoundException, IOException {
 
         StringBuilder sb = new StringBuilder();
 
         ClassLoader classLoader = AkkaConfigTest.class.getClassLoader();
         File file = Paths.get(classLoader.getResource(resourceName).toURI()).toFile();
-        try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
 
             while (line != null) {

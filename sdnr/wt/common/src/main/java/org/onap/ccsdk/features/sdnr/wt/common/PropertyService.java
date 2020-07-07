@@ -22,6 +22,6 @@
 package org.onap.ccsdk.features.sdnr.wt.common;
 
 public interface PropertyService {
-	
-	public String getProperty(String property);
+
+    public String getProperty(String property);
 }

@@ -23,34 +23,36 @@ import org.slf4j.LoggerFactory;
 
 public enum ONFLayerProtocolName {
 
-    MWAIRINTERFACE("MWPS"),                    //V1.0 + V1.2
-    ETHERNETCONTAINER10("ETH-CTP"),            //V1.0
-    ETHERNETCONTAINER12("ETC"),                //V1.2 + V1.2.1.1
-    ETHERNETPHYSICAL("ETY"),                //V1.2
-    TDMCONTAINER("TDM"),                    //V1.2
-    STRUCTURE("MWS"),                        //V1.0 + V1.2
-    ETHERNET("ETH"),                        //V1.2
+    MWAIRINTERFACE("MWPS"), //V1.0 + V1.2
+    ETHERNETCONTAINER10("ETH-CTP"), //V1.0
+    ETHERNETCONTAINER12("ETC"), //V1.2 + V1.2.1.1
+    ETHERNETPHYSICAL("ETY"), //V1.2
+    TDMCONTAINER("TDM"), //V1.2
+    STRUCTURE("MWS"), //V1.0 + V1.2
+    ETHERNET("ETH"), //V1.2
     UNKNOWN("");
 
     private static final Logger LOG = LoggerFactory.getLogger(ONFLayerProtocolName.class);
 
     private final String myLayerProtocolName;
 
-    ONFLayerProtocolName( String myLayerProtocolName ) {
+    ONFLayerProtocolName(String myLayerProtocolName) {
         this.myLayerProtocolName = myLayerProtocolName;
     }
 
-    public boolean is( org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.LayerProtocolName onfName ) {
+    public boolean is(
+            org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.LayerProtocolName onfName) {
         return myLayerProtocolName.equals(onfName.getValue());
     }
 
-    public static @NonNull ONFLayerProtocolName valueOf( org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.LayerProtocolName onfName ) {
+    public static @NonNull ONFLayerProtocolName valueOf(
+            org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.LayerProtocolName onfName) {
         for (ONFLayerProtocolName protocol : ONFLayerProtocolName.values()) {
             if (protocol.is(onfName)) {
                 return protocol;
             }
         }
-        LOG.info("Can not map {}. Use Unknown",onfName.getValue() );
+        LOG.info("Can not map {}. Use Unknown", onfName.getValue());
         return UNKNOWN;
     }
 

@@ -21,39 +21,43 @@
 package org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.onap.ccsdk.features.sdnr.wt.apigateway.EsServlet;
 
 public class HelpEsServlet extends EsServlet implements IPublicServlet {
 
-	public static final String RESPONSE_GET = "This is the response get";
-	public static final String RESPONSE_POST = "This is the response post";
-	public static final String RESPONSE_PUT = "This is the response put";
-	public static final String RESPONSE_DELETE = "This is the response delete";
-	public static final String RESPONSE_OPTIONS = "This is the response options";
+    private static final long serialVersionUID = 6502905928958752573L;
 
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doGet(req, resp);
-	}
-	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doPost(req, resp);
-	}
-	@Override
-	public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doPut(req, resp);
-	}
-	@Override
-	public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doOptions(req, resp);
-	}
-	@Override
-	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doDelete(req, resp);
-	}
+    public static final String RESPONSE_GET = "This is the response get";
+    public static final String RESPONSE_POST = "This is the response post";
+    public static final String RESPONSE_PUT = "This is the response put";
+    public static final String RESPONSE_DELETE = "This is the response delete";
+    public static final String RESPONSE_OPTIONS = "This is the response options";
+
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doGet(req, resp);
+    }
+
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPost(req, resp);
+    }
+
+    @Override
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPut(req, resp);
+    }
+
+    @Override
+    public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doOptions(req, resp);
+    }
+
+    @Override
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doDelete(req, resp);
+    }
 }

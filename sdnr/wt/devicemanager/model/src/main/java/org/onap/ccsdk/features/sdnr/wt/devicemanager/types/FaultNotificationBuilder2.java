@@ -30,7 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 public class FaultNotificationBuilder2 extends FaultlogBuilder {
 
     public FaultNotificationBuilder2(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
-            @Nullable String objectId, @Nullable String problem, @Nullable SeverityType severity, SourceType sourceType) {
+            @Nullable String objectId, @Nullable String problem, @Nullable SeverityType severity,
+            SourceType sourceType) {
 
         setNodeId(nodeId.getValue());
         if (counter != null) {

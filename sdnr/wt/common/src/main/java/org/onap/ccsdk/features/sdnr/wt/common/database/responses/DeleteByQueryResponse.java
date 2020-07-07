@@ -26,29 +26,29 @@ import org.json.JSONObject;
 
 /**
  * {"took":1,"batches":0,"retries":{"search":0,"bulk":0},"throttled_millis":0,"total":0,"deleted":0,"noops":0,"requests_per_second":-1,"failures":[],"version_conflicts":0,"throttled_until_millis":0,"timed_out":false}
+ * 
  * @author jack
  *
  */
 public class DeleteByQueryResponse extends BaseResponse {
 
-	private int deleted;
+    private int deleted;
 
-	public DeleteByQueryResponse(Response response) {
-		super(response);
-		try {
-			JSONObject o = this.getJson(response);
-			if (o != null) {
-				this.deleted = o.getInt("deleted");
-			}
-		}
-		catch(Exception e) {
-			this.deleted=0;
-		}
+    public DeleteByQueryResponse(Response response) {
+        super(response);
+        try {
+            JSONObject o = this.getJson(response);
+            if (o != null) {
+                this.deleted = o.getInt("deleted");
+            }
+        } catch (Exception e) {
+            this.deleted = 0;
+        }
 
-	}
+    }
 
-	public int getDeleted() {
-		return this.deleted;
-	}
+    public int getDeleted() {
+        return this.deleted;
+    }
 
 }

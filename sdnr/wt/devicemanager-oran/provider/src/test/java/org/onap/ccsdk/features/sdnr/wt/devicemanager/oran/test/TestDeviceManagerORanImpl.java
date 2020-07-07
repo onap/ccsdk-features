@@ -20,51 +20,51 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TestDeviceManagerORanImpl {
-	private static Path KARAF_ETC = Paths.get("etc");
-	 private static final Logger LOG = LoggerFactory.getLogger(TestDeviceManagerORanImpl.class);
-	DeviceManagerORanImpl devMgrOran; 
-	
-	@Before
-	public void init() throws InterruptedException, IOException {
-		/*System.out.println("Logger: " + LOG.getClass().getName() + " " + LOG.getName());
+    private static Path KARAF_ETC = Paths.get("etc");
+    private static final Logger LOG = LoggerFactory.getLogger(TestDeviceManagerORanImpl.class);
+    DeviceManagerORanImpl devMgrOran;
+
+    @Before
+    public void init() throws InterruptedException, IOException {
+        /*System.out.println("Logger: " + LOG.getClass().getName() + " " + LOG.getName());
         Path etc = KARAF_ETC;
-		delete(etc);
-		
+        delete(etc);
+        
         System.out.println("Create empty:" + etc.toString());
         Files.createDirectories(etc);*/
-	}
-	
-	@Test
-	public void test() throws Exception {
-		devMgrOran = new DeviceManagerORanImpl();
-		/*DeviceManagerImpl devMgr = new DeviceManagerImpl();
-		
-		try {
-			devMgr.init();
-			devMgrOran.setNetconfNetworkElementService(devMgr);
-			devMgrOran.init();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		/*
-		 * devMgrOran.setNetconfNetworkElementService(null); devMgrOran.init();
-		 * NetconfNetworkElementService netConfNetworkElementService =
-		 * mock(NetconfNetworkElementService.class); devMgrOran =
-		 * mock(DeviceManagerORanImpl.class);
-		 * when(netConfNetworkElementService.registerNetworkElementFactory(new
-		 * ORanNetworkElementFactory())).thenReturn(null);
-		 */
-		
-		
-	}
-	
-	@After
-	public void cleanUp() throws Exception {
-			devMgrOran.close();
-	}
-	
-	private static void delete(Path etc) throws IOException {
+    }
+
+    @Test
+    public void test() throws Exception {
+        devMgrOran = new DeviceManagerORanImpl();
+        /*DeviceManagerImpl devMgr = new DeviceManagerImpl();
+        
+        try {
+        	devMgr.init();
+        	devMgrOran.setNetconfNetworkElementService(devMgr);
+        	devMgrOran.init();
+        } catch (Exception e) {
+        	// TODO Auto-generated catch block
+        	e.printStackTrace();
+        }*/
+        /*
+         * devMgrOran.setNetconfNetworkElementService(null); devMgrOran.init();
+         * NetconfNetworkElementService netConfNetworkElementService =
+         * mock(NetconfNetworkElementService.class); devMgrOran =
+         * mock(DeviceManagerORanImpl.class);
+         * when(netConfNetworkElementService.registerNetworkElementFactory(new
+         * ORanNetworkElementFactory())).thenReturn(null);
+         */
+
+
+    }
+
+    @After
+    public void cleanUp() throws Exception {
+        devMgrOran.close();
+    }
+
+    private static void delete(Path etc) throws IOException {
         if (Files.exists(etc)) {
             System.out.println("Found, removing:" + etc.toString());
             delete(etc.toFile());

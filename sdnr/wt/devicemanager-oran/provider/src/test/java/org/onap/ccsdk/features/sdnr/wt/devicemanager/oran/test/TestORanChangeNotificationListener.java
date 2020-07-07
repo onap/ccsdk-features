@@ -41,47 +41,47 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 
 public class TestORanChangeNotificationListener {
 
-	private static final String NODEID = "node1";
+    private static final String NODEID = "node1";
 
-	@Test
-	public void test() {
+    @Test
+    public void test() {
 
-		NetconfAccessor netconfAccessor = mock(NetconfAccessor.class);
-		DataProvider databaseService = mock(DataProvider.class);
-		ORanChangeNotificationListener notifListener = new ORanChangeNotificationListener(netconfAccessor,
-				databaseService);
-		when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
-		Iterable<? extends PathArgument> pathArguments = Arrays.asList(new PathArgument() {
+        NetconfAccessor netconfAccessor = mock(NetconfAccessor.class);
+        DataProvider databaseService = mock(DataProvider.class);
+        ORanChangeNotificationListener notifListener =
+                new ORanChangeNotificationListener(netconfAccessor, databaseService);
+        when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
+        Iterable<? extends PathArgument> pathArguments = Arrays.asList(new PathArgument() {
 
-			@Override
-			public int compareTo(PathArgument arg0) {
-				return 0;
-			}
+            @Override
+            public int compareTo(PathArgument arg0) {
+                return 0;
+            }
 
-			@Override
-			public Class<? extends DataObject> getType() {
-				return DataObject.class;
-			}
-		});
-		InstanceIdentifier<?> target = InstanceIdentifier.create(pathArguments);
+            @Override
+            public Class<? extends DataObject> getType() {
+                return DataObject.class;
+            }
+        });
+        InstanceIdentifier<?> target = InstanceIdentifier.create(pathArguments);
 
-		notifListener.onNetconfConfigChange(createNotification(EditOperationType.Create,target));
-		EventlogEntity event = new EventlogBuilder().setNodeId(NODEID)
-				.setNewValue(String.valueOf(EditOperationType.Create)).setObjectId(target.toString()).build();
-		verify(databaseService).writeEventLog(event);
+        notifListener.onNetconfConfigChange(createNotification(EditOperationType.Create, target));
+        EventlogEntity event = new EventlogBuilder().setNodeId(NODEID)
+                .setNewValue(String.valueOf(EditOperationType.Create)).setObjectId(target.toString()).build();
+        verify(databaseService).writeEventLog(event);
 
-	}
+    }
 
-	/**
-	 * @param type 
-	 * @return
-	 */
-	private static NetconfConfigChange createNotification(EditOperationType type,InstanceIdentifier<?> target) {
-		NetconfConfigChange change = mock(NetconfConfigChange.class);
-		
-		@SuppressWarnings("null")
-		final @NonNull List<Edit> edits = Arrays.asList(new EditBuilder().setOperation(type).setTarget(target).build());
-		when(change.nonnullEdit()).thenReturn(edits);
-		return change;
-	}
+    /**
+     * @param type
+     * @return
+     */
+    private static NetconfConfigChange createNotification(EditOperationType type, InstanceIdentifier<?> target) {
+        NetconfConfigChange change = mock(NetconfConfigChange.class);
+
+        @SuppressWarnings("null")
+        final @NonNull List<Edit> edits = Arrays.asList(new EditBuilder().setOperation(type).setTarget(target).build());
+        when(change.nonnullEdit()).thenReturn(edits);
+        return change;
+    }
 }

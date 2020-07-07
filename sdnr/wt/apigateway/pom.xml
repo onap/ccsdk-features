@@ -49,4 +49,18 @@
     <properties>
         <feature-name>sdnr-wt-apigateway</feature-name>
     </properties>
+     <build>  <plugins>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.6.0.1398</version>
+                <goals>
+                    <goal>sonar</goal>
+                </goals>
+                <configuration>
+
+                </configuration>
+            </plugin>
+        </plugins>
+        </build>
 </project>

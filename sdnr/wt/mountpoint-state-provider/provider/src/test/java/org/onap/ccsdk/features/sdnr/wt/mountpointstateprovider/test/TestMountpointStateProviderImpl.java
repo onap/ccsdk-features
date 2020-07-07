@@ -44,88 +44,88 @@ import org.slf4j.LoggerFactory;
 
 public class TestMountpointStateProviderImpl {
 
-	private static Path KARAF_ETC = Paths.get("etc");
-	private static MountpointStateProviderImpl mountpointStateProvider;
+    private static Path KARAF_ETC = Paths.get("etc");
+    private static MountpointStateProviderImpl mountpointStateProvider;
 
-	private static final Logger LOG = LoggerFactory.getLogger(TestMountpointStateProviderImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestMountpointStateProviderImpl.class);
 
 
 
-	@BeforeClass
-	public static void before() throws InterruptedException, IOException {
+    @BeforeClass
+    public static void before() throws InterruptedException, IOException {
 
-		System.out.println("Logger: " + LOG.getClass().getName() + " " + LOG.getName());
-		// Call System property to get the classpath value
-		Path etc = KARAF_ETC;
-		delete(etc);
+        System.out.println("Logger: " + LOG.getClass().getName() + " " + LOG.getName());
+        // Call System property to get the classpath value
+        Path etc = KARAF_ETC;
+        delete(etc);
 
-		System.out.println("Create empty:" + etc.toString());
-		Files.createDirectories(etc);
+        System.out.println("Create empty:" + etc.toString());
+        Files.createDirectories(etc);
 
-		// Create mocks
+        // Create mocks
 
-		// start using blueprint interface
-		try {
-			mountpointStateProvider = new MountpointStateProviderImpl();
+        // start using blueprint interface
+        try {
+            mountpointStateProvider = new MountpointStateProviderImpl();
 
-			//mountpointStateProvider.init(); // Can't be tested as this invokes a thread. Mockito doesn't help either
-		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			fail("Not initialized" +sw.toString());
-		}
-		System.out.println("Initialization status: " + mountpointStateProvider.isInitializationOk());
-		System.out.println("Initialization done");
-	}
+            //mountpointStateProvider.init(); // Can't be tested as this invokes a thread. Mockito doesn't help either
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            fail("Not initialized" + sw.toString());
+        }
+        System.out.println("Initialization status: " + mountpointStateProvider.isInitializationOk());
+        System.out.println("Initialization done");
+    }
 
-	@AfterClass
-	public static void after() throws InterruptedException, IOException {
+    @AfterClass
+    public static void after() throws InterruptedException, IOException {
 
-		System.out.println("Start shutdown");
-		// close using blueprint interface
-		try {
-			mountpointStateProvider.close();
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		delete(KARAF_ETC);
+        System.out.println("Start shutdown");
+        // close using blueprint interface
+        try {
+            mountpointStateProvider.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        delete(KARAF_ETC);
 
-	}
+    }
 
-	 @Test
-	public void test1() {
-		System.out.println("Test1: slave mountpoint");
-		System.out.println("Initialization status: " + mountpointStateProvider.isInitializationOk());
-		System.out.println("Test2: Done");
-	}
+    @Test
+    public void test1() {
+        System.out.println("Test1: slave mountpoint");
+        System.out.println("Initialization status: " + mountpointStateProvider.isInitializationOk());
+        System.out.println("Test2: Done");
+    }
 
-	// ********************* Private
+    // ********************* Private
 
-	private static void delete(Path etc) throws IOException {
-		if (Files.exists(etc)) {
-			System.out.println("Found and remove:" + etc.toString());
-			delete(etc.toFile());
-		}
-	}
+    private static void delete(Path etc) throws IOException {
+        if (Files.exists(etc)) {
+            System.out.println("Found and remove:" + etc.toString());
+            delete(etc.toFile());
+        }
+    }
 
-	private static void delete(File f) throws IOException {
-		if (f.isDirectory()) {
-			for (File c : f.listFiles()) {
-				delete(c);
-			}
-		}
-		if (!f.delete()) {
-			throw new FileNotFoundException("Failed to delete file: " + f);
-		}
-	}
-/*	@Test
-	public void testInit() {
-
-	}
-
-	@Test
-	public void testOnConfigChanged() {
-		//fail("Not yet implemented");
-	}*/
+    private static void delete(File f) throws IOException {
+        if (f.isDirectory()) {
+            for (File c : f.listFiles()) {
+                delete(c);
+            }
+        }
+        if (!f.delete()) {
+            throw new FileNotFoundException("Failed to delete file: " + f);
+        }
+    }
+    /*	@Test
+    	public void testInit() {
+    
+    	}
+    
+    	@Test
+    	public void testOnConfigChanged() {
+    		//fail("Not yet implemented");
+    	}*/
 
 }

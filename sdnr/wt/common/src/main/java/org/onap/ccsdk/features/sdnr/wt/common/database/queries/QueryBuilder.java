@@ -26,76 +26,78 @@ import org.json.JSONObject;
 
 public class QueryBuilder {
 
-	private JSONObject innerQuery;
-	private final JSONObject outerQuery;
-	private final JSONObject queryObj;
+    private JSONObject innerQuery;
+    private final JSONObject outerQuery;
+    private final JSONObject queryObj;
 
-	public QueryBuilder() {
-		this.outerQuery = new JSONObject();
-		this.queryObj = new JSONObject();
-		this.outerQuery.put("query", this.queryObj);
+    public QueryBuilder() {
+        this.outerQuery = new JSONObject();
+        this.queryObj = new JSONObject();
+        this.outerQuery.put("query", this.queryObj);
 
-	}
+    }
 
-	public QueryBuilder from(long from) {
-		this.outerQuery.put("from", from);
-		return this;
-	}
+    public QueryBuilder from(long from) {
+        this.outerQuery.put("from", from);
+        return this;
+    }
 
-	public QueryBuilder size(long size) {
-		this.outerQuery.put("size", size);
-		return this;
-	}
+    public QueryBuilder size(long size) {
+        this.outerQuery.put("size", size);
+        return this;
+    }
 
-	public QueryBuilder sort(String prop, SortOrder order) {
-		JSONArray a;
-		if (this.outerQuery.has("sort")) {
-			a = this.outerQuery.getJSONArray("sort");
-		} else {
-			a = new JSONArray();
-		}
-		JSONObject sortObj = new JSONObject();
-		JSONObject orderObj = new JSONObject();
-		orderObj.put("order", order.getValue());
-		sortObj.put(prop, orderObj);
-		a.put(sortObj);
-		this.outerQuery.put("sort", a);
-		return this;
-	}
+    public QueryBuilder sort(String prop, SortOrder order) {
+        JSONArray a;
+        if (this.outerQuery.has("sort")) {
+            a = this.outerQuery.getJSONArray("sort");
+        } else {
+            a = new JSONArray();
+        }
+        JSONObject sortObj = new JSONObject();
+        JSONObject orderObj = new JSONObject();
+        orderObj.put("order", order.getValue());
+        sortObj.put(prop, orderObj);
+        a.put(sortObj);
+        this.outerQuery.put("sort", a);
+        return this;
+    }
 
-	public QueryBuilder aggregations(String key, SortOrder sortOrder) {
-		JSONObject keyquery = new JSONObject();
-		JSONObject terms = new JSONObject();
-		JSONObject field = new JSONObject();
-		field.put("field", key);
-		terms.put("terms", field);
-		if(sortOrder!=null) {
-			JSONObject so = new JSONObject();
-			so.put("_key",sortOrder.getValue());
-			terms.put("order", so);
-		}
-		keyquery.put(key, terms);
-		this.outerQuery.put("aggs", keyquery);
-		return this;
-	}
+    public QueryBuilder aggregations(String key, SortOrder sortOrder) {
+        JSONObject keyquery = new JSONObject();
+        JSONObject terms = new JSONObject();
+        JSONObject field = new JSONObject();
+        field.put("field", key);
+        terms.put("terms", field);
+        if (sortOrder != null) {
+            JSONObject so = new JSONObject();
+            so.put("_key", sortOrder.getValue());
+            terms.put("order", so);
+        }
+        keyquery.put(key, terms);
+        this.outerQuery.put("aggs", keyquery);
+        return this;
+    }
 
-	protected QueryBuilder setQuery(String key, JSONObject query) {
-		this.innerQuery = query;
-		this.queryObj.put(key, this.innerQuery);
-		return this;
-	}
+    protected QueryBuilder setQuery(String key, JSONObject query) {
+        this.innerQuery = query;
+        this.queryObj.put(key, this.innerQuery);
+        return this;
+    }
 
-	public JSONObject getInner() {
-		return this.queryObj;
-	}
-	public boolean contains(String match) {
-		return this.toJSON().contains(match);
-	}
-	public String toJSON() {
-		return this.outerQuery.toString();
-	}
+    public JSONObject getInner() {
+        return this.queryObj;
+    }
 
-	public QueryBuilder aggregations(String key) {
-		return this.aggregations(key, null);
-	}
+    public boolean contains(String match) {
+        return this.toJSON().contains(match);
+    }
+
+    public String toJSON() {
+        return this.outerQuery.toString();
+    }
+
+    public QueryBuilder aggregations(String key) {
+        return this.aggregations(key, null);
+    }
 }

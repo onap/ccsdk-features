@@ -40,132 +40,96 @@ import com.google.common.io.Files;
 
 public class TestDMaaPVESMsgConsumerMain {
 
-	private static final String CONFIGURATIONFILE = "test.properties";
-	private static final String TESTCONFIG_GENERAL="[general]\n" +
-			"dmaapEnabled=false\n" +
-			"baseUrl=http://localhost:8181\n" +
-			"sdnrUser=admin\n" +
-			"sdnrPasswd=admin\n" +
-			"\n" +
-			"[pnfRegistration]\n" +
-			"pnfRegConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyPNFRegVESMsgConsumer\n" +
-			"TransportType=HTTPNOAUTH\n" +
-			"host=onap-dmap:3904\n" +
-			"topic=unauthenticated.VES_PNFREG_OUTPUT\n" +
-			"contenttype=application/json\n" +
-			"group=myG\n" +
-			"id=C1\n" +
-			"timeout=20000\n" +
-			"limit=10000\n" +
-			"\n" +
-			"[fault]\n" +
-			"faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyFaultVESMsgConsumer\n" +
-			"TransportType=HTTPNOAUTH\n" +
-			"host=onap-dmap:3904\n" +
-			"topic=unauthenticated.SEC_FAULT_OUTPUT\n" +
-			"contenttype=application/json\n" +
-			"group=myG\n" +
-			"id=C1\n" +
-			"timeout=20000\n" +
-			"limit=10000\n" +
-			"fetchPause=10000\n" +
-			"\n" +
-			"";
+    private static final String CONFIGURATIONFILE = "test.properties";
+    private static final String TESTCONFIG_GENERAL = "[general]\n" + "dmaapEnabled=false\n"
+            + "baseUrl=http://localhost:8181\n" + "sdnrUser=admin\n" + "sdnrPasswd=admin\n" + "\n"
+            + "[pnfRegistration]\n"
+            + "pnfRegConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyPNFRegVESMsgConsumer\n"
+            + "TransportType=HTTPNOAUTH\n" + "host=onap-dmap:3904\n" + "topic=unauthenticated.VES_PNFREG_OUTPUT\n"
+            + "contenttype=application/json\n" + "group=myG\n" + "id=C1\n" + "timeout=20000\n" + "limit=10000\n" + "\n"
+            + "[fault]\n"
+            + "faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyFaultVESMsgConsumer\n"
+            + "TransportType=HTTPNOAUTH\n" + "host=onap-dmap:3904\n" + "topic=unauthenticated.SEC_FAULT_OUTPUT\n"
+            + "contenttype=application/json\n" + "group=myG\n" + "id=C1\n" + "timeout=20000\n" + "limit=10000\n"
+            + "fetchPause=10000\n" + "\n" + "";
 
-	private static final String TESTCONFIG_GENERAL_INVALID="[general]\n" +
-			"dmaapEnabled=false\n" +
-			"baseUrl=http://localhost:8181\n" +
-			"sdnrUser=admin\n" +
-			"sdnrPasswd=admin\n" +
-			"\n" +
-			"[pnfRegistration]\n" +
-			"pnfRegConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyPNFRegVESMsgConsumer\n" +
-			"TransportType=HTTPNOAUTH\n" +
-			"host=onap-dmap:3904\n" +
-			"topic=unauthenticated.VES_PNFREG_OUTPUT\n" +
-			"contenttype=application/json\n" +
-			"group=myG\n" +
-			"id=C1\n" +
-			"timeout=20000\n" +
-			"limit=10000\n" +
-			"\n" +
-			"[fault]\n" +
-			"faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyFaultVESMsgConsumer\n" +
-			"TransportType=HTTPNOAUTH\n" +
-			"host=onap-dmap:3904\n" +
-			"topic=unauthenticated.SEC_FAULT_OUTPUT\n" +
-			"contenttype=application/json\n" +
-			"group=myG\n" +
-			"id=C1\n" +
-			"timeout=HELLO\n" +
-			"limit=10000\n" +
-			"fetchPause=WORLD\n" +
-			"\n" +
-			"";
-	public GeneralConfig generalConfig;
-	Map<String, Configuration> configMap = new HashMap<String, Configuration>();
-	DMaaPVESMsgConsumerMain dmaapMain;
+    private static final String TESTCONFIG_GENERAL_INVALID = "[general]\n" + "dmaapEnabled=false\n"
+            + "baseUrl=http://localhost:8181\n" + "sdnrUser=admin\n" + "sdnrPasswd=admin\n" + "\n"
+            + "[pnfRegistration]\n"
+            + "pnfRegConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyPNFRegVESMsgConsumer\n"
+            + "TransportType=HTTPNOAUTH\n" + "host=onap-dmap:3904\n" + "topic=unauthenticated.VES_PNFREG_OUTPUT\n"
+            + "contenttype=application/json\n" + "group=myG\n" + "id=C1\n" + "timeout=20000\n" + "limit=10000\n" + "\n"
+            + "[fault]\n"
+            + "faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyFaultVESMsgConsumer\n"
+            + "TransportType=HTTPNOAUTH\n" + "host=onap-dmap:3904\n" + "topic=unauthenticated.SEC_FAULT_OUTPUT\n"
+            + "contenttype=application/json\n" + "group=myG\n" + "id=C1\n" + "timeout=HELLO\n" + "limit=10000\n"
+            + "fetchPause=WORLD\n" + "\n" + "";
+    public GeneralConfig generalConfig;
+    Map<String, Configuration> configMap = new HashMap<String, Configuration>();
+    DMaaPVESMsgConsumerMain dmaapMain;
 
-	//	@Before
-	public void preTest1() {
-		try {
-			Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_GENERAL);
-			ConfigurationFileRepresentation configFileRepresentation = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
+    //	@Before
+    public void preTest1() {
+        try {
+            Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_GENERAL);
+            ConfigurationFileRepresentation configFileRepresentation =
+                    new ConfigurationFileRepresentation(CONFIGURATIONFILE);
 
-			generalConfig = new GeneralConfig(configFileRepresentation);
-			PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
-			FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
+            generalConfig = new GeneralConfig(configFileRepresentation);
+            PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
+            FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
 
-			configMap.put("pnfRegistration", pnfRegConfig);
-			configMap.put("fault", faultConfig);
-		} catch (Exception e) {
-			System.out.println("Failed in preTest execution "+e.getMessage());
-		}
-	}
+            configMap.put("pnfRegistration", pnfRegConfig);
+            configMap.put("fault", faultConfig);
+        } catch (Exception e) {
+            System.out.println("Failed in preTest execution " + e.getMessage());
+        }
+    }
 
-	public void preTest2() {
-		try {
-			Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_GENERAL_INVALID);
-			ConfigurationFileRepresentation configFileRepresentation = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
+    public void preTest2() {
+        try {
+            Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_GENERAL_INVALID);
+            ConfigurationFileRepresentation configFileRepresentation =
+                    new ConfigurationFileRepresentation(CONFIGURATIONFILE);
 
-			generalConfig = new GeneralConfig(configFileRepresentation);
-			PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
-			FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
+            generalConfig = new GeneralConfig(configFileRepresentation);
+            PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
+            FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
 
-			configMap.put("pnfRegistration", pnfRegConfig);
-			configMap.put("fault", faultConfig);
-		} catch (Exception e) {
-			System.out.println("Failed in preTest execution "+e.getMessage());
-		}
-	}
+            configMap.put("pnfRegistration", pnfRegConfig);
+            configMap.put("fault", faultConfig);
+        } catch (Exception e) {
+            System.out.println("Failed in preTest execution " + e.getMessage());
+        }
+    }
 
-	@Test
-	public void testDMaaPVESMsgConsumerMainMapOfStringConfiguration() {
-		preTest1();
-		assertNotNull(configMap);
-		dmaapMain = new DMaaPVESMsgConsumerMain(configMap);
-	}
+    @Test
+    public void testDMaaPVESMsgConsumerMainMapOfStringConfiguration() {
+        preTest1();
+        assertNotNull(configMap);
+        dmaapMain = new DMaaPVESMsgConsumerMain(configMap);
+    }
 
-	@Test
-	public void testDMaaPVESMsgConsumerMainMapOfStringConfiguration1() {
-		preTest2();
-		assertNotNull(configMap);
-		dmaapMain = new DMaaPVESMsgConsumerMain(configMap);
-	}
+    @Test
+    public void testDMaaPVESMsgConsumerMainMapOfStringConfiguration1() {
+        preTest2();
+        assertNotNull(configMap);
+        dmaapMain = new DMaaPVESMsgConsumerMain(configMap);
+    }
 
-	@After
-	public void postTest() {
-		File file = new File("test.properties");
-		if (file.exists()) {
-			System.out.println("File exists, Deleting it");
-			file.delete();
-		}
-		List<DMaaPVESMsgConsumer> consumers = DMaaPVESMsgConsumerMain.getConsumers();
-		for (DMaaPVESMsgConsumer consumer : consumers) {
-			// stop all consumers
-			consumer.stopConsumer();
-		}
-	}
+    @After
+    public void postTest() {
+        File file = new File("test.properties");
+        if (file.exists()) {
+            System.out.println("File exists, Deleting it");
+            file.delete();
+        }
+        List<DMaaPVESMsgConsumer> consumers = DMaaPVESMsgConsumerMain.getConsumers();
+        for (DMaaPVESMsgConsumer consumer : consumers) {
+            // stop all consumers
+            consumer.stopConsumer();
+        }
+    }
 }
 
 

@@ -36,50 +36,50 @@ import org.opendaylight.yangtools.yang.common.QName;
 
 public class TestORanNetworkElementFactory {
 
-	static NetconfAccessor accessor;
-	static DeviceManagerServiceProvider serviceProvider;
-	static Capabilities capabilities;
-	QName qCapability;
+    static NetconfAccessor accessor;
+    static DeviceManagerServiceProvider serviceProvider;
+    static Capabilities capabilities;
+    QName qCapability;
 
-	@BeforeClass
-	public static void init() throws InterruptedException, IOException {
-		capabilities = mock(Capabilities.class);
-		accessor = mock(NetconfAccessorMock.class);
-		serviceProvider = mock(DeviceManagerServiceProvider.class);
-				
-		when(accessor.getCapabilites()).thenReturn(capabilities);
-		when(serviceProvider.getDataProvider()).thenReturn(null);
+    @BeforeClass
+    public static void init() throws InterruptedException, IOException {
+        capabilities = mock(Capabilities.class);
+        accessor = mock(NetconfAccessorMock.class);
+        serviceProvider = mock(DeviceManagerServiceProvider.class);
 
-	
-	}
+        when(accessor.getCapabilites()).thenReturn(capabilities);
+        when(serviceProvider.getDataProvider()).thenReturn(null);
 
-	@Test
-	public void testCreateORANHWComponent() throws Exception {
-		when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(true);
-		when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(false);
-		ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
-		assertTrue((factory.create(accessor, serviceProvider)).isPresent());
-	}
 
-	@Test
-	public void testCreateSimulator() throws Exception {
-		when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(false);
-		when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(true);
-		ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
-		assertTrue(factory.create(accessor, serviceProvider).isPresent());
-	}
-	
-	@Test
-	public void testCreateNone() throws Exception {
-		when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(false);
-		when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(false);
-		ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
-		assertTrue(!(factory.create(accessor, serviceProvider).isPresent()));
-	}
-	
-	@After
-	public void cleanUp() throws Exception {
+    }
 
-	}
+    @Test
+    public void testCreateORANHWComponent() throws Exception {
+        when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(true);
+        when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(false);
+        ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
+        assertTrue((factory.create(accessor, serviceProvider)).isPresent());
+    }
+
+    @Test
+    public void testCreateSimulator() throws Exception {
+        when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(false);
+        when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(true);
+        ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
+        assertTrue(factory.create(accessor, serviceProvider).isPresent());
+    }
+
+    @Test
+    public void testCreateNone() throws Exception {
+        when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(false);
+        when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(false);
+        ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
+        assertTrue(!(factory.create(accessor, serviceProvider).isPresent()));
+    }
+
+    @After
+    public void cleanUp() throws Exception {
+
+    }
 }
 

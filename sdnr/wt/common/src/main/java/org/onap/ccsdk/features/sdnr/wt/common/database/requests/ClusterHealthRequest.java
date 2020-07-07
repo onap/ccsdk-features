@@ -21,15 +21,15 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-public class ClusterHealthRequest extends BaseRequest{
+public class ClusterHealthRequest extends BaseRequest {
 
-	
-	public ClusterHealthRequest() {
-		super("GET","/_cluster/health");
-	}
 
-	public void timeout(long seconds) {
-		this.request.addParameter("timeout", String.valueOf(seconds)+"s");
-		
-	}	
+    public ClusterHealthRequest() {
+        super("GET", "/_cluster/health");
+    }
+
+    public void timeout(long seconds) {
+        this.request.addParameter("timeout", String.valueOf(seconds) + "s");
+
+    }
 }

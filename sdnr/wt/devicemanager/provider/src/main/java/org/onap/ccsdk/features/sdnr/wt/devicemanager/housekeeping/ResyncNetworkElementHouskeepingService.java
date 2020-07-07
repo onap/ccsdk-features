@@ -71,10 +71,9 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
      * @param databaseClientEvents database to clean
      * @param deviceMonitor devicemonitor
      */
-    public ResyncNetworkElementHouskeepingService(
-            DeviceManagerImpl deviceManager,
-            MountPointService mountPointService, ODLEventListenerHandler odlEventListenerHandler,
-            DataProvider databaseClientEvents, DeviceMonitor deviceMonitor) {
+    public ResyncNetworkElementHouskeepingService(DeviceManagerImpl deviceManager, MountPointService mountPointService,
+            ODLEventListenerHandler odlEventListenerHandler, DataProvider databaseClientEvents,
+            DeviceMonitor deviceMonitor) {
         super();
         this.deviceManager = deviceManager;
         this.mountPointService = mountPointService;
@@ -103,8 +102,8 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
             if (nodeNames == null || nodeNames.size() <= 0) {
                 nodeNamesInput = this.databaseClientEvents.getAllNodesWithCurrentAlarms();
             } else {
-				nodeNamesInput = nodeNames;
-			}
+                nodeNamesInput = nodeNames;
+            }
 
             // Filter all mountpoints from input that were found and are known to this Cluster-node instance of
             // DeviceManager
@@ -134,7 +133,7 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
                             this.databaseClientEvents.clearFaultsCurrentOfNode(mountpointName);
                             nodeNamesHandled.add(mountpointName);
                         } else {
-                            if (deviceManager.getNeByMountpoint(mountpointName) != null) {
+                            if (deviceManager.getConnectedNeByMountpoint(mountpointName) != null) {
                                 LOG.info("At node known mountpoint {}", mountpointName);
                                 nodeNamesHandled.add(mountpointName);
                             } else {
@@ -153,7 +152,7 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
                 LOG.info("Start refresh mountpoint task {}", refreshCounter);
                 // for(String nodeName:nodeNamesOutput) {
                 for (String nodeName : nodeNamesHandled) {
-                    NetworkElement ne = deviceManager.getNeByMountpoint(nodeName);
+                    NetworkElement ne = deviceManager.getConnectedNeByMountpoint(nodeName);
                     if (ne != null) {
                         LOG.info("Refresh mountpoint {}", nodeName);
                         ne.warmstart();

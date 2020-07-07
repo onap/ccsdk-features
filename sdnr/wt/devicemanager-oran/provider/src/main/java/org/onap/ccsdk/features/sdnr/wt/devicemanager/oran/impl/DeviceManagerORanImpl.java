@@ -23,7 +23,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkEleme
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceManagerORanImpl implements AutoCloseable  {
+public class DeviceManagerORanImpl implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerORanImpl.class);
     private static final String APPLICATION_NAME = "DeviceManagerORan";

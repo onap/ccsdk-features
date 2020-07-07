@@ -28,9 +28,13 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface IPublicServlet {
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
-	public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
-	public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException ;
-	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException ;
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
+
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
+
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
+
+    public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
+
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
 }

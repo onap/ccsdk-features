@@ -88,7 +88,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     @Override
     public void onWebSocketText(String message) {
-        LOG.info("{} has sent {}",this.getRemoteAdr(), message);
+        LOG.info("{} has sent {}", this.getRemoteAdr(), message);
         if (!this.manageClientRequest(message)) {
             this.manageClientRequest2(message);
         }
@@ -130,8 +130,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     /**
      *
-     * @param request is a json object
-     *                {"data":"scopes","scopes":["scope1","scope2",...]}
+     * @param request is a json object {"data":"scopes","scopes":["scope1","scope2",...]}
      * @return if handled
      */
     private boolean manageClientRequest(String request) {
@@ -180,7 +179,8 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
             LOG.warn("problem sending message: " + e.getMessage());
         }
     }
-     public String getSessionId() {
+
+    public String getSessionId() {
         return this.myUniqueSessionId;
     }
 
@@ -209,12 +209,12 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
             }
         }
     }
+
     public static void broadCast(String nodeName, String eventType, String xmlEvent) {
-        if(clientList.size()>0) {
+        if (clientList.size() > 0) {
             Set<Entry<String, WebSocketManagerSocket>> e = clientList.entrySet();
             WebSocketManagerSocket s = e.iterator().next().getValue();
-            if(s!=null)
-            {
+            if (s != null) {
                 s.sendToAll(nodeName, eventType, xmlEvent);
             }
         }

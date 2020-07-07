@@ -20,52 +20,74 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateListener;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener {
-	private static final Logger LOG = LoggerFactory.getLogger(MountpointNodeStateListenerImpl.class);
-	@Override
-	public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
+public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(MountpointNodeStateListenerImpl.class);
+    private NetconfNodeStateService netconfNodeStateService;
+    private MountpointStatePublisherMain mountpointStatePublisher;
+    private ListenerRegistration<MountpointNodeStateListenerImpl> registeredNodeStateListener;
 
-		LOG.info("In onCreated of MountpointNodeStateListenerImpl - nNodeId = "+nNodeId.getValue()+
-				" IP Address = "+netconfNode.getHost().getIpAddress().getIpv4Address().toString());
-		JSONObject obj = new JSONObject();
-		obj.put("NodeId", nNodeId.getValue());
-		obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
-		obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+    public MountpointNodeStateListenerImpl(NetconfNodeStateService netconfNodeStateService) {
+        this.netconfNodeStateService = netconfNodeStateService;
+    }
 
-		MountpointStatePublisher.stateObjects.add(obj);
-	}
+    public void start(MountpointStatePublisherMain mountpointStatePublisher) {
+        this.mountpointStatePublisher = mountpointStatePublisher;
+        registeredNodeStateListener = netconfNodeStateService.registerNetconfNodeStateListener(this);
+    }
 
-	@Override
-	public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
+    @Override
+    public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
 
-		LOG.info("In onStateChange of MountpointNodeStateListenerImpl - nNodeId = "+nNodeId.getValue()+
-				" IP Address = "+netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
-		JSONObject obj = new JSONObject();
-		obj.put("NodeId", nNodeId.getValue());
-		obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
-		obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+        LOG.info("In onCreated of MountpointNodeStateListenerImpl - nNodeId = " + nNodeId.getValue() + " IP Address = "
+                + netconfNode.getHost().getIpAddress().getIpv4Address().toString());
+        JSONObject obj = new JSONObject();
+        obj.put("NodeId", nNodeId.getValue());
+        obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
+        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
 
-		MountpointStatePublisher.stateObjects.add(obj);
-	}
+        mountpointStatePublisher.addToPublish(obj);
+    }
 
-	@Override
-	public void onRemoved(NodeId nNodeId) {
+    @Override
+    public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
 
-		LOG.info("In onRemoved of MountpointNodeStateListenerImpl - nNodeId = "+nNodeId);
-		JSONObject obj = new JSONObject();
-		obj.put("NodeId", nNodeId.getValue());
-		obj.put("NetConfNodeState", "Removed");
-		obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+        LOG.info("In onStateChange of MountpointNodeStateListenerImpl - nNodeId = " + nNodeId.getValue()
+                + " IP Address = " + netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
+        JSONObject obj = new JSONObject();
+        obj.put("NodeId", nNodeId.getValue());
+        obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
+        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
 
-		MountpointStatePublisher.stateObjects.add(obj);
-	}
+        mountpointStatePublisher.addToPublish(obj);
+    }
+
+    @Override
+    public void onRemoved(NodeId nNodeId) {
+
+        LOG.info("In onRemoved of MountpointNodeStateListenerImpl - nNodeId = " + nNodeId);
+        JSONObject obj = new JSONObject();
+        obj.put("NodeId", nNodeId.getValue());
+        obj.put("NetConfNodeState", "Removed");
+        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+
+        mountpointStatePublisher.addToPublish(obj);
+    }
+
+    public void stop() throws Exception {
+        this.close();
+    }
+
+    @Override
+    public void close() throws Exception {
+        registeredNodeStateListener.close();
+    }
 
 }

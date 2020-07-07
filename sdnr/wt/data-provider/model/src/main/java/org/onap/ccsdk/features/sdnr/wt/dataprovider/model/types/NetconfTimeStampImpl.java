@@ -41,32 +41,25 @@ import org.slf4j.LoggerFactory;
  * Format2 NETCONF - pattern from ietf-yang-types "2013-07-15" Pattern:
  * "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[\+\-](\d{2}):(\d{2}))"
  *
- * Format3 NETCONF DateAndTime CoreModel-CoreFoundationModule-TypeDefinitions vom
- * 2016-07-01 Example1: 20170118114449.1Z Example2: 20170118114449.1-0500 Pattern:
- * "\d{4}\d{2}\d{2}\d{2}\d{2}\d{2}.\d+?(Z|[\+\-](\d{2})(\d{2}))" typedef DateAndTime { description
- * "This primitive type defines the date and time according to the following structure:
- * 'yyyyMMddhhmmss.s[Z|{+|-}HHMm]' where: yyyy '0000'..'9999' year MM '01'..'12' month dd '01'..'31'
- * day hh '00'..'23' hour mm '00'..'59' minute ss '00'..'59' second s '.0'..'.9' tenth of second
- * (set to '.0' if EMS or NE cannot support this granularity) Z 'Z' indicates UTC (rather than local
- * time) {+|-} '+' or '-' delta from UTC HH '00'..'23' time zone difference in hours Mm '00'..'59'
- * time zone difference in minutes."; type string; } Format4 E/// specific Example1:
- * 2017-01-23T13:32:38-05:00 Example2: 2017-01-23T13:32-05:00
+ * Format3 NETCONF DateAndTime CoreModel-CoreFoundationModule-TypeDefinitions vom 2016-07-01 Example1: 20170118114449.1Z
+ * Example2: 20170118114449.1-0500 Pattern: "\d{4}\d{2}\d{2}\d{2}\d{2}\d{2}.\d+?(Z|[\+\-](\d{2})(\d{2}))" typedef
+ * DateAndTime { description "This primitive type defines the date and time according to the following structure:
+ * 'yyyyMMddhhmmss.s[Z|{+|-}HHMm]' where: yyyy '0000'..'9999' year MM '01'..'12' month dd '01'..'31' day hh '00'..'23'
+ * hour mm '00'..'59' minute ss '00'..'59' second s '.0'..'.9' tenth of second (set to '.0' if EMS or NE cannot support
+ * this granularity) Z 'Z' indicates UTC (rather than local time) {+|-} '+' or '-' delta from UTC HH '00'..'23' time
+ * zone difference in hours Mm '00'..'59' time zone difference in minutes."; type string; } Format4 E/// specific
+ * Example1: 2017-01-23T13:32:38-05:00 Example2: 2017-01-23T13:32-05:00
  *
  * Input formats netconfTime as String according the formats given above
  *
  * Return format is String in ISO8601 Format for database and presentation.
  *
- * Example formats:
- *    1) ISO8601. Example 2017-01-18T11:44:49.482-05:00
- *    2) Microwave ONF. Examples 20170118114449.1Z, 20170118114449.1-0500
- *    3.1) Ericson. Example: 2017-01-23T13:32:38-05:00
- *    3.2) Ericson. Example: 2017-01-23T13:32-05:00
- *          Always 10 Groups,
- *          1:Year 2:Month 3:day 4:Hour 5:minute 6:optional sec 7:optional ms 8:optional Z or 9:offset
- *           signedhour 10:min
+ * Example formats: 1) ISO8601. Example 2017-01-18T11:44:49.482-05:00 2) Microwave ONF. Examples 20170118114449.1Z,
+ * 20170118114449.1-0500 3.1) Ericson. Example: 2017-01-23T13:32:38-05:00 3.2) Ericson. Example: 2017-01-23T13:32-05:00
+ * Always 10 Groups, 1:Year 2:Month 3:day 4:Hour 5:minute 6:optional sec 7:optional ms 8:optional Z or 9:offset
+ * signedhour 10:min
  *
- * Template:
- *     private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStamp.getConverter();
+ * Template: private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStamp.getConverter();
  */
 
 public class NetconfTimeStampImpl implements NetconfTimeStamp {
@@ -77,22 +70,20 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
     /**
      * Specify the input format expected from netconf, and from specific devices.
      */
-    private static DateTimeFormatter formatterInput = DateTimeFormatter.ofPattern(""
-            + "[yyyy-MM-dd'T'HH:mm[:ss][.SSS][.SS][.S][xxx][xx][X][Z]]"
-            + "[yyyyMMddHHmmss[.SSS][.SS][.S][xxx][xx][X][Z]]"
-            ).withZone(ZoneOffset.UTC);
+    private static DateTimeFormatter formatterInput =
+            DateTimeFormatter.ofPattern("" + "[yyyy-MM-dd'T'HH:mm[:ss][.SSS][.SS][.S][xxx][xx][X][Z]]"
+                    + "[yyyyMMddHHmmss[.SSS][.SS][.S][xxx][xx][X][Z]]").withZone(ZoneOffset.UTC);
 
     /**
      * Specify output format that is used internally
      */
-    private static DateTimeFormatter formatterOutput = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S'Z'")
-            .withZone(ZoneOffset.UTC);
+    private static DateTimeFormatter formatterOutput =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S'Z'").withZone(ZoneOffset.UTC);
 
     /**
      * Use static access
      */
-    private NetconfTimeStampImpl() {
-    }
+    private NetconfTimeStampImpl() {}
 
     /*
      * ------------------------------------ Public function
@@ -100,6 +91,7 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
 
     /**
      * Use this function to get the converter
+     * 
      * @return global converter
      */
     public static NetconfTimeStamp getConverter() {
@@ -118,12 +110,12 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
 
     /**
      * Get actual timestamp as NETCONF specific type NETCONF/YANG 1.0 Format
-
+     * 
      * @return String with Date in NETCONF/YANG Format Version 1.0.
      */
     @Override
     public String getTimeStampAsNetconfString(Date date) {
-        return ZonedDateTime.ofInstant(date.toInstant(),ZoneOffset.UTC).format(formatterOutput);
+        return ZonedDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC).format(formatterOutput);
     }
 
 
@@ -140,6 +132,7 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
 
     /**
      * Get time from date as NETCONF specific type NETCONF/YANG 1.0 Format in GMT
+     * 
      * @param date specifying the date and time
      * @return DateAndTime Type 1.0. Date in NETCONF/YANG Format Version 1.0.
      */
@@ -147,8 +140,10 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
     public DateAndTime getTimeStamp(Date date) {
         return DateAndTime.getDefaultInstance(getTimeStampAsNetconfString(date));
     }
+
     /**
      * Get time from date as NETCONF specific type NETCONF/YANG 1.0 Format in GMT
+     * 
      * @param date specifying the date and time
      * @return DateAndTime Type 1.0. Date in NETCONF/YANG Format Version 1.0.
      */
@@ -173,14 +168,14 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
             throw new IllegalArgumentException(
                     "No pattern for NETCONF data string: " + netconfTime + " Msg:" + e.getMessage());
         }
-       }
+    }
 
     /**
      * Deliver String result.
      *
      * @param netconfTime as String according the formats given above
-     * @return If successful: String in ISO8601 Format for database and presentation. If "wrong formed
-     *         input" the Input string with the prefix "Maleformed date" is delivered back.
+     * @return If successful: String in ISO8601 Format for database and presentation. If "wrong formed input" the Input
+     *         string with the prefix "Maleformed date" is delivered back.
      */
     @Override
     public String getTimeStampFromNetconf(String netconfTime) {
@@ -189,7 +184,7 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
             return inputUTC;
         } catch (Exception e) {
             LOG.info(e.getMessage());
-         }
+        }
         LOG.debug("No pattern for NETCONF data string: {}", netconfTime);
         return "Malformed date: " + netconfTime; // Error handling
     }

@@ -44,5 +44,5 @@ public interface IEsConfig {
     void registerConfigChangedListener(IConfigChangedListener archiveCleanService);
 
 
-   
+
 }

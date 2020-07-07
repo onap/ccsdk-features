@@ -25,8 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.extension.g.Extension;
 
 /**
- * ValueNameList is an access Wrapper to NETCONF Extension lists
- * Class is a specialized HashMap.
+ * ValueNameList is an access Wrapper to NETCONF Extension lists Class is a specialized HashMap.
  */
 public class ValueNameList extends HashMap<String, String> {
 
@@ -34,6 +33,7 @@ public class ValueNameList extends HashMap<String, String> {
 
     /**
      * Create ValueNameList for NETCONF extensions
+     * 
      * @param extensionList Parameters as received from device. Could be null.
      */
     public void put(@Nullable List<Extension> extensionList) {
@@ -54,6 +54,7 @@ public class ValueNameList extends HashMap<String, String> {
 
     /**
      * Return value or null
+     * 
      * @param name key for element
      * @return value if key exists; if not nul
      */
@@ -63,11 +64,12 @@ public class ValueNameList extends HashMap<String, String> {
 
     /**
      * Get element as id list
+     * 
      * @param name key of element
      * @param topLevelEqUuidList as input to add elements
      * @return List<UniversalId>
      */
-    public  @NonNull List<UniversalId> getAsUniversalIdList(String name, List<UniversalId> topLevelEqUuidList) {
+    public @NonNull List<UniversalId> getAsUniversalIdList(String name, List<UniversalId> topLevelEqUuidList) {
         if (containsKey(name)) {
             String[] result = get(name).split(",\\s*");
             if (result.length > 0) {

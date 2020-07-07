@@ -29,16 +29,15 @@ import org.osgi.framework.Bundle;
  * Extract subtree with resources from Opendaylight/Karaf/OSGi bundle into Karaf directory<br>
  *
  * Reference: Eclipsezone @see
- * <a href="https://www.eclipsezone.com/eclipse/forums/t101557.html">https://www.eclipszone.com</a>
+ * <a href="https://www.eclipsezone.com/eclipse/forums/t101557.html">https://www.eclipszone.com</a> <br>
  * <br>
- * <br>
- * Example for resource and directory path from karaf log. write resource: help/FAQ/0.4.0/README.md
- * Create directories for: data/cache/com.highstreet.technologies.help/help/FAQ/0.4.0/README.md Open
- * the file: data/cache/com.highstreet.technologies.help/help/FAQ/0.4.0/README.md Problem: Binary,
- * JPG files => do not use buffer related functions
+ * Example for resource and directory path from karaf log. write resource: help/FAQ/0.4.0/README.md Create directories
+ * for: data/cache/com.highstreet.technologies.help/help/FAQ/0.4.0/README.md Open the file:
+ * data/cache/com.highstreet.technologies.help/help/FAQ/0.4.0/README.md Problem: Binary, JPG files => do not use buffer
+ * related functions
  *
- * Hint: Verify with file manager the content of the bundle.jar file to see the location of the
- * resources. There is no need to mark them via the classpath.
+ * Hint: Verify with file manager the content of the bundle.jar file to see the location of the resources. There is no
+ * need to mark them via the classpath.
  */
 
 public class ExtactBundleResource {
@@ -47,8 +46,7 @@ public class ExtactBundleResource {
      * Extract resources from Karaf/OSGi bundle into karaf directory structure.
      *
      * @param bundle Karaf/OSGi bundle with resources
-     * @param filePrefix prefix in karaf file system for destination e.g.
-     *        "data/cache/com.highstreet.technologies."
+     * @param filePrefix prefix in karaf file system for destination e.g. "data/cache/com.highstreet.technologies."
      * @param ressoureRoot root name of ressources, with leading "/". e.g. "/help"
      * @throws IOException In case of problems.
      */

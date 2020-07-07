@@ -24,253 +24,149 @@ import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.PNFMountPointCli
 
 public class TestDMaaPPNFRegVESMsgConsumer extends DMaaPPNFRegVESMsgConsumer {
 
-	private static final String DEFAULT_SDNRUSER = "admin";
-	private static final String DEFAULT_SDNRPASSWD = "admin";
-	private static final String DEFAULT_SDNRBASEURL = "http://localhost:8181";
+    private static final String DEFAULT_SDNRUSER = "admin";
+    private static final String DEFAULT_SDNRPASSWD = "admin";
+    private static final String DEFAULT_SDNRBASEURL = "http://localhost:8181";
 
-	private static final String pnfRegMsg_TLS = "{\n" +
-			"  \"event\": {\n" +
-			"    \"commonEventHeader\": {\n" +
-			"      \"domain\": \"pnfRegistration\",\n" +
-			"      \"eventId\": \"NSHMRIACQ01M01123401_1234 BestInClass\",\n" +
-			"      \"eventName\": \"pnfRegistration_EventType5G\",\n" +
-			"      \"eventType\": \"EventType5G\",\n" +
-			"      \"sequence\": 0,\n" +
-			"      \"priority\": \"Low\",\n" +
-			"      \"reportingEntityId\": \"\",\n" +
-			"      \"reportingEntityName\": \"pendurty-virtual-machine\",\n" +
-			"      \"sourceId\": \"\",\n" +
-			"      \"sourceName\": \"NSHMRIACQ01M01123401\",\n" +
-			"      \"startEpochMicrosec\": 1571300004203,\n" +
-			"      \"lastEpochMicrosec\": 1571300004203,\n" +
-			"      \"nfNamingCode\": \"1234\",\n" +
-			"      \"nfVendorName\": \"VENDORA\",\n" +
-			"      \"timeZoneOffset\": \"+00:00\",\n" +
-			"      \"version\": \"4.0.1\",\n" +
-			"      \"vesEventListenerVersion\":\"7.0.1\"\n" +
-			"    },\n" +
-			"    \"pnfRegistrationFields\": {\n" +
-			"      \"pnfRegistrationFieldsVersion\": \"2.0\",\n" +
-			"		\"additionalFields\": \n" +
-			"		{ \n" +
-			"			\"protocol\":\"TLS\",\n"+
-			"			\"keyId\":\"netconf\",\n"+
-			"			\"oamPort\":\"50000\",\n"+
-			"			\"betweenAttemptsTimeout\":\"2000\",\n" +
-			"			\"keepaliveDelay\":\"120\",\n" +
-			"			\"sleep-factor\":\"1.5\",\n" +
-			"			\"reconnectOnChangedSchema\":\"false\",\n" +
-			"			\"connectionTimeout\":\"20000\",\n" +
-			"			\"maxConnectionAttempts\":\"100\",\n" +
-			"			\"username\":\"netconf\",\n" +
-			"			\"tcpOnly\":\"false\"\n" +
-			"		},\n" +
-			"      \"lastServiceDate\":\"2019-08-16\",\n" +
-			"      \"macAddress\":\"02:42:f7:d4:62:ce\",\n" +
-			"      \"manufactureDate\":\"2019-08-16\",\n" +
-			"      \"modelNumbsdnrer\": \"1234 BestInClass\",\n" +
-			"      \"oamV4IpAddress\": \"10.10.10.11\",\n" +
-			"	   \"oamPort\":\"17380\",\n" +
-			"      \"oamV6IpAddress\": \"0:0:0:0:0:ffff:a0a:011\",\n" +
-			"      \"serialNumber\": \"VENDORA-1234-10.10.10.11-1234 BestInClass\",\n" +
-			"      \"softwareVersion\": \"2.3.5\",\n" +
-			"      \"unitFamily\": \"VENDORA-1234\",\n" +
-			"      \"unitType\": \"1234\",\n" +
-			"      \"vendorName\": \"VENDORA\"\n" +
-			"    }\n" +
-			"  }\n" +
-			"}\n" +
-			"";
+    private static final String pnfRegMsg_TLS = "{\n" + "  \"event\": {\n" + "    \"commonEventHeader\": {\n"
+            + "      \"domain\": \"pnfRegistration\",\n"
+            + "      \"eventId\": \"NSHMRIACQ01M01123401_1234 BestInClass\",\n"
+            + "      \"eventName\": \"pnfRegistration_EventType5G\",\n" + "      \"eventType\": \"EventType5G\",\n"
+            + "      \"sequence\": 0,\n" + "      \"priority\": \"Low\",\n" + "      \"reportingEntityId\": \"\",\n"
+            + "      \"reportingEntityName\": \"pendurty-virtual-machine\",\n" + "      \"sourceId\": \"\",\n"
+            + "      \"sourceName\": \"NSHMRIACQ01M01123401\",\n" + "      \"startEpochMicrosec\": 1571300004203,\n"
+            + "      \"lastEpochMicrosec\": 1571300004203,\n" + "      \"nfNamingCode\": \"1234\",\n"
+            + "      \"nfVendorName\": \"VENDORA\",\n" + "      \"timeZoneOffset\": \"+00:00\",\n"
+            + "      \"version\": \"4.0.1\",\n" + "      \"vesEventListenerVersion\":\"7.0.1\"\n" + "    },\n"
+            + "    \"pnfRegistrationFields\": {\n" + "      \"pnfRegistrationFieldsVersion\": \"2.0\",\n"
+            + "		\"additionalFields\": \n" + "		{ \n" + "			\"protocol\":\"TLS\",\n"
+            + "			\"keyId\":\"netconf\",\n" + "			\"oamPort\":\"50000\",\n"
+            + "			\"betweenAttemptsTimeout\":\"2000\",\n" + "			\"keepaliveDelay\":\"120\",\n"
+            + "			\"sleep-factor\":\"1.5\",\n" + "			\"reconnectOnChangedSchema\":\"false\",\n"
+            + "			\"connectionTimeout\":\"20000\",\n" + "			\"maxConnectionAttempts\":\"100\",\n"
+            + "			\"username\":\"netconf\",\n" + "			\"tcpOnly\":\"false\"\n" + "		},\n"
+            + "      \"lastServiceDate\":\"2019-08-16\",\n" + "      \"macAddress\":\"02:42:f7:d4:62:ce\",\n"
+            + "      \"manufactureDate\":\"2019-08-16\",\n" + "      \"modelNumbsdnrer\": \"1234 BestInClass\",\n"
+            + "      \"oamV4IpAddress\": \"10.10.10.11\",\n" + "	   \"oamPort\":\"17380\",\n"
+            + "      \"oamV6IpAddress\": \"0:0:0:0:0:ffff:a0a:011\",\n"
+            + "      \"serialNumber\": \"VENDORA-1234-10.10.10.11-1234 BestInClass\",\n"
+            + "      \"softwareVersion\": \"2.3.5\",\n" + "      \"unitFamily\": \"VENDORA-1234\",\n"
+            + "      \"unitType\": \"1234\",\n" + "      \"vendorName\": \"VENDORA\"\n" + "    }\n" + "  }\n" + "}\n"
+            + "";
 
-	private static final String pnfRegMsg_SSH = "{\n" +
-			"  \"event\": {\n" +
-			"    \"commonEventHeader\": {\n" +
-			"      \"domain\": \"pnfRegistration\",\n" +
-			"      \"eventId\": \"NSHMRIACQ01M01123401_1234 BestInClass\",\n" +
-			"      \"eventName\": \"pnfRegistration_EventType5G\",\n" +
-			"      \"eventType\": \"EventType5G\",\n" +
-			"      \"sequence\": 0,\n" +
-			"      \"priority\": \"Low\",\n" +
-			"      \"reportingEntityId\": \"\",\n" +
-			"      \"reportingEntityName\": \"pendurty-virtual-machine\",\n" +
-			"      \"sourceId\": \"\",\n" +
-			"      \"sourceName\": \"NSHMRIACQ01M01123401\",\n" +
-			"      \"startEpochMicrosec\": 1571300004203,\n" +
-			"      \"lastEpochMicrosec\": 1571300004203,\n" +
-			"      \"nfNamingCode\": \"1234\",\n" +
-			"      \"nfVendorName\": \"VENDORA\",\n" +
-			"      \"timeZoneOffset\": \"+00:00\",\n" +
-			"      \"version\": \"4.0.1\",\n" +
-			"      \"vesEventListenerVersion\":\"7.0.1\"\n" +
-			"    },\n" +
-			"    \"pnfRegistrationFields\": {\n" +
-			"      \"pnfRegistrationFieldsVersion\": \"2.0\",\n" +
-			"		\"additionalFields\": \n" +
-			"		{ \n" +
-			"			\"protocol\":\"SSH\",\n"+
-			"			\"password\":\"netconf\",\n"+
-			"			\"oamPort\":\"50000\",\n"+
-			"			\"betweenAttemptsTimeout\":\"2000\",\n" +
-			"			\"keepaliveDelay\":\"120\",\n" +
-			"			\"sleep-factor\":\"1.5\",\n" +
-			"			\"reconnectOnChangedSchema\":\"false\",\n" +
-			"			\"connectionTimeout\":\"20000\",\n" +
-			"			\"maxConnectionAttempts\":\"100\",\n" +
-			"			\"username\":\"netconf\",\n" +
-			"			\"tcpOnly\":\"false\"\n" +
-			"		},\n" +
-			"      \"lastServiceDate\":\"2019-08-16\",\n" +
-			"      \"macAddress\":\"02:42:f7:d4:62:ce\",\n" +
-			"      \"manufactureDate\":\"2019-08-16\",\n" +
-			"      \"modelNumbsdnrer\": \"1234 BestInClass\",\n" +
-			"      \"oamV4IpAddress\": \"10.10.10.11\",\n" +
-			"	   \"oamPort\":\"17380\",\n" +
-			"      \"oamV6IpAddress\": \"0:0:0:0:0:ffff:a0a:011\",\n" +
-			"      \"serialNumber\": \"VENDORA-1234-10.10.10.11-1234 BestInClass\",\n" +
-			"      \"softwareVersion\": \"2.3.5\",\n" +
-			"      \"unitFamily\": \"VENDORA-1234\",\n" +
-			"      \"unitType\": \"1234\",\n" +
-			"      \"vendorName\": \"VENDORA\"\n" +
-			"    }\n" +
-			"  }\n" +
-			"}\n" +
-			"";
+    private static final String pnfRegMsg_SSH = "{\n" + "  \"event\": {\n" + "    \"commonEventHeader\": {\n"
+            + "      \"domain\": \"pnfRegistration\",\n"
+            + "      \"eventId\": \"NSHMRIACQ01M01123401_1234 BestInClass\",\n"
+            + "      \"eventName\": \"pnfRegistration_EventType5G\",\n" + "      \"eventType\": \"EventType5G\",\n"
+            + "      \"sequence\": 0,\n" + "      \"priority\": \"Low\",\n" + "      \"reportingEntityId\": \"\",\n"
+            + "      \"reportingEntityName\": \"pendurty-virtual-machine\",\n" + "      \"sourceId\": \"\",\n"
+            + "      \"sourceName\": \"NSHMRIACQ01M01123401\",\n" + "      \"startEpochMicrosec\": 1571300004203,\n"
+            + "      \"lastEpochMicrosec\": 1571300004203,\n" + "      \"nfNamingCode\": \"1234\",\n"
+            + "      \"nfVendorName\": \"VENDORA\",\n" + "      \"timeZoneOffset\": \"+00:00\",\n"
+            + "      \"version\": \"4.0.1\",\n" + "      \"vesEventListenerVersion\":\"7.0.1\"\n" + "    },\n"
+            + "    \"pnfRegistrationFields\": {\n" + "      \"pnfRegistrationFieldsVersion\": \"2.0\",\n"
+            + "		\"additionalFields\": \n" + "		{ \n" + "			\"protocol\":\"SSH\",\n"
+            + "			\"password\":\"netconf\",\n" + "			\"oamPort\":\"50000\",\n"
+            + "			\"betweenAttemptsTimeout\":\"2000\",\n" + "			\"keepaliveDelay\":\"120\",\n"
+            + "			\"sleep-factor\":\"1.5\",\n" + "			\"reconnectOnChangedSchema\":\"false\",\n"
+            + "			\"connectionTimeout\":\"20000\",\n" + "			\"maxConnectionAttempts\":\"100\",\n"
+            + "			\"username\":\"netconf\",\n" + "			\"tcpOnly\":\"false\"\n" + "		},\n"
+            + "      \"lastServiceDate\":\"2019-08-16\",\n" + "      \"macAddress\":\"02:42:f7:d4:62:ce\",\n"
+            + "      \"manufactureDate\":\"2019-08-16\",\n" + "      \"modelNumbsdnrer\": \"1234 BestInClass\",\n"
+            + "      \"oamV4IpAddress\": \"10.10.10.11\",\n" + "	   \"oamPort\":\"17380\",\n"
+            + "      \"oamV6IpAddress\": \"0:0:0:0:0:ffff:a0a:011\",\n"
+            + "      \"serialNumber\": \"VENDORA-1234-10.10.10.11-1234 BestInClass\",\n"
+            + "      \"softwareVersion\": \"2.3.5\",\n" + "      \"unitFamily\": \"VENDORA-1234\",\n"
+            + "      \"unitType\": \"1234\",\n" + "      \"vendorName\": \"VENDORA\"\n" + "    }\n" + "  }\n" + "}\n"
+            + "";
 
-	private static final String pnfRegMsg_OTHER = "{\n" +
-			"  \"event\": {\n" +
-			"    \"commonEventHeader\": {\n" +
-			"      \"domain\": \"pnfRegistration\",\n" +
-			"      \"eventId\": \"NSHMRIACQ01M01123401_1234 BestInClass\",\n" +
-			"      \"eventName\": \"pnfRegistration_EventType5G\",\n" +
-			"      \"eventType\": \"EventType5G\",\n" +
-			"      \"sequence\": 0,\n" +
-			"      \"priority\": \"Low\",\n" +
-			"      \"reportingEntityId\": \"\",\n" +
-			"      \"reportingEntityName\": \"pendurty-virtual-machine\",\n" +
-			"      \"sourceId\": \"\",\n" +
-			"      \"sourceName\": \"NSHMRIACQ01M01123401\",\n" +
-			"      \"startEpochMicrosec\": 1571300004203,\n" +
-			"      \"lastEpochMicrosec\": 1571300004203,\n" +
-			"      \"nfNamingCode\": \"1234\",\n" +
-			"      \"nfVendorName\": \"VENDORA\",\n" +
-			"      \"timeZoneOffset\": \"+00:00\",\n" +
-			"      \"version\": \"4.0.1\",\n" +
-			"      \"vesEventListenerVersion\":\"7.0.1\"\n" +
-			"    },\n" +
-			"    \"pnfRegistrationFields\": {\n" +
-			"      \"pnfRegistrationFieldsVersion\": \"2.0\",\n" +
-			"		\"additionalFields\": \n" +
-			"		{ \n" +
-			"			\"protocol\":\"OTHER\",\n"+
-			"			\"password\":\"netconf\",\n"+
-			"			\"oamPort\":\"50000\",\n"+
-			"			\"betweenAttemptsTimeout\":\"2000\",\n" +
-			"			\"keepaliveDelay\":\"120\",\n" +
-			"			\"sleep-factor\":\"1.5\",\n" +
-			"			\"reconnectOnChangedSchema\":\"false\",\n" +
-			"			\"connectionTimeout\":\"20000\",\n" +
-			"			\"maxConnectionAttempts\":\"100\",\n" +
-			"			\"username\":\"netconf\",\n" +
-			"			\"tcpOnly\":\"false\"\n" +
-			"		},\n" +
-			"      \"lastServiceDate\":\"2019-08-16\",\n" +
-			"      \"macAddress\":\"02:42:f7:d4:62:ce\",\n" +
-			"      \"manufactureDate\":\"2019-08-16\",\n" +
-			"      \"modelNumbsdnrer\": \"1234 BestInClass\",\n" +
-			"      \"oamV4IpAddress\": \"10.10.10.11\",\n" +
-			"	   \"oamPort\":\"17380\",\n" +
-			"      \"oamV6IpAddress\": \"0:0:0:0:0:ffff:a0a:011\",\n" +
-			"      \"serialNumber\": \"VENDORA-1234-10.10.10.11-1234 BestInClass\",\n" +
-			"      \"softwareVersion\": \"2.3.5\",\n" +
-			"      \"unitFamily\": \"VENDORA-1234\",\n" +
-			"      \"unitType\": \"1234\",\n" +
-			"      \"vendorName\": \"VENDORA\"\n" +
-			"    }\n" +
-			"  }\n" +
-			"}\n" +
-			"";
-	private static final String pnfRegMsg = "{\n" +
-			"  \"event\": {\n" +
-			"    \"commonEventHeader\": {\n" +
-			"      \"domain\": \"pnfRegistration\",\n" +
-			"      \"eventId\": \"NSHMRIACQ01M01123401_1234 BestInClass\",\n" +
-			"      \"eventName\": \"pnfRegistration_EventType5G\",\n" +
-			"      \"eventType\": \"EventType5G\",\n" +
-			"      \"sequence\": 0,\n" +
-			"      \"priority\": \"Low\",\n" +
-			"      \"reportingEntityId\": \"\",\n" +
-			"      \"reportingEntityName\": \"pendurty-virtual-machine\",\n" +
-			"      \"sourceId\": \"\",\n" +
-			"      \"sourceName\": \"NSHMRIACQ01M01123401\",\n" +
-			"      \"startEpochMicrosec\": 1571300004203,\n" +
-			"      \"lastEpochMicrosec\": 1571300004203,\n" +
-			"      \"nfNamingCode\": \"1234\",\n" +
-			"      \"nfVendorName\": \"VENDORA\",\n" +
-			"      \"timeZoneOffset\": \"+00:00\",\n" +
-			"      \"version\": \"4.0.1\",\n" +
-			"      \"vesEventListenerVersion\":\"7.0.1\"\n" +
-			"    },\n" +
-			"    \"pnfRegistrationFields\": {\n" +
-			"      \"pnfRegistrationFieldsVersion\": \"2.0\",\n" +
-			"      \"lastServiceDate\":\"2019-08-16\",\n" +
-			"      \"macAddress\":\"02:42:f7:d4:62:ce\",\n" +
-			"      \"manufactureDate\":\"2019-08-16\",\n" +
-			"      \"modelNumbsdnrer\": \"1234 BestInClass\",\n" +
-			"      \"oamV4IpAddress\": \"10.10.10.11\",\n" +
-			"	   \"oamPort\":\"17380\",\n" +
-			"      \"oamV6IpAddress\": \"0:0:0:0:0:ffff:a0a:011\",\n" +
-			"      \"serialNumber\": \"VENDORA-1234-10.10.10.11-1234 BestInClass\",\n" +
-			"      \"softwareVersion\": \"2.3.5\",\n" +
-			"      \"unitFamily\": \"VENDORA-1234\",\n" +
-			"      \"unitType\": \"1234\",\n" +
-			"      \"vendorName\": \"VENDORA\"\n" +
-			"    }\n" +
-			"  }\n" +
-			"}\n" +
-			"";
+    private static final String pnfRegMsg_OTHER = "{\n" + "  \"event\": {\n" + "    \"commonEventHeader\": {\n"
+            + "      \"domain\": \"pnfRegistration\",\n"
+            + "      \"eventId\": \"NSHMRIACQ01M01123401_1234 BestInClass\",\n"
+            + "      \"eventName\": \"pnfRegistration_EventType5G\",\n" + "      \"eventType\": \"EventType5G\",\n"
+            + "      \"sequence\": 0,\n" + "      \"priority\": \"Low\",\n" + "      \"reportingEntityId\": \"\",\n"
+            + "      \"reportingEntityName\": \"pendurty-virtual-machine\",\n" + "      \"sourceId\": \"\",\n"
+            + "      \"sourceName\": \"NSHMRIACQ01M01123401\",\n" + "      \"startEpochMicrosec\": 1571300004203,\n"
+            + "      \"lastEpochMicrosec\": 1571300004203,\n" + "      \"nfNamingCode\": \"1234\",\n"
+            + "      \"nfVendorName\": \"VENDORA\",\n" + "      \"timeZoneOffset\": \"+00:00\",\n"
+            + "      \"version\": \"4.0.1\",\n" + "      \"vesEventListenerVersion\":\"7.0.1\"\n" + "    },\n"
+            + "    \"pnfRegistrationFields\": {\n" + "      \"pnfRegistrationFieldsVersion\": \"2.0\",\n"
+            + "		\"additionalFields\": \n" + "		{ \n" + "			\"protocol\":\"OTHER\",\n"
+            + "			\"password\":\"netconf\",\n" + "			\"oamPort\":\"50000\",\n"
+            + "			\"betweenAttemptsTimeout\":\"2000\",\n" + "			\"keepaliveDelay\":\"120\",\n"
+            + "			\"sleep-factor\":\"1.5\",\n" + "			\"reconnectOnChangedSchema\":\"false\",\n"
+            + "			\"connectionTimeout\":\"20000\",\n" + "			\"maxConnectionAttempts\":\"100\",\n"
+            + "			\"username\":\"netconf\",\n" + "			\"tcpOnly\":\"false\"\n" + "		},\n"
+            + "      \"lastServiceDate\":\"2019-08-16\",\n" + "      \"macAddress\":\"02:42:f7:d4:62:ce\",\n"
+            + "      \"manufactureDate\":\"2019-08-16\",\n" + "      \"modelNumbsdnrer\": \"1234 BestInClass\",\n"
+            + "      \"oamV4IpAddress\": \"10.10.10.11\",\n" + "	   \"oamPort\":\"17380\",\n"
+            + "      \"oamV6IpAddress\": \"0:0:0:0:0:ffff:a0a:011\",\n"
+            + "      \"serialNumber\": \"VENDORA-1234-10.10.10.11-1234 BestInClass\",\n"
+            + "      \"softwareVersion\": \"2.3.5\",\n" + "      \"unitFamily\": \"VENDORA-1234\",\n"
+            + "      \"unitType\": \"1234\",\n" + "      \"vendorName\": \"VENDORA\"\n" + "    }\n" + "  }\n" + "}\n"
+            + "";
+    private static final String pnfRegMsg = "{\n" + "  \"event\": {\n" + "    \"commonEventHeader\": {\n"
+            + "      \"domain\": \"pnfRegistration\",\n"
+            + "      \"eventId\": \"NSHMRIACQ01M01123401_1234 BestInClass\",\n"
+            + "      \"eventName\": \"pnfRegistration_EventType5G\",\n" + "      \"eventType\": \"EventType5G\",\n"
+            + "      \"sequence\": 0,\n" + "      \"priority\": \"Low\",\n" + "      \"reportingEntityId\": \"\",\n"
+            + "      \"reportingEntityName\": \"pendurty-virtual-machine\",\n" + "      \"sourceId\": \"\",\n"
+            + "      \"sourceName\": \"NSHMRIACQ01M01123401\",\n" + "      \"startEpochMicrosec\": 1571300004203,\n"
+            + "      \"lastEpochMicrosec\": 1571300004203,\n" + "      \"nfNamingCode\": \"1234\",\n"
+            + "      \"nfVendorName\": \"VENDORA\",\n" + "      \"timeZoneOffset\": \"+00:00\",\n"
+            + "      \"version\": \"4.0.1\",\n" + "      \"vesEventListenerVersion\":\"7.0.1\"\n" + "    },\n"
+            + "    \"pnfRegistrationFields\": {\n" + "      \"pnfRegistrationFieldsVersion\": \"2.0\",\n"
+            + "      \"lastServiceDate\":\"2019-08-16\",\n" + "      \"macAddress\":\"02:42:f7:d4:62:ce\",\n"
+            + "      \"manufactureDate\":\"2019-08-16\",\n" + "      \"modelNumbsdnrer\": \"1234 BestInClass\",\n"
+            + "      \"oamV4IpAddress\": \"10.10.10.11\",\n" + "	   \"oamPort\":\"17380\",\n"
+            + "      \"oamV6IpAddress\": \"0:0:0:0:0:ffff:a0a:011\",\n"
+            + "      \"serialNumber\": \"VENDORA-1234-10.10.10.11-1234 BestInClass\",\n"
+            + "      \"softwareVersion\": \"2.3.5\",\n" + "      \"unitFamily\": \"VENDORA-1234\",\n"
+            + "      \"unitType\": \"1234\",\n" + "      \"vendorName\": \"VENDORA\"\n" + "    }\n" + "  }\n" + "}\n"
+            + "";
 
-	@Test
-	public void processMsgTest() {
+    @Test
+    public void processMsgTest() {
 
-		DMaaPPNFRegVESMsgConsumer pnfRegMsgConsumer = new TestDMaaPPNFRegVESMsgConsumer();
-		try {
-			pnfRegMsgConsumer.processMsg(pnfRegMsg);
-			pnfRegMsgConsumer.processMsg(pnfRegMsg_SSH);
-			pnfRegMsgConsumer.processMsg(pnfRegMsg_TLS);
-			pnfRegMsgConsumer.processMsg(pnfRegMsg_OTHER);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Exception while processing PNF Registration Message - "+e.getMessage());
-		}
-	}
+        DMaaPPNFRegVESMsgConsumer pnfRegMsgConsumer = new TestDMaaPPNFRegVESMsgConsumer();
+        try {
+            pnfRegMsgConsumer.processMsg(pnfRegMsg);
+            pnfRegMsgConsumer.processMsg(pnfRegMsg_SSH);
+            pnfRegMsgConsumer.processMsg(pnfRegMsg_TLS);
+            pnfRegMsgConsumer.processMsg(pnfRegMsg_OTHER);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Exception while processing PNF Registration Message - " + e.getMessage());
+        }
+    }
 
-	@Override
-	public PNFMountPointClient getPNFMountPointClient(String baseUrl) {
-		return new TestPNFMountPointClient();
-	}
+    @Override
+    public PNFMountPointClient getPNFMountPointClient(String baseUrl) {
+        return new TestPNFMountPointClient();
+    }
 
-	@Override
-	public String getSDNRUser() {
-		return DEFAULT_SDNRUSER;
-	}
+    @Override
+    public String getSDNRUser() {
+        return DEFAULT_SDNRUSER;
+    }
 
-	@Override
-	public String getSDNRPasswd() {
-		return DEFAULT_SDNRPASSWD;
-	}
+    @Override
+    public String getSDNRPasswd() {
+        return DEFAULT_SDNRPASSWD;
+    }
 
-	@Override
-	public String getBaseUrl() {
-		return DEFAULT_SDNRBASEURL;
-	}
+    @Override
+    public String getBaseUrl() {
+        return DEFAULT_SDNRBASEURL;
+    }
 
-	@Test
-	public void Test1() {
-		TestGeneralConfig cfgTest = new TestGeneralConfig();
-		cfgTest.test();
-		DMaaPPNFRegVESMsgConsumer pnfConsumer = new DMaaPPNFRegVESMsgConsumer();
-		System.out.println(pnfConsumer.getBaseUrl());
-		System.out.println(pnfConsumer.getSDNRUser());
-		System.out.println(pnfConsumer.getSDNRPasswd());
-	}
+    @Test
+    public void Test1() {
+        TestGeneralConfig cfgTest = new TestGeneralConfig();
+        cfgTest.test();
+        DMaaPPNFRegVESMsgConsumer pnfConsumer = new DMaaPPNFRegVESMsgConsumer();
+        System.out.println(pnfConsumer.getBaseUrl());
+        System.out.println(pnfConsumer.getSDNRUser());
+        System.out.println(pnfConsumer.getSDNRPasswd());
+    }
 }

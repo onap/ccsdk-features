@@ -22,15 +22,15 @@ import java.util.Properties;
 
 public abstract interface DMaaPVESMsgConsumer extends Runnable {
 
-	//public abstract void init(Properties baseProperties, String consumerPropertiesPath);
-	public abstract void init(Properties baseProperties);
+    //public abstract void init(Properties baseProperties, String consumerPropertiesPath);
+    public abstract void init(Properties baseProperties);
 
-	public abstract void processMsg(String msg) throws Exception;//Implement something like InvalidMessageException;
+    public abstract void processMsg(String msg) throws Exception;//Implement something like InvalidMessageException;
 
-	public abstract boolean isReady();
+    public abstract boolean isReady();
 
-	public abstract boolean isRunning();
-	
-	public abstract void stopConsumer();
+    public abstract boolean isRunning();
+
+    public abstract void stopConsumer();
 
 }

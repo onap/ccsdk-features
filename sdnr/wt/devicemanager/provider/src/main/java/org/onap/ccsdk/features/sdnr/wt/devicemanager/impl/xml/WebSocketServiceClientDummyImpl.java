@@ -29,16 +29,16 @@ public class WebSocketServiceClientDummyImpl implements WebSocketServiceClientIn
 
     private static final Logger LOG = LoggerFactory.getLogger(ODLEventListenerHandler.class);
 
-    public WebSocketServiceClientDummyImpl() {
+    public WebSocketServiceClientDummyImpl() {}
+
+    @Override
+    public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(@NonNull String nodeName,
+            @NonNull T notificationXml) {
+        LOG.info("Dummy to send websocket event {} for mountpoint {}", notificationXml.getClass().getSimpleName(),
+                nodeName);
     }
 
     @Override
-    public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(@NonNull String nodeName, @NonNull T notificationXml) {
-        LOG.info("Dummy to send websocket event {} for mountpoint {}", notificationXml.getClass().getSimpleName(), nodeName);
-    }
-
-    @Override
-    public void close() throws Exception {
-    }
+    public void close() throws Exception {}
 
 }

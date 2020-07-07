@@ -24,7 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.AboutHttpServlet;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -43,92 +43,96 @@ import javax.servlet.http.HttpServletResponse;
 
 public class TestAbout {
 
-	private static final String REPO_MDSAL_DIR = "system/org/opendaylight/mdsal/mdsal-binding-api/3.0.9/";
-	private static final String REPO_YANGTOOLS_DIR = "system/org/opendaylight/yangtools/odl-yangtools-common/2.1.11";
-	@BeforeClass
-	public static void before() throws IOException {
-		//create temporary odl folder structure in tmp
-		Files.createDirectories(new File(REPO_MDSAL_DIR).toPath() );
-		Files.createDirectories(new File(REPO_YANGTOOLS_DIR).toPath() );
-	}
-	@AfterClass
-	public static void after() throws IOException {
-		//delete created dirs
-		delete(new File("system/"));
-	}
-	private static void delete(File file) throws IOException {
- 
-		for (File childFile : file.listFiles()) {
- 
-			if (childFile.isDirectory()) {
-				delete(childFile);
-			} else {
-				if (!childFile.delete()) {
-					throw new IOException();
-				}
-			}
-		}
- 
-		if (!file.delete()) {
-			throw new IOException();
-		}
-	}
-	@Test
-	public void testReadmeRequest() throws IOException, ServletException {
-		AboutHelperServlet servlet =new AboutHelperServlet();
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		HttpServletResponse response =  mock(HttpServletResponse.class);
-		when(request.getRequestURI()).thenReturn("/about");
-		StringWriter out = new StringWriter();
-		ServletOutputStream printOut = new ServletOutputStream() {
+    private static final String REPO_MDSAL_DIR = "system/org/opendaylight/mdsal/mdsal-binding-api/3.0.9/";
+    private static final String REPO_YANGTOOLS_DIR = "system/org/opendaylight/yangtools/odl-yangtools-common/2.1.11";
 
-			@Override
-			public void write(int arg0) throws IOException {
-				out.write(arg0);
-			}
-		};
-		when(response.getOutputStream()).thenReturn(printOut);
-		servlet.doGet(request,response);
-		verify(response).setStatus(200);
-		verify(response).setContentType("text/plain");
-		System.out.println(out.getBuffer().toString());
-		assertTrue(out.getBuffer().length()>0);
-	}
+    @BeforeClass
+    public static void before() throws IOException {
+        //create temporary odl folder structure in tmp
+        Files.createDirectories(new File(REPO_MDSAL_DIR).toPath());
+        Files.createDirectories(new File(REPO_YANGTOOLS_DIR).toPath());
+    }
 
-	@Test
-	public void testReadmeResourceRequest() throws IOException, ServletException {
-		AboutHelperServlet servlet =new AboutHelperServlet();
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		HttpServletResponse response =  mock(HttpServletResponse.class);
-		when(request.getRequestURI()).thenReturn("/about/test.bmp");
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		ServletOutputStream printOut = new ServletOutputStream() {
+    @AfterClass
+    public static void after() throws IOException {
+        //delete created dirs
+        delete(new File("system/"));
+    }
 
-			@Override
-			public void write(int arg0) throws IOException {
-				out.write(arg0);
-			}
-		};
-		when(response.getOutputStream()).thenReturn(printOut);
-		servlet.doGet(request,response);
-		verify(response).setStatus(200);
-		verify(response).setContentType("image/bmp");
-		assertTrue(out.size()>0);
-	}
+    private static void delete(File file) throws IOException {
 
-	
+        for (File childFile : file.listFiles()) {
 
-	private class AboutHelperServlet extends AboutHttpServlet{
+            if (childFile.isDirectory()) {
+                delete(childFile);
+            } else {
+                if (!childFile.delete()) {
+                    throw new IOException();
+                }
+            }
+        }
 
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
+        if (!file.delete()) {
+            throw new IOException();
+        }
+    }
 
-		@Override
-		public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-			super.doGet(req, resp);
-		}
+    @Test
+    public void testReadmeRequest() throws IOException, ServletException {
+        AboutHelperServlet servlet = new AboutHelperServlet();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getRequestURI()).thenReturn("/about");
+        StringWriter out = new StringWriter();
+        ServletOutputStream printOut = new ServletOutputStream() {
 
-	}
+            @Override
+            public void write(int arg0) throws IOException {
+                out.write(arg0);
+            }
+        };
+        when(response.getOutputStream()).thenReturn(printOut);
+        servlet.doGet(request, response);
+        verify(response).setStatus(200);
+        verify(response).setContentType("text/plain");
+        System.out.println(out.getBuffer().toString());
+        assertTrue(out.getBuffer().length() > 0);
+    }
+
+    @Test
+    public void testReadmeResourceRequest() throws IOException, ServletException {
+        AboutHelperServlet servlet = new AboutHelperServlet();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getRequestURI()).thenReturn("/about/test.bmp");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ServletOutputStream printOut = new ServletOutputStream() {
+
+            @Override
+            public void write(int arg0) throws IOException {
+                out.write(arg0);
+            }
+        };
+        when(response.getOutputStream()).thenReturn(printOut);
+        servlet.doGet(request, response);
+        verify(response).setStatus(200);
+        verify(response).setContentType("image/bmp");
+        assertTrue(out.size() > 0);
+    }
+
+
+
+    private class AboutHelperServlet extends AboutHttpServlet {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            super.doGet(req, resp);
+        }
+
+    }
 }

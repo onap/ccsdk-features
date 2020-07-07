@@ -28,35 +28,35 @@ import java.util.List;
  * @author Michael Dürre
  *
  */
-public class AliasesEntryList extends ArrayList<AliasesEntry>{
+public class AliasesEntryList extends ArrayList<AliasesEntry> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param alias
-	 * @return
-	 */
-	public AliasesEntry findByAlias(String alias) {
-		for(AliasesEntry e:this) {
-			if(e.getAlias().equals(alias)) {
-				return e;
-			}
-		}
-		return null;
-	}
+    /**
+     * @param alias
+     * @return
+     */
+    public AliasesEntry findByAlias(String alias) {
+        for (AliasesEntry e : this) {
+            if (e.getAlias().equals(alias)) {
+                return e;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * @return
-	 */
-	public List<String> getLinkedIndices() {
-		List<String> list = new ArrayList<String>();
-		for(AliasesEntry e:this) {
-			list.add(e.getIndex());
-		}
-		return list;
-	}
+    /**
+     * @return
+     */
+    public List<String> getLinkedIndices() {
+        List<String> list = new ArrayList<String>();
+        for (AliasesEntry e : this) {
+            list.add(e.getIndex());
+        }
+        return list;
+    }
 
 }

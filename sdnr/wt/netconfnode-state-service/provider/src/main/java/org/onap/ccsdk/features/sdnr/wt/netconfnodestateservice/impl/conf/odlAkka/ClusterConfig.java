@@ -35,20 +35,20 @@ public class ClusterConfig {
     private final ClusterRoleInfoCollection roles;
     private ClusterNodeInfo ismeInfo;
 
-    public static ClusterConfig defaultSingleNodeConfig()
-    {
-        ClusterConfig cfg=new ClusterConfig();
-        cfg.ismeInfo=ClusterNodeInfo.defaultSingleNodeInfo();
+    public static ClusterConfig defaultSingleNodeConfig() {
+        ClusterConfig cfg = new ClusterConfig();
+        cfg.ismeInfo = ClusterNodeInfo.defaultSingleNodeInfo();
         cfg.seedNodes.add(cfg.ismeInfo);
         cfg.roles.add(ClusterRoleInfo.defaultSingleNodeRole());
         return cfg;
     }
-    public ClusterConfig()
-    {
+
+    public ClusterConfig() {
         this.seedNodes = new ArrayList<>();
         this.roles = new ClusterRoleInfoCollection();
 
     }
+
     public ClusterConfig(Config o) throws Exception {
         {
             this.seedNodes = new ArrayList<>();
@@ -87,9 +87,9 @@ public class ClusterConfig {
 
     public String getHostName(String defaultValue) {
         if (getRoleMemberIndex() > 0 && getRoleMemberIndex() <= seedNodes.size()) {
-            return this.seedNodes.get(getRoleMemberIndex()-1).getRemoteAddress();
+            return this.seedNodes.get(getRoleMemberIndex() - 1).getRemoteAddress();
         } else {
-            LOG.warn("Seednode not available for roleMemberIndex {}. Using default {}",getRoleMember(), defaultValue);
+            LOG.warn("Seednode not available for roleMemberIndex {}. Using default {}", getRoleMember(), defaultValue);
             return defaultValue;
         }
     }
@@ -97,33 +97,37 @@ public class ClusterConfig {
     public String getDBClusterName(String defaultValue) {
         String r = null;
         if (this.seedNodes != null && this.seedNodes.size() > 0) {
-            r = String.format("cluster-%s.%d", this.seedNodes.get(0).getRemoteAddress(), this.seedNodes.get(0).getPort());
+            r = String.format("cluster-%s.%d", this.seedNodes.get(0).getRemoteAddress(),
+                    this.seedNodes.get(0).getPort());
         }
         if (r == null || r.isEmpty()) {
             r = defaultValue;
         }
         return r;
     }
+
     public String getClusterSeedNodeName() {
         return this.getClusterSeedNodeName("");
     }
+
     public String getClusterSeedNodeName(String defaultValue) {
-        int idx=this.getRoleMemberIndex()-1;
-        String r=null;
-        if(this.seedNodes!=null && idx>=0 && this.seedNodes.size()>0 && this.seedNodes.size()>idx)
-        {
-            r=this.seedNodes.get(idx).getSeedNodeName();
+        int idx = this.getRoleMemberIndex() - 1;
+        String r = null;
+        if (this.seedNodes != null && idx >= 0 && this.seedNodes.size() > 0 && this.seedNodes.size() > idx) {
+            r = this.seedNodes.get(idx).getSeedNodeName();
         }
         if (r == null || r.isEmpty()) {
             r = defaultValue;
         }
         return r;
     }
+
     public int getRoleMemberIndex() {
 
-        ClusterRoleInfo role=this.roles.get("member");
-        return role!=null?role.getIndex():0;
+        ClusterRoleInfo role = this.roles.get("member");
+        return role != null ? role.getIndex() : 0;
     }
+
     public ClusterRoleInfo getRoleMember() {
         return this.roles.get("member");
     }
@@ -133,9 +137,9 @@ public class ClusterConfig {
         return "ClusterConfig [seedNodes=" + seedNodes + ", roles=" + roles + ", ismeInfo=" + ismeInfo + "]";
     }
 
-	public int getClusterSize() {
-		return this.seedNodes == null ? 0 : this.seedNodes.size();
-	}
+    public int getClusterSize() {
+        return this.seedNodes == null ? 0 : this.seedNodes.size();
+    }
 
 
 }

@@ -25,19 +25,20 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 
 public class KeepDataSearchHitConverter implements SearchHitConverter {
 
-	
-	private final ComponentName name;
 
-	public KeepDataSearchHitConverter(ComponentName name) {
-		this.name = name;
-	}
-	@Override
-	public SearchHit convert(SearchHit source) {
-		return source;
-	}
+    private final ComponentName name;
 
-	@Override
-	public ComponentData convert(DataContainer container) {
-		return container.getComponents().get(this.name);
-	}
+    public KeepDataSearchHitConverter(ComponentName name) {
+        this.name = name;
+    }
+
+    @Override
+    public SearchHit convert(SearchHit source) {
+        return source;
+    }
+
+    @Override
+    public ComponentData convert(DataContainer container) {
+        return container.getComponents().get(this.name);
+    }
 }

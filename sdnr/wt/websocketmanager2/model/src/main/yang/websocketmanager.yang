@@ -1,38 +1,76 @@
 module websocketmanager {
-    yang-version 1;
-    namespace "urn:opendaylight:params:xml:ns:yang:websocketmanager";
-    prefix "websocketmanager";
 
-    revision "2015-01-05" {
-        description "Initial revision of websocketmanager model";
-    }
+  yang-version 1;
+  namespace "urn:opendaylight:params:xml:ns:yang:websocketmanager";
+  prefix websocketmanager;
 
-     rpc websocket-event {
-        input {
-            leaf nodeName {
-             	type string;
-            }
+  organization
+    "highstreet technologies GmbH";
+  contact
+    "Web:   <https://highstreet-technologies.com>
+     ONAP:  <https://wiki.onap.org/display/DW/ODLUX+DB+API>";
 
-            leaf eventType {
-             	type string;
-            }
+  description
+    "This module defines the API for the websocket manager component.
 
-            leaf xmlEvent {
-             	type string;
-            }
-        }
-        output {
-            leaf response {
-                type string;
-            }
-        }
-    }
+     Copyright 2019 highstreet technologies GmbH Intellectual Property.
+     All rights reserved.
 
-    notification messagePushed {
-      leaf message {
+     Licensed under the Apache License, Version 2.0 (the 'License');
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an 'AS IS' BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.";
+
+  revision 2015-01-05 {
+    description
+      "Initial revision of websocketmanager model";
+    reference
+      "https://jira.onap.org/browse/SDNC-879";
+  }
+
+  rpc websocket-event {
+    description 
+      "The remote procedure call tor regirster for websocket.";
+    input {
+      leaf nodeName {
         type string;
+        description
+          "The node name, also called mointpoint name, device id,...";
       }
-
+      leaf eventType {
+        type string;
+        description
+          "The event type.";
+      }
+      leaf xmlEvent {
+        type string;
+        description
+          "The event in xml format.";
+      }
     }
-}
+    output {
+      leaf response {
+        type string;
+        description
+          "The response message.";
+      }
+    }
+  }
 
+  notification messagePushed {
+    leaf message {
+      type string;
+      description
+        "The text pushed in the message.";
+    }
+    description
+      "The definition of the notification syntax to push a message.";
+  }
+}

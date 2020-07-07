@@ -83,9 +83,12 @@ public class TestONFCoreNetworkElementFactory {
 
 
         when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElement.QNAME)).thenReturn(true);
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME)).thenReturn(true);
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME)).thenReturn(false);
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev181010.QNAME)).thenReturn(false);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME))
+                .thenReturn(true);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME))
+                .thenReturn(false);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev181010.QNAME))
+                .thenReturn(false);
         ONFCoreNetworkElementFactory factory = new ONFCoreNetworkElementFactory(configuration);
         assertTrue(factory.create(accessor, serviceProvider).isPresent());
     }
@@ -93,9 +96,12 @@ public class TestONFCoreNetworkElementFactory {
     @Test
     public void testCreateMWModelRev180907() throws Exception {
         when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElement.QNAME)).thenReturn(true);
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME)).thenReturn(false);
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME)).thenReturn(true);
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev181010.QNAME)).thenReturn(false);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME))
+                .thenReturn(false);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME))
+                .thenReturn(true);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev181010.QNAME))
+                .thenReturn(false);
         ONFCoreNetworkElementFactory factory = new ONFCoreNetworkElementFactory(configuration);
         assertTrue(factory.create(accessor, serviceProvider).isPresent());
     }
@@ -103,9 +109,12 @@ public class TestONFCoreNetworkElementFactory {
     @Test
     public void testCreateMWModelRev181010() throws Exception {
         when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElement.QNAME)).thenReturn(true);
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME)).thenReturn(false);
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME)).thenReturn(false);
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev181010.QNAME)).thenReturn(true);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME))
+                .thenReturn(false);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME))
+                .thenReturn(false);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev181010.QNAME))
+                .thenReturn(true);
         ONFCoreNetworkElementFactory factory = new ONFCoreNetworkElementFactory(configuration);
         assertTrue(factory.create(accessor, serviceProvider).isPresent());
     }

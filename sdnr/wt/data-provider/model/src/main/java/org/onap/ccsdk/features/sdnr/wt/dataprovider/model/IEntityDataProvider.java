@@ -31,7 +31,7 @@ public interface IEntityDataProvider {
     public void setReadyStatus(boolean status);
 
     /** Set some static status information after startup */
-    public void setStatus(StatusKey key,String value);
+    public void setStatus(StatusKey key, String value);
 
     /** Database configuration information **/
     public IEsConfig getEsConfig();

@@ -17,7 +17,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl;
 
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.DeviceMonitoredNe;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 
 public interface DeviceMonitor extends AutoCloseable {
@@ -29,26 +28,22 @@ public interface DeviceMonitor extends AutoCloseable {
 
     /**
      * removeMountpointIndication deregisters a mountpoint for registration services
+     * 
      * @param mountPointNodeName to deregister
      */
     void removeMountpointIndication(String mountPointNodeName);
 
-       /**
-        * Notify of device state change to "disconnected"
-        * Mount point supervision
-        * @param mountPointNodeName to deregister
-        */
+    /**
+     * Notify of device state change to "disconnected" or "connecting". For mountpoint creation or leaving connected
+     * state. Mount point supervision
+     * 
+     * @param mountPointNodeName to deregister
+     */
     void deviceDisconnectIndication(String mountPointNodeName);
 
     /**
      * Notify of device state changes to "connected"
-     * @param mountPointNodeName name of mount point
-     * @param ne to monitor
-     */
-    void deviceConnectMasterIndication(String mountPointNodeName, DeviceMonitoredNe ne);
-
-    /**
-     * Notify of device state changes to "connected"
+     * 
      * @param mountPointNodeName name of mount point
      * @param ne to monitor
      */
@@ -56,6 +51,7 @@ public interface DeviceMonitor extends AutoCloseable {
 
     /**
      * Notify of device state changes to "connected" for slave nodes
+     * 
      * @param mountPointNodeName name of mount point
      */
     void deviceConnectSlaveIndication(String mountPointNodeName);

@@ -43,18 +43,20 @@ public class TestHelpInfObject {
             e.printStackTrace();
         }
     }
+
     @After
     public void deinit() {
         this.init();
     }
+
     @Test
     public void test() {
-        File root=new File(HelpInfrastructureObject.getHelpDirectoryBase()+"/"+ROOT);
-        TestMyServlet.createHelpFile("/"+ROOT+"/test/0.4.0/README.md", CONTENT);
-        TestMyServlet.createHelpFile("/"+ROOT+"/test2/0.4.0/README.md", CONTENT);
-        TestMyServlet.createHelpFile("/"+ROOT+"/test3/abc/0.4.0/README.md", CONTENT);
-        TestMyServlet.createHelpFile("/"+ROOT+"/test3/abc1/0.4.0/README.md", CONTENT);
-        TestMyServlet.createHelpFile("/"+ROOT+"/test5/0.4.0/README.md", CONTENT);
+        File root = new File(HelpInfrastructureObject.getHelpDirectoryBase() + "/" + ROOT);
+        TestMyServlet.createHelpFile("/" + ROOT + "/test/0.4.0/README.md", CONTENT);
+        TestMyServlet.createHelpFile("/" + ROOT + "/test2/0.4.0/README.md", CONTENT);
+        TestMyServlet.createHelpFile("/" + ROOT + "/test3/abc/0.4.0/README.md", CONTENT);
+        TestMyServlet.createHelpFile("/" + ROOT + "/test3/abc1/0.4.0/README.md", CONTENT);
+        TestMyServlet.createHelpFile("/" + ROOT + "/test5/0.4.0/README.md", CONTENT);
 
         try {
             new HelpInfrastructureObject(root.toPath());

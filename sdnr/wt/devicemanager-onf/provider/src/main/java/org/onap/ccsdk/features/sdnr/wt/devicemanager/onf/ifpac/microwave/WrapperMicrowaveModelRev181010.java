@@ -96,10 +96,12 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
 
     /**
      * Handle specific version of microwave model
+     * 
      * @param acessor to access device
      * @param serviceProvider for devicemanager services
      */
-    public WrapperMicrowaveModelRev181010(@NonNull NetconfAccessor acessor, @NonNull DeviceManagerServiceProvider serviceProvider) {
+    public WrapperMicrowaveModelRev181010(@NonNull NetconfAccessor acessor,
+            @NonNull DeviceManagerServiceProvider serviceProvider) {
         this.acessor = acessor;
         this.genericTransactionUtils = acessor.getTransactionUtils();
         this.mountpointId = acessor.getNodeId().getValue();
@@ -132,58 +134,60 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
             FaultData resultList) {
 
         switch (lpName) {
-        case MWAIRINTERFACE:
-            readTheFaultsOfMwAirInterfacePac(uuid, resultList);
-            break;
+            case MWAIRINTERFACE:
+                readTheFaultsOfMwAirInterfacePac(uuid, resultList);
+                break;
 
-        case ETHERNETCONTAINER12:
-            readTheFaultsOfMwEthernetContainerPac(uuid, resultList);
-            break;
+            case ETHERNETCONTAINER12:
+                readTheFaultsOfMwEthernetContainerPac(uuid, resultList);
+                break;
 
-        case TDMCONTAINER:
-            readTheFaultsOfMwTdmContainerPac(uuid, resultList);
-            break;
+            case TDMCONTAINER:
+                readTheFaultsOfMwTdmContainerPac(uuid, resultList);
+                break;
 
-        case STRUCTURE:
-            if (lpClass == MwHybridMwStructurePac.class) {
-                readTheFaultsOfMwHybridMwStructurePac(uuid, resultList);
+            case STRUCTURE:
+                if (lpClass == MwHybridMwStructurePac.class) {
+                    readTheFaultsOfMwHybridMwStructurePac(uuid, resultList);
 
-            } else if (lpClass == MwAirInterfaceDiversityPac.class) {
-                readTheFaultsOfMwAirInterfaceDiversityPac(uuid, resultList);
+                } else if (lpClass == MwAirInterfaceDiversityPac.class) {
+                    readTheFaultsOfMwAirInterfaceDiversityPac(uuid, resultList);
 
-            } else if (lpClass == MwPureEthernetStructurePac.class) {
-                readTheFaultsOfMwPureEthernetStructurePac(uuid, resultList);
+                } else if (lpClass == MwPureEthernetStructurePac.class) {
+                    readTheFaultsOfMwPureEthernetStructurePac(uuid, resultList);
 
-            } else {
-                LOG.warn("Unassigned lp model {} class {}", lpName, lpClass);
-            }
-            break;
-        case ETHERNET:
-            // No alarms supported
-            break;
-        case ETHERNETCONTAINER10:
-        default:
-            LOG.warn("Unassigned or not expected lp in model {}", lpName);
+                } else {
+                    LOG.warn("Unassigned lp model {} class {}", lpName, lpClass);
+                }
+                break;
+            case ETHERNET:
+                // No alarms supported
+                break;
+            case ETHERNETCONTAINER10:
+            default:
+                LOG.warn("Unassigned or not expected lp in model {}", lpName);
         }
     }
 
     @Override
-    public @NonNull PerformanceDataLtp getLtpHistoricalPerformanceData(@NonNull ONFLayerProtocolName lpName, @NonNull Lp lp) {
+    public @NonNull PerformanceDataLtp getLtpHistoricalPerformanceData(@NonNull ONFLayerProtocolName lpName,
+            @NonNull Lp lp) {
         PerformanceDataLtp res = new PerformanceDataLtp();
         switch (lpName) {
-        case MWAIRINTERFACE:
-            return readAirInterfacePerformanceData(lp, res);
+            case MWAIRINTERFACE:
+                return readAirInterfacePerformanceData(lp, res);
 
-        case ETHERNETCONTAINER12:
-            return readEthernetContainerPerformanceData(lp, res);
+            case ETHERNETCONTAINER12:
+                return readEthernetContainerPerformanceData(lp, res);
 
-        case ETHERNETCONTAINER10:
-        case ETHERNETPHYSICAL:
-        case ETHERNET:
-        case TDMCONTAINER:
-        case STRUCTURE:
-        case UNKNOWN:
-            LOG.debug("Do not read HistoricalPM data for {} {}", lpName, Helper.nnGetUniversalId(lp.getUuid()).getValue());
+            case ETHERNETCONTAINER10:
+            case ETHERNETPHYSICAL:
+            case ETHERNET:
+            case TDMCONTAINER:
+            case STRUCTURE:
+            case UNKNOWN:
+                LOG.debug("Do not read HistoricalPM data for {} {}", lpName,
+                        Helper.nnGetUniversalId(lp.getUuid()).getValue());
         }
         return res;
     }
@@ -218,7 +222,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     }
 
     @Override
-    public void onObjectDeletionNotification( ObjectDeletionNotification notification) {
+    public void onObjectDeletionNotification(ObjectDeletionNotification notification) {
         LOG.debug("Got event of type :: {}", ObjectDeletionNotification.class.getSimpleName());
         if (notification != null) {
             microwaveModelListener.deletionNotification(acessor.getNodeId(), notification.getCounter(),
@@ -244,9 +248,9 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
 
         LOG.debug("Got event of type :: {}", ProblemNotification.class.getSimpleName());
 
-        faultService.faultNotification(acessor.getNodeId(), notification.getCounter(),
-                notification.getTimeStamp(), Helper.nnGetUniversalId(notification.getObjectIdRef()).getValue(),
-                notification.getProblem(), mapSeverity(notification.getSeverity()));
+        faultService.faultNotification(acessor.getNodeId(), notification.getCounter(), notification.getTimeStamp(),
+                Helper.nnGetUniversalId(notification.getObjectIdRef()).getValue(), notification.getProblem(),
+                mapSeverity(notification.getSeverity()));
     }
 
     /*-----------------------------------------------------------------------------
@@ -259,18 +263,17 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
      * @param uuId Universal Id String of the interface
      * @return number of alarms
      */
-    private FaultData readTheFaultsOfMwAirInterfacePac(UniversalId interfacePacUuid,
-            FaultData resultList) {
+    private FaultData readTheFaultsOfMwAirInterfacePac(UniversalId interfacePacUuid, FaultData resultList) {
 
         final Class<MwAirInterfacePac> clazzPac = MwAirInterfacePac.class;
-    
+
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
         // Step 2.2: construct data and the relative iid
-        InstanceIdentifier<AirInterfaceCurrentProblems> mwAirInterfaceIID = InstanceIdentifier
-                .builder(MwAirInterfacePac.class, new MwAirInterfacePacKey(interfacePacUuid))
-                .child(AirInterfaceCurrentProblems.class).build();
+        InstanceIdentifier<AirInterfaceCurrentProblems> mwAirInterfaceIID =
+                InstanceIdentifier.builder(MwAirInterfacePac.class, new MwAirInterfacePacKey(interfacePacUuid))
+                        .child(AirInterfaceCurrentProblems.class).build();
 
         // Step 2.3: read to the config data store
         AirInterfaceCurrentProblems problems = genericTransactionUtils.readData(acessor.getDataBroker(),
@@ -283,7 +286,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         } else {
             for (AirInterfaceCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
-                        interfacePacUuid.getValue(), problem.getProblemName(), mapSeverity(problem.getProblemSeverity()));
+                        interfacePacUuid.getValue(), problem.getProblemName(),
+                        mapSeverity(problem.getProblemSeverity()));
             }
         }
         return resultList;
@@ -295,11 +299,10 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
      * @param uuId Universal index of Interfacepac
      * @return number of alarms
      */
-    private FaultData readTheFaultsOfMwEthernetContainerPac(UniversalId interfacePacUuid,
-            FaultData resultList) {
+    private FaultData readTheFaultsOfMwEthernetContainerPac(UniversalId interfacePacUuid, FaultData resultList) {
 
         final Class<MwEthernetContainerPac> clazzPac = MwEthernetContainerPac.class;
-    
+
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -316,7 +319,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         } else {
             for (ContainerCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
-                        interfacePacUuid.getValue(), problem.getProblemName(), mapSeverity(problem.getProblemSeverity()));
+                        interfacePacUuid.getValue(), problem.getProblemName(),
+                        mapSeverity(problem.getProblemSeverity()));
             }
         }
         return resultList;
@@ -328,12 +332,11 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
      * @param uuId Universal index of Interfacepac
      * @return number of alarms
      */
-    private FaultData readTheFaultsOfMwAirInterfaceDiversityPac(UniversalId interfacePacUuid,
-            FaultData resultList) {
+    private FaultData readTheFaultsOfMwAirInterfaceDiversityPac(UniversalId interfacePacUuid, FaultData resultList) {
 
         final Class<MwAirInterfaceDiversityPac> clazzPac = MwAirInterfaceDiversityPac.class;
         final Class<AirInterfaceDiversityCurrentProblems> clazzProblems = AirInterfaceDiversityCurrentProblems.class;
-     
+
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -349,7 +352,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         } else {
             for (AirInterfaceDiversityCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
-                        interfacePacUuid.getValue(), problem.getProblemName(), mapSeverity(problem.getProblemSeverity()));
+                        interfacePacUuid.getValue(), problem.getProblemName(),
+                        mapSeverity(problem.getProblemSeverity()));
             }
         }
         return resultList;
@@ -361,12 +365,11 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
      * @param uuId Universal index of Interfacepac
      * @return number of alarms
      */
-    private FaultData readTheFaultsOfMwPureEthernetStructurePac(UniversalId interfacePacUuid,
-            FaultData resultList) {
+    private FaultData readTheFaultsOfMwPureEthernetStructurePac(UniversalId interfacePacUuid, FaultData resultList) {
 
         final Class<MwPureEthernetStructurePac> clazzPac = MwPureEthernetStructurePac.class;
         final Class<PureEthernetStructureCurrentProblems> clazzProblems = PureEthernetStructureCurrentProblems.class;
-     
+
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -382,7 +385,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         } else {
             for (StructureCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
-                        interfacePacUuid.getValue(), problem.getProblemName(), mapSeverity(problem.getProblemSeverity()));
+                        interfacePacUuid.getValue(), problem.getProblemName(),
+                        mapSeverity(problem.getProblemSeverity()));
             }
         }
         return resultList;
@@ -394,12 +398,11 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
      * @param uuId Universal index of Interfacepac
      * @return number of alarms
      */
-    private FaultData readTheFaultsOfMwHybridMwStructurePac(UniversalId interfacePacUuid,
-            FaultData resultList) {
+    private FaultData readTheFaultsOfMwHybridMwStructurePac(UniversalId interfacePacUuid, FaultData resultList) {
 
         final Class<MwHybridMwStructurePac> clazzPac = MwHybridMwStructurePac.class;
         final Class<HybridMwStructureCurrentProblems> clazzProblems = HybridMwStructureCurrentProblems.class;
-     
+
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -415,16 +418,16 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         } else {
             for (StructureCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
-                        interfacePacUuid.getValue(), problem.getProblemName(), mapSeverity(problem.getProblemSeverity()));
+                        interfacePacUuid.getValue(), problem.getProblemName(),
+                        mapSeverity(problem.getProblemSeverity()));
             }
         }
         return resultList;
     }
 
     /**
-     * Read problems of specific interfaces. TODO Goal for future implementation
-     * without usage of explicit new. Key is generated by newInstance() function
-     * here to verify this approach.
+     * Read problems of specific interfaces. TODO Goal for future implementation without usage of explicit new. Key is
+     * generated by newInstance() function here to verify this approach.
      *
      * @param uuId Universal index of Interfacepac
      * @return number of alarms
@@ -435,13 +438,12 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    private FaultData readTheFaultsOfMwTdmContainerPac(UniversalId interfacePacUuid,
-            FaultData resultList) {
+    private FaultData readTheFaultsOfMwTdmContainerPac(UniversalId interfacePacUuid, FaultData resultList) {
 
         final Class<MwTdmContainerPac> clazzPac = MwTdmContainerPac.class;
         final Class<MwTdmContainerPacKey> clazzPacKey = MwTdmContainerPacKey.class;
         final Class<TdmContainerCurrentProblems> clazzProblems = TdmContainerCurrentProblems.class;
-      
+
         LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
@@ -460,7 +462,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
                 // -- Specific part 3
                 for (ContainerCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
                     resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
-                            interfacePacUuid.getValue(), problem.getProblemName(), mapSeverity(problem.getProblemSeverity()));
+                            interfacePacUuid.getValue(), problem.getProblemName(),
+                            mapSeverity(problem.getProblemSeverity()));
                 }
             }
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
@@ -476,6 +479,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
 
     /**
      * Read and add performance data
+     * 
      * @param lp to read from
      * @param result Object to be filled with data
      * @return result
@@ -486,9 +490,9 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         // ----
         UniversalId mwAirInterfacePacuuId = lp.getUuid();
         // Step 2.1: construct data and the relative iid
-        InstanceIdentifier<AirInterfaceConfiguration> mwAirInterfaceConfigurationIID = InstanceIdentifier
-                .builder(MwAirInterfacePac.class, new MwAirInterfacePacKey(mwAirInterfacePacuuId))
-                .child(AirInterfaceConfiguration.class).build();
+        InstanceIdentifier<AirInterfaceConfiguration> mwAirInterfaceConfigurationIID =
+                InstanceIdentifier.builder(MwAirInterfacePac.class, new MwAirInterfacePacKey(mwAirInterfacePacuuId))
+                        .child(AirInterfaceConfiguration.class).build();
         AirInterfaceConfiguration airConfiguration = acessor.getTransactionUtils().readData(acessor.getDataBroker(),
                 LogicalDatastoreType.OPERATIONAL, mwAirInterfaceConfigurationIID);
 
@@ -497,9 +501,9 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
 
         } else {
             // Step 2.2: construct data and the relative iid
-            InstanceIdentifier<AirInterfaceHistoricalPerformances> mwAirInterfaceHistoricalPerformanceIID = InstanceIdentifier
-                    .builder(MwAirInterfacePac.class, new MwAirInterfacePacKey(mwAirInterfacePacuuId))
-                    .child(AirInterfaceHistoricalPerformances.class).build();
+            InstanceIdentifier<AirInterfaceHistoricalPerformances> mwAirInterfaceHistoricalPerformanceIID =
+                    InstanceIdentifier.builder(MwAirInterfacePac.class, new MwAirInterfacePacKey(mwAirInterfacePacuuId))
+                            .child(AirInterfaceHistoricalPerformances.class).build();
 
             // Step 2.3: read to the config data store
             AirInterfaceHistoricalPerformances airHistoricalPerformanceData = genericTransactionUtils.readData(
@@ -510,13 +514,14 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
                         mwAirInterfacePacuuId);
             } else {
                 // org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170320.air._interface.historical.performances.g.HistoricalPerformanceDataList
-                List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.air._interface.historical.performances.g.HistoricalPerformanceDataList> airHistPMList = airHistoricalPerformanceData
-                        .nonnullHistoricalPerformanceDataList();
+                List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.air._interface.historical.performances.g.HistoricalPerformanceDataList> airHistPMList =
+                        airHistoricalPerformanceData.nonnullHistoricalPerformanceDataList();
                 LOG.debug("DBRead MWAirInterfacePac Id {} Records intermediate: {}", mwAirInterfacePacuuId,
                         airHistPMList.size());
                 for (AirInterfaceHistoricalPerformanceTypeG pmRecord : airHistoricalPerformanceData
                         .nonnullHistoricalPerformanceDataList()) {
-                    result.add(new PerformanceDataAirInterface181010Builder(acessor.getNodeId(), lp, pmRecord, airConfiguration));
+                    result.add(new PerformanceDataAirInterface181010Builder(acessor.getNodeId(), lp, pmRecord,
+                            airConfiguration));
                 }
             }
         }
@@ -542,8 +547,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         if (ethContainerHistoricalPerformanceData == null) {
             LOG.debug("DBRead {} Id {} no HistoricalPerformances", myName, ethContainerPacuuId);
         } else {
-            List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.ethernet.container.historical.performances.g.HistoricalPerformanceDataList> airHistPMList = ethContainerHistoricalPerformanceData
-                    .nonnullHistoricalPerformanceDataList();
+            List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.ethernet.container.historical.performances.g.HistoricalPerformanceDataList> airHistPMList =
+                    ethContainerHistoricalPerformanceData.nonnullHistoricalPerformanceDataList();
             LOG.debug("DBRead {} Id {} Records intermediate: {}", myName, ethContainerPacuuId, airHistPMList.size());
             for (ContainerHistoricalPerformanceTypeG pmRecord : airHistPMList) {
                 result.add(new PerformanceDataAirInterface181010Builder(acessor.getNodeId(), lp, pmRecord));
@@ -553,11 +558,14 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         return result;
     }
 
-    public static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType mapSeverity( SeverityType severity) {
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType mapSeverity(
+            SeverityType severity) {
 
         Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType> res =
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.forName(severity.name());
-        return res.orElse(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.NonAlarmed);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType
+                        .forName(severity.name());
+        return res.orElse(
+                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.NonAlarmed);
     }
 
 

@@ -32,66 +32,66 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BaseResponse {
-	private static final Logger LOG = LoggerFactory.getLogger(BaseResponse.class);
 
-	private final int responseCode;
+    private static final Logger LOG = LoggerFactory.getLogger(BaseResponse.class);
 
-	BaseResponse(Response response) {
-		this.responseCode = response != null ? response.getStatusLine().getStatusCode() : 0;
-	}
+    private final int responseCode;
 
-	int getResponseCode() {
-		return this.responseCode;
-	}
+    BaseResponse(Response response) {
+        this.responseCode = response != null ? response.getStatusLine().getStatusCode() : 0;
+    }
 
-	public boolean isResponseSucceeded() {
-		return this.responseCode < 300;
-	}
+    int getResponseCode() {
+        return this.responseCode;
+    }
 
-	JSONObject getJson(Response response) {
-		if(response==null) {
-			LOG.warn("unable to parse response. response is null.");
-			return null;
-		}
-		try {
-			String sresponse = EntityUtils.toString(response.getEntity());
-			LOG.debug("parsing response={}", sresponse);
-			return new JSONObject(sresponse);
-		} catch (UnsupportedOperationException | IOException e) {
-			LOG.warn("error parsing es response: {}", e.getMessage());
-			return null;
-		}
+    public boolean isResponseSucceeded() {
+        return this.responseCode < 300 && this.responseCode >= 200;
+    }
 
-	}
+    JSONObject getJson(Response response) {
+        try {
+            String sresponse = EntityUtils.toString(response.getEntity());
+            LOG.debug("parsing response={}", sresponse);
+            return new JSONObject(sresponse);
+        } catch (UnsupportedOperationException | IOException e) {
+            LOG.warn("error parsing es response: {}", e.getMessage());
+            return null;
+        }
 
-	JSONObject getJson(String json) {
-		return new JSONObject(json);
-	}
+    }
 
-	/**
-	 * @param response
-	 * @return
-	 */
-	List<String> getLines(Response response){
-		return this.getLines(response,true);
-	}
-	List<String> getLines(Response response,boolean ignoreEmpty) {
-		try {
-			String sresponse = EntityUtils.toString(response.getEntity());
-			LOG.debug("parsing response={}", sresponse);
-			String[] hlp = sresponse.split("\n");
-			List<String> lines=new ArrayList<String>();
-			for(String h:hlp) {
-				if(ignoreEmpty && h.trim().length()==0) {
-					continue;
-				}
-				lines.add(h);
-			}
-			return lines;
-		} catch (UnsupportedOperationException | IOException e) {
-			LOG.warn("error parsing es response: {}", e.getMessage());
-			return null;
-		}
+    JSONObject getJson(String json) {
+        return new JSONObject(json);
+    }
 
-	}
+    /**
+     * @param response
+     * @return
+     */
+    List<String> getLines(Response response) {
+        return this.getLines(response, true);
+    }
+
+    List<String> getLines(Response response, boolean ignoreEmpty) {
+        try {
+            String sresponse = EntityUtils.toString(response.getEntity());
+            LOG.debug("parsing response={}", sresponse);
+            String[] hlp = sresponse.split("\n");
+            List<String> lines = new ArrayList<String>();
+            for (String h : hlp) {
+                if (ignoreEmpty && h.trim().length() == 0) {
+                    continue;
+                }
+                lines.add(h);
+            }
+            return lines;
+        } catch (UnsupportedOperationException | IOException e) {
+            LOG.warn("error parsing es response: {}", e.getMessage());
+            return null;
+        }
+
+    }
+
+
 }

@@ -22,7 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
 public class TestYangCloning {
-/*
+    /*
     @Test
     public void testEquipment() {
         EquipmentBuilder equipmentBuilder = new EquipmentBuilder();
@@ -35,20 +35,20 @@ public class TestYangCloning {
         Equipment equipment = equipmentBuilder.build();
         InventoryEntity output = YangToolsCloner.instance().cloneToBuilder(equipment,  new InventoryBuilder())
                 .setNodeId("node1").setUuid("a.a.a").setId("node1"+"/"+"a.a.a").build();
-
-
+    
+    
         System.out.println("source:");
         System.out.println(equipment);
         System.out.println("result:");
         System.out.println(output);
-
-
+    
+    
     }
     @Test
     public void testFaultCurrent() {
         ProblemNotificationXml source = new ProblemNotificationXml("node", "uuid", "problem", InternalSeverity.Critical,54,InternalDateAndTime.getTestpattern());
         FaultcurrentEntity output = YangToolsCloner.instance().clone(source,Faultcurrent.class);
-
+    
           System.out.println("source:");
             System.out.println(source);
             System.out.println("result:");

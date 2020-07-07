@@ -29,131 +29,133 @@ import org.onap.dmaap.mr.client.response.MRConsumerResponse;
 
 public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DMaaPVESMsgConsumerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DMaaPVESMsgConsumerImpl.class);
 
-	private final String name = this.getClass().getSimpleName();
-	private Properties properties = null;
-	private MRConsumer consumer = null;
-	private MRConsumerResponse consumerResponse = null;
-	private boolean running = false;
-	private boolean ready = false;
-	private int fetchPause = 5000; // Default pause between fetch - 5 seconds
-	private int timeout = 15000; // Default timeout - 15 seconds
+    private final String name = this.getClass().getSimpleName();
+    private Properties properties = null;
+    private MRConsumer consumer = null;
+    private MRConsumerResponse consumerResponse = null;
+    private boolean running = false;
+    private boolean ready = false;
+    private int fetchPause = 5000; // Default pause between fetch - 5 seconds
+    private int timeout = 15000; // Default timeout - 15 seconds
 
-	protected DMaaPVESMsgConsumerImpl() {
+    protected DMaaPVESMsgConsumerImpl() {
 
-	}
+    }
 
-	/*
-	 * Thread to fetch messages from the DMaaP topic. Waits for the messages to arrive on the topic until a certain timeout and returns. 
-	 * If no data arrives on the topic, sleeps for a certain time period before checking again
-	 */
-	@Override
-	public void run() {
+    /*
+     * Thread to fetch messages from the DMaaP topic. Waits for the messages to arrive on the topic until a certain timeout and returns. 
+     * If no data arrives on the topic, sleeps for a certain time period before checking again
+     */
+    @Override
+    public void run() {
 
-		if (ready) {
-			running = true;
-			while (running) {
-				try {
-					boolean noData = true;
-					consumerResponse = consumer.fetchWithReturnConsumerResponse(timeout, -1);
-					for (String msg : consumerResponse.getActualMessages()) {
-						noData = false;
-						LOG.debug(name + " received ActualMessage from DMaaP VES Message topic:\n"+msg);
-						processMsg(msg);
-					}
+        if (ready) {
+            running = true;
+            while (running) {
+                try {
+                    boolean noData = true;
+                    consumerResponse = consumer.fetchWithReturnConsumerResponse(timeout, -1);
+                    for (String msg : consumerResponse.getActualMessages()) {
+                        noData = false;
+                        LOG.debug(name + " received ActualMessage from DMaaP VES Message topic:\n" + msg);
+                        processMsg(msg);
+                    }
 
-					if (noData) {
-						LOG.debug(name + " received ResponseCode: " + consumerResponse.getResponseCode());
-						LOG.debug(name + " received ResponseMessage: " + consumerResponse.getResponseMessage());
-						if ((consumerResponse.getResponseCode() == null) && (consumerResponse.getResponseMessage().contains("SocketTimeoutException"))) {
-							LOG.warn("Client timeout while waiting for response from Server {}", consumerResponse.getResponseMessage());
-						}
-						pauseThread();
-					}
-				} catch (Exception e) {
-					LOG.error("Caught exception reading from DMaaP VES Message Topic", e);
-					running = false;
-				}
-			}
-		}
-	}
+                    if (noData) {
+                        LOG.debug(name + " received ResponseCode: " + consumerResponse.getResponseCode());
+                        LOG.debug(name + " received ResponseMessage: " + consumerResponse.getResponseMessage());
+                        if ((consumerResponse.getResponseCode() == null)
+                                && (consumerResponse.getResponseMessage().contains("SocketTimeoutException"))) {
+                            LOG.warn("Client timeout while waiting for response from Server {}",
+                                    consumerResponse.getResponseMessage());
+                        }
+                        pauseThread();
+                    }
+                } catch (Exception e) {
+                    LOG.error("Caught exception reading from DMaaP VES Message Topic", e);
+                    running = false;
+                }
+            }
+        }
+    }
 
-	/*
-	 * Create a consumer by specifying  properties containing information such as topic name, timeout, URL etc 
-	 */
-	@Override
-	public void init(Properties properties) {
+    /*
+     * Create a consumer by specifying  properties containing information such as topic name, timeout, URL etc 
+     */
+    @Override
+    public void init(Properties properties) {
 
-		try {
-			
-			String timeoutStr = properties.getProperty("timeout");
-			LOG.debug("timeoutStr: " + timeoutStr);
+        try {
 
-			if ((timeoutStr != null) && (timeoutStr.length() > 0)) {
-				timeout = parseTimeOutValue(timeoutStr);
-			}
+            String timeoutStr = properties.getProperty("timeout");
+            LOG.debug("timeoutStr: " + timeoutStr);
 
-			String fetchPauseStr = properties.getProperty("fetchPause");
-			LOG.debug("fetchPause(Str): " + fetchPauseStr);
-			if ((fetchPauseStr != null) && (fetchPauseStr.length() > 0)) {
-				fetchPause = parseFetchPause(fetchPauseStr);
-			}
-			LOG.debug("fetchPause: " + fetchPause);
+            if ((timeoutStr != null) && (timeoutStr.length() > 0)) {
+                timeout = parseTimeOutValue(timeoutStr);
+            }
 
-			this.consumer = MRClientFactory.createConsumer(properties);
-			ready = true;
-		} catch (Exception e) {
-			LOG.error("Error initializing DMaaP VES Message consumer from file " + properties, e);
-		}
-	}
+            String fetchPauseStr = properties.getProperty("fetchPause");
+            LOG.debug("fetchPause(Str): " + fetchPauseStr);
+            if ((fetchPauseStr != null) && (fetchPauseStr.length() > 0)) {
+                fetchPause = parseFetchPause(fetchPauseStr);
+            }
+            LOG.debug("fetchPause: " + fetchPause);
 
-	private int parseTimeOutValue(String timeoutStr) {
-		try {
-			return Integer.parseInt(timeoutStr);
-		} catch (NumberFormatException e) {
-			LOG.error("Non-numeric value specified for timeout (" + timeoutStr + ")");
-		}
-		return timeout;
-	}
+            this.consumer = MRClientFactory.createConsumer(properties);
+            ready = true;
+        } catch (Exception e) {
+            LOG.error("Error initializing DMaaP VES Message consumer from file " + properties, e);
+        }
+    }
 
-	private int parseFetchPause(String fetchPauseStr) {
-		try {
-			return Integer.parseInt(fetchPauseStr);
-		} catch (NumberFormatException e) {
-			LOG.error("Non-numeric value specified for fetchPause (" + fetchPauseStr + ")");
-		}
-		return fetchPause;
-	}
+    private int parseTimeOutValue(String timeoutStr) {
+        try {
+            return Integer.parseInt(timeoutStr);
+        } catch (NumberFormatException e) {
+            LOG.error("Non-numeric value specified for timeout (" + timeoutStr + ")");
+        }
+        return timeout;
+    }
 
-	private void pauseThread() throws InterruptedException {
-		if (fetchPause > 0) {
-			LOG.debug(String.format("No data received from fetch.  Pausing %d ms before retry", fetchPause));
-			Thread.sleep(fetchPause);
-		} else {
-			LOG.debug("No data received from fetch.  No fetch pause specified - retrying immediately");
-		}
-	}
+    private int parseFetchPause(String fetchPauseStr) {
+        try {
+            return Integer.parseInt(fetchPauseStr);
+        } catch (NumberFormatException e) {
+            LOG.error("Non-numeric value specified for fetchPause (" + fetchPauseStr + ")");
+        }
+        return fetchPause;
+    }
 
-	@Override
-	public boolean isReady() {
-		return ready;
-	}
+    private void pauseThread() throws InterruptedException {
+        if (fetchPause > 0) {
+            LOG.debug(String.format("No data received from fetch.  Pausing %d ms before retry", fetchPause));
+            Thread.sleep(fetchPause);
+        } else {
+            LOG.debug("No data received from fetch.  No fetch pause specified - retrying immediately");
+        }
+    }
 
-	@Override
-	public boolean isRunning() {
-		return running;
-	}
+    @Override
+    public boolean isReady() {
+        return ready;
+    }
 
-	public String getProperty(String name) {
-		return properties.getProperty(name, "");
-	}
+    @Override
+    public boolean isRunning() {
+        return running;
+    }
 
-	@Override
-	public void stopConsumer() {
-		running = false;
-	}
+    public String getProperty(String name) {
+        return properties.getProperty(name, "");
+    }
 
-	public abstract void processMsg(String msg) throws Exception;
+    @Override
+    public void stopConsumer() {
+        running = false;
+    }
+
+    public abstract void processMsg(String msg) throws Exception;
 
 }

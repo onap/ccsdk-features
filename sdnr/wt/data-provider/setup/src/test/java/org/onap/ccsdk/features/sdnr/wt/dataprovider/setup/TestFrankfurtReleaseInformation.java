@@ -42,9 +42,9 @@ public class TestFrankfurtReleaseInformation {
         Set<ComponentName> components = ri.getComponents();
         assertFalse(components.contains(ComponentName.INVENTORYTOPLEVEL));
         assertTrue(components.contains(ComponentName.EVENTLOG));
-        assertEquals("faultlog",ri.getAlias(ComponentName.FAULTLOG));
-        assertEquals("faultlog-v2",ri.getIndex(ComponentName.FAULTLOG));
-        assertNull(ri.getConverter(Release.FRANKFURT_R1,ComponentName.INVENTORYTOPLEVEL));
+        assertEquals("faultlog", ri.getAlias(ComponentName.FAULTLOG));
+        assertEquals("faultlog-v2", ri.getIndex(ComponentName.FAULTLOG));
+        assertNull(ri.getConverter(Release.FRANKFURT_R1, ComponentName.INVENTORYTOPLEVEL));
         assertNotNull(ri.getConverter(Release.FRANKFURT_R1, ComponentName.FAULTCURRENT));
     }
 

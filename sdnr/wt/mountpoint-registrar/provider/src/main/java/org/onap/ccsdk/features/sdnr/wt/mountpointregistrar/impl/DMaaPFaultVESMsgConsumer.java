@@ -30,75 +30,77 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 
 public class DMaaPFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DMaaPFaultVESMsgConsumer.class);
-	
-	//private static int faultCounter = 0;
-	private static final String DEFAULT_SDNRUSER = "admin";
-	private static final String DEFAULT_SDNRPASSWD = "admin";
+    private static final Logger LOG = LoggerFactory.getLogger(DMaaPFaultVESMsgConsumer.class);
 
-	@Override
-	public void processMsg(String msg) throws Exception {
-		String faultNodeId;
-		String faultOccurrenceTime;
-		String faultObjectId;
-		String faultReason;
-		String faultSeverity;
-		int faultSequence;
-		ObjectMapper oMapper = new ObjectMapper();
-		JsonNode dmaapMessageRootNode;
+    //private static int faultCounter = 0;
+    private static final String DEFAULT_SDNRUSER = "admin";
+    private static final String DEFAULT_SDNRPASSWD = "admin";
 
-		LOG.info("Fault VES Message is - {}", msg);
-		try {
-			dmaapMessageRootNode = oMapper.readTree(msg);
-			faultNodeId = dmaapMessageRootNode.at("/event/commonEventHeader/sourceName").textValue();
-			faultOccurrenceTime =  dmaapMessageRootNode.at("/event/faultFields/alarmAdditionalInformation/eventTime").textValue();
-			faultObjectId = dmaapMessageRootNode.at("/event/faultFields/alarmInterfaceA").textValue();
-			faultReason = dmaapMessageRootNode.at("/event/faultFields/specificProblem").textValue();
-			faultSeverity = dmaapMessageRootNode.at("/event/faultFields/eventSeverity").textValue();
-			faultSequence = dmaapMessageRootNode.at("/event/commonEventHeader/sequence").intValue();
-			//faultCounter++;
+    @Override
+    public void processMsg(String msg) throws Exception {
+        String faultNodeId;
+        String faultOccurrenceTime;
+        String faultObjectId;
+        String faultReason;
+        String faultSeverity;
+        int faultSequence;
+        ObjectMapper oMapper = new ObjectMapper();
+        JsonNode dmaapMessageRootNode;
 
-			if (faultSeverity.equalsIgnoreCase("critical")) {
-				faultSeverity = SeverityType.Critical.toString();
-			} else if (faultSeverity.equalsIgnoreCase("major")) {
-				faultSeverity = SeverityType.Major.toString();
-			} else if (faultSeverity.equalsIgnoreCase("minor")) {
-				faultSeverity = SeverityType.Minor.toString();
-			} else if (faultSeverity.equalsIgnoreCase("warning")) {
-				faultSeverity = SeverityType.Warning.toString();
-			} else if (faultSeverity.equalsIgnoreCase("nonalarmed")) {
-				faultSeverity = SeverityType.NonAlarmed.toString();
-			} else {
-				faultSeverity = SeverityType.NonAlarmed.toString();
-			}
+        LOG.info("Fault VES Message is - {}", msg);
+        try {
+            dmaapMessageRootNode = oMapper.readTree(msg);
+            faultNodeId = dmaapMessageRootNode.at("/event/commonEventHeader/sourceName").textValue();
+            faultOccurrenceTime =
+                    dmaapMessageRootNode.at("/event/faultFields/alarmAdditionalInformation/eventTime").textValue();
+            faultObjectId = dmaapMessageRootNode.at("/event/faultFields/alarmInterfaceA").textValue();
+            faultReason = dmaapMessageRootNode.at("/event/faultFields/specificProblem").textValue();
+            faultSeverity = dmaapMessageRootNode.at("/event/faultFields/eventSeverity").textValue();
+            faultSequence = dmaapMessageRootNode.at("/event/commonEventHeader/sequence").intValue();
+            //faultCounter++;
 
-			String baseUrl = getBaseUrl();
-			String sdnrUser = getSDNRUser();
-			String sdnrPasswd = getSDNRPasswd();
+            if (faultSeverity.equalsIgnoreCase("critical")) {
+                faultSeverity = SeverityType.Critical.toString();
+            } else if (faultSeverity.equalsIgnoreCase("major")) {
+                faultSeverity = SeverityType.Major.toString();
+            } else if (faultSeverity.equalsIgnoreCase("minor")) {
+                faultSeverity = SeverityType.Minor.toString();
+            } else if (faultSeverity.equalsIgnoreCase("warning")) {
+                faultSeverity = SeverityType.Warning.toString();
+            } else if (faultSeverity.equalsIgnoreCase("nonalarmed")) {
+                faultSeverity = SeverityType.NonAlarmed.toString();
+            } else {
+                faultSeverity = SeverityType.NonAlarmed.toString();
+            }
 
-			FaultNotificationClient faultClient = getFaultNotificationClient(baseUrl);
-			faultClient.setAuthorization(sdnrUser, sdnrPasswd);
-			faultClient.sendFaultNotification(faultNodeId, Integer.toString(faultSequence), faultOccurrenceTime, faultObjectId, faultReason, faultSeverity);
+            String baseUrl = getBaseUrl();
+            String sdnrUser = getSDNRUser();
+            String sdnrPasswd = getSDNRPasswd();
 
-		} catch (IOException e) {
-			LOG.info("Cannot parse json object ");
-			throw new Exception("Cannot parse json object", e);
-		}
-	}
+            FaultNotificationClient faultClient = getFaultNotificationClient(baseUrl);
+            faultClient.setAuthorization(sdnrUser, sdnrPasswd);
+            faultClient.sendFaultNotification(faultNodeId, Integer.toString(faultSequence), faultOccurrenceTime,
+                    faultObjectId, faultReason, faultSeverity);
 
-	public String getBaseUrl() {
-		return GeneralConfig.getBaseUrl();
-	}
-	
-	public String getSDNRUser() {
-		return GeneralConfig.getSDNRUser()!= null?GeneralConfig.getSDNRUser():DEFAULT_SDNRUSER;
-	}
-	
-	public String getSDNRPasswd() {
-		return GeneralConfig.getSDNRPasswd()!= null?GeneralConfig.getSDNRPasswd():DEFAULT_SDNRPASSWD;
-	}
-	
-	public FaultNotificationClient getFaultNotificationClient(String baseUrl) {
-		return new FaultNotificationClient(baseUrl);
-	}
+        } catch (IOException e) {
+            LOG.info("Cannot parse json object ");
+            throw new Exception("Cannot parse json object", e);
+        }
+    }
+
+    public String getBaseUrl() {
+        return GeneralConfig.getBaseUrl();
+    }
+
+    public String getSDNRUser() {
+        return GeneralConfig.getSDNRUser() != null ? GeneralConfig.getSDNRUser() : DEFAULT_SDNRUSER;
+    }
+
+    public String getSDNRPasswd() {
+        return GeneralConfig.getSDNRPasswd() != null ? GeneralConfig.getSDNRPasswd() : DEFAULT_SDNRPASSWD;
+    }
+
+    public FaultNotificationClient getFaultNotificationClient(String baseUrl) {
+        return new FaultNotificationClient(baseUrl);
+    }
 }

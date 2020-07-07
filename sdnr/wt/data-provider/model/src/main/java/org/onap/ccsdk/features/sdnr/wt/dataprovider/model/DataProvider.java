@@ -67,6 +67,7 @@ public interface DataProvider extends ArchiveCleanProvider {
 
     /**
      * write internal equipment to database
+     * 
      * @param internalEquipment with mandatory fields.
      */
     void writeInventory(Inventory internalEquipment);
@@ -75,16 +76,19 @@ public interface DataProvider extends ArchiveCleanProvider {
      *
      * @param networkElementConnectionEntitiy to wirte to DB
      * @param nodeId Id for this DB element
+     * @return if succeeded
      */
-    void updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy,
+    boolean updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy,
             String nodeId);
 
     /**
      * Update after new mountpoint registration
+     * 
      * @param networkElementConnectionEntitiy data
      * @param nodeId of device (mountpoint name)
+     * @return if succeeded
      */
-    void updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy, String nodeId);
+    boolean updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy, String nodeId);
 
     void removeNetworkConnection(String nodeId);
 
@@ -101,9 +105,9 @@ public interface DataProvider extends ArchiveCleanProvider {
      */
     void doWritePerformanceData(List<PmdataEntity> list);
 
-	/**
-	 * @return
-	 */
-	HtDatabaseClient getRawClient();
+    /**
+     * @return
+     */
+    HtDatabaseClient getRawClient();
 
 }

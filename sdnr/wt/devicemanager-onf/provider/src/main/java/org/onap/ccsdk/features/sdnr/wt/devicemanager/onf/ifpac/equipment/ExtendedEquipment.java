@@ -44,6 +44,7 @@ public class ExtendedEquipment {
     private final Equipment equipment;
     private final String nodeId;
     private final String path;
+
     /**
      * Equipment with additional information beside NETCONF equipment
      *
@@ -71,6 +72,7 @@ public class ExtendedEquipment {
     public int getTreeLevel() {
         return treeLevel;
     }
+
     public String getNodeId() {
         return nodeId;
     }
