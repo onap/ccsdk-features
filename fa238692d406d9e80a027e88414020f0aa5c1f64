@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f804a71d_19d68ceb",
+        "filename": "sdnr/wt/apigateway/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2020-07-07T12:58:26Z",
+      "side": 1,
+      "message": "This shouldn\u0027t be in project-specific pom, but should be driven from ccsdk/parent poms so that we have consistent versions",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 63,
+        "endChar": 21
+      },
+      "revId": "fa238692d406d9e80a027e88414020f0aa5c1f64",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b44c2bee_0875bbee",
+        "filename": "sdnr/wt/common/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2020-07-07T12:58:26Z",
+      "side": 1,
+      "message": "Would be better to drive this from property in parent pom so that we can enforce consistency.\n\nIf this version is of elasticsearch, SECCOM requires version 7.6.1 for Guilin",
+      "range": {
+        "startLine": 123,
+        "startChar": 29,
+        "endLine": 123,
+        "endChar": 34
+      },
+      "revId": "fa238692d406d9e80a027e88414020f0aa5c1f64",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
