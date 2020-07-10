@@ -38,33 +38,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *  Implementation of concept "Active monitoring" of a device.<br>
- *    <br>
- *  For each existing mountpoint a task runs with 120s cycle time. Every 120 seconds the check actions are performed.
- *  The request is handled by the NETCONF layer with a (default)configured time-out of 60 seconds.<br>
- *  Generated alarms, by the object/node "SDN-Controller" are (enum DeviceMonitorProblems):<br>
- *      - notConnected(InternalSeverity.Warning)<br>
- *      - noConnectionMediator(InternalSeverity.Minor)<br>
- *      - noConnectionNe(InternalSeverity.Critical)<br>
- *    <br>
- *  1. Mountpoint does not exist<br>
- *  If the mountpoint does not exists there are no related current alarms in the database.<br>
- *    <br>
- *  2. Created mountpoint with state "Connecting" or "UnableToConnect"<br>
- *  If the Mountpoint is created and connection status is "Connecting" or "UnableToConnect".<br>
- *  - After about 2..4 Minutes ... raise alarm "notConnected" with severity warning<br>
- *    <br>
- *  3. Created mountpoint with state "Connection"<br>
- *  There are two monitor activities.<br>
- *      3a. Check of Mediator connection by requesting (typical) cached data.<br>
- *          - After about 60 seconds raise alarm: connection-loss-mediator with severity minor<br>
- *          - Request from Mediator: network-element<br>
- *    <br>
- *      3b. Check connection to NEby requesting (typical) non-cached data.<br>
- *          - Only if AirInterface available. The first one is used.<br>
- *          - Requested are the currentAlarms<br>
- *          - After about 60 seconds raise alarm: connection-loss-network-element with severity critical<br>
- *    <br>
+ * Implementation of concept "Active monitoring" of a device.<br>
+ * <br>
+ * For each existing mountpoint a task runs with 120s cycle time. Every 120 seconds the check actions are performed. The
+ * request is handled by the NETCONF layer with a (default)configured time-out of 60 seconds.<br>
+ * Generated alarms, by the object/node "SDN-Controller" are (enum DeviceMonitorProblems):<br>
+ * - notConnected(InternalSeverity.Warning)<br>
+ * - noConnectionMediator(InternalSeverity.Minor)<br>
+ * - noConnectionNe(InternalSeverity.Critical)<br>
+ * <br>
+ * 1. Mountpoint does not exist<br>
+ * If the mountpoint does not exists there are no related current alarms in the database.<br>
+ * <br>
+ * 2. Created mountpoint with state "Connecting" or "UnableToConnect"<br>
+ * If the Mountpoint is created and connection status is "Connecting" or "UnableToConnect".<br>
+ * - After about 2..4 Minutes ... raise alarm "notConnected" with severity warning<br>
+ * <br>
+ * 3. Created mountpoint with state "Connection"<br>
+ * There are two monitor activities.<br>
+ * 3a. Check of Mediator connection by requesting (typical) cached data.<br>
+ * - After about 60 seconds raise alarm: connection-loss-mediator with severity minor<br>
+ * - Request from Mediator: network-element<br>
+ * <br>
+ * 3b. Check connection to NEby requesting (typical) non-cached data.<br>
+ * - Only if AirInterface available. The first one is used.<br>
+ * - Requested are the currentAlarms<br>
+ * - After about 60 seconds raise alarm: connection-loss-network-element with severity critical<br>
+ * <br>
+ * 
  * @author herbert
  */
 
@@ -86,9 +87,11 @@ public class DeviceMonitorImpl implements DeviceMonitor, IConfigChangedListener 
 
     /**
      * Basic implementation of devicemonitoring
+     * 
      * @param odlEventListener as destination for problems
      */
-    public DeviceMonitorImpl(DataBroker dataBroker, ODLEventListenerHandler odlEventListener, ConfigurationFileRepresentation htconfig) {
+    public DeviceMonitorImpl(DataBroker dataBroker, ODLEventListenerHandler odlEventListener,
+            ConfigurationFileRepresentation htconfig) {
         LOG.info("Construct {}", this.getClass().getSimpleName());
 
         this.odlEventListener = odlEventListener;
@@ -135,57 +138,62 @@ public class DeviceMonitorImpl implements DeviceMonitor, IConfigChangedListener 
 
     /**
      * Notify of device state changes to "connected" for slave nodes
+     * 
      * @param mountPointNodeName name of mount point
      */
     @Override
     synchronized public void deviceConnectSlaveIndication(String mountPointNodeName) {
-        deviceConnectMasterIndication(mountPointNodeName, (DeviceMonitoredNe)null);
+        deviceConnectMasterIndication(mountPointNodeName, (DeviceMonitoredNe) null);
     }
 
     @Override
     public void deviceConnectMasterIndication(String mountPointNodeName, NetworkElement networkElement) {
         Optional<DeviceMonitoredNe> monitoredNe = networkElement.getService(DeviceMonitoredNe.class);
-           deviceConnectMasterIndication(mountPointNodeName, monitoredNe.isPresent() ? monitoredNe.get() : dummyNe);
+        deviceConnectMasterIndication(mountPointNodeName, monitoredNe.isPresent() ? monitoredNe.get() : dummyNe);
     }
 
     /**
      * Notify of device state changes to "connected"
+     * 
      * @param mountPointNodeName name of mount point
      * @param ne to monitor
      */
     @Override
     synchronized public void deviceConnectMasterIndication(String mountPointNodeName, DeviceMonitoredNe ne) {
 
-        LOG.debug("ne changes to connected state {}",mountPointNodeName);
+        LOG.debug("ne changes to connected state {}", mountPointNodeName);
         createMonitoringTask(mountPointNodeName);
         if (queue.containsKey(mountPointNodeName)) {
             DeviceMonitorTask task = queue.get(mountPointNodeName);
             task.deviceConnectIndication(ne);
         } else {
-            LOG.warn("Monitoring task not in queue: {} {} {}", mountPointNodeName, mountPointNodeName.hashCode(), queue.size());
+            LOG.warn("Monitoring task not in queue: {} {} {}", mountPointNodeName, mountPointNodeName.hashCode(),
+                    queue.size());
         }
     }
 
-   /**
-    * Notify of device state change to "disconnected"
-    * Mount point supervision
-    * @param mountPointNodeName to deregister
-    */
+    /**
+     * Notify of device state change to "disconnected" Mount point supervision
+     * 
+     * @param mountPointNodeName to deregister
+     */
     @Override
     synchronized public void deviceDisconnectIndication(String mountPointNodeName) {
 
-        LOG.debug("State changes to not connected state {}",mountPointNodeName);
+        LOG.debug("State changes to not connected state {}", mountPointNodeName);
         createMonitoringTask(mountPointNodeName);
         if (queue.containsKey(mountPointNodeName)) {
             DeviceMonitorTask task = queue.get(mountPointNodeName);
             task.deviceDisconnectIndication();
         } else {
-            LOG.warn("Monitoring task not in queue: {} {} {}", mountPointNodeName, mountPointNodeName.hashCode(), queue.size());
+            LOG.warn("Monitoring task not in queue: {} {} {}", mountPointNodeName, mountPointNodeName.hashCode(),
+                    queue.size());
         }
     }
 
     /**
      * removeMountpointIndication deregisters a mountpoint for registration services
+     * 
      * @param mountPointNodeName to deregister
      */
     @Override
@@ -208,7 +216,7 @@ public class DeviceMonitorImpl implements DeviceMonitor, IConfigChangedListener 
      */
     @Override
     public void refreshAlarmsInDb() {
-        synchronized(queue) {
+        synchronized (queue) {
             for (DeviceMonitorTask task : queue.values()) {
                 task.refreshAlarms();
             }
@@ -219,7 +227,7 @@ public class DeviceMonitorImpl implements DeviceMonitor, IConfigChangedListener 
      * For test run the tasks
      */
     public void taskTestRun() {
-        synchronized(queue) {
+        synchronized (queue) {
             for (DeviceMonitorTask task : queue.values()) {
                 task.run();
             }
@@ -232,12 +240,13 @@ public class DeviceMonitorImpl implements DeviceMonitor, IConfigChangedListener 
 
     /**
      * createMountpoint registers a new mountpoint monitoring service
+     * 
      * @param mountPointNodeName name of mountpoint
      */
     synchronized private DeviceMonitorTask createMonitoringTask(String mountPointNodeName) {
 
         DeviceMonitorTask task;
-        LOG.debug("Register for monitoring {} {}",mountPointNodeName, mountPointNodeName.hashCode());
+        LOG.debug("Register for monitoring {} {}", mountPointNodeName, mountPointNodeName.hashCode());
 
         if (queue.containsKey(mountPointNodeName)) {
             LOG.info("Monitoring task exists");

@@ -24,7 +24,8 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServic
 /**
  * Devicemanager service
  */
-public class DevicemanagerNotificationDelayService extends NotificationDelayService<ProblemNotificationXml> implements DeviceManagerService {
+public class DevicemanagerNotificationDelayService extends NotificationDelayService<ProblemNotificationXml>
+        implements DeviceManagerService {
 
     public DevicemanagerNotificationDelayService(ConfigurationFileRepresentation htconfig) {
         super(htconfig);

@@ -57,8 +57,8 @@ public class DcaeForwarderImpl implements DcaeForwarderInternal, AutoCloseable {
                 this.aotsmClient.sendProblemNotification(nodeId, notificationXml);
             }
         } else {
-            LOG.debug("Notification will not be sent to external services. Device " + nodeId
-                    + " is in maintenance mode");
+            LOG.debug(
+                    "Notification will not be sent to external services. Device " + nodeId + " is in maintenance mode");
         }
     }
 
@@ -66,17 +66,16 @@ public class DcaeForwarderImpl implements DcaeForwarderInternal, AutoCloseable {
     public void sendProblemNotification(String nodeId, ProblemNotificationXml notificationXml) {
         //to prevent push alarms on reconnect
         //=> only pushed alarms are forwared to dcae
-    	if(dcaeProvider!=null) {
-    		dcaeProvider.sendProblemNotification(nodeId, notificationXml);
-    	}
-    	if(aotsmClient!=null) {
+        if (dcaeProvider != null) {
+            dcaeProvider.sendProblemNotification(nodeId, notificationXml);
+        }
+        if (aotsmClient != null) {
             aotsmClient.sendProblemNotification(nodeId, notificationXml);
         }
 
     }
 
     @Override
-    public void close() throws Exception {
-    }
+    public void close() throws Exception {}
 
 }

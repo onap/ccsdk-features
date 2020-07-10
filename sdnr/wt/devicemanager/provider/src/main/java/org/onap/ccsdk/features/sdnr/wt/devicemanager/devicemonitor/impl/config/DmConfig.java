@@ -23,10 +23,8 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.DeviceMo
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalSeverity;
 
 /**
- * Configuration of devicemonitor, section [devicemonitor]
- *   SeverityConnectionlossNeOAM=minor
- *   SeverityConnectionlossOAM=major
- *   SeverityConnectionlossMediator=critical
+ * Configuration of devicemonitor, section [devicemonitor] SeverityConnectionlossNeOAM=minor
+ * SeverityConnectionlossOAM=major SeverityConnectionlossMediator=critical
  */
 public class DmConfig implements Configuration {
 
@@ -34,34 +32,35 @@ public class DmConfig implements Configuration {
 
     private static final String PROPERTY_KEY_PREFIX_Severity = "Severity";
 
-	private final ConfigurationFileRepresentation configuration;
+    private final ConfigurationFileRepresentation configuration;
 
-	public DmConfig(ConfigurationFileRepresentation configuration) {
-		this.configuration = configuration;
-    	this.configuration.addSection(SECTION_MARKER_TA);
-		defaults();
-	}
+    public DmConfig(ConfigurationFileRepresentation configuration) {
+        this.configuration = configuration;
+        this.configuration.addSection(SECTION_MARKER_TA);
+        defaults();
+    }
 
-	public InternalSeverity getSeverity(DeviceMonitorProblems problem) {
-		String severityString = configuration.getProperty(SECTION_MARKER_TA, getPropertyName(problem));
-		InternalSeverity result = InternalSeverity.valueOfString(severityString);
-		return result != null ? result : InternalSeverity.Major;
-	}
+    public InternalSeverity getSeverity(DeviceMonitorProblems problem) {
+        String severityString = configuration.getProperty(SECTION_MARKER_TA, getPropertyName(problem));
+        InternalSeverity result = InternalSeverity.valueOfString(severityString);
+        return result != null ? result : InternalSeverity.Major;
+    }
 
-	@Override
-	public String getSectionName() {
-		return SECTION_MARKER_TA;
-	}
+    @Override
+    public String getSectionName() {
+        return SECTION_MARKER_TA;
+    }
 
-	@Override
-	public void defaults() {
+    @Override
+    public void defaults() {
         for (DeviceMonitorProblems problem : DeviceMonitorProblems.values()) {
-    		configuration.setPropertyIfNotAvailable(SECTION_MARKER_TA, getPropertyName(problem), problem.getSeverity().name());
+            configuration.setPropertyIfNotAvailable(SECTION_MARKER_TA, getPropertyName(problem),
+                    problem.getSeverity().name());
         }
-	}
+    }
 
-	private String getPropertyName(DeviceMonitorProblems problem) {
-		return PROPERTY_KEY_PREFIX_Severity+problem.name();
-	}
+    private String getPropertyName(DeviceMonitorProblems problem) {
+        return PROPERTY_KEY_PREFIX_Severity + problem.name();
+    }
 
 }

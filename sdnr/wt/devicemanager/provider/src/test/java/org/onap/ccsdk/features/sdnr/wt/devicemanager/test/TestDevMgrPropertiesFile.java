@@ -23,11 +23,10 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
+import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,14 +39,12 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.conf.Togg
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.Files;
-
 public class TestDevMgrPropertiesFile {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArchiveCleanService.class);
 
     private static final File FILENAME = new File("testdevmgrpropertiesfile.properties");
-    private static final File AAIPROP_FILE=new File("testdevmgrpropertiesfileaaiclient.properties");
+    private static final File AAIPROP_FILE = new File("testdevmgrpropertiesfileaaiclient.properties");
     private int hasChanged;
 
     @Before
@@ -55,6 +52,7 @@ public class TestDevMgrPropertiesFile {
         delete(FILENAME);
         delete(AAIPROP_FILE);
     }
+
     @After
     public void deinit() {
         this.init();
@@ -94,7 +92,7 @@ public class TestDevMgrPropertiesFile {
         hasChanged = 0;
         cfg2.registerConfigChangedListener(() -> {
             hasChanged++;
-            LOG.info("file changed listener triggered: {}",hasChanged);
+            LOG.info("file changed listener triggered: {}", hasChanged);
         });
 
         AaiConfig aaiConfig = new AaiConfig(cfg2);
@@ -106,17 +104,17 @@ public class TestDevMgrPropertiesFile {
         ToggleAlarmConfig toggleAlarmConfig = new ToggleAlarmConfig(cfg2);
         assertNotNull(toggleAlarmConfig);
 
-        LOG.info("Write new content. Changes {}",hasChanged);
+        LOG.info("Write new content. Changes {}", hasChanged);
         writeFile(FILENAME, this.getContent2());
 
-        int i=10;
-        while(hasChanged == 0 && i-- > 0) {
+        int i = 10;
+        while (hasChanged == 0 && i-- > 0) {
             LOG.info("Wait for Change indication.");
             sleep(1000);
         }
-        LOG.info("Changes {}",hasChanged);
+        LOG.info("Changes {}", hasChanged);
 
-        assertTrue("fileChanged counter "+hasChanged, hasChanged > 0);
+        assertTrue("fileChanged counter " + hasChanged, hasChanged > 0);
         LOG.info("Test done");
 
     }
@@ -130,22 +128,23 @@ public class TestDevMgrPropertiesFile {
     }
 
     public static void writeFile(File f, String content) {
-         try {
+        try {
             Files.asCharSink(f, StandardCharsets.UTF_8).write(content);
         } catch (IOException e) {
             fail(e.getMessage());
-        };
+        } ;
         sleep(500);
     }
 
     private void delete(File f) {
-        if(f.exists()) {
+        if (f.exists()) {
             f.delete();
         }
     }
 
 
     private String getContent2() {
+        // @formatter:off
         return "[dcae]\n" +
                 "dcaeUserCredentials=admin:admin\n" +
                 "dcaeUrl=http://localhost:45451/abc\n" +
@@ -196,9 +195,11 @@ public class TestDevMgrPropertiesFile {
                 "taEnabled=true\n" +
                 "taDelay=5555\n" +
                 "";
+        // @formatter:on
     }
 
     private String getContent1() {
+        // @formatter:off
         return "[dcae]\n" +
                 "dcaeUserCredentials=admin:admin\n" +
                 "dcaeUrl=http://localhost:45/abc\n" +
@@ -245,8 +246,11 @@ public class TestDevMgrPropertiesFile {
                 "taEnabled=false\n" +
                 "taDelay=5555\n" +
                 "";
+        // @formatter:on
     }
+
     private String getAaiPropertiesConfig() {
+        // @formatter:off
         return "org.onap.ccsdk.sli.adaptors.aai.ssl.key=keykey\"\"\n" +
                 "org.onap.ccsdk.sli.adaptors.aai.ssl.key.psswd=psswdpsswd\"\"\n" +
                 "org.onap.ccsdk.sli.adaptors.aai.host.certificate.ignore=\"false\"\n" +
@@ -254,6 +258,7 @@ public class TestDevMgrPropertiesFile {
                 "org.onap.ccsdk.sli.adaptors.aai.uri=uriu\"\"\n" +
                 "connection.timeout=60000\n" +
                 "read.timeout=60000";
+        // @formatter:on
     }
 
 }

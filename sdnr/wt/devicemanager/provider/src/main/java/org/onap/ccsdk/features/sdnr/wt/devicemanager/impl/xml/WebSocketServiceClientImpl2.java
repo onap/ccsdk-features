@@ -30,8 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wrapper for forwarding web-socket notifications to the web-socket service, that is running as
- * bundle.
+ * Wrapper for forwarding web-socket notifications to the web-socket service, that is running as bundle.
  */
 @SuppressWarnings("deprecation")
 public class WebSocketServiceClientImpl2 implements WebSocketServiceClientInternal {
@@ -43,6 +42,7 @@ public class WebSocketServiceClientImpl2 implements WebSocketServiceClientIntern
 
     /**
      * Implementation of Websocket notification processor.
+     * 
      * @param rpcProviderRegistry to get MDSAL services.
      */
     @Deprecated
@@ -54,6 +54,7 @@ public class WebSocketServiceClientImpl2 implements WebSocketServiceClientIntern
 
     /**
      * New: Implementation of Websocket notification processor.
+     * 
      * @param websocketmanagerService2 to be used
      */
     public WebSocketServiceClientImpl2(WebsocketmanagerService websocketmanagerService2) {
@@ -63,7 +64,8 @@ public class WebSocketServiceClientImpl2 implements WebSocketServiceClientIntern
     }
 
     @Override
-    public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(@NonNull String nodeName, @NonNull T notificationXml) {
+    public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(@NonNull String nodeName,
+            @NonNull T notificationXml) {
         LOG.info("Send websocket event {} for mountpoint {}", notificationXml.getClass().getSimpleName(), nodeName);
 
         try {
@@ -80,7 +82,6 @@ public class WebSocketServiceClientImpl2 implements WebSocketServiceClientIntern
     }
 
     @Override
-    public void close() throws Exception {
-    }
+    public void close() throws Exception {}
 
 }

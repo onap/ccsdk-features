@@ -30,6 +30,7 @@ public interface EquipmentService extends DeviceManagerService {
 
     /**
      * Write equipment to database
+     * 
      * @param equipment with all equipment entities (card, subrack) of device
      */
     void writeEquipment(@NonNull EquipmentData equipment);

@@ -49,14 +49,13 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
     }
 
     /**
-     * Generic Problem. All the parameters are of type Strings according to YANG
-     * specification.
+     * Generic Problem. All the parameters are of type Strings according to YANG specification.
      *
-     * @param nodeName                Name of mountpoint
-     * @param uuId                    Name of Interface Pac
-     * @param problemNameString       Name of the problem
-     * @param problemSeverityString   Severitycode of the problem
-     * @param counter                 Counter from device
+     * @param nodeName Name of mountpoint
+     * @param uuId Name of Interface Pac
+     * @param problemNameString Name of the problem
+     * @param problemSeverityString Severitycode of the problem
+     * @param counter Counter from device
      * @param internaltimeStampString Timestamp according to internal format.
      */
     public ProblemNotificationXml(String nodeName, String uuId, String problemNameString,
@@ -80,7 +79,7 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
     }
 
     public boolean isNotManagedAsCurrentProblem() {
-        return ! FaultEntityManager.isManagedAsCurrentProblem(getProblem());
+        return !FaultEntityManager.isManagedAsCurrentProblem(getProblem());
     }
 
     public boolean isNoAlarmIndication() {
@@ -100,6 +99,7 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
 
     /**
      * Create a specific ES id for the current log.
+     * 
      * @return a string with the generated ES Id
      */
     @JsonIgnore
@@ -137,6 +137,7 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
 
     /**
      * LOG the newly added problems of the interface pac
+     * 
      * @param log of logger
      * @param uuid as log info
      * @param resultList with all problems

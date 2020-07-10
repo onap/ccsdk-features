@@ -79,8 +79,7 @@ public class FaultData {
     /**
      *
      */
-    public void clear() {
-    }
+    public void clear() {}
 
     /**
      * @param idx of element to get
@@ -92,6 +91,7 @@ public class FaultData {
 
     /**
      * Provide list with all problems of node
+     * 
      * @return list
      */
     public List<Faultlog> getProblemList() {

@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 @XmlRootElement(name = "ObjectDeletionNotification")
 public class ObjectDeletionNotificationXml extends MwtNotificationBase implements GetEventType {
 
-    private static String EVENTTYPE =  "ObjectDeletionNotification";
+    private static String EVENTTYPE = "ObjectDeletionNotification";
     private static String ACTION = "deletion";
 
     public ObjectDeletionNotificationXml() {
@@ -36,13 +36,15 @@ public class ObjectDeletionNotificationXml extends MwtNotificationBase implement
 
     /**
      * Normalized notification
+     * 
      * @param nodeName name of mountpoint or instance that owns the problem
      * @param counter of notification
      * @param timeStamp from ne
      * @param objectIdRef from ne
      */
-    public ObjectDeletionNotificationXml(String nodeName, Integer counter, InternalDateAndTime timeStamp, String objectIdRef) {
-        super(nodeName, counter, timeStamp,  objectIdRef);
+    public ObjectDeletionNotificationXml(String nodeName, Integer counter, InternalDateAndTime timeStamp,
+            String objectIdRef) {
+        super(nodeName, counter, timeStamp, objectIdRef);
     }
 
     public ObjectDeletionNotificationXml(EventlogEntity el) {
@@ -56,9 +58,9 @@ public class ObjectDeletionNotificationXml extends MwtNotificationBase implement
 
     public EventlogEntity getEventlogEntity() {
         return new EventlogBuilder().setAttributeName(ACTION).setNewValue(ACTION)
-                .setCounter(Integer.valueOf(this.getCounter()))
-                .setNodeId(this.getNodeName()).setObjectId(this.getObjectId())
-                .setTimestamp(new DateAndTime(this.getTimeStamp())).setSourceType(SourceType.Netconf).build();
+                .setCounter(Integer.valueOf(this.getCounter())).setNodeId(this.getNodeName())
+                .setObjectId(this.getObjectId()).setTimestamp(new DateAndTime(this.getTimeStamp()))
+                .setSourceType(SourceType.Netconf).build();
     }
 
 }

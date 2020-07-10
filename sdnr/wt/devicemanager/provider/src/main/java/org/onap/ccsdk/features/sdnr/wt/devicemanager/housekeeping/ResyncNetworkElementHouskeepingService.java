@@ -71,10 +71,9 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
      * @param databaseClientEvents database to clean
      * @param deviceMonitor devicemonitor
      */
-    public ResyncNetworkElementHouskeepingService(
-            DeviceManagerImpl deviceManager,
-            MountPointService mountPointService, ODLEventListenerHandler odlEventListenerHandler,
-            DataProvider databaseClientEvents, DeviceMonitor deviceMonitor) {
+    public ResyncNetworkElementHouskeepingService(DeviceManagerImpl deviceManager, MountPointService mountPointService,
+            ODLEventListenerHandler odlEventListenerHandler, DataProvider databaseClientEvents,
+            DeviceMonitor deviceMonitor) {
         super();
         this.deviceManager = deviceManager;
         this.mountPointService = mountPointService;
@@ -103,8 +102,8 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
             if (nodeNames == null || nodeNames.size() <= 0) {
                 nodeNamesInput = this.databaseClientEvents.getAllNodesWithCurrentAlarms();
             } else {
-				nodeNamesInput = nodeNames;
-			}
+                nodeNamesInput = nodeNames;
+            }
 
             // Filter all mountpoints from input that were found and are known to this Cluster-node instance of
             // DeviceManager

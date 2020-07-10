@@ -36,10 +36,11 @@ import org.slf4j.LoggerFactory;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
-public class ArchiveCleanService implements AutoCloseable, IConfigChangedListener, Runnable,ClusterSingletonService {
+public class ArchiveCleanService implements AutoCloseable, IConfigChangedListener, Runnable, ClusterSingletonService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArchiveCleanService.class);
-    private static final ServiceGroupIdentifier IDENT = ServiceGroupIdentifier.create("ElasticSearchArchiveCleanService");
+    private static final ServiceGroupIdentifier IDENT =
+            ServiceGroupIdentifier.create("ElasticSearchArchiveCleanService");
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final ArchiveCleanProvider[] indexCleanList;
@@ -65,17 +66,16 @@ public class ArchiveCleanService implements AutoCloseable, IConfigChangedListene
         if (taskReference != null) {
             taskReference.cancel(false);
         }
-        if(this.isMaster) {
-        if (this.esConfig.getArchiveCheckIntervalSeconds() > 0) {
-            LOG.info("DBCleanService is turned on for entries older than {} seconds",
-                    this.esConfig.getArchiveLifetimeSeconds());
-            taskReference = this.scheduler.scheduleAtFixedRate(doClean, 0,
-                    this.esConfig.getArchiveCheckIntervalSeconds(), TimeUnit.SECONDS);
+        if (this.isMaster) {
+            if (this.esConfig.getArchiveCheckIntervalSeconds() > 0) {
+                LOG.info("DBCleanService is turned on for entries older than {} seconds",
+                        this.esConfig.getArchiveLifetimeSeconds());
+                taskReference = this.scheduler.scheduleAtFixedRate(doClean, 0,
+                        this.esConfig.getArchiveCheckIntervalSeconds(), TimeUnit.SECONDS);
+            } else {
+                LOG.info("DBCleanService is turned off");
+            }
         } else {
-            LOG.info("DBCleanService is turned off");
-        }
-        }
-        else {
             LOG.info("service is inactive on this node. active on another node.");
         }
     }
@@ -109,7 +109,7 @@ public class ArchiveCleanService implements AutoCloseable, IConfigChangedListene
                 }
             }
             if (removed > 0) {
-                LOG.trace("Removed elements: {}",removed);
+                LOG.trace("Removed elements: {}", removed);
             }
         } catch (Exception e) {
             LOG.warn("problem executing dbclean", e);
@@ -136,20 +136,20 @@ public class ArchiveCleanService implements AutoCloseable, IConfigChangedListene
     @SuppressWarnings("null")
     @Override
     public @NonNull ServiceGroupIdentifier getIdentifier() {
-         return IDENT;
+        return IDENT;
     }
 
     @Override
     public void instantiateServiceInstance() {
         LOG.info("We take Leadership");
-        this.isMaster=true;
+        this.isMaster = true;
         this.reinit();
     }
 
     @Override
     public ListenableFuture<? extends Object> closeServiceInstance() {
         LOG.info("We lost Leadership");
-        this.isMaster=false;
+        this.isMaster = false;
         this.reinit();
         return Futures.immediateFuture(null);
     }

@@ -28,18 +28,18 @@ public class FaultEntityManager {
     private static final Pattern pattern = Pattern.compile(".*\\[layerProtocol=(.*)\\]");
 
     /**
-     * The leading indication for notification or events that are not in the
-     * currentProblem data of the ONF Coremodel
+     * The leading indication for notification or events that are not in the currentProblem data of the ONF Coremodel
      */
     private static final String NOCURRENTPROBLEMINDICATION = "#";
 
     /**
      * Specific problems are not moving into current problem list
+     * 
      * @param problemName to be verified
      * @return true if problem is current
      */
     public static boolean isManagedAsCurrentProblem(String problemName) {
-        return ! problemName.startsWith(NOCURRENTPROBLEMINDICATION);
+        return !problemName.startsWith(NOCURRENTPROBLEMINDICATION);
     }
 
     public static boolean isManagedAsCurrentProblem(Fault problem) {
@@ -48,6 +48,7 @@ public class FaultEntityManager {
 
     /**
      * Specific problems are not moving into current problem list
+     * 
      * @param fault to be verified
      * @return true if cleared indication
      */
@@ -58,9 +59,10 @@ public class FaultEntityManager {
 
     /**
      * Create a specific ES id for the current log.
+     * 
      * @return a string with the generated ES Id
      */
-     public static String genSpecificEsId(String nodeName, String objectId, String problemName) {
+    public static String genSpecificEsId(String nodeName, String objectId, String problemName) {
 
         String uuId;
 
@@ -82,6 +84,7 @@ public class FaultEntityManager {
 
     /**
      * Create Es id
+     * 
      * @param fault used to create uuid for faultcurrent
      * @return String with Id
      */

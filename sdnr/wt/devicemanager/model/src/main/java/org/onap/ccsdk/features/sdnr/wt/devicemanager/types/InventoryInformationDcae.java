@@ -36,28 +36,26 @@ public class InventoryInformationDcae {
     private String deviceIpv6;
     private List<String> interfaceUuidList;
 
-    public InventoryInformationDcae()
-    {
-        this.type=UNKNOWN;
-        this.model=UNKNOWN;
-        this.vendor=UNKNOWN;
-        this.deviceIpv4=UNKNOWN;
-        this.deviceIpv6=UNKNOWN;
-        this.interfaceUuidList=EMPTY;
+    public InventoryInformationDcae() {
+        this.type = UNKNOWN;
+        this.model = UNKNOWN;
+        this.vendor = UNKNOWN;
+        this.deviceIpv4 = UNKNOWN;
+        this.deviceIpv6 = UNKNOWN;
+        this.interfaceUuidList = EMPTY;
     }
 
     public InventoryInformationDcae(InventoryInformationDcae inventoryInformation) {
-        this.type=inventoryInformation.type;
-        this.model=inventoryInformation.model;
-        this.vendor=inventoryInformation.vendor;
-        this.deviceIpv4=inventoryInformation.deviceIpv4;
-        this.deviceIpv6=inventoryInformation.deviceIpv6;
-        this.interfaceUuidList=new ArrayList<>(inventoryInformation.interfaceUuidList);
+        this.type = inventoryInformation.type;
+        this.model = inventoryInformation.model;
+        this.vendor = inventoryInformation.vendor;
+        this.deviceIpv4 = inventoryInformation.deviceIpv4;
+        this.deviceIpv6 = inventoryInformation.deviceIpv6;
+        this.interfaceUuidList = new ArrayList<>(inventoryInformation.interfaceUuidList);
     }
 
-    public InventoryInformationDcae(
-                String type, String model, String vendor, String deviceIpv4,
-                String deviceIpv6, List<String> interfaceUuidList) {
+    public InventoryInformationDcae(String type, String model, String vendor, String deviceIpv4, String deviceIpv6,
+            List<String> interfaceUuidList) {
         setType(type);
         setModel(model);
         setVendor(vendor);
@@ -111,7 +109,7 @@ public class InventoryInformationDcae {
     }
 
     public InventoryInformationDcae setDeviceIpv6(String deviceIpv6) {
-        this.deviceIpv6 = deviceIpv6 != null ? deviceIpv6 : UNKNOWN ;
+        this.deviceIpv6 = deviceIpv6 != null ? deviceIpv6 : UNKNOWN;
         return this;
     }
 
