@@ -29,19 +29,19 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class TransactionUtilsMock implements TransactionUtils {
 
-	@Override
-	public <T extends DataObject> @Nullable T readData(DataBroker dataBroker, LogicalDatastoreType dataStoreType,
-			InstanceIdentifier<T> iid) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public <T extends DataObject> @Nullable T readData(DataBroker dataBroker, LogicalDatastoreType dataStoreType,
+            InstanceIdentifier<T> iid) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public <T extends DataObject> @Nullable T readDataOptionalWithStatus(DataBroker dataBroker,
-			LogicalDatastoreType dataStoreType, InstanceIdentifier<T> iid, AtomicBoolean noErrorIndication,
-			AtomicReference<String> statusIndicator) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public <T extends DataObject> @Nullable T readDataOptionalWithStatus(DataBroker dataBroker,
+            LogicalDatastoreType dataStoreType, InstanceIdentifier<T> iid, AtomicBoolean noErrorIndication,
+            AtomicReference<String> statusIndicator) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

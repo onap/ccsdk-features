@@ -29,34 +29,34 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 public class NetconfConfigChangeMock implements NetconfConfigChange {
 
-	@Override
-	public Class<? extends DataContainer> getImplementedInterface() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Class<? extends DataContainer> getImplementedInterface() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public <E$$ extends Augmentation<NetconfConfigChange>> @Nullable E$$ augmentation(Class<E$$> augmentationType) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public <E$$ extends Augmentation<NetconfConfigChange>> @Nullable E$$ augmentation(Class<E$$> augmentationType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public @Nullable ChangedBy getChangedBy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public @Nullable ChangedBy getChangedBy() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public @Nullable Datastore getDatastore() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public @Nullable Datastore getDatastore() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public @Nullable List<Edit> getEdit() {
-		List<Edit> list = new ArrayList<Edit>();
-		return list;
-	}
+    @Override
+    public @Nullable List<Edit> getEdit() {
+        List<Edit> list = new ArrayList<Edit>();
+        return list;
+    }
 
 }

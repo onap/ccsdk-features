@@ -35,10 +35,10 @@ public class ORanNetworkElementFactory implements NetworkElementFactory {
     @Override
     public Optional<NetworkElement> create(NetconfAccessor acessor, DeviceManagerServiceProvider serviceProvider) {
         if (acessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)) {
-            log.info("Create device {} ",ORanNetworkElement.class.getName());
+            log.info("Create device {} ", ORanNetworkElement.class.getName());
             return Optional.of(new ORanNetworkElement(acessor, serviceProvider.getDataProvider()));
         } else if (acessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)) {
-            log.info("Create device {} ",NtsNetworkElement.class.getName());
+            log.info("Create device {} ", NtsNetworkElement.class.getName());
             return Optional.of(new NtsNetworkElement(acessor, serviceProvider.getDataProvider()));
         } else {
             return Optional.empty();
