@@ -44,14 +44,13 @@ public class NtsNetworkElement implements NetworkElement {
     private final DataProvider databaseService;
 
     NtsNetworkElement(NetconfAccessor netconfAccess, DataProvider databaseService) {
-        LOG.info("Create {}",NtsNetworkElement.class.getSimpleName());
+        LOG.info("Create {}", NtsNetworkElement.class.getSimpleName());
         this.netconfAccessor = netconfAccess;
         this.databaseService = databaseService;
     }
 
     @Override
-    public void deregister() {
-    }
+    public void deregister() {}
 
     @Override
     public NodeId getNodeId() {
@@ -64,12 +63,10 @@ public class NtsNetworkElement implements NetworkElement {
     }
 
     @Override
-    public void warmstart() {
-    }
+    public void warmstart() {}
 
     @Override
-    public void register() {
-    }
+    public void register() {}
 
     @Override
     public NetworkElementDeviceType getDeviceType() {

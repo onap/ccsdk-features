@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Listener for change notifications
  */
-public class ORanChangeNotificationListener  implements IetfNetconfNotificationsListener {
+public class ORanChangeNotificationListener implements IetfNetconfNotificationsListener {
 
     private static final Logger log = LoggerFactory.getLogger(ORanChangeNotificationListener.class);
 

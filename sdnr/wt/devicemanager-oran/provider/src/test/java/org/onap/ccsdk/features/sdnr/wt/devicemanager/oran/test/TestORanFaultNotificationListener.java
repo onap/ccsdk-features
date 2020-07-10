@@ -22,9 +22,9 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanFaultNotifica
 
 public class TestORanFaultNotificationListener {
 
-	@Test
-	public void test() {
-		ORanFaultNotificationListener faultListener = new ORanFaultNotificationListener();
-		faultListener.onAlarmNotif(null);
-	}
+    @Test
+    public void test() {
+        ORanFaultNotificationListener faultListener = new ORanFaultNotificationListener();
+        faultListener.onAlarmNotif(null);
+    }
 }
