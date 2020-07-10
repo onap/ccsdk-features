@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -6,23 +6,21 @@
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.helpserver.test;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,18 +41,20 @@ public class TestHelpInfObject {
             e.printStackTrace();
         }
     }
+
     @After
     public void deinit() {
         this.init();
     }
+
     @Test
     public void test() {
-        File root=new File(HelpInfrastructureObject.getHelpDirectoryBase()+"/"+ROOT);
-        TestMyServlet.createHelpFile("/"+ROOT+"/test/0.4.0/README.md", CONTENT);
-        TestMyServlet.createHelpFile("/"+ROOT+"/test2/0.4.0/README.md", CONTENT);
-        TestMyServlet.createHelpFile("/"+ROOT+"/test3/abc/0.4.0/README.md", CONTENT);
-        TestMyServlet.createHelpFile("/"+ROOT+"/test3/abc1/0.4.0/README.md", CONTENT);
-        TestMyServlet.createHelpFile("/"+ROOT+"/test5/0.4.0/README.md", CONTENT);
+        File root = new File(HelpInfrastructureObject.getHelpDirectoryBase() + "/" + ROOT);
+        TestMyServlet.createHelpFile("/" + ROOT + "/test/0.4.0/README.md", CONTENT);
+        TestMyServlet.createHelpFile("/" + ROOT + "/test2/0.4.0/README.md", CONTENT);
+        TestMyServlet.createHelpFile("/" + ROOT + "/test3/abc/0.4.0/README.md", CONTENT);
+        TestMyServlet.createHelpFile("/" + ROOT + "/test3/abc1/0.4.0/README.md", CONTENT);
+        TestMyServlet.createHelpFile("/" + ROOT + "/test5/0.4.0/README.md", CONTENT);
 
         try {
             new HelpInfrastructureObject(root.toPath());
