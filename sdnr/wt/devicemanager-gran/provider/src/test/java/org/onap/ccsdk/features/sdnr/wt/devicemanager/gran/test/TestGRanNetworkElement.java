@@ -29,27 +29,27 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 
 public class TestGRanNetworkElement {
 
-	private static final String NODEID = "node1";
-	
-	@Test
-	public void test() {
-		NetconfAccessor netconfAccessor = mock(NetconfAccessor.class);
-		DataProvider databaseService = mock(DataProvider.class);
+    private static final String NODEID = "node1";
 
-		when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
-		
-		GRanNetworkElement gRanNe = new GRanNetworkElement(netconfAccessor, databaseService);
-		assertEquals(3, gRanNe.getDeviceType().getIntValue());
-		assertEquals("RAN3GPP", gRanNe.getDeviceType().getName());
-		assertEquals(NODEID, gRanNe.getNodeId().getValue());
-		
-		gRanNe.register();
-		gRanNe.deregister();
-		gRanNe.warmstart();
-		gRanNe.getAcessor();
-		gRanNe.getService(null);
-		
-	}
+    @Test
+    public void test() {
+        NetconfAccessor netconfAccessor = mock(NetconfAccessor.class);
+        DataProvider databaseService = mock(DataProvider.class);
+
+        when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
+
+        GRanNetworkElement gRanNe = new GRanNetworkElement(netconfAccessor, databaseService);
+        assertEquals(3, gRanNe.getDeviceType().getIntValue());
+        assertEquals("RAN3GPP", gRanNe.getDeviceType().getName());
+        assertEquals(NODEID, gRanNe.getNodeId().getValue());
+
+        gRanNe.register();
+        gRanNe.deregister();
+        gRanNe.warmstart();
+        gRanNe.getAcessor();
+        gRanNe.getService(null);
+
+    }
 
 
 }

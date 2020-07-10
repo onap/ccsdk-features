@@ -31,13 +31,13 @@ public class GRanNetworkElementFactory implements NetworkElementFactory {
 
     private static final Logger log = LoggerFactory.getLogger(GRanNetworkElementFactory.class);
 
-	@Override
-	public Optional<NetworkElement> create(NetconfAccessor acessor, DeviceManagerServiceProvider serviceProvider) {
+    @Override
+    public Optional<NetworkElement> create(NetconfAccessor acessor, DeviceManagerServiceProvider serviceProvider) {
         if (acessor.getCapabilites().isSupportingNamespace(TopGrp.QNAME)) {
-            log.info("Create device {} ",GRanNetworkElement.class.getName());
+            log.info("Create device {} ", GRanNetworkElement.class.getName());
             return Optional.of(new GRanNetworkElement(acessor, serviceProvider.getDataProvider()));
         } else {
             return Optional.empty();
         }
-	}
+    }
 }

@@ -33,36 +33,36 @@ import org.opendaylight.yang.gen.v1.urn._3gpp.tsg.sa5.nrm.top.rev180731.TopGrp;
 
 public class TestGRanNetworkElementFactory {
 
-	Capabilities capabilities;
-	NetconfAccessor netconfAccessor;
-	DeviceManagerServiceProvider devMgrService;
-	
-	@SuppressWarnings("unused")
-	@Before
-	public void init() {
-		capabilities = mock(Capabilities.class);
-		netconfAccessor = mock(NetconfAccessor.class);
-		devMgrService = mock(DeviceManagerServiceProvider.class);
-		
-		when(netconfAccessor.getCapabilites()).thenReturn(capabilities);
-		when(devMgrService.getDataProvider()).thenReturn(null);
-		
-	}
-	
-	@Test
-	public void testCreate() throws Exception {
-		when(netconfAccessor.getCapabilites().isSupportingNamespace(TopGrp.QNAME)).thenReturn(true);
-		
-		GRanNetworkElementFactory gRanNeFactory = new GRanNetworkElementFactory();
-		assertTrue((gRanNeFactory.create(netconfAccessor, devMgrService)).isPresent());
-	}
+    Capabilities capabilities;
+    NetconfAccessor netconfAccessor;
+    DeviceManagerServiceProvider devMgrService;
 
-	@Test
-	public void testCreateNone() throws Exception {
-		when(netconfAccessor.getCapabilites().isSupportingNamespace(TopGrp.QNAME)).thenReturn(false);
-		
-		GRanNetworkElementFactory gRanNeFactory = new GRanNetworkElementFactory();
-		assertTrue(!(gRanNeFactory.create(netconfAccessor, devMgrService).isPresent()));
-	}
+    @SuppressWarnings("unused")
+    @Before
+    public void init() {
+        capabilities = mock(Capabilities.class);
+        netconfAccessor = mock(NetconfAccessor.class);
+        devMgrService = mock(DeviceManagerServiceProvider.class);
+
+        when(netconfAccessor.getCapabilites()).thenReturn(capabilities);
+        when(devMgrService.getDataProvider()).thenReturn(null);
+
+    }
+
+    @Test
+    public void testCreate() throws Exception {
+        when(netconfAccessor.getCapabilites().isSupportingNamespace(TopGrp.QNAME)).thenReturn(true);
+
+        GRanNetworkElementFactory gRanNeFactory = new GRanNetworkElementFactory();
+        assertTrue((gRanNeFactory.create(netconfAccessor, devMgrService)).isPresent());
+    }
+
+    @Test
+    public void testCreateNone() throws Exception {
+        when(netconfAccessor.getCapabilites().isSupportingNamespace(TopGrp.QNAME)).thenReturn(false);
+
+        GRanNetworkElementFactory gRanNeFactory = new GRanNetworkElementFactory();
+        assertTrue(!(gRanNeFactory.create(netconfAccessor, devMgrService).isPresent()));
+    }
 
 }
