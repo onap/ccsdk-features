@@ -40,7 +40,7 @@ public class GRanNetworkElement implements NetworkElement {
     private final DataProvider databaseService;
 
     public GRanNetworkElement(NetconfAccessor netconfAccess, DataProvider databaseService) {
-        log.info("Create {}",GRanNetworkElement.class.getSimpleName());
+        log.info("Create {}", GRanNetworkElement.class.getSimpleName());
         this.netconfAccessor = netconfAccess;
         this.databaseService = databaseService;
     }
@@ -52,12 +52,12 @@ public class GRanNetworkElement implements NetworkElement {
 
     @Override
     public void deregister() {
-    	log.info("deRegister actions should be here");
+        log.info("deRegister actions should be here");
     }
 
     @Override
     public void warmstart() {
-    	log.info("Warmstart actions should be here");
+        log.info("Warmstart actions should be here");
     }
 
     @Override

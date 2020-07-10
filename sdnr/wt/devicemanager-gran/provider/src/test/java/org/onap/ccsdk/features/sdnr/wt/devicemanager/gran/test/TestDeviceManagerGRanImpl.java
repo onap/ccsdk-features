@@ -27,22 +27,22 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServic
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 
 public class TestDeviceManagerGRanImpl {
-	GRanNetworkElementFactory factory = new GRanNetworkElementFactory();
-	DeviceManagerServiceProvider serviceProvider;
-	
-	@Test
-	public void test() throws Exception {
-		serviceProvider = mock(DeviceManagerServiceProvider.class);
-		NetconfNetworkElementService netconfNetworkElementService = mock(NetconfNetworkElementService.class);
-		when(netconfNetworkElementService.registerNetworkElementFactory(factory)).thenReturn(null);
-		when(netconfNetworkElementService.getServiceProvider()).thenReturn(serviceProvider);
-				
-		DeviceManagerGRanImpl devMgrGRan = new DeviceManagerGRanImpl();
-		
-		devMgrGRan.setNetconfNetworkElementService(netconfNetworkElementService);
-		devMgrGRan.init();
-		devMgrGRan.close();
-		
-	}
+    GRanNetworkElementFactory factory = new GRanNetworkElementFactory();
+    DeviceManagerServiceProvider serviceProvider;
+
+    @Test
+    public void test() throws Exception {
+        serviceProvider = mock(DeviceManagerServiceProvider.class);
+        NetconfNetworkElementService netconfNetworkElementService = mock(NetconfNetworkElementService.class);
+        when(netconfNetworkElementService.registerNetworkElementFactory(factory)).thenReturn(null);
+        when(netconfNetworkElementService.getServiceProvider()).thenReturn(serviceProvider);
+
+        DeviceManagerGRanImpl devMgrGRan = new DeviceManagerGRanImpl();
+
+        devMgrGRan.setNetconfNetworkElementService(netconfNetworkElementService);
+        devMgrGRan.init();
+        devMgrGRan.close();
+
+    }
 
 }
