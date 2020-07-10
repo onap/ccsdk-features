@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "994c14e1_37dd9633",
+        "filename": "sdnr/wt/devicemanager/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/dcaeconnector/impl/DcaeMessages.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2020-07-10T18:32:33Z",
+      "side": 1,
+      "message": "Ok .. yes, makes sense what you say. Will provide an update.",
+      "parentUuid": "7a02b481_ce200c51",
+      "revId": "45c7d46d01ae84dac13bf7f68f99f4fb83f11b44",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "356d2569_482c107f",
         "filename": "sdnr/wt/devicemanager/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/dcaeconnector/impl/DcaeMessages.java",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2020-07-10T17:20:38Z",
       "side": 1,
       "message": "same",
+      "revId": "45c7d46d01ae84dac13bf7f68f99f4fb83f11b44",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aba61fd1_c319b874",
+        "filename": "sdnr/wt/devicemanager/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/dcaeconnector/impl/DcaeMessages.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2020-07-10T18:32:33Z",
+      "side": 1,
+      "message": "Same here. Will provide an update. Thanks for the hint.",
+      "parentUuid": "356d2569_482c107f",
       "revId": "45c7d46d01ae84dac13bf7f68f99f4fb83f11b44",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
