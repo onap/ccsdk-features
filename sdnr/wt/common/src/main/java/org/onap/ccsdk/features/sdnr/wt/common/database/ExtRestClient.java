@@ -108,17 +108,18 @@ public class ExtRestClient {
             HttpAsyncClientBuilder httpAsyncClientBuilder = null;
             try {
                 httpAsyncClientBuilder = httpClientBuilder.setSSLContext(BaseHTTPClient.setupSsl(this.trustAll));
-                if(this.trustAll) {
-	                httpAsyncClientBuilder.setSSLHostnameVerifier(new HostnameVerifier() {
-						
-						@Override
-						public boolean verify(String hostname, SSLSession session) {
-							return true;
-						}
-					});
+                if (this.trustAll) {
+                    httpAsyncClientBuilder.setSSLHostnameVerifier(new HostnameVerifier() {
+
+                        @Override
+                        public boolean verify(String hostname, SSLSession session) {
+                            return true;
+                        }
+                    });
                 }
-            } catch (NoSuchAlgorithmException | KeyManagementException | UnrecoverableKeyException | CertificateException | KeyStoreException | InvalidKeySpecException | IOException e) {
-                LOG.warn("unable to init ssl context for db client: {}",e.getMessage());
+            } catch (NoSuchAlgorithmException | KeyManagementException | UnrecoverableKeyException
+                    | CertificateException | KeyStoreException | InvalidKeySpecException | IOException e) {
+                LOG.warn("unable to init ssl context for db client: {}", e.getMessage());
             }
             if (basicAuthPassword == null || basicAuthUsername == null) {
                 return httpAsyncClientBuilder;
@@ -187,12 +188,12 @@ public class ExtRestClient {
     private final RestClient client;
 
     protected ExtRestClient(HostInfo[] hosts) {
-        this(hosts, null, null,false);
+        this(hosts, null, null, false);
     }
 
     protected ExtRestClient(HostInfo[] hosts, String username, String password, boolean trustAll) {
         this.client = RestClient.builder(get(hosts))
-                .setHttpClientConfigCallback(new BasicAuthHttpClientConfigCallback(username, password,trustAll))
+                .setHttpClientConfigCallback(new BasicAuthHttpClientConfigCallback(username, password, trustAll))
                 .build();
     }
 
@@ -215,6 +216,7 @@ public class ExtRestClient {
     public ClusterSettingsResponse setupClusterSettings(ClusterSettingsRequest request) throws IOException {
         return new ClusterSettingsResponse(this.client.performRequest(request.getInner()));
     }
+
     public CreateAliasResponse updateAliases(CreateAliasRequest request) throws IOException {
         return new CreateAliasResponse(this.client.performRequest(request.getInner()));
     }
@@ -265,6 +267,7 @@ public class ExtRestClient {
 
     /**
      * Search for database entries
+     * 
      * @param request inputRequest
      * @param ignoreParseException especially for usercreated filters which may cause ES server response exceptions
      * @return Response with related entries
@@ -357,12 +360,12 @@ public class ExtRestClient {
         return new ExtRestClient(hosts);
     }
 
-    public static ExtRestClient createInstance(HostInfo[] hosts, String username, String password,boolean trustAll) {
+    public static ExtRestClient createInstance(HostInfo[] hosts, String username, String password, boolean trustAll) {
         return new ExtRestClient(hosts, username, password, trustAll);
     }
 
     public static ExtRestClient createInstance(String hostname, int port, Protocol protocol) {
-        return createInstance(new HostInfo[] { new HostInfo(hostname, port, protocol) });
+        return createInstance(new HostInfo[] {new HostInfo(hostname, port, protocol)});
 
     }
 

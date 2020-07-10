@@ -56,6 +56,7 @@ public class ClusterHealthResponse extends BaseResponse {
     public boolean isTimedOut() {
         return this.timedOut;
     }
+
     @SuppressWarnings("hiding")
     public boolean isStatusMinimal(String status) {
         if (status == null) {

@@ -28,49 +28,40 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
 public class GetInfoResponse extends BaseResponse {
 
     /**
-     * {
-     *  "name" : "kpOdXt-",
-     *  "cluster_name" : "docker-cluster",
-     *  "cluster_uuid" : "qags6CGGTrS75iBhrAdsgg",
-     *  "version" : {
-     *    "number" : "6.4.3",
-     *    "build_flavor" : "default",
-     *    "build_type" : "tar",
-     *    "build_hash" : "fe40335",
-     *    "build_date" : "2018-10-30T23:17:19.084789Z",
-     *    "build_snapshot" : false,
-     *    "lucene_version" : "7.4.0",
-     *    "minimum_wire_compatibility_version" : "5.6.0",
-     *    "minimum_index_compatibility_version" : "5.0.0"
-     *  },
-     *  "tagline" : "You Know, for Search"
-     *}
+     * { "name" : "kpOdXt-", "cluster_name" : "docker-cluster", "cluster_uuid" : "qags6CGGTrS75iBhrAdsgg", "version" : {
+     * "number" : "6.4.3", "build_flavor" : "default", "build_type" : "tar", "build_hash" : "fe40335", "build_date" :
+     * "2018-10-30T23:17:19.084789Z", "build_snapshot" : false, "lucene_version" : "7.4.0",
+     * "minimum_wire_compatibility_version" : "5.6.0", "minimum_index_compatibility_version" : "5.0.0" }, "tagline" :
+     * "You Know, for Search" }
      */
-	private final String clusterName;
-	private final String name;
-	
-	private final EsVersion version;
-    public GetInfoResponse(Response response) throws Exception  {
+    private final String clusterName;
+    private final String name;
+
+    private final EsVersion version;
+
+    public GetInfoResponse(Response response) throws Exception {
         super(response);
         JSONObject o = this.getJson(response);
-        if(o==null) {
-        	throw new Exception("unable to read response");
+        if (o == null) {
+            throw new Exception("unable to read response");
         }
         this.name = o.getString("name");
         this.clusterName = o.getString("cluster_name");
         this.version = new EsVersion(o.getJSONObject("version").getString("number"));
     }
-	public String getClusterName() {
-		return clusterName;
-	}
-	public String getName() {
-		return name;
-	}
-	public EsVersion getVersion() {
-		return version;
-	}
-  
 
-   
-   
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public EsVersion getVersion() {
+        return version;
+    }
+
+
+
 }

@@ -43,25 +43,27 @@ public class ListAliasesResponse extends BaseResponse {
      * faultcurrent               faultcurrent-v1               - - -
      * connectionlog              connectionlog-v1              - - -
      */
-	private final AliasesEntryList entries;
+    private final AliasesEntryList entries;
+
     public ListAliasesResponse(Response response) throws ParseException {
         super(response);
-        List<String> lines=this.getLines(response);
+        List<String> lines = this.getLines(response);
         this.entries = new AliasesEntryList();
-        if(lines!=null) {
-        	for(String line:lines) {
-        		this.entries.add(new AliasesEntry(line));
-        	}
+        if (lines != null) {
+            for (String line : lines) {
+                this.entries.add(new AliasesEntry(line));
+            }
         }
     }
+
     /**
      * 
      * @return null if parsing failed otherwise valid (=>no entries may also be valid)
      */
-    public AliasesEntryList getEntries(){
-    	return this.entries;
+    public AliasesEntryList getEntries() {
+        return this.entries;
     }
 
-   
-   
+
+
 }

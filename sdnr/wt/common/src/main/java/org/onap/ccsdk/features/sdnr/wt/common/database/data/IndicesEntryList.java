@@ -28,38 +28,38 @@ import java.util.List;
  * @author Michael Dürre
  *
  */
-public class IndicesEntryList extends ArrayList<IndicesEntry>{
+public class IndicesEntryList extends ArrayList<IndicesEntry> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param index
-	 * @return
-	 */
-	public IndicesEntry findByIndex(String index) {
-		for(IndicesEntry e:this) {
-			if(e.getName().equals(index)) {
-				return e;
-			}
-		}
-		return null;
-	}
+    /**
+     * @param index
+     * @return
+     */
+    public IndicesEntry findByIndex(String index) {
+        for (IndicesEntry e : this) {
+            if (e.getName().equals(index)) {
+                return e;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * @param indices
-	 * @return
-	 */
-	public IndicesEntryList subList(List<String> indices) {
-		IndicesEntryList sublist = new IndicesEntryList();
-		for(IndicesEntry e:this) {
-			if(indices.contains(e.getName())) {
-				sublist.add(e);
-			}
-		}
-		return sublist;
-	}
+    /**
+     * @param indices
+     * @return
+     */
+    public IndicesEntryList subList(List<String> indices) {
+        IndicesEntryList sublist = new IndicesEntryList();
+        for (IndicesEntry e : this) {
+            if (indices.contains(e.getName())) {
+                sublist.add(e);
+            }
+        }
+        return sublist;
+    }
 
 }

@@ -86,10 +86,10 @@ public class BaseHTTPClient {
     }
 
     public BaseHTTPClient(String base, boolean trustAllCerts, String certFilename, String passphrase, int sslCertType) {
-        if(!base.endsWith("/")) {
-        	base+="/";
+        if (!base.endsWith("/")) {
+            base += "/";
         }
-    	this.baseUrl = base;
+        this.baseUrl = base;
         this.trustAll = trustAllCerts;
         try {
             sc = setupSsl(trustAll, certFilename, passphrase, sslCertType);

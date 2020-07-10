@@ -21,11 +21,11 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-public class ListIndicesRequest extends BaseRequest{
+public class ListIndicesRequest extends BaseRequest {
 
-	
-	public ListIndicesRequest() {
-		super("GET","/_cat/indices");
-	}
+
+    public ListIndicesRequest() {
+        super("GET", "/_cat/indices");
+    }
 
 }

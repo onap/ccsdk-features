@@ -26,37 +26,37 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.responses.AggregationEntr
 
 public class TestPageHashMap {
 
-	@Test
-	public void testGenericTypes() {
-		AggregationEntries agg = new AggregationEntries();
+    @Test
+    public void testGenericTypes() {
+        AggregationEntries agg = new AggregationEntries();
 
-		for (int t=0; t < 100; t++) {
-			agg.put("Key"+t, Long.valueOf(t));
-		}
+        for (int t = 0; t < 100; t++) {
+            agg.put("Key" + t, Long.valueOf(t));
+        }
 
-		int x =0;
-		for (String k : agg.keySet()) {
-			if (x++ >= 10)
-				break;
-   		    System.out.println("Keys: "+k);
-		}
+        int x = 0;
+        for (String k : agg.keySet()) {
+            if (x++ >= 10)
+                break;
+            System.out.println("Keys: " + k);
+        }
 
-		String[] res;
+        String[] res;
 
-		res = agg.getKeysAsPagedStringList(5, 10);
-		System.out.println("Entries: "+res.length);
-		for (int t=0; t < res.length; t++) {
-			System.out.println("Entry "+t+": "+res[t]);
-		}
+        res = agg.getKeysAsPagedStringList(5, 10);
+        System.out.println("Entries: " + res.length);
+        for (int t = 0; t < res.length; t++) {
+            System.out.println("Entry " + t + ": " + res[t]);
+        }
 
-		res = agg.getKeysAsPagedStringList(5, 10);
-		System.out.println("Entries: "+res.length);
-		for (int t=0; t < res.length; t++) {
-			System.out.println("Entry "+t+": "+res[t]);
-		}
+        res = agg.getKeysAsPagedStringList(5, 10);
+        System.out.println("Entries: " + res.length);
+        for (int t = 0; t < res.length; t++) {
+            System.out.println("Entry " + t + ": " + res[t]);
+        }
 
 
-	}
+    }
 
 
 }

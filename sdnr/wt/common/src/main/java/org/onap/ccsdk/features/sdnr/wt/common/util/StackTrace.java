@@ -32,6 +32,7 @@ public class StackTrace {
 
     /**
      * Return stacktrace as String
+     * 
      * @param e with stacktrace information to be converte
      * @return String with call stack
      */

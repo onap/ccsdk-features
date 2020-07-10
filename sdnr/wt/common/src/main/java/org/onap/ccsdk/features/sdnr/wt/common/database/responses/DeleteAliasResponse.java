@@ -25,8 +25,8 @@ import org.elasticsearch.client.Response;
 
 public class DeleteAliasResponse extends AcknowledgedResponse {
 
-	public DeleteAliasResponse(Response response) {
-		super(response);
-	}
+    public DeleteAliasResponse(Response response) {
+        super(response);
+    }
 
 }

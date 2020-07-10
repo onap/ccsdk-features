@@ -21,11 +21,11 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-public class ListAliasesRequest extends BaseRequest{
+public class ListAliasesRequest extends BaseRequest {
 
-	
-	public ListAliasesRequest() {
-		super("GET","/_cat/aliases");
-	}
+
+    public ListAliasesRequest() {
+        super("GET", "/_cat/aliases");
+    }
 
 }

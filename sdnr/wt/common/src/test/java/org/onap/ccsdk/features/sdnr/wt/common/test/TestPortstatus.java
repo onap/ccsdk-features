@@ -29,47 +29,49 @@ import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.common.database.Portstatus;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 
-public class TestPortstatus extends Mockito{
+public class TestPortstatus extends Mockito {
 
 
     @Test
     public void testIsAvailable() throws IOException {
-        assertFalse("Port status should be false", Portstatus.isAvailable("localhost", 4567) );
+        assertFalse("Port status should be false", Portstatus.isAvailable("localhost", 4567));
         ServerSocket serverSocket = new ServerSocket(4567);
-        assertTrue("Port status should be true", Portstatus.isAvailable("localhost", 4567) );
+        assertTrue("Port status should be true", Portstatus.isAvailable("localhost", 4567));
         serverSocket.close();
     }
 
     @Test
     public void testWaitIsAvailable() throws IOException {
         ServerSocket serverSocket = new ServerSocket(4567);
-        assertTrue("Port status should be true", Portstatus.waitSecondsTillAvailable(5, "localhost", 4567) );
+        assertTrue("Port status should be true", Portstatus.waitSecondsTillAvailable(5, "localhost", 4567));
         serverSocket.close();
     }
 
     @Test
     public void testWaitIsAvailableHostInfo() throws IOException {
         ServerSocket serverSocket = new ServerSocket(4567);
-        assertTrue("Port status should be true", Portstatus.waitSecondsTillAvailable(5, new HostInfo("localhost", 4567)) );
+        assertTrue("Port status should be true",
+                Portstatus.waitSecondsTillAvailable(5, new HostInfo("localhost", 4567)));
         serverSocket.close();
     }
 
     @Test
     public void testWaitTillAvailable() throws IOException {
         Instant start = Instant.now();
-        assertFalse("Port status should be false", Portstatus.waitSecondsTillAvailable(5, "localhost", 4567) );
+        assertFalse("Port status should be false", Portstatus.waitSecondsTillAvailable(5, "localhost", 4567));
         Instant end = Instant.now();
         long seconds = Duration.between(start, end).getSeconds();
-        assertTrue("Port status timeout 5 expected and not between 3 .. 7 seconds", 3 < seconds && seconds < 7  );
+        assertTrue("Port status timeout 5 expected and not between 3 .. 7 seconds", 3 < seconds && seconds < 7);
     }
 
     @Test
     public void testWaitTillAvailableHostinfo() throws IOException {
         Instant start = Instant.now();
-        assertFalse("Port status should be false", Portstatus.waitSecondsTillAvailable(5, new HostInfo("localhost", 4567)));
+        assertFalse("Port status should be false",
+                Portstatus.waitSecondsTillAvailable(5, new HostInfo("localhost", 4567)));
         Instant end = Instant.now();
         long seconds = Duration.between(start, end).getSeconds();
-        assertTrue("Port status timeout 5 expected and not between 3 .. 7 seconds", 3 < seconds && seconds < 7  );
+        assertTrue("Port status timeout 5 expected and not between 3 .. 7 seconds", 3 < seconds && seconds < 7);
     }
 
 
