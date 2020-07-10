@@ -30,68 +30,74 @@ import org.slf4j.LoggerFactory;
 
 public class EsServlet extends BaseServlet {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -3996363343749995011L;
-	private static final String OFFLINE_RESPONSE_MESSAGE = "Database interface is offline";
-	private static Logger LOG = LoggerFactory.getLogger(EsServlet.class);
-	
-	private static boolean trustAll = false;
-	
-	public EsServlet() {
-		super();
-	}
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3996363343749995011L;
+    private static final String OFFLINE_RESPONSE_MESSAGE = "Database interface is offline";
+    private static Logger LOG = LoggerFactory.getLogger(EsServlet.class);
 
-	@Override
-	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (MyProperties.getInstance().corsEnabled()) {
-			resp.addHeader("Access-Control-Allow-Origin", "*");
-			resp.addHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-			resp.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-		}
-		resp.setStatus(200);
-	}
+    private static boolean trustAll = false;
 
-	@Override
-	protected String getOfflineResponse() {
-		return OFFLINE_RESPONSE_MESSAGE;
-	}
+    public EsServlet() {
+        super();
+    }
 
-	@Override
-	protected boolean isOff() {
-		return MyProperties.getInstance().isEsOff();
-	}
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (MyProperties.getInstance().corsEnabled()) {
+            resp.addHeader("Access-Control-Allow-Origin", "*");
+            resp.addHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+            resp.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        }
+        resp.setStatus(200);
+    }
 
-	@Override
-	protected String getRemoteUrl(String uri) {
-		if (uri != null && uri.length() > 0) {
-			uri = uri.substring("/database".length());
-		}
-		return MyProperties.getInstance().getEsBaseUrl() + uri;
-	}
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doGet(req, resp);
-	}
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doPost(req, resp);
-	}
-	@Override
-	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doPut(req, resp);
-	}
-	@Override
-	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doDelete(req, resp);
-	}
-	@Override
-	protected boolean doTrustAll() {
-		return trustAll;
-	}
-	@Override
-	protected void trustAll(boolean trust) {
-		trustAll = trust;
-	}
-}	
+    @Override
+    protected String getOfflineResponse() {
+        return OFFLINE_RESPONSE_MESSAGE;
+    }
+
+    @Override
+    protected boolean isOff() {
+        return MyProperties.getInstance().isEsOff();
+    }
+
+    @Override
+    protected String getRemoteUrl(String uri) {
+        if (uri != null && uri.length() > 0) {
+            uri = uri.substring("/database".length());
+        }
+        return MyProperties.getInstance().getEsBaseUrl() + uri;
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doGet(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPost(req, resp);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPut(req, resp);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doDelete(req, resp);
+    }
+
+    @Override
+    protected boolean doTrustAll() {
+        return trustAll;
+    }
+
+    @Override
+    protected void trustAll(boolean trust) {
+        trustAll = trust;
+    }
+}

@@ -30,24 +30,28 @@ import org.onap.ccsdk.features.sdnr.wt.apigateway.EsServlet;
 
 public class HelpServlet extends EsServlet {
 
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doGet(req, resp);
-	}
-	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doPost(req, resp);
-	}
-	@Override
-	public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doPut(req, resp);
-	}
-	@Override
-	public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doOptions(req, resp);
-	}
-	@Override
-	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doDelete(req, resp);
-	}
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doGet(req, resp);
+    }
+
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPost(req, resp);
+    }
+
+    @Override
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPut(req, resp);
+    }
+
+    @Override
+    public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doOptions(req, resp);
+    }
+
+    @Override
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doDelete(req, resp);
+    }
 }
