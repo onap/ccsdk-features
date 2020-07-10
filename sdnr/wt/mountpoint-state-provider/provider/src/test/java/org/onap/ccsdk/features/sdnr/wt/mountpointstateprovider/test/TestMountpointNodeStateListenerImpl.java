@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test;
 
@@ -33,29 +33,29 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 
 public class TestMountpointNodeStateListenerImpl {
 
-	MountpointNodeStateListenerImpl nodeStateListener = new MountpointNodeStateListenerImpl();
-	NetconfNodeMock netconfNodeMock = new NetconfNodeMock();
-	NetconfNode netconfNode = netconfNodeMock.getNetconfNode();
-	NodeId nNodeId = new NodeId("nSky");
-	DataBroker netconfNodeDataBroker = new DataBrokerMountpointMock();
+    MountpointNodeStateListenerImpl nodeStateListener = new MountpointNodeStateListenerImpl();
+    NetconfNodeMock netconfNodeMock = new NetconfNodeMock();
+    NetconfNode netconfNode = netconfNodeMock.getNetconfNode();
+    NodeId nNodeId = new NodeId("nSky");
+    DataBroker netconfNodeDataBroker = new DataBrokerMountpointMock();
 
-	@Test
-	public void testOnCreated() {
-		assertNotNull(nNodeId);
-		assertNotNull(netconfNode);
-		nodeStateListener.onCreated(nNodeId, netconfNode);
-		assertNotEquals(MountpointStatePublisher.stateObjects.size(), 0);
-	}
+    @Test
+    public void testOnCreated() {
+        assertNotNull(nNodeId);
+        assertNotNull(netconfNode);
+        nodeStateListener.onCreated(nNodeId, netconfNode);
+        assertNotEquals(MountpointStatePublisher.stateObjects.size(), 0);
+    }
 
-	@Test
-	public void testOnStateChange() {
-		nodeStateListener.onStateChange(nNodeId, netconfNode);
-		assertNotEquals(MountpointStatePublisher.stateObjects.size(), 0);
-	}
+    @Test
+    public void testOnStateChange() {
+        nodeStateListener.onStateChange(nNodeId, netconfNode);
+        assertNotEquals(MountpointStatePublisher.stateObjects.size(), 0);
+    }
 
-	@Test
-	public void testOnRemoved() {
-		nodeStateListener.onRemoved(nNodeId);
-	}
+    @Test
+    public void testOnRemoved() {
+        nodeStateListener.onRemoved(nNodeId);
+    }
 
 }

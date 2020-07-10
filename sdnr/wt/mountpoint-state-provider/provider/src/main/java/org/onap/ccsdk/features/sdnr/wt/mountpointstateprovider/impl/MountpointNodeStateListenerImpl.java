@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 
@@ -29,43 +29,44 @@ import org.slf4j.LoggerFactory;
 
 
 public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener {
-	private static final Logger LOG = LoggerFactory.getLogger(MountpointNodeStateListenerImpl.class);
-	@Override
-	public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
+    private static final Logger LOG = LoggerFactory.getLogger(MountpointNodeStateListenerImpl.class);
 
-		LOG.info("In onCreated of MountpointNodeStateListenerImpl - nNodeId = "+nNodeId.getValue()+
-				" IP Address = "+netconfNode.getHost().getIpAddress().getIpv4Address().toString());
-		JSONObject obj = new JSONObject();
-		obj.put("NodeId", nNodeId.getValue());
-		obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
-		obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+    @Override
+    public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
 
-		MountpointStatePublisher.stateObjects.add(obj);
-	}
+        LOG.info("In onCreated of MountpointNodeStateListenerImpl - nNodeId = " + nNodeId.getValue() + " IP Address = "
+                + netconfNode.getHost().getIpAddress().getIpv4Address().toString());
+        JSONObject obj = new JSONObject();
+        obj.put("NodeId", nNodeId.getValue());
+        obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
+        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
 
-	@Override
-	public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
+        MountpointStatePublisher.stateObjects.add(obj);
+    }
 
-		LOG.info("In onStateChange of MountpointNodeStateListenerImpl - nNodeId = "+nNodeId.getValue()+
-				" IP Address = "+netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
-		JSONObject obj = new JSONObject();
-		obj.put("NodeId", nNodeId.getValue());
-		obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
-		obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+    @Override
+    public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
 
-		MountpointStatePublisher.stateObjects.add(obj);
-	}
+        LOG.info("In onStateChange of MountpointNodeStateListenerImpl - nNodeId = " + nNodeId.getValue()
+                + " IP Address = " + netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
+        JSONObject obj = new JSONObject();
+        obj.put("NodeId", nNodeId.getValue());
+        obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
+        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
 
-	@Override
-	public void onRemoved(NodeId nNodeId) {
+        MountpointStatePublisher.stateObjects.add(obj);
+    }
 
-		LOG.info("In onRemoved of MountpointNodeStateListenerImpl - nNodeId = "+nNodeId);
-		JSONObject obj = new JSONObject();
-		obj.put("NodeId", nNodeId.getValue());
-		obj.put("NetConfNodeState", "Removed");
-		obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+    @Override
+    public void onRemoved(NodeId nNodeId) {
 
-		MountpointStatePublisher.stateObjects.add(obj);
-	}
+        LOG.info("In onRemoved of MountpointNodeStateListenerImpl - nNodeId = " + nNodeId);
+        JSONObject obj = new JSONObject();
+        obj.put("NodeId", nNodeId.getValue());
+        obj.put("NetConfNodeState", "Removed");
+        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+
+        MountpointStatePublisher.stateObjects.add(obj);
+    }
 
 }

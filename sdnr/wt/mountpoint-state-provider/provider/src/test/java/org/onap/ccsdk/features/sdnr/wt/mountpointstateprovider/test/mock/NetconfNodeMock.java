@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock;
 
@@ -28,16 +28,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev15
 
 public class NetconfNodeMock {
 
-	public NetconfNode getNetconfNode() {
+    public NetconfNode getNetconfNode() {
 
-	        NetconfNodeBuilder nNodeBuilder = new NetconfNodeBuilder();
-	        nNodeBuilder.setAvailableCapabilities(null);
-	        nNodeBuilder.setConnectionStatus(ConnectionStatus.Connected);
-	        nNodeBuilder.setHost(new Host(new IpAddress(new Ipv4Address("1.2.3.4"))));
-	        nNodeBuilder.setPort(new PortNumber(2230));
-	        // build
-	        NetconfNode nNode = nNodeBuilder.build();
-	        return nNode;
-	    }
+        NetconfNodeBuilder nNodeBuilder = new NetconfNodeBuilder();
+        nNodeBuilder.setAvailableCapabilities(null);
+        nNodeBuilder.setConnectionStatus(ConnectionStatus.Connected);
+        nNodeBuilder.setHost(new Host(new IpAddress(new Ipv4Address("1.2.3.4"))));
+        nNodeBuilder.setPort(new PortNumber(2230));
+        // build
+        NetconfNode nNode = nNodeBuilder.build();
+        return nNode;
+    }
 
 }

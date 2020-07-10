@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk feature sdnr wt
  *  ================================================================================
@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.odlapi;
 
 import org.opendaylight.controller.md.sal.common.api.routing.RouteChangeListener;
@@ -37,7 +37,7 @@ public class RpcProviderRegistryMock implements RpcProviderRegistry {
         return null;
     }
 
-   @Override
+    @Override
     public <L extends RouteChangeListener<RpcContextIdentifier, InstanceIdentifier<?>>> ListenerRegistration<L> registerRouteChangeListener(
             L listener) {
         return null;
@@ -53,7 +53,7 @@ public class RpcProviderRegistryMock implements RpcProviderRegistry {
     @Override
     public <T extends RpcService> RpcRegistration<T> addRpcImplementation(Class<T> serviceInterface, T implementation)
             throws IllegalStateException {
-        System.out.println("Register class "+serviceInterface);
+        System.out.println("Register class " + serviceInterface);
         return null;
     }
 
