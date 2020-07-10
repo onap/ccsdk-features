@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.helpserver.test;
 
 import static org.junit.Assert.fail;
@@ -36,7 +36,7 @@ public class TestHelpInfrastructure {
         try {
             path = Paths.get(url.toURI());
             HelpInfrastructureObject helpInfrastuctureObject = new HelpInfrastructureObject(path);
-            System.out.println("Help: "+helpInfrastuctureObject);
+            System.out.println("Help: " + helpInfrastuctureObject);
         } catch (URISyntaxException e) {
             fail(e.getMessage());
         }

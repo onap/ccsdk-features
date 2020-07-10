@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -6,20 +6,23 @@
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.helpserver.test;
 
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -36,27 +39,24 @@ import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.helpserver.HelpServlet;
 import org.onap.ccsdk.features.sdnr.wt.helpserver.data.ExtactBundleResource;
 import org.onap.ccsdk.features.sdnr.wt.helpserver.data.HelpInfrastructureObject;
-import static java.nio.file.StandardOpenOption.CREATE_NEW;
-import static java.nio.file.StandardOpenOption.WRITE;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 public class TestMyServlet extends Mockito {
 
     private static final String GETHELPDIRECTORYBASE = "data";
     private static final String CONTENT = "abbccdfkamaosie aksdmais";
 
-    public static void createHelpFile(String filename,String content) {
-        File file=new File(HelpInfrastructureObject.getHelpDirectoryBase() + filename);
+    public static void createHelpFile(String filename, String content) {
+        File file = new File(HelpInfrastructureObject.getHelpDirectoryBase() + filename);
         File folder = file.getParentFile();
-        if(!folder.exists()) {
+        if (!folder.exists()) {
             folder.mkdirs();
         }
         try {
-            if(file.exists()) {
+            if (file.exists()) {
                 file.delete();
             }
-            Files.write( file.toPath(),content.getBytes(),new OpenOption[] { WRITE, CREATE_NEW , CREATE, TRUNCATE_EXISTING});
+            Files.write(file.toPath(), content.getBytes(),
+                    new OpenOption[] {WRITE, CREATE_NEW, CREATE, TRUNCATE_EXISTING});
         } catch (IOException e1) {
             fail(e1.getMessage());
         }
@@ -70,6 +70,7 @@ public class TestMyServlet extends Mockito {
             e.printStackTrace();
         }
     }
+
     @After
     public void deinit() {
         this.init();
@@ -87,7 +88,7 @@ public class TestMyServlet extends Mockito {
         when(request.getQueryString()).thenReturn("?meta");
 
         StringWriter stringWriter = new StringWriter();
-        ServletOutputStream out=new ServletOutputStream() {
+        ServletOutputStream out = new ServletOutputStream() {
 
             @Override
             public void write(int arg0) throws IOException {
@@ -96,11 +97,11 @@ public class TestMyServlet extends Mockito {
         };
         when(response.getOutputStream()).thenReturn(out);
 
-        HelpServlet helpServlet=null;
+        HelpServlet helpServlet = null;
         try {
             helpServlet = new HelpServlet();
             System.out.println("Server created");
-            createHelpFile("/meta.json",CONTENT);
+            createHelpFile("/meta.json", CONTENT);
 
             helpServlet.doOptions(request, response);
             System.out.println("Get calling");
@@ -115,7 +116,7 @@ public class TestMyServlet extends Mockito {
 
         String result = stringWriter.toString().trim();
         System.out.println("Result: '" + result + "'");
-        assertEquals(CONTENT,result);
+        assertEquals(CONTENT, result);
     }
 
     @Test
@@ -128,11 +129,11 @@ public class TestMyServlet extends Mockito {
 
     private void testGetRequest(String fn) {
         HelpServlet helpServlet = new HelpServlet();
-        createHelpFile("/"+fn,CONTENT);
+        createHelpFile("/" + fn, CONTENT);
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
 
-        when(request.getRequestURI()).thenReturn("help/"+fn);
+        when(request.getRequestURI()).thenReturn("help/" + fn);
         StringWriter sw = new StringWriter();
         ServletOutputStream out = new ServletOutputStream() {
 
@@ -156,6 +157,6 @@ public class TestMyServlet extends Mockito {
         } catch (Exception e) {
         }
 
-        assertEquals("compare content for "+fn,CONTENT,sw.toString().trim());
+        assertEquals("compare content for " + fn, CONTENT, sw.toString().trim());
     }
 }
