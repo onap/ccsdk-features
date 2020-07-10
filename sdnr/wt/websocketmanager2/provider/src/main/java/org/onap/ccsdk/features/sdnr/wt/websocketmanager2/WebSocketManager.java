@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+  */
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager2;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -37,9 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocke
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketEventOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketEventOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketmanagerService;
+import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +54,9 @@ public class WebSocketManager extends WebSocketServlet implements Websocketmanag
     private final AkkaConfig akkaConfig;
     /**
      * timeout for websocket with no messages in ms
-     */
+      */
     //private static final long IDLE_TIMEOUT = 5 * 60 * 1000L;
-    private static final long IDLE_TIMEOUT =0L;
+    private static final long IDLE_TIMEOUT = 0L;
 
     private final ArrayList<URI> clusterNodeClients = new ArrayList<>();
 
@@ -142,12 +142,12 @@ public class WebSocketManager extends WebSocketServlet implements Websocketmanag
 
     /**********************************************************
      * Private functions
-     */
+      */
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (req.getHeader("Upgrade") != null) {
-            /* Accept upgrade request */
+            /* Accept upgrade request  */
             resp.setStatus(101);
             resp.setHeader("Upgrade", "XYZP");
             resp.setHeader("Connection", "Upgrade");

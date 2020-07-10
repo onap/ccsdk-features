@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager2.test;
 
 import static org.junit.Assert.assertTrue;
@@ -30,7 +30,8 @@ public class WebsocketMessageTest {
 
     private static final String MSG1 = "{\"data\":\"scopes\",\"scopes\":[\"scope1\"]}";
     private static final String MSG2 = "{}";
-    private static final String MSG3 = "{\""+WebSocketManagerSocket.KEY_NODENAME+":\"xy\","+WebSocketManagerSocket.KEY_EVENTTYPE+":\"zu\"}";
+    private static final String MSG3 = "{\"" + WebSocketManagerSocket.KEY_NODENAME + ":\"xy\","
+            + WebSocketManagerSocket.KEY_EVENTTYPE + ":\"zu\"}";
     private static final String MSG4 = "{ Not correct messga}";
 
     @Test
@@ -58,8 +59,8 @@ public class WebsocketMessageTest {
 
         private String expected;
 
-        public MyWebSocketManagerSocket() {
-        }
+        public MyWebSocketManagerSocket() {}
+
         void setExpected(String expected) {
             this.expected = expected;
         }
@@ -67,7 +68,7 @@ public class WebsocketMessageTest {
         @Override
         public void send(String msg) {
             System.out.println(msg);
-            assertTrue("Expected '"+expected+"' answer '"+msg+"'", msg.contains(expected));
+            assertTrue("Expected '" + expected + "' answer '" + msg + "'", msg.contains(expected));
         }
 
     }

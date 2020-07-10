@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager2;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -107,8 +107,8 @@ public class WebSocketManagerProvider extends Blueprint implements Websocketmana
     @Override
     public ListenableFuture<RpcResult<WebsocketEventOutput>> websocketEvent(WebsocketEventInput input) {
         if (wsServlet != null) {
-			return wsServlet.websocketEvent(input);
-		} else {
+            return wsServlet.websocketEvent(input);
+        } else {
             RpcResultBuilder<WebsocketEventOutput> result = RpcResultBuilder.failed();
             return result.withError(ErrorType.APPLICATION, "Not intialized").buildFuture();
         }

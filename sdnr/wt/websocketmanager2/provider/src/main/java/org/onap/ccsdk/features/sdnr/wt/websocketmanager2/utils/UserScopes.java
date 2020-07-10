@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,33 +14,33 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager2.utils;
 
 import org.json.JSONArray;
 
 public class UserScopes {
 
-	private JSONArray scopes;
+    private JSONArray scopes;
 
-	/**
-	 * 
-	 * @param jsonArray array of Strings
-	 */
-	public void setScopes(JSONArray jsonArray) {
-		this.scopes = jsonArray;
-	}
+    /**
+     * 
+     * @param jsonArray array of Strings
+      */
+    public void setScopes(JSONArray jsonArray) {
+        this.scopes = jsonArray;
+    }
 
-	public boolean hasScope(String scope) {
-		if (this.scopes == null)
-			return false;
-		for (int i = 0, l = this.scopes.length(); i < l; i++) {
-			if (this.scopes.get(i).toString().equals(scope)) {
-				return true;
-			}
-		}
+    public boolean hasScope(String scope) {
+        if (this.scopes == null)
+            return false;
+        for (int i = 0, l = this.scopes.length(); i < l; i++) {
+            if (this.scopes.get(i).toString().equals(scope)) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
 }

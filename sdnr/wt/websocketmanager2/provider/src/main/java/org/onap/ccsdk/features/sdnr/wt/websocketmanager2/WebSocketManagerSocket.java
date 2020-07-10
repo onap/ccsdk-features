@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager2;
 
 import java.util.ArrayList;
@@ -50,15 +50,15 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     /**
      * list of all sessionids
-     */
+      */
     private static final List<String> sessionIds = new ArrayList<>();
     /**
      * map of sessionid <=> UserScopes
-     */
+      */
     private static final HashMap<String, UserScopes> userScopesList = new HashMap<>();
     /**
      * map of class.hashCode <=> class
-     */
+      */
     private static final HashMap<String, WebSocketManagerSocket> clientList = new HashMap<>();
     private final String myUniqueSessionId;
 
@@ -88,7 +88,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     @Override
     public void onWebSocketText(String message) {
-        LOG.info("{} has sent {}",this.getRemoteAdr(), message);
+        LOG.info("{} has sent {}", this.getRemoteAdr(), message);
         if (!this.manageClientRequest(message)) {
             this.manageClientRequest2(message);
         }
@@ -130,10 +130,9 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     /**
      *
-     * @param request is a json object
-     *                {"data":"scopes","scopes":["scope1","scope2",...]}
+     * @param request is a json object {"data":"scopes","scopes":["scope1","scope2",...]}
      * @return if handled
-     */
+      */
     private boolean manageClientRequest(String request) {
         boolean ret = false;
         try {
@@ -160,7 +159,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     /*
      * broadcast message to all your clients
-     */
+      */
     private void manageClientRequest2(String request) {
         try {
             JSONObject o = new JSONObject(request);
@@ -180,7 +179,8 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
             LOG.warn("problem sending message: " + e.getMessage());
         }
     }
-     public String getSessionId() {
+
+    public String getSessionId() {
         return this.myUniqueSessionId;
     }
 
@@ -209,12 +209,12 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
             }
         }
     }
+
     public static void broadCast(String nodeName, String eventType, String xmlEvent) {
-        if(clientList.size()>0) {
+        if (clientList.size() > 0) {
             Set<Entry<String, WebSocketManagerSocket>> e = clientList.entrySet();
             WebSocketManagerSocket s = e.iterator().next().getValue();
-            if(s!=null)
-            {
+            if (s != null) {
                 s.sendToAll(nodeName, eventType, xmlEvent);
             }
         }
