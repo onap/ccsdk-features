@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,13 +14,13 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.odlAkka;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public  class ClusterNodeInfo {
+public class ClusterNodeInfo {
     private final String protocol;
     private final String clusterName;
     private final String remoteAdr;
@@ -28,7 +28,7 @@ public  class ClusterNodeInfo {
     private final String seedNodeName;
 
     public static ClusterNodeInfo defaultSingleNodeInfo() {
-        return new ClusterNodeInfo("akka.tcp","opendaylight-cluster-data","127.0.0.1",2550);
+        return new ClusterNodeInfo("akka.tcp", "opendaylight-cluster-data", "127.0.0.1", 2550);
     }
 
     public ClusterNodeInfo(String s) throws Exception {
@@ -46,11 +46,11 @@ public  class ClusterNodeInfo {
     }
 
     public ClusterNodeInfo(String protocol, String clustername, String remoteadr, int port) {
-        this.protocol=protocol;
-        this.clusterName=clustername;
-        this.remoteAdr=remoteadr;
-        this.port=port;
-        this.seedNodeName=this.protocol+"://"+this.clusterName+"@"+this.remoteAdr+":"+this.port;
+        this.protocol = protocol;
+        this.clusterName = clustername;
+        this.remoteAdr = remoteadr;
+        this.port = port;
+        this.seedNodeName = this.protocol + "://" + this.clusterName + "@" + this.remoteAdr + ":" + this.port;
     }
 
     public String getProtocol() {
@@ -64,6 +64,7 @@ public  class ClusterNodeInfo {
     public String getRemoteAddress() {
         return remoteAdr;
     }
+
     public String getSeedNodeName() {
         return seedNodeName;
     }

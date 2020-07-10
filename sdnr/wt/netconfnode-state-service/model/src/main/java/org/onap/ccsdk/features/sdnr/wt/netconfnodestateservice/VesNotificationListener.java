@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
@@ -23,21 +23,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfn
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.FaultNotification;
 
 /**
- *  Indicate if device is connected or not.
- *  A NetconfNode (Mountpoint) is providing the status.
- *  If this is Master and connected, this function is calles.
+ * Indicate if device is connected or not. A NetconfNode (Mountpoint) is providing the status. If this is Master and
+ * connected, this function is calles.
  */
 
 public interface VesNotificationListener extends EventListener, AutoCloseable {
 
     /**
      * Called in case of fault notification
+     * 
      * @param faultNotification to handle
      */
     public void onNotification(FaultNotification faultNotification);
 
     /**
      * Called in case of attributeChange notification
+     * 
      * @param attributeChangeNotification to handle
      */
     public void onNotification(AttributeChangeNotification attributeChangeNotification);

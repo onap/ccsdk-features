@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,32 +31,32 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public interface TransactionUtils {
 
-	/**
-	 * Deliver the data back or null. Warning
-	 *
-	 * @param <T> SubType of the DataObject to be handled
-	 * @param dataBroker for accessing data
-	 * @param dataStoreType to address datastore
-	 * @param iid id to access data
-	 * @return null or object
-	 */
-	@Nullable
-	<T extends DataObject> T readData(DataBroker dataBroker, LogicalDatastoreType dataStoreType,
-			InstanceIdentifier<T> iid);
+    /**
+     * Deliver the data back or null. Warning
+     *
+     * @param <T> SubType of the DataObject to be handled
+     * @param dataBroker for accessing data
+     * @param dataStoreType to address datastore
+     * @param iid id to access data
+     * @return null or object
+     */
+    @Nullable
+    <T extends DataObject> T readData(DataBroker dataBroker, LogicalDatastoreType dataStoreType,
+            InstanceIdentifier<T> iid);
 
-	/**
-	 * Deliver the data back or null
-	 *
-	 * @param <T> SubType of the DataObject to be handled
-	 * @param dataBroker for accessing data
-	 * @param dataStoreType to address datastore
-	 * @param iid id to access data
-	 * @param noErrorIndication (Output) true if data could be read and are available and is not null
-	 * @param statusIndicator (Output) String with status indications during the read.
-	 * @return null or object
-	 */
-	@Nullable
-	<T extends DataObject> T readDataOptionalWithStatus(DataBroker dataBroker, LogicalDatastoreType dataStoreType,
-			InstanceIdentifier<T> iid, AtomicBoolean noErrorIndication, AtomicReference<String> statusIndicator);
+    /**
+     * Deliver the data back or null
+     *
+     * @param <T> SubType of the DataObject to be handled
+     * @param dataBroker for accessing data
+     * @param dataStoreType to address datastore
+     * @param iid id to access data
+     * @param noErrorIndication (Output) true if data could be read and are available and is not null
+     * @param statusIndicator (Output) String with status indications during the read.
+     * @return null or object
+     */
+    @Nullable
+    <T extends DataObject> T readDataOptionalWithStatus(DataBroker dataBroker, LogicalDatastoreType dataStoreType,
+            InstanceIdentifier<T> iid, AtomicBoolean noErrorIndication, AtomicReference<String> statusIndicator);
 
 }

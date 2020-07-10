@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.odlGeo;
 
 import java.util.regex.Matcher;
@@ -29,24 +29,25 @@ public class ClusterRoleInfo {
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(s);
         if (!matcher.find()) {
-            throw new Exception("unexpected role format:"+s);
+            throw new Exception("unexpected role format:" + s);
         }
         this.Role = matcher.group(1);
         this.Index = Integer.parseInt(matcher.group(2));
     }
 
     private ClusterRoleInfo(String role, int idx) {
-        this.Role=role;
-        this.Index=idx;
+        this.Role = role;
+        this.Index = idx;
     }
 
     public static ClusterRoleInfo defaultSingleNodeRole() {
-        return new ClusterRoleInfo("member",1);
+        return new ClusterRoleInfo("member", 1);
     }
 
     public String getRole() {
         return Role;
     }
+
     public int getIndex() {
         return Index;
     }
@@ -84,6 +85,7 @@ public class ClusterRoleInfo {
         }
         return true;
     }
+
     @Override
     public String toString() {
         return "ClusterRoleInfo [Role=" + Role + ", Index=" + Index + "]";

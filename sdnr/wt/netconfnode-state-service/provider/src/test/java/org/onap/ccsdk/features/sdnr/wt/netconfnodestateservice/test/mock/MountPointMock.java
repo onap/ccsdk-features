@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk feature sdnr wt sdnr-wt-devicemanager-provider
  *  ================================================================================
@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock;
 
@@ -57,12 +57,13 @@ public class MountPointMock implements MountPoint {
     @Override
     public <T extends BindingService> Optional<T> getService(Class<T> service) {
 
-        System.out.println("Requested mountpoint service: "+service.getSimpleName()+" databrokerAbsent state: "+databrokerAbsent);
+        System.out.println("Requested mountpoint service: " + service.getSimpleName() + " databrokerAbsent state: "
+                + databrokerAbsent);
 
         Optional<? extends BindingService> res;
         if (service.isInstance(dataBroker)) {
             System.out.println("Delivering databroker");
-            res =  databrokerAbsent ? Optional.empty() : Optional.of(dataBroker);
+            res = databrokerAbsent ? Optional.empty() : Optional.of(dataBroker);
         } else if (service.isInstance(rpcConsumerRegistry)) {
             System.out.println("Delivering RpcConsumerRegistryMock");
             res = Optional.of(rpcConsumerRegistry);
@@ -76,7 +77,7 @@ public class MountPointMock implements MountPoint {
         return (Optional<T>) res;
     }
 
-    public void setDatabrokerAbsent( boolean state) {
+    public void setDatabrokerAbsent(boolean state) {
         this.databrokerAbsent = state;
     }
 

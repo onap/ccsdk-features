@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START======================================================= ONAP : ccsdk
  * feature sdnr wt ================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
@@ -12,7 +12,7 @@
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License. ============LICENSE_END=========================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test;
 
 import static org.mockito.Mockito.mock;
@@ -149,8 +149,7 @@ public class TestNetconfNodeStateService {
         System.out.println("Test2: Register state listener");
 
         NetconfNodeStateListener nSL = mock(NetconfNodeStateListener.class);
-        ListenerRegistration<NetconfNodeStateListener> res =
-        netconfStateService.registerNetconfNodeStateListener(nSL);
+        ListenerRegistration<NetconfNodeStateListener> res = netconfStateService.registerNetconfNodeStateListener(nSL);
         assertNotNull("Result should be null", res);
         res.getInstance();
         res.close();
@@ -163,7 +162,7 @@ public class TestNetconfNodeStateService {
 
         NetconfNodeConnectListener nCL = mock(NetconfNodeConnectListener.class);
         ListenerRegistration<NetconfNodeConnectListener> res =
-        netconfStateService.registerNetconfNodeConnectListener(nCL);
+                netconfStateService.registerNetconfNodeConnectListener(nCL);
         assertNotNull("Result should be null", res);
         res.getInstance();
         res.close();
@@ -212,7 +211,7 @@ public class TestNetconfNodeStateService {
         //verify that it was called one time and nodeId is the expected
         ArgumentCaptor<NetconfAccessor> varArgs = ArgumentCaptor.forClass(NetconfAccessor.class);
         verify(nCL).onEnterConnected(varArgs.capture());
-        System.out.println("Accessor "+varArgs.getValue().getNodeId());
+        System.out.println("Accessor " + varArgs.getValue().getNodeId());
         assertEquals(nodeIdString, varArgs.getValue().getNodeId().getValue());
 
     }
@@ -252,7 +251,7 @@ public class TestNetconfNodeStateService {
         ListenableFuture<RpcResult<GetStatusOutput>> statusOutput = api.getStatus(statusInput.build());
         RpcResult<GetStatusOutput> res = statusOutput.get();
         GetStatusOutput output = res.getResult();
-        System.out.println("Output "+output);
+        System.out.println("Output " + output);
     }
 
 
@@ -269,15 +268,16 @@ public class TestNetconfNodeStateService {
         FaultNotification fault = faultBuilder.build();
         PushFaultNotificationInputBuilder statusInput = new PushFaultNotificationInputBuilder();
         statusInput.fieldsFrom(fault);
-        ListenableFuture<RpcResult<PushFaultNotificationOutput>> rpcOutput = api.pushFaultNotification(statusInput.build());
+        ListenableFuture<RpcResult<PushFaultNotificationOutput>> rpcOutput =
+                api.pushFaultNotification(statusInput.build());
         RpcResult<PushFaultNotificationOutput> res = rpcOutput.get();
         PushFaultNotificationOutput output = res.getResult();
 
         //verify that it was called one time
-        verify(vNL,times(1)).onNotification(fault);
+        verify(vNL, times(1)).onNotification(fault);
 
         registration.close();
-        System.out.println("Output "+output);
+        System.out.println("Output " + output);
     }
 
     @Test
@@ -293,15 +293,16 @@ public class TestNetconfNodeStateService {
         AttributeChangeNotification change = changeBuilder.build();
         PushAttributeChangeNotificationInputBuilder statusInput = new PushAttributeChangeNotificationInputBuilder();
         statusInput.fieldsFrom(change);
-        ListenableFuture<RpcResult<PushAttributeChangeNotificationOutput>> rpcOutput = api.pushAttributeChangeNotification(statusInput.build());
+        ListenableFuture<RpcResult<PushAttributeChangeNotificationOutput>> rpcOutput =
+                api.pushAttributeChangeNotification(statusInput.build());
         RpcResult<PushAttributeChangeNotificationOutput> res = rpcOutput.get();
         PushAttributeChangeNotificationOutput output = res.getResult();
 
         //verify that it was called one time
-        verify(vNL,times(1)).onNotification(change);
+        verify(vNL, times(1)).onNotification(change);
 
         registration.close();
-        System.out.println("Output "+output);
+        System.out.println("Output " + output);
     }
 
 

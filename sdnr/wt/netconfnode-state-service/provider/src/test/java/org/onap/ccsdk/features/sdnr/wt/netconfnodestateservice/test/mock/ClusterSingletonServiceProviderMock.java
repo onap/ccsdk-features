@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock;
 
@@ -24,14 +24,14 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegist
 
 public class ClusterSingletonServiceProviderMock implements ClusterSingletonServiceProvider {
 
-	@Override
-	public void close() throws Exception {
+    @Override
+    public void close() throws Exception {
 
-	}
+    }
 
-	@Override
-	public ClusterSingletonServiceRegistration registerClusterSingletonService(ClusterSingletonService service) {
-		return null;
-	}
+    @Override
+    public ClusterSingletonServiceRegistration registerClusterSingletonService(ClusterSingletonService service) {
+        return null;
+    }
 
 }

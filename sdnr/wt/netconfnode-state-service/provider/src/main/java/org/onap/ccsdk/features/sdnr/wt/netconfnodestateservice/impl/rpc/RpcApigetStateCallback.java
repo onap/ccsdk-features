@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.rpc;
 
@@ -23,5 +23,5 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfn
 
 public interface RpcApigetStateCallback {
 
-	GetStatusOutputBuilder getStatus(GetStatusInput input);
+    GetStatusOutputBuilder getStatus(GetStatusInput input);
 }
