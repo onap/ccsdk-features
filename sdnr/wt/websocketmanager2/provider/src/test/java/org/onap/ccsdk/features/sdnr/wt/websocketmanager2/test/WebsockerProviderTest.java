@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager2.test;
 
 import static org.junit.Assert.*;
@@ -28,7 +28,7 @@ public class WebsockerProviderTest extends Mockito {
 
     @Test
     public void test() {
-       RpcProviderService rpcProviderServiceMock = mock(RpcProviderService.class);
+        RpcProviderService rpcProviderServiceMock = mock(RpcProviderService.class);
         HttpService httpService = mock(HttpService.class);
 
         try (WebSocketManagerProvider provider = new WebSocketManagerProvider();) {
