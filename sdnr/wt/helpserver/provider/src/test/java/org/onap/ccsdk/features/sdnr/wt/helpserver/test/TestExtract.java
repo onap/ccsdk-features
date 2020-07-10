@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.helpserver.test;
 
 import static org.junit.Assert.assertFalse;
@@ -62,7 +62,7 @@ public class TestExtract extends Mockito {
             });
             when(myBundle.getEntry(anyString())).thenAnswer(invocation -> {
                 Object[] args = invocation.getArguments();
-                System.out.println("GetEntrye input: "+args[0]);
+                System.out.println("GetEntrye input: " + args[0]);
                 return new URL(testFile = (String) args[0]);
             });
 
@@ -70,11 +70,11 @@ public class TestExtract extends Mockito {
 
             ExtactBundleResource.copyBundleResoucesRecursively(myBundle, TMPDATAFOLDER, "help/meta.json");
 
-            assertTrue("Test file not found: "+testFile, new File(TMPDATAFOLDER+testFile).exists());
+            assertTrue("Test file not found: " + testFile, new File(TMPDATAFOLDER + testFile).exists());
 
-            ExtactBundleResource.deleteRecursively(new File(TMPDATAFOLDER+"file:"));
+            ExtactBundleResource.deleteRecursively(new File(TMPDATAFOLDER + "file:"));
 
-            assertFalse("Test not deleted: "+testFile, new File(TMPDATAFOLDER+"file:").exists());
+            assertFalse("Test not deleted: " + testFile, new File(TMPDATAFOLDER + "file:").exists());
 
         } catch (Exception e) {
             e.printStackTrace();
