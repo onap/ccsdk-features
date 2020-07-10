@@ -23,37 +23,34 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
 public enum ComponentName {
 
-	CONNECTIONLOG("connectionlog"),
-	EVENTLOG("eventlog"),
-	FAULTLOG("faultlog"),
-	FAULTCURRENT("faultcurrent"),
-	HISTORICAL_PERFORMANCE_15M("historicalperformance15m"),
-	HISTORICAL_PERFORMANCE_24H("historicalperformance24h"),
-	INVENTORY("inventory"),
-	INVENTORYTOPLEVEL("inventorytoplevel"),
-	MAINTENANCE("maintenance"),
-	MEDIATOR_SERVER("mediator-server"),
-	REQUIRED_NETWORKELEMENT("required-networkelement");
-	
-	private final String value;
+    CONNECTIONLOG("connectionlog"), EVENTLOG("eventlog"), FAULTLOG("faultlog"), FAULTCURRENT(
+            "faultcurrent"), HISTORICAL_PERFORMANCE_15M("historicalperformance15m"), HISTORICAL_PERFORMANCE_24H(
+                    "historicalperformance24h"), INVENTORY("inventory"), INVENTORYTOPLEVEL(
+                            "inventorytoplevel"), MAINTENANCE("maintenance"), MEDIATOR_SERVER(
+                                    "mediator-server"), REQUIRED_NETWORKELEMENT("required-networkelement");
 
-	private ComponentName(String s) {
-		this.value = s;
-	}
-	@Override
-	public String toString() {
-		return this.value;
-	}
-	public String getValue() {
-		return value;
-	}
-	public static ComponentName getValueOf(String s) throws Exception  {
-		s = s.toLowerCase();
-		for(ComponentName p:ComponentName.values()) {
-			if(p.value.equals(s)) {
-				return p;
-			}
-		}
-		throw new Exception("value not found for "+s);
-	}
+    private final String value;
+
+    private ComponentName(String s) {
+        this.value = s;
+    }
+
+    @Override
+    public String toString() {
+        return this.value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public static ComponentName getValueOf(String s) throws Exception {
+        s = s.toLowerCase();
+        for (ComponentName p : ComponentName.values()) {
+            if (p.value.equals(s)) {
+                return p;
+            }
+        }
+        throw new Exception("value not found for " + s);
+    }
 }

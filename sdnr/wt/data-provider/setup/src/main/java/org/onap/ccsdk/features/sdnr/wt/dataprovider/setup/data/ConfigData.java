@@ -23,13 +23,14 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
 public class ConfigData {
 
-	private final String[] lines;
+    private final String[] lines;
 
-	public String[] getLines() {
-		return this.lines;
-	}
-	public ConfigData(String content) {
-		this.lines = content.split("\n");
-	}
+    public String[] getLines() {
+        return this.lines;
+    }
+
+    public ConfigData(String content) {
+        this.lines = content.split("\n");
+    }
 
 }

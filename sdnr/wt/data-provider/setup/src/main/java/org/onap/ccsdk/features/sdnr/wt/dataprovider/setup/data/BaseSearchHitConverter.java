@@ -26,26 +26,28 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 
 public abstract class BaseSearchHitConverter implements SearchHitConverter {
 
-	private ComponentName name;
-	public BaseSearchHitConverter(ComponentName name) {
-		this.name = name;
-	}
-	
-	protected SearchHit getSearchHit(String index, String type, String id, JSONObject data) {
-		JSONObject o = new JSONObject();
-		o.put("_index", index);
-		o.put("_type", type);
-		o.put("_id", id);
-		o.put("_source", data);
-		return new SearchHit(o);
-	}
-	@Override
-	public ComponentData convert(DataContainer container) {
-		ComponentData srcData = container.getComponents().get(this.name);
-		ComponentData dstData = new ComponentData(srcData.getName());
-		for(SearchHit sh:srcData) {
-			dstData.add(this.convert(sh));
-		}
-		return dstData;
-	}
+    private ComponentName name;
+
+    public BaseSearchHitConverter(ComponentName name) {
+        this.name = name;
+    }
+
+    protected SearchHit getSearchHit(String index, String type, String id, JSONObject data) {
+        JSONObject o = new JSONObject();
+        o.put("_index", index);
+        o.put("_type", type);
+        o.put("_id", id);
+        o.put("_source", data);
+        return new SearchHit(o);
+    }
+
+    @Override
+    public ComponentData convert(DataContainer container) {
+        ComponentData srcData = container.getComponents().get(this.name);
+        ComponentData dstData = new ComponentData(srcData.getName());
+        for (SearchHit sh : srcData) {
+            dstData.add(this.convert(sh));
+        }
+        return dstData;
+    }
 }

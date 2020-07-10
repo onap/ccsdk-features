@@ -34,24 +34,26 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
  * @author Michael Dürre
  *
  */
-public class DataTreeHttpServlet extends HttpServlet{
+public class DataTreeHttpServlet extends HttpServlet {
 
-	/**
-	 * @param rawClient
-	 */
-	public void setDatabaseClient(HtDatabaseClient rawClient) {
-		
-		
-	}
+    /**
+     * @param rawClient
+     */
+    public void setDatabaseClient(HtDatabaseClient rawClient) {
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		final String uri = req.getRequestURI();
-	}
-	private void readInventoryTree(String filter) {
-		
-	}
-	private void doJsonResponse(HttpServletResponse resp,Object data) {
-		
-	}
+
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        final String uri = req.getRequestURI();
+    }
+
+    private void readInventoryTree(String filter) {
+
+    }
+
+    private void doJsonResponse(HttpServletResponse resp, Object data) {
+
+    }
 }

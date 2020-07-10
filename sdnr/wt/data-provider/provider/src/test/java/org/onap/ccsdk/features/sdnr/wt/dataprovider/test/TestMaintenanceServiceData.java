@@ -49,14 +49,16 @@ public class TestMaintenanceServiceData {
 
     private static final String NODEID = "tmsnode1";
     private static final String NODEID2 = "tmsnode2";
+
     @BeforeClass
     public static void init() throws Exception {
 
         dbProvider = new ElasticSearchDataProvider(TestCRUDforDatabase.hosts);
         dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
         dbRawProvider = new HtDatabaseClient(TestCRUDforDatabase.hosts);
-        service  = dbProvider.getHtDatabaseMaintenance();
+        service = dbProvider.getHtDatabaseMaintenance();
     }
+
     @Test
     public void test() throws InterruptedException {
         clearDbEntity(Entity.Maintenancemode);
@@ -67,25 +69,29 @@ public class TestMaintenanceServiceData {
         obj = service.getMaintenance(NODEID);
         assertNotNull(obj);
         List<MaintenanceEntity> list = service.getAll();
-        assertEquals("Verify for two ids", 2,list.size());
+        assertEquals("Verify for two ids", 2, list.size());
         service.deleteIfNotRequired(NODEID);
         obj = service.getMaintenance(NODEID);
         assertNull("Check if first id was removed", obj);
 
-        obj = service.setMaintenance(createMaintenance(NODEID,true));
+        obj = service.setMaintenance(createMaintenance(NODEID, true));
 
 
     }
+
     /**
      * @param nodeId
      * @param active
      * @return
      */
     private static MaintenanceEntity createMaintenance(String nodeId, Boolean active) {
-        return new MaintenanceBuilder().setNodeId(nodeId).setActive(active).setProblem("problem").setObjectIdRef("idref").build();
+        return new MaintenanceBuilder().setNodeId(nodeId).setActive(active).setProblem("problem")
+                .setObjectIdRef("idref").build();
     }
+
     /**
      * Delete
+     * 
      * @param entity
      */
     private static void clearDbEntity(Entity entity) {

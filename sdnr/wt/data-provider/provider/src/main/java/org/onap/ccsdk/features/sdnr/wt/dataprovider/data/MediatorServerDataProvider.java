@@ -38,66 +38,66 @@ import org.slf4j.LoggerFactory;
 
 public class MediatorServerDataProvider implements AutoCloseable {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MediatorServerDataProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MediatorServerDataProvider.class);
 
-	private final HtDatabaseClient dbClient;
-	private final DataObjectAcessor<Data> mediatorserverRW;
-	private final int REFRESH_INTERVAL = 60;
-	private final Map<String, Data> entries;
-	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-	private boolean isRunning;
+    private final HtDatabaseClient dbClient;
+    private final DataObjectAcessor<Data> mediatorserverRW;
+    private final int REFRESH_INTERVAL = 60;
+    private final Map<String, Data> entries;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private boolean isRunning;
 
-	public MediatorServerDataProvider(HostInfo[] hosts) throws Exception {
-		this(hosts, null, null);
-	}
+    public MediatorServerDataProvider(HostInfo[] hosts) throws Exception {
+        this(hosts, null, null);
+    }
 
-	public MediatorServerDataProvider(HostInfo[] hosts, String authUsername, String authPassword) throws Exception {
-		super();
-		LOG.info("Start {}", this.getClass().getName());
-		this.entries = new HashMap<>();
-		this.dbClient = new HtDatabaseClient(hosts, authUsername, authPassword);
-		this.mediatorserverRW = new DataObjectAcessor<>(dbClient, Entity.MediatorServer, Data.class);
-		this.scheduler.scheduleAtFixedRate(onTick, this.REFRESH_INTERVAL, this.REFRESH_INTERVAL, TimeUnit.SECONDS);
-	}
+    public MediatorServerDataProvider(HostInfo[] hosts, String authUsername, String authPassword) throws Exception {
+        super();
+        LOG.info("Start {}", this.getClass().getName());
+        this.entries = new HashMap<>();
+        this.dbClient = new HtDatabaseClient(hosts, authUsername, authPassword);
+        this.mediatorserverRW = new DataObjectAcessor<>(dbClient, Entity.MediatorServer, Data.class);
+        this.scheduler.scheduleAtFixedRate(onTick, this.REFRESH_INTERVAL, this.REFRESH_INTERVAL, TimeUnit.SECONDS);
+    }
 
-	private final Runnable onTick = new Runnable() {
+    private final Runnable onTick = new Runnable() {
 
-		@Override
-		public void run() {
-			isRunning = true;
-			runIt();
-			isRunning = false;
-		}
+        @Override
+        public void run() {
+            isRunning = true;
+            runIt();
+            isRunning = false;
+        }
 
-	};
+    };
 
-	private void runIt() {
-		SearchResult<Data> result = MediatorServerDataProvider.this.mediatorserverRW.doReadAll();
-		List<Data> data = result.getHits();
-		for (Data item : data) {
-			MediatorServerDataProvider.this.entries.put(item.getId(), item);
-		}
-	}
+    private void runIt() {
+        SearchResult<Data> result = MediatorServerDataProvider.this.mediatorserverRW.doReadAll();
+        List<Data> data = result.getHits();
+        for (Data item : data) {
+            MediatorServerDataProvider.this.entries.put(item.getId(), item);
+        }
+    }
 
-	/**
-	 * 
-	 * @param dbServerId
-	 * @return url or null if not exists
-	 */
-	public String getHostUrl(String dbServerId) {
-		Data info = this.entries.getOrDefault(dbServerId, null);
-		return info == null ? null : info.getUrl();
-	}
+    /**
+     * 
+     * @param dbServerId
+     * @return url or null if not exists
+     */
+    public String getHostUrl(String dbServerId) {
+        Data info = this.entries.getOrDefault(dbServerId, null);
+        return info == null ? null : info.getUrl();
+    }
 
-	public boolean triggerReloadSync() {
-		if (!isRunning) {
-			runIt();
-		}
-		return true;
-	}
+    public boolean triggerReloadSync() {
+        if (!isRunning) {
+            runIt();
+        }
+        return true;
+    }
 
-	@Override
-	public void close() throws Exception {
-		this.scheduler.shutdown();
-	}
+    @Override
+    public void close() throws Exception {
+        this.scheduler.shutdown();
+    }
 }

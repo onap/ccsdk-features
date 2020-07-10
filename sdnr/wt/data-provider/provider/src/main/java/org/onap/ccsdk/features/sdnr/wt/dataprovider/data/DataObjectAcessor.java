@@ -33,28 +33,29 @@ import org.slf4j.LoggerFactory;
 
 public class DataObjectAcessor<T extends DataObject> extends EsDataObjectReaderWriter<T> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DataObjectAcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataObjectAcessor.class);
 
-	public DataObjectAcessor(HtDatabaseClient dbClient, Entity entity, Class<T> clazz) throws ClassNotFoundException {
-		this(dbClient, entity, clazz, true);
-		LOG.info("Create {}", this.getClass().getName());
-	}
+    public DataObjectAcessor(HtDatabaseClient dbClient, Entity entity, Class<T> clazz) throws ClassNotFoundException {
+        this(dbClient, entity, clazz, true);
+        LOG.info("Create {}", this.getClass().getName());
+    }
 
-	public DataObjectAcessor(HtDatabaseClient dbClient, Entity entity, Class<T> clazz, boolean idSupported) throws ClassNotFoundException {
-		super(dbClient, entity, clazz);
-		if (idSupported) {
-			setEsIdAttributeName("_id");
-		}
-	}
+    public DataObjectAcessor(HtDatabaseClient dbClient, Entity entity, Class<T> clazz, boolean idSupported)
+            throws ClassNotFoundException {
+        super(dbClient, entity, clazz);
+        if (idSupported) {
+            setEsIdAttributeName("_id");
+        }
+    }
 
-	QueryResult<T> getData(EntityInput input) {
-		long page = QueryByFilter.getPage(input);
-		long pageSize = QueryByFilter.getPageSize(input);
+    QueryResult<T> getData(EntityInput input) {
+        long page = QueryByFilter.getPage(input);
+        long pageSize = QueryByFilter.getPageSize(input);
         LOG.info("Request: {}", this.getDataTypeName());
-		QueryBuilder query = QueryByFilter.fromFilter(input.getFilter()).from((page - 1) * pageSize).size(pageSize);
-		QueryByFilter.setSortOrder(query, input.getSortorder());
-		SearchResult<T> result = doReadAll(query,query.contains("range"));
-		return new QueryResult<>(page, pageSize, result);
-	}
+        QueryBuilder query = QueryByFilter.fromFilter(input.getFilter()).from((page - 1) * pageSize).size(pageSize);
+        QueryByFilter.setSortOrder(query, input.getSortorder());
+        SearchResult<T> result = doReadAll(query, query.contains("range"));
+        return new QueryResult<>(page, pageSize, result);
+    }
 
 }

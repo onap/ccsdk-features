@@ -31,56 +31,37 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
  * 
  * @author jack
  *
- *{
- *    "node": "ddd",
- *    "filter": [
- *    {
- *        "definition": {
- *            "object-id-ref": "",
- *            "problem": ""
- *        },
- *        "description": "",
- *        "start": "2019-11-26T15:37+00:00",
- *        "end": "2019-11-26T23:37+00:00"
- *    }],
- *    "active": false
- *}
- *  =>
- *{
- *    "id": "sim1"
- *    "node-id": "sim1",
- *    "description": "",
- *    "start": "2020-01-28T12:00:17.6Z",
- *    "end": "2020-01-28T12:00:17.6Z",
- *    "active": false,
- *    "object-id-ref": "",
- *    "problem": ""
+ *         { "node": "ddd", "filter": [ { "definition": { "object-id-ref": "", "problem": "" }, "description": "",
+ *         "start": "2019-11-26T15:37+00:00", "end": "2019-11-26T23:37+00:00" }], "active": false } => { "id": "sim1"
+ *         "node-id": "sim1", "description": "", "start": "2020-01-28T12:00:17.6Z", "end": "2020-01-28T12:00:17.6Z",
+ *         "active": false, "object-id-ref": "", "problem": ""
  *
  */
 public class FrankfurtMaintenanceConverter extends BaseSearchHitConverter {
 
-	public FrankfurtMaintenanceConverter() {
-		super(ComponentName.MAINTENANCE);
-	}
+    public FrankfurtMaintenanceConverter() {
+        super(ComponentName.MAINTENANCE);
+    }
 
-	@Override
-	public SearchHit convert(SearchHit source) {
+    @Override
+    public SearchHit convert(SearchHit source) {
 
-		JSONObject src = source.getSource();
-		JSONObject data = new JSONObject();
-		data.put("id", src.getString("node"));
-		data.put("node-id", src.getString("node"));
-		data.put("active", src.getBoolean("active"));
-		JSONObject filter = null;
-		if (src.has("filter")) {
-			filter = src.getJSONArray("filter").length() > 0 ? src.getJSONArray("filter").getJSONObject(0) : null;
-		}
-		data.put("start", filter != null ? filter.getString("start") : "");
-		data.put("end", filter != null ? filter.getString("end") : "");
-		data.put("description", filter != null ? filter.getString("description") : "");
-		JSONObject definition = filter!=null?filter.has("definition")?filter.getJSONObject("definition"):null:null;
-		data.put("problem", definition!=null?definition.getString("problem"):"");
-		data.put("object-id-ref", definition!=null?definition.getString("object-id-ref"):"");
-		return this.getSearchHit(source.getIndex(), source.getType(), source.getId(), data);
-	}
+        JSONObject src = source.getSource();
+        JSONObject data = new JSONObject();
+        data.put("id", src.getString("node"));
+        data.put("node-id", src.getString("node"));
+        data.put("active", src.getBoolean("active"));
+        JSONObject filter = null;
+        if (src.has("filter")) {
+            filter = src.getJSONArray("filter").length() > 0 ? src.getJSONArray("filter").getJSONObject(0) : null;
+        }
+        data.put("start", filter != null ? filter.getString("start") : "");
+        data.put("end", filter != null ? filter.getString("end") : "");
+        data.put("description", filter != null ? filter.getString("description") : "");
+        JSONObject definition =
+                filter != null ? filter.has("definition") ? filter.getJSONObject("definition") : null : null;
+        data.put("problem", definition != null ? definition.getString("problem") : "");
+        data.put("object-id-ref", definition != null ? definition.getString("object-id-ref") : "");
+        return this.getSearchHit(source.getIndex(), source.getType(), source.getId(), data);
+    }
 }

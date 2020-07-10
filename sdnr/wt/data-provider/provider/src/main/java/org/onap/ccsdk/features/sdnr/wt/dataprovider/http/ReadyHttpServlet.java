@@ -33,35 +33,34 @@ import org.slf4j.LoggerFactory;
 
 public class ReadyHttpServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(ReadyHttpServlet.class);
-	private static boolean status;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private static final Logger LOG = LoggerFactory.getLogger(ReadyHttpServlet.class);
+    private static boolean status;
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	
-		if(isReady()) {
-			resp.setStatus(HttpServletResponse.SC_OK);
-		}
-		else {
-		
-			try {
-				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-			}catch(IOException | IllegalStateException e) {
-				LOG.warn("unable to write out 404 res not found: {}",e);
-			}
-		}
-	}
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-	private static boolean isReady() {
-		return status;
-	}
+        if (isReady()) {
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } else {
 
-	public static void setStatus(boolean s) {
-		status = s;
-		LOG.info("status is set to ready: {}",status);
-	}
+            try {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            } catch (IOException | IllegalStateException e) {
+                LOG.warn("unable to write out 404 res not found: {}", e);
+            }
+        }
+    }
+
+    private static boolean isReady() {
+        return status;
+    }
+
+    public static void setStatus(boolean s) {
+        status = s;
+        LOG.info("status is set to ready: {}", status);
+    }
 }

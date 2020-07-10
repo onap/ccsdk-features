@@ -39,14 +39,14 @@ public class TestConfiguration {
         System.out.println("Configuration file " + CONFIGURATIONTESTFILE);
 
         File testConfigurationFile = ResourceFileLoader.getFile(this, CONFIGURATIONTESTFILE);
-        System.out.println("Located at: "+testConfigurationFile.getAbsolutePath());
+        System.out.println("Located at: " + testConfigurationFile.getAbsolutePath());
 
         ConfigurationFileRepresentation configuration = new ConfigurationFileRepresentation(testConfigurationFile);
 
         System.out.println("Configuration: " + configuration.getSection(EsConfig.SECTION_MARKER_ES));
         EsConfig esConfig1 = new EsConfig(configuration);
 
-        System.out.println("ES config getArchiveLifetimeSeconds: "+esConfig1.getArchiveLifetimeSeconds());
+        System.out.println("ES config getArchiveLifetimeSeconds: " + esConfig1.getArchiveLifetimeSeconds());
 
 
         // fail("Not yet implemented");

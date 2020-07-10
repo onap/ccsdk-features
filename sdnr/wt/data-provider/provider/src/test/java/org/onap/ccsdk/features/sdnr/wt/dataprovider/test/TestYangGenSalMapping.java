@@ -80,9 +80,10 @@ public class TestYangGenSalMapping {
         loginPasswordBuilder.setPassword("myTestPassword");
         netconfNodeBuilder.setCredentials(loginPasswordBuilder.build());
 
-        OdlHelloMessageCapabilitiesBuilder odlHelloMessageCapabilitiesBuilder = new OdlHelloMessageCapabilitiesBuilder();
+        OdlHelloMessageCapabilitiesBuilder odlHelloMessageCapabilitiesBuilder =
+                new OdlHelloMessageCapabilitiesBuilder();
         List<Uri> uriList = new ArrayList<>();
-        uriList.add( new Uri("test.uri") );
+        uriList.add(new Uri("test.uri"));
         odlHelloMessageCapabilitiesBuilder.setCapability(uriList);
         netconfNodeBuilder.setOdlHelloMessageCapabilities(odlHelloMessageCapabilitiesBuilder.build());
 
@@ -98,7 +99,7 @@ public class TestYangGenSalMapping {
         NetconfNode generatedNode = mapper.readValue(res.getBytes(), NetconfNode.class);
         out(generatedNode.toString()); // Print it with specified indentation
         // Compare result
-        out("Equal?  "+netconfNode.equals(generatedNode));
+        out("Equal?  " + netconfNode.equals(generatedNode));
     }
 
     static class TestDataObjectBuilder implements Builder<TestDataObject> {
@@ -118,20 +119,22 @@ public class TestYangGenSalMapping {
     }
 
     @Test
-    public void test2() throws ClassNotFoundException    {
+    public void test2() throws ClassNotFoundException {
 
-        int databasePort = Integer.valueOf(System.getProperty("databaseport")!=null?System.getProperty("databaseport"):"49200");
-        System.out.println("DB Port: "+databasePort);
+        int databasePort = Integer
+                .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200");
+        System.out.println("DB Port: " + databasePort);
 
-        HostInfo[] HOSTINFOS = new HostInfo[] { new HostInfo("localhost", databasePort ,Protocol.HTTP)};
+        HostInfo[] HOSTINFOS = new HostInfo[] {new HostInfo("localhost", databasePort, Protocol.HTTP)};
         DatabaseClient db = new HtDatabaseClient(HOSTINFOS);
 
         EsDataObjectReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data> dataRW =
-            new EsDataObjectReaderWriter<>(db, "inventorytest", org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data.class);
+                new EsDataObjectReaderWriter<>(db, "inventorytest",
+                        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data.class);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data d1;
         d1 = getInventoryDataBuilder("MyDescription", 23L).build();
-        String id = dataRW.write(d1,null);
+        String id = dataRW.write(d1, null);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data d2;
         d2 = dataRW.read(id);
@@ -141,7 +144,7 @@ public class TestYangGenSalMapping {
     }
 
     @Test
-    public void test3() throws IOException    {
+    public void test3() throws IOException {
 
         PerformanceDataBuilder performanceBuilder = new PerformanceDataBuilder();
         performanceBuilder.setEs(99);
@@ -190,59 +193,29 @@ public class TestYangGenSalMapping {
 
     @Test
     public void test5() throws IOException {
-        String jsonString = "{\n" +
-                "    \"time-stamp\": \"2017-03-01T06:45:00.0Z\",\n" +
-                "    \"node-name\": \"Sim2230\",\n" +
-                "    \"uuid-interface\": \"LP-MWPS-TTP-RADIO\",\n" +
-                "    \"scanner-id\": \"PM_RADIO_15M_14\",\n" +
-                "    \"layer-protocol-name\": \"MWPS\",\n" +
-                "    \"granularity-period\": \"Period15Min\",\n" +
-                "    \"radio-signal-id\": \"Test8\",\n" +
-                "    \"suspect-interval-flag\": false,\n" +
-                "    \"performance-data\": {\n" +
-                "        \"time4096-states-l\": -1,\n" +
-                "        \"time16-states-s\": -1,\n" +
-                "        \"tx-level-max\": 3,\n" +
-                "        \"snir-max\": -99,\n" +
-                "        \"time16-states\": 0,\n" +
-                "        \"time64-states\": 900,\n" +
-                "        \"unavailability\": 0,\n" +
-                "        \"time8192-states-l\": -1,\n" +
-                "        \"time512-states\": -1,\n" +
-                "        \"xpd-min\": -99,\n" +
-                "        \"xpd-avg\": -99,\n" +
-                "        \"tx-level-avg\": 3,\n" +
-                "        \"tx-level-min\": 3,\n" +
-                "        \"rf-temp-min\": -99,\n" +
-                "        \"rf-temp-avg\": -99,\n" +
-                "        \"snir-avg\": -99,\n" +
-                "        \"snir-min\": -99,\n" +
-                "        \"time-period\": 900,\n" +
-                "        \"time2-states\": 0,\n" +
-                "        \"time4-states\": 0,\n" +
-                "        \"time8-states\": -1,\n" +
-                "        \"ses\": 0,\n" +
-                "        \"time2048-states-l\": -1,\n" +
-                "        \"time2048-states\": -1,\n" +
-                "        \"xpd-max\": -99,\n" +
-                "        \"rf-temp-max\": -99,\n" +
-                "        \"time8192-states\": -1,\n" +
-                "        \"time128-states\": -1,\n" +
-                "        \"time256-states\": -1,\n" +
-                "        \"rx-level-min\": -44,\n" +
-                "        \"rx-level-avg\": -44,\n" +
-                "        \"time1024-states-l\": -1,\n" +
-                "        \"es\": 0,\n" +
-                "        \"cses\": 0,\n" +
-                "        \"time4-states-s\": 0,\n" +
-                "        \"time1024-states\": -1,\n" +
-                "        \"time512-states-l\": -1,\n" +
-                "        \"time4096-states\": -1,\n" +
-                "        \"rx-level-max\": -45,\n" +
-                "        \"defect-blocks-sum\": -1,\n" +
-                "        \"time32-states\": -1\n" +
-                "    }\n" +
-                "}";
+        String jsonString = "{\n" + "    \"time-stamp\": \"2017-03-01T06:45:00.0Z\",\n"
+                + "    \"node-name\": \"Sim2230\",\n" + "    \"uuid-interface\": \"LP-MWPS-TTP-RADIO\",\n"
+                + "    \"scanner-id\": \"PM_RADIO_15M_14\",\n" + "    \"layer-protocol-name\": \"MWPS\",\n"
+                + "    \"granularity-period\": \"Period15Min\",\n" + "    \"radio-signal-id\": \"Test8\",\n"
+                + "    \"suspect-interval-flag\": false,\n" + "    \"performance-data\": {\n"
+                + "        \"time4096-states-l\": -1,\n" + "        \"time16-states-s\": -1,\n"
+                + "        \"tx-level-max\": 3,\n" + "        \"snir-max\": -99,\n" + "        \"time16-states\": 0,\n"
+                + "        \"time64-states\": 900,\n" + "        \"unavailability\": 0,\n"
+                + "        \"time8192-states-l\": -1,\n" + "        \"time512-states\": -1,\n"
+                + "        \"xpd-min\": -99,\n" + "        \"xpd-avg\": -99,\n" + "        \"tx-level-avg\": 3,\n"
+                + "        \"tx-level-min\": 3,\n" + "        \"rf-temp-min\": -99,\n"
+                + "        \"rf-temp-avg\": -99,\n" + "        \"snir-avg\": -99,\n" + "        \"snir-min\": -99,\n"
+                + "        \"time-period\": 900,\n" + "        \"time2-states\": 0,\n"
+                + "        \"time4-states\": 0,\n" + "        \"time8-states\": -1,\n" + "        \"ses\": 0,\n"
+                + "        \"time2048-states-l\": -1,\n" + "        \"time2048-states\": -1,\n"
+                + "        \"xpd-max\": -99,\n" + "        \"rf-temp-max\": -99,\n"
+                + "        \"time8192-states\": -1,\n" + "        \"time128-states\": -1,\n"
+                + "        \"time256-states\": -1,\n" + "        \"rx-level-min\": -44,\n"
+                + "        \"rx-level-avg\": -44,\n" + "        \"time1024-states-l\": -1,\n" + "        \"es\": 0,\n"
+                + "        \"cses\": 0,\n" + "        \"time4-states-s\": 0,\n" + "        \"time1024-states\": -1,\n"
+                + "        \"time512-states-l\": -1,\n" + "        \"time4096-states\": -1,\n"
+                + "        \"rx-level-max\": -45,\n" + "        \"defect-blocks-sum\": -1,\n"
+                + "        \"time32-states\": -1\n" + "    }\n" + "}";
 
         // Map to JSON String to Object
         Data generatedNode = mapper.readValue(jsonString.getBytes(), Data.class);
@@ -254,11 +227,12 @@ public class TestYangGenSalMapping {
     @Test
     public void test6() throws IOException, ClassNotFoundException {
         out(method());
-        HtDatabaseClient dbClient = new HtDatabaseClient(new HostInfo[] { new HostInfo("sdnrdb", 9200, Protocol.HTTP) });
+        HtDatabaseClient dbClient = new HtDatabaseClient(new HostInfo[] {new HostInfo("sdnrdb", 9200, Protocol.HTTP)});
         String PMDATA15M_TYPE = "historicalperformance15min";
 
         EsDataObjectReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> pm15mRW =
-                new EsDataObjectReaderWriter<>(dbClient, PMDATA15M_TYPE, org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data.class);
+                new EsDataObjectReaderWriter<>(dbClient, PMDATA15M_TYPE,
+                        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data.class);
         pm15mRW.setEsIdAttributeName("_nodeName");
 
         ReadPmdata15mListInputBuilder inputBuilder = new ReadPmdata15mListInputBuilder();
@@ -277,12 +251,13 @@ public class TestYangGenSalMapping {
         QueryBuilder query = fromFilter(input.getFilter()).from((page - 1) * pageSize).size(pageSize);
         setSortOrder(query, input.getSortorder());
 
-        SearchResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> result=pm15mRW.doReadAll(query);
+        SearchResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> result =
+                pm15mRW.doReadAll(query);
 
-        out("Found: "+result.getHits().size());
-        int t=0;
+        out("Found: " + result.getHits().size());
+        int t = 0;
         for (Data hit : result.getHits()) {
-            out("Hit "+t+++":"+hit);
+            out("Hit " + t++ + ":" + hit);
         }
         setPagination(outputBuilder, page, pageSize, result.getTotal());
         outputBuilder.setData(result.getHits());
@@ -292,19 +267,20 @@ public class TestYangGenSalMapping {
     public void test7() throws IOException, ClassNotFoundException {
         out(method());
         String ESDATATYPE_MEDIATORSERVER = Entity.MediatorServer.getName();
-        HtDatabaseClient dbClient = new HtDatabaseClient(new HostInfo[] { new HostInfo("sdnrdb", 9200, Protocol.HTTP) });
+        HtDatabaseClient dbClient = new HtDatabaseClient(new HostInfo[] {new HostInfo("sdnrdb", 9200, Protocol.HTTP)});
         EsDataObjectReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data> mediatorserverRW;
 
         mediatorserverRW = new EsDataObjectReaderWriter<>(dbClient, ESDATATYPE_MEDIATORSERVER,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data.class)
-                .setWriteInterface(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.MediatorServerEntity.class)
-                .setEsIdAttributeName("_id");
+                        .setWriteInterface(
+                                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.MediatorServerEntity.class)
+                        .setEsIdAttributeName("_id");
 
         CreateMediatorServerInputBuilder inputBuilder = new CreateMediatorServerInputBuilder();
         inputBuilder.setName("Hans");
         inputBuilder.setUrl("MyGreatUrl");
 
-        String id = mediatorserverRW.write(inputBuilder.build(),"testid");
+        String id = mediatorserverRW.write(inputBuilder.build(), "testid");
         System.out.println(id);
 
     }
@@ -314,15 +290,15 @@ public class TestYangGenSalMapping {
         out(method());
         String input;
         input = "id-dd-dd";
-        System.out.println("Map " + input + " to "+YangToolsMapper.toCamelCaseAttributeName(input));
+        System.out.println("Map " + input + " to " + YangToolsMapper.toCamelCaseAttributeName(input));
         input = "idDdGg";
-        System.out.println("Map " + input + " to "+YangToolsMapper.toCamelCaseAttributeName(input));
+        System.out.println("Map " + input + " to " + YangToolsMapper.toCamelCaseAttributeName(input));
         input = "_idDdGg";
-        System.out.println("Map " + input + " to "+YangToolsMapper.toCamelCaseAttributeName(input));
+        System.out.println("Map " + input + " to " + YangToolsMapper.toCamelCaseAttributeName(input));
         input = "--ff--gfg";
-        System.out.println("Map " + input + " to "+YangToolsMapper.toCamelCaseAttributeName(input));
+        System.out.println("Map " + input + " to " + YangToolsMapper.toCamelCaseAttributeName(input));
         input = "";
-        System.out.println("Map " + input + " to "+YangToolsMapper.toCamelCaseAttributeName(input));
+        System.out.println("Map " + input + " to " + YangToolsMapper.toCamelCaseAttributeName(input));
     }
 
     /* ---------------------------------
@@ -333,7 +309,8 @@ public class TestYangGenSalMapping {
         return nameofCurrMethod;
     }
 
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.DataBuilder getInventoryDataBuilder(String description, long treeLevel) {
+    private org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.DataBuilder getInventoryDataBuilder(
+            String description, long treeLevel) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.DataBuilder dataBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.DataBuilder();
         dataBuilder.setDescription(description);
@@ -371,10 +348,9 @@ public class TestYangGenSalMapping {
         if (filters == null || filters.size() == 0) {
             return QueryBuilders.matchAllQuery();
 
-        } else if(filters.size()==1){
+        } else if (filters.size() == 1) {
             return QueryBuilders.matchQuery(filters.get(0).getProperty(), filters.get(0).getFiltervalue());
-        }
-        else {
+        } else {
             BoolQueryBuilder query = new BoolQueryBuilder();
             for (Filter fi : filters) {
                 query.must(QueryBuilders.matchQuery((prefix != null ? prefix : "") + fi.getProperty(),
@@ -384,6 +360,7 @@ public class TestYangGenSalMapping {
         }
 
     }
+
     private static QueryBuilder setSortOrder(QueryBuilder query, @Nullable List<Sortorder> sortorder) {
         return setSortOrder(query, sortorder, "");
     }
@@ -401,9 +378,12 @@ public class TestYangGenSalMapping {
 
     }
 
-    private static void setPagination(ReadPmdata15mListOutputBuilder outputBuilder, long page, long pageSize, long totalSize) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Pagination value = new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.PaginationBuilder()
-                .setPage(BigInteger.valueOf(page)).setSize(pageSize).setTotal(BigInteger.valueOf(totalSize)).build();
+    private static void setPagination(ReadPmdata15mListOutputBuilder outputBuilder, long page, long pageSize,
+            long totalSize) {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Pagination value =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.PaginationBuilder()
+                        .setPage(BigInteger.valueOf(page)).setSize(pageSize).setTotal(BigInteger.valueOf(totalSize))
+                        .build();
         outputBuilder.setPagination(value);
     }
 

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.StatusChangedHandler.StatusKey;
@@ -31,7 +31,7 @@ public interface IEntityDataProvider {
     public void setReadyStatus(boolean status);
 
     /** Set some static status information after startup */
-    public void setStatus(StatusKey key,String value);
+    public void setStatus(StatusKey key, String value);
 
     /** Database configuration information **/
     public IEsConfig getEsConfig();

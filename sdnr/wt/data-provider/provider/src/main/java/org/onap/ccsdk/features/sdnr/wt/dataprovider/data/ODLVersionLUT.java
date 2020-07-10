@@ -23,41 +23,42 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
 
 public class ODLVersionLUT {
 
-	public static String getONAPReleaseName(String onapCCSDKVersion,String def) {
-		if(onapCCSDKVersion==null) {
-			return def;
-		}
-		if(onapCCSDKVersion.startsWith("1.6.")) {
-			return "ONAP Guillin";
-		}
-		if(onapCCSDKVersion.startsWith("1.5.")) {
-			return "ONAP Frankfurt";
-		}
-		if(onapCCSDKVersion.startsWith("1.4.")) {
-			return "ONAP El Alto";
-		}
-		if(onapCCSDKVersion.startsWith("1.3.")) {
-			return "ONAP El Alto";
-		}
-		return def;
-	}
-	public static String getOdlVersion(String onapCCSDKVersion,String def) {
-		
-		if(onapCCSDKVersion==null) {
-			return def;
-		}
-		if(onapCCSDKVersion.startsWith("1.6.")) {
-			return "sodium-SRX (0.11.X)";
-		}
-		if(onapCCSDKVersion.startsWith("1.5.")) {
-			return "neon-SR1 (0.10.1)";
-		}
-		if(onapCCSDKVersion.startsWith("1.4.")) {
-			return "neon-SR1 (0.10.1)";
-		}
-		if(onapCCSDKVersion.startsWith("1.3.")) {
-			return "fluorine-SR2 (0.9.2)";
-		}
-		return def;
-	}
+    public static String getONAPReleaseName(String onapCCSDKVersion, String def) {
+        if (onapCCSDKVersion == null) {
+            return def;
+        }
+        if (onapCCSDKVersion.startsWith("1.6.")) {
+            return "ONAP Guillin";
+        }
+        if (onapCCSDKVersion.startsWith("1.5.")) {
+            return "ONAP Frankfurt";
+        }
+        if (onapCCSDKVersion.startsWith("1.4.")) {
+            return "ONAP El Alto";
+        }
+        if (onapCCSDKVersion.startsWith("1.3.")) {
+            return "ONAP El Alto";
+        }
+        return def;
+    }
+
+    public static String getOdlVersion(String onapCCSDKVersion, String def) {
+
+        if (onapCCSDKVersion == null) {
+            return def;
+        }
+        if (onapCCSDKVersion.startsWith("1.6.")) {
+            return "sodium-SRX (0.11.X)";
+        }
+        if (onapCCSDKVersion.startsWith("1.5.")) {
+            return "neon-SR1 (0.10.1)";
+        }
+        if (onapCCSDKVersion.startsWith("1.4.")) {
+            return "neon-SR1 (0.10.1)";
+        }
+        if (onapCCSDKVersion.startsWith("1.3.")) {
+            return "fluorine-SR2 (0.9.2)";
+        }
+        return def;
+    }
 }

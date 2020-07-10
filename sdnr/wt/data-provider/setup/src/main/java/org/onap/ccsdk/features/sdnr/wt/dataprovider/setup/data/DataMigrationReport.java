@@ -26,29 +26,35 @@ import java.util.List;
 
 public class DataMigrationReport {
 
-	private boolean completed;
-	private final List<String> logs;
-	private final List<String> errors;
-	public void setCompleted(boolean s) {
-		this.completed = s;
-	}
-	public boolean completed() {
-		return this.completed;
-	}
-	public void log(String format,Object ...params) {
-		this.logs.add(String.format(format, params));
-	}
-	public void error(String format,Object ...params) {
-		this.errors.add(String.format(format, params));
-	}
-	public DataMigrationReport() {
-		this.completed = false;
-		this.logs = new ArrayList<>();
-		this.errors = new  ArrayList<>();
-	}
-	@Override
-	public String toString() {
-		return "DataMigrationReport [completed=" + completed + ", logs=" + logs + ", errors=" + errors + "]";
-	}
+    private boolean completed;
+    private final List<String> logs;
+    private final List<String> errors;
+
+    public void setCompleted(boolean s) {
+        this.completed = s;
+    }
+
+    public boolean completed() {
+        return this.completed;
+    }
+
+    public void log(String format, Object... params) {
+        this.logs.add(String.format(format, params));
+    }
+
+    public void error(String format, Object... params) {
+        this.errors.add(String.format(format, params));
+    }
+
+    public DataMigrationReport() {
+        this.completed = false;
+        this.logs = new ArrayList<>();
+        this.errors = new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        return "DataMigrationReport [completed=" + completed + ", logs=" + logs + ", errors=" + errors + "]";
+    }
 
 }

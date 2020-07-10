@@ -29,27 +29,26 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 
 public class QueryResult<T> {
 
-	private SearchResult<T> result;
-	private PaginationOutputG pagination;
+    private SearchResult<T> result;
+    private PaginationOutputG pagination;
 
-	public QueryResult(long page, long pageSize, SearchResult<T> result) {
-		this.result = result;
+    public QueryResult(long page, long pageSize, SearchResult<T> result) {
+        this.result = result;
 
-		PaginationBuilder x = new PaginationBuilder();
-		x.setPage(BigInteger.valueOf(page));
-		x.setSize(pageSize);
-		x.setTotal(BigInteger.valueOf(result.getTotal()));
-		pagination = x.build();
-	}
+        PaginationBuilder x = new PaginationBuilder();
+        x.setPage(BigInteger.valueOf(page));
+        x.setSize(pageSize);
+        x.setTotal(BigInteger.valueOf(result.getTotal()));
+        pagination = x.build();
+    }
 
-	public SearchResult<T> getResult() {
-		return result;
-	}
+    public SearchResult<T> getResult() {
+        return result;
+    }
 
-	PaginationOutputG getPagination() {
-		return pagination;
-	}
-
+    PaginationOutputG getPagination() {
+        return pagination;
+    }
 
 
 

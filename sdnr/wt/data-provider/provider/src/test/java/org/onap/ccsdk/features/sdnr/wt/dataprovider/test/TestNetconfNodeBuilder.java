@@ -44,11 +44,11 @@ public class TestNetconfNodeBuilder {
         System.out.println(netconfNode);
 
         Credentials credentials = netconfNode.getCredentials();
-        System.out.println("Class: "+credentials.getClass()+"\nContent: "+credentials);
+        System.out.println("Class: " + credentials.getClass() + "\nContent: " + credentials);
 
         if (credentials instanceof LoginPassword) {
-            LoginPassword loginPassword = (LoginPassword)credentials;
-            System.out.println("User: "+loginPassword.getUsername()+" Password"+loginPassword.getPassword());
+            LoginPassword loginPassword = (LoginPassword) credentials;
+            System.out.println("User: " + loginPassword.getUsername() + " Password" + loginPassword.getPassword());
         } else {
             System.out.println("Not expected class");
         }

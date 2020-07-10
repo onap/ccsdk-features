@@ -45,304 +45,312 @@ import org.slf4j.LoggerFactory;
 
 public class AboutHttpServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(AboutHttpServlet.class);
-	private static final String UNKNOWN = "unknown";
-	private static final String METAINF_MAVEN = "/META-INF/maven/";
-	private static final String EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE = "unable to read inner pom file: {}";
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private static final Logger LOG = LoggerFactory.getLogger(AboutHttpServlet.class);
+    private static final String UNKNOWN = "unknown";
+    private static final String METAINF_MAVEN = "/META-INF/maven/";
+    private static final String EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE = "unable to read inner pom file: {}";
 
-	private static final String URI_PRE = "/about";
-	private static final String RES_BASEPATH = "about/";
+    private static final String URI_PRE = "/about";
+    private static final String RES_BASEPATH = "about/";
 
-	private static final String PLACEHOLDER_ONAP_RELEASENAME = "{release-name}";
-	private static final String PLACEHOLDER_ONAP_RELEASEVERSION = "{release-version}";
-	private static final String PLACEHOLDER_ODL_RELEASENAME = "{odl-version}";
-	private static final String PLACEHOLDER_BUILD_TIMESTAMP = "{build-time}";
-	private static final String PLACEHOLDER_ODLUX_REVISION = "{odlux-revision}";
-	private static final String PLACEHOLDER_PACKAGE_GITHASH = "{package-githash}";
-	private static final String PLACEHOLDER_PACAKGE_VERSION = "{package-version}";
-	private static final String PLACEHOLDER_CCSDK_VERSION = "{ccsdk-version}";
-	private static final String PLACEHOLDER_CLUSTER_SIZE = "{cluster-size}";
-	private static final String PLACEHOLDER_MDSAL_VERSION = "{mdsal-version}";
-	private static final String PLACEHOLDER_YANGTOOLS_VERSION = "{yangtools-version}";
-	private static final String PLACEHOLDER_KARAF_INFO = "{karaf-info}";
-	private static final String README_FILE = "README.md";
+    private static final String PLACEHOLDER_ONAP_RELEASENAME = "{release-name}";
+    private static final String PLACEHOLDER_ONAP_RELEASEVERSION = "{release-version}";
+    private static final String PLACEHOLDER_ODL_RELEASENAME = "{odl-version}";
+    private static final String PLACEHOLDER_BUILD_TIMESTAMP = "{build-time}";
+    private static final String PLACEHOLDER_ODLUX_REVISION = "{odlux-revision}";
+    private static final String PLACEHOLDER_PACKAGE_GITHASH = "{package-githash}";
+    private static final String PLACEHOLDER_PACAKGE_VERSION = "{package-version}";
+    private static final String PLACEHOLDER_CCSDK_VERSION = "{ccsdk-version}";
+    private static final String PLACEHOLDER_CLUSTER_SIZE = "{cluster-size}";
+    private static final String PLACEHOLDER_MDSAL_VERSION = "{mdsal-version}";
+    private static final String PLACEHOLDER_YANGTOOLS_VERSION = "{yangtools-version}";
+    private static final String PLACEHOLDER_KARAF_INFO = "{karaf-info}";
+    private static final String README_FILE = "README.md";
 
-	private final String groupId = "org.onap.ccsdk.features.sdnr.wt";
-	private final String artifactId = "sdnr-wt-data-provider-provider";
+    private final String groupId = "org.onap.ccsdk.features.sdnr.wt";
+    private final String artifactId = "sdnr-wt-data-provider-provider";
 
-	private final Map<String, String> data;
-	private final String readmeContent;
+    private final Map<String, String> data;
+    private final String readmeContent;
 
-	public AboutHttpServlet() {
+    public AboutHttpServlet() {
 
-		this.data = new HashMap<>();
-		this.collectStaticData();
-		this.readmeContent = this.render(this.getResourceFileContent(README_FILE));
-	}
+        this.data = new HashMap<>();
+        this.collectStaticData();
+        this.readmeContent = this.render(this.getResourceFileContent(README_FILE));
+    }
 
-	/**
-	 * collect static versioning data 
-	 */
-	private void collectStaticData() {
-		PomPropertiesFile props = this.getPomProperties();
-		final String ccsdkVersion = this.getPomParentVersion();
-		this.data.put(PLACEHOLDER_ONAP_RELEASENAME, ODLVersionLUT.getONAPReleaseName(ccsdkVersion, UNKNOWN));
-		this.data.put(PLACEHOLDER_ODL_RELEASENAME, ODLVersionLUT.getOdlVersion(ccsdkVersion, UNKNOWN));
-		this.data.put(PLACEHOLDER_BUILD_TIMESTAMP, props != null ? props.getBuildDate().toString() : "");
-		this.data.put(PLACEHOLDER_ODLUX_REVISION, this.getPomProperty("odlux.buildno"));
-		this.data.put(PLACEHOLDER_PACAKGE_VERSION, this.getManifestValue("Bundle-Version"));
-		this.data.put(PLACEHOLDER_CCSDK_VERSION, ccsdkVersion);
-		this.data.put(PLACEHOLDER_ONAP_RELEASEVERSION, "1.8.1-SNAPSHOT");
-		this.data.put(PLACEHOLDER_MDSAL_VERSION, SystemInfo.getMdSalVersion(UNKNOWN));
-		this.data.put(PLACEHOLDER_YANGTOOLS_VERSION, SystemInfo.getYangToolsVersion(UNKNOWN));
-		this.data.put(PLACEHOLDER_PACKAGE_GITHASH, this.getGitHash(UNKNOWN));
-	}
+    /**
+     * collect static versioning data
+     */
+    private void collectStaticData() {
+        PomPropertiesFile props = this.getPomProperties();
+        final String ccsdkVersion = this.getPomParentVersion();
+        this.data.put(PLACEHOLDER_ONAP_RELEASENAME, ODLVersionLUT.getONAPReleaseName(ccsdkVersion, UNKNOWN));
+        this.data.put(PLACEHOLDER_ODL_RELEASENAME, ODLVersionLUT.getOdlVersion(ccsdkVersion, UNKNOWN));
+        this.data.put(PLACEHOLDER_BUILD_TIMESTAMP, props != null ? props.getBuildDate().toString() : "");
+        this.data.put(PLACEHOLDER_ODLUX_REVISION, this.getPomProperty("odlux.buildno"));
+        this.data.put(PLACEHOLDER_PACAKGE_VERSION, this.getManifestValue("Bundle-Version"));
+        this.data.put(PLACEHOLDER_CCSDK_VERSION, ccsdkVersion);
+        this.data.put(PLACEHOLDER_ONAP_RELEASEVERSION, "1.8.1-SNAPSHOT");
+        this.data.put(PLACEHOLDER_MDSAL_VERSION, SystemInfo.getMdSalVersion(UNKNOWN));
+        this.data.put(PLACEHOLDER_YANGTOOLS_VERSION, SystemInfo.getYangToolsVersion(UNKNOWN));
+        this.data.put(PLACEHOLDER_PACKAGE_GITHASH, this.getGitHash(UNKNOWN));
+    }
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		String uri = req.getRequestURI().substring(URI_PRE.length());
-		LOG.debug("request for {}", uri);
-		if (uri.length() <= 0 || uri.equals("/")) {
-			// collect data
-			this.collectData();
-			// render readme
-			String content = this.render();
-			byte[] output = content != null ? content.getBytes() : new byte[0];
-			// output
-			resp.setStatus(HttpServletResponse.SC_OK);
-			resp.setContentLength(output.length);
-			resp.setContentType("text/plain");
-			ServletOutputStream os = null;
-			try{
-				os = resp.getOutputStream();
-				os.write(output);
-			}
-			catch(IOException e) {
-				LOG.warn("problem writing response for {}: {}",uri,e);
-			}
-			finally {
-				if(os!=null) {
-					try{
-						os.close();
-					}
-					catch(IOException e) {
-						LOG.warn("problem closing response stream: {}",e);
-					}
-				}
-			}
+        String uri = req.getRequestURI().substring(URI_PRE.length());
+        LOG.debug("request for {}", uri);
+        if (uri.length() <= 0 || uri.equals("/")) {
+            // collect data
+            this.collectData();
+            // render readme
+            String content = this.render();
+            byte[] output = content != null ? content.getBytes() : new byte[0];
+            // output
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setContentLength(output.length);
+            resp.setContentType("text/plain");
+            ServletOutputStream os = null;
+            try {
+                os = resp.getOutputStream();
+                os.write(output);
+            } catch (IOException e) {
+                LOG.warn("problem writing response for {}: {}", uri, e);
+            } finally {
+                if (os != null) {
+                    try {
+                        os.close();
+                    } catch (IOException e) {
+                        LOG.warn("problem closing response stream: {}", e);
+                    }
+                }
+            }
 
-		} else {
-			this.doGetFile(uri, resp);
-		}
-	}
+        } else {
+            this.doGetFile(uri, resp);
+        }
+    }
 
-	/**
-	 * load git.commit.id from jar /META-INF/git.properties
-	 * 
-	 * @param def
-	 */
-	private String getGitHash(String def) {
-		String content = Resources.getFileContent(AboutHttpServlet.class, "/META-INF/git.properties");
-		if (content == null) {
-			return def;
-		}
-		String lines[] = content.split("\n");
-		for (String line : lines) {
-			if (line.startsWith("git.commit.id")) {
-				def = line.substring("git.commit.id=".length());
-				break;
-			}
-		}
-		return def;
-	}
+    /**
+     * load git.commit.id from jar /META-INF/git.properties
+     * 
+     * @param def
+     */
+    private String getGitHash(String def) {
+        String content = Resources.getFileContent(AboutHttpServlet.class, "/META-INF/git.properties");
+        if (content == null) {
+            return def;
+        }
+        String lines[] = content.split("\n");
+        for (String line : lines) {
+            if (line.startsWith("git.commit.id")) {
+                def = line.substring("git.commit.id=".length());
+                break;
+            }
+        }
+        return def;
+    }
 
-	private String getResourceFileContent(String filename) {
-		LOG.debug("try ti get content of {}", filename);
-		return Resources.getFileContent(AboutHttpServlet.class, RES_BASEPATH + filename);
-	}
+    private String getResourceFileContent(String filename) {
+        LOG.debug("try ti get content of {}", filename);
+        return Resources.getFileContent(AboutHttpServlet.class, RES_BASEPATH + filename);
+    }
 
-	/**
-	 * collect dynamic data for about.md
-	 */
-	private void collectData() {
-		LOG.info("collecting dynamic data");
-		try {
-			this.data.put(PLACEHOLDER_KARAF_INFO, SystemInfo.get());
-		} catch (Exception e) {
-			LOG.warn("problem collecting system data: {}", e);
-		}
-	}
+    /**
+     * collect dynamic data for about.md
+     */
+    private void collectData() {
+        LOG.info("collecting dynamic data");
+        try {
+            this.data.put(PLACEHOLDER_KARAF_INFO, SystemInfo.get());
+        } catch (Exception e) {
+            LOG.warn("problem collecting system data: {}", e);
+        }
+    }
 
-	/**
-	 * get value for key out of /META-INF/MANIFEST.MF
-	 * @param key
-	 * @return
-	 */
-	private String getManifestValue(String key) {
-		URL url = Resources.getUrlForRessource(AboutHttpServlet.class, "/META-INF/MANIFEST.MF");
-		if (url == null) {
-			return null;
-		}
-		Manifest manifest;
-		try {
-			manifest = new Manifest(url.openStream());
-			Attributes attr = manifest.getMainAttributes();
-			return attr.getValue(key);
-		} catch (IOException e) {
-			LOG.warn("problem reading manifest: {}", e);
-		}
-		return null;
+    /**
+     * get value for key out of /META-INF/MANIFEST.MF
+     * 
+     * @param key
+     * @return
+     */
+    private String getManifestValue(String key) {
+        URL url = Resources.getUrlForRessource(AboutHttpServlet.class, "/META-INF/MANIFEST.MF");
+        if (url == null) {
+            return null;
+        }
+        Manifest manifest;
+        try {
+            manifest = new Manifest(url.openStream());
+            Attributes attr = manifest.getMainAttributes();
+            return attr.getValue(key);
+        } catch (IOException e) {
+            LOG.warn("problem reading manifest: {}", e);
+        }
+        return null;
 
-	}
-	/**
-	 * get object representation of /META-INF/maven/groupId/artifactId/pom.properties
-	 * @return
-	 */
-	private PomPropertiesFile getPomProperties() {
-		URL url = Resources.getUrlForRessource(AboutHttpServlet.class,
-				METAINF_MAVEN + groupId + "/" + artifactId + "/pom.properties");
-		PomPropertiesFile propfile;
-		if (url == null) {
-			return null;
-		}
-		try {
-			propfile = new PomPropertiesFile(url.openStream());
-			return propfile;
-		} catch (Exception e) {
-			LOG.warn(EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE, e);
-		}
-		return null;
-	}
-	/**
-	 * get value for key out of /META-INF/maven/groupId/artifactId/pom.xml in properties section
-	 * @param key
-	 * @return
-	 */
-	private String getPomProperty(String key) {
-		LOG.info("try to get pom property for {}", key);
-		URL url = Resources.getUrlForRessource(AboutHttpServlet.class,
-				METAINF_MAVEN + groupId + "/" + artifactId + "/pom.xml");
-		if (url == null) {
-			return null;
-		}
-		PomFile pomfile;
-		try {
-			pomfile = new PomFile(url.openStream());
-			return pomfile.getProperty(key);
-		} catch (Exception e) {
-			LOG.warn(EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE, e);
-		}
-		return null;
-	}
-	/**
-	 * get parent pom version out of /META-INF/maven/groupId/artifactId/pom.xml 
-	 * @return
-	 */
-	private String getPomParentVersion() {
-		LOG.info("try to get pom parent version");
-		URL url = Resources.getUrlForRessource(AboutHttpServlet.class,
-				METAINF_MAVEN + groupId + "/" + artifactId + "/pom.xml");
-		if (url == null) {
-			return null;
-		}
-		PomFile pomfile;
-		try {
-			pomfile = new PomFile(url.openStream());
-			return pomfile.getParentVersion();
-		} catch (Exception e) {
-			LOG.warn(EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE, e);
-		}
-		return null;
-	}
+    }
 
-	/**
-	 * get file by uri from resources and write out to response stream 
-	 * @param uri
-	 * @param resp
-	 */
-	private void doGetFile(String uri, HttpServletResponse resp) {
-		String content = this.getResourceFileContent(uri);
-		if (content == null) {
-			try {
-				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-			} catch (IOException e) {
-				LOG.debug("unable to send error response : {}", e);
-			}
-		} else {
-			byte[] data = content.getBytes();
-			resp.setStatus(HttpServletResponse.SC_OK);
-			resp.setContentType(this.getContentType(uri));
-			try {
-				resp.getOutputStream().write(data);
-			} catch (IOException e) {
-				LOG.debug("unable to send data : {}", e);
-			}
-		}
+    /**
+     * get object representation of /META-INF/maven/groupId/artifactId/pom.properties
+     * 
+     * @return
+     */
+    private PomPropertiesFile getPomProperties() {
+        URL url = Resources.getUrlForRessource(AboutHttpServlet.class,
+                METAINF_MAVEN + groupId + "/" + artifactId + "/pom.properties");
+        PomPropertiesFile propfile;
+        if (url == null) {
+            return null;
+        }
+        try {
+            propfile = new PomPropertiesFile(url.openStream());
+            return propfile;
+        } catch (Exception e) {
+            LOG.warn(EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE, e);
+        }
+        return null;
+    }
 
-	}
+    /**
+     * get value for key out of /META-INF/maven/groupId/artifactId/pom.xml in properties section
+     * 
+     * @param key
+     * @return
+     */
+    private String getPomProperty(String key) {
+        LOG.info("try to get pom property for {}", key);
+        URL url = Resources.getUrlForRessource(AboutHttpServlet.class,
+                METAINF_MAVEN + groupId + "/" + artifactId + "/pom.xml");
+        if (url == null) {
+            return null;
+        }
+        PomFile pomfile;
+        try {
+            pomfile = new PomFile(url.openStream());
+            return pomfile.getProperty(key);
+        } catch (Exception e) {
+            LOG.warn(EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE, e);
+        }
+        return null;
+    }
 
-	/**
-	 * create http response contentType by filename
-	 * @param filename
-	 * @return
-	 */
-	private String getContentType(String filename) {
-		String ext = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-		switch (ext) {
-		case "jpg":
-		case "jpeg":
-		case "svg":
-		case "png":
-		case "gif":
-		case "bmp":
-			return "image/" + ext;
-		case "json":
-			return "application/json";
-		case "html":
-		case "htm":
-			return "text/html";
-		case "txt":
-		case "md":
-		default:
-			return "text/plain";
-		}
-	}
+    /**
+     * get parent pom version out of /META-INF/maven/groupId/artifactId/pom.xml
+     * 
+     * @return
+     */
+    private String getPomParentVersion() {
+        LOG.info("try to get pom parent version");
+        URL url = Resources.getUrlForRessource(AboutHttpServlet.class,
+                METAINF_MAVEN + groupId + "/" + artifactId + "/pom.xml");
+        if (url == null) {
+            return null;
+        }
+        PomFile pomfile;
+        try {
+            pomfile = new PomFile(url.openStream());
+            return pomfile.getParentVersion();
+        } catch (Exception e) {
+            LOG.warn(EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE, e);
+        }
+        return null;
+    }
 
-	/**
-	 * render this.readmeContent with this.data
-	 * @return
-	 */
-	private String render() {
-		return this.render(null);
-	}
+    /**
+     * get file by uri from resources and write out to response stream
+     * 
+     * @param uri
+     * @param resp
+     */
+    private void doGetFile(String uri, HttpServletResponse resp) {
+        String content = this.getResourceFileContent(uri);
+        if (content == null) {
+            try {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            } catch (IOException e) {
+                LOG.debug("unable to send error response : {}", e);
+            }
+        } else {
+            byte[] data = content.getBytes();
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setContentType(this.getContentType(uri));
+            try {
+                resp.getOutputStream().write(data);
+            } catch (IOException e) {
+                LOG.debug("unable to send data : {}", e);
+            }
+        }
 
-	/**
-	 * render content with this.data
-	 * @param content
-	 * @return
-	 */
-	private String render(String content) {
-		if (content == null) {
-			content = this.readmeContent;
-		}
-		if (content == null) {
-			return null;
-		}
-		for (Entry<String, String> entry : this.data.entrySet()) {
-			if (entry.getValue() != null && content.contains(entry.getKey())) {
-				content = content.replace(entry.getKey(), entry.getValue());
-			}
-		}
+    }
 
-		return content;
-	}
+    /**
+     * create http response contentType by filename
+     * 
+     * @param filename
+     * @return
+     */
+    private String getContentType(String filename) {
+        String ext = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        switch (ext) {
+            case "jpg":
+            case "jpeg":
+            case "svg":
+            case "png":
+            case "gif":
+            case "bmp":
+                return "image/" + ext;
+            case "json":
+                return "application/json";
+            case "html":
+            case "htm":
+                return "text/html";
+            case "txt":
+            case "md":
+            default:
+                return "text/plain";
+        }
+    }
 
-	public void setClusterSize(String value) {
-		this.data.put(PLACEHOLDER_CLUSTER_SIZE, value);
-	}
+    /**
+     * render this.readmeContent with this.data
+     * 
+     * @return
+     */
+    private String render() {
+        return this.render(null);
+    }
+
+    /**
+     * render content with this.data
+     * 
+     * @param content
+     * @return
+     */
+    private String render(String content) {
+        if (content == null) {
+            content = this.readmeContent;
+        }
+        if (content == null) {
+            return null;
+        }
+        for (Entry<String, String> entry : this.data.entrySet()) {
+            if (entry.getValue() != null && content.contains(entry.getKey())) {
+                content = content.replace(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return content;
+    }
+
+    public void setClusterSize(String value) {
+        this.data.put(PLACEHOLDER_CLUSTER_SIZE, value);
+    }
 }

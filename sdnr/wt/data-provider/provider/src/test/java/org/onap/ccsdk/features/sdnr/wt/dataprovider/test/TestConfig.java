@@ -44,15 +44,16 @@ public class TestConfig {
     @After
     @Before
     public void afterAndBefore() {
-        File f=new File(TESTFILENAME);
-        if(f.exists()) {
+        File f = new File(TESTFILENAME);
+        if (f.exists()) {
             LOG.info("Remove {}", f.getAbsolutePath());
             f.delete();
         }
     }
+
     @Test
     public void test() {
-        ConfigurationFileRepresentation configuration=new ConfigurationFileRepresentation(TESTFILENAME);
+        ConfigurationFileRepresentation configuration = new ConfigurationFileRepresentation(TESTFILENAME);
         setSDNRDBURLEnv();
         EsConfig esConfig = new EsConfig(configuration);
         LOG.info("Defaultconfiguration: {}", esConfig.toString());
@@ -61,19 +62,21 @@ public class TestConfig {
         assertEquals("sdnrdb", esConfig.getHosts()[0].hostname);
 
     }
+
     public static void setSDNRDBURLEnv() {
-    	setEnv("SDNRDBURL","http://sdnrdb:9200");
+        setEnv("SDNRDBURL", "http://sdnrdb:9200");
     }
-	public static void setEnv(String key, String value) {
-	    try {
-	        Map<String, String> env = System.getenv();
-	        Class<?> cl = env.getClass();
-	        Field field = cl.getDeclaredField("m");
-	        field.setAccessible(true);
-	        Map<String, String> writableEnv = (Map<String, String>) field.get(env);
-	        writableEnv.put(key, value);
-	    } catch (Exception e) {
-	        throw new IllegalStateException("Failed to set environment variable", e);
-	    }
-	}
+
+    public static void setEnv(String key, String value) {
+        try {
+            Map<String, String> env = System.getenv();
+            Class<?> cl = env.getClass();
+            Field field = cl.getDeclaredField("m");
+            field.setAccessible(true);
+            Map<String, String> writableEnv = (Map<String, String>) field.get(env);
+            writableEnv.put(key, value);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to set environment variable", e);
+        }
+    }
 }

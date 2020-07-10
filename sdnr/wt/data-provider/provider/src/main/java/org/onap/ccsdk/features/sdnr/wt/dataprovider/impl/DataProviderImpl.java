@@ -47,7 +47,7 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     private DataProviderServiceImpl rpcApiService;
     private AboutHttpServlet aboutServlet;
     private HtDatabaseClient dbClient;
-	
+
     // Blueprint 1
     public DataProviderImpl() {
         super();
@@ -57,18 +57,21 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     public void setRpcProviderService(RpcProviderService rpcProviderService) {
         this.rpcProviderService = rpcProviderService;
     }
+
     public void setMediatorServerServlet(MsServlet servlet) {
         this.mediatorServerServlet = servlet;
     }
+
     public void setAboutServlet(AboutHttpServlet aboutServlet) {
         this.aboutServlet = aboutServlet;
     }
+
     public void init() throws Exception {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
         // Start RPC Service
-        this.rpcApiService = new DataProviderServiceImpl(rpcProviderService,this.mediatorServerServlet);
+        this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.mediatorServerServlet);
         LOG.info("Session Initiated end. Initialization done");
     }
 
@@ -117,13 +120,13 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
 
     @Override
     public void setReadyStatus(boolean status) {
-            ReadyHttpServlet.setStatus(status);
+        ReadyHttpServlet.setStatus(status);
     }
 
     @Override
     public void setStatus(StatusKey key, String value) {
-        if(this.aboutServlet!=null) {
-            if(key==StatusKey.CLUSTER_SIZE) {
+        if (this.aboutServlet != null) {
+            if (key == StatusKey.CLUSTER_SIZE) {
                 this.aboutServlet.setClusterSize(value);
             }
         }

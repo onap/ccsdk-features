@@ -30,51 +30,36 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
  * 
  * @author Michael Dürre
  *
- *  {
- *     "faultCurrent": {
- *     "nodeName": "sim9090",
- *     "counter": "50443",
- *     "timeStamp": "2017-07-27T13:33:49.0Z",
- *     "objectId": "a2.module-1.1.5.6",
- *     "problem": "Ais",
- *     "severity": "Major",
- *     "type": "ProblemNotificationXml"
- *     }
- * }
+ *         { "faultCurrent": { "nodeName": "sim9090", "counter": "50443", "timeStamp": "2017-07-27T13:33:49.0Z",
+ *         "objectId": "a2.module-1.1.5.6", "problem": "Ais", "severity": "Major", "type": "ProblemNotificationXml" } }
  * 
- * =>
+ *         =>
  * 
- * {
- *     "timestamp": "2017-01-01T00:00:00.0Z",
- *     "object-id": "LP-MWS-TTP-01",
- *     "severity": "Warning",
- *     "counter": 2,
- *     "node-id": "sim1",
- *     "problem": "unknownProblem2"
- * }
+ *         { "timestamp": "2017-01-01T00:00:00.0Z", "object-id": "LP-MWS-TTP-01", "severity": "Warning", "counter": 2,
+ *         "node-id": "sim1", "problem": "unknownProblem2" }
  */
 public class FrankfurtFaultcurrentConverter extends BaseSearchHitConverter {
 
-	/**
-	 * @param name
-	 */
-	public FrankfurtFaultcurrentConverter() {
-		super(ComponentName.FAULTCURRENT);
-	}
+    /**
+     * @param name
+     */
+    public FrankfurtFaultcurrentConverter() {
+        super(ComponentName.FAULTCURRENT);
+    }
 
-	@Override
-	public SearchHit convert(SearchHit source) {
-		
-		JSONObject data = new JSONObject();
-		JSONObject src = source.getSource();
-		JSONObject srcInner = src.getJSONObject("faultCurrent");
-		data.put("node-id", srcInner.getString("nodeName"));
-		data.put("severity", srcInner.getString("severity"));
-		data.put("counter", Long.parseLong(srcInner.getString("counter")));
-		data.put("timestamp", srcInner.getString("timeStamp"));
-		data.put("object-id",srcInner.getString("objectId"));
-		data.put("problem", srcInner.getString("problem"));
-		
-		return this.getSearchHit(source.getIndex(), source.getType(), source.getId(), data );
-	}
+    @Override
+    public SearchHit convert(SearchHit source) {
+
+        JSONObject data = new JSONObject();
+        JSONObject src = source.getSource();
+        JSONObject srcInner = src.getJSONObject("faultCurrent");
+        data.put("node-id", srcInner.getString("nodeName"));
+        data.put("severity", srcInner.getString("severity"));
+        data.put("counter", Long.parseLong(srcInner.getString("counter")));
+        data.put("timestamp", srcInner.getString("timeStamp"));
+        data.put("object-id", srcInner.getString("objectId"));
+        data.put("problem", srcInner.getString("problem"));
+
+        return this.getSearchHit(source.getIndex(), source.getType(), source.getId(), data);
+    }
 }
