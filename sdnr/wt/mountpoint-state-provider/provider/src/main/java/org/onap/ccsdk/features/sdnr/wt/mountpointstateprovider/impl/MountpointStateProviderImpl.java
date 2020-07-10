@@ -58,7 +58,8 @@ public class MountpointStateProviderImpl implements AutoCloseable, IConfigChange
 
     public void init() {
         LOG.info("Init call for {}", APPLICATION_NAME);
-        ConfigurationFileRepresentation configFileRepresentation = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
+        ConfigurationFileRepresentation configFileRepresentation =
+                new ConfigurationFileRepresentation(CONFIGURATIONFILE);
         configFileRepresentation.registerConfigChangedListener(this);
 
         generalConfig = new GeneralConfig(configFileRepresentation);
@@ -72,6 +73,7 @@ public class MountpointStateProviderImpl implements AutoCloseable, IConfigChange
 
     /**
      * Reflect status for Unit Tests
+     * 
      * @return Text with status
      */
     public String isInitializationOk() {
@@ -91,13 +93,13 @@ public class MountpointStateProviderImpl implements AutoCloseable, IConfigChange
             netconfNodeStateService.registerNetconfNodeConnectListener(nodeConnectListener);
             netconfNodeStateService.registerNetconfNodeStateListener(nodeStateListener);
         } else if (dmaapEnabled && !dmaapEnabledNewVal) {
-        	// DMaap enabled earlier (or during bundle startup) but disabled later, stop consumer(s)
+            // DMaap enabled earlier (or during bundle startup) but disabled later, stop consumer(s)
             LOG.info("DMaaP is disabled, stop publisher");
             try {
-				MountpointStatePublisher.stopPublisher();
-			} catch (IOException | InterruptedException e) {
-				LOG.error("Exception while stopping publisher ", e);
-			}
+                MountpointStatePublisher.stopPublisher();
+            } catch (IOException | InterruptedException e) {
+                LOG.error("Exception while stopping publisher ", e);
+            }
         }
         dmaapEnabled = dmaapEnabledNewVal;
     }
@@ -107,12 +109,12 @@ public class MountpointStateProviderImpl implements AutoCloseable, IConfigChange
         LOG.info("{} closing ...", this.getClass().getName());
         //close(updateService, configService, mwtnService); issue#1
         try {
-			MountpointStatePublisher.stopPublisher();
-		} catch (IOException | InterruptedException e) {
-			LOG.error("Exception while stopping publisher ", e);
-		}
+            MountpointStatePublisher.stopPublisher();
+        } catch (IOException | InterruptedException e) {
+            LOG.error("Exception while stopping publisher ", e);
+        }
         //close(updateService, mwtnService);
-        LOG.info("{} closing done",APPLICATION_NAME);
+        LOG.info("{} closing done", APPLICATION_NAME);
     }
 
     /**

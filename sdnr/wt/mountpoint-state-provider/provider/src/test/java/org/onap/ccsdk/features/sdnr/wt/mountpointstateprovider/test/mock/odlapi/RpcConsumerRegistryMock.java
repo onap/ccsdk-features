@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk feature sdnr wt sdnr-wt-devicemanager-provider
  *  ================================================================================
@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.odlapi;
 
