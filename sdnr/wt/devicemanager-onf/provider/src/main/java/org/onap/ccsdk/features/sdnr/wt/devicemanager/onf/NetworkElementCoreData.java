@@ -25,8 +25,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 public interface NetworkElementCoreData {
 
     public String getMountpoint();
+
     public DataBroker getDataBroker();
+
     public Optional<NetworkElement> getOptionalNetworkElement();
+
     public NetworkElementDeviceType getDeviceType();
 
 }

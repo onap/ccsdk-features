@@ -62,7 +62,8 @@ public class ONFCoreNetworkElement12Equipment {
     private final @NonNull FaultData globalProblemList;
     private final @NonNull List<ExtendedEquipment> globalEquipmentList;
 
-    public ONFCoreNetworkElement12Equipment(NetconfAccessor acessor, NetworkElementCoreData coreData, Capabilities capabilities) {
+    public ONFCoreNetworkElement12Equipment(NetconfAccessor acessor, NetworkElementCoreData coreData,
+            Capabilities capabilities) {
         LOG.debug("Initialize class: {} " + ONFCoreNetworkElement12Equipment.class.getName());
         this.acessor = acessor;
         this.coreData = coreData;
@@ -188,7 +189,8 @@ public class ONFCoreNetworkElement12Equipment {
             Equipment equipment = this.readEquipment(uuid);
 
             if (equipment != null) {
-                equipmentList.add(new ExtendedEquipment(this.getMountpoint(),parentUuid.getValue(), equipment, path, treeLevel));
+                equipmentList.add(
+                        new ExtendedEquipment(this.getMountpoint(), parentUuid.getValue(), equipment, path, treeLevel));
 
                 if (this.equipmentPac != null) {
                     this.equipmentPac.readTheFaults(uuid, problemList);
@@ -196,8 +198,8 @@ public class ONFCoreNetworkElement12Equipment {
                     List<ContainedHolder> containedHolderListe = equipment.getContainedHolder();
                     if (containedHolderListe != null) {
                         for (ContainedHolder containedHolder : containedHolderListe) {
-                            recurseReadEquipmentProblems(containedHolder.getOccupyingFru(), uuid, path+"/"+uuid.getValue(), treeLevel + 1,
-                                    problemList, equipmentList);
+                            recurseReadEquipmentProblems(containedHolder.getOccupyingFru(), uuid,
+                                    path + "/" + uuid.getValue(), treeLevel + 1, problemList, equipmentList);
                         }
                     }
                 }
@@ -205,7 +207,8 @@ public class ONFCoreNetworkElement12Equipment {
         }
     }
 
-    private @NonNull InventoryInformationDcae getInventoryInformationDcae(ValueNameList extensions, List<String> uuids) {
+    private @NonNull InventoryInformationDcae getInventoryInformationDcae(ValueNameList extensions,
+            List<String> uuids) {
 
         InventoryInformationDcae inventoryInformation = new InventoryInformationDcae();
 

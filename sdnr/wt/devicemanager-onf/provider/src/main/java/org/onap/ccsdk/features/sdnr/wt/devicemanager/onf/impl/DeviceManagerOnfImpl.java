@@ -23,7 +23,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkEleme
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceManagerOnfImpl implements AutoCloseable  {
+public class DeviceManagerOnfImpl implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerOnfImpl.class);
     private static final String APPLICATIONNAME = "DeviceManagerOnf";
@@ -49,8 +49,10 @@ public class DeviceManagerOnfImpl implements AutoCloseable  {
 
         LOG.info("Session Initiated start {}", APPLICATIONNAME);
 
-        configuration = new DeviceManagerOnfConfiguration(netconfNetworkElementService.getServiceProvider().getConfigurationFileRepresentation());
-        resOnf = netconfNetworkElementService.registerNetworkElementFactory(new ONFCoreNetworkElementFactory(configuration));
+        configuration = new DeviceManagerOnfConfiguration(
+                netconfNetworkElementService.getServiceProvider().getConfigurationFileRepresentation());
+        resOnf = netconfNetworkElementService
+                .registerNetworkElementFactory(new ONFCoreNetworkElementFactory(configuration));
 
 
         netconfNetworkElementService.writeToEventLog(APPLICATIONNAME, "startup", "done");

@@ -34,9 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Create a Network Element representation according to the capability
- * information. The capabilities are more than an ODL-QName. After the ? other
- * terms than "revision" are provided.
+ * Create a Network Element representation according to the capability information. The capabilities are more than an
+ * ODL-QName. After the ? other terms than "revision" are provided.
  *
  */
 public class ONFCoreNetworkElementFactory implements NetworkElementFactory {
@@ -70,7 +69,8 @@ public class ONFCoreNetworkElementFactory implements NetworkElementFactory {
             }
 
             if (onfMicrowaveModel != null) {
-                return Optional.of(new ONFCoreNetworkElement12Microwave(acessor, serviceProvider, configuration, onfMicrowaveModel));
+                return Optional.of(new ONFCoreNetworkElement12Microwave(acessor, serviceProvider, configuration,
+                        onfMicrowaveModel));
             } else {
                 return Optional.of(new ONFCoreNetworkElement12Basic(acessor, serviceProvider, configuration));
             }

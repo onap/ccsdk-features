@@ -47,13 +47,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Get information over NETCONF device according to ONF Coremodel. Read networkelement and
- * conditional packages.
+ * Get information over NETCONF device according to ONF Coremodel. Read networkelement and conditional packages.
  *
- * Get conditional packages from Networkelement Possible interfaces are: MWPS, LTP(MWPS-TTP),
- * MWAirInterfacePac, MicrowaveModel-ObjectClasses-AirInterface ETH-CTP,LTP(Client),
- * MW_EthernetContainer_Pac MWS, LTP(MWS-CTP-xD), MWAirInterfaceDiversityPac,
- * MicrowaveModel-ObjectClasses-AirInterfaceDiversity MWS, LTP(MWS-TTP),
+ * Get conditional packages from Networkelement Possible interfaces are: MWPS, LTP(MWPS-TTP), MWAirInterfacePac,
+ * MicrowaveModel-ObjectClasses-AirInterface ETH-CTP,LTP(Client), MW_EthernetContainer_Pac MWS, LTP(MWS-CTP-xD),
+ * MWAirInterfaceDiversityPac, MicrowaveModel-ObjectClasses-AirInterfaceDiversity MWS, LTP(MWS-TTP),
  * ,MicrowaveModel-ObjectClasses-HybridMwStructure MWS, LTP(MWS-TTP),
  * ,MicrowaveModel-ObjectClasses-PureEthernetStructure
  *
@@ -78,16 +76,16 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
 
     /**
      * Constructor
+     * 
      * @param acessor for device
      * @param serviceProvider to get services
      * @param onfMicrowaveModel handling ofmicrosoft model data
      */
-	public ONFCoreNetworkElement12Microwave(@NonNull NetconfAccessor acessor,
-			@NonNull DeviceManagerServiceProvider serviceProvider,
-			DeviceManagerOnfConfiguration configuration,
-			OnfMicrowaveModel onfMicrowaveModel) {
+    public ONFCoreNetworkElement12Microwave(@NonNull NetconfAccessor acessor,
+            @NonNull DeviceManagerServiceProvider serviceProvider, DeviceManagerOnfConfiguration configuration,
+            OnfMicrowaveModel onfMicrowaveModel) {
 
-        super(acessor, serviceProvider,configuration);
+        super(acessor, serviceProvider, configuration);
         this.microwaveModel = onfMicrowaveModel;
 
         this.microwaveEventListener = serviceProvider.getFaultService();
@@ -103,12 +101,12 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
      */
 
     /**
-	 * @param acessor
-	 * @param serviceProvider
-	 * @param configuration
-	 * @param onfMicrowaveModel
-	 */
-	/**
+     * @param acessor
+     * @param serviceProvider
+     * @param configuration
+     * @param onfMicrowaveModel
+     */
+    /**
      * DeviceMonitor Prepare check by updating NE state and reading all interfaces.
      */
     @Override
@@ -144,8 +142,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
      *
      * <attribute-value-changed-notification xmlns="urn:onf:params:xml:ns:yang:microwave-model">
      * <attribute-name>/equipment-pac/equipment-current-problems</attribute-name>
-     * <object-id-ref>CARD-1.1.1.0</object-id-ref> <new-value></new-value>
-     * </attribute-value-changed-notification>
+     * <object-id-ref>CARD-1.1.1.0</object-id-ref> <new-value></new-value> </attribute-value-changed-notification>
      * <attribute-value-changed-notification xmlns="urn:onf:params:xml:ns:yang:microwave-model">
      * <attribute-name>/network-element/extension[value-name="top-level-equipment"]/value</attribute-name>
      * <object-id-ref>Hybrid-Z</object-id-ref>
@@ -251,7 +248,8 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
         // Step 2.3: read the existing faults and add to DB
         FaultData resultList = new FaultData();
         int idxStart; // Start index for debug messages
-        @NonNull UniversalId uuid;
+        @NonNull
+        UniversalId uuid;
 
         synchronized (getPmLock()) {
             for (Lp lp : getInterfaceList()) {
@@ -380,7 +378,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
         // notificationService.registerNotificationListener(microwaveEventListener);
         listenerRegistrationresult =
                 notificationService.registerNotificationListener(microwaveModel.getNotificationListener());
-        LOG.info("End registration listener for Mountpoint Result: {}",listenerRegistrationresult);
+        LOG.info("End registration listener for Mountpoint Result: {}", listenerRegistrationresult);
     }
 
     /*------------------------------------------------------------

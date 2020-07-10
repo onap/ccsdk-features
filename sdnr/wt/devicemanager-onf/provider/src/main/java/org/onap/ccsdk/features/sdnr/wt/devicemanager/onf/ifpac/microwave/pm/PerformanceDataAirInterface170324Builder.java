@@ -34,7 +34,8 @@ public class PerformanceDataAirInterface170324Builder extends PmdataEntityBuilde
 
     private PerformanceDataAirInterface170324Builder(NodeId nodeId, Lp lp, OtnHistoryDataG pmRecord) {
         super();
-        Optional<GranularityPeriodType> gp = GranularityPeriodType.forName(Helper.nnGetGranularityPeriodType(pmRecord.getGranularityPeriod()).getName());
+        Optional<GranularityPeriodType> gp = GranularityPeriodType
+                .forName(Helper.nnGetGranularityPeriodType(pmRecord.getGranularityPeriod()).getName());
         this.setGranularityPeriod(gp.orElse(GranularityPeriodType.Unknown));
         this.setUuidInterface(Helper.nnGetUniversalId(lp.getUuid()).getValue());
         this.setLayerProtocolName(Helper.nnGetLayerProtocolName(lp.getLayerProtocolName()).getValue());
@@ -46,13 +47,14 @@ public class PerformanceDataAirInterface170324Builder extends PmdataEntityBuilde
 
     /**
      * Move data to generic type
+     * 
      * @param nodeId of node
      * @param lp to get data from
-     * @param pmRecord         data itself
+     * @param pmRecord data itself
      * @param airConfiguration configuration for additional parameter
      */
-    public PerformanceDataAirInterface170324Builder(NodeId nodeId, Lp lp, AirInterfaceHistoricalPerformanceTypeG pmRecord,
-            AirInterfaceConfiguration airConfiguration) {
+    public PerformanceDataAirInterface170324Builder(NodeId nodeId, Lp lp,
+            AirInterfaceHistoricalPerformanceTypeG pmRecord, AirInterfaceConfiguration airConfiguration) {
         this(nodeId, lp, pmRecord);
 
         this.setRadioSignalId(airConfiguration.getRadioSignalId());
@@ -106,14 +108,16 @@ public class PerformanceDataAirInterface170324Builder extends PmdataEntityBuilde
 
     /**
      * Move data to generic type
+     * 
      * @param nodeId of node
      * @param lp to get data from
-     * @param pmRecord         data itself
+     * @param pmRecord data itself
      */
-    public PerformanceDataAirInterface170324Builder(NodeId nodeId, Lp lp, ContainerHistoricalPerformanceTypeG pmRecord) {
+    public PerformanceDataAirInterface170324Builder(NodeId nodeId, Lp lp,
+            ContainerHistoricalPerformanceTypeG pmRecord) {
         this(nodeId, lp, (OtnHistoryDataG) pmRecord);
-        org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.container.historical.performance.type.g.PerformanceData pmr = pmRecord
-                .getPerformanceData();
+        org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.container.historical.performance.type.g.PerformanceData pmr =
+                pmRecord.getPerformanceData();
         if (pmr != null) {
             PerformanceDataBuilder bPerformanceData = new PerformanceDataBuilder();
             bPerformanceData.setTimePeriod(pmr.getTimePeriod());

@@ -77,14 +77,14 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
     public String getMountPointNodeName() {
         return mountPointNodeName;
     }
-    
+
     /**
      * @return the netconfNodeDataBroker
      */
     public DataBroker getNetconfNodeDataBroker() {
         return netconfNodeDataBroker;
     }
-    
+
     @Override
     public void warmstart() {
         int problems = removeAllCurrentProblemsOfNode();

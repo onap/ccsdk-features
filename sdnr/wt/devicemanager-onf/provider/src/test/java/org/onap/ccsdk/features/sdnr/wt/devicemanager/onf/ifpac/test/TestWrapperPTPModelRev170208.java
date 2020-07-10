@@ -47,47 +47,47 @@ import static org.mockito.Mockito.*;
 
 public class TestWrapperPTPModelRev170208 {
 
-	private static final String NODEID = "node1";
-	NetconfAccessor netconfAccessor;
-	Capabilities capabilities;
-	TransactionUtils transactionUtils;
-	DataBroker dataBroker;
-	
-	@Before
-	public void init() {
-		netconfAccessor = mock(NetconfAccessor.class);
-		capabilities = mock(Capabilities.class);
-		dataBroker = mock(DataBroker.class);
-		transactionUtils = mock(TransactionUtils.class);
-		
-		when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
-		when(netconfAccessor.getCapabilites()).thenReturn(capabilities);
-		when(netconfAccessor.getTransactionUtils()).thenReturn(transactionUtils);
-		when(netconfAccessor.getDataBroker()).thenReturn(dataBroker);
-		
-		PortIdentity portIdentity = new PortIdentityBuilder().setPortNumber(10).build();
-		List<PortDsList> portDsList = Arrays.asList(new PortDsListBuilder().setPortIdentity(portIdentity).build());
-		InstanceList instanceList = new InstanceListBuilder().setPortDsList(portDsList).build();
-		InstanceIdentifier<InstanceList> PTPINSTANCES_IID = InstanceIdentifier
-	            .builder(InstanceList.class, new InstanceListKey(1)).build();
-		when(netconfAccessor.getTransactionUtils().readData(netconfAccessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
-                PTPINSTANCES_IID)).thenReturn(instanceList);
-	}
-	
-	@Test
-	public void test() {
-		
-		when(capabilities.isSupportingNamespaceAndRevision(InstanceList.QNAME)).thenReturn(false);
-		
-		WrapperPTPModelRev170208.initSynchronizationExtension(netconfAccessor);
-	}
+    private static final String NODEID = "node1";
+    NetconfAccessor netconfAccessor;
+    Capabilities capabilities;
+    TransactionUtils transactionUtils;
+    DataBroker dataBroker;
 
-	@Test
-	public void test1() {
-		
-		when(capabilities.isSupportingNamespaceAndRevision(InstanceList.QNAME)).thenReturn(true);
-		
-		WrapperPTPModelRev170208.initSynchronizationExtension(netconfAccessor);
-	}
+    @Before
+    public void init() {
+        netconfAccessor = mock(NetconfAccessor.class);
+        capabilities = mock(Capabilities.class);
+        dataBroker = mock(DataBroker.class);
+        transactionUtils = mock(TransactionUtils.class);
+
+        when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
+        when(netconfAccessor.getCapabilites()).thenReturn(capabilities);
+        when(netconfAccessor.getTransactionUtils()).thenReturn(transactionUtils);
+        when(netconfAccessor.getDataBroker()).thenReturn(dataBroker);
+
+        PortIdentity portIdentity = new PortIdentityBuilder().setPortNumber(10).build();
+        List<PortDsList> portDsList = Arrays.asList(new PortDsListBuilder().setPortIdentity(portIdentity).build());
+        InstanceList instanceList = new InstanceListBuilder().setPortDsList(portDsList).build();
+        InstanceIdentifier<InstanceList> PTPINSTANCES_IID =
+                InstanceIdentifier.builder(InstanceList.class, new InstanceListKey(1)).build();
+        when(netconfAccessor.getTransactionUtils().readData(netconfAccessor.getDataBroker(),
+                LogicalDatastoreType.OPERATIONAL, PTPINSTANCES_IID)).thenReturn(instanceList);
+    }
+
+    @Test
+    public void test() {
+
+        when(capabilities.isSupportingNamespaceAndRevision(InstanceList.QNAME)).thenReturn(false);
+
+        WrapperPTPModelRev170208.initSynchronizationExtension(netconfAccessor);
+    }
+
+    @Test
+    public void test1() {
+
+        when(capabilities.isSupportingNamespaceAndRevision(InstanceList.QNAME)).thenReturn(true);
+
+        WrapperPTPModelRev170208.initSynchronizationExtension(netconfAccessor);
+    }
 
 }
