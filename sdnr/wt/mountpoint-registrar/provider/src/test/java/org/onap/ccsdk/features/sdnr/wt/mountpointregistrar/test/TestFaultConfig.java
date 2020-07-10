@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
@@ -33,63 +33,52 @@ import com.google.common.io.Files;
 
 public class TestFaultConfig {
 
-	private static final String TESTCONFIG_CONTENT="[fault]\n" +
-			"faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer\n" +
-			"TransportType=HTTPNOAUTH\n" +
-			"Protocol=http\n" +
-			"username=username\n" +
-			"password=password\n" +
-			"host=onap-dmap:3904\n" +
-			"topic=unauthenticated.SEC_FAULT_OUTPUT\n" +
-			"contenttype=application/json\n" +
-			"group=myG\n" +
-			"id=C1\n" +
-			"timeout=20000\n" +
-			"limit=10000\n" +
-			"fetchPause=5000\n" +
-			"jersey.config.client.readTimeout=25000\n" +
-			"jersey.config.client.connectTimeout=25000\n" +
-			"\n" +
-			"";
+    private static final String TESTCONFIG_CONTENT = "[fault]\n"
+            + "faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer\n"
+            + "TransportType=HTTPNOAUTH\n" + "Protocol=http\n" + "username=username\n" + "password=password\n"
+            + "host=onap-dmap:3904\n" + "topic=unauthenticated.SEC_FAULT_OUTPUT\n" + "contenttype=application/json\n"
+            + "group=myG\n" + "id=C1\n" + "timeout=20000\n" + "limit=10000\n" + "fetchPause=5000\n"
+            + "jersey.config.client.readTimeout=25000\n" + "jersey.config.client.connectTimeout=25000\n" + "\n" + "";
 
-	private ConfigurationFileRepresentation cfg;
+    private ConfigurationFileRepresentation cfg;
 
-	@Test
-	public void test() {
-		try {
-			Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
-			cfg = new ConfigurationFileRepresentation("test.properties");
-			FaultConfig faultCfg = new FaultConfig(cfg);
-			assertEquals("fault", faultCfg.getSectionName());
-			assertEquals("org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer", faultCfg.getConsumerClass());
-			assertEquals("HTTPNOAUTH", faultCfg.getTransportType());
-			assertEquals("onap-dmap:3904", faultCfg.getHostPort());
-			assertEquals("unauthenticated.SEC_FAULT_OUTPUT", faultCfg.getTopic());
-			assertEquals("application/json", faultCfg.getContenttype());
-			assertEquals("myG", faultCfg.getConsumerGroup());
-			assertEquals("C1", faultCfg.getConsumerId());
-			assertEquals("20000", faultCfg.getTimeout());
-			assertEquals("10000", faultCfg.getLimit());
-			assertEquals("5000", faultCfg.getFetchPause());
-			assertEquals("http", faultCfg.getProtocol());
-			assertEquals("username", faultCfg.getUsername());
-			assertEquals("password", faultCfg.getPassword());
-			assertEquals("25000", faultCfg.getClientReadTimeout());
-			assertEquals("25000", faultCfg.getClientConnectTimeout());
+    @Test
+    public void test() {
+        try {
+            Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
+            cfg = new ConfigurationFileRepresentation("test.properties");
+            FaultConfig faultCfg = new FaultConfig(cfg);
+            assertEquals("fault", faultCfg.getSectionName());
+            assertEquals("org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer",
+                    faultCfg.getConsumerClass());
+            assertEquals("HTTPNOAUTH", faultCfg.getTransportType());
+            assertEquals("onap-dmap:3904", faultCfg.getHostPort());
+            assertEquals("unauthenticated.SEC_FAULT_OUTPUT", faultCfg.getTopic());
+            assertEquals("application/json", faultCfg.getContenttype());
+            assertEquals("myG", faultCfg.getConsumerGroup());
+            assertEquals("C1", faultCfg.getConsumerId());
+            assertEquals("20000", faultCfg.getTimeout());
+            assertEquals("10000", faultCfg.getLimit());
+            assertEquals("5000", faultCfg.getFetchPause());
+            assertEquals("http", faultCfg.getProtocol());
+            assertEquals("username", faultCfg.getUsername());
+            assertEquals("password", faultCfg.getPassword());
+            assertEquals("25000", faultCfg.getClientReadTimeout());
+            assertEquals("25000", faultCfg.getClientConnectTimeout());
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-		}
-	}
-	
-	@After
-	public void cleanUp() {
-		File file = new File("test.properties");
-		if (file.exists()) {
-			System.out.println("File exists, Deleting it");
-			file.delete();
-		}
-		
-	}
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+        }
+    }
+
+    @After
+    public void cleanUp() {
+        File file = new File("test.properties");
+        if (file.exists()) {
+            System.out.println("File exists, Deleting it");
+            file.delete();
+        }
+
+    }
 
 }
