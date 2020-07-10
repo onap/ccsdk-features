@@ -22,12 +22,12 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
 //https://github.com/elastic/elasticsearch/blob/6.4/rest-api-spec/src/main/resources/rest-api-spec/api/indices.put_alias.json
-public class CreateAliasRequest extends BaseRequest{
+public class CreateAliasRequest extends BaseRequest {
 
 
-    public CreateAliasRequest(String index,String alias) {
-    	super("PUT", String.format("/%s/_alias/%s",index,alias));
-    }	
+    public CreateAliasRequest(String index, String alias) {
+        super("PUT", String.format("/%s/_alias/%s", index, alias));
+    }
 
 
 }

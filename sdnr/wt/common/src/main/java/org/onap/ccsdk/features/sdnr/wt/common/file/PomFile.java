@@ -37,61 +37,64 @@ import org.xml.sax.SAXException;
 
 public class PomFile {
 
-	private Document xmlDoc;
+    private Document xmlDoc;
 
-	public PomFile(InputStream is) throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-		        .newInstance();
-//		documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-//		documentBuilderFactory.setFeature(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-//		documentBuilderFactory.setFeature(XMLInputFactory.SUPPORT_DTD, false);
+    public PomFile(InputStream is) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        //		documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        //		documentBuilderFactory.setFeature(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        //		documentBuilderFactory.setFeature(XMLInputFactory.SUPPORT_DTD, false);
 
-		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-		this.xmlDoc = documentBuilder.parse(is);
-	}
-	
-	public String getProperty(String key) {
-		Node props = findChild("properties",this.xmlDoc.getDocumentElement());
-		if(props!=null) {
-			Node prop = findChild(key, props);
-			if(prop!=null) {
-				return getTextValue(prop);
-			}
-		}
-		return null;
-	}
-	public String getParentVersion() {
-		Node parent = findChild("parent",this.xmlDoc.getDocumentElement());
-		if(parent!=null) {
-			Node version = findChild("version", parent);
-			if(version!=null) {
-				return getTextValue(version);
-			}
-		}
-		return null;
-	}
-	private static String getTextValue(Node node) {
-	    StringBuffer textValue = new StringBuffer();
-	    for (int i = 0,length = node.getChildNodes().getLength(); i < length; i ++) {
-	      Node c = node.getChildNodes().item(i);
-	      if (c.getNodeType() == Node.TEXT_NODE) {
-	        textValue.append(c.getNodeValue());
-	      }
-	    }
-	    return textValue.toString().trim();
-	  }
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        this.xmlDoc = documentBuilder.parse(is);
+    }
 
-	private Node findChild(String name,Node root) {
-		List<Element> childs = getChildElementNodes(root);
-		for(Element n : childs) {
-			if(name.equals(n.getNodeName())) {
-				return n;
-			}
-		}
-		return null;
-	}
-	  /**
+    public String getProperty(String key) {
+        Node props = findChild("properties", this.xmlDoc.getDocumentElement());
+        if (props != null) {
+            Node prop = findChild(key, props);
+            if (prop != null) {
+                return getTextValue(prop);
+            }
+        }
+        return null;
+    }
+
+    public String getParentVersion() {
+        Node parent = findChild("parent", this.xmlDoc.getDocumentElement());
+        if (parent != null) {
+            Node version = findChild("version", parent);
+            if (version != null) {
+                return getTextValue(version);
+            }
+        }
+        return null;
+    }
+
+    private static String getTextValue(Node node) {
+        StringBuffer textValue = new StringBuffer();
+        for (int i = 0, length = node.getChildNodes().getLength(); i < length; i++) {
+            Node c = node.getChildNodes().item(i);
+            if (c.getNodeType() == Node.TEXT_NODE) {
+                textValue.append(c.getNodeValue());
+            }
+        }
+        return textValue.toString().trim();
+    }
+
+    private Node findChild(String name, Node root) {
+        List<Element> childs = getChildElementNodes(root);
+        for (Element n : childs) {
+            if (name.equals(n.getNodeName())) {
+                return n;
+            }
+        }
+        return null;
+    }
+
+    /**
      * get all child nodes with type ELEMENT_NODE back in a list
+     * 
      * @param node parent node
      * @return List with child nodes
      */
@@ -100,11 +103,11 @@ public class PomFile {
         NodeList childs = node.getChildNodes();
         Node item;
         //System.out.println("Query node "+node.getNodeName());
-        for (int n=0; n < childs.getLength(); n++) {
+        for (int n = 0; n < childs.getLength(); n++) {
             item = childs.item(n);
             //System.out.println(node.getNodeName()+"-"+item.getNodeName()+" "+item.getNodeType());
             if (item.getNodeType() == Node.ELEMENT_NODE) {
-                res.add((Element)childs.item(n));
+                res.add((Element) childs.item(n));
             }
         }
         return res;

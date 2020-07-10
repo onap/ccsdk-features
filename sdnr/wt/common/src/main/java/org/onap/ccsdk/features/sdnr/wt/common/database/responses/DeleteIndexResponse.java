@@ -25,8 +25,8 @@ import org.elasticsearch.client.Response;
 
 public class DeleteIndexResponse extends AcknowledgedResponse {
 
-	public DeleteIndexResponse(Response response) {
-		super(response);
-	}
+    public DeleteIndexResponse(Response response) {
+        super(response);
+    }
 
 }

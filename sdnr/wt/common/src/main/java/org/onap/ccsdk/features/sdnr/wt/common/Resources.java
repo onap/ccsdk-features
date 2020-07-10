@@ -35,72 +35,72 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Dürre
  *
- * class to get access to internal jar resources
+ *         class to get access to internal jar resources
  */
 public class Resources {
 
-	// constants
-	private static final Logger LOG = LoggerFactory.getLogger(Resources.class);
-	// end of constants
+    // constants
+    private static final Logger LOG = LoggerFactory.getLogger(Resources.class);
+    // end of constants
 
-	// static methods
-	private static URL getFileURL(Class<?> cls, String resFile) {
-		Bundle b = FrameworkUtil.getBundle(cls);
-		URL u = null;
-		LOG.debug("try to get file {}", resFile);
-		if (b == null) {
-			LOG.info("Load resource as file: {}", resFile);
-			u = getUrlForRessource(cls, resFile);
-		} else {
-			LOG.info("Load resource from bundle: {}", resFile);
-			u = b.getEntry(resFile);
-		}
-		return u;
-	}
+    // static methods
+    private static URL getFileURL(Class<?> cls, String resFile) {
+        Bundle b = FrameworkUtil.getBundle(cls);
+        URL u = null;
+        LOG.debug("try to get file {}", resFile);
+        if (b == null) {
+            LOG.info("Load resource as file: {}", resFile);
+            u = getUrlForRessource(cls, resFile);
+        } else {
+            LOG.info("Load resource from bundle: {}", resFile);
+            u = b.getEntry(resFile);
+        }
+        return u;
+    }
 
-	private static String readFile(final URL u) throws IOException {
-		return readFile(u.openStream());
-	}
+    private static String readFile(final URL u) throws IOException {
+        return readFile(u.openStream());
+    }
 
-	private static String readFile(final InputStream s) throws IOException {
-		// read file
-		final String LR = "\n";
-		BufferedReader in = new BufferedReader(new InputStreamReader(s));
-		StringBuilder sb = new StringBuilder();
-		String inputLine;
-		while ((inputLine = in.readLine()) != null) {
-			sb.append(inputLine + LR);
-		}
-		in.close();
-		s.close();
-		return sb.toString();
-	}
+    private static String readFile(final InputStream s) throws IOException {
+        // read file
+        final String LR = "\n";
+        BufferedReader in = new BufferedReader(new InputStreamReader(s));
+        StringBuilder sb = new StringBuilder();
+        String inputLine;
+        while ((inputLine = in.readLine()) != null) {
+            sb.append(inputLine + LR);
+        }
+        in.close();
+        s.close();
+        return sb.toString();
+    }
 
-	public static String getFileContent(Class<?> cls, String resFile) {
-		LOG.debug("loading file {} from res", resFile);
-		URL u = getFileURL(cls, resFile);
-		String s = null;
-		if (u == null) {
-			LOG.warn("cannot find resfile: {}", resFile);
-			return null;
-		}
-		try {
-			s = readFile(u);
-		} catch (Exception e) {
-			LOG.warn("problem reading file: {}", e.getMessage());
-		}
-		return s;
+    public static String getFileContent(Class<?> cls, String resFile) {
+        LOG.debug("loading file {} from res", resFile);
+        URL u = getFileURL(cls, resFile);
+        String s = null;
+        if (u == null) {
+            LOG.warn("cannot find resfile: {}", resFile);
+            return null;
+        }
+        try {
+            s = readFile(u);
+        } catch (Exception e) {
+            LOG.warn("problem reading file: {}", e.getMessage());
+        }
+        return s;
 
-	}
+    }
 
-	public static URL getUrlForRessource(Class<?> cls, String fileOrDirectory) {
-		//ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		ClassLoader loader = cls.getClassLoader();
-		URL url = loader.getResource(fileOrDirectory);
-		if (url == null && fileOrDirectory.startsWith("/")) {
-			url = loader.getResource(fileOrDirectory.substring(1));
-		}
-		return url;
-	}
-	// end of static methods
+    public static URL getUrlForRessource(Class<?> cls, String fileOrDirectory) {
+        //ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        ClassLoader loader = cls.getClassLoader();
+        URL url = loader.getResource(fileOrDirectory);
+        if (url == null && fileOrDirectory.startsWith("/")) {
+            url = loader.getResource(fileOrDirectory.substring(1));
+        }
+        return url;
+    }
+    // end of static methods
 }

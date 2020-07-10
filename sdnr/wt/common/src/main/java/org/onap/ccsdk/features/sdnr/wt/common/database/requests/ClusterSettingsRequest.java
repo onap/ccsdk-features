@@ -25,26 +25,27 @@ import org.json.JSONObject;
 
 //https://www.elastic.co/guide/en/elasticsearch/reference/6.8/docs-index_.html
 //https://github.com/elastic/elasticsearch/blob/6.8/rest-api-spec/src/main/resources/rest-api-spec/api/cluster.put_settings.json
-public class ClusterSettingsRequest extends BaseRequest{
+public class ClusterSettingsRequest extends BaseRequest {
 
-	private static final boolean DEFAULT_ALLOW_AUTOCREATEINDEX = true;
-	private final JSONObject persistent;
-	private final JSONObject data;
-	
-	public ClusterSettingsRequest() {
-		this(DEFAULT_ALLOW_AUTOCREATEINDEX);
-	}
-	public ClusterSettingsRequest(boolean autoCreateIndex) {
-		super("PUT","/_cluster/settings");
-		this.data = new JSONObject();
-		this.persistent = new JSONObject();
-		this.data.put("persistent",this.persistent);
-		this.allowAutoCreateIndex(autoCreateIndex);
-	}
+    private static final boolean DEFAULT_ALLOW_AUTOCREATEINDEX = true;
+    private final JSONObject persistent;
+    private final JSONObject data;
 
-	public ClusterSettingsRequest allowAutoCreateIndex(boolean allow) {
-		this.persistent.put("action.auto_create_index", String.valueOf(allow));
-		this.setQuery(this.data);
-		return this;
-	}
+    public ClusterSettingsRequest() {
+        this(DEFAULT_ALLOW_AUTOCREATEINDEX);
+    }
+
+    public ClusterSettingsRequest(boolean autoCreateIndex) {
+        super("PUT", "/_cluster/settings");
+        this.data = new JSONObject();
+        this.persistent = new JSONObject();
+        this.data.put("persistent", this.persistent);
+        this.allowAutoCreateIndex(autoCreateIndex);
+    }
+
+    public ClusterSettingsRequest allowAutoCreateIndex(boolean allow) {
+        this.persistent.put("action.auto_create_index", String.valueOf(allow));
+        this.setQuery(this.data);
+        return this;
+    }
 }

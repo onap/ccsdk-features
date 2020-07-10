@@ -32,17 +32,17 @@ import org.json.JSONObject;
  */
 public class RefreshIndexResponse extends BaseResponse {
 
-	private boolean succeeded;
+    private boolean succeeded;
 
-	public RefreshIndexResponse(Response response) {
-		super(response);
-		JSONObject o = this.getJson(response);
-		this.succeeded = o.getJSONObject("_shards").getInt("failed") == 0;
-		// {"_index":"historicalperformance24h","_type":"historicalperformance24h","_id":"CbZxvWwB4xjGPydc9ida","_version":1,"result":"created","_shards":{"total":4,"successful":1,"failed":0},"_seq_no":1,"_primary_term":1}
-	}
+    public RefreshIndexResponse(Response response) {
+        super(response);
+        JSONObject o = this.getJson(response);
+        this.succeeded = o.getJSONObject("_shards").getInt("failed") == 0;
+        // {"_index":"historicalperformance24h","_type":"historicalperformance24h","_id":"CbZxvWwB4xjGPydc9ida","_version":1,"result":"created","_shards":{"total":4,"successful":1,"failed":0},"_seq_no":1,"_primary_term":1}
+    }
 
-	public boolean succeeded() {
-		return this.succeeded;
-	}
+    public boolean succeeded() {
+        return this.succeeded;
+    }
 
 }

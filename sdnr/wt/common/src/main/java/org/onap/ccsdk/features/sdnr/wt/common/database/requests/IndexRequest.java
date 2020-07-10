@@ -25,37 +25,37 @@ import javax.annotation.Nullable;
 
 public class IndexRequest extends BaseRequest {
 
-	private final String alias;
-	private final String esId;
+    private final String alias;
+    private final String esId;
 
-	public IndexRequest(String alias, String dataType) {
-		this(alias, dataType, null);
-	}
+    public IndexRequest(String alias, String dataType) {
+        this(alias, dataType, null);
+    }
 
-	public IndexRequest(String alias, String dataType, @Nullable String esId) {
-		super("POST", esId != null ? String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId))
-				: String.format("/%s/%s", alias, dataType));
-		this.alias = alias;
-		this.esId = esId;
-	}
+    public IndexRequest(String alias, String dataType, @Nullable String esId) {
+        super("POST", esId != null ? String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId))
+                : String.format("/%s/%s", alias, dataType));
+        this.alias = alias;
+        this.esId = esId;
+    }
 
-	public IndexRequest(String alias, String dataType, @Nullable String esId, boolean refresh) {
-		super("POST", esId != null ? String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId))
-				: String.format("/%s/%s", alias, dataType),refresh);
-		this.alias = alias;
-		this.esId = esId;
-	}
+    public IndexRequest(String alias, String dataType, @Nullable String esId, boolean refresh) {
+        super("POST", esId != null ? String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId))
+                : String.format("/%s/%s", alias, dataType), refresh);
+        this.alias = alias;
+        this.esId = esId;
+    }
 
-	public void source(String content) {
-		super.setQuery(content);
-	}
+    public void source(String content) {
+        super.setQuery(content);
+    }
 
-	protected String getAlias() {
-		return this.alias;
-	}
+    protected String getAlias() {
+        return this.alias;
+    }
 
-	protected String getEsId() {
-		return this.esId;
-	}
+    protected String getEsId() {
+        return this.esId;
+    }
 
 }

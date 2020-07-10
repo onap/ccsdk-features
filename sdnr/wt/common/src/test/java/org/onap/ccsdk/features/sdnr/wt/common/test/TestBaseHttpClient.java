@@ -47,141 +47,139 @@ import com.sun.net.httpserver.HttpServer;
 @SuppressWarnings("restriction")
 public class TestBaseHttpClient {
 
-	public static final String HTTPMETHOD_GET = "GET";
-	public static final String HTTPMETHOD_POST = "POST";
-	public static final String HTTPMETHOD_PUT = "PUT";
-	public static final String HTTPMETHOD_DELETE = "DELETE";
-	public static final String HTTPMETHOD_OPTIONS = "OPTIONS";
-	public static final String RESPONSE_GET = "This is the response get";
-	public static final String RESPONSE_POST = "This is the response post";
-	public static final String RESPONSE_PUT = "This is the response put";
-	public static final String RESPONSE_DELETE = "This is the response delete";
-	public static final String RESPONSE_OPTIONS = "This is the response options";
-	private static final String TESTURI = "/mwtn/test";
-	private static HttpServer server;
-	private static ExecutorService httpThreadPool;
-	private static final int testPort = 54440;
+    public static final String HTTPMETHOD_GET = "GET";
+    public static final String HTTPMETHOD_POST = "POST";
+    public static final String HTTPMETHOD_PUT = "PUT";
+    public static final String HTTPMETHOD_DELETE = "DELETE";
+    public static final String HTTPMETHOD_OPTIONS = "OPTIONS";
+    public static final String RESPONSE_GET = "This is the response get";
+    public static final String RESPONSE_POST = "This is the response post";
+    public static final String RESPONSE_PUT = "This is the response put";
+    public static final String RESPONSE_DELETE = "This is the response delete";
+    public static final String RESPONSE_OPTIONS = "This is the response options";
+    private static final String TESTURI = "/mwtn/test";
+    private static HttpServer server;
+    private static ExecutorService httpThreadPool;
+    private static final int testPort = 54440;
 
-	@Test
-	public void test() {
-		MyHttpClient httpClient = new MyHttpClient("http://localhost:"+testPort, true);
-		Map<String, String> headers = new HashMap<String,String>();
-		headers.put("Authorization", BaseHTTPClient.getAuthorizationHeaderValue("admin", "admin"));
-		headers.put("Content-Type","application/json");
-		BaseHTTPResponse response=null;
-		try {
-			response= httpClient.sendRequest(TESTURI, HTTPMETHOD_GET, null, headers );
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-		assertNotNull(response);
-		assertEquals(RESPONSE_GET, response.body);
-		try {
-			response= httpClient.sendRequest(TESTURI, HTTPMETHOD_POST, "{}", headers );
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-		assertNotNull(response);
-		assertTrue(response.isSuccess());
-		System.out.println(response.toString());
-		assertEquals(RESPONSE_POST, response.body);
-		try {
-			response= httpClient.sendRequest(TESTURI, HTTPMETHOD_PUT, "{}", headers );
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-		assertNotNull(response);
-		assertEquals(RESPONSE_PUT, response.body);
-		try {
-			response= httpClient.sendRequest(TESTURI, HTTPMETHOD_DELETE, "{}", headers );
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-		assertNotNull(response);
-		assertEquals(RESPONSE_DELETE, response.body);
+    @Test
+    public void test() {
+        MyHttpClient httpClient = new MyHttpClient("http://localhost:" + testPort, true);
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Authorization", BaseHTTPClient.getAuthorizationHeaderValue("admin", "admin"));
+        headers.put("Content-Type", "application/json");
+        BaseHTTPResponse response = null;
+        try {
+            response = httpClient.sendRequest(TESTURI, HTTPMETHOD_GET, null, headers);
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+        assertNotNull(response);
+        assertEquals(RESPONSE_GET, response.body);
+        try {
+            response = httpClient.sendRequest(TESTURI, HTTPMETHOD_POST, "{}", headers);
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+        assertNotNull(response);
+        assertTrue(response.isSuccess());
+        System.out.println(response.toString());
+        assertEquals(RESPONSE_POST, response.body);
+        try {
+            response = httpClient.sendRequest(TESTURI, HTTPMETHOD_PUT, "{}", headers);
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+        assertNotNull(response);
+        assertEquals(RESPONSE_PUT, response.body);
+        try {
+            response = httpClient.sendRequest(TESTURI, HTTPMETHOD_DELETE, "{}", headers);
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+        assertNotNull(response);
+        assertEquals(RESPONSE_DELETE, response.body);
 
-	}
-
-
+    }
 
 
-	@BeforeClass
-	public static void initTestWebserver() throws IOException {
-		server = HttpServer.create(new InetSocketAddress("127.0.0.1", testPort), 0);
-		httpThreadPool = Executors.newFixedThreadPool(5);
-		server.setExecutor(httpThreadPool);
-		server.createContext(TESTURI, new MyHandler());
-		//server.createContext("/", new MyRootHandler());
-		server.setExecutor(null); // creates a default executor
-		server.start();
-		System.out.println("http server started");
-	}
-	@AfterClass
-	public static void stopTestWebserver() {
-		System.out.println("try to stop server");
-		if (server != null) {
-			server.stop(0);
-			httpThreadPool.shutdownNow();
-			System.out.println("http server stopped" );
-		}
-	}
 
-	private class MyHttpClient extends BaseHTTPClient{
+    @BeforeClass
+    public static void initTestWebserver() throws IOException {
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", testPort), 0);
+        httpThreadPool = Executors.newFixedThreadPool(5);
+        server.setExecutor(httpThreadPool);
+        server.createContext(TESTURI, new MyHandler());
+        //server.createContext("/", new MyRootHandler());
+        server.setExecutor(null); // creates a default executor
+        server.start();
+        System.out.println("http server started");
+    }
 
-		public MyHttpClient(String base, boolean trustAllCerts) {
-			super(base, trustAllCerts);
-		}
+    @AfterClass
+    public static void stopTestWebserver() {
+        System.out.println("try to stop server");
+        if (server != null) {
+            server.stop(0);
+            httpThreadPool.shutdownNow();
+            System.out.println("http server stopped");
+        }
+    }
 
-		@Override
-		public BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
-				throws IOException {
-			return super.sendRequest(uri, method, body, headers);
-		}
-	}
+    private class MyHttpClient extends BaseHTTPClient {
 
-	public static class MyHandler implements HttpHandler {
+        public MyHttpClient(String base, boolean trustAllCerts) {
+            super(base, trustAllCerts);
+        }
 
-		@Override
-		public void handle(HttpExchange t) throws IOException {
-			String method = t.getRequestMethod();
-			System.out.println(String.format("req received: %s %s" ,method,t.getRequestURI()));
-			OutputStream os = null;
-			try {
-				if (method.equals(HTTPMETHOD_GET)) {
-					t.sendResponseHeaders(200, RESPONSE_GET.length());
-					os = t.getResponseBody();
-					os.write(RESPONSE_GET.getBytes());
-				} else if (method.equals(HTTPMETHOD_POST)) {
-					t.sendResponseHeaders(200, RESPONSE_POST.length());
-					os = t.getResponseBody();
-					os.write(RESPONSE_POST.getBytes());
-				} else if (method.equals(HTTPMETHOD_PUT)) {
-					t.sendResponseHeaders(200, RESPONSE_PUT.length());
-					os = t.getResponseBody();
-					os.write(RESPONSE_PUT.getBytes());
-				} else if (method.equals(HTTPMETHOD_DELETE)) {
-					t.sendResponseHeaders(200, RESPONSE_DELETE.length());
-					os = t.getResponseBody();
-					os.write(RESPONSE_DELETE.getBytes());
-				} else if (method.equals(HTTPMETHOD_OPTIONS)) {
-					t.sendResponseHeaders(200, RESPONSE_OPTIONS.length());
-					//os = t.getResponseBody();
-					//os.write(RESPONSE_OPTIONS.getBytes());
-				} else {
-					t.sendResponseHeaders(404, 0);
-				}
-				System.out.println("req handled successful");
+        @Override
+        public BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
+                throws IOException {
+            return super.sendRequest(uri, method, body, headers);
+        }
+    }
 
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
-			}
-			finally {
-				if (os != null)
-				{
-					os.flush();
-					os.close();
-				}
-			}
-		}
-	}
+    public static class MyHandler implements HttpHandler {
+
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            String method = t.getRequestMethod();
+            System.out.println(String.format("req received: %s %s", method, t.getRequestURI()));
+            OutputStream os = null;
+            try {
+                if (method.equals(HTTPMETHOD_GET)) {
+                    t.sendResponseHeaders(200, RESPONSE_GET.length());
+                    os = t.getResponseBody();
+                    os.write(RESPONSE_GET.getBytes());
+                } else if (method.equals(HTTPMETHOD_POST)) {
+                    t.sendResponseHeaders(200, RESPONSE_POST.length());
+                    os = t.getResponseBody();
+                    os.write(RESPONSE_POST.getBytes());
+                } else if (method.equals(HTTPMETHOD_PUT)) {
+                    t.sendResponseHeaders(200, RESPONSE_PUT.length());
+                    os = t.getResponseBody();
+                    os.write(RESPONSE_PUT.getBytes());
+                } else if (method.equals(HTTPMETHOD_DELETE)) {
+                    t.sendResponseHeaders(200, RESPONSE_DELETE.length());
+                    os = t.getResponseBody();
+                    os.write(RESPONSE_DELETE.getBytes());
+                } else if (method.equals(HTTPMETHOD_OPTIONS)) {
+                    t.sendResponseHeaders(200, RESPONSE_OPTIONS.length());
+                    //os = t.getResponseBody();
+                    //os.write(RESPONSE_OPTIONS.getBytes());
+                } else {
+                    t.sendResponseHeaders(404, 0);
+                }
+                System.out.println("req handled successful");
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            } finally {
+                if (os != null) {
+                    os.flush();
+                    os.close();
+                }
+            }
+        }
+    }
 }

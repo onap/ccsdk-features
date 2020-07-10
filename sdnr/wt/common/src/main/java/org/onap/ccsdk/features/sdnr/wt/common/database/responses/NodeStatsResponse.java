@@ -31,83 +31,86 @@ import org.json.JSONObject;
 
 public class NodeStatsResponse extends BaseResponse {
 
-	private NodesInfo nodesInfo;
-	private Map<String,NodeStats> nodeStats;
-	
-	public NodesInfo getNodesInfo() {
-		return this.nodesInfo;
-	}
-	public Map<String,NodeStats> getNodeStatistics(){
-		return this.nodeStats;
-	}
-	public NodeStatsResponse(Response response) throws UnsupportedOperationException, IOException, JSONException {
-		super(response);
-		
-		JSONObject o = this.getJson(response);
-		String k;
-		if (o != null) {
-			this.nodesInfo = new NodesInfo(o.getJSONObject("_nodes"));
-			this.nodeStats = new HashMap<>();
-			if(this.nodesInfo.successful>0) {
-				JSONObject stats = o.getJSONObject("nodes");
-				for (Object key : stats.keySet()) {
-					k=String.valueOf(key);
-					this.nodeStats.put(k, new NodeStats(k,stats.getJSONObject(k)));
-				}
-			}
-		}
-	}
+    private NodesInfo nodesInfo;
+    private Map<String, NodeStats> nodeStats;
 
-	
-	
-	public static class NodesInfo{
-		@Override
-		public String toString() {
-			return "NodesInfo [total=" + total + ", successful=" + successful + ", failed=" + failed + "]";
-		}
+    public NodesInfo getNodesInfo() {
+        return this.nodesInfo;
+    }
 
-		public final int total;
-		public final int successful;
-		public final int failed;
+    public Map<String, NodeStats> getNodeStatistics() {
+        return this.nodeStats;
+    }
 
-		public NodesInfo(JSONObject o) {
-			this.total =o.getInt("total");
-			this.successful = o.getInt("successful");
-			this.failed = o.getInt("failed");
-		}
-	}
-	public static class NodeStats{
-		public final String name;
-		public final NodeTotalDiskStats total;
-		
-		@Override
-		public String toString() {
-			return "NodeStats [name=" + name + ", total=" + total + "]";
-		}
+    public NodeStatsResponse(Response response) throws UnsupportedOperationException, IOException, JSONException {
+        super(response);
 
-		public NodeStats(String name,JSONObject o) {
-			this.name = name;
-			this.total = new NodeTotalDiskStats(o.getJSONObject("fs").getJSONObject("total"));
-		}
-	}
-	public static class NodeTotalDiskStats{
-		public final long total;
-		public final long available;
-		public final long free;
+        JSONObject o = this.getJson(response);
+        String k;
+        if (o != null) {
+            this.nodesInfo = new NodesInfo(o.getJSONObject("_nodes"));
+            this.nodeStats = new HashMap<>();
+            if (this.nodesInfo.successful > 0) {
+                JSONObject stats = o.getJSONObject("nodes");
+                for (Object key : stats.keySet()) {
+                    k = String.valueOf(key);
+                    this.nodeStats.put(k, new NodeStats(k, stats.getJSONObject(k)));
+                }
+            }
+        }
+    }
 
-		@Override
-		public String toString() {
-			return "NodeTotalDiskStats [total=" + total + ", available=" + available + ", free=" + free
-					+ ", getUseDiskPercentage()=" + getUseDiskPercentage() + "]";
-		}
-	
-		public float getUseDiskPercentage() {
-			return (total-available)*100.0f/(float)total;
-		}
-		public NodeTotalDiskStats(JSONObject o) {
-			this.total = o.getLong("total_in_bytes");
-			this.available = o.getLong("available_in_bytes");
-			this.free = o.getLong("free_in_bytes");
-		}
-	}
+
+
+    public static class NodesInfo {
+        @Override
+        public String toString() {
+            return "NodesInfo [total=" + total + ", successful=" + successful + ", failed=" + failed + "]";
+        }
+
+        public final int total;
+        public final int successful;
+        public final int failed;
+
+        public NodesInfo(JSONObject o) {
+            this.total = o.getInt("total");
+            this.successful = o.getInt("successful");
+            this.failed = o.getInt("failed");
+        }
+    }
+    public static class NodeStats {
+        public final String name;
+        public final NodeTotalDiskStats total;
+
+        @Override
+        public String toString() {
+            return "NodeStats [name=" + name + ", total=" + total + "]";
+        }
+
+        public NodeStats(String name, JSONObject o) {
+            this.name = name;
+            this.total = new NodeTotalDiskStats(o.getJSONObject("fs").getJSONObject("total"));
+        }
+    }
+    public static class NodeTotalDiskStats {
+        public final long total;
+        public final long available;
+        public final long free;
+
+        @Override
+        public String toString() {
+            return "NodeTotalDiskStats [total=" + total + ", available=" + available + ", free=" + free
+                    + ", getUseDiskPercentage()=" + getUseDiskPercentage() + "]";
+        }
+
+        public float getUseDiskPercentage() {
+            return (total - available) * 100.0f / (float) total;
+        }
+
+        public NodeTotalDiskStats(JSONObject o) {
+            this.total = o.getLong("total_in_bytes");
+            this.available = o.getLong("available_in_bytes");
+            this.free = o.getLong("free_in_bytes");
+        }
+    }
 }

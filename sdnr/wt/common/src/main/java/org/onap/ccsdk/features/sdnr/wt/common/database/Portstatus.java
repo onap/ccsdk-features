@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.common.database;
 
@@ -58,11 +58,11 @@ public class Portstatus {
 
     public static boolean isAvailable(HostInfo... hosts) {
         for (HostInfo host : hosts) {
-           if (!isAvailable(host.hostname, host.port)) {
-               return false;
-           }
-       }
-       return true;
+            if (!isAvailable(host.hostname, host.port)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static boolean waitSecondsTillAvailable(long timeoutSeconds, HostInfo... hosts) {
@@ -72,7 +72,7 @@ public class Portstatus {
         }
         long waitSeconds = 0;
         boolean res = false;
-        while ( (timeoutSeconds == 0 || ++waitSeconds < timeoutSeconds) && !(res = isAvailable(hosts))) {
+        while ((timeoutSeconds == 0 || ++waitSeconds < timeoutSeconds) && !(res = isAvailable(hosts))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -82,7 +82,7 @@ public class Portstatus {
         return res;
     }
 
-    public static boolean waitSecondsTillAvailable(long timeoutSeconds, String dnsName, int port ) {
+    public static boolean waitSecondsTillAvailable(long timeoutSeconds, String dnsName, int port) {
         return waitSecondsTillAvailable(timeoutSeconds, new HostInfo(dnsName, port));
     }
 

@@ -25,9 +25,9 @@ import java.io.File;
 
 public class ResourceFileLoader {
 
-	public static File getFile(Object o, String fileName) {
-		ClassLoader classLoader = o.getClass().getClassLoader();
-		return new File(classLoader.getResource(fileName).getFile());
-	}
+    public static File getFile(Object o, String fileName) {
+        ClassLoader classLoader = o.getClass().getClassLoader();
+        return new File(classLoader.getResource(fileName).getFile());
+    }
 
 }

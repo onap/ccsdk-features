@@ -25,6 +25,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 
 public interface DatabaseConfig {
 
-	HostInfo[] getHosts();
+    HostInfo[] getHosts();
 
 }

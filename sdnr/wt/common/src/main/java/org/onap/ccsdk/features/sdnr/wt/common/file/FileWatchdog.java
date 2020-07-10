@@ -26,8 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Check every now and then that a certain file has not changed. If it has, then call the
- * {@link #doOnChange} method.
+ * Check every now and then that a certain file has not changed. If it has, then call the {@link #doOnChange} method.
  *
  * @author JunHo Yoon
  * @since 3.1.1
@@ -78,7 +77,7 @@ public abstract class FileWatchdog extends Thread {
         try {
             fileExists = file.exists();
         } catch (SecurityException e) {
-            LOGGER.warn("Was not allowed to read check file existence, file:[{}].",filename);
+            LOGGER.warn("Was not allowed to read check file existence, file:[{}].", filename);
             this.interrupt(); // there is no point in continuing
             return;
         }

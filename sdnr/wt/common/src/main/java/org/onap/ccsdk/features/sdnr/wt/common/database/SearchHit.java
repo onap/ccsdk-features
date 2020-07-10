@@ -33,7 +33,7 @@ public class SearchHit {
 
     public SearchHit(JSONObject o) {
         this.raw = o;
-        this.index=o.getString("_index");
+        this.index = o.getString("_index");
         this.type = o.getString("_type");
         this.id = o.getString("_id");
         this.source = o.getJSONObject("_source");
@@ -42,9 +42,11 @@ public class SearchHit {
     public String getIndex() {
         return this.index;
     }
+
     public String getType() {
         return this.type;
     }
+
     public String getId() {
         return this.id;
     }
@@ -52,9 +54,11 @@ public class SearchHit {
     public JSONObject getSource() {
         return this.source;
     }
+
     public String getSourceAsString() {
         return this.source.toString();
     }
+
     public JSONObject getRaw() {
         return this.raw;
     }

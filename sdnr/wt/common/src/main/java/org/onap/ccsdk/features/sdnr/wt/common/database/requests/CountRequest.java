@@ -21,12 +21,12 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-public class CountRequest extends BaseRequest{
+public class CountRequest extends BaseRequest {
 
-	
-	public CountRequest(String alias,String dataType) {
-		super("GET",String.format("/%s/%s/_count",alias,dataType));
-	}
 
-	
+    public CountRequest(String alias, String dataType) {
+        super("GET", String.format("/%s/%s/_count", alias, dataType));
+    }
+
+
 }

@@ -28,89 +28,89 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 
 public class UpdateByQueryRequest extends BaseRequest {
 
-	private JSONObject params;
-	private final String alias;
-	
-	public UpdateByQueryRequest(String alias, String dataType) {
-		this(alias, dataType, false);
-	}
+    private JSONObject params;
+    private final String alias;
 
-	public UpdateByQueryRequest(String alias, String dataType, boolean refresh) {
-		super("POST", String.format("/%s/%s/_update_by_query", alias, dataType), refresh);
-		this.alias = alias;
-		this.params = null;
-	}
+    public UpdateByQueryRequest(String alias, String dataType) {
+        this(alias, dataType, false);
+    }
 
-	public void source(String esId, JSONObject map) {
-		this.source(map, QueryBuilders.matchQuery("_id", esId));
-	}
+    public UpdateByQueryRequest(String alias, String dataType, boolean refresh) {
+        super("POST", String.format("/%s/%s/_update_by_query", alias, dataType), refresh);
+        this.alias = alias;
+        this.params = null;
+    }
 
-	public void source(JSONObject map, QueryBuilder query) {
-		JSONObject outer = new JSONObject();
-		outer.put("query", query.getInner());
-		JSONObject script = new JSONObject();
-		script.put("lang", "painless");
-		script.put("inline", this.createInline(map));
-		if(this.params!=null) {
-			script.put("params",this.params);
-		}
-		outer.put("script", script);
-		super.setQuery(outer.toString());
-	}
+    public void source(String esId, JSONObject map) {
+        this.source(map, QueryBuilders.matchQuery("_id", esId));
+    }
 
-	private String createInline(JSONObject map) {
-		String s = "", k, pkey;
-		int i = 1;
-		Object value;
-		for (Object key : map.keySet()) {
-			k = String.valueOf(key);
-			value = map.get(k);
-			if (value instanceof JSONObject || value instanceof JSONArray) {
-				pkey = String.format("p%d", i++);
-				if (value instanceof JSONObject) {
-					this.withParam(pkey, (JSONObject) value);
-				} else {
-					this.withParam(pkey, (JSONArray) value);
-				}
+    public void source(JSONObject map, QueryBuilder query) {
+        JSONObject outer = new JSONObject();
+        outer.put("query", query.getInner());
+        JSONObject script = new JSONObject();
+        script.put("lang", "painless");
+        script.put("inline", this.createInline(map));
+        if (this.params != null) {
+            script.put("params", this.params);
+        }
+        outer.put("script", script);
+        super.setQuery(outer.toString());
+    }
 
-				s += String.format("ctx._source['%s']=%s;", key, "params." + pkey);
-			} else {
-				s += String.format("ctx._source['%s']=%s;", key, escpaped(value));
-			}
-		}
-		return s;
-	}
+    private String createInline(JSONObject map) {
+        String s = "", k, pkey;
+        int i = 1;
+        Object value;
+        for (Object key : map.keySet()) {
+            k = String.valueOf(key);
+            value = map.get(k);
+            if (value instanceof JSONObject || value instanceof JSONArray) {
+                pkey = String.format("p%d", i++);
+                if (value instanceof JSONObject) {
+                    this.withParam(pkey, (JSONObject) value);
+                } else {
+                    this.withParam(pkey, (JSONArray) value);
+                }
 
-	private UpdateByQueryRequest withParam(String key, JSONArray p) {
-		if (this.params == null) {
-			this.params = new JSONObject();
-		}
-		this.params.put(key, p);
-		return this;
-	}
+                s += String.format("ctx._source['%s']=%s;", key, "params." + pkey);
+            } else {
+                s += String.format("ctx._source['%s']=%s;", key, escpaped(value));
+            }
+        }
+        return s;
+    }
 
-	private UpdateByQueryRequest withParam(String key, JSONObject p) {
-		if (this.params == null) {
-			this.params = new JSONObject();
-		}
-		this.params.put(key, p);
-		return this;
-	}
+    private UpdateByQueryRequest withParam(String key, JSONArray p) {
+        if (this.params == null) {
+            this.params = new JSONObject();
+        }
+        this.params.put(key, p);
+        return this;
+    }
 
-	private String escpaped(Object value) {
-		String s = "";
-		if (value instanceof Boolean || value instanceof Integer || value instanceof Long || value instanceof Float
-				|| value instanceof Double) {
-			s = String.valueOf(value);
-		} else {
-			s = "\"" + String.valueOf(value) + "\"";
-		}
-		return s;
+    private UpdateByQueryRequest withParam(String key, JSONObject p) {
+        if (this.params == null) {
+            this.params = new JSONObject();
+        }
+        this.params.put(key, p);
+        return this;
+    }
 
-	}
+    private String escpaped(Object value) {
+        String s = "";
+        if (value instanceof Boolean || value instanceof Integer || value instanceof Long || value instanceof Float
+                || value instanceof Double) {
+            s = String.valueOf(value);
+        } else {
+            s = "\"" + String.valueOf(value) + "\"";
+        }
+        return s;
 
-	protected String getAlias() {
-		return this.alias;
-	}
+    }
+
+    protected String getAlias() {
+        return this.alias;
+    }
 
 }

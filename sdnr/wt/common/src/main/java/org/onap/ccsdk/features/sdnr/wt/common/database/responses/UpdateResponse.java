@@ -25,45 +25,34 @@ import org.elasticsearch.client.Response;
 import org.json.JSONObject;
 
 /**
- {
-"_index": "networkelement-connection-v1",
-"_type": "networkelement-connection",
-"_id": "sim2",
-"_version": 2,
-"result": "updated",
-"_shards": {
-"total": 2,
-"successful": 1,
-"failed": 0
-},
-"_seq_no": 5,
-"_primary_term": 1
-}
+ * { "_index": "networkelement-connection-v1", "_type": "networkelement-connection", "_id": "sim2", "_version": 2,
+ * "result": "updated", "_shards": { "total": 2, "successful": 1, "failed": 0 }, "_seq_no": 5, "_primary_term": 1 }
+ * 
  * @author jack
  *
  */
-public class UpdateResponse extends BaseResponse{
-	
-	private String result;
+public class UpdateResponse extends BaseResponse {
 
-	public UpdateResponse(Response response) {
-		super(response);
-		JSONObject o = this.getJson(response);
-		
-		this.result=o.getString("result");
-	}
-	
-	public boolean succeeded() {
-		if(this.result==null) {
-			return false;
-		}
-		String s=this.result.toLowerCase();
-		return s.equals("updated") || s.equals("created");
-	}
+    private String result;
 
-	@Override
-	public String toString() {
-		return "UpdateResponse [result=" + result + "]";
-	}
-	
+    public UpdateResponse(Response response) {
+        super(response);
+        JSONObject o = this.getJson(response);
+
+        this.result = o.getString("result");
+    }
+
+    public boolean succeeded() {
+        if (this.result == null) {
+            return false;
+        }
+        String s = this.result.toLowerCase();
+        return s.equals("updated") || s.equals("created");
+    }
+
+    @Override
+    public String toString() {
+        return "UpdateResponse [result=" + result + "]";
+    }
+
 }

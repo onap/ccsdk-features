@@ -31,142 +31,143 @@ import org.onap.ccsdk.features.sdnr.wt.common.test.JSONAssert;
 
 public class TestJsonAssert {
 
-	@Test
-	public void testGenericTypes() {
-		try {
-			JSONAssert.assertEquals("test boolean", "{ \"test\":true}", "{ \"test\":true}", true);
-		} catch (JSONException e) {
-			fail(e.getMessage());
-		}
-		try {
-			JSONAssert.assertEquals("test int", "{ \"test\":2}", "{ \"test\":2}", true);
-		} catch (JSONException e) {
-			fail(e.getMessage());
-		}
-		try {
-			JSONAssert.assertEquals("test string", "{ \"test\":\"abc\"}", "{ \"test\":\"abc\"}", true);
-		} catch (JSONException e) {
-			fail(e.getMessage());
-		}
+    @Test
+    public void testGenericTypes() {
+        try {
+            JSONAssert.assertEquals("test boolean", "{ \"test\":true}", "{ \"test\":true}", true);
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
+        try {
+            JSONAssert.assertEquals("test int", "{ \"test\":2}", "{ \"test\":2}", true);
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
+        try {
+            JSONAssert.assertEquals("test string", "{ \"test\":\"abc\"}", "{ \"test\":\"abc\"}", true);
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
 
-	}
+    }
 
-	@Test
-	public void testGenericTypesFails() {
-		try {
-			JSONAssert.assertEquals("test boolean", "{ \"test\":true}", "{ \"test\":false}", true);
-			fail("test boolean not failed, but has to");
-		} catch (JSONException e) {
-			fail("problem with json");
-		} catch (AssertionError e) {
+    @Test
+    public void testGenericTypesFails() {
+        try {
+            JSONAssert.assertEquals("test boolean", "{ \"test\":true}", "{ \"test\":false}", true);
+            fail("test boolean not failed, but has to");
+        } catch (JSONException e) {
+            fail("problem with json");
+        } catch (AssertionError e) {
 
-		}
-		try {
-			JSONAssert.assertEquals("test int", "{ \"test\":2}", "{ \"test\":3}", true);
-			fail("test int not failed, but has to");
-		} catch (JSONException e) {
-			fail("problem with json");
-		} catch (AssertionError e) {
+        }
+        try {
+            JSONAssert.assertEquals("test int", "{ \"test\":2}", "{ \"test\":3}", true);
+            fail("test int not failed, but has to");
+        } catch (JSONException e) {
+            fail("problem with json");
+        } catch (AssertionError e) {
 
-		}
-		try {
-			JSONAssert.assertEquals("test string", "{ \"test\":\"abc\"}", "{ \"test\":\"abcd\"}", true);
-			fail("test string not failed, but has to");
-		} catch (JSONException e) {
-			fail("problem with json");
-		} catch (AssertionError e) {
+        }
+        try {
+            JSONAssert.assertEquals("test string", "{ \"test\":\"abc\"}", "{ \"test\":\"abcd\"}", true);
+            fail("test string not failed, but has to");
+        } catch (JSONException e) {
+            fail("problem with json");
+        } catch (AssertionError e) {
 
-		}
+        }
 
-	}
+    }
 
-	@Test
-	public void testObject() {
-		try {
-			JSONAssert.assertEquals("test object", "{ \"test\":{\"more\":{\"x\":1,\"y\":\"2\",\"z\":{}}}}",
-					"{ \"test\":{\"more\":{\"x\":1,\"z\":{},\"y\":\"2\"}}}", true);
-		} catch (JSONException e) {
-			fail(e.getMessage());
-		}
-	}
+    @Test
+    public void testObject() {
+        try {
+            JSONAssert.assertEquals("test object", "{ \"test\":{\"more\":{\"x\":1,\"y\":\"2\",\"z\":{}}}}",
+                    "{ \"test\":{\"more\":{\"x\":1,\"z\":{},\"y\":\"2\"}}}", true);
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
+    }
 
-	@Test
-	public void testObjectFails() {
-		try {
-			JSONAssert.assertEquals("test object", "{ \"test\":{\"more\":{\"x\":1,\"y\":\"2\",\"z\":{}}}}",
-					"{ \"test\":{\"more\":{\"x\":1,\"z\":{}}}}", true);
-			fail("test object not failed, but has to");
-		} catch (JSONException e) {
-			fail("problem with json");
-		} catch (AssertionError e) {
+    @Test
+    public void testObjectFails() {
+        try {
+            JSONAssert.assertEquals("test object", "{ \"test\":{\"more\":{\"x\":1,\"y\":\"2\",\"z\":{}}}}",
+                    "{ \"test\":{\"more\":{\"x\":1,\"z\":{}}}}", true);
+            fail("test object not failed, but has to");
+        } catch (JSONException e) {
+            fail("problem with json");
+        } catch (AssertionError e) {
 
-		}
-	}
+        }
+    }
 
-	@Test
-	public void testArrayStrict() {
-		try {
-			JSONAssert.assertEquals("test array strict", "{ \"test\":[\"a\",\"b\",\"c\"]}",
-					"{ \"test\":[\"a\",\"b\",\"c\"]}", true);
-		} catch (JSONException e) {
-			fail(e.getMessage());
-		}
-	}
+    @Test
+    public void testArrayStrict() {
+        try {
+            JSONAssert.assertEquals("test array strict", "{ \"test\":[\"a\",\"b\",\"c\"]}",
+                    "{ \"test\":[\"a\",\"b\",\"c\"]}", true);
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
+    }
 
-	@Test
-	public void testArrayStrictFails() {
-		try {
-			JSONAssert.assertEquals("test array strict", "{ \"test\":[\"a\",\"b\",\"c\"]}",
-					"{ \"test\":[\"a\",\"c\",\"b\"]}", true);
-			fail("test object not failed, but has to");
-		} catch (JSONException e) {
-			fail("problem with json");
-		} catch (AssertionError e) {
+    @Test
+    public void testArrayStrictFails() {
+        try {
+            JSONAssert.assertEquals("test array strict", "{ \"test\":[\"a\",\"b\",\"c\"]}",
+                    "{ \"test\":[\"a\",\"c\",\"b\"]}", true);
+            fail("test object not failed, but has to");
+        } catch (JSONException e) {
+            fail("problem with json");
+        } catch (AssertionError e) {
 
-		}
-	}
+        }
+    }
 
-	@Test
-	public void testArrayNonStrict() {
-		try {
-			JSONAssert.assertEquals("test array strict", "{ \"test\":[\"a\",\"b\",\"c\"]}",
-					"{ \"test\":[\"a\",\"c\",\"b\"]}", false);
-		} catch (JSONException e) {
-			fail(e.getMessage());
-		}
-	}
+    @Test
+    public void testArrayNonStrict() {
+        try {
+            JSONAssert.assertEquals("test array strict", "{ \"test\":[\"a\",\"b\",\"c\"]}",
+                    "{ \"test\":[\"a\",\"c\",\"b\"]}", false);
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
+    }
 
-	@Test
-	public void testArrayNonStrictFails() {
-		try {
-			JSONAssert.assertEquals("test array strict", "{ \"test\":[\"a\",\"b\",\"c\"]}",
-					"{ \"test\":[\"a\",\"c\",\"b\",\"d\"]}", false);
-			fail("test object not failed, but has to");
-		} catch (JSONException e) {
-			fail("problem with json");
-		} catch (AssertionError e) {
+    @Test
+    public void testArrayNonStrictFails() {
+        try {
+            JSONAssert.assertEquals("test array strict", "{ \"test\":[\"a\",\"b\",\"c\"]}",
+                    "{ \"test\":[\"a\",\"c\",\"b\",\"d\"]}", false);
+            fail("test object not failed, but has to");
+        } catch (JSONException e) {
+            fail("problem with json");
+        } catch (AssertionError e) {
 
-		}
-		try {
-			JSONAssert.assertEquals("test array strict", "{ \"test\":[\"a\",\"b\",\"c\"]}",
-					"{ \"test\":[\"a\",\"b\",\"d\"]}", false);
-			fail("test object not failed, but has to");
-		} catch (JSONException e) {
-			fail("problem with json");
-		} catch (AssertionError e) {
+        }
+        try {
+            JSONAssert.assertEquals("test array strict", "{ \"test\":[\"a\",\"b\",\"c\"]}",
+                    "{ \"test\":[\"a\",\"b\",\"d\"]}", false);
+            fail("test object not failed, but has to");
+        } catch (JSONException e) {
+            fail("problem with json");
+        } catch (AssertionError e) {
 
-		}
-	}
+        }
+    }
 
-	@Test
-	public void testNullParamCheck() {
+    @Test
+    public void testNullParamCheck() {
 
-		try {
+        try {
 
-			HtAssert.nonnull("test", new JSONArray(), null);
-			fail("exception not thrown");
-		} catch (Exception e) {
-			assertTrue(e.getMessage().contains("org.onap.ccsdk.features.sdnr.wt.common.test.TestJsonAssert") && e.getMessage().contains("testNullParamCheck"));
-		}
-	}
+            HtAssert.nonnull("test", new JSONArray(), null);
+            fail("exception not thrown");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("org.onap.ccsdk.features.sdnr.wt.common.test.TestJsonAssert")
+                    && e.getMessage().contains("testNullParamCheck"));
+        }
+    }
 }

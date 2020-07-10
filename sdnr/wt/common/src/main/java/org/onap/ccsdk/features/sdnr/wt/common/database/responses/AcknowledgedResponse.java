@@ -24,19 +24,19 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.responses;
 import org.elasticsearch.client.Response;
 import org.json.JSONObject;
 
-public class AcknowledgedResponse extends BaseResponse{
+public class AcknowledgedResponse extends BaseResponse {
 
-	private boolean isAcknowledged;
+    private boolean isAcknowledged;
 
-	public AcknowledgedResponse(Response response) {
-		super(response);
-		JSONObject o = this.getJson(response);
-		if(o!=null) {
-			this.isAcknowledged=o.getBoolean("acknowledged");
-		}
-	}
+    public AcknowledgedResponse(Response response) {
+        super(response);
+        JSONObject o = this.getJson(response);
+        if (o != null) {
+            this.isAcknowledged = o.getBoolean("acknowledged");
+        }
+    }
 
-	public boolean isAcknowledged() {
-		return this.isAcknowledged;
-	}
+    public boolean isAcknowledged() {
+        return this.isAcknowledged;
+    }
 }
