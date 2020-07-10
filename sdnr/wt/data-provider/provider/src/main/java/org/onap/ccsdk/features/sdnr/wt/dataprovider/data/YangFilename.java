@@ -29,39 +29,46 @@ import java.util.regex.Pattern;
 
 public class YangFilename {
 
-	private static final String REGEX = "([^\\/]*)@([0-9]{4}-[0-9]{2}-[0-9]{2}).yang";
-	private static final Pattern pattern = Pattern.compile(REGEX, Pattern.MULTILINE);
-	private final String filename;
-	private final Matcher matcher;
-	private Date revision;
-	private String module; 
-	public static Date parseRevision(String sRevision) throws ParseException {
-		final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-		return fmt.parse(sRevision);
-	}
-	public YangFilename(String fn) throws ParseException {
-		this.filename = fn;
-		matcher = pattern.matcher(this.filename);
-		if(!matcher.find()) {
-			throw new ParseException("unknown filename format", 0);
-		}
-		this.module= matcher.group(1);
-		this.revision=parseRevision(matcher.group(2));
-		
-	}
-	public static String createFilename(String module, String rev) {
-		return String.format("%s@%s.yang", module,rev);
-	}
-	public YangFilename(String module, String rev) throws ParseException {
-		this(createFilename(module, rev));
-	}
-	public String getFilename() {
-		return this.filename;
-	}
-	public Date getRevision() {
-		return this.revision;
-	}
-	public String getModule() {
-		return this.module;
-	}
+    private static final String REGEX = "([^\\/]*)@([0-9]{4}-[0-9]{2}-[0-9]{2}).yang";
+    private static final Pattern pattern = Pattern.compile(REGEX, Pattern.MULTILINE);
+    private final String filename;
+    private final Matcher matcher;
+    private Date revision;
+    private String module;
+
+    public static Date parseRevision(String sRevision) throws ParseException {
+        final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+        return fmt.parse(sRevision);
+    }
+
+    public YangFilename(String fn) throws ParseException {
+        this.filename = fn;
+        matcher = pattern.matcher(this.filename);
+        if (!matcher.find()) {
+            throw new ParseException("unknown filename format", 0);
+        }
+        this.module = matcher.group(1);
+        this.revision = parseRevision(matcher.group(2));
+
+    }
+
+    public static String createFilename(String module, String rev) {
+        return String.format("%s@%s.yang", module, rev);
+    }
+
+    public YangFilename(String module, String rev) throws ParseException {
+        this(createFilename(module, rev));
+    }
+
+    public String getFilename() {
+        return this.filename;
+    }
+
+    public Date getRevision() {
+        return this.revision;
+    }
+
+    public String getModule() {
+        return this.module;
+    }
 }

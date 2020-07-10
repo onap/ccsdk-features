@@ -29,5 +29,5 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
  */
 public class TestDataTreeSerialization {
 
-	//YangToolsMapper
+    //YangToolsMapper
 }

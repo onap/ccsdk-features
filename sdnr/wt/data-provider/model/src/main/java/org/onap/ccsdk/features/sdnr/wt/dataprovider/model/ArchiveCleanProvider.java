@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 import java.util.Date;
@@ -23,6 +23,7 @@ public interface ArchiveCleanProvider {
 
     /**
      * Remove all index data older, than specified from faultlog and eventlog
+     * 
      * @param olderAreOutdated time to specify older elements
      * @return number of removed elements
      */
@@ -30,6 +31,7 @@ public interface ArchiveCleanProvider {
 
     /**
      * Get number of elements older then
+     * 
      * @param olderAreOutdated date to compare with and specify older elements
      * @return number of elements
      */

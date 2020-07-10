@@ -42,169 +42,167 @@ import org.slf4j.LoggerFactory;
 
 public class YangFileProvider {
 
-	private static final Logger LOG = LoggerFactory.getLogger(YangFileProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(YangFileProvider.class);
 
-	private static final FilenameFilter yangFilenameFilter = new FilenameFilter() {
+    private static final FilenameFilter yangFilenameFilter = new FilenameFilter() {
 
-		@Override
-		public boolean accept(File dir, String name) {
-			return name.toLowerCase().endsWith(".yang");
-		}
-	};
+        @Override
+        public boolean accept(File dir, String name) {
+            return name.toLowerCase().endsWith(".yang");
+        }
+    };
 
-	private static final int BUFFER_SIZE = 1024;
+    private static final int BUFFER_SIZE = 1024;
 
-	private final Path mainSourcePath;
-	private final List<Path> additionalSources;
+    private final Path mainSourcePath;
+    private final List<Path> additionalSources;
 
-	public YangFileProvider(String path) {
-		this.mainSourcePath = new File(path).toPath();
-		this.additionalSources = new ArrayList<>();
-	}
+    public YangFileProvider(String path) {
+        this.mainSourcePath = new File(path).toPath();
+        this.additionalSources = new ArrayList<>();
+    }
 
-	public boolean hasFileForModule(String module, String version) {
-		return this.mainSourcePath.resolve(YangFilename.createFilename(module, version)).toFile().exists();
-	}
+    public boolean hasFileForModule(String module, String version) {
+        return this.mainSourcePath.resolve(YangFilename.createFilename(module, version)).toFile().exists();
+    }
 
-	public boolean hasFileForModule(String module) {
-		return this.findYangFiles(module).size() > 0;
-	}
+    public boolean hasFileForModule(String module) {
+        return this.findYangFiles(module).size() > 0;
+    }
 
-	private List<YangFilename> findYangFiles(String module) {
-		List<YangFilename> list = new ArrayList<>();
-		String[] files = this.mainSourcePath.toFile().list(yangFilenameFilter);
-		YangFilename yangfile;
-		for (String file : files) {
-			files = this.mainSourcePath.toFile().list(yangFilenameFilter);
-			for (String fn : files) {
-				try {
-					yangfile = new YangFilename(this.mainSourcePath.resolve(fn).toString());
-					if (yangfile.getModule().equals(module)) {
-						list.add(yangfile);
-					}
-				} catch (ParseException e) {
-					LOG.warn("unable to handle yangfile {}: {}", file, e);
-				}
-			}
-		}
-		for (Path addPath : this.additionalSources) {
-			files = addPath.toFile().list(yangFilenameFilter);
-			for (String file : files) {
-				try {
-					yangfile = new YangFilename(addPath.resolve(file).toString());
-					if (yangfile.getModule().equals(module)) {
-						list.add(yangfile);
-					}
-				} catch (ParseException e) {
-					LOG.warn("unable to handle yangfile {}: {}", file, e);
-				}
-			}
-		}
-		return list;
-	}
+    private List<YangFilename> findYangFiles(String module) {
+        List<YangFilename> list = new ArrayList<>();
+        String[] files = this.mainSourcePath.toFile().list(yangFilenameFilter);
+        YangFilename yangfile;
+        for (String file : files) {
+            files = this.mainSourcePath.toFile().list(yangFilenameFilter);
+            for (String fn : files) {
+                try {
+                    yangfile = new YangFilename(this.mainSourcePath.resolve(fn).toString());
+                    if (yangfile.getModule().equals(module)) {
+                        list.add(yangfile);
+                    }
+                } catch (ParseException e) {
+                    LOG.warn("unable to handle yangfile {}: {}", file, e);
+                }
+            }
+        }
+        for (Path addPath : this.additionalSources) {
+            files = addPath.toFile().list(yangFilenameFilter);
+            for (String file : files) {
+                try {
+                    yangfile = new YangFilename(addPath.resolve(file).toString());
+                    if (yangfile.getModule().equals(module)) {
+                        list.add(yangfile);
+                    }
+                } catch (ParseException e) {
+                    LOG.warn("unable to handle yangfile {}: {}", file, e);
+                }
+            }
+        }
+        return list;
+    }
 
-	/**
-	 * get yang file from source with specified version or least newer one if
-	 * version is null then the latest one
-	 * 
-	 * @param module
-	 * @param version
-	 * @return
-	 * @throws ParseException
-	 */
-	private @Nullable YangFilename getYangFile(@Nonnull String module, @Nullable String version) throws ParseException {
-		YangFilename f = null;
-		List<YangFilename> list = this.findYangFiles(module);
+    /**
+     * get yang file from source with specified version or least newer one if version is null then the latest one
+     * 
+     * @param module
+     * @param version
+     * @return
+     * @throws ParseException
+     */
+    private @Nullable YangFilename getYangFile(@Nonnull String module, @Nullable String version) throws ParseException {
+        YangFilename f = null;
+        List<YangFilename> list = this.findYangFiles(module);
 
-		list.sort(SortByDateAscComparator.getInstance());
+        list.sort(SortByDateAscComparator.getInstance());
 
-		// find specific version or nearest oldest
-		if (version != null) {
-			Date rev = YangFilename.parseRevision(version);
-			for (YangFilename item : list) {
-				if (rev.equals(item.getRevision())) {
-					f = item;
-					break;
-				}
-				if (item.getRevision().after(rev)) {
-					f = item;
-					break;
-				}
-			}
-		}
-		// get latest
-		else {
-			f = list.get(list.size() - 1);
-		}
-		return f;
-	}
+        // find specific version or nearest oldest
+        if (version != null) {
+            Date rev = YangFilename.parseRevision(version);
+            for (YangFilename item : list) {
+                if (rev.equals(item.getRevision())) {
+                    f = item;
+                    break;
+                }
+                if (item.getRevision().after(rev)) {
+                    f = item;
+                    break;
+                }
+            }
+        }
+        // get latest
+        else {
+            f = list.get(list.size() - 1);
+        }
+        return f;
+    }
 
-	/**
-	 * write filestream directly to output stream easier for http handling
-	 * 
-	 * @param module
-	 * @param version
-	 * @param outputStream
-	 * @return
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	public int writeOutput(@Nonnull String module, @Nullable String version, @Nonnull OutputStream outputStream)
-			throws IOException, ParseException {
-		YangFilename fn = this.getYangFile(module, version);
-		if(fn==null) {
-			return 0;
-		}
-		byte[] buffer = new byte[BUFFER_SIZE];
-		int bytesRead = -1;
-		int sumlen = 0;
-		InputStream inputStream = null ;
-		try {
-			inputStream= new FileInputStream(fn.getFilename());
+    /**
+     * write filestream directly to output stream easier for http handling
+     * 
+     * @param module
+     * @param version
+     * @param outputStream
+     * @return
+     * @throws IOException
+     * @throws ParseException
+     */
+    public int writeOutput(@Nonnull String module, @Nullable String version, @Nonnull OutputStream outputStream)
+            throws IOException, ParseException {
+        YangFilename fn = this.getYangFile(module, version);
+        if (fn == null) {
+            return 0;
+        }
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int bytesRead = -1;
+        int sumlen = 0;
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(fn.getFilename());
 
-		while ((bytesRead = inputStream.read(buffer)) != -1) {
-			outputStream.write(buffer, 0, bytesRead);
-			sumlen += bytesRead;
-		}}
-		catch(IOException e) {
-			LOG.warn("problem sending {}: {}",fn.getFilename(),e);
-		}
-		finally {
-			if(inputStream!=null) {
-				inputStream.close();		
-			}
-		}
-		return sumlen;
-	}
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+                sumlen += bytesRead;
+            }
+        } catch (IOException e) {
+            LOG.warn("problem sending {}: {}", fn.getFilename(), e);
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
+        return sumlen;
+    }
 
-	private static class SortByDateAscComparator implements Comparator<YangFilename> {
+    private static class SortByDateAscComparator implements Comparator<YangFilename> {
 
-		private static SortByDateAscComparator instance;
+        private static SortByDateAscComparator instance;
 
-		@Override
-		public int compare(YangFilename o1, YangFilename o2) {
-			return o1.getRevision().compareTo(o2.getRevision());
-		}
+        @Override
+        public int compare(YangFilename o1, YangFilename o2) {
+            return o1.getRevision().compareTo(o2.getRevision());
+        }
 
-		public static Comparator<YangFilename> getInstance() {
-			if (instance == null) {
-				instance = new SortByDateAscComparator();
-			}
-			return instance;
-		}
+        public static Comparator<YangFilename> getInstance() {
+            if (instance == null) {
+                instance = new SortByDateAscComparator();
+            }
+            return instance;
+        }
 
-	}
+    }
 
-	public YangFilename getFileForModule(String module, String rev) throws ParseException {
-		return this.getYangFile(module, rev);
-	}
+    public YangFilename getFileForModule(String module, String rev) throws ParseException {
+        return this.getYangFile(module, rev);
+    }
 
-	public YangFilename getFileForModule(String module) throws ParseException {
-		return this.getFileForModule(module, null);
-	}
+    public YangFilename getFileForModule(String module) throws ParseException {
+        return this.getFileForModule(module, null);
+    }
 
-	public boolean hasFileOrNewerForModule(String module, String version) throws ParseException {
-		return this.getYangFile(module, version) != null;
-	}
+    public boolean hasFileOrNewerForModule(String module, String version) throws ParseException {
+        return this.getYangFile(module, version) != null;
+    }
 
 }

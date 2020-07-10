@@ -26,13 +26,13 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.data;
  *
  */
 public enum ConnectionLogStatus {
-	Connected, Connecting, UnableToConnect, Mounted, Unmounted, Undefined;
+    Connected, Connecting, UnableToConnect, Mounted, Unmounted, Undefined;
 
-	/**
-	 * @return
-	 */
-	public String getName() {
-		return this.name();
-	}
+    /**
+     * @return
+     */
+    public String getName() {
+        return this.name();
+    }
 
 }

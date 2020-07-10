@@ -25,37 +25,37 @@ import javax.servlet.http.HttpServletRequest;
 
 public class GetYangSchemaRequest {
 
-	private static final String URI_PREFIX = "/yang-schema/";
-	private final String module;
-	private final String version;
+    private static final String URI_PREFIX = "/yang-schema/";
+    private final String module;
+    private final String version;
 
-	public String getModule() {
-		return this.module;
-	}
+    public String getModule() {
+        return this.module;
+    }
 
-	public String getVersion() {
-		return this.version;
-	}
+    public String getVersion() {
+        return this.version;
+    }
 
-	public boolean hasVersion() {
-		return this.version != null;
-	}
+    public boolean hasVersion() {
+        return this.version != null;
+    }
 
-	public GetYangSchemaRequest(HttpServletRequest req) throws Exception {
-		String uri = req.getRequestURI().substring(URI_PREFIX.length());
+    public GetYangSchemaRequest(HttpServletRequest req) throws Exception {
+        String uri = req.getRequestURI().substring(URI_PREFIX.length());
 
-		String[] hlp = uri.split("/");
-		if (hlp.length < 1) {
-			throw new Exception("no module request found");
+        String[] hlp = uri.split("/");
+        if (hlp.length < 1) {
+            throw new Exception("no module request found");
 
-		} else if (hlp.length == 1) {
-			this.module = hlp[0];
-			this.version = null;
-		} else {
-			this.module = hlp[0];
-			this.version = hlp[1];
-		}
+        } else if (hlp.length == 1) {
+            this.module = hlp[0];
+            this.version = null;
+        } else {
+            this.module = hlp[0];
+            this.version = hlp[1];
+        }
 
-	}
+    }
 
 }

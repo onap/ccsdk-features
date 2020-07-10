@@ -27,6 +27,6 @@ import java.util.HashMap;
  * @author Michael Dürre
  *
  */
-public class DataTreeObject extends HashMap<String,DataTreeChildObject> {
-	
+public class DataTreeObject extends HashMap<String, DataTreeChildObject> {
+
 }

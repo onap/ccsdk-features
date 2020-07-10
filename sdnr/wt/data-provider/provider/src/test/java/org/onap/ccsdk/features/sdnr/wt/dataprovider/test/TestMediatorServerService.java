@@ -45,52 +45,54 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
  *
  */
 public class TestMediatorServerService {
-	private static final String SERVERID = null;
-	private static ElasticSearchDataProvider dbProvider;
-	private static HtDatabaseClient dbRawProvider;
-	private static MediatorServerDataProvider service = null;
+    private static final String SERVERID = null;
+    private static ElasticSearchDataProvider dbProvider;
+    private static HtDatabaseClient dbRawProvider;
+    private static MediatorServerDataProvider service = null;
 
-	
-	@BeforeClass
-	public static void init() throws Exception {
 
-		dbProvider = new ElasticSearchDataProvider(TestCRUDforDatabase.hosts);
-		dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
-		dbRawProvider = new HtDatabaseClient(TestCRUDforDatabase.hosts);
-		service  = new MediatorServerDataProvider(TestCRUDforDatabase.hosts);
-		
-		
-	}
-	@Test
-	public void test() {
-		clearDbEntity(Entity.MediatorServer);
-		System.out.println(service.triggerReloadSync());
-		String dbServerId="abc";
-		String host = service.getHostUrl(dbServerId);
-		assertNull(host);
-		final String NAME="ms1";
-		final String HOST = "http://10.20.30.40:7070";
-		CreateMediatorServerOutputBuilder output = null;
-		try {
-			 output = dbProvider.createMediatorServer(new CreateMediatorServerInputBuilder().setName(NAME).setUrl(HOST).build());
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail("unable to create ms entry: "+e.getMessage());
-		}
-		System.out.println(service.triggerReloadSync());
-		host = service.getHostUrl(output.getId());
-		assertEquals(HOST, host);
-	
-	}
-	
-	private static void clearDbEntity(Entity entity) {
-		DeleteByQueryRequest query = new DeleteByQueryRequest(entity.getName());
-		query.setQuery(QueryBuilders.matchAllQuery().toJSON());
-		try {
-			dbRawProvider.deleteByQuery(query);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		TestCRUDforDatabase.trySleep(1000);
-	}
+    @BeforeClass
+    public static void init() throws Exception {
+
+        dbProvider = new ElasticSearchDataProvider(TestCRUDforDatabase.hosts);
+        dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
+        dbRawProvider = new HtDatabaseClient(TestCRUDforDatabase.hosts);
+        service = new MediatorServerDataProvider(TestCRUDforDatabase.hosts);
+
+
+    }
+
+    @Test
+    public void test() {
+        clearDbEntity(Entity.MediatorServer);
+        System.out.println(service.triggerReloadSync());
+        String dbServerId = "abc";
+        String host = service.getHostUrl(dbServerId);
+        assertNull(host);
+        final String NAME = "ms1";
+        final String HOST = "http://10.20.30.40:7070";
+        CreateMediatorServerOutputBuilder output = null;
+        try {
+            output = dbProvider
+                    .createMediatorServer(new CreateMediatorServerInputBuilder().setName(NAME).setUrl(HOST).build());
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("unable to create ms entry: " + e.getMessage());
+        }
+        System.out.println(service.triggerReloadSync());
+        host = service.getHostUrl(output.getId());
+        assertEquals(HOST, host);
+
+    }
+
+    private static void clearDbEntity(Entity entity) {
+        DeleteByQueryRequest query = new DeleteByQueryRequest(entity.getName());
+        query.setQuery(QueryBuilders.matchAllQuery().toJSON());
+        try {
+            dbRawProvider.deleteByQuery(query);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        TestCRUDforDatabase.trySleep(1000);
+    }
 }

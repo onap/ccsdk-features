@@ -32,24 +32,23 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataContainer;
  * @author Michael Dürre
  * 
  * 
- *  Cannot be converted from el alto to frankfurt
- *  most of the entries are in connectionlog
+ *         Cannot be converted from el alto to frankfurt most of the entries are in connectionlog
  *
  */
-public class FrankfurtEventlogConverter extends BaseSearchHitConverter{
+public class FrankfurtEventlogConverter extends BaseSearchHitConverter {
 
-	public FrankfurtEventlogConverter() {
-		super(ComponentName.EVENTLOG);
-	}
+    public FrankfurtEventlogConverter() {
+        super(ComponentName.EVENTLOG);
+    }
 
-	@Override
-	public SearchHit convert(SearchHit source) {		
-		return null;
-	}
+    @Override
+    public SearchHit convert(SearchHit source) {
+        return null;
+    }
 
-	@Override
-	public ComponentData convert(DataContainer container) {
-		return null;
-	}
+    @Override
+    public ComponentData convert(DataContainer container) {
+        return null;
+    }
 
 }

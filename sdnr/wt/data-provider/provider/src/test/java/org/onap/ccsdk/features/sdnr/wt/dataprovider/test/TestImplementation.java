@@ -44,43 +44,43 @@ import net.bytebuddy.implementation.bytecode.StackSize;
  */
 public class TestImplementation {
 
-	@Test
-	public void test() {
-		TestConfig.setSDNRDBURLEnv();
-		DataProviderImpl impl = new DataProviderImpl();
-		impl.setRpcProviderService(new RpcProviderService() {
-			
-			@Override
-			public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
-					T implementation, Set<InstanceIdentifier<?>> paths) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			
-			@Override
-			public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
-					T implementation) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		});
-		impl.setMediatorServerServlet(new MsServlet());
-		impl.setAboutServlet(new AboutHttpServlet());
-		try {
-			impl.init();
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("failed to init impl: "+e.getMessage());
-		}
-		
-		impl.setStatus(StatusKey.CLUSTER_SIZE, "3");
-		impl.setReadyStatus(true);
-		try {
-			impl.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("failed to close impl: "+e.getMessage());
-		}
-	}
-	
+    @Test
+    public void test() {
+        TestConfig.setSDNRDBURLEnv();
+        DataProviderImpl impl = new DataProviderImpl();
+        impl.setRpcProviderService(new RpcProviderService() {
+
+            @Override
+            public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
+                    T implementation, Set<InstanceIdentifier<?>> paths) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
+                    T implementation) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        });
+        impl.setMediatorServerServlet(new MsServlet());
+        impl.setAboutServlet(new AboutHttpServlet());
+        try {
+            impl.init();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("failed to init impl: " + e.getMessage());
+        }
+
+        impl.setStatus(StatusKey.CLUSTER_SIZE, "3");
+        impl.setReadyStatus(true);
+        try {
+            impl.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("failed to close impl: " + e.getMessage());
+        }
+    }
+
 }

@@ -62,14 +62,15 @@ import org.slf4j.LoggerFactory;
 
 public class DataMigrationProviderImpl implements DataMigrationProviderService {
 
-	
+
     private static final Logger LOG = LoggerFactory.getLogger(DataMigrationProviderImpl.class);
     private final HtDatabaseClient dbClient;
 
-    public DataMigrationProviderImpl(HostInfo[] hosts, String username, String password, boolean trustAll, long timeoutms) {
+    public DataMigrationProviderImpl(HostInfo[] hosts, String username, String password, boolean trustAll,
+            long timeoutms) {
 
-        if(timeoutms>0) {
-            Portstatus.waitSecondsTillAvailable(timeoutms/1000, hosts);
+        if (timeoutms > 0) {
+            Portstatus.waitSecondsTillAvailable(timeoutms / 1000, hosts);
         }
         this.dbClient = new HtDatabaseClient(hosts, username, password, trustAll);
     }
@@ -148,8 +149,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
 
 
     /**
-     * export data
-     * if file exists .1 (.n) will be created
+     * export data if file exists .1 (.n) will be created
      *
      */
     @Override
@@ -162,17 +162,17 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
         LOG.info("output will be written to {}", filename);
         //autodetect version
         Release dbRelease = this.autoDetectRelease();
-        if(dbRelease==null) {
+        if (dbRelease == null) {
             report.error("unbable to detect db release. is database initialized?");
             return report;
         }
         ReleaseInformation ri = ReleaseInformation.getInstance(dbRelease);
         boolean componentsSucceeded = true;
-        for(ComponentName c: ri.getComponents()) {
+        for (ComponentName c : ri.getComponents()) {
             ComponentData data = new ComponentData(c);
-            SearchResult<SearchHit> result = this.dbClient.doReadAllJsonData(ri.getAlias(c),ri.getDataType(c),false);
+            SearchResult<SearchHit> result = this.dbClient.doReadAllJsonData(ri.getAlias(c), ri.getDataType(c), false);
             data.addAll(result.getHits());
-            container.addComponent(c, data );
+            container.addComponent(c, data);
         }
         try {
             Files.write(new File(filename).toPath(), Arrays.asList(container.toJSON()), StandardCharsets.UTF_8);
@@ -192,7 +192,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
     }
 
     private String checkFilenameForWrite(String filename, int apdx) {
-        File f = new File(String.format("$s.$d",filename,apdx));
+        File f = new File(String.format("$s.$d", filename, apdx));
         if (!f.exists()) {
             return filename;
         }
@@ -209,18 +209,18 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
         EsVersion dbVersion = this.readActualVersion();
         AliasesEntryList aliases = this.readAliases();
         IndicesEntryList indices = this.readIndices();
-        if(indices==null) {
+        if (indices == null) {
             return null;
         }
         List<Release> foundReleases = new ArrayList<>();
         //if there are active aliases reduce indices to the active ones
-        if(aliases!=null && aliases.size()>0) {
+        if (aliases != null && aliases.size() > 0) {
             indices = indices.subList(aliases.getLinkedIndices());
         }
-        for(Release r:Release.values()) {
-            if(r.isDbInRange(dbVersion)) {
+        for (Release r : Release.values()) {
+            if (r.isDbInRange(dbVersion)) {
                 ReleaseInformation ri = ReleaseInformation.getInstance(r);
-                if(ri!=null && ri.containsIndices(indices)) {
+                if (ri != null && ri.containsIndices(indices)) {
                     foundReleases.add(r);
                 }
             }
@@ -228,9 +228,11 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
         if (foundReleases.size() == 1) {
             return foundReleases.get(0);
         }
-        LOG.error("detect {} releases: {}. unable to detect for which one to do sth.",foundReleases.size(), foundReleases);
+        LOG.error("detect {} releases: {}. unable to detect for which one to do sth.", foundReleases.size(),
+                foundReleases);
         return null;
     }
+
     private EsVersion readActualVersion() {
         try {
             GetInfoResponse response = this.dbClient.getInfo();
@@ -264,9 +266,9 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
     }
 
     @Override
-    public boolean initDatabase(Release release, int numShards, int numReplicas, String dbPrefix,
-            boolean forceRecreate,long timeoutms) {
-        if(timeoutms>0) {
+    public boolean initDatabase(Release release, int numShards, int numReplicas, String dbPrefix, boolean forceRecreate,
+            long timeoutms) {
+        if (timeoutms > 0) {
             this.dbClient.waitForYellowStatus(timeoutms);
         }
         EsVersion dbVersion = this.readActualVersion();
@@ -278,7 +280,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
             return false;
         }
         if (forceRecreate) {
-            this.clearDatabase(release, dbPrefix,0);
+            this.clearDatabase(release, dbPrefix, 0);
         }
         ReleaseInformation ri = ReleaseInformation.getInstance(release);
         AliasesEntryList aliases = this.readAliases();
@@ -287,7 +289,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
             return false;
         }
         AcknowledgedResponse response = null;
-        if(!ri.runPreInitCommands(this.dbClient)) {
+        if (!ri.runPreInitCommands(this.dbClient)) {
             return false;
         }
         for (ComponentName component : ri.getComponents()) {
@@ -320,7 +322,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
                 return false;
             }
         }
-        if(!ri.runPostInitCommands(this.dbClient)) {
+        if (!ri.runPostInitCommands(this.dbClient)) {
             return false;
         }
         return true;
@@ -329,7 +331,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
     @Override
     public boolean clearDatabase(Release release, String dbPrefix, long timeoutms) {
 
-        if(timeoutms>0) {
+        if (timeoutms > 0) {
             this.dbClient.waitForYellowStatus(timeoutms);
         }
         //check aliases
@@ -349,9 +351,9 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
                 if (entryToDelete != null) {
                     try {
                         LOG.info("deleting alias {} for index {}", entryToDelete.getAlias(), entryToDelete.getIndex());
-                        response=this.dbClient.deleteAlias(
+                        response = this.dbClient.deleteAlias(
                                 new DeleteAliasRequest(entryToDelete.getIndex(), entryToDelete.getAlias()));
-                        LOG.info(response.isResponseSucceeded()?"succeeded":"failed");
+                        LOG.info(response.isResponseSucceeded() ? "succeeded" : "failed");
                     } catch (IOException e) {
                         LOG.error(e.getMessage());
                         return false;
@@ -373,8 +375,8 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
                 if (entryToDelete != null) {
                     try {
                         LOG.info("deleting index {}", entryToDelete.getName());
-                        response=this.dbClient.deleteIndex(new DeleteIndexRequest(entryToDelete.getName()));
-                        LOG.info(response.isResponseSucceeded()?"succeeded":"failed");
+                        response = this.dbClient.deleteIndex(new DeleteIndexRequest(entryToDelete.getName()));
+                        LOG.info(response.isResponseSucceeded() ? "succeeded" : "failed");
                     } catch (IOException e) {
                         LOG.error(e.getMessage());
                         return false;
@@ -386,39 +388,39 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
         return true;
     }
 
-	/**
-	 * @param timeoutms
-	 * @return
-	 */
-	public boolean clearCompleteDatabase(long timeoutms) {
-		if(timeoutms>0) {
+    /**
+     * @param timeoutms
+     * @return
+     */
+    public boolean clearCompleteDatabase(long timeoutms) {
+        if (timeoutms > 0) {
             this.dbClient.waitForYellowStatus(timeoutms);
         }
         //check aliases and indices
-		AliasesEntryList aliases = this.readAliases();
+        AliasesEntryList aliases = this.readAliases();
         IndicesEntryList indices = this.readIndices();
         if (aliases == null || indices == null) {
             return false;
         }
-        for(AliasesEntry alias:aliases) {
-        	try {
-        		LOG.info("deleting alias {} for index {}",alias.getAlias(),alias.getIndex());
-				this.dbClient.deleteAlias(new DeleteAliasRequest(alias.getIndex(), alias.getAlias()));
-			} catch (IOException e) {
-				LOG.error("problem deleting alias {}: {}",alias.getAlias(),e);
-				return false;
-			}
+        for (AliasesEntry alias : aliases) {
+            try {
+                LOG.info("deleting alias {} for index {}", alias.getAlias(), alias.getIndex());
+                this.dbClient.deleteAlias(new DeleteAliasRequest(alias.getIndex(), alias.getAlias()));
+            } catch (IOException e) {
+                LOG.error("problem deleting alias {}: {}", alias.getAlias(), e);
+                return false;
+            }
         }
-        for(IndicesEntry index : indices) {
-        	try {
-        		LOG.info("deleting index {}",index.getName());
-				this.dbClient.deleteIndex(new DeleteIndexRequest(index.getName()));
-			} catch (IOException e) {
-				LOG.error("problem deleting index {}: {}",index.getName(),e);
-				return false;
-			}
+        for (IndicesEntry index : indices) {
+            try {
+                LOG.info("deleting index {}", index.getName());
+                this.dbClient.deleteIndex(new DeleteIndexRequest(index.getName()));
+            } catch (IOException e) {
+                LOG.error("problem deleting index {}: {}", index.getName(), e);
+                return false;
+            }
         }
         return true;
-	}
+    }
 
 }

@@ -63,8 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Event service, writing all events into the database into the appropriate
- * index.
+ * Event service, writing all events into the database into the appropriate index.
  *
  * @author herbert
  */
@@ -88,7 +87,8 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     // --- Construct and initialize
 
 
-    public HtDatabaseEventsService(HtDatabaseClient client, ElasticSearchDataProvider elasticSearchDataProvider) throws Exception {
+    public HtDatabaseEventsService(HtDatabaseClient client, ElasticSearchDataProvider elasticSearchDataProvider)
+            throws Exception {
 
         LOG.info("Create {} start", HtDatabaseEventsService.class);
         this.dataProvider = elasticSearchDataProvider;
@@ -100,27 +100,27 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
             eventRWEventLogDevicemanager = new EsDataObjectReaderWriter2<>(client, Entity.Eventlog,
                     EventlogEntity.class, EventlogBuilder.class);
 
-            eventRWEquipment = new EsDataObjectReaderWriter2<>(client, Entity.Inventoryequipment,
-                    InventoryEntity.class, InventoryBuilder.class);
+            eventRWEquipment = new EsDataObjectReaderWriter2<>(client, Entity.Inventoryequipment, InventoryEntity.class,
+                    InventoryBuilder.class);
 
             eventRWFaultCurrentDB = new EsDataObjectReaderWriter2<>(client, Entity.Faultcurrent,
                     FaultcurrentEntity.class, FaultcurrentBuilder.class);
 
-            eventRWFaultLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Faultlog,
-                    FaultlogEntity.class, FaultlogBuilder.class);
+            eventRWFaultLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Faultlog, FaultlogEntity.class,
+                    FaultlogBuilder.class);
 
             eventRWConnectionLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Connectionlog,
                     ConnectionlogEntity.class, ConnectionlogBuilder.class);
 
             networkelementConnectionDB = new EsDataObjectReaderWriter2<>(client, Entity.NetworkelementConnection,
                     NetworkElementConnectionEntity.class, NetworkElementConnectionBuilder.class)
-                    .setEsIdAttributeName("_id");
+                            .setEsIdAttributeName("_id");
 
-            pmData15mDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance15min,
-                    PmdataEntity.class, PmdataEntityBuilder.class);
+            pmData15mDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance15min, PmdataEntity.class,
+                    PmdataEntityBuilder.class);
 
-            pmData24hDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance24h,
-                    PmdataEntity.class, PmdataEntityBuilder.class);
+            pmData24hDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance24h, PmdataEntity.class,
+                    PmdataEntityBuilder.class);
 
         } catch (Exception e) {
             LOG.error("Can not start database client. Exception: {}", e);
@@ -142,6 +142,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         eventRWConnectionLogDB.write(event, null);
 
     }
+
     // -- Event log
     @Override
     public void writeEventLog(EventlogEntity event) {
@@ -163,7 +164,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         }
 
         LOG.debug("Write fault to faultlog: {}", fault.toString());
-        eventRWFaultLogDB.write(fault,null);
+        eventRWFaultLogDB.write(fault, null);
     }
 
     // -- Fault current
@@ -248,6 +249,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
     /**
      * write internal equipment to database
+     * 
      * @param internalEquipment with mandatory fields.
      */
     @Override
@@ -256,14 +258,14 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         if (assertIfClientNullForNodeName(internalEquipment.getNodeId())) {
             return;
         }
-        if(internalEquipment.getManufacturerIdentifier()==null) {
-        	internalEquipment = new InventoryBuilder(internalEquipment).setManufacturerIdentifier("").build();
+        if (internalEquipment.getManufacturerIdentifier() == null) {
+            internalEquipment = new InventoryBuilder(internalEquipment).setManufacturerIdentifier("").build();
         }
-        if(internalEquipment.getDate()==null) {
-        	internalEquipment = new InventoryBuilder(internalEquipment).setDate("").build();
+        if (internalEquipment.getDate() == null) {
+            internalEquipment = new InventoryBuilder(internalEquipment).setDate("").build();
         }
-        
-        eventRWEquipment.write(internalEquipment, internalEquipment.getNodeId()+"/"+internalEquipment.getUuid());
+
+        eventRWEquipment.write(internalEquipment, internalEquipment.getNodeId() + "/" + internalEquipment.getUuid());
     }
 
 
@@ -275,18 +277,22 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
      * @param nodeId Id for this DB element
      */
     @Override
-    public void updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy, String nodeId) {
+    public void updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy,
+            String nodeId) {
         this.networkelementConnectionDB.update(networkElementConnectionEntitiy, nodeId);
     }
 
     /**
      * Update after new mountpoint registration
+     * 
      * @param networkElementConnectionEntitiy data
      * @param nodeId of device (mountpoint name)
      */
     @Override
-    public void updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy, String nodeId) {
-        this.networkelementConnectionDB.updateOrCreate(networkElementConnectionEntitiy, nodeId, Arrays.asList("is-required", "username", "password"));
+    public void updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy,
+            String nodeId) {
+        this.networkelementConnectionDB.updateOrCreate(networkElementConnectionEntitiy, nodeId,
+                Arrays.asList("is-required", "username", "password"));
     }
 
     /* please do not remove */
@@ -302,15 +308,16 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         NetworkElementConnectionEntity e = this.networkelementConnectionDB.read(nodeId);
         if (e != null && (isRequired = e.isIsRequired()) != null) {
             if (isRequired) {
-                LOG.debug("updating connection status for {} of required ne to disconnected",nodeId);
-                this.networkelementConnectionDB.update(new UpdateNetworkElementConnectionInputBuilder().setStatus(ConnectionLogStatus.Disconnected).build(), nodeId);
+                LOG.debug("updating connection status for {} of required ne to disconnected", nodeId);
+                this.networkelementConnectionDB.update(new UpdateNetworkElementConnectionInputBuilder()
+                        .setStatus(ConnectionLogStatus.Disconnected).build(), nodeId);
             } else {
-                LOG.debug("remove networkelement-connection for {} entry because of non-required",nodeId);
+                LOG.debug("remove networkelement-connection for {} entry because of non-required", nodeId);
                 this.networkelementConnectionDB.remove(nodeId);
             }
-        }
-        else {
-            LOG.warn("Unable to update connection-status. dbentry for {} not found in networkelement-connection",nodeId);
+        } else {
+            LOG.warn("Unable to update connection-status. dbentry for {} not found in networkelement-connection",
+                    nodeId);
         }
     }
 
@@ -349,6 +356,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
     /**
      * Verify status of client
+     * 
      * @param event that is printed with message
      * @return true if client is null
      */
@@ -359,8 +367,10 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     private boolean assertIfClientNullForNodeName(Object object) {
         return assertIfClientNull("No DB, can not handle node: {}", object);
     }
+
     /**
      * Verify status of client
+     * 
      * @param message to print including {} for object printout.
      * @return true if client is null
      */
@@ -378,6 +388,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     private static class EsEventBase {
         /**
          * Query to get older Elements
+         * 
          * @param netconfTimeStamp to identify older Elements
          * @return QueryBuilder for older elements related to timestamp
          */
@@ -388,29 +399,31 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     private static class EsFaultLogDevicemanager {
         /**
          * Get older Elements
+         * 
          * @param netconfTimeStamp to identify query elements older than this timestamp.
          * @return QueryBuilder for related elements
          */
         public static QueryBuilder getQueryForTimeStamp(String netconfTimeStamp) {
             return new RangeQueryBuilder("timestamp").lte(netconfTimeStamp);
         }
-     }
-    public static class EsFaultCurrent  {
+    }
+    public static class EsFaultCurrent {
         /**
          * @param nodeName name of the node
          * @return query builder
          */
-        public static QueryBuilder getQueryForOneNode( String nodeName) {
+        public static QueryBuilder getQueryForOneNode(String nodeName) {
             return QueryBuilders.matchQuery("node-id", nodeName);
         }
 
-        public static QueryBuilder getQueryForOneNodeAndObjectId( String nodeName, String objectId) {
+        public static QueryBuilder getQueryForOneNodeAndObjectId(String nodeName, String objectId) {
             BoolQueryBuilder bq = QueryBuilders.boolQuery();
             bq.must(QueryBuilders.matchQuery("node-id", nodeName));
             bq.must(QueryBuilders.matchQuery("object-id", objectId));
             return bq;
         }
     }
+
     @Override
     public List<NetworkElementConnectionEntity> getNetworkElementConnections() {
         return this.networkelementConnectionDB.doReadAll().getHits();
@@ -431,28 +444,29 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
             id.append(date != null ? date.getValue() : "null");
 
             switch (granularityPeriod) {
-            case Period15Min:
-                pmData15mDB.write(elem, id.toString());
-                break;
-            case Period24Hours:
-                pmData24hDB.write(elem, id.toString());
-                break;
-            case Unknown:
-            default:
-                LOG.debug("Unknown granularity {} id {}", granularityPeriod, id);
-                break;
+                case Period15Min:
+                    pmData15mDB.write(elem, id.toString());
+                    break;
+                case Period24Hours:
+                    pmData24hDB.write(elem, id.toString());
+                    break;
+                case Unknown:
+                default:
+                    LOG.debug("Unknown granularity {} id {}", granularityPeriod, id);
+                    break;
             }
-        } );
+        });
 
     }
 
-    @NonNull GranularityPeriodType nnGetGranularityPeriodType(@Nullable GranularityPeriodType granularityPeriod) {
+    @NonNull
+    GranularityPeriodType nnGetGranularityPeriodType(@Nullable GranularityPeriodType granularityPeriod) {
         return granularityPeriod != null ? granularityPeriod : GranularityPeriodType.Unknown;
     }
 
-	@Override
-	public HtDatabaseClient getRawClient() {
-		return this.client;
-	}
+    @Override
+    public HtDatabaseClient getRawClient() {
+        return this.client;
+    }
 
 }

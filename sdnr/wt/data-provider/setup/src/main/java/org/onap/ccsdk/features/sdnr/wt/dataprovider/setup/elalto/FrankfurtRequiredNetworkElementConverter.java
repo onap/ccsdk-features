@@ -31,48 +31,35 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.data.Connect
  * 
  * @author Michael Dürre
  *
- * {
- *     "mountId":"nts-manager-dev-micha",
- *     "host":"10.20.5.2",
- *     "port":8300,
- *     "username":"netconf",
- *     "password":"netconf"
- * }
+ *         { "mountId":"nts-manager-dev-micha", "host":"10.20.5.2", "port":8300, "username":"netconf",
+ *         "password":"netconf" }
  *
- * =>
+ *         =>
  * 
- * {
- *      "node-id": "sim1",
- *      "is-required": true,
- *      "password": "ads",
- *      "port": 12600,
- *      "host": "10.20.5.2",
- *      "id": "sim1",
- *      "username": "ad",
- *      "status": "Connected"
- * }
+ *         { "node-id": "sim1", "is-required": true, "password": "ads", "port": 12600, "host": "10.20.5.2", "id":
+ *         "sim1", "username": "ad", "status": "Connected" }
  * 
  */
-public class FrankfurtRequiredNetworkElementConverter extends BaseSearchHitConverter{
+public class FrankfurtRequiredNetworkElementConverter extends BaseSearchHitConverter {
 
-	public FrankfurtRequiredNetworkElementConverter() {
-		super(ComponentName.REQUIRED_NETWORKELEMENT);
-	}
+    public FrankfurtRequiredNetworkElementConverter() {
+        super(ComponentName.REQUIRED_NETWORKELEMENT);
+    }
 
-	@Override
-	public SearchHit convert(SearchHit source) {
-		
-		JSONObject data = new JSONObject();
-		JSONObject src = source.getSource();
-		data.put("id", src.getString("mountId"));
-		data.put("node-id", src.getString("mountId"));
-		data.put("username", src.getString("username"));
-		data.put("password", src.getString("password"));
-		data.put("host", src.getString("host"));
-		data.put("port", src.getInt("port"));
-		data.put("status", ConnectionLogStatus.Undefined.getName());
-		data.put("is-required", true);
-		return this.getSearchHit(source.getIndex(), source.getType(), source.getId(), data );
-	}
+    @Override
+    public SearchHit convert(SearchHit source) {
+
+        JSONObject data = new JSONObject();
+        JSONObject src = source.getSource();
+        data.put("id", src.getString("mountId"));
+        data.put("node-id", src.getString("mountId"));
+        data.put("username", src.getString("username"));
+        data.put("password", src.getString("password"));
+        data.put("host", src.getString("host"));
+        data.put("port", src.getInt("port"));
+        data.put("status", ConnectionLogStatus.Undefined.getName());
+        data.put("is-required", true);
+        return this.getSearchHit(source.getIndex(), source.getType(), source.getId(), data);
+    }
 
 }

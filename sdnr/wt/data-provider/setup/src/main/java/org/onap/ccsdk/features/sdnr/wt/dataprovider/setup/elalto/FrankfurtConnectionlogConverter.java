@@ -35,86 +35,73 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.data.Connect
  * 
  * @author Michael Dürre
  * 
- * Convert data from el alto to frankfurt
+ *         Convert data from el alto to frankfurt
  * 
- * src: eventlog 
- * dst: connectionlog
+ *         src: eventlog dst: connectionlog
  * 
  * 
- * { 
- *     "event": { 
- *         "nodeName": "SDN-Controller-5a150173d678", 
- *         "counter": "48", 
- *         "timeStamp": "2019-10-07T09:57:08.2Z", 
- *         "objectId": "Sim2230",
- *         "attributeName": "ConnectionStatus", 
- *         "newValue": "connecting",
- *         "type": "AttributeValueChangedNotificationXml" 
- *     } 
- * }
+ *         { "event": { "nodeName": "SDN-Controller-5a150173d678", "counter": "48", "timeStamp":
+ *         "2019-10-07T09:57:08.2Z", "objectId": "Sim2230", "attributeName": "ConnectionStatus", "newValue":
+ *         "connecting", "type": "AttributeValueChangedNotificationXml" } }
  * 
- * => 
+ *         =>
  * 
- * { 
- *     "timestamp": "2020-01-28T12:00:10.2Z", 
- *     "status": "Connected",
- *     "node-id": "sim1" 
- * }
+ *         { "timestamp": "2020-01-28T12:00:10.2Z", "status": "Connected", "node-id": "sim1" }
  * 
  */
 public class FrankfurtConnectionlogConverter extends BaseSearchHitConverter {
 
-	public FrankfurtConnectionlogConverter() {
-		super(ComponentName.CONNECTIONLOG);
-	}
+    public FrankfurtConnectionlogConverter() {
+        super(ComponentName.CONNECTIONLOG);
+    }
 
-	/**
-	 * @source eventlog searchhit converted to connectionlog entry
-	 */
-	@Override
-	public SearchHit convert(SearchHit source) {
+    /**
+     * @source eventlog searchhit converted to connectionlog entry
+     */
+    @Override
+    public SearchHit convert(SearchHit source) {
 
-		JSONObject data = new JSONObject();
-		JSONObject inner = source.getSource().getJSONObject("event");
-		String eventType = inner.getString("type");
-		String eventSource = inner.getString("nodeName");
-		if (!eventSource.startsWith("SDN-Controller")) {
-			return null;
-		}
-		data.put("node-id", inner.getString("objectId"));
-		data.put("timestamp", inner.getString("timeStamp"));
-		if (eventType.equals("AttributeValueChangedNotificationXml")) {
-			String event = inner.getString("newValue").toLowerCase();
-			if (event.equals("connected")) {
-				data.put("status", ConnectionLogStatus.Connected.getName());
-			} else if (event.equals("connecting")) {
-				data.put("status", ConnectionLogStatus.Connecting.getName());
-			} else {
-				data.put("status", ConnectionLogStatus.UnableToConnect.getName());
-			}
+        JSONObject data = new JSONObject();
+        JSONObject inner = source.getSource().getJSONObject("event");
+        String eventType = inner.getString("type");
+        String eventSource = inner.getString("nodeName");
+        if (!eventSource.startsWith("SDN-Controller")) {
+            return null;
+        }
+        data.put("node-id", inner.getString("objectId"));
+        data.put("timestamp", inner.getString("timeStamp"));
+        if (eventType.equals("AttributeValueChangedNotificationXml")) {
+            String event = inner.getString("newValue").toLowerCase();
+            if (event.equals("connected")) {
+                data.put("status", ConnectionLogStatus.Connected.getName());
+            } else if (event.equals("connecting")) {
+                data.put("status", ConnectionLogStatus.Connecting.getName());
+            } else {
+                data.put("status", ConnectionLogStatus.UnableToConnect.getName());
+            }
 
-		} else if (eventType.equals("ObjectCreationNotificationXml")) {
-			data.put("status", ConnectionLogStatus.Mounted.getName());
+        } else if (eventType.equals("ObjectCreationNotificationXml")) {
+            data.put("status", ConnectionLogStatus.Mounted.getName());
 
-		} else if (eventType.equals("ObjectDeletionNotificationXml")) {
-			data.put("status", ConnectionLogStatus.Unmounted.getName());
-		}
+        } else if (eventType.equals("ObjectDeletionNotificationXml")) {
+            data.put("status", ConnectionLogStatus.Unmounted.getName());
+        }
 
-		return this.getSearchHit(source.getIndex(), source.getType(), source.getId(), data);
-	}
+        return this.getSearchHit(source.getIndex(), source.getType(), source.getId(), data);
+    }
 
-	@Override
-	public ComponentData convert(DataContainer container) {
-		Map<ComponentName, ComponentData> src = container.getComponents();
-		if (!src.containsKey(ComponentName.EVENTLOG)) {
-			return null;
-		}
-		ComponentData eventData = src.get(ComponentName.EVENTLOG);
-		ComponentData dstData = new ComponentData(ComponentName.CONNECTIONLOG);
-		for (SearchHit sh : eventData) {
-			dstData.add(this.convert(sh));
-		}
-		return dstData;
-	}
+    @Override
+    public ComponentData convert(DataContainer container) {
+        Map<ComponentName, ComponentData> src = container.getComponents();
+        if (!src.containsKey(ComponentName.EVENTLOG)) {
+            return null;
+        }
+        ComponentData eventData = src.get(ComponentName.EVENTLOG);
+        ComponentData dstData = new ComponentData(ComponentName.CONNECTIONLOG);
+        for (SearchHit sh : eventData) {
+            dstData.add(this.convert(sh));
+        }
+        return dstData;
+    }
 
 }

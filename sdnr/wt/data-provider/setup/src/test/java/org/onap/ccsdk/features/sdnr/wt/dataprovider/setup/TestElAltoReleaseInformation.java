@@ -42,9 +42,9 @@ public class TestElAltoReleaseInformation {
         Set<ComponentName> components = ri.getComponents();
         assertFalse(components.contains(ComponentName.CONNECTIONLOG));
         assertTrue(components.contains(ComponentName.EVENTLOG));
-        assertEquals("sdnevents",ri.getAlias(ComponentName.FAULTLOG));
-        assertEquals("sdnevents_v1",ri.getIndex(ComponentName.FAULTLOG));
-        assertNull(ri.getConverter(Release.EL_ALTO,ComponentName.CONNECTIONLOG));
+        assertEquals("sdnevents", ri.getAlias(ComponentName.FAULTLOG));
+        assertEquals("sdnevents_v1", ri.getIndex(ComponentName.FAULTLOG));
+        assertNull(ri.getConverter(Release.EL_ALTO, ComponentName.CONNECTIONLOG));
         assertNotNull(ri.getConverter(Release.EL_ALTO, ComponentName.FAULTCURRENT));
     }
 

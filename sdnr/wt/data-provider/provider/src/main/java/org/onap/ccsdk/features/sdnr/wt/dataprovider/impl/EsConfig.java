@@ -51,7 +51,7 @@ public class EsConfig implements Configuration, IEsConfig {
     private static final String PROPERTY_KEY_AUTH_USERNAME = "esAuthUsername";
     private static final String PROPERTY_KEY_AUTH_PASSWORD = "esAuthPassword";
 
-    
+
     private static String defaultHostinfo = "${SDNRDBURL}";//printHosts(new HostInfo[] { new HostInfo("sdnrdb", 9200, Protocol.HTTP) });
     private static final String DEFAULT_VALUE_CLUSTER = "";
     /** check db data in this interval [in seconds] 0 deactivated */
@@ -59,10 +59,10 @@ public class EsConfig implements Configuration, IEsConfig {
     /** keep data for this time [in seconds] 30 days */
     private static final String DEFAULT_ARCHIVE_LIMIT_SEC = String.valueOf(60L * 60L * 24L * 30L);
     //private static final String DEFAULT_KEY_NODE = "elasticsearchnode";
-	private static final String DEFAULT_VALUE_NODE = "elasticsearchnode";
-	private static final String DEFAULT_VALUE_DBUSERNAME = "${SDNRDBUSERNAME}";
-	private static final String DEFAULT_VALUE_DBPASSWORD = "${SDNRDBPASSWORD}";
-	private static final String DEFAULT_VALUE_TRUSTALLCERTS = "${SDNRDBTRUSTALLCERTS}";
+    private static final String DEFAULT_VALUE_NODE = "elasticsearchnode";
+    private static final String DEFAULT_VALUE_DBUSERNAME = "${SDNRDBUSERNAME}";
+    private static final String DEFAULT_VALUE_DBPASSWORD = "${SDNRDBPASSWORD}";
+    private static final String DEFAULT_VALUE_TRUSTALLCERTS = "${SDNRDBTRUSTALLCERTS}";
 
     private final ConfigurationFileRepresentation configuration;
 
@@ -93,9 +93,11 @@ public class EsConfig implements Configuration, IEsConfig {
         String dbHosts = configuration.getProperty(SECTION_MARKER_ES, PROPERTY_KEY_DBHOSTS);
         return parseHosts(dbHosts);
     }
+
     public void setHosts(HostInfo[] hosts) {
         this.configuration.setProperty(SECTION_MARKER_ES, PROPERTY_KEY_DBHOSTS, printHosts(hosts));
     }
+
     @Override
     public String getCluster() {
         return configuration.getProperty(SECTION_MARKER_ES, PROPERTY_KEY_ARCHIVE_INTERVAL);
@@ -106,22 +108,27 @@ public class EsConfig implements Configuration, IEsConfig {
     }
 
     public boolean hasBasicAuthCredentials() {
-    	return this.getBasicAuthUsername()!=null && this.getBasicAuthPassword()!=null &&
-    			!this.getBasicAuthUsername().isEmpty() && !this.getBasicAuthPassword().isEmpty() ;
+        return this.getBasicAuthUsername() != null && this.getBasicAuthPassword() != null
+                && !this.getBasicAuthUsername().isEmpty() && !this.getBasicAuthPassword().isEmpty();
     }
+
     public String getBasicAuthUsername() {
-    	return this.configuration.getProperty(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_USERNAME);
+        return this.configuration.getProperty(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_USERNAME);
     }
+
     public String getBasicAuthPassword() {
-    	return this.configuration.getProperty(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_PASSWORD);
+        return this.configuration.getProperty(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_PASSWORD);
     }
+
     @Override
     public long getArchiveCheckIntervalSeconds() {
         return configuration.getPropertyLong(SECTION_MARKER_ES, PROPERTY_KEY_ARCHIVE_INTERVAL).orElse(0L);
     }
+
     public boolean trustAllCerts() {
-    	return configuration.getPropertyBoolean(SECTION_MARKER_ES, PROPERTY_KEY_TRUSTALLCERTS);
+        return configuration.getPropertyBoolean(SECTION_MARKER_ES, PROPERTY_KEY_TRUSTALLCERTS);
     }
+
     public void setArchiveCheckIntervalSeconds(long seconds) {
         configuration.setProperty(SECTION_MARKER_ES, PROPERTY_KEY_ARCHIVE_INTERVAL, seconds);
     }
@@ -150,10 +157,13 @@ public class EsConfig implements Configuration, IEsConfig {
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_ARCHIVE_INTERVAL,
                 DEFAULT_ARCHIVE_INTERVAL_SEC);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_NODE, DEFAULT_VALUE_NODE);
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_USERNAME, DEFAULT_VALUE_DBUSERNAME);
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_PASSWORD, DEFAULT_VALUE_DBPASSWORD);
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_TRUSTALLCERTS, DEFAULT_VALUE_TRUSTALLCERTS);
-        
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_USERNAME,
+                DEFAULT_VALUE_DBUSERNAME);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_AUTH_PASSWORD,
+                DEFAULT_VALUE_DBPASSWORD);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_ES, PROPERTY_KEY_TRUSTALLCERTS,
+                DEFAULT_VALUE_TRUSTALLCERTS);
+
     }
 
     @Override

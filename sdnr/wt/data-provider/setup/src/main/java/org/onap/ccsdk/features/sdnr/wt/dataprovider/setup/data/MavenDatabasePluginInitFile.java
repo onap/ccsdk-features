@@ -38,27 +38,29 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
  *
  */
 public class MavenDatabasePluginInitFile {
-	private static final int replicas=1;
-	private static final int shards=5;
-	private static final String mappings="\"mappings\":%s";
-    private static final String settings="\"settings\":{\"index\":{\"number_of_shards\":%d,\"number_of_replicas\":%d},\"analysis\":{\"analyzer\":{\"content\":"+
-    "{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}}";
+    private static final int replicas = 1;
+    private static final int shards = 5;
+    private static final String mappings = "\"mappings\":%s";
+    private static final String settings =
+            "\"settings\":{\"index\":{\"number_of_shards\":%d,\"number_of_replicas\":%d},\"analysis\":{\"analyzer\":{\"content\":"
+                    + "{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}}";
 
-	public static void create(Release release, String filename) throws IOException {
+    public static void create(Release release, String filename) throws IOException {
 
-		ReleaseInformation ri = ReleaseInformation.getInstance(release);
-		Set<ComponentName> comps=ri.getComponents();
-		List<String> lines = new ArrayList<>();
-		for(ComponentName c:comps) {
-			lines.add(String.format("PUT:%s/:{"+settings+","+mappings+"}",ri.getIndex(c),shards,replicas,ri.getDatabaseMapping(c)));
-			lines.add(String.format("PUT:%s/_alias/%s/:{}", ri.getIndex(c),ri.getAlias(c)));
-		}
+        ReleaseInformation ri = ReleaseInformation.getInstance(release);
+        Set<ComponentName> comps = ri.getComponents();
+        List<String> lines = new ArrayList<>();
+        for (ComponentName c : comps) {
+            lines.add(String.format("PUT:%s/:{" + settings + "," + mappings + "}", ri.getIndex(c), shards, replicas,
+                    ri.getDatabaseMapping(c)));
+            lines.add(String.format("PUT:%s/_alias/%s/:{}", ri.getIndex(c), ri.getAlias(c)));
+        }
 
-		File filePath = new File(filename);
-		if (filePath.getParentFile() != null && !filePath.getParentFile().exists()){
-			//Crate Directory if missing
-			filePath.getParentFile().mkdirs();
-		}
-		Files.write(filePath.toPath(), lines);
-	}
+        File filePath = new File(filename);
+        if (filePath.getParentFile() != null && !filePath.getParentFile().exists()) {
+            //Crate Directory if missing
+            filePath.getParentFile().mkdirs();
+        }
+        Files.write(filePath.toPath(), lines);
+    }
 }

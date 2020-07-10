@@ -61,6 +61,7 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
 
     /**
      * Get existing object for mountpoint to manage maintenance mode
+     * 
      * @return Object with configuration
      */
     @Override
@@ -74,26 +75,23 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
     }
 
     @Override
-    public
-    MaintenanceEntity setMaintenance(MaintenanceEntity m) {
+    public MaintenanceEntity setMaintenance(MaintenanceEntity m) {
         if (maintenanceRW != null) {
-           if (maintenanceRW.write(m, m.getNodeId() ) == null) {
-                throw new IllegalArgumentException("Problem writing to database: "+m.getId());
+            if (maintenanceRW.write(m, m.getNodeId()) == null) {
+                throw new IllegalArgumentException("Problem writing to database: " + m.getId());
             }
-           LOG.info("Wrote maintenance object {}", m.toString());
+            LOG.info("Wrote maintenance object {}", m.toString());
         }
         return m;
     }
 
     @Override
-    public
-    List<MaintenanceEntity> getAll() {
+    public List<MaintenanceEntity> getAll() {
         return maintenanceRW != null ? maintenanceRW.doReadAll().getHits() : new ArrayList<>();
     }
 
     @Override
-    public
-    MaintenanceEntity createIfNotExists(String mountpointId) {
+    public MaintenanceEntity createIfNotExists(String mountpointId) {
         MaintenanceEntity deviceMaintenanceMode = null;
         if (maintenanceRW != null) {
             deviceMaintenanceMode = maintenanceRW.read(mountpointId);
@@ -111,8 +109,7 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
     }
 
     @Override
-    public
-    void deleteIfNotRequired(String mountPointNodeName) {
+    public void deleteIfNotRequired(String mountPointNodeName) {
 
         if (!this.isRequireNe(mountPointNodeName)) {
             if (maintenanceRW != null) {
@@ -128,6 +125,7 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
 
     /**
      * Provide default maintenanceinformation for a device
+     * 
      * @param mountpointId nodeId of device
      * @return default data
      */
@@ -143,14 +141,14 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
         deviceMaintenanceModeBuilder.setStart(now);
         deviceMaintenanceModeBuilder.setEnd(now);
         deviceMaintenanceModeBuilder.setActive(false);
-        
+
         // Reference to all
         //consistent to UI input to null/not empty string
         //deviceMaintenanceModeBuilder.setObjectIdRef("");
         //deviceMaintenanceModeBuilder.setProblem("");
-        
+
         return deviceMaintenanceModeBuilder.build();
-   }
+    }
 
     // -- Private
     /**

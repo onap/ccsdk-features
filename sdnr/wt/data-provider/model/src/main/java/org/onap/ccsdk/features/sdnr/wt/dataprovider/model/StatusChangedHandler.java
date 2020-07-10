@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,16 +14,17 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 
 public interface StatusChangedHandler {
 
-	public enum StatusKey {
-		CLUSTER_SIZE,
-		
-	}
-	public void onStatusChanged(StatusKey key,String newValue);
-	
+    public enum StatusKey {
+        CLUSTER_SIZE,
+
+    }
+
+    public void onStatusChanged(StatusKey key, String newValue);
+
 }

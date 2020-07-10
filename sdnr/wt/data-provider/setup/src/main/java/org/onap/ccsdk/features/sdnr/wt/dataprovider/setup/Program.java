@@ -43,7 +43,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
  */
 public class Program {
 
-	// constants
+    // constants
     private static final String CMD_INITDB = "init";
     private static final String CMD_CLEAR_DB = "delete";
     private static final String CMD_CLEAR_DB_COMPLETE = "clear";
@@ -59,11 +59,11 @@ public class Program {
     private static final String CMD_EXPORT_DESCRIPTION = "export data from database";
     private static final String CMD_LIST_VERSION_DESCRIPTION = "list release versions";
 
-    private static final List<String[]> commands = Arrays.asList(new String[] { CMD_INITDB, CMD_INITDB_DESCRIPTION },
-            new String[] { CMD_CLEAR_DB, CMD_CLEAR_DB_DESCRIPTION },
-            new String[] { CMD_CREATE_PLUGIN_INIT_FILE, CMD_CREATE_PLUGIN_INIT_FILE_DESCRIPTION },
-            new String[] { CMD_IMPORT, CMD_IMPORT_DESCRIPTION }, new String[] { CMD_EXPORT, CMD_EXPORT_DESCRIPTION },
-            new String[] { CMD_LIST_VERSION, CMD_LIST_VERSION_DESCRIPTION });
+    private static final List<String[]> commands = Arrays.asList(new String[] {CMD_INITDB, CMD_INITDB_DESCRIPTION},
+            new String[] {CMD_CLEAR_DB, CMD_CLEAR_DB_DESCRIPTION},
+            new String[] {CMD_CREATE_PLUGIN_INIT_FILE, CMD_CREATE_PLUGIN_INIT_FILE_DESCRIPTION},
+            new String[] {CMD_IMPORT, CMD_IMPORT_DESCRIPTION}, new String[] {CMD_EXPORT, CMD_EXPORT_DESCRIPTION},
+            new String[] {CMD_LIST_VERSION, CMD_LIST_VERSION_DESCRIPTION});
     private static final String APPLICATION_NAME = "SDNR DataMigrationTool";
     private static final int DEFAULT_SHARDS = 5;
     private static final int DEFAULT_REPLICAS = 1;
@@ -81,24 +81,24 @@ public class Program {
     private static final String OPTION_TRUSTINSECURESSL_SHORT = "k";
     private static final String OPTION_DATABASE_SHORT = "db";
     private static final String OPTION_COMMAND_SHORT = "c";
-	private static final String OPTION_DATABASEUSER_SHORT = "dbu";
-	private static final String OPTION_DATABASEPASSWORD_SHORT = "dbp";
-	private static final String OPTION_DATABASEPREFIX_SHORT = "p";
-	private static final String OPTION_DATABASEWAIT_SHORT = "w";
-	private static final String OPTION_HELP_SHORT = "h";
+    private static final String OPTION_DATABASEUSER_SHORT = "dbu";
+    private static final String OPTION_DATABASEPASSWORD_SHORT = "dbp";
+    private static final String OPTION_DATABASEPREFIX_SHORT = "p";
+    private static final String OPTION_DATABASEWAIT_SHORT = "w";
+    private static final String OPTION_HELP_SHORT = "h";
     // end of constants
-	
-	// variables
+
+    // variables
     private static Options options = init();
     private static Log LOG = null;
     // end of variables
-    
+
     // public methods
     public static void main(String[] args) {
-        System.exit( main2(args) );
+        System.exit(main2(args));
     }
     // end of public methods
-    
+
     // private methods
     @SuppressWarnings("unchecked")
     private static <T> T getOptionOrDefault(CommandLine cmd, String option, T def) throws ParseException {
@@ -156,7 +156,7 @@ public class Program {
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd = null;
-       
+
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
@@ -175,72 +175,72 @@ public class Program {
 
         }
         try {
-			if(getOptionOrDefault(cmd, OPTION_HELP_SHORT, false)) {
-			    printHelp(formatter);
-			    return 0;
-			}
-		} catch (ParseException e2) {
-			return exit(e2);
-		}
+            if (getOptionOrDefault(cmd, OPTION_HELP_SHORT, false)) {
+                printHelp(formatter);
+                return 0;
+            }
+        } catch (ParseException e2) {
+            return exit(e2);
+        }
         final String command = cmd.getOptionValue(OPTION_COMMAND_SHORT);
-        if(command==null) {
-        	printHelp(formatter);
+        if (command == null) {
+            printHelp(formatter);
             return 1;
         }
         switch (command) {
-        case CMD_INITDB:
-            try {
-                cmd_init_db(cmd);
-            } catch (Exception e1) {
-                return exit(e1);
-            }
-            break;
-        case CMD_CLEAR_DB:
-            try {
-                cmd_clear_db(cmd);
-            } catch (Exception e1) {
-                return exit(e1);
-            }
-            break;
-        case CMD_CLEAR_DB_COMPLETE:
-        	try {
-                cmd_clear_db_complete(cmd);
-            } catch (Exception e1) {
-                return exit(e1);
-            }
-            break;
-        case CMD_CREATE_PLUGIN_INIT_FILE:
-            try {
-                String of = getOptionOrDefault(cmd, OPTION_OUTPUTFILE_SHORT, null);
-                if (of == null) {
-                    throw new Exception("please add the parameter output-file");
+            case CMD_INITDB:
+                try {
+                    cmd_init_db(cmd);
+                } catch (Exception e1) {
+                    return exit(e1);
                 }
-                MavenDatabasePluginInitFile.create(Release.CURRENT_RELEASE, of);
-            } catch (Exception e) {
-                return exit(e);
-            }
-            break;
-        case CMD_IMPORT:
-            try {
-                cmd_dbimport(cmd);
-            } catch (Exception e1) {
-                return exit(e1);
-            }
-            break;
-        case CMD_EXPORT:
-            try {
-                cmd_dbexport(cmd);
-            } catch (Exception e) {
-                return exit(e);
-            }
-            break;
-        case CMD_LIST_VERSION:
-            cmd_listversion();
-            break;
+                break;
+            case CMD_CLEAR_DB:
+                try {
+                    cmd_clear_db(cmd);
+                } catch (Exception e1) {
+                    return exit(e1);
+                }
+                break;
+            case CMD_CLEAR_DB_COMPLETE:
+                try {
+                    cmd_clear_db_complete(cmd);
+                } catch (Exception e1) {
+                    return exit(e1);
+                }
+                break;
+            case CMD_CREATE_PLUGIN_INIT_FILE:
+                try {
+                    String of = getOptionOrDefault(cmd, OPTION_OUTPUTFILE_SHORT, null);
+                    if (of == null) {
+                        throw new Exception("please add the parameter output-file");
+                    }
+                    MavenDatabasePluginInitFile.create(Release.CURRENT_RELEASE, of);
+                } catch (Exception e) {
+                    return exit(e);
+                }
+                break;
+            case CMD_IMPORT:
+                try {
+                    cmd_dbimport(cmd);
+                } catch (Exception e1) {
+                    return exit(e1);
+                }
+                break;
+            case CMD_EXPORT:
+                try {
+                    cmd_dbexport(cmd);
+                } catch (Exception e) {
+                    return exit(e);
+                }
+                break;
+            case CMD_LIST_VERSION:
+                cmd_listversion();
+                break;
 
-        default:
-            printHelp(formatter);
-            return 1;
+            default:
+                printHelp(formatter);
+                return 1;
         }
         return 0;
     }
@@ -266,7 +266,7 @@ public class Program {
 
     }
 
-   private static void cmd_dbimport(CommandLine cmd) throws Exception {
+    private static void cmd_dbimport(CommandLine cmd) throws Exception {
         String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
         String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
         String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
@@ -275,12 +275,12 @@ public class Program {
         if (filename == null) {
             throw new Exception("please add output file parameter");
         }
-        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30)*1000;
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
+        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30) * 1000;
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(dbUrl)},
                 username, password, trustAll, timeoutms);
         DataMigrationReport report = service.importData(filename, false);
         LOG.info(report);
-        if(!report.completed()) {
+        if (!report.completed()) {
             throw new Exception("db import seems to be not executed completed");
         }
     }
@@ -294,12 +294,12 @@ public class Program {
         if (filename == null) {
             throw new Exception("please add output file parameter");
         }
-        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30)*1000;
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
+        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30) * 1000;
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(dbUrl)},
                 username, password, trustAll, timeoutms);
         DataMigrationReport report = service.exportData(filename);
         LOG.info(report);
-        if(!report.completed()) {
+        if (!report.completed()) {
             throw new Exception("db export seems to be not executed completed");
         }
 
@@ -321,23 +321,24 @@ public class Program {
         String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
         String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
         boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, false);
-        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30)*1000;
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
+        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30) * 1000;
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(dbUrl)},
                 username, password, trustAll, timeoutms);
-        if (!service.clearDatabase(r, dbPrefix,timeoutms)) {
+        if (!service.clearDatabase(r, dbPrefix, timeoutms)) {
             throw new Exception("failed to init database");
         }
     }
+
     private static void cmd_clear_db_complete(CommandLine cmd) throws Exception {
         String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
         String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
         String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
         boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, false);
-        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30)*1000;
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
+        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30) * 1000;
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(dbUrl)},
                 username, password, trustAll, timeoutms);
         if (!service.clearCompleteDatabase(timeoutms)) {
-        	throw new Exception("failed to init database");
+            throw new Exception("failed to init database");
         }
     }
 
@@ -348,13 +349,13 @@ public class Program {
         String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
         String dbPrefix = getOptionOrDefault(cmd, OPTION_DATABASEPREFIX_SHORT, DEFAULT_DBPREFIX);
         String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
-        String password = getOptionOrDefault(cmd,OPTION_DATABASEPASSWORD_SHORT, null);
+        String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
         boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, false);
-        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30)*1000;
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] { HostInfo.parse(dbUrl) },
+        long timeoutms = getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, 30) * 1000;
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(dbUrl)},
                 username, password, trustAll, timeoutms);
         boolean forceRecreate = cmd.hasOption(OPTION_FORCE_RECREATE_SHORT);
-        if (!service.initDatabase(r, numShards, numReplicas, dbPrefix, forceRecreate,timeoutms)) {
+        if (!service.initDatabase(r, numShards, numReplicas, dbPrefix, forceRecreate, timeoutms)) {
             throw new Exception("failed to init database");
         }
 
@@ -364,8 +365,10 @@ public class Program {
         Options result = new Options();
         result.addOption(createOption(OPTION_COMMAND_SHORT, "cmd", true, "command to execute", false));
         result.addOption(createOption(OPTION_DATABASE_SHORT, "dburl", true, "database url", false));
-        result.addOption(createOption(OPTION_DATABASEUSER_SHORT, "db-username", true, "database basic auth username", false));
-        result.addOption(createOption(OPTION_DATABASEPASSWORD_SHORT, "db-password", true, "database basic auth password", false));
+        result.addOption(
+                createOption(OPTION_DATABASEUSER_SHORT, "db-username", true, "database basic auth username", false));
+        result.addOption(createOption(OPTION_DATABASEPASSWORD_SHORT, "db-password", true,
+                "database basic auth password", false));
         result.addOption(createOption(OPTION_REPLICAS_SHORT, "replicas", true, "amount of replicas", false));
         result.addOption(createOption(OPTION_SHARDS_SHORT, "shards", true, "amount of shards", false));
         result.addOption(createOption(OPTION_DATABASEPREFIX_SHORT, "prefix", true, "prefix for db indices", false));
@@ -373,13 +376,14 @@ public class Program {
         result.addOption(createOption(OPTION_DEBUG_SHORT, "verbose", false, "verbose mode", false));
         result.addOption(createOption(OPTION_TRUSTINSECURESSL_SHORT, "trust-insecure", false,
                 "trust insecure ssl certs", false));
-        result.addOption(createOption(OPTION_DATABASEWAIT_SHORT, "wait", true, "wait for yellow status with timeout in seconds", false));
+        result.addOption(createOption(OPTION_DATABASEWAIT_SHORT, "wait", true,
+                "wait for yellow status with timeout in seconds", false));
         result.addOption(
                 createOption(OPTION_FORCE_RECREATE_SHORT, "force-recreate", false, "delete if sth exists", false));
         result.addOption(createOption(OPTION_SILENT_SHORT, OPTION_SILENT, false, "prevent console output", false));
         result.addOption(createOption(OPTION_OUTPUTFILE_SHORT, "output-file", true, "file to write into", false));
         result.addOption(createOption(OPTION_INPUTFILE_SHORT, "input-file", true, "file to read from", false));
-        result.addOption(createOption(OPTION_HELP_SHORT,"help",false,"show help",false));
+        result.addOption(createOption(OPTION_HELP_SHORT, "help", false, "show help", false));
         return result;
     }
 

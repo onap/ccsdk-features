@@ -49,219 +49,231 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+
 /**
- * YangToolsMapper is a specific Jackson mapper configuration for opendaylight yangtools serialization or deserialization of DataObject to/from JSON
- * TODO ChoiceIn and Credentials deserialization only for LoginPasswordBuilder
+ * YangToolsMapper is a specific Jackson mapper configuration for opendaylight yangtools serialization or
+ * deserialization of DataObject to/from JSON TODO ChoiceIn and Credentials deserialization only for
+ * LoginPasswordBuilder
  */
 public class YangToolsMapper2<T extends DataObject> extends ObjectMapper {
 
- 	private final Logger LOG = LoggerFactory.getLogger(YangToolsMapper2.class);
-	private static final long serialVersionUID = 1L;
-	private static String ENTITY = "Entity";
-	private static String BUILDER = "Builder";
+    private final Logger LOG = LoggerFactory.getLogger(YangToolsMapper2.class);
+    private static final long serialVersionUID = 1L;
+    private static String ENTITY = "Entity";
+    private static String BUILDER = "Builder";
 
-	private @Nullable Class<T> clazz;
-	private @Nullable Class<? extends Builder<? extends T>> builderClazz;
+    private @Nullable Class<T> clazz;
+    private @Nullable Class<? extends Builder<? extends T>> builderClazz;
 
-	private BundleContext context;
+    private BundleContext context;
 
-	public <X extends T, B extends Builder<X>> YangToolsMapper2(Class<T> clazz, Class<B> builderClazz) throws ClassNotFoundException {
-		super();
-		configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
-		setSerializationInclusion(Include.NON_NULL);
-		setAnnotationIntrospector(new YangToolsBuilderAnnotationIntrospector());
-		SimpleModule dateAndTimeSerializerModule = new SimpleModule();
-		dateAndTimeSerializerModule.addSerializer(DateAndTime.class, new CustomDateAndTimeSerializer());
-		registerModule(dateAndTimeSerializerModule );
-		Bundle bundle = FrameworkUtil.getBundle(YangToolsMapper2.class);
+    public <X extends T, B extends Builder<X>> YangToolsMapper2(Class<T> clazz, Class<B> builderClazz)
+            throws ClassNotFoundException {
+        super();
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
+        setSerializationInclusion(Include.NON_NULL);
+        setAnnotationIntrospector(new YangToolsBuilderAnnotationIntrospector());
+        SimpleModule dateAndTimeSerializerModule = new SimpleModule();
+        dateAndTimeSerializerModule.addSerializer(DateAndTime.class, new CustomDateAndTimeSerializer());
+        registerModule(dateAndTimeSerializerModule);
+        Bundle bundle = FrameworkUtil.getBundle(YangToolsMapper2.class);
 
-		this.clazz = clazz;
-		this.builderClazz = builderClazz != null ? builderClazz : getBuilderClass(getBuilderClassName(clazz)) ;
-		context = bundle != null ? bundle.getBundleContext() : null;
-	}
+        this.clazz = clazz;
+        this.builderClazz = builderClazz != null ? builderClazz : getBuilderClass(getBuilderClassName(clazz));
+        context = bundle != null ? bundle.getBundleContext() : null;
+    }
 
-	public YangToolsMapper2() throws ClassNotFoundException {
-		this(null, null);
-	}
+    public YangToolsMapper2() throws ClassNotFoundException {
+        this(null, null);
+    }
 
 
-	@Override
-	public String writeValueAsString(Object value) throws JsonProcessingException {
-		return super.writeValueAsString(value);
-	}
-	/**
-	 * Get Builder object for yang tools interface.
-	 * @param <T> yang-tools base datatype
-	 * @param clazz class with interface.
-	 * @return builder for interface or null if not existing
-	 */
-	@SuppressWarnings("unchecked")
-	public @Nullable <T extends DataObject> Builder<T> getBuilder(Class<T> clazz) {
-		try {
-			//Class<?> clazzBuilder = getBuilderClass(getBuilderClassName(clazz));
-			return (Builder<T>) builderClazz.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			LOG.debug("Problem ", e);
-			return null;
-		}
-	}
+    @Override
+    public String writeValueAsString(Object value) throws JsonProcessingException {
+        return super.writeValueAsString(value);
+    }
 
-	/**
-	 * Callback for handling mapping failures.
-	 * @return
-	 */
-	public int getMappingFailures() {
-		return 0;
-	}
+    /**
+     * Get Builder object for yang tools interface.
+     * 
+     * @param <T> yang-tools base datatype
+     * @param clazz class with interface.
+     * @return builder for interface or null if not existing
+     */
+    @SuppressWarnings("unchecked")
+    public @Nullable <T extends DataObject> Builder<T> getBuilder(Class<T> clazz) {
+        try {
+            //Class<?> clazzBuilder = getBuilderClass(getBuilderClassName(clazz));
+            return (Builder<T>) builderClazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            LOG.debug("Problem ", e);
+            return null;
+        }
+    }
 
-	/**
-	 * Provide mapping of string to attribute names, generated by yang-tools.
-	 * "netconf-id" converted to "_netconfId"
-	 * @param name with attribute name, not null or empty
-	 * @return converted string or null if name was empty or null
-	 */
-	public @Nullable static String toCamelCaseAttributeName(final String name) {
-		if (name == null || name.isEmpty())
-			return null;
+    /**
+     * Callback for handling mapping failures.
+     * 
+     * @return
+     */
+    public int getMappingFailures() {
+        return 0;
+    }
 
-		final StringBuilder ret = new StringBuilder(name.length());
-		if (!name.startsWith("_"))
-			ret.append('_');
-		int start = 0;
-		for (final String word : name.split("-")) {
-			if (!word.isEmpty()) {
-				if (start++ == 0) {
-					ret.append(Character.toLowerCase(word.charAt(0)));
-				} else {
-					ret.append(Character.toUpperCase(word.charAt(0)));
-				}
-				ret.append(word.substring(1));
-			}
-		}
-		return ret.toString();
-	}
+    /**
+     * Provide mapping of string to attribute names, generated by yang-tools. "netconf-id" converted to "_netconfId"
+     * 
+     * @param name with attribute name, not null or empty
+     * @return converted string or null if name was empty or null
+     */
+    public @Nullable static String toCamelCaseAttributeName(final String name) {
+        if (name == null || name.isEmpty())
+            return null;
 
-	/** Verify if builder is available
-	 * @throws ClassNotFoundException **/
-	public Class<?> assertBuilderClass(Class<?> clazz) throws ClassNotFoundException {
-		return getBuilderClass(getBuilderClassName(clazz));
-	}
+        final StringBuilder ret = new StringBuilder(name.length());
+        if (!name.startsWith("_"))
+            ret.append('_');
+        int start = 0;
+        for (final String word : name.split("-")) {
+            if (!word.isEmpty()) {
+                if (start++ == 0) {
+                    ret.append(Character.toLowerCase(word.charAt(0)));
+                } else {
+                    ret.append(Character.toUpperCase(word.charAt(0)));
+                }
+                ret.append(word.substring(1));
+            }
+        }
+        return ret.toString();
+    }
 
-	// --- Private functions
+    /**
+     * Verify if builder is available
+     * 
+     * @throws ClassNotFoundException
+     **/
+    public Class<?> assertBuilderClass(Class<?> clazz) throws ClassNotFoundException {
+        return getBuilderClass(getBuilderClassName(clazz));
+    }
 
-	/**
-	 * Create name of builder class
-	 * @param <T>
-	 * @param clazz
-	 * @return builders class name
-	 * @throws ClassNotFoundException
-	 */
-	private static String getBuilderClassName(Class<?> clazz) {
-		return clazz.getName() + BUILDER;
-//		String clazzName = clazz.getName();
-//		if (clazzName.endsWith(ENTITY)) {
-//			return clazzName.replace(ENTITY, BUILDER);
-//		} else {
-//			return clazzName + BUILDER;
-//		}
-	}
+    // --- Private functions
 
-	/**
-	 * Search builder in context
-	 * @param name
-	 * @return
-	 * @throws ClassNotFoundException
-	 */
-	@SuppressWarnings("unchecked")
-	private <X extends T, B extends Builder<X>> Class<B> getBuilderClass(String name) throws ClassNotFoundException {
-		// Try to find in other bundles
-		if (context != null) {
-			//OSGi environment
-			for (Bundle b : context.getBundles()) {
-				try {
-					return (Class<B>) b.loadClass(name);
-				} catch (ClassNotFoundException e) {
-					// No problem, this bundle doesn't have the class
-				}
-			}
-			throw new ClassNotFoundException("Can not find Class in OSGi context.");
-		} else {
-			return (Class<B>) Class.forName(name);
-		}
-	    // not found in any bundle
-	}
+    /**
+     * Create name of builder class
+     * 
+     * @param <T>
+     * @param clazz
+     * @return builders class name
+     * @throws ClassNotFoundException
+     */
+    private static String getBuilderClassName(Class<?> clazz) {
+        return clazz.getName() + BUILDER;
+        //		String clazzName = clazz.getName();
+        //		if (clazzName.endsWith(ENTITY)) {
+        //			return clazzName.replace(ENTITY, BUILDER);
+        //		} else {
+        //			return clazzName + BUILDER;
+        //		}
+    }
 
-	// --- Classes
+    /**
+     * Search builder in context
+     * 
+     * @param name
+     * @return
+     * @throws ClassNotFoundException
+     */
+    @SuppressWarnings("unchecked")
+    private <X extends T, B extends Builder<X>> Class<B> getBuilderClass(String name) throws ClassNotFoundException {
+        // Try to find in other bundles
+        if (context != null) {
+            //OSGi environment
+            for (Bundle b : context.getBundles()) {
+                try {
+                    return (Class<B>) b.loadClass(name);
+                } catch (ClassNotFoundException e) {
+                    // No problem, this bundle doesn't have the class
+                }
+            }
+            throw new ClassNotFoundException("Can not find Class in OSGi context.");
+        } else {
+            return (Class<B>) Class.forName(name);
+        }
+        // not found in any bundle
+    }
 
-	/**
-	 * Adapted Builder callbacks
-	 */
-	private class YangToolsBuilderAnnotationIntrospector extends JacksonAnnotationIntrospector {
-		private static final long serialVersionUID = 1L;
+    // --- Classes
 
-		@Override
-		public Class<?> findPOJOBuilder(AnnotatedClass ac) {
+    /**
+     * Adapted Builder callbacks
+     */
+    private class YangToolsBuilderAnnotationIntrospector extends JacksonAnnotationIntrospector {
+        private static final long serialVersionUID = 1L;
 
-			if (ac.getRawType().equals(Credentials.class)) {
-				return org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPasswordBuilder.class;
+        @Override
+        public Class<?> findPOJOBuilder(AnnotatedClass ac) {
 
-			} else if (ac.getRawType().equals(DateAndTime.class)) {
-				return DateAndTimeBuilder.class;
+            if (ac.getRawType().equals(Credentials.class)) {
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPasswordBuilder.class;
 
-			} else if (ac.getRawType().equals(clazz)) {
-				return builderClazz;
-			}
+            } else if (ac.getRawType().equals(DateAndTime.class)) {
+                return DateAndTimeBuilder.class;
 
-			if (ac.getRawType().isInterface()) {
-				String builder = getBuilderClassName(ac.getRawType());
-				try {
-					Class<?> innerBuilder = getBuilderClass(builder);
-					return innerBuilder;
-				} catch (ClassNotFoundException e) {
-					// No problem .. try next
-				}
-			}
-			return super.findPOJOBuilder(ac);
-		}
+            } else if (ac.getRawType().equals(clazz)) {
+                return builderClazz;
+            }
 
-		@Override
-		public Value findPOJOBuilderConfig(AnnotatedClass ac) {
-			if (ac.hasAnnotation(JsonPOJOBuilder.class)) {
-				return super.findPOJOBuilderConfig(ac);
-			}
-			return new JsonPOJOBuilder.Value("build", "set");
-		}
-	}
+            if (ac.getRawType().isInterface()) {
+                String builder = getBuilderClassName(ac.getRawType());
+                try {
+                    Class<?> innerBuilder = getBuilderClass(builder);
+                    return innerBuilder;
+                } catch (ClassNotFoundException e) {
+                    // No problem .. try next
+                }
+            }
+            return super.findPOJOBuilder(ac);
+        }
 
-	public static class DateAndTimeBuilder{
+        @Override
+        public Value findPOJOBuilderConfig(AnnotatedClass ac) {
+            if (ac.hasAnnotation(JsonPOJOBuilder.class)) {
+                return super.findPOJOBuilderConfig(ac);
+            }
+            return new JsonPOJOBuilder.Value("build", "set");
+        }
+    }
 
-		private final String _value;
+    public static class DateAndTimeBuilder {
 
-		public DateAndTimeBuilder(String v) {
-			this._value= v;
-		}
+        private final String _value;
 
-		public DateAndTime build() {
-			return new DateAndTime(_value);
-		}
+        public DateAndTimeBuilder(String v) {
+            this._value = v;
+        }
 
-	}
-	public static class CustomDateAndTimeSerializer extends StdSerializer<@NonNull DateAndTime>{
+        public DateAndTime build() {
+            return new DateAndTime(_value);
+        }
 
-		private static final long serialVersionUID = 1L;
+    }
+    public static class CustomDateAndTimeSerializer extends StdSerializer<@NonNull DateAndTime> {
 
-		public CustomDateAndTimeSerializer() {
-			this(null);
-		}
-		protected CustomDateAndTimeSerializer(Class<DateAndTime> t) {
-			super(t);
-		}
+        private static final long serialVersionUID = 1L;
 
-		@Override
-		public void serialize(DateAndTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-			gen.writeString(value.getValue());
-		}
+        public CustomDateAndTimeSerializer() {
+            this(null);
+        }
 
-	}
+        protected CustomDateAndTimeSerializer(Class<DateAndTime> t) {
+            super(t);
+        }
+
+        @Override
+        public void serialize(DateAndTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeString(value.getValue());
+        }
+
+    }
 }

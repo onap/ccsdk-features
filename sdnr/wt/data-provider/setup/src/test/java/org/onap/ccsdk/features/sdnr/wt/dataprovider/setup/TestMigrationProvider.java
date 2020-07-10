@@ -37,17 +37,17 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
  */
 public class TestMigrationProvider {
 
-      private static final String FRANKFURT_BACKUP_FILE = "src/test/resources/test2.bak.json";
-    public static HostInfo[] hosts = new HostInfo[] { new HostInfo("localhost", Integer
-                .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200")) };
+    private static final String FRANKFURT_BACKUP_FILE = "src/test/resources/test2.bak.json";
+    public static HostInfo[] hosts = new HostInfo[] {new HostInfo("localhost", Integer
+            .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200"))};
 
     @Test
     public void testCreateImport() {
-        DataMigrationProviderImpl provider = new DataMigrationProviderImpl(hosts, null, null,true,5000);
+        DataMigrationProviderImpl provider = new DataMigrationProviderImpl(hosts, null, null, true, 5000);
 
         try {
             //create el alto db infrastructure
-            provider.initDatabase(Release.FRANKFURT_R1, 5, 1, "", true,10000);
+            provider.initDatabase(Release.FRANKFURT_R1, 5, 1, "", true, 10000);
             //import data into database
             DataMigrationReport report = provider.importData(FRANKFURT_BACKUP_FILE, false, Release.FRANKFURT_R1);
             assertTrue(report.completed());

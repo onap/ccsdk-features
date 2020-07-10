@@ -35,48 +35,48 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
 
 public class GuilinReleaseInformation extends ReleaseInformation {
 
-	/**
-	 * @param r
-	 * @param dbMap
-	 */
-	public GuilinReleaseInformation() {
-		super(Release.GUILIN, createDBMap());
+    /**
+     * @param r
+     * @param dbMap
+     */
+    public GuilinReleaseInformation() {
+        super(Release.GUILIN, createDBMap());
 
-	}
+    }
 
-	private static Map<ComponentName, DatabaseInfo> createDBMap() {
-		Map<ComponentName, DatabaseInfo> map = new HashMap<>();
-		map.put(ComponentName.EVENTLOG, new DatabaseInfo("eventlog", "eventlog", ""));
-		map.put(ComponentName.FAULTCURRENT, new DatabaseInfo("faultcurrent", "faultcurrent", ""));
-		map.put(ComponentName.FAULTLOG, new DatabaseInfo("faultlog", "faultlog", ""));
-		map.put(ComponentName.INVENTORY, new DatabaseInfo("inventoryequipment", "inventoryequipment", ""));
-		map.put(ComponentName.HISTORICAL_PERFORMANCE_15M,
-				new DatabaseInfo("historicalperformance15min", "historicalperformance15min", ""));
-		map.put(ComponentName.HISTORICAL_PERFORMANCE_24H,
-				new DatabaseInfo("historicalperformance24h", "historicalperformance24h", ""));
-		map.put(ComponentName.REQUIRED_NETWORKELEMENT,
-				new DatabaseInfo("networkelement-connection", "networkelement-connection", ""));
-		map.put(ComponentName.MEDIATOR_SERVER, new DatabaseInfo("mediator-server", "mediator-server", ""));
-		map.put(ComponentName.MAINTENANCE, new DatabaseInfo("maintenancemode", "maintenancemode", ""));
-		return map;
-	}
+    private static Map<ComponentName, DatabaseInfo> createDBMap() {
+        Map<ComponentName, DatabaseInfo> map = new HashMap<>();
+        map.put(ComponentName.EVENTLOG, new DatabaseInfo("eventlog", "eventlog", ""));
+        map.put(ComponentName.FAULTCURRENT, new DatabaseInfo("faultcurrent", "faultcurrent", ""));
+        map.put(ComponentName.FAULTLOG, new DatabaseInfo("faultlog", "faultlog", ""));
+        map.put(ComponentName.INVENTORY, new DatabaseInfo("inventoryequipment", "inventoryequipment", ""));
+        map.put(ComponentName.HISTORICAL_PERFORMANCE_15M,
+                new DatabaseInfo("historicalperformance15min", "historicalperformance15min", ""));
+        map.put(ComponentName.HISTORICAL_PERFORMANCE_24H,
+                new DatabaseInfo("historicalperformance24h", "historicalperformance24h", ""));
+        map.put(ComponentName.REQUIRED_NETWORKELEMENT,
+                new DatabaseInfo("networkelement-connection", "networkelement-connection", ""));
+        map.put(ComponentName.MEDIATOR_SERVER, new DatabaseInfo("mediator-server", "mediator-server", ""));
+        map.put(ComponentName.MAINTENANCE, new DatabaseInfo("maintenancemode", "maintenancemode", ""));
+        return map;
+    }
 
-	@Override
-	public SearchHitConverter getConverter(Release dst, ComponentName comp) {
-		if (dst == Release.GUILIN) {
-			return new KeepDataSearchHitConverter(comp);
-		}
-		return null;
-	}
+    @Override
+    public SearchHitConverter getConverter(Release dst, ComponentName comp) {
+        if (dst == Release.GUILIN) {
+            return new KeepDataSearchHitConverter(comp);
+        }
+        return null;
+    }
 
-	@Override
-	protected boolean runPreInitCommands(HtDatabaseClient dbClient) {
-		return true;
-	}
+    @Override
+    protected boolean runPreInitCommands(HtDatabaseClient dbClient) {
+        return true;
+    }
 
-	@Override
-	protected boolean runPostInitCommands(HtDatabaseClient dbClient) {
-		return true;
-	}
+    @Override
+    protected boolean runPostInitCommands(HtDatabaseClient dbClient) {
+        return true;
+    }
 
 }

@@ -67,6 +67,7 @@ public interface DataProvider extends ArchiveCleanProvider {
 
     /**
      * write internal equipment to database
+     * 
      * @param internalEquipment with mandatory fields.
      */
     void writeInventory(Inventory internalEquipment);
@@ -81,6 +82,7 @@ public interface DataProvider extends ArchiveCleanProvider {
 
     /**
      * Update after new mountpoint registration
+     * 
      * @param networkElementConnectionEntitiy data
      * @param nodeId of device (mountpoint name)
      */
@@ -101,9 +103,9 @@ public interface DataProvider extends ArchiveCleanProvider {
      */
     void doWritePerformanceData(List<PmdataEntity> list);
 
-	/**
-	 * @return
-	 */
-	HtDatabaseClient getRawClient();
+    /**
+     * @return
+     */
+    HtDatabaseClient getRawClient();
 
 }

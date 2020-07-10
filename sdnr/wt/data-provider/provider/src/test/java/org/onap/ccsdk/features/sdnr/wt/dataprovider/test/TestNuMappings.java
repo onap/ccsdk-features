@@ -38,13 +38,13 @@ public class TestNuMappings {
         Faultcurrent c = new FaultcurrentBuilder().setSeverity(SeverityType.Critical).build();
         YangToolsMapper mapper = new YangToolsMapper();
         try {
-            System.out.println(mapper.writeValueAsString(c)+"<=>"+SeverityType.Critical.getName());
+            System.out.println(mapper.writeValueAsString(c) + "<=>" + SeverityType.Critical.getName());
         } catch (JsonProcessingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         try {
-            Faultcurrent f=mapper.readValue( "{\"severity\":\"Critical\"}", Faultcurrent.class);
+            Faultcurrent f = mapper.readValue("{\"severity\":\"Critical\"}", Faultcurrent.class);
             System.out.println(f);
             System.out.println(mapper.writeValueAsString(f));
         } catch (JsonParseException e) {

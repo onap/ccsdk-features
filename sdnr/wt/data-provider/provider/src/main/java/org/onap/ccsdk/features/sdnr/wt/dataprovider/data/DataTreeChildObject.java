@@ -29,17 +29,18 @@ import java.util.Map;
  */
 public class DataTreeChildObject {
 
-	private final String label;
-	private final String ownSeverity;
-	private final String childrenSeveritySummary;
-	private final boolean isMatch;
-	private final Map<String,DataTreeChildObject> children;
-	
-	public DataTreeChildObject(String label,boolean isMatch,Map<String,DataTreeChildObject>children,String ownSeverity,String childrenSeveritySummary) {
-		this.label = label;
-		this.isMatch = isMatch;
-		this.children = children;
-		this.ownSeverity = ownSeverity;
-		this.childrenSeveritySummary = childrenSeveritySummary;
-	}
+    private final String label;
+    private final String ownSeverity;
+    private final String childrenSeveritySummary;
+    private final boolean isMatch;
+    private final Map<String, DataTreeChildObject> children;
+
+    public DataTreeChildObject(String label, boolean isMatch, Map<String, DataTreeChildObject> children,
+            String ownSeverity, String childrenSeveritySummary) {
+        this.label = label;
+        this.isMatch = isMatch;
+        this.children = children;
+        this.ownSeverity = ownSeverity;
+        this.childrenSeveritySummary = childrenSeveritySummary;
+    }
 }

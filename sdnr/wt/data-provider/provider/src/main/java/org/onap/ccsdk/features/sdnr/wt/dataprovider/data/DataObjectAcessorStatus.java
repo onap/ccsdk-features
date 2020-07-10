@@ -37,39 +37,34 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 
 public class DataObjectAcessorStatus extends DataObjectAcessor<Data> {
 
-	final String ESDATATYPE_FAULTCURRENT_SEVERITY_KEY = "severity";
+    final String ESDATATYPE_FAULTCURRENT_SEVERITY_KEY = "severity";
 
-	private final ExtRestClient dbClient;
-	private final Entity entity;
+    private final ExtRestClient dbClient;
+    private final Entity entity;
 
-	public DataObjectAcessorStatus(HtDatabaseClient dbClient, Entity entity)
-			throws ClassNotFoundException {
-		super(dbClient, entity, Data.class, false);
-		this.dbClient = dbClient;
-		this.entity = entity;
-	}
+    public DataObjectAcessorStatus(HtDatabaseClient dbClient, Entity entity) throws ClassNotFoundException {
+        super(dbClient, entity, Data.class, false);
+        this.dbClient = dbClient;
+        this.entity = entity;
+    }
 
-	QueryResult<Data> getDataStatus() throws IOException {
-	SearchRequest request = getNewInstanceOfSearchRequest(entity);
-	request.setQuery(
-			QueryBuilders.matchAllQuery().aggregations(ESDATATYPE_FAULTCURRENT_SEVERITY_KEY).size(0));
-		SearchResponse response = this.dbClient.search(request);
-		AggregationEntries aggs = response.getAggregations(ESDATATYPE_FAULTCURRENT_SEVERITY_KEY);
+    QueryResult<Data> getDataStatus() throws IOException {
+        SearchRequest request = getNewInstanceOfSearchRequest(entity);
+        request.setQuery(QueryBuilders.matchAllQuery().aggregations(ESDATATYPE_FAULTCURRENT_SEVERITY_KEY).size(0));
+        SearchResponse response = this.dbClient.search(request);
+        AggregationEntries aggs = response.getAggregations(ESDATATYPE_FAULTCURRENT_SEVERITY_KEY);
 
-		Data[] data = { new DataBuilder().setFaults(new FaultsBuilder().
-						setCriticals(aggs.getOrDefault("Critical",0L)).
-						setMajors(aggs.getOrDefault("Major", 0L)).
-						setMinors(aggs.getOrDefault("Minor", 0L)).
-						setWarnings(aggs.getOrDefault("Warning", 0L)).
-						build()).build() };
-		long toalsize = data.length;
-		return new QueryResult<Data>(1L, 1L, new SearchResult<Data>(data, toalsize));
+        Data[] data = {new DataBuilder().setFaults(new FaultsBuilder().setCriticals(aggs.getOrDefault("Critical", 0L))
+                .setMajors(aggs.getOrDefault("Major", 0L)).setMinors(aggs.getOrDefault("Minor", 0L))
+                .setWarnings(aggs.getOrDefault("Warning", 0L)).build()).build()};
+        long toalsize = data.length;
+        return new QueryResult<Data>(1L, 1L, new SearchResult<Data>(data, toalsize));
 
-	}
+    }
 
 
     private static SearchRequest getNewInstanceOfSearchRequest(Entity entity) {
-    	return new SearchRequest(entity.getName(), entity.getName());
+        return new SearchRequest(entity.getName(), entity.getName());
     }
 
 

@@ -39,36 +39,39 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 
 public class TestFilterConversion {
 
-	private static final String PROPERTY = "node-id";
-	private static final String PROPERTY2 = "_id";
-	private static final String PROPERTY3 = "timestamp";
+    private static final String PROPERTY = "node-id";
+    private static final String PROPERTY2 = "_id";
+    private static final String PROPERTY3 = "timestamp";
 
-	@Test
-	public void testQuestionMark() {
-		List<Filter> filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build());
-		QueryBuilder query = QueryByFilter.fromFilter(filters);
-		System.out.println(query.toJSON());
-		assertTrue(query.toJSON().contains("{1,1}"));
-		assertNotNull(QueryByFilter.getFilter(filters, PROPERTY));
-		assertNull(QueryByFilter.getFilter(filters, PROPERTY2));
-		filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build(),
-				new FilterBuilder().setProperty(PROPERTY2).setFiltervalue("abc").build());
-		query = QueryByFilter.fromFilter(filters);
-		System.out.println(query.toJSON());
-		assertNotNull(QueryByFilter.getFilter(filters, PROPERTY2));
-		filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build(),
-				new FilterBuilder().setProperty(PROPERTY3).setFiltervalue("<2019-06-13T15:00:12.0Z").build());
-		query = QueryByFilter.fromFilter(filters);
-		List<Sortorder> sortorder = Arrays
-				.asList(new SortorderBuilder().setProperty(PROPERTY).setSortorder(SortOrder.Ascending).build());
-		QueryByFilter.setSortOrder(query, sortorder);
-		assertNotNull(QueryByFilter.getSortOrder(sortorder, PROPERTY));
-	}
-	@Test
-	public void testSortorder() {
-		String f = "{\"input\":{\"filter\":[],\"sortorder\":[{\"property\":\"source-type\",\"sortorder\":\"ascending\"}],\"pagination\":{\"size\":10,\"page\":1}}}";
-		
-		QueryBuilder query = QueryByFilter.setSortOrder(QueryByFilter.fromFilter(null), Arrays.asList(new SortorderBuilder().setProperty("source-type").setSortorder(SortOrder.Ascending).build()));
-		System.out.println(query.toJSON());
-	}
+    @Test
+    public void testQuestionMark() {
+        List<Filter> filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build());
+        QueryBuilder query = QueryByFilter.fromFilter(filters);
+        System.out.println(query.toJSON());
+        assertTrue(query.toJSON().contains("{1,1}"));
+        assertNotNull(QueryByFilter.getFilter(filters, PROPERTY));
+        assertNull(QueryByFilter.getFilter(filters, PROPERTY2));
+        filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build(),
+                new FilterBuilder().setProperty(PROPERTY2).setFiltervalue("abc").build());
+        query = QueryByFilter.fromFilter(filters);
+        System.out.println(query.toJSON());
+        assertNotNull(QueryByFilter.getFilter(filters, PROPERTY2));
+        filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build(),
+                new FilterBuilder().setProperty(PROPERTY3).setFiltervalue("<2019-06-13T15:00:12.0Z").build());
+        query = QueryByFilter.fromFilter(filters);
+        List<Sortorder> sortorder =
+                Arrays.asList(new SortorderBuilder().setProperty(PROPERTY).setSortorder(SortOrder.Ascending).build());
+        QueryByFilter.setSortOrder(query, sortorder);
+        assertNotNull(QueryByFilter.getSortOrder(sortorder, PROPERTY));
+    }
+
+    @Test
+    public void testSortorder() {
+        String f =
+                "{\"input\":{\"filter\":[],\"sortorder\":[{\"property\":\"source-type\",\"sortorder\":\"ascending\"}],\"pagination\":{\"size\":10,\"page\":1}}}";
+
+        QueryBuilder query = QueryByFilter.setSortOrder(QueryByFilter.fromFilter(null), Arrays
+                .asList(new SortorderBuilder().setProperty("source-type").setSortorder(SortOrder.Ascending).build()));
+        System.out.println(query.toJSON());
+    }
 }
