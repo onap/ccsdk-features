@@ -25,24 +25,25 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class AggregationEntries extends LinkedHashMap<String,Long>{
+public class AggregationEntries extends LinkedHashMap<String, Long> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Return page with keys
-	 * @param size elements
-	 * @param offset start position in list.
-	 * @return List<String> with selected values
-	 */
-	public String[] getKeysAsPagedStringList(long size, long offset) {
-		List<String> ltps = new ArrayList<String>();
-		String[] keys = keySet().toArray(new String[0]);
-		for (long i = offset; i < keys.length && i < offset + size; i++) {
-			ltps.add(keys[(int) i]);
-		}
-		return ltps.toArray(new String[0]);
-	}
+    /**
+     * Return page with keys
+     * 
+     * @param size elements
+     * @param offset start position in list.
+     * @return List<String> with selected values
+     */
+    public String[] getKeysAsPagedStringList(long size, long offset) {
+        List<String> ltps = new ArrayList<String>();
+        String[] keys = keySet().toArray(new String[0]);
+        for (long i = offset; i < keys.length && i < offset + size; i++) {
+            ltps.add(keys[(int) i]);
+        }
+        return ltps.toArray(new String[0]);
+    }
 
 
 }

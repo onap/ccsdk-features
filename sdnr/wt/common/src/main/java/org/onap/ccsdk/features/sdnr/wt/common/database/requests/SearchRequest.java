@@ -23,15 +23,15 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 
-public class SearchRequest extends BaseRequest{
+public class SearchRequest extends BaseRequest {
 
-	public SearchRequest(String alias,String dataType) {
-		super("POST",String.format("/%s/%s/_search", alias,dataType));
-	}
+    public SearchRequest(String alias, String dataType) {
+        super("POST", String.format("/%s/%s/_search", alias, dataType));
+    }
 
-	@Override
-	public void setQuery(QueryBuilder query){
-		super.setQuery(query);
-	}
+    @Override
+    public void setQuery(QueryBuilder query) {
+        super.setQuery(query);
+    }
 
 }

@@ -26,7 +26,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.configuration;
  */
 public interface Configuration {
 
-	String getSectionName();
+    String getSectionName();
 
     void defaults();
 }

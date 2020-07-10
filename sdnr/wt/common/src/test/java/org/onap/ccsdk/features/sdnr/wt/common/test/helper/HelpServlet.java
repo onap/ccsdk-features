@@ -29,99 +29,112 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseServlet;
 
-public class HelpServlet extends BaseServlet implements IPublicServlet{
+public class HelpServlet extends BaseServlet implements IPublicServlet {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	public static final String RESPONSE_GET = "This is the response get";
-	public static final String RESPONSE_POST = "This is the response post";
-	public static final String RESPONSE_PUT = "This is the response put";
-	public static final String RESPONSE_DELETE = "This is the response delete";
-	public static final String RESPONSE_OPTIONS = "This is the response options";
-	private static final String HOST = "localhost";
-	private int port;
-	private boolean isoff;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    public static final String RESPONSE_GET = "This is the response get";
+    public static final String RESPONSE_POST = "This is the response post";
+    public static final String RESPONSE_PUT = "This is the response put";
+    public static final String RESPONSE_DELETE = "This is the response delete";
+    public static final String RESPONSE_OPTIONS = "This is the response options";
+    private static final String HOST = "localhost";
+    private int port;
+    private boolean isoff;
 
-	/**
-	 * @param port
-	 */
-	public HelpServlet(int port) {
-		this.port = port;
-		this.isoff=true;
-	}
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doGet(req, resp);
-	}
-	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doPost(req, resp);
-	}
-	@Override
-	public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doPut(req, resp);
-	}
-	@Override
-	public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setStatus(200);
-	}
-	@Override
-	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doDelete(req, resp);
-	}
-	@Override
-	protected String getOfflineResponse() {
-		return "offline";
-	}
-	@Override
-	protected boolean isOff() {
-		return this.isoff;
-	}
-	@Override
-	protected boolean doTrustAll() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	protected void trustAll(boolean trust) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	protected String getRemoteUrl(String uri) {
-		if (uri.startsWith("/")) {
-			uri = uri.substring(1);
-		}
-		if (uri.startsWith("base")) {
-			uri = uri.substring("base".length());
-		}
-		if (uri.startsWith("/")) {
-			uri = uri.substring(1);
-		}
-		String base = "http://" + HOST + ":" + this.port;
-		if (!base.endsWith("/")) {
-			base += "/";
-		}
+    /**
+     * @param port
+     */
+    public HelpServlet(int port) {
+        this.port = port;
+        this.isoff = true;
+    }
 
-		return base + uri;
-	}
-	@Override
-	protected boolean trustInsecure() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	protected boolean isCorsEnabled() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	/**
-	 * @param b
-	 */
-	public void setOffline(boolean b) {
-		this.isoff = b;
-		
-	}
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doGet(req, resp);
+    }
+
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPost(req, resp);
+    }
+
+    @Override
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPut(req, resp);
+    }
+
+    @Override
+    public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setStatus(200);
+    }
+
+    @Override
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doDelete(req, resp);
+    }
+
+    @Override
+    protected String getOfflineResponse() {
+        return "offline";
+    }
+
+    @Override
+    protected boolean isOff() {
+        return this.isoff;
+    }
+
+    @Override
+    protected boolean doTrustAll() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    protected void trustAll(boolean trust) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected String getRemoteUrl(String uri) {
+        if (uri.startsWith("/")) {
+            uri = uri.substring(1);
+        }
+        if (uri.startsWith("base")) {
+            uri = uri.substring("base".length());
+        }
+        if (uri.startsWith("/")) {
+            uri = uri.substring(1);
+        }
+        String base = "http://" + HOST + ":" + this.port;
+        if (!base.endsWith("/")) {
+            base += "/";
+        }
+
+        return base + uri;
+    }
+
+    @Override
+    protected boolean trustInsecure() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    protected boolean isCorsEnabled() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /**
+     * @param b
+     */
+    public void setOffline(boolean b) {
+        this.isoff = b;
+
+    }
 }

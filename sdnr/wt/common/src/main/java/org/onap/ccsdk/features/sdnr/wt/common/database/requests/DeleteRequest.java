@@ -23,22 +23,25 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
 public class DeleteRequest extends BaseRequest {
 
-	private final String alias;
-	private final String esId;
-	public DeleteRequest(String alias,String dataType,String esId) {
-		this(alias, dataType, esId, false);
-	}
-	public DeleteRequest(String alias,String dataType,String esId, boolean refresh) {
-		super("DELETE",String.format("/%s/%s/%s",alias,dataType,BaseRequest.urlEncodeValue(esId)), refresh);
-		this.alias = alias;
-		this.esId = esId;
-	}
-	protected String getAlias() {
-		return this.alias;
-	}
+    private final String alias;
+    private final String esId;
 
-	protected String getEsId() {
-		return this.esId;
-	}
+    public DeleteRequest(String alias, String dataType, String esId) {
+        this(alias, dataType, esId, false);
+    }
+
+    public DeleteRequest(String alias, String dataType, String esId, boolean refresh) {
+        super("DELETE", String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId)), refresh);
+        this.alias = alias;
+        this.esId = esId;
+    }
+
+    protected String getAlias() {
+        return this.alias;
+    }
+
+    protected String getEsId() {
+        return this.esId;
+    }
 
 }

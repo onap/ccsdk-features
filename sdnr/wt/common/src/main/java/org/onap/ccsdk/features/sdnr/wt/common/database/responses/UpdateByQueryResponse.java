@@ -25,50 +25,39 @@ import org.elasticsearch.client.Response;
 import org.json.JSONObject;
 
 /**
- * {  
- *   "took":47,
- *   "timed_out":false,
- *   "total":1,
- *   "updated":1,
- *   "deleted":0,
- *   "batches":1,
- *   "version_conflicts":0,
- *   "noops":0,
- *   "retries":{
- *     "bulk":0,
- *     "search":0
- *   },
- *   "throttled_millis":0,
- *   "requests_per_second":-1.0,
- *   "throttled_until_millis":0,
- *   "failures":[]}
+ * { "took":47, "timed_out":false, "total":1, "updated":1, "deleted":0, "batches":1, "version_conflicts":0, "noops":0,
+ * "retries":{ "bulk":0, "search":0 }, "throttled_millis":0, "requests_per_second":-1.0, "throttled_until_millis":0,
+ * "failures":[]}
+ * 
  * @author jack
  *
  */
-public class UpdateByQueryResponse extends BaseResponse{
+public class UpdateByQueryResponse extends BaseResponse {
 
-	
-	private int isUpdated;
-	private int failures;
 
-	public UpdateByQueryResponse(Response response) {
-		super(response);
-		JSONObject o = this.getJson(response);
-		
-		this.isUpdated=o.getInt("updated");
-		this.failures = o.getJSONArray("failures").length();
-		//{"_index":"historicalperformance24h","_type":"historicalperformance24h","_id":"CbZxvWwB4xjGPydc9ida","_version":1,"result":"created","_shards":{"total":4,"successful":1,"failed":0},"_seq_no":1,"_primary_term":1}
-	}
+    private int isUpdated;
+    private int failures;
 
-	
-	public boolean isUpdated() {
-		return this.isUpdated>0;
-	}
-	public boolean hasFailures() {
-		return this.failures>0;
-	}
-	@Override
-	public String toString() {
-		return "UpdateByQueryResponse [isUpdated=" + isUpdated + ", failures=" + failures + "]";
-	}
+    public UpdateByQueryResponse(Response response) {
+        super(response);
+        JSONObject o = this.getJson(response);
+
+        this.isUpdated = o.getInt("updated");
+        this.failures = o.getJSONArray("failures").length();
+        //{"_index":"historicalperformance24h","_type":"historicalperformance24h","_id":"CbZxvWwB4xjGPydc9ida","_version":1,"result":"created","_shards":{"total":4,"successful":1,"failed":0},"_seq_no":1,"_primary_term":1}
+    }
+
+
+    public boolean isUpdated() {
+        return this.isUpdated > 0;
+    }
+
+    public boolean hasFailures() {
+        return this.failures > 0;
+    }
+
+    @Override
+    public String toString() {
+        return "UpdateByQueryResponse [isUpdated=" + isUpdated + ", failures=" + failures + "]";
+    }
 }

@@ -24,30 +24,31 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.responses;
 import org.elasticsearch.client.Response;
 import org.json.JSONObject;
 
-public class IndexResponse extends BaseResponse{
+public class IndexResponse extends BaseResponse {
 
-	private boolean isCreated;
-	private String id;
-	private boolean isUpdated;
+    private boolean isCreated;
+    private String id;
+    private boolean isUpdated;
 
-	public IndexResponse(Response response) {
-		super(response);
-		JSONObject o = this.getJson(response);
-		this.id=o.getString("_id");
-		this.isCreated="created".equals(o.getString("result"));
-		this.isUpdated="updated".equals(o.getString("result"));
-		//{"_index":"historicalperformance24h","_type":"historicalperformance24h","_id":"CbZxvWwB4xjGPydc9ida","_version":1,"result":"created","_shards":{"total":4,"successful":1,"failed":0},"_seq_no":1,"_primary_term":1}
-	}
+    public IndexResponse(Response response) {
+        super(response);
+        JSONObject o = this.getJson(response);
+        this.id = o.getString("_id");
+        this.isCreated = "created".equals(o.getString("result"));
+        this.isUpdated = "updated".equals(o.getString("result"));
+        //{"_index":"historicalperformance24h","_type":"historicalperformance24h","_id":"CbZxvWwB4xjGPydc9ida","_version":1,"result":"created","_shards":{"total":4,"successful":1,"failed":0},"_seq_no":1,"_primary_term":1}
+    }
 
-	public String getId() {
-		return this.id;
-	}
+    public String getId() {
+        return this.id;
+    }
 
-	public boolean isCreated() {
-		return this.isCreated;
-	}
-	public boolean isUpdated() {
-		return this.isUpdated;
-	}
+    public boolean isCreated() {
+        return this.isCreated;
+    }
+
+    public boolean isUpdated() {
+        return this.isUpdated;
+    }
 
 }

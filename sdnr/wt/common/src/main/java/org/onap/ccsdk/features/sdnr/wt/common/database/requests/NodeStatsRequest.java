@@ -21,10 +21,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-public class NodeStatsRequest extends BaseRequest{
+public class NodeStatsRequest extends BaseRequest {
 
-	
-	public NodeStatsRequest() {
-		super("GET","/_nodes/stats");
-	}
+
+    public NodeStatsRequest() {
+        super("GET", "/_nodes/stats");
+    }
 }

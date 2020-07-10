@@ -27,28 +27,28 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 
 public class GetResponse extends BaseResponse {
 
-	private boolean found;
-	private SearchHit result;
+    private boolean found;
+    private SearchHit result;
 
-	public GetResponse(Response response) {
-		super(response);
-		if (this.isResponseSucceeded()) {
-			JSONObject o = this.getJson(response);
-			this.found = o.getBoolean("found");
-			this.result = new SearchHit(o);
-		} else {
-			this.found = false;
-			this.result = null;
-		}
+    public GetResponse(Response response) {
+        super(response);
+        if (this.isResponseSucceeded()) {
+            JSONObject o = this.getJson(response);
+            this.found = o.getBoolean("found");
+            this.result = new SearchHit(o);
+        } else {
+            this.found = false;
+            this.result = null;
+        }
 
-	}
+    }
 
-	public boolean isExists() {
-		return this.found;
-	}
+    public boolean isExists() {
+        return this.found;
+    }
 
-	public String getSourceAsBytesRef() {
-		return this.result.getSourceAsString();
-	}
+    public String getSourceAsBytesRef() {
+        return this.result.getSourceAsString();
+    }
 
 }

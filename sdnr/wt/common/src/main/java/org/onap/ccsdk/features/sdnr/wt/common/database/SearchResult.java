@@ -27,41 +27,46 @@ import java.util.List;
 
 public class SearchResult<T> {
 
-	/**
-	 * objects in results
-	 */
-	private final List<T> hits;
-	/**
-	 * size of all potential hits
-	 * not necessarily the number of hits
-	 */
-	private long total;
+    /**
+     * objects in results
+     */
+    private final List<T> hits;
+    /**
+     * size of all potential hits not necessarily the number of hits
+     */
+    private long total;
 
-	public SearchResult(T[] hits) {
-		this(hits,hits==null?0:hits.length);
-	}
-	public SearchResult(T[] hits,long total) {
-		this.hits = Arrays.asList(hits);
-		this.total = total;
-	}
-//	public SearchResult(List<T> hits,long total) {
-//		this.hits = hits;
-//		this.total = total;
-//	}
-	public SearchResult() {
-		this.hits=new ArrayList<>();
-		this.total = 0;
-	}
-	public List<T> getHits() {
-		return this.hits;
-	}
-	public long getTotal() {
-		return this.total;
-	}
-	public void setTotal(long total) {
-		this.total = total;
-	}
-	public void add(T object) {
-		this.hits.add(object);
-	}
+    public SearchResult(T[] hits) {
+        this(hits, hits == null ? 0 : hits.length);
+    }
+
+    public SearchResult(T[] hits, long total) {
+        this.hits = Arrays.asList(hits);
+        this.total = total;
+    }
+
+    //	public SearchResult(List<T> hits,long total) {
+    //		this.hits = hits;
+    //		this.total = total;
+    //	}
+    public SearchResult() {
+        this.hits = new ArrayList<>();
+        this.total = 0;
+    }
+
+    public List<T> getHits() {
+        return this.hits;
+    }
+
+    public long getTotal() {
+        return this.total;
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    public void add(T object) {
+        this.hits.add(object);
+    }
 }

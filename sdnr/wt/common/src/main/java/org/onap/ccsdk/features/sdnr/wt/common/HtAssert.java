@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.common;
 
 import java.util.Arrays;
+
 /**
  * 
  * @author Michael Dürre
@@ -29,28 +30,28 @@ import java.util.Arrays;
  */
 public class HtAssert {
 
-	
-	public static class HtNullable<T> {
-	}
 
-	public static void nonnull(Object... oList) {
-		for (Object o : oList) {
-			if (o == null) {
-				throw new IllegalArgumentException(
-						"One of the date parameters in ["+whoCalledMe()+"] is null (" + Arrays.toString(oList) + ")");
+    public static class HtNullable<T> {
+    }
 
-			}
-		}
+    public static void nonnull(Object... oList) {
+        for (Object o : oList) {
+            if (o == null) {
+                throw new IllegalArgumentException("One of the date parameters in [" + whoCalledMe() + "] is null ("
+                        + Arrays.toString(oList) + ")");
 
-	};
+            }
+        }
 
-	private static String whoCalledMe() {
-		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-		StackTraceElement caller = stackTraceElements[3];
-		String classname = caller.getClassName();
-		String methodName = caller.getMethodName();
-		int lineNumber = caller.getLineNumber();
-		return classname + "." + methodName + ":" + lineNumber;
-	}
+    };
+
+    private static String whoCalledMe() {
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        StackTraceElement caller = stackTraceElements[3];
+        String classname = caller.getClassName();
+        String methodName = caller.getMethodName();
+        int lineNumber = caller.getLineNumber();
+        return classname + "." + methodName + ":" + lineNumber;
+    }
 
 }

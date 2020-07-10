@@ -25,8 +25,8 @@ import org.elasticsearch.client.Response;
 
 public class CreateAliasResponse extends AcknowledgedResponse {
 
-	public CreateAliasResponse(Response response) {
-		super(response);
-	}
+    public CreateAliasResponse(Response response) {
+        super(response);
+    }
 
 }

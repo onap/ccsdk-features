@@ -31,109 +31,108 @@ import org.eclipse.jdt.annotation.NonNull;
  *
  */
 public class EsVersion {
-	
-	private final String raw;
-	private final int major;
-	private final int minor;
-	private final int revision;
-	
-	public EsVersion(@NonNull String version) throws ParseException {
-		String[] hlp=version.split("\\.");
-		if(hlp.length<3) {
-			throw new ParseException("unable to parse version string: "+version, 0);
-		}
-		this.raw = version;
-		this.major = Integer.parseInt(hlp[0]);
-		this.minor = Integer.parseInt(hlp[1]);
-		this.revision = Integer.parseInt(hlp[2]);
-	}
 
-	/**
-	 * @param major
-	 * @param minor
-	 * @param revision
-	 */
-	public EsVersion(int major, int minor, int revision) {
-		this.raw = String.format("%d.%d.%d", major,minor,revision);
-		this.major = major;
-		this.minor = minor;
-		this.revision = revision;
-	}
+    private final String raw;
+    private final int major;
+    private final int minor;
+    private final int revision;
 
-	/**
-	 * @return the revision
-	 */
-	public int getRevision() {
-		return revision;
-	}
+    public EsVersion(@NonNull String version) throws ParseException {
+        String[] hlp = version.split("\\.");
+        if (hlp.length < 3) {
+            throw new ParseException("unable to parse version string: " + version, 0);
+        }
+        this.raw = version;
+        this.major = Integer.parseInt(hlp[0]);
+        this.minor = Integer.parseInt(hlp[1]);
+        this.revision = Integer.parseInt(hlp[2]);
+    }
 
-	/**
-	 * @return the minor
-	 */
-	public int getMinor() {
-		return minor;
-	}
+    /**
+     * @param major
+     * @param minor
+     * @param revision
+     */
+    public EsVersion(int major, int minor, int revision) {
+        this.raw = String.format("%d.%d.%d", major, minor, revision);
+        this.major = major;
+        this.minor = minor;
+        this.revision = revision;
+    }
 
-	/**
-	 * @return the major
-	 */
-	public int getMajor() {
-		return major;
-	}
+    /**
+     * @return the revision
+     */
+    public int getRevision() {
+        return revision;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if(!(obj instanceof EsVersion)) {
-			return false;
-		}
-		EsVersion esobj = (EsVersion)obj;
-		return this.major==esobj.major && this.minor==esobj.minor && this.revision==esobj.revision;
-	}
-	@Override
-	public int hashCode() {
-		return this.raw.hashCode();
-	}
-	public boolean isNewerOrEqualThan(EsVersion v) {
-		if(this.equals(v)) {
-			return true;
-		}
-		if(this.major>v.major) {
-			return true;
-		}
-		else if(this.major<v.major) {
-			return false;
-		}
-		if(this.minor>v.minor) {
-			return true;
-		}
-		else if(this.minor<v.minor) {
-			return false;
-		}
-		if(this.revision>v.revision) {
-			return true;
-		}
-		return false;
-	}
-	public boolean isOlderOrEqualThan(EsVersion v) {
-		if(this.equals(v)) {
-			return true;
-		}
-		if(this.major<v.major) {
-			return true;
-		}
-		else if(this.major>v.major) {
-			return false;
-		}
-		if(this.minor<v.minor) {
-			return true;
-		}
-		else if(this.minor>v.minor) {
-			return false;
-		}
-		if(this.revision<v.revision) {
-			return true;
-		}
-		return false;
-	}
-	
+    /**
+     * @return the minor
+     */
+    public int getMinor() {
+        return minor;
+    }
+
+    /**
+     * @return the major
+     */
+    public int getMajor() {
+        return major;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof EsVersion)) {
+            return false;
+        }
+        EsVersion esobj = (EsVersion) obj;
+        return this.major == esobj.major && this.minor == esobj.minor && this.revision == esobj.revision;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.raw.hashCode();
+    }
+
+    public boolean isNewerOrEqualThan(EsVersion v) {
+        if (this.equals(v)) {
+            return true;
+        }
+        if (this.major > v.major) {
+            return true;
+        } else if (this.major < v.major) {
+            return false;
+        }
+        if (this.minor > v.minor) {
+            return true;
+        } else if (this.minor < v.minor) {
+            return false;
+        }
+        if (this.revision > v.revision) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isOlderOrEqualThan(EsVersion v) {
+        if (this.equals(v)) {
+            return true;
+        }
+        if (this.major < v.major) {
+            return true;
+        } else if (this.major > v.major) {
+            return false;
+        }
+        if (this.minor < v.minor) {
+            return true;
+        } else if (this.minor > v.minor) {
+            return false;
+        }
+        if (this.revision < v.revision) {
+            return true;
+        }
+        return false;
+    }
+
 }

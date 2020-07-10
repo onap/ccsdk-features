@@ -25,23 +25,25 @@ import org.json.JSONObject;
 
 public class RegexQueryBuilder extends QueryBuilder {
 
-	private JSONObject inner;
+    private JSONObject inner;
 
-	public RegexQueryBuilder() {
-		super();
-		this.inner = new JSONObject();
-		this.setQuery("regexp", this.inner);
-	}
-	public RegexQueryBuilder add(String propertyName, String filter) {
-		JSONObject regexFilter = new JSONObject();
-		regexFilter.put("value", filter);
-		regexFilter.put("flags", "ALL");
-		regexFilter.put("max_determinized_states", 10000);
-		this.inner.put(propertyName, regexFilter);
-		return this;
-	}
-	@Override
-	public String toString() {
-		return "RegexQueryBuilder [inner=" + inner + "]";
-	}
+    public RegexQueryBuilder() {
+        super();
+        this.inner = new JSONObject();
+        this.setQuery("regexp", this.inner);
+    }
+
+    public RegexQueryBuilder add(String propertyName, String filter) {
+        JSONObject regexFilter = new JSONObject();
+        regexFilter.put("value", filter);
+        regexFilter.put("flags", "ALL");
+        regexFilter.put("max_determinized_states", 10000);
+        this.inner.put(propertyName, regexFilter);
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "RegexQueryBuilder [inner=" + inner + "]";
+    }
 }

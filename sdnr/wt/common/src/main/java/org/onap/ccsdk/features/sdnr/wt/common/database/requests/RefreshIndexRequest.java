@@ -21,11 +21,11 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-public class RefreshIndexRequest extends BaseRequest{
+public class RefreshIndexRequest extends BaseRequest {
 
-	public RefreshIndexRequest(String alias) {
-		super("GET",String.format("/%s/_refresh",alias));
-	}
+    public RefreshIndexRequest(String alias) {
+        super("GET", String.format("/%s/_refresh", alias));
+    }
 
 
 

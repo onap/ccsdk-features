@@ -24,10 +24,10 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 //https://github.com/elastic/elasticsearch/blob/6.4/rest-api-spec/src/main/resources/rest-api-spec/api/indices.exists.json
 public class GetIndexRequest extends BaseRequest {
 
-	public GetIndexRequest(String index) {
-		super("HEAD","/"+index);
-	}
+    public GetIndexRequest(String index) {
+        super("HEAD", "/" + index);
+    }
 
-	
+
 
 }
