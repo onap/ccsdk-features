@@ -24,8 +24,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Provide a thread that is receiving and process notifications.
- * @param <T> represents the object that is provided with a notification and
- * forwarded to the NotificationActor<T>.
+ * 
+ * @param <T> represents the object that is provided with a notification and forwarded to the NotificationActor<T>.
  */
 
 public class NotificationWorker<T> implements AutoCloseable {
@@ -39,7 +39,7 @@ public class NotificationWorker<T> implements AutoCloseable {
         service = Executors.newFixedThreadPool(numWorkers);
         actor = actorObject;
 
-        for (int i=0; i < numWorkers; i++) {
+        for (int i = 0; i < numWorkers; i++) {
             service.submit(new Worker<>(workQueue, actor));
         }
     }

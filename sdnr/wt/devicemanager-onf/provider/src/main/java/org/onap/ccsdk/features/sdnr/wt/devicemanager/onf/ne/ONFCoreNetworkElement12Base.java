@@ -57,378 +57,379 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementBase implements NetworkElementCoreData {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ONFCoreNetworkElement12Base.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ONFCoreNetworkElement12Base.class);
 
-	protected static final @NonNull List<Extension> EMPTYLTPEXTENSIONLIST = new ArrayList<>();
+    protected static final @NonNull List<Extension> EMPTYLTPEXTENSIONLIST = new ArrayList<>();
 
-	protected static final InstanceIdentifier<NetworkElement> NETWORKELEMENT_IID = InstanceIdentifier
-			.builder(NetworkElement.class).build();
-
-
-	/*-----------------------------------------------------------------------------
-	 * Class members
-	 */
-
-	// Non specific part. Used by all functions.
-	/** interfaceList is used by PM task and should be synchronized */
-	@SuppressWarnings("null")
-	private final @NonNull List<Lp> interfaceList = Collections.synchronizedList(new CopyOnWriteArrayList<>());
-	private Optional<NetworkElement> optionalNe;
-
-	// Performance monitoring specific part
-	/** Lock for the PM access specific elements that could be null */
-	private final @NonNull Object pmLock = new Object();
-	protected @Nullable Iterator<Lp> interfaceListIterator = null;
-	/** Actual pmLp used during iteration over interfaces */
-	protected @Nullable Lp pmLp = null;
-
-	// Device monitoring specific part
-	/** Lock for the DM access specific elements that could be null */
-	protected final @NonNull Object dmLock = new Object();
-
-	protected final boolean isNetworkElementCurrentProblemsSupporting12;
-
-	protected final ONFCoreNetworkElement12Equipment equipment;
-
-	protected final NodeId nodeId;
-
-	/*---------------------------------------------------------------
-	 * Constructor
-	 */
-
-	protected ONFCoreNetworkElement12Base(@NonNull NetconfAccessor acessor) {
-		super(acessor);
-		this.optionalNe = Optional.empty();
-		this.nodeId = getAcessor().get().getNodeId();
-		this.isNetworkElementCurrentProblemsSupporting12 = acessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElementPac.QNAME);
-		this.equipment = new ONFCoreNetworkElement12Equipment(acessor, this, acessor.getCapabilites());
-		WrapperPTPModelRev170208.initSynchronizationExtension(acessor);
-		LOG.debug("support necurrent-problem-list={}", this.isNetworkElementCurrentProblemsSupporting12);
-	}
-
-	/*---------------------------------------------------------------
-	 * Getter/ Setter
-	 */
-
-	@Override
-	public Optional<NetworkElement> getOptionalNetworkElement() {
-		return optionalNe;
-	}
-
-	List<Lp> getInterfaceList() {
-		return interfaceList;
-	}
-
-	public Object getPmLock() {
-		return pmLock;
-	}
-
-	/*---------------------------------------------------------------
-	 * Core model related function
-	 */
-
-	/**
-	 * Get uuid of Optional NE.
-	 *
-	 * @return Uuid or EMPTY String if optionNE is not available
-	 */
-	protected String getUuId() {
-		return optionalNe.isPresent() ? Helper.nnGetUniversalId(optionalNe.get().getUuid()).getValue() : EMPTY;
-	}
-
-	/**
-	 * Read from NetworkElement and verify LTPs have changed. If the NE has changed, update to the new
-	 * structure. From initial state it changes also.
-	 */
-	protected synchronized boolean readNetworkElementAndInterfaces() {
-
-		LOG.debug("Update mountpoint if changed {}", getMountpoint());
-
-		optionalNe = Optional.ofNullable(getGenericTransactionUtils().readData(getDataBroker(), LogicalDatastoreType.OPERATIONAL,
-				NETWORKELEMENT_IID));
-		synchronized (pmLock) {
-			boolean change = false;
-
-			if (!optionalNe.isPresent()) {
-				LOG.debug("Unable to read NE data for mountpoint {}", getMountpoint());
-				if (!interfaceList.isEmpty()) {
-					interfaceList.clear();
-					interfaceListIterator = null;
-					change = true;
-				}
-
-			} else {
-				NetworkElement ne = optionalNe.get();
-				LOG.debug("Mountpoint '{}' NE-Name '{}'", getMountpoint(), ne.getName());
-				List<Lp> actualInterfaceList = getLtpList(ne);
-				if (!interfaceList.equals(actualInterfaceList)) {
-					LOG.debug("Mountpoint '{}' Update LTP List. Elements {}", getMountpoint(),
-							actualInterfaceList.size());
-					interfaceList.clear();
-					interfaceList.addAll(actualInterfaceList);
-					interfaceListIterator = null;
-					change = true;
-				}
-			}
-			return change;
-		}
-	}
-
-	/**
-	 * Get List of UUIDs for conditional packages from Networkelement<br>
-	 * Possible interfaces are:<br>
-	 * MWPS, LTP(MWPS-TTP), MWAirInterfacePac, MicrowaveModel-ObjectClasses-AirInterface<br>
-	 * ETH-CTP,LTP(Client), MW_EthernetContainer_Pac<br>
-	 * MWS, LTP(MWS-CTP-xD), MWAirInterfaceDiversityPac,
-	 * MicrowaveModel-ObjectClasses-AirInterfaceDiversity<br>
-	 * MWS, LTP(MWS-TTP), ,MicrowaveModel-ObjectClasses-HybridMwStructure<br>
-	 * MWS, LTP(MWS-TTP), ,MicrowaveModel-ObjectClasses-PureEthernetStructure<br>
-	 *
-	 * @param ne NetworkElement
-	 * @return Id List, never null.
-	 */
-
-	private static List<Lp> getLtpList(@Nullable NetworkElement ne) {
-
-		List<Lp> res = Collections.synchronizedList(new ArrayList<Lp>());
-
-		if (ne != null) {
-			List<Ltp> ltpRefList = ne.getLtp();
-			if (ltpRefList == null) {
-				LOG.debug("DBRead NE-Interfaces: null");
-			} else {
-				for (Ltp ltRefListE : ltpRefList) {
-					List<Lp> lpList = ltRefListE.getLp();
-					if (lpList == null) {
-						LOG.debug("DBRead NE-Interfaces Reference List: null");
-					} else {
-						for (Lp ltp : lpList) {
-							res.add(ltp);
-						}
-					}
-				}
-			}
-		} else {
-			LOG.debug("DBRead NE: null");
-		}
-
-		// ---- Debug
-		if (LOG.isDebugEnabled()) {
-			StringBuilder strBuild = new StringBuilder();
-			for (Lp ltp : res) {
-				if (strBuild.length() > 0) {
-					strBuild.append(", ");
-				}
-				strBuild.append(Helper.nnGetLayerProtocolName(ltp.getLayerProtocolName()).getValue());
-				strBuild.append(':');
-				strBuild.append(Helper.nnGetUniversalId(ltp.getUuid()).getValue());
-			}
-			LOG.debug("DBRead NE-Interfaces: {}", strBuild.toString());
-		}
-		// ---- Debug end
-
-		return res;
-	}
-
-	/**
-	 * Read current problems of AirInterfaces and EthernetContainer according to NE status into DB
-	 *
-	 * @return List with all problems
-	 */
-	protected FaultData readAllCurrentProblemsOfNode() {
-
-		// Step 2.3: read the existing faults and add to DB
-		FaultData resultList = new FaultData();
-		int idxStart; // Start index for debug messages
-		UniversalId uuid;
-
-		synchronized (pmLock) {
-			for (Lp lp : interfaceList) {
-
-				idxStart = resultList.size();
-				uuid = lp.getUuid();
-				FaultData.debugResultList(LOG, uuid.getValue(), resultList, idxStart);
-
-			}
-		}
-
-		// Step 2.4: Read other problems from mountpoint
-		if (isNetworkElementCurrentProblemsSupporting12) {
-			idxStart = resultList.size();
-			readNetworkElementCurrentProblems12(resultList);
-			FaultData.debugResultList(LOG, "CurrentProblems12", resultList, idxStart);
-		}
-
-		return resultList;
-
-	}
-
-	/**
-	 * Reading problems for the networkElement V1.2
-	 * @param resultList to collect the problems
-	 * @return resultList with additonal problems
-	 */
-	protected FaultData readNetworkElementCurrentProblems12(FaultData resultList) {
-
-		LOG.info("DBRead Get {} NetworkElementCurrentProblems12", getMountpoint());
-
-		InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.NetworkElementPac> networkElementCurrentProblemsIID =
-				InstanceIdentifier.builder(
-						org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.NetworkElementPac.class)
-				.build();
-
-		// Step 2.3: read to the config data store
-		NetworkElementPac problemPac;
-		NetworkElementCurrentProblems problems = null;
-		try {
-			problemPac = getGenericTransactionUtils().readData(getDataBroker(), LogicalDatastoreType.OPERATIONAL,
-					networkElementCurrentProblemsIID);
-			if (problemPac != null) {
-				problems = problemPac.getNetworkElementCurrentProblems();
-			}
-			if (problems == null) {
-				LOG.debug("DBRead no NetworkElementCurrentProblems12");
-			} else {
-				for (org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.network.element.current.problems.g.CurrentProblemList problem : problems
-						.nonnullCurrentProblemList()) {
-					resultList.add(nodeId, problem.getSequenceNumber(), problem.getTimeStamp(),
-							problem.getObjectReference(), problem.getProblemName(),
-							WrapperMicrowaveModelRev181010.mapSeverity(problem.getProblemSeverity()));
-				}
-			}
-		} catch (Exception e) {
-			LOG.warn("DBRead {} NetworkElementCurrentProblems12 not supported. Message '{}' ", getMountpoint(),
-					e.getMessage());
-		}
-		return resultList;
-	}
-
-	/*---------------------------------------------------------------
-	 * Device Monitor
-	 */
-
-	@Override
-	public boolean checkIfConnectionToMediatorIsOk() {
-		synchronized (dmLock) {
-			return optionalNe != null;
-		}
-	}
-
-	/*
-	 * New implementation to interpret status with empty LTP List as notConnected => return false
-	 * 30.10.2018 Since this behavior is very specific and implicit for specific NE Types
-	 *     it needs to be activated by extension or configuration. Change to be disabled at the moment
-	 */
-	@Override
-	public boolean checkIfConnectionToNeIsOk() {
-		return true;
-	}
-
-	/*---------------------------------------------------------------
-	 * Synchronization
-	 */
+    protected static final InstanceIdentifier<NetworkElement> NETWORKELEMENT_IID =
+            InstanceIdentifier.builder(NetworkElement.class).build();
 
 
-	/*---------------------------------------------------------------
-	 * Equipment related functions
-	 */
+    /*-----------------------------------------------------------------------------
+     * Class members
+     */
 
-	@Override
-	public @NonNull InventoryInformationDcae getInventoryInformation(String layerProtocolFilter) {
-		LOG.debug("request inventory information. filter: {}" + layerProtocolFilter);
-		return this.equipment.getInventoryInformation(getFilteredInterfaceUuidsAsStringList(layerProtocolFilter));
-	}
+    // Non specific part. Used by all functions.
+    /** interfaceList is used by PM task and should be synchronized */
+    @SuppressWarnings("null")
+    private final @NonNull List<Lp> interfaceList = Collections.synchronizedList(new CopyOnWriteArrayList<>());
+    private Optional<NetworkElement> optionalNe;
 
-	@Override
-	public InventoryInformationDcae getInventoryInformation() {
-		return getInventoryInformation(null);
-	}
+    // Performance monitoring specific part
+    /** Lock for the PM access specific elements that could be null */
+    private final @NonNull Object pmLock = new Object();
+    protected @Nullable Iterator<Lp> interfaceListIterator = null;
+    /** Actual pmLp used during iteration over interfaces */
+    protected @Nullable Lp pmLp = null;
 
-	protected List<String> getFilteredInterfaceUuidsAsStringList(String layerProtocolFilter) {
-		List<String> uuids = new ArrayList<>();
+    // Device monitoring specific part
+    /** Lock for the DM access specific elements that could be null */
+    protected final @NonNull Object dmLock = new Object();
 
-		LOG.debug("request inventory information. filter: {}" + layerProtocolFilter);
-		if (optionalNe != null) {
-			// uuids
-			for (Lp lp : this.interfaceList) {
-				if (layerProtocolFilter == null || 
-						layerProtocolFilter.isEmpty() || 
-						layerProtocolFilter.equals(Helper.nnGetLayerProtocolName(lp.getLayerProtocolName()).getValue())) {
-					uuids.add(Helper.nnGetUniversalId(lp.getUuid()).getValue());
-				} 
-			}
-		}
-		LOG.debug("uuids found: {}", uuids);
-		return uuids;
-	}
+    protected final boolean isNetworkElementCurrentProblemsSupporting12;
+
+    protected final ONFCoreNetworkElement12Equipment equipment;
+
+    protected final NodeId nodeId;
+
+    /*---------------------------------------------------------------
+     * Constructor
+     */
+
+    protected ONFCoreNetworkElement12Base(@NonNull NetconfAccessor acessor) {
+        super(acessor);
+        this.optionalNe = Optional.empty();
+        this.nodeId = getAcessor().get().getNodeId();
+        this.isNetworkElementCurrentProblemsSupporting12 =
+                acessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElementPac.QNAME);
+        this.equipment = new ONFCoreNetworkElement12Equipment(acessor, this, acessor.getCapabilites());
+        WrapperPTPModelRev170208.initSynchronizationExtension(acessor);
+        LOG.debug("support necurrent-problem-list={}", this.isNetworkElementCurrentProblemsSupporting12);
+    }
+
+    /*---------------------------------------------------------------
+     * Getter/ Setter
+     */
+
+    @Override
+    public Optional<NetworkElement> getOptionalNetworkElement() {
+        return optionalNe;
+    }
+
+    List<Lp> getInterfaceList() {
+        return interfaceList;
+    }
+
+    public Object getPmLock() {
+        return pmLock;
+    }
+
+    /*---------------------------------------------------------------
+     * Core model related function
+     */
+
+    /**
+     * Get uuid of Optional NE.
+     *
+     * @return Uuid or EMPTY String if optionNE is not available
+     */
+    protected String getUuId() {
+        return optionalNe.isPresent() ? Helper.nnGetUniversalId(optionalNe.get().getUuid()).getValue() : EMPTY;
+    }
+
+    /**
+     * Read from NetworkElement and verify LTPs have changed. If the NE has changed, update to the new structure. From
+     * initial state it changes also.
+     */
+    protected synchronized boolean readNetworkElementAndInterfaces() {
+
+        LOG.debug("Update mountpoint if changed {}", getMountpoint());
+
+        optionalNe = Optional.ofNullable(getGenericTransactionUtils().readData(getDataBroker(),
+                LogicalDatastoreType.OPERATIONAL, NETWORKELEMENT_IID));
+        synchronized (pmLock) {
+            boolean change = false;
+
+            if (!optionalNe.isPresent()) {
+                LOG.debug("Unable to read NE data for mountpoint {}", getMountpoint());
+                if (!interfaceList.isEmpty()) {
+                    interfaceList.clear();
+                    interfaceListIterator = null;
+                    change = true;
+                }
+
+            } else {
+                NetworkElement ne = optionalNe.get();
+                LOG.debug("Mountpoint '{}' NE-Name '{}'", getMountpoint(), ne.getName());
+                List<Lp> actualInterfaceList = getLtpList(ne);
+                if (!interfaceList.equals(actualInterfaceList)) {
+                    LOG.debug("Mountpoint '{}' Update LTP List. Elements {}", getMountpoint(),
+                            actualInterfaceList.size());
+                    interfaceList.clear();
+                    interfaceList.addAll(actualInterfaceList);
+                    interfaceListIterator = null;
+                    change = true;
+                }
+            }
+            return change;
+        }
+    }
+
+    /**
+     * Get List of UUIDs for conditional packages from Networkelement<br>
+     * Possible interfaces are:<br>
+     * MWPS, LTP(MWPS-TTP), MWAirInterfacePac, MicrowaveModel-ObjectClasses-AirInterface<br>
+     * ETH-CTP,LTP(Client), MW_EthernetContainer_Pac<br>
+     * MWS, LTP(MWS-CTP-xD), MWAirInterfaceDiversityPac, MicrowaveModel-ObjectClasses-AirInterfaceDiversity<br>
+     * MWS, LTP(MWS-TTP), ,MicrowaveModel-ObjectClasses-HybridMwStructure<br>
+     * MWS, LTP(MWS-TTP), ,MicrowaveModel-ObjectClasses-PureEthernetStructure<br>
+     *
+     * @param ne NetworkElement
+     * @return Id List, never null.
+     */
+
+    private static List<Lp> getLtpList(@Nullable NetworkElement ne) {
+
+        List<Lp> res = Collections.synchronizedList(new ArrayList<Lp>());
+
+        if (ne != null) {
+            List<Ltp> ltpRefList = ne.getLtp();
+            if (ltpRefList == null) {
+                LOG.debug("DBRead NE-Interfaces: null");
+            } else {
+                for (Ltp ltRefListE : ltpRefList) {
+                    List<Lp> lpList = ltRefListE.getLp();
+                    if (lpList == null) {
+                        LOG.debug("DBRead NE-Interfaces Reference List: null");
+                    } else {
+                        for (Lp ltp : lpList) {
+                            res.add(ltp);
+                        }
+                    }
+                }
+            }
+        } else {
+            LOG.debug("DBRead NE: null");
+        }
+
+        // ---- Debug
+        if (LOG.isDebugEnabled()) {
+            StringBuilder strBuild = new StringBuilder();
+            for (Lp ltp : res) {
+                if (strBuild.length() > 0) {
+                    strBuild.append(", ");
+                }
+                strBuild.append(Helper.nnGetLayerProtocolName(ltp.getLayerProtocolName()).getValue());
+                strBuild.append(':');
+                strBuild.append(Helper.nnGetUniversalId(ltp.getUuid()).getValue());
+            }
+            LOG.debug("DBRead NE-Interfaces: {}", strBuild.toString());
+        }
+        // ---- Debug end
+
+        return res;
+    }
+
+    /**
+     * Read current problems of AirInterfaces and EthernetContainer according to NE status into DB
+     *
+     * @return List with all problems
+     */
+    protected FaultData readAllCurrentProblemsOfNode() {
+
+        // Step 2.3: read the existing faults and add to DB
+        FaultData resultList = new FaultData();
+        int idxStart; // Start index for debug messages
+        UniversalId uuid;
+
+        synchronized (pmLock) {
+            for (Lp lp : interfaceList) {
+
+                idxStart = resultList.size();
+                uuid = lp.getUuid();
+                FaultData.debugResultList(LOG, uuid.getValue(), resultList, idxStart);
+
+            }
+        }
+
+        // Step 2.4: Read other problems from mountpoint
+        if (isNetworkElementCurrentProblemsSupporting12) {
+            idxStart = resultList.size();
+            readNetworkElementCurrentProblems12(resultList);
+            FaultData.debugResultList(LOG, "CurrentProblems12", resultList, idxStart);
+        }
+
+        return resultList;
+
+    }
+
+    /**
+     * Reading problems for the networkElement V1.2
+     * 
+     * @param resultList to collect the problems
+     * @return resultList with additonal problems
+     */
+    protected FaultData readNetworkElementCurrentProblems12(FaultData resultList) {
+
+        LOG.info("DBRead Get {} NetworkElementCurrentProblems12", getMountpoint());
+
+        InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.NetworkElementPac> networkElementCurrentProblemsIID =
+                InstanceIdentifier.builder(
+                        org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.NetworkElementPac.class)
+                        .build();
+
+        // Step 2.3: read to the config data store
+        NetworkElementPac problemPac;
+        NetworkElementCurrentProblems problems = null;
+        try {
+            problemPac = getGenericTransactionUtils().readData(getDataBroker(), LogicalDatastoreType.OPERATIONAL,
+                    networkElementCurrentProblemsIID);
+            if (problemPac != null) {
+                problems = problemPac.getNetworkElementCurrentProblems();
+            }
+            if (problems == null) {
+                LOG.debug("DBRead no NetworkElementCurrentProblems12");
+            } else {
+                for (org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.network.element.current.problems.g.CurrentProblemList problem : problems
+                        .nonnullCurrentProblemList()) {
+                    resultList.add(nodeId, problem.getSequenceNumber(), problem.getTimeStamp(),
+                            problem.getObjectReference(), problem.getProblemName(),
+                            WrapperMicrowaveModelRev181010.mapSeverity(problem.getProblemSeverity()));
+                }
+            }
+        } catch (Exception e) {
+            LOG.warn("DBRead {} NetworkElementCurrentProblems12 not supported. Message '{}' ", getMountpoint(),
+                    e.getMessage());
+        }
+        return resultList;
+    }
+
+    /*---------------------------------------------------------------
+     * Device Monitor
+     */
+
+    @Override
+    public boolean checkIfConnectionToMediatorIsOk() {
+        synchronized (dmLock) {
+            return optionalNe != null;
+        }
+    }
+
+    /*
+     * New implementation to interpret status with empty LTP List as notConnected => return false
+     * 30.10.2018 Since this behavior is very specific and implicit for specific NE Types
+     *     it needs to be activated by extension or configuration. Change to be disabled at the moment
+     */
+    @Override
+    public boolean checkIfConnectionToNeIsOk() {
+        return true;
+    }
+
+    /*---------------------------------------------------------------
+     * Synchronization
+     */
 
 
-	/*---------------------------------------------------------------
-	 * Performancemanagement specific interface
-	 */
+    /*---------------------------------------------------------------
+     * Equipment related functions
+     */
 
-	@Override
-	public void resetPMIterator() {
-		synchronized (pmLock) {
-			interfaceListIterator = interfaceList.iterator();
-		}
-		LOG.debug("PM reset iterator");
-	}
+    @Override
+    public @NonNull InventoryInformationDcae getInventoryInformation(String layerProtocolFilter) {
+        LOG.debug("request inventory information. filter: {}" + layerProtocolFilter);
+        return this.equipment.getInventoryInformation(getFilteredInterfaceUuidsAsStringList(layerProtocolFilter));
+    }
 
-	@SuppressWarnings("null")
-	@Override
-	public boolean hasNext() {
-		boolean res;
-		synchronized (pmLock) {
-			res = interfaceListIterator != null ? interfaceListIterator.hasNext() : false;
-		}
-		LOG.debug("PM hasNext LTP {}", res);
-		return res;
-	}
+    @Override
+    public InventoryInformationDcae getInventoryInformation() {
+        return getInventoryInformation(null);
+    }
 
-	@SuppressWarnings("null")
-	@Override
-	public void next() {
-		synchronized (pmLock) {
-			if (interfaceListIterator == null) {
-				pmLp = null;
-				LOG.debug("PM next LTP null");
-			} else {
-				pmLp = interfaceListIterator.next();
-				LOG.debug("PM next LTP {}", Helper.nnGetLayerProtocolName(pmLp.getLayerProtocolName()).getValue());
-			}
-		}
-	}
+    protected List<String> getFilteredInterfaceUuidsAsStringList(String layerProtocolFilter) {
+        List<String> uuids = new ArrayList<>();
 
-	@SuppressWarnings("null")
-	@Override
-	public String pmStatusToString() {
-		StringBuilder res = new StringBuilder();
-		synchronized (pmLock) {
-			res.append(pmLp == null ? "no interface" : Helper.nnGetLayerProtocolName(pmLp.getLayerProtocolName()).getValue());
-			for (Lp lp : getInterfaceList()) {
-				res.append("IF:");
-				res.append(Helper.nnGetLayerProtocolName(lp.getLayerProtocolName()).getValue());
-				res.append(" ");
-			}
-		}
-		return res.toString();
-	}
+        LOG.debug("request inventory information. filter: {}" + layerProtocolFilter);
+        if (optionalNe != null) {
+            // uuids
+            for (Lp lp : this.interfaceList) {
+                if (layerProtocolFilter == null || layerProtocolFilter.isEmpty() || layerProtocolFilter
+                        .equals(Helper.nnGetLayerProtocolName(lp.getLayerProtocolName()).getValue())) {
+                    uuids.add(Helper.nnGetUniversalId(lp.getUuid()).getValue());
+                }
+            }
+        }
+        LOG.debug("uuids found: {}", uuids);
+        return uuids;
+    }
 
-	@Override
-	public void doRegisterEventListener(MountPoint mountPoint) {
-		//Do nothing
-	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <L extends NetworkElementService> Optional<L> getService(Class<L> clazz) {
-		return clazz.isInstance(this) ? Optional.of((L)this) : Optional.empty();
-	}
+    /*---------------------------------------------------------------
+     * Performancemanagement specific interface
+     */
 
-	@Override
-	public Optional<PerformanceDataLtp> getLtpHistoricalPerformanceData() {
-		return Optional.empty();
-	}
+    @Override
+    public void resetPMIterator() {
+        synchronized (pmLock) {
+            interfaceListIterator = interfaceList.iterator();
+        }
+        LOG.debug("PM reset iterator");
+    }
+
+    @SuppressWarnings("null")
+    @Override
+    public boolean hasNext() {
+        boolean res;
+        synchronized (pmLock) {
+            res = interfaceListIterator != null ? interfaceListIterator.hasNext() : false;
+        }
+        LOG.debug("PM hasNext LTP {}", res);
+        return res;
+    }
+
+    @SuppressWarnings("null")
+    @Override
+    public void next() {
+        synchronized (pmLock) {
+            if (interfaceListIterator == null) {
+                pmLp = null;
+                LOG.debug("PM next LTP null");
+            } else {
+                pmLp = interfaceListIterator.next();
+                LOG.debug("PM next LTP {}", Helper.nnGetLayerProtocolName(pmLp.getLayerProtocolName()).getValue());
+            }
+        }
+    }
+
+    @SuppressWarnings("null")
+    @Override
+    public String pmStatusToString() {
+        StringBuilder res = new StringBuilder();
+        synchronized (pmLock) {
+            res.append(pmLp == null ? "no interface"
+                    : Helper.nnGetLayerProtocolName(pmLp.getLayerProtocolName()).getValue());
+            for (Lp lp : getInterfaceList()) {
+                res.append("IF:");
+                res.append(Helper.nnGetLayerProtocolName(lp.getLayerProtocolName()).getValue());
+                res.append(" ");
+            }
+        }
+        return res.toString();
+    }
+
+    @Override
+    public void doRegisterEventListener(MountPoint mountPoint) {
+        //Do nothing
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <L extends NetworkElementService> Optional<L> getService(Class<L> clazz) {
+        return clazz.isInstance(this) ? Optional.of((L) this) : Optional.empty();
+    }
+
+    @Override
+    public Optional<PerformanceDataLtp> getLtpHistoricalPerformanceData() {
+        return Optional.empty();
+    }
 
 }

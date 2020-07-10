@@ -67,8 +67,8 @@ public class TestONFCoreNetworkElement12Microwave {
     EquipmentService equipmentService;
     DeviceManagerOnfConfiguration configuration;
 
-    protected static final InstanceIdentifier<NetworkElement> NETWORKELEMENT_IID = InstanceIdentifier
-            .builder(NetworkElement.class).build();
+    protected static final InstanceIdentifier<NetworkElement> NETWORKELEMENT_IID =
+            InstanceIdentifier.builder(NetworkElement.class).build();
 
     @Before
     public void init() {
@@ -178,8 +178,8 @@ public class TestONFCoreNetworkElement12Microwave {
         when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 NETWORKELEMENT_IID)).thenReturn(optionalNe);
 
-        ONFCoreNetworkElement12Microwave onfCoreNetworkElement12MW = new ONFCoreNetworkElement12Microwave(accessor,
-                serviceProvider, configuration, onfMicrowaveModel);
+        ONFCoreNetworkElement12Microwave onfCoreNetworkElement12MW =
+                new ONFCoreNetworkElement12Microwave(accessor, serviceProvider, configuration, onfMicrowaveModel);
         onfCoreNetworkElement12MW.prepareCheck();
 
         EventlogEntity eventlogEntity = new EventlogEntity() {
@@ -245,73 +245,72 @@ public class TestONFCoreNetworkElement12Microwave {
 
 
     @Test
-    public void test1()
-    {
-        when (accessor.getTransactionUtils().readData(accessor.getDataBroker(),
-                LogicalDatastoreType.OPERATIONAL, NETWORKELEMENT_IID)).thenReturn(null);
+    public void test1() {
+        when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
+                NETWORKELEMENT_IID)).thenReturn(null);
 
         ONFCoreNetworkElement12Microwave onfCoreNetworkElement12MW =
-                new ONFCoreNetworkElement12Microwave(accessor, serviceProvider, configuration,
-                        onfMicrowaveModel); onfCoreNetworkElement12MW.prepareCheck();
+                new ONFCoreNetworkElement12Microwave(accessor, serviceProvider, configuration, onfMicrowaveModel);
+        onfCoreNetworkElement12MW.prepareCheck();
 
-                        EventlogEntity eventlogEntity = new EventlogEntity() {
+        EventlogEntity eventlogEntity = new EventlogEntity() {
 
-                            @Override
-                            public @Nullable String getId() {
-                                // TODO Auto-generated method stub
-                                return null;
-                            }
+            @Override
+            public @Nullable String getId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-                            @Override
-                            public @Nullable DateAndTime getTimestamp() {
-                                // TODO Auto-generated method stub
-                                return null;
-                            }
+            @Override
+            public @Nullable DateAndTime getTimestamp() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-                            @Override
-                            public @Nullable String getObjectId() {
-                                // TODO Auto-generated method stub
-                                return "ABCD";
-                            }
+            @Override
+            public @Nullable String getObjectId() {
+                // TODO Auto-generated method stub
+                return "ABCD";
+            }
 
-                            @Override
-                            public @Nullable String getNodeId() {
-                                // TODO Auto-generated method stub
-                                return null;
-                            }
+            @Override
+            public @Nullable String getNodeId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-                            @Override
-                            public @Nullable Integer getCounter() {
-                                // TODO Auto-generated method stub
-                                return null;
-                            }
+            @Override
+            public @Nullable Integer getCounter() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-                            @Override
-                            public @Nullable SourceType getSourceType() {
-                                // TODO Auto-generated method stub
-                                return null;
-                            }
+            @Override
+            public @Nullable SourceType getSourceType() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-                            @Override
-                            public @Nullable String getNewValue() {
-                                // TODO Auto-generated method stub
-                                return null;
-                            }
+            @Override
+            public @Nullable String getNewValue() {
+                // TODO Auto-generated method stub
+                return null;
+            }
 
-                            @Override
-                            public @Nullable String getAttributeName() {
-                                // TODO Auto-generated method stub
-                                return "/equipment-pac/equipment-current-problems";
-                            }
+            @Override
+            public @Nullable String getAttributeName() {
+                // TODO Auto-generated method stub
+                return "/equipment-pac/equipment-current-problems";
+            }
 
-                            @Override
-                            public Class<? extends DataContainer> getImplementedInterface() {
-                                // TODO Auto-generated method stub
-                                return null;
-                            }
-                        };
+            @Override
+            public Class<? extends DataContainer> getImplementedInterface() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
 
-                        onfCoreNetworkElement12MW.notificationActor(eventlogEntity);
+        onfCoreNetworkElement12MW.notificationActor(eventlogEntity);
     }
 
 

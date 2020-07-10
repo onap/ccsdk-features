@@ -39,16 +39,18 @@ public interface OnfMicrowaveModel {
 
     // -- Frankfurt below
 
-    /** Get performancedata from LTP
-    *
-    * @param lpName filter for layerprotocol
-    * @param lp to get pm from
-    * @return the pm data object
-    */
-   @NonNull PerformanceDataLtp getLtpHistoricalPerformanceData(@NonNull ONFLayerProtocolName lpName, @NonNull Lp lp);
+    /**
+     * Get performancedata from LTP
+     *
+     * @param lpName filter for layerprotocol
+     * @param lp to get pm from
+     * @return the pm data object
+     */
+    @NonNull
+    PerformanceDataLtp getLtpHistoricalPerformanceData(@NonNull ONFLayerProtocolName lpName, @NonNull Lp lp);
 
-   /** Set notificationqueue worker for specific notification that needs to be forwarded **/
-   void setNotificationQueue(NotificationWorker<EventlogEntity> notificationQueue);
+    /** Set notificationqueue worker for specific notification that needs to be forwarded **/
+    void setNotificationQueue(NotificationWorker<EventlogEntity> notificationQueue);
 
 
 }

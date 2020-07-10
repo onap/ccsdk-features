@@ -39,8 +39,8 @@ public class WrapperPTPModelRev170208 {
 
     private static final Logger LOG = LoggerFactory.getLogger(WrapperPTPModelRev170208.class);
 
-    protected static final InstanceIdentifier<InstanceList> PTPINSTANCES_IID = InstanceIdentifier
-            .builder(InstanceList.class, new InstanceListKey(1)).build();
+    protected static final InstanceIdentifier<InstanceList> PTPINSTANCES_IID =
+            InstanceIdentifier.builder(InstanceList.class, new InstanceListKey(1)).build();
 
     /**
      * Query synchronization information out of NE
