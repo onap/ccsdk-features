@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl;
 
@@ -22,10 +22,10 @@ import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPVESMsgConsu
 
 public class DummyFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
 
-	@Override
-	public void processMsg(String msg) throws Exception {
-		System.out.println("Message received is - "+msg);
+    @Override
+    public void processMsg(String msg) throws Exception {
+        System.out.println("Message received is - " + msg);
 
-	}
+    }
 
 }
