@@ -24,8 +24,9 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter;
 public interface ToggleAlarmFilterable {
 
 
-    /** Provide id for toggle alarm filter that is unique for the mountpoint/nodeId**/
+    /** Provide id for toggle alarm filter that is unique for the mountpoint/nodeId **/
     String getUuidForMountpoint();
+
     /** Provide indication if cleared **/
     boolean isCleared();
 

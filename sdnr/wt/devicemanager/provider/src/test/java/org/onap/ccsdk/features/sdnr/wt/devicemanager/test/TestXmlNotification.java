@@ -58,13 +58,13 @@ public class TestXmlNotification {
     public void testNoAlarm() {
 
         ProblemNotificationXml notification;
-        notification = new ProblemNotificationXml("TestMointpoint", "network-element",
-                "problemName", InternalSeverity.Critical, 123, InternalDateAndTime.getTestpattern());
+        notification = new ProblemNotificationXml("TestMointpoint", "network-element", "problemName",
+                InternalSeverity.Critical, 123, InternalDateAndTime.getTestpattern());
 
         assertFalse("Critical", notification.isNoAlarmIndication());
 
-        notification = new ProblemNotificationXml("TestMointpoint", "network-element",
-                "problemName", InternalSeverity.NonAlarmed, 123, InternalDateAndTime.getTestpattern());
+        notification = new ProblemNotificationXml("TestMointpoint", "network-element", "problemName",
+                InternalSeverity.NonAlarmed, 123, InternalDateAndTime.getTestpattern());
 
         assertTrue("NonAlarm", notification.isNoAlarmIndication());
 
@@ -74,7 +74,8 @@ public class TestXmlNotification {
     public void testObjectCreationNotification() {
 
         ObjectCreationNotificationXml notification;
-        notification = new ObjectCreationNotificationXml("TestMointpoint1", 1, InternalDateAndTime.getTestpattern(), "Id1");
+        notification =
+                new ObjectCreationNotificationXml("TestMointpoint1", 1, InternalDateAndTime.getTestpattern(), "Id1");
 
     }
 
@@ -82,7 +83,8 @@ public class TestXmlNotification {
     public void testDeletionCreationNotification() {
 
         ObjectDeletionNotificationXml notification;
-        notification = new ObjectDeletionNotificationXml("TestMointpoint2", 2, InternalDateAndTime.getTestpattern(), "Id2");
+        notification =
+                new ObjectDeletionNotificationXml("TestMointpoint2", 2, InternalDateAndTime.getTestpattern(), "Id2");
 
     }
 

@@ -47,7 +47,7 @@ public class TestDevMgrPropertiesFile {
     private static final Logger LOG = LoggerFactory.getLogger(ArchiveCleanService.class);
 
     private static final File FILENAME = new File("testdevmgrpropertiesfile.properties");
-    private static final File AAIPROP_FILE=new File("testdevmgrpropertiesfileaaiclient.properties");
+    private static final File AAIPROP_FILE = new File("testdevmgrpropertiesfileaaiclient.properties");
     private int hasChanged;
 
     @Before
@@ -55,6 +55,7 @@ public class TestDevMgrPropertiesFile {
         delete(FILENAME);
         delete(AAIPROP_FILE);
     }
+
     @After
     public void deinit() {
         this.init();
@@ -94,7 +95,7 @@ public class TestDevMgrPropertiesFile {
         hasChanged = 0;
         cfg2.registerConfigChangedListener(() -> {
             hasChanged++;
-            LOG.info("file changed listener triggered: {}",hasChanged);
+            LOG.info("file changed listener triggered: {}", hasChanged);
         });
 
         AaiConfig aaiConfig = new AaiConfig(cfg2);
@@ -106,17 +107,17 @@ public class TestDevMgrPropertiesFile {
         ToggleAlarmConfig toggleAlarmConfig = new ToggleAlarmConfig(cfg2);
         assertNotNull(toggleAlarmConfig);
 
-        LOG.info("Write new content. Changes {}",hasChanged);
+        LOG.info("Write new content. Changes {}", hasChanged);
         writeFile(FILENAME, this.getContent2());
 
-        int i=10;
-        while(hasChanged == 0 && i-- > 0) {
+        int i = 10;
+        while (hasChanged == 0 && i-- > 0) {
             LOG.info("Wait for Change indication.");
             sleep(1000);
         }
-        LOG.info("Changes {}",hasChanged);
+        LOG.info("Changes {}", hasChanged);
 
-        assertTrue("fileChanged counter "+hasChanged, hasChanged > 0);
+        assertTrue("fileChanged counter " + hasChanged, hasChanged > 0);
         LOG.info("Test done");
 
     }
@@ -130,130 +131,61 @@ public class TestDevMgrPropertiesFile {
     }
 
     public static void writeFile(File f, String content) {
-         try {
+        try {
             Files.asCharSink(f, StandardCharsets.UTF_8).write(content);
         } catch (IOException e) {
             fail(e.getMessage());
-        };
+        } ;
         sleep(500);
     }
 
     private void delete(File f) {
-        if(f.exists()) {
+        if (f.exists()) {
             f.delete();
         }
     }
 
 
     private String getContent2() {
-        return "[dcae]\n" +
-                "dcaeUserCredentials=admin:admin\n" +
-                "dcaeUrl=http://localhost:45451/abc\n" +
-                "dcaeHeartbeatPeriodSeconds=120\n" +
-                "dcaeTestCollector=no\n" +
-                "\n" +
-                "[aots]\n" +
-                "userPassword=passwd\n" +
-                "soapurladd=off\n" +
-                "soapaddtimeout=10\n" +
-                "soapinqtimeout=20\n" +
-                "userName=user\n" +
-                "inqtemplate=inqreq.tmpl.xml\n" +
-                "assignedto=userid\n" +
-                "addtemplate=addreq.tmpl.xml\n" +
-                "severitypassthrough=critical,major,minor,warning\n" +
-                "systemuser=user\n" +
-                "prt-offset=1200\n" +
-                "soapurlinq=off\n" +
-                "#smtpHost=\n" +
-                "#smtpPort=\n" +
-                "#smtpUsername=\n" +
-                "#smtpPassword=\n" +
-                "#smtpSender=\n" +
-                "#smtpReceivers=\n" +
-                "\n" +
-                "[es]\n" +
-                "esCluster=sendateodl5\n" +
-                "\n" +
-                "[aai]\n" +
-                "#keep comment\n" +
-                "aaiHeaders=[\"X-TransactionId: 9999\"]\n" +
-                "aaiUrl=off\n" +
-                "aaiUserCredentials=AAI:AAI\n" +
-                "aaiDeleteOnMountpointRemove=true\n" +
-                "aaiTrustAllCerts=false\n" +
-                "aaiApiVersion=aai/v13\n" +
-                "aaiPropertiesFile=aaiclient.properties\n" +
-                "aaiApplicationId=SDNR\n" +
-                "aaiPcks12ClientCertFile=/opt/logs/externals/data/stores/keystore.client.p12\n" +
-                "aaiPcks12ClientCertPassphrase=adminadmin\n" +
-                "aaiClientConnectionTimeout=30000\n" +
-                "\n" +
-                "[pm]\n" +
-                "pmCluster=sendateodl5\n" +
-                "pmEnabled=true\n" +
-                "[toggleAlarmFilter]\n" +
-                "taEnabled=true\n" +
-                "taDelay=5555\n" +
-                "";
+        return "[dcae]\n" + "dcaeUserCredentials=admin:admin\n" + "dcaeUrl=http://localhost:45451/abc\n"
+                + "dcaeHeartbeatPeriodSeconds=120\n" + "dcaeTestCollector=no\n" + "\n" + "[aots]\n"
+                + "userPassword=passwd\n" + "soapurladd=off\n" + "soapaddtimeout=10\n" + "soapinqtimeout=20\n"
+                + "userName=user\n" + "inqtemplate=inqreq.tmpl.xml\n" + "assignedto=userid\n"
+                + "addtemplate=addreq.tmpl.xml\n" + "severitypassthrough=critical,major,minor,warning\n"
+                + "systemuser=user\n" + "prt-offset=1200\n" + "soapurlinq=off\n" + "#smtpHost=\n" + "#smtpPort=\n"
+                + "#smtpUsername=\n" + "#smtpPassword=\n" + "#smtpSender=\n" + "#smtpReceivers=\n" + "\n" + "[es]\n"
+                + "esCluster=sendateodl5\n" + "\n" + "[aai]\n" + "#keep comment\n"
+                + "aaiHeaders=[\"X-TransactionId: 9999\"]\n" + "aaiUrl=off\n" + "aaiUserCredentials=AAI:AAI\n"
+                + "aaiDeleteOnMountpointRemove=true\n" + "aaiTrustAllCerts=false\n" + "aaiApiVersion=aai/v13\n"
+                + "aaiPropertiesFile=aaiclient.properties\n" + "aaiApplicationId=SDNR\n"
+                + "aaiPcks12ClientCertFile=/opt/logs/externals/data/stores/keystore.client.p12\n"
+                + "aaiPcks12ClientCertPassphrase=adminadmin\n" + "aaiClientConnectionTimeout=30000\n" + "\n" + "[pm]\n"
+                + "pmCluster=sendateodl5\n" + "pmEnabled=true\n" + "[toggleAlarmFilter]\n" + "taEnabled=true\n"
+                + "taDelay=5555\n" + "";
     }
 
     private String getContent1() {
-        return "[dcae]\n" +
-                "dcaeUserCredentials=admin:admin\n" +
-                "dcaeUrl=http://localhost:45/abc\n" +
-                "dcaeHeartbeatPeriodSeconds=120\n" +
-                "dcaeTestCollector=no\n" +
-                "\n" +
-                "[aots]\n" +
-                "userPassword=passwd\n" +
-                "soapurladd=off\n" +
-                "soapaddtimeout=10\n" +
-                "soapinqtimeout=20\n" +
-                "userName=user\n" +
-                "inqtemplate=inqreq.tmpl.xml\n" +
-                "assignedto=userid\n" +
-                "addtemplate=addreq.tmpl.xml\n" +
-                "severitypassthrough=critical,major,minor,warning\n" +
-                "systemuser=user\n" +
-                "prt-offset=1200\n" +
-                "soapurlinq=off\n" +
-                "#smtpHost=\n" +
-                "#smtpPort=\n" +
-                "#smtpUsername=\n" +
-                "#smtpPassword=\n" +
-                "#smtpSender=\n" +
-                "#smtpReceivers=\n" +
-                "\n" +
-                "[es]\n" +
-                "esCluster=sendateodl5\n" +
-                "\n" +
-                "[aai]\n" +
-                "#keep comment\n" +
-                "aaiHeaders=[\"X-TransactionId: 9999\"]\n" +
-                "aaiUrl=off\n" +
-                "aaiUserCredentials=AAI:AAI\n" +
-                "aaiDeleteOnMountpointRemove=true\n" +
-                "aaiTrustAllCerts=false\n" +
-                "aaiApiVersion=aai/v13\n" +
-                "aaiPropertiesFile=aaiclient.properties\n" +
-                "\n" +
-                "[pm]\n" +
-                "pmCluster=sendateodl5\n" +
-                "pmEnabled=true\n" +
-                "[toggleAlarmFilter]\n" +
-                "taEnabled=false\n" +
-                "taDelay=5555\n" +
-                "";
+        return "[dcae]\n" + "dcaeUserCredentials=admin:admin\n" + "dcaeUrl=http://localhost:45/abc\n"
+                + "dcaeHeartbeatPeriodSeconds=120\n" + "dcaeTestCollector=no\n" + "\n" + "[aots]\n"
+                + "userPassword=passwd\n" + "soapurladd=off\n" + "soapaddtimeout=10\n" + "soapinqtimeout=20\n"
+                + "userName=user\n" + "inqtemplate=inqreq.tmpl.xml\n" + "assignedto=userid\n"
+                + "addtemplate=addreq.tmpl.xml\n" + "severitypassthrough=critical,major,minor,warning\n"
+                + "systemuser=user\n" + "prt-offset=1200\n" + "soapurlinq=off\n" + "#smtpHost=\n" + "#smtpPort=\n"
+                + "#smtpUsername=\n" + "#smtpPassword=\n" + "#smtpSender=\n" + "#smtpReceivers=\n" + "\n" + "[es]\n"
+                + "esCluster=sendateodl5\n" + "\n" + "[aai]\n" + "#keep comment\n"
+                + "aaiHeaders=[\"X-TransactionId: 9999\"]\n" + "aaiUrl=off\n" + "aaiUserCredentials=AAI:AAI\n"
+                + "aaiDeleteOnMountpointRemove=true\n" + "aaiTrustAllCerts=false\n" + "aaiApiVersion=aai/v13\n"
+                + "aaiPropertiesFile=aaiclient.properties\n" + "\n" + "[pm]\n" + "pmCluster=sendateodl5\n"
+                + "pmEnabled=true\n" + "[toggleAlarmFilter]\n" + "taEnabled=false\n" + "taDelay=5555\n" + "";
     }
+
     private String getAaiPropertiesConfig() {
-        return "org.onap.ccsdk.sli.adaptors.aai.ssl.key=keykey\"\"\n" +
-                "org.onap.ccsdk.sli.adaptors.aai.ssl.key.psswd=psswdpsswd\"\"\n" +
-                "org.onap.ccsdk.sli.adaptors.aai.host.certificate.ignore=\"false\"\n" +
-                "org.onap.ccsdk.sli.adaptors.aai.application=appxyz\"\"\n" +
-                "org.onap.ccsdk.sli.adaptors.aai.uri=uriu\"\"\n" +
-                "connection.timeout=60000\n" +
-                "read.timeout=60000";
+        return "org.onap.ccsdk.sli.adaptors.aai.ssl.key=keykey\"\"\n"
+                + "org.onap.ccsdk.sli.adaptors.aai.ssl.key.psswd=psswdpsswd\"\"\n"
+                + "org.onap.ccsdk.sli.adaptors.aai.host.certificate.ignore=\"false\"\n"
+                + "org.onap.ccsdk.sli.adaptors.aai.application=appxyz\"\"\n"
+                + "org.onap.ccsdk.sli.adaptors.aai.uri=uriu\"\"\n" + "connection.timeout=60000\n"
+                + "read.timeout=60000";
     }
 
 }

@@ -62,6 +62,7 @@ public class EquipmentData {
 
     /**
      * Get list with all equipment
+     * 
      * @return list with equipment
      */
     public List<Inventory> getList() {

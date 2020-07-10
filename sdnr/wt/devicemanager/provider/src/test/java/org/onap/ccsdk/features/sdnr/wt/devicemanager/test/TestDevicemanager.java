@@ -80,12 +80,14 @@ public class TestDevicemanager extends Mockito {
         @SuppressWarnings("unchecked")
         ListenerRegistration<NetconfNodeConnectListener> lr1 = mock(ListenerRegistration.class);
         //doNothing().when(lr1).close();
-        when(netconfNodeStateService.registerNetconfNodeConnectListener(mock(NetconfNodeConnectListener.class))).thenReturn(lr1);
+        when(netconfNodeStateService.registerNetconfNodeConnectListener(mock(NetconfNodeConnectListener.class)))
+                .thenReturn(lr1);
 
         @SuppressWarnings("unchecked")
         ListenerRegistration<NetconfNodeStateListener> lr2 = mock(ListenerRegistration.class);
         //doNothing().when(lr2).close();
-        when(netconfNodeStateService.registerNetconfNodeStateListener(mock(NetconfNodeStateListener.class))).thenReturn(lr2);
+        when(netconfNodeStateService.registerNetconfNodeStateListener(mock(NetconfNodeStateListener.class)))
+                .thenReturn(lr2);
 
         WebsocketmanagerService websocketmanagerService = mock(WebsocketmanagerService.class);
 
@@ -113,7 +115,7 @@ public class TestDevicemanager extends Mockito {
 
         deviceManager.init();
 
-        apiService  = rpcProviderRegistry.getDeviceManagerApiService();
+        apiService = rpcProviderRegistry.getDeviceManagerApiService();
 
     }
 
@@ -129,7 +131,8 @@ public class TestDevicemanager extends Mockito {
 
         n.creationNotification(new NodeId("NodeTest1"), 1, InternalDateAndTime.getTestpatternDateAndTime(), "ObjTest1");
 
-        n.changeNotification(new NodeId("NodeTest1"), 2, InternalDateAndTime.getTestpatternDateAndTime(), "ObjTest1", "AtrributeTest1", "NewTest1");
+        n.changeNotification(new NodeId("NodeTest1"), 2, InternalDateAndTime.getTestpatternDateAndTime(), "ObjTest1",
+                "AtrributeTest1", "NewTest1");
 
         n.deletionNotification(new NodeId("NodeTest1"), 3, InternalDateAndTime.getTestpatternDateAndTime(), "ObjTest1");
 
@@ -140,9 +143,7 @@ public class TestDevicemanager extends Mockito {
         log.info("testFaultNotification");
 
         MaintenanceBuilder mb = new MaintenanceBuilder();
-        when(htDataBaseMaintenance
-                .getMaintenance(""))
-                    .thenReturn(mb.build());
+        when(htDataBaseMaintenance.getMaintenance("")).thenReturn(mb.build());
 
         FaultService n = deviceManager.getFaultService();
         FaultlogBuilder faultLogEntityBuilder = new FaultlogBuilder();

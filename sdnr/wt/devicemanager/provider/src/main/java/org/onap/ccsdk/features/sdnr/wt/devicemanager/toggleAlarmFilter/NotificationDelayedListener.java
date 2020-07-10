@@ -19,7 +19,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter;
 
 public interface NotificationDelayedListener<T> {
 
-	public void onNotificationDelay(String nodeName,T notification);
+    public void onNotificationDelay(String nodeName, T notification);
 
 }
 

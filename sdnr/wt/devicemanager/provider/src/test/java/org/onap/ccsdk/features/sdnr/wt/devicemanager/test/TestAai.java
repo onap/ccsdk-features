@@ -50,228 +50,228 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationD
 
 public class TestAai {
 
-	private static final String CONFIGURATIONTESTFILE = "test.properties"; // for
-	private static final String ENABLEDAAI_TESTCONFIG_FILENAME = "test2.properties";
-	private static final File ENABLEDAAI_TESTCONFIG_FILE = new File(ENABLEDAAI_TESTCONFIG_FILENAME);
-	private static final int AAI_SERVER_PORT = 45454;
-	private static final String TESTCONFIG_CONTENT = "[dcae]\n" + "dcaeUserCredentials=admin:admin\n" + "dcaeUrl=off\n"
-			+ "dcaeHeartbeatPeriodSeconds=120\n" + "dcaeTestCollector=no\n" + "\n" + "[aots]\n"
-			+ "userPassword=passwd\n" + "soapurladd=off\n" + "soapaddtimeout=10\n" + "soapinqtimeout=20\n"
-			+ "userName=user\n" + "inqtemplate=inqreq.tmpl.xml\n" + "assignedto=userid\n"
-			+ "addtemplate=addreq.tmpl.xml\n" + "severitypassthrough=critical,major,minor,warning\n"
-			+ "systemuser=user\n" + "prt-offset=1200\n" + "soapurlinq=off\n" + "#smtpHost=\n" + "#smtpPort=\n"
-			+ "#smtpUsername=\n" + "#smtpPassword=\n" + "#smtpSender=\n" + "#smtpReceivers=\n" + "\n" + "[es]\n"
-			+ "esCluster=sendateodl5\n" + "\n" + "[aai]\n" + "#keep comment\n"
-			+ "aaiHeaders=[\"X-TransactionId: 9999\"]\n" + "aaiUrl=http://localhost:" + AAI_SERVER_PORT + "\n"
-			+ "aaiUserCredentials=AAI:AAI\n" + "aaiDeleteOnMountpointRemove=true\n" + "aaiTrustAllCerts=false\n"
-			+ "aaiApiVersion=aai/v13\n" + "aaiPropertiesFile=aaiclient.properties\n" + "aaiApplicationId=SDNR\n"
-			+ "aaiPcks12ClientCertFile=/opt/logs/externals/data/stores/keystore.client.p12\n"
-			+ "aaiPcks12ClientCertPassphrase=adminadmin\n" + "aaiClientConnectionTimeout=30000\n" + "\n" + "[pm]\n"
-			+ "pmCluster=sendateodl5\n" + "pmEnabled=true\n" + "\n" + "";
-	
-	private static final String EXT_TEST_URL="https://testaai.onap.org:8443";
-	private static final String EXT_TEST_KEY="test.key";
-	private static final String EXT_TEST_PASSWD="test123";
-	private static final String EXT_TEST_APPLICATIONID="SDNC";
-	private static final long EXT_TEST_CONN_TIMEOUT=6000;
-	
-	
-	private static final CharSequence TESTCONFIG_CONTENT_EXT = "[aai]\n" + "#keep comment\n"
-			+ "aaiHeaders=[\"X-TransactionId: 9999\"]\n" + "aaiUrl=http://localhost:" + AAI_SERVER_PORT + "\n"
-			+ "aaiUserCredentials=AAI:AAI\n" + "aaiDeleteOnMountpointRemove=true\n" + "aaiTrustAllCerts=false\n"
-			+ "aaiApiVersion=aai/v13\n" + "aaiPropertiesFile=aaiclient.properties\n" +
-			//            "aaiApplicationId=SDNR\n" +
-			//            "aaiPcks12ClientCertFile=/opt/logs/externals/data/stores/keystore.client.p12\n" +
-			//            "aaiPcks12ClientCertPassphrase=adminadmin\n" +
-			//            "aaiClientConnectionTimeout=30000\n" +
-			"\n";
-	private static final CharSequence TESTCONFIG_CONTENT_EXT2 = "org.onap.ccsdk.sli.adaptors.aai.ssl.key="+EXT_TEST_KEY+"\n"
-			+ "org.onap.ccsdk.sli.adaptors.aai.ssl.key.psswd="+EXT_TEST_PASSWD+"\n"
-			+ "org.onap.ccsdk.sli.adaptors.aai.host.certificate.ignore=false\n"
-			+ "org.onap.ccsdk.sli.adaptors.aai.application="+EXT_TEST_APPLICATIONID+"\n"
-			+ "org.onap.ccsdk.sli.adaptors.aai.uri="+EXT_TEST_URL+"\n" 
-			+ "connection.timeout="+EXT_TEST_CONN_TIMEOUT+"\n";
-	private static HttpServer server;
-	private static ExecutorService httpThreadPool;
-	private static ConfigurationFileRepresentation globalCfg;
+    private static final String CONFIGURATIONTESTFILE = "test.properties"; // for
+    private static final String ENABLEDAAI_TESTCONFIG_FILENAME = "test2.properties";
+    private static final File ENABLEDAAI_TESTCONFIG_FILE = new File(ENABLEDAAI_TESTCONFIG_FILENAME);
+    private static final int AAI_SERVER_PORT = 45454;
+    private static final String TESTCONFIG_CONTENT = "[dcae]\n" + "dcaeUserCredentials=admin:admin\n" + "dcaeUrl=off\n"
+            + "dcaeHeartbeatPeriodSeconds=120\n" + "dcaeTestCollector=no\n" + "\n" + "[aots]\n"
+            + "userPassword=passwd\n" + "soapurladd=off\n" + "soapaddtimeout=10\n" + "soapinqtimeout=20\n"
+            + "userName=user\n" + "inqtemplate=inqreq.tmpl.xml\n" + "assignedto=userid\n"
+            + "addtemplate=addreq.tmpl.xml\n" + "severitypassthrough=critical,major,minor,warning\n"
+            + "systemuser=user\n" + "prt-offset=1200\n" + "soapurlinq=off\n" + "#smtpHost=\n" + "#smtpPort=\n"
+            + "#smtpUsername=\n" + "#smtpPassword=\n" + "#smtpSender=\n" + "#smtpReceivers=\n" + "\n" + "[es]\n"
+            + "esCluster=sendateodl5\n" + "\n" + "[aai]\n" + "#keep comment\n"
+            + "aaiHeaders=[\"X-TransactionId: 9999\"]\n" + "aaiUrl=http://localhost:" + AAI_SERVER_PORT + "\n"
+            + "aaiUserCredentials=AAI:AAI\n" + "aaiDeleteOnMountpointRemove=true\n" + "aaiTrustAllCerts=false\n"
+            + "aaiApiVersion=aai/v13\n" + "aaiPropertiesFile=aaiclient.properties\n" + "aaiApplicationId=SDNR\n"
+            + "aaiPcks12ClientCertFile=/opt/logs/externals/data/stores/keystore.client.p12\n"
+            + "aaiPcks12ClientCertPassphrase=adminadmin\n" + "aaiClientConnectionTimeout=30000\n" + "\n" + "[pm]\n"
+            + "pmCluster=sendateodl5\n" + "pmEnabled=true\n" + "\n" + "";
 
-	@Test
-	public void test() {
+    private static final String EXT_TEST_URL = "https://testaai.onap.org:8443";
+    private static final String EXT_TEST_KEY = "test.key";
+    private static final String EXT_TEST_PASSWD = "test123";
+    private static final String EXT_TEST_APPLICATIONID = "SDNC";
+    private static final long EXT_TEST_CONN_TIMEOUT = 6000;
 
-		String testConfigurationFileName = ResourceFileLoader.getFile(this, CONFIGURATIONTESTFILE).getAbsolutePath();
-		ConfigurationFileRepresentation cfg = new ConfigurationFileRepresentation(testConfigurationFileName);
 
-		AaiProviderClient provider = new AaiProviderClient(cfg, null);
+    private static final CharSequence TESTCONFIG_CONTENT_EXT = "[aai]\n" + "#keep comment\n"
+            + "aaiHeaders=[\"X-TransactionId: 9999\"]\n" + "aaiUrl=http://localhost:" + AAI_SERVER_PORT + "\n"
+            + "aaiUserCredentials=AAI:AAI\n" + "aaiDeleteOnMountpointRemove=true\n" + "aaiTrustAllCerts=false\n"
+            + "aaiApiVersion=aai/v13\n" + "aaiPropertiesFile=aaiclient.properties\n" +
+            //            "aaiApplicationId=SDNR\n" +
+            //            "aaiPcks12ClientCertFile=/opt/logs/externals/data/stores/keystore.client.p12\n" +
+            //            "aaiPcks12ClientCertPassphrase=adminadmin\n" +
+            //            "aaiClientConnectionTimeout=30000\n" +
+            "\n";
+    private static final CharSequence TESTCONFIG_CONTENT_EXT2 = "org.onap.ccsdk.sli.adaptors.aai.ssl.key="
+            + EXT_TEST_KEY + "\n" + "org.onap.ccsdk.sli.adaptors.aai.ssl.key.psswd=" + EXT_TEST_PASSWD + "\n"
+            + "org.onap.ccsdk.sli.adaptors.aai.host.certificate.ignore=false\n"
+            + "org.onap.ccsdk.sli.adaptors.aai.application=" + EXT_TEST_APPLICATIONID + "\n"
+            + "org.onap.ccsdk.sli.adaptors.aai.uri=" + EXT_TEST_URL + "\n" + "connection.timeout="
+            + EXT_TEST_CONN_TIMEOUT + "\n";
+    private static HttpServer server;
+    private static ExecutorService httpThreadPool;
+    private static ConfigurationFileRepresentation globalCfg;
 
-		String mountPointName = "testDevice 01";
-		String type = "Unit";
-		String model = "Horizon Compact+";
-		String vendor = "DragonWave-X";
-		String ipv4 = "127.0.0.1";
-		String ipv6 = "::1";
-		List<String> ifInfos = new ArrayList<>();
-		ifInfos.add("LP-MWPS-RADIO");
-		InventoryInformationDcae ii = new InventoryInformationDcae(type, model, vendor, ipv4, ipv6, ifInfos);
-		System.out.println("registering device");
-		provider.onDeviceRegistered(mountPointName, ii);
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("unregistering device");
-		provider.onDeviceUnregistered(mountPointName);
-		System.out.println("finished");
-		try {
-			provider.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    @Test
+    public void test() {
 
-	@Test
-	public void test2() {
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-		AaiProviderClient provider = new AaiProviderClient(globalCfg, null);
+        String testConfigurationFileName = ResourceFileLoader.getFile(this, CONFIGURATIONTESTFILE).getAbsolutePath();
+        ConfigurationFileRepresentation cfg = new ConfigurationFileRepresentation(testConfigurationFileName);
 
-		String mountPointName = "testDevice 01";
-		String type = "Unit";
-		String model = "Horizon Compact+";
-		String vendor = "DragonWave-X";
-		String ipv4 = "127.0.0.1";
-		String ipv6 = "::1";
-		List<String> ifInfos = new ArrayList<>();
-		ifInfos.add("LP-MWPS-RADIO");
-		InventoryInformationDcae ii = new InventoryInformationDcae(type, model, vendor, ipv4, ipv6, ifInfos);
-		System.out.println("registering device");
-		provider.onDeviceRegistered(mountPointName);
-		provider.onDeviceRegistered(mountPointName, ii);
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("unregistering device");
-		provider.onDeviceUnregistered(mountPointName);
-		System.out.println("finished");
-		try {
-			provider.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        AaiProviderClient provider = new AaiProviderClient(cfg, null);
 
-	@Test
-	public void testExtendedProperties() {
-		File testConfigurationFileName = new File("abbsads.properties");
-		File extfile = new File("aaiclient.properties");
-		if (testConfigurationFileName.exists()) {
-			testConfigurationFileName.delete();
-		}
-		if (extfile.exists()) {
-			extfile.delete();
-		}
-		try {
-			Files.asCharSink(testConfigurationFileName, StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT_EXT);
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail("problem writing a test config file: " + e.getMessage());
-		}
-		try {
-			Files.asCharSink(extfile, StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT_EXT2);
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail("problem writing a second test config file: " + e.getMessage());
-		}
+        String mountPointName = "testDevice 01";
+        String type = "Unit";
+        String model = "Horizon Compact+";
+        String vendor = "DragonWave-X";
+        String ipv4 = "127.0.0.1";
+        String ipv6 = "::1";
+        List<String> ifInfos = new ArrayList<>();
+        ifInfos.add("LP-MWPS-RADIO");
+        InventoryInformationDcae ii = new InventoryInformationDcae(type, model, vendor, ipv4, ipv6, ifInfos);
+        System.out.println("registering device");
+        provider.onDeviceRegistered(mountPointName, ii);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("unregistering device");
+        provider.onDeviceUnregistered(mountPointName);
+        System.out.println("finished");
+        try {
+            provider.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-		ConfigurationFileRepresentation cfg = new ConfigurationFileRepresentation(testConfigurationFileName);
-		AaiConfig config = new AaiConfig(cfg);
-		System.out.println(config.toString());
+    @Test
+    public void test2() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+        AaiProviderClient provider = new AaiProviderClient(globalCfg, null);
 
-		assertTrue(config.getBaseUrl().startsWith(EXT_TEST_URL));
-		assertEquals(EXT_TEST_KEY,config.getPcks12CertificateFilename());
-		assertEquals(EXT_TEST_PASSWD,config.getPcks12CertificatePassphrase());
-		assertEquals(EXT_TEST_APPLICATIONID,config.getHeaders().get("X-FromAppId"));
-		assertEquals(EXT_TEST_CONN_TIMEOUT,config.getConnectionTimeout());
-		
-		if (testConfigurationFileName.exists()) {
-			testConfigurationFileName.delete();
-		}
-		if (extfile.exists()) {
-			extfile.delete();
-		}
+        String mountPointName = "testDevice 01";
+        String type = "Unit";
+        String model = "Horizon Compact+";
+        String vendor = "DragonWave-X";
+        String ipv4 = "127.0.0.1";
+        String ipv6 = "::1";
+        List<String> ifInfos = new ArrayList<>();
+        ifInfos.add("LP-MWPS-RADIO");
+        InventoryInformationDcae ii = new InventoryInformationDcae(type, model, vendor, ipv4, ipv6, ifInfos);
+        System.out.println("registering device");
+        provider.onDeviceRegistered(mountPointName);
+        provider.onDeviceRegistered(mountPointName, ii);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("unregistering device");
+        provider.onDeviceUnregistered(mountPointName);
+        System.out.println("finished");
+        try {
+            provider.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	}
+    @Test
+    public void testExtendedProperties() {
+        File testConfigurationFileName = new File("abbsads.properties");
+        File extfile = new File("aaiclient.properties");
+        if (testConfigurationFileName.exists()) {
+            testConfigurationFileName.delete();
+        }
+        if (extfile.exists()) {
+            extfile.delete();
+        }
+        try {
+            Files.asCharSink(testConfigurationFileName, StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT_EXT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("problem writing a test config file: " + e.getMessage());
+        }
+        try {
+            Files.asCharSink(extfile, StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT_EXT2);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("problem writing a second test config file: " + e.getMessage());
+        }
 
-	@BeforeClass
-	public static void initAaiTestWebserver() throws IOException {
-		try {
-			Files.asCharSink(ENABLEDAAI_TESTCONFIG_FILE, StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
-		} catch (IOException e1) {
-			fail(e1.getMessage());
-		}
-		//globalCfg=HtDevicemanagerConfiguration.getTestConfiguration(ENABLEDAAI_TESTCONFIG_FILENAME,true);
-		globalCfg = new ConfigurationFileRepresentation(ENABLEDAAI_TESTCONFIG_FILENAME);
-		server = HttpServer.create(new InetSocketAddress(AAI_SERVER_PORT), 0);
-		httpThreadPool = Executors.newFixedThreadPool(5);
-		server.setExecutor(httpThreadPool);
-		AaiConfig config = new AaiConfig(globalCfg);
-		server.createContext(config.getBaseUri(), new MyHandler());
-		//server.createContext("/", new MyRootHandler());
-		server.setExecutor(null); // creates a default executor
-		server.start();
-		System.out.println("http server started");
-	}
+        ConfigurationFileRepresentation cfg = new ConfigurationFileRepresentation(testConfigurationFileName);
+        AaiConfig config = new AaiConfig(cfg);
+        System.out.println(config.toString());
 
-	@AfterClass
-	public static void stopTestWebserver() {
-		if (server != null) {
-			server.stop(0);
-			httpThreadPool.shutdownNow();
-			System.out.println("http server stopped");
-		}
-		if (ENABLEDAAI_TESTCONFIG_FILE.exists()) {
-			ENABLEDAAI_TESTCONFIG_FILE.delete();
-		}
+        assertTrue(config.getBaseUrl().startsWith(EXT_TEST_URL));
+        assertEquals(EXT_TEST_KEY, config.getPcks12CertificateFilename());
+        assertEquals(EXT_TEST_PASSWD, config.getPcks12CertificatePassphrase());
+        assertEquals(EXT_TEST_APPLICATIONID, config.getHeaders().get("X-FromAppId"));
+        assertEquals(EXT_TEST_CONN_TIMEOUT, config.getConnectionTimeout());
 
-	}
+        if (testConfigurationFileName.exists()) {
+            testConfigurationFileName.delete();
+        }
+        if (extfile.exists()) {
+            extfile.delete();
+        }
 
-	static class MyHandler implements HttpHandler {
-		@Override
-		public void handle(HttpExchange t) throws IOException {
-			String method = t.getRequestMethod();
-			System.out.println("req method: " + method);
-			OutputStream os = null;
-			try {
-				String res = "";
-				if (method.equals("GET")) {
-					t.sendResponseHeaders(404, res.length());
-					os = t.getResponseBody();
-					os.write(res.getBytes());
-				} else if (method.equals("DELETE")) {
-					t.sendResponseHeaders(200, res.length());
-					os = t.getResponseBody();
-					os.write(res.getBytes());
-				} else if (method.equals("PUT")) {
-					t.sendResponseHeaders(200, res.length());
-					os = t.getResponseBody();
-					os.write(res.getBytes());
-				} else {
-					t.sendResponseHeaders(404, 0);
-				}
-				System.out.println("req handled successful");
+    }
 
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
-			} finally {
-				if (os != null) {
-					os.close();
-				}
-			}
-		}
-	}
+    @BeforeClass
+    public static void initAaiTestWebserver() throws IOException {
+        try {
+            Files.asCharSink(ENABLEDAAI_TESTCONFIG_FILE, StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
+        } catch (IOException e1) {
+            fail(e1.getMessage());
+        }
+        //globalCfg=HtDevicemanagerConfiguration.getTestConfiguration(ENABLEDAAI_TESTCONFIG_FILENAME,true);
+        globalCfg = new ConfigurationFileRepresentation(ENABLEDAAI_TESTCONFIG_FILENAME);
+        server = HttpServer.create(new InetSocketAddress(AAI_SERVER_PORT), 0);
+        httpThreadPool = Executors.newFixedThreadPool(5);
+        server.setExecutor(httpThreadPool);
+        AaiConfig config = new AaiConfig(globalCfg);
+        server.createContext(config.getBaseUri(), new MyHandler());
+        //server.createContext("/", new MyRootHandler());
+        server.setExecutor(null); // creates a default executor
+        server.start();
+        System.out.println("http server started");
+    }
+
+    @AfterClass
+    public static void stopTestWebserver() {
+        if (server != null) {
+            server.stop(0);
+            httpThreadPool.shutdownNow();
+            System.out.println("http server stopped");
+        }
+        if (ENABLEDAAI_TESTCONFIG_FILE.exists()) {
+            ENABLEDAAI_TESTCONFIG_FILE.delete();
+        }
+
+    }
+
+    static class MyHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            String method = t.getRequestMethod();
+            System.out.println("req method: " + method);
+            OutputStream os = null;
+            try {
+                String res = "";
+                if (method.equals("GET")) {
+                    t.sendResponseHeaders(404, res.length());
+                    os = t.getResponseBody();
+                    os.write(res.getBytes());
+                } else if (method.equals("DELETE")) {
+                    t.sendResponseHeaders(200, res.length());
+                    os = t.getResponseBody();
+                    os.write(res.getBytes());
+                } else if (method.equals("PUT")) {
+                    t.sendResponseHeaders(200, res.length());
+                    os = t.getResponseBody();
+                    os.write(res.getBytes());
+                } else {
+                    t.sendResponseHeaders(404, 0);
+                }
+                System.out.println("req handled successful");
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            } finally {
+                if (os != null) {
+                    os.close();
+                }
+            }
+        }
+    }
 }

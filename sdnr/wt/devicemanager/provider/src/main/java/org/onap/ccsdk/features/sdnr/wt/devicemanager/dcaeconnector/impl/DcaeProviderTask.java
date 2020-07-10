@@ -26,7 +26,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DcaeProviderTask  implements Runnable {
+class DcaeProviderTask implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DcaeProviderTask.class);
 
@@ -39,7 +39,7 @@ class DcaeProviderTask  implements Runnable {
     }
 
     private void sendHeartbeat() {
-         dcaeMessages.postHeartBeat();
+        dcaeMessages.postHeartBeat();
     }
 
     @Override

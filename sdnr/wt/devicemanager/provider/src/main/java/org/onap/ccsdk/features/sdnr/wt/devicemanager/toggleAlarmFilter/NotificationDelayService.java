@@ -26,7 +26,8 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.conf.Togg
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NotificationDelayService<T extends ToggleAlarmFilterable> implements DeviceManagerService, AutoCloseable, IConfigChangedListener {
+public class NotificationDelayService<T extends ToggleAlarmFilterable>
+        implements DeviceManagerService, AutoCloseable, IConfigChangedListener {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationDelayService.class);
 
     private final HashMap<String, NotificationDelayFilter<T>> filters;
