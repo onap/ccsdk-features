@@ -24,10 +24,12 @@ import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * Wrapper for forwarding websocket notifications to the websocket service, that is running as container.
+ * 
  * @author herbert
  */
 public interface WebSocketServiceClientInternal extends AutoCloseable {
 
-    public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(@NonNull String nodeName, @NonNull T notificationXml);
+    public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(@NonNull String nodeName,
+            @NonNull T notificationXml);
 
 }

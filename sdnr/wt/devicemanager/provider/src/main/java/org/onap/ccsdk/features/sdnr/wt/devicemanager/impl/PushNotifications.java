@@ -23,8 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicema
 
 public interface PushNotifications {
 
-	void pushAttributeChangeNotification(PushAttributeChangeNotificationInput input);
+    void pushAttributeChangeNotification(PushAttributeChangeNotificationInput input);
 
-	void pushFaultNotification(PushFaultNotificationInput input);
+    void pushFaultNotification(PushFaultNotificationInput input);
 
 }

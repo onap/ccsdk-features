@@ -32,12 +32,12 @@ public class DcaeConfig implements Configuration {
     private static final String DEFAULT_VALUE_USERCREDENTIALS = "admin:admin";
     private static final long DEFAULT_VALUE_TIMERPERIOD = 120;
 
-	private final ConfigurationFileRepresentation configuration;
+    private final ConfigurationFileRepresentation configuration;
 
-	public DcaeConfig(ConfigurationFileRepresentation configuration) {
-		this.configuration = configuration;
-    	this.configuration.addSection(SECTION_MARKER_DCAE);
-		defaults();
+    public DcaeConfig(ConfigurationFileRepresentation configuration) {
+        this.configuration = configuration;
+        this.configuration.addSection(SECTION_MARKER_DCAE);
+        defaults();
     }
 
     /* ***********************
@@ -45,35 +45,39 @@ public class DcaeConfig implements Configuration {
      */
 
     public String getEventReveicerUrl() {
-		return configuration.getProperty(SECTION_MARKER_DCAE, PROPERTY_KEY_EVENTRECEIVERURL);
+        return configuration.getProperty(SECTION_MARKER_DCAE, PROPERTY_KEY_EVENTRECEIVERURL);
     }
 
     public String getUserCredentials() {
-		return configuration.getProperty(SECTION_MARKER_DCAE, PROPERTY_KEY_USERCREDENTIALS);
+        return configuration.getProperty(SECTION_MARKER_DCAE, PROPERTY_KEY_USERCREDENTIALS);
     }
 
     public Integer getTimerPeriodSeconds() {
-    	long res = configuration.getPropertyLong(SECTION_MARKER_DCAE, PROPERTY_KEY_TIMERPERIOD).orElse(DEFAULT_VALUE_TIMERPERIOD);
-		return (int)res;
+        long res = configuration.getPropertyLong(SECTION_MARKER_DCAE, PROPERTY_KEY_TIMERPERIOD)
+                .orElse(DEFAULT_VALUE_TIMERPERIOD);
+        return (int) res;
     }
 
 
-	@Override
-	public String getSectionName() {
-		return SECTION_MARKER_DCAE;
-	}
+    @Override
+    public String getSectionName() {
+        return SECTION_MARKER_DCAE;
+    }
 
-	@Override
-	public void defaults() {
-		this.configuration.setPropertyIfNotAvailable(SECTION_MARKER_DCAE, PROPERTY_KEY_EVENTRECEIVERURL, DEFAULT_VALUE_EVENTRECEIVERURL);
-		this.configuration.setPropertyIfNotAvailable(SECTION_MARKER_DCAE, PROPERTY_KEY_USERCREDENTIALS, DEFAULT_VALUE_USERCREDENTIALS);
-		this.configuration.setPropertyIfNotAvailable(SECTION_MARKER_DCAE, PROPERTY_KEY_TIMERPERIOD, DEFAULT_VALUE_TIMERPERIOD);
-	}
+    @Override
+    public void defaults() {
+        this.configuration.setPropertyIfNotAvailable(SECTION_MARKER_DCAE, PROPERTY_KEY_EVENTRECEIVERURL,
+                DEFAULT_VALUE_EVENTRECEIVERURL);
+        this.configuration.setPropertyIfNotAvailable(SECTION_MARKER_DCAE, PROPERTY_KEY_USERCREDENTIALS,
+                DEFAULT_VALUE_USERCREDENTIALS);
+        this.configuration.setPropertyIfNotAvailable(SECTION_MARKER_DCAE, PROPERTY_KEY_TIMERPERIOD,
+                DEFAULT_VALUE_TIMERPERIOD);
+    }
 
-	@Override
-	public String toString() {
-		return "DcaeConfig [getEventReveicerUrl()=" + getEventReveicerUrl() + ", getUserCredentials()="
-				+ getUserCredentials() + ", getTimerPeriodSeconds()=" + getTimerPeriodSeconds() + ", getSectionName()="
-				+ getSectionName() + "]";
-	}
+    @Override
+    public String toString() {
+        return "DcaeConfig [getEventReveicerUrl()=" + getEventReveicerUrl() + ", getUserCredentials()="
+                + getUserCredentials() + ", getTimerPeriodSeconds()=" + getTimerPeriodSeconds() + ", getSectionName()="
+                + getSectionName() + "]";
+    }
 }

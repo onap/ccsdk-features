@@ -16,23 +16,23 @@
  * ============LICENSE_END==========================================================================
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 public interface NetconfNodeService {
 
     public enum Action {
-        CREATE,
-        REMOVE,
-        UPDATE
+        CREATE, REMOVE, UPDATE
     }
 
     /**
      * MountpointChangeHandler, called to indicate change to DeviceManager
+     * 
      * @param action provided
      * @param csts provided
      * @param nodeId provided
      * @param nnode provided
      */
-	void netconfNodeChangeHandler(Action action, NodeId nodeId, NetconfNode nnode);
+    void netconfNodeChangeHandler(Action action, NodeId nodeId, NetconfNode nnode);
 }

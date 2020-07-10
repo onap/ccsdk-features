@@ -23,8 +23,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStamp
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 
 /**
- * Converts time stamps into internal format according to ONF1.2 and ISO 8601.
- * To be replaced by NetconfTimeStampImpl
+ * Converts time stamps into internal format according to ONF1.2 and ISO 8601. To be replaced by NetconfTimeStampImpl
  */
 @Deprecated
 public class InternalDateAndTime {
@@ -42,16 +41,18 @@ public class InternalDateAndTime {
 
     /**
      * Static builder ONF1.0
+     * 
      * @param time in ONF1.0 yang format
-     * @return  InternalDateAndTime
+     * @return InternalDateAndTime
      */
 
-    public static InternalDateAndTime valueOf(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime time) {
+    public static InternalDateAndTime valueOf(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime time) {
         return new InternalDateAndTime(time);
     }
 
     /**
-     * @return     Getter with String representation
+     * @return Getter with String representation
      */
     public String getValue() {
         return internalDateAndTime;
@@ -59,6 +60,7 @@ public class InternalDateAndTime {
 
     /**
      * Get a testpattern
+     * 
      * @return testpattern
      */
     public static InternalDateAndTime getTestpattern() {
@@ -78,9 +80,11 @@ public class InternalDateAndTime {
 
     /**
      * Convert ONF 1.2 DateAndTime to String
+     * 
      * @param time as input
      */
-    private InternalDateAndTime(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime time) {
+    private InternalDateAndTime(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime time) {
         if (time != null) {
             internalDateAndTime = NETCONFTIME_CONVERTER.getTimeStampFromNetconf(time.getValue());
         } else {
@@ -90,6 +94,7 @@ public class InternalDateAndTime {
 
     /**
      * Setup static TEST
+     * 
      * @param internalDateAndTime
      */
     private InternalDateAndTime(String internalDateAndTime) {

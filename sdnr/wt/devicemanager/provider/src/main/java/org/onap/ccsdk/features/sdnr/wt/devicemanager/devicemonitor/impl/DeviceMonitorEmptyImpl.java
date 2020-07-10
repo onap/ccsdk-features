@@ -23,32 +23,25 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 public class DeviceMonitorEmptyImpl implements DeviceMonitor {
 
     @Override
-    public void refreshAlarmsInDb() {
-    }
+    public void refreshAlarmsInDb() {}
 
     @Override
-    public void removeMountpointIndication(String mountPointNodeName) {
-    }
+    public void removeMountpointIndication(String mountPointNodeName) {}
 
     @Override
-    public void deviceConnectMasterIndication(String mountPointNodeName, DeviceMonitoredNe ne) {
-    }
+    public void deviceConnectMasterIndication(String mountPointNodeName, DeviceMonitoredNe ne) {}
 
     @Override
-    public void deviceDisconnectIndication(String mountPointNodeName) {
-    }
+    public void deviceDisconnectIndication(String mountPointNodeName) {}
 
     @Override
-    public void deviceConnectSlaveIndication(String mountPointNodeName) {
-    }
+    public void deviceConnectSlaveIndication(String mountPointNodeName) {}
 
     @Override
-    public void close() throws Exception {
-    }
+    public void close() throws Exception {}
 
     @Override
-    public void deviceConnectMasterIndication(String mountPointNodeName, NetworkElement ne) {
-    }
+    public void deviceConnectMasterIndication(String mountPointNodeName, NetworkElement ne) {}
 
 
 }

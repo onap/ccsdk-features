@@ -28,18 +28,19 @@ import org.opendaylight.yangtools.yang.common.QName;
 public class TestNameSpace {
 
     private static final String QNAME_COREMODEL_NAMESPACE = "urn:onf:params:xml:ns:yang:core-model";
-    private static final QName QNAME_COREMODEL = QName.create(QNAME_COREMODEL_NAMESPACE, "2017-03-20", "core-model").intern();
+    private static final QName QNAME_COREMODEL =
+            QName.create(QNAME_COREMODEL_NAMESPACE, "2017-03-20", "core-model").intern();
 
     @Test
     public void test() throws URISyntaxException {
 
         QName qname = QName.create("(urn:o-ran:hardware:1.0?revision=2019-03-28)o-ran-hardware");
 
-        System.out.println("QName getNamespace"+qname.getNamespace());
-        assertEquals(qname.getNamespace().toString(),"urn:o-ran:hardware:1.0");
+        System.out.println("QName getNamespace" + qname.getNamespace());
+        assertEquals(qname.getNamespace().toString(), "urn:o-ran:hardware:1.0");
 
-        System.out.println("QName getRevision"+qname.getRevision());
-        assertEquals(qname.getRevision().get().toString(),"2019-03-28");
+        System.out.println("QName getRevision" + qname.getRevision());
+        assertEquals(qname.getRevision().get().toString(), "2019-03-28");
 
         System.out.println(QNAME_COREMODEL.getNamespace().toString());
         assertEquals(QNAME_COREMODEL.getNamespace().toString(), QNAME_COREMODEL_NAMESPACE);

@@ -28,27 +28,27 @@ public class PmConfig implements Configuration {
     private static final String DEFAULT_VALUE_ENABLED = String.valueOf(true);
 
 
-	private final ConfigurationFileRepresentation configuration;
+    private final ConfigurationFileRepresentation configuration;
 
-	public PmConfig(ConfigurationFileRepresentation configuration) {
-		this.configuration = configuration;
-		this.configuration.addSection(SECTION_MARKER_PM);
-		defaults();
-	}
+    public PmConfig(ConfigurationFileRepresentation configuration) {
+        this.configuration = configuration;
+        this.configuration.addSection(SECTION_MARKER_PM);
+        defaults();
+    }
 
     public boolean isPerformanceManagerEnabled() {
         return configuration.getPropertyBoolean(SECTION_MARKER_PM, PROPERTY_KEY_ENABLED);
     }
 
-	@Override
-	public String getSectionName() {
-		return SECTION_MARKER_PM;
-	}
+    @Override
+    public String getSectionName() {
+        return SECTION_MARKER_PM;
+    }
 
-	@Override
-	public void defaults() {
-		//Add default if not available
-		configuration.setPropertyIfNotAvailable(SECTION_MARKER_PM, PROPERTY_KEY_ENABLED, DEFAULT_VALUE_ENABLED);
-	}
+    @Override
+    public void defaults() {
+        //Add default if not available
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_PM, PROPERTY_KEY_ENABLED, DEFAULT_VALUE_ENABLED);
+    }
 
 }

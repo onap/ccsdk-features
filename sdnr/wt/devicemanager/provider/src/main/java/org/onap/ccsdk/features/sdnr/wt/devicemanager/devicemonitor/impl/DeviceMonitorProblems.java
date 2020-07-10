@@ -36,13 +36,13 @@ public enum DeviceMonitorProblems {
     connectionLossOAM(InternalSeverity.Major),
 
     /**
-     * Mountpoint is connected via Netconf to Mediator, but mediator is not responding.
-     * Connection state to NE is unknown.
+     * Mountpoint is connected via Netconf to Mediator, but mediator is not responding. Connection state to NE is
+     * unknown.
      */
     connectionLossMediator(InternalSeverity.Major),
 
-    /** Mountpoint is connected via Netconf to Mediator.
-     * This connection is OK, but mediator <-> NE Connection is not OK
+    /**
+     * Mountpoint is connected via Netconf to Mediator. This connection is OK, but mediator <-> NE Connection is not OK
      */
     connectionLossNeOAM(InternalSeverity.Major);
 
@@ -61,7 +61,7 @@ public enum DeviceMonitorProblems {
 
     public void setSeverity(InternalSeverity severity) {
         LOG.info("Change severity for {} from {} to {}", name(), this.severity, severity);
-        this.severity=severity;
+        this.severity = severity;
     }
 
 }

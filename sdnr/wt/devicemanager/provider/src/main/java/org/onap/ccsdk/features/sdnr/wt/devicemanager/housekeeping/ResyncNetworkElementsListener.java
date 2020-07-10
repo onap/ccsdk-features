@@ -22,14 +22,15 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 
-public interface ResyncNetworkElementsListener
-{
+public interface ResyncNetworkElementsListener {
     /**
-     * Handle API Request and clean up current alarms according to the list of mountpoint id's/devices
-     * Implement RPC function "clear-current-fault-by-nodename"
+     * Handle API Request and clean up current alarms according to the list of mountpoint id's/devices Implement RPC
+     * function "clear-current-fault-by-nodename"
+     * 
      * @return List with
      * @throws IllegalStateException Illegal state exception
      */
-    public @NonNull List<String> doClearCurrentFaultByNodename(@Nullable List<String> nodeNamesInput) throws IllegalStateException;
+    public @NonNull List<String> doClearCurrentFaultByNodename(@Nullable List<String> nodeNamesInput)
+            throws IllegalStateException;
 
 }

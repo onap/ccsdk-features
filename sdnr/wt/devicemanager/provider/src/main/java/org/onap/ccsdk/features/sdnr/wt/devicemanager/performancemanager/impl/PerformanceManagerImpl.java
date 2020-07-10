@@ -33,8 +33,7 @@ public class PerformanceManagerImpl implements PerformanceManager, AutoCloseable
     private PerformanceManagerTask task;
 
     public PerformanceManagerImpl(long seconds, NetconfNetworkElementService netconfNetworkElementService,
-            DataProvider microwaveHistoricalPerformanceWriterService,
-            ConfigurationFileRepresentation config) {
+            DataProvider microwaveHistoricalPerformanceWriterService, ConfigurationFileRepresentation config) {
 
         LOG.info("Construct {}", PerformanceManagerImpl.class.getSimpleName());
 
@@ -48,7 +47,8 @@ public class PerformanceManagerImpl implements PerformanceManager, AutoCloseable
         } else {
             LOG.info("{} Seconds", seconds);
             LOG.info("Start of PM task");
-            task = new PerformanceManagerTask(seconds, microwaveHistoricalPerformanceWriterService, netconfNetworkElementService);
+            task = new PerformanceManagerTask(seconds, microwaveHistoricalPerformanceWriterService,
+                    netconfNetworkElementService);
             task.start();
             LOG.info("PM task scheduled");
         }
@@ -66,7 +66,7 @@ public class PerformanceManagerImpl implements PerformanceManager, AutoCloseable
 
     @Override
     public void registration(String mountPointNodeName, NetworkElement ne) {
-        LOG.debug("Register {}",mountPointNodeName);
+        LOG.debug("Register {}", mountPointNodeName);
         if (task != null) {
             task.registration(mountPointNodeName, ne);
         }
@@ -74,7 +74,7 @@ public class PerformanceManagerImpl implements PerformanceManager, AutoCloseable
 
     @Override
     public void deRegistration(String mountPointNodeName) {
-        LOG.debug("Deregister {}",mountPointNodeName);
+        LOG.debug("Deregister {}", mountPointNodeName);
         if (task != null) {
             task.deRegistration(mountPointNodeName);
         }

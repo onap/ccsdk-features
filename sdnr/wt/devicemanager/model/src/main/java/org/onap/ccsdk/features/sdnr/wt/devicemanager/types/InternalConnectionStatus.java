@@ -22,16 +22,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev15
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ConnectionLogStatus;
 
 public class InternalConnectionStatus {
-	public static ConnectionLogStatus statusFromNodeStatus(ConnectionStatus nodeStatus) {
-		switch(nodeStatus) {
-		case Connected:
-			return ConnectionLogStatus.Connected;
-		case Connecting:
-			return ConnectionLogStatus.Connecting;
-		case UnableToConnect:
-			return ConnectionLogStatus.UnableToConnect;
-		default:
-			return ConnectionLogStatus.Undefined;
-		}
-	}
+    public static ConnectionLogStatus statusFromNodeStatus(ConnectionStatus nodeStatus) {
+        switch (nodeStatus) {
+            case Connected:
+                return ConnectionLogStatus.Connected;
+            case Connecting:
+                return ConnectionLogStatus.Connecting;
+            case UnableToConnect:
+                return ConnectionLogStatus.UnableToConnect;
+            default:
+                return ConnectionLogStatus.Undefined;
+        }
+    }
 }

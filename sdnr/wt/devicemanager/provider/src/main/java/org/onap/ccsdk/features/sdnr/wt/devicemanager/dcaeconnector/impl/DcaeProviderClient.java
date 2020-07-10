@@ -40,36 +40,37 @@ public class DcaeProviderClient implements AutoCloseable, ProviderClient {
 
     public DcaeProviderClient(ConfigurationFileRepresentation cfg, String entityName, DeviceManagerImpl deviceManager) {
         LOG.info("Create");
-        this.htConfig=cfg;
+        this.htConfig = cfg;
         this.config = new DcaeConfig(cfg);
         worker = new DcaeProviderWorker(config, entityName, deviceManager);
         this.configChangedListener = () -> {
             LOG.info("Configuration change. Worker exchanged");
-            synchronized(lock) {
+            synchronized (lock) {
                 worker.close();
                 worker = new DcaeProviderWorker(this.config, entityName, deviceManager);
             }
         };
-        this.htConfig.registerConfigChangedListener(configChangedListener );
+        this.htConfig.registerConfigChangedListener(configChangedListener);
 
     }
 
     @Override
     public void sendProblemNotification(String mountPointName, ProblemNotificationXml notification) {
-        synchronized(lock) {
+        synchronized (lock) {
             worker.sendProblemNotification(mountPointName, notification);
         }
     }
 
     @Override
-    public void sendProblemNotification(String mountPointName, ProblemNotificationXml notification, boolean neDeviceAlarm) {
+    public void sendProblemNotification(String mountPointName, ProblemNotificationXml notification,
+            boolean neDeviceAlarm) {
         sendProblemNotification(mountPointName, notification);
     }
 
     @Override
     public void close() {
         this.htConfig.unregisterConfigChangedListener(configChangedListener);
-        synchronized(lock) {
+        synchronized (lock) {
             worker.close();
         }
     }
@@ -79,6 +80,5 @@ public class DcaeProviderClient implements AutoCloseable, ProviderClient {
      */
 
 }
-
 
 

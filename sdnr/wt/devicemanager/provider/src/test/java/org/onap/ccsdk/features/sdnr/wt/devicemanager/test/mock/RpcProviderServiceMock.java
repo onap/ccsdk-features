@@ -34,9 +34,9 @@ public class RpcProviderServiceMock implements RpcProviderService {
     @Override
     public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
             T implementation) {
-        System.out.println("Register class "+implementation);
+        System.out.println("Register class " + implementation);
         if (implementation instanceof DevicemanagerService) {
-            deviceManagerApi = (DevicemanagerService)implementation;
+            deviceManagerApi = (DevicemanagerService) implementation;
         }
         return null;
     }

@@ -38,7 +38,7 @@ public class MwtNotificationBase {
 
     public MwtNotificationBase() {
         // For Jaxb
-    	this.objectId = EMPTY;
+        this.objectId = EMPTY;
     }
 
     public MwtNotificationBase(String nodeName, Integer counter, InternalDateAndTime timeStamp, String objectId) {
@@ -73,19 +73,18 @@ public class MwtNotificationBase {
 
     /**
      * Provide ConnectionlogEntity type
+     * 
      * @return ConnectionlogEntity
      */
     public ConnectionlogEntity getConnectionlogEntity() {
-        return new ConnectionlogBuilder()
-                .setNodeId(objectId)
-                .setStatus(getStatus())
-                .setTimestamp(new DateAndTime(timeStamp))
-                .build();
+        return new ConnectionlogBuilder().setNodeId(objectId).setStatus(getStatus())
+                .setTimestamp(new DateAndTime(timeStamp)).build();
     }
 
     /**
-     * Provide connection status for mountpoint log.
-     * TODO Add status disconnected if mountpoint is required, but does not exists.
+     * Provide connection status for mountpoint log. TODO Add status disconnected if mountpoint is required, but does
+     * not exists.
+     * 
      * @return
      */
     private ConnectionLogStatus getStatus() {
@@ -97,7 +96,7 @@ public class MwtNotificationBase {
             return ConnectionLogStatus.Unmounted;
 
         } else if (this instanceof AttributeValueChangedNotificationXml) {
-            String pnx = ((AttributeValueChangedNotificationXml)this).getNewValue();
+            String pnx = ((AttributeValueChangedNotificationXml) this).getNewValue();
             if (pnx.equals(ConnectionStatus.Connected.getName())) {
                 return ConnectionLogStatus.Connected;
 
@@ -113,6 +112,7 @@ public class MwtNotificationBase {
 
     /**
      * Type for the Database to document the the same name that is used in the websockets.
+     * 
      * @return String with type name of child class
      */
     @JsonProperty("type")
@@ -122,8 +122,8 @@ public class MwtNotificationBase {
 
     @Override
     public String toString() {
-        return "MwtNotificationBase [getType()="+ getType() + ", nodeName=" + nodeName + ", counter=" + counter + ", timeStamp=" + timeStamp
-                + ", objectId=" + objectId + "]";
+        return "MwtNotificationBase [getType()=" + getType() + ", nodeName=" + nodeName + ", counter=" + counter
+                + ", timeStamp=" + timeStamp + ", objectId=" + objectId + "]";
     }
 
 
