@@ -25,7 +25,8 @@ import org.opendaylight.yangtools.concepts.Registration;
 public interface NetconfNetworkElementService extends Registration, DeviceManagerService {
 
     /** Register factory class for network-element handler **/
-    @NonNull <L extends NetworkElementFactory> FactoryRegistration<L> registerNetworkElementFactory(@NonNull L factory);
+    @NonNull
+    <L extends NetworkElementFactory> FactoryRegistration<L> registerNetworkElementFactory(@NonNull L factory);
 
     /** Get Devicemanager service **/
     DeviceManagerServiceProvider getServiceProvider();

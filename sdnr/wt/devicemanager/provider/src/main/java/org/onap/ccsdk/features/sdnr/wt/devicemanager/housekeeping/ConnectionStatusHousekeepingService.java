@@ -60,15 +60,16 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConnectionStatusHousekeepingService implements ClusterSingletonService,AutoCloseable {
+public class ConnectionStatusHousekeepingService implements ClusterSingletonService, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionStatusHousekeepingService.class);
 
     private static final long INTERVAL_SECONDS = 30;
-    private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID = InstanceIdentifier
-            .create(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
-    private static final ServiceGroupIdentifier IDENT = ServiceGroupIdentifier.create("ConnectionStatusHousekeepingService");
+    private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
+            InstanceIdentifier.create(NetworkTopology.class).child(Topology.class,
+                    new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
+    private static final ServiceGroupIdentifier IDENT =
+            ServiceGroupIdentifier.create("ConnectionStatusHousekeepingService");
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
     private final DataBroker dataBroker;
@@ -88,13 +89,13 @@ public class ConnectionStatusHousekeepingService implements ClusterSingletonServ
         if (taskReference != null) {
             taskReference.cancel(false);
         }
-        if(!isMaster) {
+        if (!isMaster) {
             LOG.info("do not start. not the master node");
             return;
         }
         LOG.info("starting scheduler with interval {}", INTERVAL_SECONDS);
-        this.taskReference = this.scheduler.scheduleAtFixedRate(runner, INTERVAL_SECONDS, INTERVAL_SECONDS,
-                TimeUnit.SECONDS);
+        this.taskReference =
+                this.scheduler.scheduleAtFixedRate(runner, INTERVAL_SECONDS, INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
     private void doClean() {
@@ -108,102 +109,103 @@ public class ConnectionStatusHousekeepingService implements ClusterSingletonServ
             String nodeId;
             if (list == null || list.size() <= 0) {
                 LOG.trace("no items in list.");
-            }
-            else {
-	            //check all db entries and sync connection status
-	            for (NetworkElementConnectionEntity item : list) {
-	
-	                // compare with MD-SAL
-	                nodeId = item.getNodeId();
-	                LOG.trace("check status of {}", nodeId);
-	                dbStatus = item.getStatus();
-	                mdsalStatus = this.getMDSalConnectionStatus(nodeId);
-	                if (mdsalStatus == null) {
-	                    LOG.trace("unable to get connection status. jump over");
-	                    continue;
-	                }
-	                // if different then update db
-	                if (dbStatus != mdsalStatus) {
-	                    LOG.trace("status is inconsistent db={}, mdsal={}. updating db", dbStatus, mdsalStatus);
-	                    if((item.isIsRequired()==null || item.isIsRequired()==false) && mdsalStatus==ConnectionLogStatus.Disconnected) {
-	                    	LOG.info("removing entry for node {} ({}) from database due missing MD-SAL entry",item.getNodeId(),mdsalStatus);
-	                        this.dataProvider.removeNetworkConnection(nodeId);
-	                    }
-	                    else {
-	                    this.dataProvider.updateNetworkConnectionDeviceType(
-	                            new NetworkElementConnectionBuilder().setStatus(mdsalStatus).build(), nodeId);
-	                    }
-	                } else {
-	                    LOG.trace("no difference");
-	                }
-	
-	            }
-            }
-			//check all md-sal entries and add non-existing to db
-//			List<Node> mdsalNodes = this.getMDSalNodes();
-//			NodeId nid;
-//			for (Node mdsalNode : mdsalNodes) {
-//				nid = mdsalNode.getNodeId();
-//				if (nid == null) {
-//					continue;
-//				}
-//				nodeId = nid.getValue();
-//				if (nodeId == null) {
-//					continue;
-//				}
-//				if (contains(list, nodeId)) {
-//					LOG.debug("found mountpoint for {} without db entry. creating.",nodeId);
-//					this.dataProvider.updateNetworkConnection22(NetworkElementConnectionEntitiyUtil
-//							.getNetworkConnection(nodeId, mdsalNode.augmentation(NetconfNode.class)), nodeId);
-//				}
-//			}
+            } else {
+                //check all db entries and sync connection status
+                for (NetworkElementConnectionEntity item : list) {
 
-		} catch (Exception e) {
+                    // compare with MD-SAL
+                    nodeId = item.getNodeId();
+                    LOG.trace("check status of {}", nodeId);
+                    dbStatus = item.getStatus();
+                    mdsalStatus = this.getMDSalConnectionStatus(nodeId);
+                    if (mdsalStatus == null) {
+                        LOG.trace("unable to get connection status. jump over");
+                        continue;
+                    }
+                    // if different then update db
+                    if (dbStatus != mdsalStatus) {
+                        LOG.trace("status is inconsistent db={}, mdsal={}. updating db", dbStatus, mdsalStatus);
+                        if ((item.isIsRequired() == null || item.isIsRequired() == false)
+                                && mdsalStatus == ConnectionLogStatus.Disconnected) {
+                            LOG.info("removing entry for node {} ({}) from database due missing MD-SAL entry",
+                                    item.getNodeId(), mdsalStatus);
+                            this.dataProvider.removeNetworkConnection(nodeId);
+                        } else {
+                            this.dataProvider.updateNetworkConnectionDeviceType(
+                                    new NetworkElementConnectionBuilder().setStatus(mdsalStatus).build(), nodeId);
+                        }
+                    } else {
+                        LOG.trace("no difference");
+                    }
+
+                }
+            }
+            //check all md-sal entries and add non-existing to db
+            //			List<Node> mdsalNodes = this.getMDSalNodes();
+            //			NodeId nid;
+            //			for (Node mdsalNode : mdsalNodes) {
+            //				nid = mdsalNode.getNodeId();
+            //				if (nid == null) {
+            //					continue;
+            //				}
+            //				nodeId = nid.getValue();
+            //				if (nodeId == null) {
+            //					continue;
+            //				}
+            //				if (contains(list, nodeId)) {
+            //					LOG.debug("found mountpoint for {} without db entry. creating.",nodeId);
+            //					this.dataProvider.updateNetworkConnection22(NetworkElementConnectionEntitiyUtil
+            //							.getNetworkConnection(nodeId, mdsalNode.augmentation(NetconfNode.class)), nodeId);
+            //				}
+            //			}
+
+        } catch (Exception e) {
             LOG.warn("problem executing housekeeping task: {}", e);
         }
         LOG.debug("finish housekeeping");
     }
 
-	/**
-	 * @param list
-	 * @param nodeId
-	 * @return
-	 */
-//	private boolean contains(List<NetworkElementConnectionEntity> list, @NonNull String nodeId) {
-//		if(list==null || list.size()<=0) {
-//			return false;
-//		}
-//		for(NetworkElementConnectionEntity item:list) {
-//			if(item!=null && nodeId.equals(item.getNodeId())) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-//
-//	private List<Node> getMDSalNodes(){
-//    	ReadTransaction trans = this.dataBroker.newReadOnlyTransaction();
-//        FluentFuture<Optional<Topology>> optionalTopology =trans.read(LogicalDatastoreType.OPERATIONAL, NETCONF_TOPO_IID);
-//        List<Node> nodes = new ArrayList<>();
-//        try {
-//        	Topology topo = optionalTopology.get(20, TimeUnit.SECONDS).get();
-//        	List<Node> topoNodes=topo.getNode();
-//        	if(topoNodes!=null){
-//        		nodes.addAll(topoNodes);
-//        	}
-//        }
-//        catch(Exception e) {
-//        	LOG.warn("unable to read netconf topology for housekeeping: {}",e);
-//        }
-//        return nodes;
-//    }
+    /**
+     * @param list
+     * @param nodeId
+     * @return
+     */
+    //	private boolean contains(List<NetworkElementConnectionEntity> list, @NonNull String nodeId) {
+    //		if(list==null || list.size()<=0) {
+    //			return false;
+    //		}
+    //		for(NetworkElementConnectionEntity item:list) {
+    //			if(item!=null && nodeId.equals(item.getNodeId())) {
+    //				return true;
+    //			}
+    //		}
+    //		return false;
+    //	}
+    //
+    //	private List<Node> getMDSalNodes(){
+    //    	ReadTransaction trans = this.dataBroker.newReadOnlyTransaction();
+    //        FluentFuture<Optional<Topology>> optionalTopology =trans.read(LogicalDatastoreType.OPERATIONAL, NETCONF_TOPO_IID);
+    //        List<Node> nodes = new ArrayList<>();
+    //        try {
+    //        	Topology topo = optionalTopology.get(20, TimeUnit.SECONDS).get();
+    //        	List<Node> topoNodes=topo.getNode();
+    //        	if(topoNodes!=null){
+    //        		nodes.addAll(topoNodes);
+    //        	}
+    //        }
+    //        catch(Exception e) {
+    //        	LOG.warn("unable to read netconf topology for housekeeping: {}",e);
+    //        }
+    //        return nodes;
+    //    }
     private ConnectionLogStatus getMDSalConnectionStatus(String nodeId) {
 
         @SuppressWarnings("null")
-        @NonNull InstanceIdentifier<Node> instanceIdentifier = NETCONF_TOPO_IID.child(Node.class,
-                new NodeKey(new NodeId(nodeId)));
-       ReadTransaction trans = this.dataBroker.newReadOnlyTransaction();
-       FluentFuture<Optional<Node>> optionalNode =trans.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
+        @NonNull
+        InstanceIdentifier<Node> instanceIdentifier =
+                NETCONF_TOPO_IID.child(Node.class, new NodeKey(new NodeId(nodeId)));
+        ReadTransaction trans = this.dataBroker.newReadOnlyTransaction();
+        FluentFuture<Optional<Node>> optionalNode = trans.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
         try {
             Node node = optionalNode.get(5, TimeUnit.SECONDS).get();
             LOG.debug("node is {}", node);
@@ -216,9 +218,8 @@ public class ConnectionStatusHousekeepingService implements ClusterSingletonServ
             return ConnectionLogStatus.Disconnected;
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             LOG.warn("unable to get node info: {}", e);
-        }
-        finally {
-        	trans.close();
+        } finally {
+            trans.close();
         }
 
         return null;
@@ -232,24 +233,24 @@ public class ConnectionStatusHousekeepingService implements ClusterSingletonServ
         this.scheduler.shutdown();
     }
 
-	@SuppressWarnings("null")
-	@Override
-	public @NonNull ServiceGroupIdentifier getIdentifier() {
-		return IDENT;
-	}
+    @SuppressWarnings("null")
+    @Override
+    public @NonNull ServiceGroupIdentifier getIdentifier() {
+        return IDENT;
+    }
 
-	@Override
-	public void instantiateServiceInstance() {
-		LOG.info("We take Leadership");
-		this.isMaster = true;
-		this.start();
-	}
+    @Override
+    public void instantiateServiceInstance() {
+        LOG.info("We take Leadership");
+        this.isMaster = true;
+        this.start();
+    }
 
-	@Override
-	public ListenableFuture<? extends Object> closeServiceInstance() {
-		LOG.info("We lost Leadership");
-		this.isMaster = false;
-		this.start();
-		return Futures.immediateFuture(null);
-	}
+    @Override
+    public ListenableFuture<? extends Object> closeServiceInstance() {
+        LOG.info("We lost Leadership");
+        this.isMaster = false;
+        this.start();
+        return Futures.immediateFuture(null);
+    }
 }

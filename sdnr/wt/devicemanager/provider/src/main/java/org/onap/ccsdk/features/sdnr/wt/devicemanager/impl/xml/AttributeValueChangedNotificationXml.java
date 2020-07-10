@@ -28,7 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 @XmlRootElement(name = "AttributeValueChangedNotification")
 public class AttributeValueChangedNotificationXml extends MwtNotificationBase implements GetEventType {
 
-    private static String EVENTTYPE =  "AttributeValueChangedNotification";
+    private static String EVENTTYPE = "AttributeValueChangedNotification";
 
     @XmlElement(name = "attributeName")
     private String attributeName;
@@ -42,6 +42,7 @@ public class AttributeValueChangedNotificationXml extends MwtNotificationBase im
 
     /**
      * Normalized notification
+     * 
      * @param nodeName name of mountpoint
      * @param counter of notification
      * @param timeStamp from ne
@@ -49,8 +50,8 @@ public class AttributeValueChangedNotificationXml extends MwtNotificationBase im
      * @param attributeName from ne
      * @param newValue from ne
      */
-    public AttributeValueChangedNotificationXml(String nodeName, Integer counter, InternalDateAndTime timeStamp, String objectIdRef,
-            String attributeName, String newValue) {
+    public AttributeValueChangedNotificationXml(String nodeName, Integer counter, InternalDateAndTime timeStamp,
+            String objectIdRef, String attributeName, String newValue) {
         super(nodeName, counter, timeStamp, objectIdRef);
         this.attributeName = attributeName;
         this.newValue = newValue;
@@ -78,9 +79,9 @@ public class AttributeValueChangedNotificationXml extends MwtNotificationBase im
 
     public EventlogEntity getEventlogEntity() {
         return new EventlogBuilder().setAttributeName(attributeName).setNewValue(newValue)
-                .setCounter(Integer.valueOf(this.getCounter()))
-                .setNodeId(this.getNodeName()).setObjectId(this.getObjectId())
-                .setTimestamp(new DateAndTime(this.getTimeStamp())).setSourceType(SourceType.Netconf).build();
+                .setCounter(Integer.valueOf(this.getCounter())).setNodeId(this.getNodeName())
+                .setObjectId(this.getObjectId()).setTimestamp(new DateAndTime(this.getTimeStamp()))
+                .setSourceType(SourceType.Netconf).build();
     }
 
 }

@@ -33,12 +33,14 @@ abstract class Checker {
 
     /**
      * Check action.
+     * 
      * @return true if reachable, false if not
      */
     abstract boolean isReachableOnce();
 
     /**
      * Procedure to check the connection of one mountpoint
+     * 
      * @return true if reachable, false if not
      */
     boolean isConnected() {

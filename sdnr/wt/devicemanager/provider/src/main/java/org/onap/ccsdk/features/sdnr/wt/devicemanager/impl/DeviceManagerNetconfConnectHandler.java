@@ -56,8 +56,7 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
 
     public DeviceManagerNetconfConnectHandler(@NonNull NetconfNodeStateService netconfNodeStateService,
             @NonNull ODLEventListenerHandler odlEventListenerHandler, @NonNull DeviceMonitor deviceMonitor,
-            @NonNull DeviceManagerServiceProvider serviceProvider,
-            @NonNull List<NetworkElementFactory> factoryList) {
+            @NonNull DeviceManagerServiceProvider serviceProvider, @NonNull List<NetworkElementFactory> factoryList) {
 
         HtAssert.nonnull(netconfNodeStateService, this.odlEventListenerHandler = odlEventListenerHandler,
                 this.deviceMonitor = deviceMonitor, this.serviceProvider = serviceProvider,
@@ -95,7 +94,7 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
         NetconfNode netconfNode = acessor.getNetconfNode();
         sendUpdateNotification(mountPointNodeName, netconfNode.getConnectionStatus(), netconfNode);
 
-        for ( NetworkElementFactory f : factoryList) {
+        for (NetworkElementFactory f : factoryList) {
             Optional<NetworkElement> optionalNe = f.create(acessor, serviceProvider);
             if (optionalNe.isPresent()) {
                 // sendUpdateNotification(mountPointNodeName, nNode.getConnectionStatus(), nNode);
@@ -131,13 +130,13 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
     public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
         LOG.info("onCreated {}", nNodeId);
         odlEventListenerHandler.mountpointCreatedIndication(nNodeId.getValue(), netconfNode);
-        
+
     }
 
     @Override
     public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
         LOG.info("onStateChange {}", nNodeId);
-        odlEventListenerHandler.onStateChangeIndication(nNodeId.getValue(),netconfNode);
+        odlEventListenerHandler.onStateChangeIndication(nNodeId.getValue(), netconfNode);
     }
 
     @Override
@@ -166,10 +165,11 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
 
     /**
      * Do all tasks necessary to move from mountpoint state connected -> connecting
+     * 
      * @param mountPointNodeName provided
      * @param ne representing the device connected to mountpoint
      */
-    private void stopListenerOnNodeForConnectedState( String mountPointNodeName) {
+    private void stopListenerOnNodeForConnectedState(String mountPointNodeName) {
         NetworkElement ne = networkElementRepresentations.remove(mountPointNodeName);
         if (ne != null) {
             ne.deregister();
@@ -184,7 +184,7 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
         if (result != null) {
             LOG.warn("NE list was not empty as expected, but contained {} ", result.getNodeId());
         } else {
-        	LOG.debug("refresh necon entry for {} with type {}",mountPointNodeName,ne.getDeviceType());
+            LOG.debug("refresh necon entry for {} with type {}", mountPointNodeName, ne.getDeviceType());
             odlEventListenerHandler.connectIndication(mountPointNodeName, ne.getDeviceType());
         }
     }
@@ -192,7 +192,7 @@ public class DeviceManagerNetconfConnectHandler implements NetconfNodeConnectLis
     private void sendUpdateNotification(String mountPointNodeName, ConnectionStatus csts, NetconfNode nNode) {
         LOG.info("update ConnectedState for device :: Name : {} ConnectionStatus {}", mountPointNodeName, csts);
         odlEventListenerHandler.updateRegistration(mountPointNodeName, ConnectionStatus.class.getSimpleName(),
-                    csts != null ? csts.getName() : "null", nNode);
+                csts != null ? csts.getName() : "null", nNode);
     }
 
 }

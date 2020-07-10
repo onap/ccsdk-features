@@ -51,56 +51,22 @@ public class TestDcae {
 
     private static final String ENABLEDDCAE_TESTCONFIG_FILENAME = "test2.properties";
     private static final File ENABLEDDCAE_TESTCONFIG_FILE = new File(ENABLEDDCAE_TESTCONFIG_FILENAME);
-    private static final int DCAE_SERVER_PORT=45451;
+    private static final int DCAE_SERVER_PORT = 45451;
     private static final String URI = "/abc";
-    private static final String TESTCONFIG_CONTENT="[dcae]\n" +
-            "dcaeUserCredentials=admin:admin\n" +
-            "dcaeUrl=http://localhost:"+DCAE_SERVER_PORT+URI+"\n" +
-            "dcaeHeartbeatPeriodSeconds=120\n" +
-            "dcaeTestCollector=no\n" +
-            "\n" +
-            "[aots]\n" +
-            "userPassword=passwd\n" +
-            "soapurladd=off\n" +
-            "soapaddtimeout=10\n" +
-            "soapinqtimeout=20\n" +
-            "userName=user\n" +
-            "inqtemplate=inqreq.tmpl.xml\n" +
-            "assignedto=userid\n" +
-            "addtemplate=addreq.tmpl.xml\n" +
-            "severitypassthrough=critical,major,minor,warning\n" +
-            "systemuser=user\n" +
-            "prt-offset=1200\n" +
-            "soapurlinq=off\n" +
-            "#smtpHost=\n" +
-            "#smtpPort=\n" +
-            "#smtpUsername=\n" +
-            "#smtpPassword=\n" +
-            "#smtpSender=\n" +
-            "#smtpReceivers=\n" +
-            "\n" +
-            "[es]\n" +
-            "esCluster=sendateodl5\n" +
-            "\n" +
-            "[aai]\n" +
-            "#keep comment\n" +
-            "aaiHeaders=[\"X-TransactionId: 9999\"]\n" +
-            "aaiUrl=off\n" +
-            "aaiUserCredentials=AAI:AAI\n" +
-            "aaiDeleteOnMountpointRemove=true\n" +
-            "aaiTrustAllCerts=false\n" +
-            "aaiApiVersion=aai/v13\n" +
-            "aaiPropertiesFile=aaiclient.properties\n" +
-            "aaiApplicationId=SDNR\n" +
-            "aaiPcks12ClientCertFile=/opt/logs/externals/data/stores/keystore.client.p12\n" +
-            "aaiPcks12ClientCertPassphrase=adminadmin\n" +
-            "aaiClientConnectionTimeout=30000\n" +
-            "\n" +
-            "[pm]\n" +
-            "pmCluster=sendateodl5\n" +
-            "pmEnabled=true\n" +
-            "\n" +
-            "";
+    private static final String TESTCONFIG_CONTENT = "[dcae]\n" + "dcaeUserCredentials=admin:admin\n"
+            + "dcaeUrl=http://localhost:" + DCAE_SERVER_PORT + URI + "\n" + "dcaeHeartbeatPeriodSeconds=120\n"
+            + "dcaeTestCollector=no\n" + "\n" + "[aots]\n" + "userPassword=passwd\n" + "soapurladd=off\n"
+            + "soapaddtimeout=10\n" + "soapinqtimeout=20\n" + "userName=user\n" + "inqtemplate=inqreq.tmpl.xml\n"
+            + "assignedto=userid\n" + "addtemplate=addreq.tmpl.xml\n"
+            + "severitypassthrough=critical,major,minor,warning\n" + "systemuser=user\n" + "prt-offset=1200\n"
+            + "soapurlinq=off\n" + "#smtpHost=\n" + "#smtpPort=\n" + "#smtpUsername=\n" + "#smtpPassword=\n"
+            + "#smtpSender=\n" + "#smtpReceivers=\n" + "\n" + "[es]\n" + "esCluster=sendateodl5\n" + "\n" + "[aai]\n"
+            + "#keep comment\n" + "aaiHeaders=[\"X-TransactionId: 9999\"]\n" + "aaiUrl=off\n"
+            + "aaiUserCredentials=AAI:AAI\n" + "aaiDeleteOnMountpointRemove=true\n" + "aaiTrustAllCerts=false\n"
+            + "aaiApiVersion=aai/v13\n" + "aaiPropertiesFile=aaiclient.properties\n" + "aaiApplicationId=SDNR\n"
+            + "aaiPcks12ClientCertFile=/opt/logs/externals/data/stores/keystore.client.p12\n"
+            + "aaiPcks12ClientCertPassphrase=adminadmin\n" + "aaiClientConnectionTimeout=30000\n" + "\n" + "[pm]\n"
+            + "pmCluster=sendateodl5\n" + "pmEnabled=true\n" + "\n" + "";
     private HttpServer server;
     private ExecutorService httpThreadPool;
     private ConfigurationFileRepresentation cfg;
@@ -112,20 +78,21 @@ public class TestDcae {
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         }
-        DcaeProviderClient provider = new DcaeProviderClient(cfg,"mountpoint",null);
+        DcaeProviderClient provider = new DcaeProviderClient(cfg, "mountpoint", null);
 
         String mountPointName = "testDevice 01";
-        String type="Unit";
-        String model="Horizon Compact+";
-        String vendor="DragonWave-X";
-        String ipv4="127.0.0.1";
-        String ipv6="::1";
+        String type = "Unit";
+        String model = "Horizon Compact+";
+        String vendor = "DragonWave-X";
+        String ipv4 = "127.0.0.1";
+        String ipv6 = "::1";
         List<String> ifInfos = new ArrayList<>();
         ifInfos.add("LP-MWPS-RADIO");
         new InventoryInformationDcae(type, model, vendor, ipv4, ipv6, ifInfos);
         System.out.println("registering device");
         boolean neDeviceAlarm = false;
-        ProblemNotificationXml notification = new ProblemNotificationXml(mountPointName, "network-element", "problemName", InternalSeverity.Critical,123, InternalDateAndTime.getTestpattern());
+        ProblemNotificationXml notification = new ProblemNotificationXml(mountPointName, "network-element",
+                "problemName", InternalSeverity.Critical, 123, InternalDateAndTime.getTestpattern());
         provider.sendProblemNotification(mountPointName, notification, neDeviceAlarm);
 
         try {

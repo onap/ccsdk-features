@@ -39,10 +39,8 @@ public interface NetworkElement extends NetworkElementService {
     /** self selected device type **/
     NetworkElementDeviceType getDeviceType();
 
-    /** Provide optional service interface.
-     * Services:
-     *     InventoryProvider.class
-     *     DeviceMonitoredNe.class
+    /**
+     * Provide optional service interface. Services: InventoryProvider.class DeviceMonitoredNe.class
      **/
     <L extends NetworkElementService> Optional<L> getService(Class<L> clazz);
 
