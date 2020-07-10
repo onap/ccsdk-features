@@ -27,58 +27,59 @@ import javax.servlet.http.HttpServletResponse;
 
 public class AaiServlet extends BaseServlet {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 5946205120796162644L;
-	private static final String OFFLINE_RESPONSE_MESSAGE = "AAI interface is offline";
-	private static boolean trustAll = false;
-	public AaiServlet() {
-		super();
-	}
+    /**
+     *
+     */
+    private static final long serialVersionUID = 5946205120796162644L;
+    private static final String OFFLINE_RESPONSE_MESSAGE = "AAI interface is offline";
+    private static boolean trustAll = false;
 
-	@Override
-	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setStatus(200);
-	}
+    public AaiServlet() {
+        super();
+    }
 
-	@Override
-	protected String getOfflineResponse() {
-		return OFFLINE_RESPONSE_MESSAGE;
-	}
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setStatus(200);
+    }
 
-	@Override
-	protected boolean isOff() {
-		return MyProperties.getInstance().isAAIOff();
-	}
+    @Override
+    protected String getOfflineResponse() {
+        return OFFLINE_RESPONSE_MESSAGE;
+    }
 
-	@Override
-	protected String getRemoteUrl(String uri) {
+    @Override
+    protected boolean isOff() {
+        return MyProperties.getInstance().isAAIOff();
+    }
 
-		if (uri.startsWith("/")) {
-			uri = uri.substring(1);
-		}
-		if (uri.startsWith("aai")) {
-			uri = uri.substring("aai".length());
-		}
-		if (uri.startsWith("/")) {
-			uri = uri.substring(1);
-		}
-		String base = MyProperties.getInstance().getAAIBaseUrl();
-		if (!base.endsWith("/")) {
-			base += "/";
-		}
+    @Override
+    protected String getRemoteUrl(String uri) {
 
-		return base + uri;
-	}
+        if (uri.startsWith("/")) {
+            uri = uri.substring(1);
+        }
+        if (uri.startsWith("aai")) {
+            uri = uri.substring("aai".length());
+        }
+        if (uri.startsWith("/")) {
+            uri = uri.substring(1);
+        }
+        String base = MyProperties.getInstance().getAAIBaseUrl();
+        if (!base.endsWith("/")) {
+            base += "/";
+        }
 
-	@Override
-	protected boolean doTrustAll() {
-		return trustAll;
-	}
+        return base + uri;
+    }
 
-	@Override
-	protected void trustAll(boolean trust) {
-		trustAll = trust;
-	}
+    @Override
+    protected boolean doTrustAll() {
+        return trustAll;
+    }
+
+    @Override
+    protected void trustAll(boolean trust) {
+        trustAll = trust;
+    }
 }
