@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
 import java.util.Optional;
@@ -36,8 +36,8 @@ public class TestMapping {
         return SeverityType.forName(faultSeverity); // <-- mapping provided by generated classes. Manual mapping beneficial.
     }
 
-    private String updateFaultPayload(String faultNodeId, String faultCounter, String faultOccurrenceTime, String faultObjectId,
-            String faultReason, String faultSeverity) throws JsonProcessingException {
+    private String updateFaultPayload(String faultNodeId, String faultCounter, String faultOccurrenceTime,
+            String faultObjectId, String faultReason, String faultSeverity) throws JsonProcessingException {
 
         PushFaultNotificationInputBuilder faultNotificationBuilder = new PushFaultNotificationInputBuilder();
         faultNotificationBuilder.setNodeId(faultNodeId);
@@ -59,9 +59,9 @@ public class TestMapping {
     public void test() throws JsonProcessingException {
         DateAndTime dt = new DateAndTime("2017-03-01T09:15:00.0Z");
 
-        String result = updateFaultPayload("f1","34",dt.getValue(),"fefef","reason","Critical");
+        String result = updateFaultPayload("f1", "34", dt.getValue(), "fefef", "reason", "Critical");
 
-        System.out.println("Res: "+result);
-   }
+        System.out.println("Res: " + result);
+    }
 
 }
