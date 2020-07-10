@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
@@ -24,30 +24,32 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev15
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 /**
- * Indicate all state changes of NetconfNode (Mountpoint). Cleans up and
- * summarizes the
+ * Indicate all state changes of NetconfNode (Mountpoint). Cleans up and summarizes the
  */
 public interface NetconfNodeStateListener extends EventListener {
 
-	/**
-	 * New NetconfNode has been created
-	 * @param nNodeId of Node
-	 * @param netconfNode object
-	 */
+    /**
+     * New NetconfNode has been created
+     * 
+     * @param nNodeId of Node
+     * @param netconfNode object
+     */
 
-	void onCreated(NodeId nNodeId, NetconfNode netconfNode);
+    void onCreated(NodeId nNodeId, NetconfNode netconfNode);
 
-	/**
-	 * New NetconfNode has been created
-	 * @param nNodeId of node
-	 * @param netconfNode object after change
-	 */
-	void onStateChange(NodeId nNodeId, NetconfNode netconfNode);
+    /**
+     * New NetconfNode has been created
+     * 
+     * @param nNodeId of node
+     * @param netconfNode object after change
+     */
+    void onStateChange(NodeId nNodeId, NetconfNode netconfNode);
 
-	/**
-	 * NetconfNode has been removed
-	 * @param nNodeId of related node
-	 */
-	void onRemoved(NodeId nNodeId);
+    /**
+     * NetconfNode has been removed
+     * 
+     * @param nNodeId of related node
+     */
+    void onRemoved(NodeId nNodeId);
 
 }

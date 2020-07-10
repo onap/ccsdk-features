@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl;
 
 import com.google.common.base.Preconditions;
@@ -58,7 +58,8 @@ public final class GenericTransactionUtils implements TransactionUtils {
         AtomicBoolean noErrorIndication = new AtomicBoolean();
         AtomicReference<String> statusText = new AtomicReference<>();
 
-        @Nullable T obj = readDataOptionalWithStatus(dataBroker, dataStoreType, iid, noErrorIndication, statusText);
+        @Nullable
+        T obj = readDataOptionalWithStatus(dataBroker, dataStoreType, iid, noErrorIndication, statusText);
 
         if (!noErrorIndication.get()) {
             LOG.warn("Read transaction for identifier " + iid + " failed with status " + statusText.get());
@@ -84,7 +85,8 @@ public final class GenericTransactionUtils implements TransactionUtils {
             LogicalDatastoreType dataStoreType, InstanceIdentifier<T> iid, AtomicBoolean noErrorIndication,
             AtomicReference<String> statusIndicator) {
 
-        @Nullable T data = null;
+        @Nullable
+        T data = null;
         noErrorIndication.set(false);
 
         statusIndicator.set("Preconditions");
@@ -109,7 +111,8 @@ public final class GenericTransactionUtils implements TransactionUtils {
             statusIndicator.set("Create Read Transaction");
             ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction();
             try {
-                @NonNull FluentFuture<Optional<T>> od = readTransaction.read(dataStoreType, iid);
+                @NonNull
+                FluentFuture<Optional<T>> od = readTransaction.read(dataStoreType, iid);
                 statusIndicator.set("Read done");
                 if (od != null) {
                     statusIndicator.set("Unwrap checkFuture done");

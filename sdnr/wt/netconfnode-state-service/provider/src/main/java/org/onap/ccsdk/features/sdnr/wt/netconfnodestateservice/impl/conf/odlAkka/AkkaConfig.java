@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.odlAkka;
 
 import java.io.File;
@@ -77,10 +77,11 @@ public class AkkaConfig {
     public boolean isSingleNode() {
         return !this.isCluster();
     }
-     public static AkkaConfig parse(String content) throws Exception {
+
+    public static AkkaConfig parse(String content) throws Exception {
         Config cfg = ConfigFactory.parseString(content);
         AkkaConfig c = new AkkaConfig();
-        c.cluserConfig=new ClusterConfig(cfg.getConfig("odl-cluster-data").getConfig("akka").getConfig("cluster"));
+        c.cluserConfig = new ClusterConfig(cfg.getConfig("odl-cluster-data").getConfig("akka").getConfig("cluster"));
         return c;
     }
 }

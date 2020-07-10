@@ -58,7 +58,8 @@ public class NetconfAccessorImpl implements NetconfAccessor {
 
     /**
      * Contains all data to access and manage netconf device
-     * @param nodeId  of managed netconf node
+     * 
+     * @param nodeId of managed netconf node
      * @param netconfNode information
      * @param dataBroker to access node
      * @param mountpoint of netconfNode
@@ -78,7 +79,7 @@ public class NetconfAccessorImpl implements NetconfAccessor {
     }
 
     /**
-     * @param nodeId     with uuid of managed netconf node
+     * @param nodeId with uuid of managed netconf node
      * @param dataBroker to access node
      */
     public NetconfAccessorImpl(String nodeId, NetconfNode netconfNode, DataBroker dataBroker, MountPoint mountpoint,
@@ -95,31 +96,36 @@ public class NetconfAccessorImpl implements NetconfAccessor {
     public DataBroker getDataBroker() {
         return dataBroker;
     }
+
     @Override
     public MountPoint getMountpoint() {
         return mountpoint;
     }
+
     @Override
     public TransactionUtils getTransactionUtils() {
         return transactionUtils;
     }
+
     @Override
     public NetconfNode getNetconfNode() {
         return netconfNode;
     }
+
     @Override
     public Capabilities getCapabilites() {
         return capabilities;
     }
 
     @Override
-    public @NonNull <T extends NotificationListener> ListenerRegistration<NotificationListener> doRegisterNotificationListener(@NonNull T listener) {
+    public @NonNull <T extends NotificationListener> ListenerRegistration<NotificationListener> doRegisterNotificationListener(
+            @NonNull T listener) {
         log.info("Begin register listener for Mountpoint {}", mountpoint.getIdentifier().toString());
-        final Optional<NotificationService> optionalNotificationService = mountpoint
-                .getService(NotificationService.class);
+        final Optional<NotificationService> optionalNotificationService =
+                mountpoint.getService(NotificationService.class);
         final NotificationService notificationService = optionalNotificationService.get();
-        final ListenerRegistration<NotificationListener> ranListenerRegistration = notificationService
-                .registerNotificationListener(listener);
+        final ListenerRegistration<NotificationListener> ranListenerRegistration =
+                notificationService.registerNotificationListener(listener);
         log.info("End registration listener for Mountpoint {} Listener: {} Result: {}",
                 mountpoint.getIdentifier().toString(), optionalNotificationService, ranListenerRegistration);
         return ranListenerRegistration;

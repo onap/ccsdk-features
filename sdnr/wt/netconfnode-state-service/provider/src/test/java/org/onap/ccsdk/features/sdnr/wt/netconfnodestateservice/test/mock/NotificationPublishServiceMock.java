@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk feature sdnr wt
  *  ================================================================================
@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -32,14 +32,13 @@ public class NotificationPublishServiceMock implements NotificationPublishServic
         return null;
     }
 
-   @Override
+    @Override
     public ListenableFuture<?> offerNotification(Notification notification, int timeout, TimeUnit unit)
             throws InterruptedException {
         return null;
     }
 
     @Override
-    public void putNotification(Notification notification) throws InterruptedException {
-   }
+    public void putNotification(Notification notification) throws InterruptedException {}
 
 }

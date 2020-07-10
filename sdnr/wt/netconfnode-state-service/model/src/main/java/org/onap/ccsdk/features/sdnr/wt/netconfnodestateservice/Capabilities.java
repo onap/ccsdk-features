@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 /**
  * Convert capabilities of netconfnode into internal format. Boron and Carbon are providing
  * different versions
@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wrapper class for capabilites for Boron and later releases. Uses generics because yang model was
- * changed from Boron to later version. Interface class:
+ * Wrapper class for capabilites for Boron and later releases. Uses generics because yang model was changed from Boron
+ * to later version. Interface class:
  * org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapability
  */
 public class Capabilities {
@@ -61,7 +61,7 @@ public class Capabilities {
         if (nnode != null) {
             AvailableCapabilities availableCapabilites = nnode.getAvailableCapabilities();
             if (availableCapabilites != null) {
-                   capabilities.constructor(availableCapabilites.getAvailableCapability());
+                capabilities.constructor(availableCapabilites.getAvailableCapability());
             } else {
                 LOG.debug("empty capabilites");
             }
@@ -78,7 +78,7 @@ public class Capabilities {
         if (nnode != null) {
             UnavailableCapabilities availableCapabilites = nnode.getUnavailableCapabilities();
             if (availableCapabilites != null) {
-                   capabilities.constructor(availableCapabilites.getUnavailableCapability());
+                capabilities.constructor(availableCapabilites.getUnavailableCapability());
             } else {
                 LOG.debug("empty capabilites");
             }
@@ -102,7 +102,7 @@ public class Capabilities {
             Method methodGetCapability;
 
             for (Object capability : pcapabilities) {
-               if (capability instanceof String) { // ODL Boron specific
+                if (capability instanceof String) { // ODL Boron specific
                     this.capabilities.add((String) capability);
                 } else { // Carbon specific part .. handled via generics
                     try {
@@ -122,6 +122,7 @@ public class Capabilities {
 
     /**
      * Get Capabilites
+     * 
      * @return List<String> with capabilites
      */
     public List<String> getCapabilities() {
@@ -130,6 +131,7 @@ public class Capabilities {
 
     /**
      * Verify if the namespace is supported
+     * 
      * @param qCapability from model
      * @return true if namespace is supported
      */
@@ -146,7 +148,7 @@ public class Capabilities {
      *
      * @param qCapability capability from the model
      * @return true if supporting the model AND revision<br>
-     * false if revision not available or both not found.
+     *         false if revision not available or both not found.
      */
     public boolean isSupportingNamespaceAndRevision(QName qCapability) {
 
@@ -176,6 +178,7 @@ public class Capabilities {
 
     /**
      * Provide revision as String from QName, considering older formats.
+     * 
      * @param qCapability that specifies the revision
      * @return String with revisiondate or null
      */
@@ -204,12 +207,13 @@ public class Capabilities {
 
     /**
      * Get revision of first entry of related capability
+     * 
      * @param qCapability that specifies the namespace
      * @return String with date or
      */
     public String getRevisionForNamespace(QName qCapability) {
         String namespace = qCapability.getNamespace().toString();
-       for (String capability : capabilities) {
+        for (String capability : capabilities) {
             if (capability.contains(namespace)) {
                 return QName.create(capability).getRevision().get().toString();
             }
