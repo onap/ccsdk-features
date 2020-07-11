@@ -33,8 +33,8 @@ public class NotificationDelayFilter<T extends ToggleAlarmFilterable> implements
     private static long delay;
     private static boolean enabled;
 
-    private final ConcurrentHashMap <String, NotificationWithServerTimeStamp<T>> problemItems;
-//    private final HashMap<String, NotificationWithServerTimeStamp<T>> nonProblemItems;
+    private final ConcurrentHashMap<String, NotificationWithServerTimeStamp<T>> problemItems;
+    //    private final HashMap<String, NotificationWithServerTimeStamp<T>> nonProblemItems;
     private final NotificationDelayedListener<T> timeoutListener;
 
     private final ScheduledExecutorService scheduler;
@@ -44,7 +44,7 @@ public class NotificationDelayFilter<T extends ToggleAlarmFilterable> implements
     public NotificationDelayFilter(String nodeName, NotificationDelayedListener<T> timeoutListener) {
         this.nodeName = nodeName;
         this.timeoutListener = timeoutListener;
-        this.problemItems = new ConcurrentHashMap <>();
+        this.problemItems = new ConcurrentHashMap<>();
         this.scheduler = Executors.newScheduledThreadPool(1);
         this.startTimer();
     }
@@ -67,6 +67,7 @@ public class NotificationDelayFilter<T extends ToggleAlarmFilterable> implements
 
     /**
      * If process the notification
+     * 
      * @return true if other processing is required, false if not
      */
     public boolean processNotification(@NonNull T notificationXml) {
@@ -86,6 +87,7 @@ public class NotificationDelayFilter<T extends ToggleAlarmFilterable> implements
 
     /**
      * Push notification with a specific severity (everything except non-alarmed)
+     * 
      * @param notification related notification
      */
     public void pushAlarmNotification(@NonNull T notification) {
@@ -94,13 +96,12 @@ public class NotificationDelayFilter<T extends ToggleAlarmFilterable> implements
             boolean cp = this.problemItems.containsKey(problemName);
             if (!cp) {
                 // no alarm in entries => create entry and push the alarm currently
-                NotificationWithServerTimeStamp<T> item = new NotificationWithServerTimeStamp<>(
-                        notification);
+                NotificationWithServerTimeStamp<T> item = new NotificationWithServerTimeStamp<>(notification);
                 LOG.debug("add event into list for node " + this.nodeName + " for alarm " + problemName + ": "
                         + item.toString());
                 this.problemItems.put(problemName, item);
                 if (this.timeoutListener != null) {
-                    this.timeoutListener.onNotificationDelay(this.nodeName,notification);
+                    this.timeoutListener.onNotificationDelay(this.nodeName, notification);
                 }
             } else {
                 LOG.debug("clear contra event for node " + this.nodeName + " for alarm " + problemName);
@@ -112,6 +113,7 @@ public class NotificationDelayFilter<T extends ToggleAlarmFilterable> implements
 
     /**
      * Push notification with severity non-alarmed
+     * 
      * @param notification related notification
      */
     public void clearAlarmNotification(@NonNull T notification) {
@@ -124,7 +126,7 @@ public class NotificationDelayFilter<T extends ToggleAlarmFilterable> implements
             } else {
                 // not in list => push directly through
                 if (this.timeoutListener != null) {
-                    this.timeoutListener.onNotificationDelay(this.nodeName,notification);
+                    this.timeoutListener.onNotificationDelay(this.nodeName, notification);
                 }
             }
         }
@@ -147,18 +149,18 @@ public class NotificationDelayFilter<T extends ToggleAlarmFilterable> implements
 
             synchronized (problemItems) {
 
-                for (Entry<String, NotificationWithServerTimeStamp<T>> entry : problemItems
-                        .entrySet()) {
+                for (Entry<String, NotificationWithServerTimeStamp<T>> entry : problemItems.entrySet()) {
                     NotificationWithServerTimeStamp<T> value = entry.getValue();
                     if (value.isStable(now)) {
                         // send contra Alarm if exists
                         if (value.getContraAlarmNotification() != null) {
                             if (this.timeoutListener != null) {
-                                this.timeoutListener.onNotificationDelay(this.nodeName,value.getContraAlarmNotification());
+                                this.timeoutListener.onNotificationDelay(this.nodeName,
+                                        value.getContraAlarmNotification());
                             }
                         }
                         problemItems.remove(entry.getKey());
-                        LOG.debug("removing entry for "+this.nodeName+" for alarm " + entry.getKey());
+                        LOG.debug("removing entry for " + this.nodeName + " for alarm " + entry.getKey());
                     } else {
                         LOG.trace("currently state is still unstable for alarm " + entry.getKey());
                     }

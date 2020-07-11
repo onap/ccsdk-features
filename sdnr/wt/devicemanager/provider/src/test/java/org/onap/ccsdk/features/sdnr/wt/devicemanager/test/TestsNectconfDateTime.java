@@ -31,19 +31,10 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.test.util.NetconfTimeStampO
 
 public class TestsNectconfDateTime {
 
-    private static String[] testPatterPostive = {
-            "2017-01-18T11:44:49.482-0500",
-            "2017-01-18T11:44:49.482-05:00",
-            "20170118114449.123Z",
-            "20170118114449.1Z",
-            "20170118114449.1-0500",
-            "2017-01-23T13:32:38-05:00",
-            "2017-01-23T13:32-05:00",
-            "2017-01-18T11:44:49Z"
-    };
-    private static String[] testPatterProblem = {
-            "2017-01-18T11:44:49"
-    };
+    private static String[] testPatterPostive = {"2017-01-18T11:44:49.482-0500", "2017-01-18T11:44:49.482-05:00",
+            "20170118114449.123Z", "20170118114449.1Z", "20170118114449.1-0500", "2017-01-23T13:32:38-05:00",
+            "2017-01-23T13:32-05:00", "2017-01-18T11:44:49Z"};
+    private static String[] testPatterProblem = {"2017-01-18T11:44:49"};
 
 
     private final static NetconfTimeStampOld netconfTimeConverterOld = NetconfTimeStampOld.getConverter();
@@ -58,24 +49,24 @@ public class TestsNectconfDateTime {
             timeNew = netconfTimeConverterNew.getTimeStampFromNetconf(testTime);
             timeOld = netconfTimeConverterOld.getTimeStampFromNetconf(testTime);
 
-            System.out.println("No "+t+++" Pattern: "+testTime);
-            System.out.println(" to old "+timeOld);
-            System.out.println(" to new "+timeNew);
+            System.out.println("No " + t++ + " Pattern: " + testTime);
+            System.out.println(" to old " + timeOld);
+            System.out.println(" to new " + timeNew);
             System.out.println();
 
-            assertTrue("Old/New implementation not same "+timeOld+"/"+timeNew, timeOld.equals(timeNew));
+            assertTrue("Old/New implementation not same " + timeOld + "/" + timeNew, timeOld.equals(timeNew));
         }
 
         for (String testTime : testPatterProblem) {
             timeNew = netconfTimeConverterNew.getTimeStampFromNetconf(testTime);
             timeOld = netconfTimeConverterOld.getTimeStampFromNetconf(testTime);
 
-            System.out.println("No "+t+++" Pattern: "+testTime);
-            System.out.println(" to old "+timeOld);
-            System.out.println(" to new "+timeNew);
+            System.out.println("No " + t++ + " Pattern: " + testTime);
+            System.out.println(" to old " + timeOld);
+            System.out.println(" to new " + timeNew);
             System.out.println();
 
-            assertTrue("Old/New implementation not same "+timeOld+"/"+timeNew, timeOld.equals(timeNew));
+            assertTrue("Old/New implementation not same " + timeOld + "/" + timeNew, timeOld.equals(timeNew));
         }
     }
 
@@ -88,12 +79,12 @@ public class TestsNectconfDateTime {
             timeNew = netconfTimeConverterNew.getTimeStampFromNetconfAsMilliseconds(testTime);
             timeOld = netconfTimeConverterOld.getTimeStampFromNetconfAsMilliseconds(testTime);
 
-            System.out.println("No "+t+++" Pattern: "+testTime);
-            System.out.println(" to old "+timeOld);
-            System.out.println(" to new "+timeNew);
+            System.out.println("No " + t++ + " Pattern: " + testTime);
+            System.out.println(" to old " + timeOld);
+            System.out.println(" to new " + timeNew);
             System.out.println();
 
-            assertTrue("Old/New implementation not same "+timeOld+"/"+timeNew, timeOld.equals(timeNew));
+            assertTrue("Old/New implementation not same " + timeOld + "/" + timeNew, timeOld.equals(timeNew));
         }
 
     }
@@ -106,9 +97,9 @@ public class TestsNectconfDateTime {
         String timeNew = netconfTimeConverterNew.getTimeStampAsNetconfString(now);
         String timeOld = netconfTimeConverterOld.getTimeStampAsNetconfString(now);
 
-        System.out.println("Old/New: "+timeOld+"/"+timeNew);
+        System.out.println("Old/New: " + timeOld + "/" + timeNew);
 
-        assertTrue("Old/New implementation not same "+timeOld+"/"+timeNew, timeOld.equals(timeNew));
+        assertTrue("Old/New implementation not same " + timeOld + "/" + timeNew, timeOld.equals(timeNew));
 
 
     }

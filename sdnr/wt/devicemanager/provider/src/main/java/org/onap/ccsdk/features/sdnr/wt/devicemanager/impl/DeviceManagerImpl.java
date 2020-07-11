@@ -87,9 +87,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Devicemanager
- * - Handles startup and closedown of network element handlers for netconf session
- * - Provide common services for network element specific components
+ * Devicemanager - Handles startup and closedown of network element handlers for netconf session - Provide common
+ * services for network element specific components
  */
 public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceManagerServiceProvider, AutoCloseable {
 
@@ -97,7 +96,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     private static final String APPLICATION_NAME = "DeviceManager";
     private static final String MYDBKEYNAMEBASE = "SDN-Controller";
     private static final String CONFIGURATIONFILE = "etc/devicemanager.properties";
-    public static final long DATABASE_TIMEOUT_MS = 120*1000L;
+    public static final long DATABASE_TIMEOUT_MS = 120 * 1000L;
 
     @SuppressWarnings("unused")
     private static final String STARTUPLOG_FILENAME = "etc/devicemanager.startup.log";
@@ -166,21 +165,24 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         this.rpcProviderRegistry = rpcProviderRegistry;
     }
 
-    public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
-    }
+    public void setNotificationPublishService(NotificationPublishService notificationPublishService) {}
 
     public void setMountPointService(MountPointService mountPointService) {
         this.mountPointService = mountPointService;
     }
+
     public void setClusterSingletonService(ClusterSingletonServiceProvider clusterSingletonService) {
         this.clusterSingletonServiceProvider = clusterSingletonService;
     }
+
     public void setNetconfNodeStateService(NetconfNodeStateService netconfNodeStateService) {
         this.netconfNodeStateService = netconfNodeStateService;
     }
+
     public void setWebsocketmanagerService(WebsocketmanagerService websocketmanagerService) {
         this.websocketmanagerService = websocketmanagerService;
     }
+
     public void setEntityDataProvider(IEntityDataProvider iEntityDataProvider) {
         this.iEntityDataProvider = iEntityDataProvider;
     }
@@ -217,17 +219,16 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         this.deviceManagerDatabaseAndNotificationService = new DeviceManagerDatabaseNotificationService(dataProvider,
                 maintenanceService, webSocketService, notificationDelayService, aotsDcaeForwarder);
 
-        RpcPushNotificationsHandler rpcPushNotificationsHandler = new RpcPushNotificationsHandler(webSocketService,
-                dataProvider, aotsDcaeForwarder);
-        this.odlEventListenerHandler = new ODLEventListenerHandler(myDbKeyNameExtended, webSocketService,
-                dataProvider, aotsDcaeForwarder);
+        RpcPushNotificationsHandler rpcPushNotificationsHandler =
+                new RpcPushNotificationsHandler(webSocketService, dataProvider, aotsDcaeForwarder);
+        this.odlEventListenerHandler =
+                new ODLEventListenerHandler(myDbKeyNameExtended, webSocketService, dataProvider, aotsDcaeForwarder);
         this.archiveCleanService = new ArchiveCleanService(iEntityDataProvider.getEsConfig(), dataProvider);
-        this.housekeepingService = new ConnectionStatusHousekeepingService(this.dataBroker,
-                dataProvider);
-        this.cssRegistration = this.clusterSingletonServiceProvider
-                .registerClusterSingletonService(this.archiveCleanService);
-        this.cssRegistration2 = this.clusterSingletonServiceProvider
-                .registerClusterSingletonService(this.housekeepingService);
+        this.housekeepingService = new ConnectionStatusHousekeepingService(this.dataBroker, dataProvider);
+        this.cssRegistration =
+                this.clusterSingletonServiceProvider.registerClusterSingletonService(this.archiveCleanService);
+        this.cssRegistration2 =
+                this.clusterSingletonServiceProvider.registerClusterSingletonService(this.housekeepingService);
         // PM
         this.performanceManager = new PerformanceManagerImpl(60, this, dataProvider, config);
         // DM
@@ -237,9 +238,8 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         this.deviceMonitor = new DeviceMonitorImpl(dataBroker, odlEventListenerHandler, config);
 
         // ResyncNetworkElementHouskeepingService
-        this.resyncNetworkElementHouskeepingService = new ResyncNetworkElementHouskeepingService(
-                this, mountPointService, odlEventListenerHandler,
-                dataProvider, deviceMonitor);
+        this.resyncNetworkElementHouskeepingService = new ResyncNetworkElementHouskeepingService(this,
+                mountPointService, odlEventListenerHandler, dataProvider, deviceMonitor);
 
         // RPC Service for specific services
         // Start RPC Service
@@ -281,7 +281,8 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     }
 
     @Override
-    public @NonNull <L extends NetworkElementFactory> FactoryRegistration<L> registerNetworkElementFactory(@NonNull L factory) {
+    public @NonNull <L extends NetworkElementFactory> FactoryRegistration<L> registerNetworkElementFactory(
+            @NonNull L factory) {
         LOG.info("Factory registration {}", factory.getClass().getName());
 
         factoryList.add(factory);
@@ -358,6 +359,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
     /**
      * Used to close all Services, that should support AutoCloseable Pattern
+     * 
      * @param toClose
      */
     private void close(AutoCloseable... toCloseList) {
@@ -391,6 +393,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
     /**
      * Indication if init() of devicemanager successfully done.
+     * 
      * @return true if init() was sucessfull. False if not done or not successfull.
      */
     public boolean isDevicemanagerInitializationOk() {
@@ -399,6 +402,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
     /**
      * Get NE object. Used by DCAE Service
+     * 
      * @param mountpoint mount point name
      * @return null or NE specific data
      */

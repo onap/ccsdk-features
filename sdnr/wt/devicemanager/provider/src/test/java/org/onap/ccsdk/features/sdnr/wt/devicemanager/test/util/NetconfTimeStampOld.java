@@ -37,32 +37,25 @@ import org.slf4j.LoggerFactory;
  * Format2 NETCONF - pattern from ietf-yang-types "2013-07-15" Pattern:
  * "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[\+\-](\d{2}):(\d{2}))"
  *
- * Format3 NETCONF DateAndTime CoreModel-CoreFoundationModule-TypeDefinitions vom
- * 2016-07-01 Example1: 20170118114449.1Z Example2: 20170118114449.1-0500 Pattern:
- * "\d{4}\d{2}\d{2}\d{2}\d{2}\d{2}.\d+?(Z|[\+\-](\d{2})(\d{2}))" typedef DateAndTime { description
- * "This primitive type defines the date and time according to the following structure:
- * 'yyyyMMddhhmmss.s[Z|{+|-}HHMm]' where: yyyy '0000'..'9999' year MM '01'..'12' month dd '01'..'31'
- * day hh '00'..'23' hour mm '00'..'59' minute ss '00'..'59' second s '.0'..'.9' tenth of second
- * (set to '.0' if EMS or NE cannot support this granularity) Z 'Z' indicates UTC (rather than local
- * time) {+|-} '+' or '-' delta from UTC HH '00'..'23' time zone difference in hours Mm '00'..'59'
- * time zone difference in minutes."; type string; } Format4 E/// specific Example1:
- * 2017-01-23T13:32:38-05:00 Example2: 2017-01-23T13:32-05:00
+ * Format3 NETCONF DateAndTime CoreModel-CoreFoundationModule-TypeDefinitions vom 2016-07-01 Example1: 20170118114449.1Z
+ * Example2: 20170118114449.1-0500 Pattern: "\d{4}\d{2}\d{2}\d{2}\d{2}\d{2}.\d+?(Z|[\+\-](\d{2})(\d{2}))" typedef
+ * DateAndTime { description "This primitive type defines the date and time according to the following structure:
+ * 'yyyyMMddhhmmss.s[Z|{+|-}HHMm]' where: yyyy '0000'..'9999' year MM '01'..'12' month dd '01'..'31' day hh '00'..'23'
+ * hour mm '00'..'59' minute ss '00'..'59' second s '.0'..'.9' tenth of second (set to '.0' if EMS or NE cannot support
+ * this granularity) Z 'Z' indicates UTC (rather than local time) {+|-} '+' or '-' delta from UTC HH '00'..'23' time
+ * zone difference in hours Mm '00'..'59' time zone difference in minutes."; type string; } Format4 E/// specific
+ * Example1: 2017-01-23T13:32:38-05:00 Example2: 2017-01-23T13:32-05:00
  *
  * Input formats netconfTime as String according the formats given above
  *
  * Return format is String in ISO8601 Format for database and presentation.
  *
- * Example formats:
- *    1) ISO8601. Example 2017-01-18T11:44:49.482-05:00
- *    2) Microwave ONF. Examples 20170118114449.1Z, 20170118114449.1-0500
- *    3.1) Ericson. Example: 2017-01-23T13:32:38-05:00
- *    3.2) Ericson. Example: 2017-01-23T13:32-05:00
- *          Always 10 Groups,
- *          1:Year 2:Month 3:day 4:Hour 5:minute 6:optional sec 7:optional ms 8:optional Z or 9:offset
- *           signedhour 10:min
+ * Example formats: 1) ISO8601. Example 2017-01-18T11:44:49.482-05:00 2) Microwave ONF. Examples 20170118114449.1Z,
+ * 20170118114449.1-0500 3.1) Ericson. Example: 2017-01-23T13:32:38-05:00 3.2) Ericson. Example: 2017-01-23T13:32-05:00
+ * Always 10 Groups, 1:Year 2:Month 3:day 4:Hour 5:minute 6:optional sec 7:optional ms 8:optional Z or 9:offset
+ * signedhour 10:min
  *
- * Template:
- *     private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStamp.getConverter();
+ * Template: private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStamp.getConverter();
  */
 
 public class NetconfTimeStampOld {
@@ -75,7 +68,7 @@ public class NetconfTimeStampOld {
     private static int MILLISECONDSDIGITS = 3; // Digits of milliseconds in dateFormatResult
     private static String MILLISECONDZEROS = "000"; // String with zeros for milliseconds in dateFormatResult
     private static final Pattern dateNetconfPatter = Pattern.compile(
-        "(\\d{4})-?(\\d{2})-?(\\d{2})T?(\\d{2}):?(\\d{2})(?:(?::?)(\\d{2}))?(?:.(\\d+))?(?:(Z)|([+-]\\d{2}):?(\\d{2}))");
+            "(\\d{4})-?(\\d{2})-?(\\d{2})T?(\\d{2}):?(\\d{2})(?:(?::?)(\\d{2}))?(?:.(\\d+))?(?:(Z)|([+-]\\d{2}):?(\\d{2}))");
 
     /*
      * ------------------------------------ Public function
@@ -84,11 +77,11 @@ public class NetconfTimeStampOld {
     /**
      * Use static access
      */
-    private NetconfTimeStampOld() {
-    }
+    private NetconfTimeStampOld() {}
 
     /**
      * Use this function to get the converter
+     * 
      * @return global converter
      */
     public static NetconfTimeStampOld getConverter() {
@@ -106,12 +99,13 @@ public class NetconfTimeStampOld {
 
     /**
      * Get actual timestamp as NETCONF specific type NETCONF/YANG 1.0 Format
-
+     * 
      * @return String with Date in NETCONF/YANG Format Version 1.0.
      */
     public String getTimeStampAsNetconfString(Date date) {
         return getRightFormattedDate(date.getTime());
     }
+
     /**
      * Get actual timestamp as NETCONF specific type NETCONF/YANG 1.0 Format in GMT
      *
@@ -123,6 +117,7 @@ public class NetconfTimeStampOld {
 
     /**
      * Get time from date as NETCONF specific type NETCONF/YANG 1.0 Format in GMT
+     * 
      * @param date specifying the date and time
      * @return DateAndTime Type 1.0. Date in NETCONF/YANG Format Version 1.0.
      */
@@ -139,22 +134,21 @@ public class NetconfTimeStampOld {
      * @throws IllegalArgumentException In case of no compliant time format definition for the string
      * @throws ParseException Time parsing failed
      */
-    public long getTimeStampFromNetconfAsMilliseconds(String netconfTime)
-            throws IllegalArgumentException {
+    public long getTimeStampFromNetconfAsMilliseconds(String netconfTime) throws IllegalArgumentException {
         Matcher m = dateNetconfPatter.matcher(netconfTime);
         // According to specified matches there have to be 10 parameter
         if (m.matches() && m.groupCount() == 10) {
             // Convert now
-        	synchronized(dateFormatConvert) {
-        		long utcMillis;
-				try {
-					utcMillis = dateFormatConvert.parse(getTimeAsNormalizedString(m, m.group(6), m.group(7))).getTime()
-					    - getTimezoneOffsetMilliseconds(m.group(9), m.group(10));
-	        		return utcMillis;
-				} catch (ParseException e) {
-		            throw new IllegalArgumentException("Parse problem for NETCONF data string: " + netconfTime);
-				}
-        	}
+            synchronized (dateFormatConvert) {
+                long utcMillis;
+                try {
+                    utcMillis = dateFormatConvert.parse(getTimeAsNormalizedString(m, m.group(6), m.group(7))).getTime()
+                            - getTimezoneOffsetMilliseconds(m.group(9), m.group(10));
+                    return utcMillis;
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException("Parse problem for NETCONF data string: " + netconfTime);
+                }
+            }
         } else {
             throw new IllegalArgumentException("No pattern for NETCONF data string: " + netconfTime);
         }
@@ -164,8 +158,8 @@ public class NetconfTimeStampOld {
      * Deliver String result.
      *
      * @param netconfTime as String according the formats given above
-     * @return If successful: String in ISO8601 Format for database and presentation. If "wrong formed
-     *         input" the Input string with the prefix "Mailformed date" is delivered back.
+     * @return If successful: String in ISO8601 Format for database and presentation. If "wrong formed input" the Input
+     *         string with the prefix "Mailformed date" is delivered back.
      */
     public String getTimeStampFromNetconf(String netconfTime) {
         Matcher m = dateNetconfPatter.matcher(netconfTime);
@@ -173,11 +167,12 @@ public class NetconfTimeStampOld {
         if (m.matches() && m.groupCount() == 10) {
             // Convert now
             try {
-            	synchronized(dateFormatConvert) {
-	                long utcMillis = dateFormatConvert.parse(getTimeAsNormalizedString(m, m.group(6), m.group(7))).getTime()
-	                        - getTimezoneOffsetMilliseconds(m.group(9), m.group(10));
-	                return getRightFormattedDate(utcMillis);
-            	}
+                synchronized (dateFormatConvert) {
+                    long utcMillis =
+                            dateFormatConvert.parse(getTimeAsNormalizedString(m, m.group(6), m.group(7))).getTime()
+                                    - getTimezoneOffsetMilliseconds(m.group(9), m.group(10));
+                    return getRightFormattedDate(utcMillis);
+                }
             } catch (ParseException e) {
                 LOG.info(e.getMessage());
             } catch (IllegalArgumentException e) {
@@ -261,8 +256,8 @@ public class NetconfTimeStampOld {
         long tenthOfSeconds = dateMillis % 1000 / 100L; // Extract 100 milliseconds
         long base = dateMillis / 1000L * 1000L; // Cut milliseconds to 000
         Date newDate = new Date(base + tenthOfSeconds);
-        synchronized(dateFormatResult) {
-        	return dateFormatResult.format(newDate);
+        synchronized (dateFormatResult) {
+            return dateFormatResult.format(newDate);
         }
     }
 

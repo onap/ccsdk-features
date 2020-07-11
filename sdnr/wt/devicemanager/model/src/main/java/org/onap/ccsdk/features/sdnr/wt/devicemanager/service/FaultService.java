@@ -30,13 +30,16 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
  */
 public interface FaultService extends DeviceManagerService {
 
-    /** Notify fault information to devicemanager
+    /**
+     * Notify fault information to devicemanager
+     * 
      * @param faultNotification to send
      */
     void faultNotification(@NonNull FaultlogEntity faultNotification);
 
     /**
      * Fault notification
+     * 
      * @param nodeId of node
      * @param counter provided
      * @param timeStamp provided
@@ -44,11 +47,12 @@ public interface FaultService extends DeviceManagerService {
      * @param problem provided
      * @param severity provided
      */
-    void faultNotification(@NonNull NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp, @Nullable String objectId,
-            @Nullable String problem, @Nullable SeverityType severity);
+    void faultNotification(@NonNull NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
+            @Nullable String objectId, @Nullable String problem, @Nullable SeverityType severity);
 
     /**
      * Remove current problems of node
+     * 
      * @param nodeId of node
      * @return number of removed entries
      */
@@ -56,6 +60,7 @@ public interface FaultService extends DeviceManagerService {
 
     /**
      * Write initial list of problems of node
+     * 
      * @param nodeId of node
      * @param resultList
      */

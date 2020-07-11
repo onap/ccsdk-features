@@ -31,13 +31,14 @@ public class NotificationWithServerTimeStamp<T2> {
         this.alarmNotification = n;
         this.contraAlarmNotification = null;
         this.timestamp = ts;
-        this.timestampStart=ts;
+        this.timestampStart = ts;
     }
 
     @SuppressWarnings("unused")
     public long getStartTime() {
         return this.timestampStart;
     }
+
     public void refresh() {
         this.refresh(System.currentTimeMillis());
     }
@@ -71,8 +72,7 @@ public class NotificationWithServerTimeStamp<T2> {
 
     @Override
     public String toString() {
-        return "NotificationWithServerTimeStamp [alarmNotification=" + alarmNotification
-                + ", contraAlarmNotification=" + contraAlarmNotification + ", timestampStart=" + timestampStart
-                + ", timestamp=" + timestamp + "]";
+        return "NotificationWithServerTimeStamp [alarmNotification=" + alarmNotification + ", contraAlarmNotification="
+                + contraAlarmNotification + ", timestampStart=" + timestampStart + ", timestamp=" + timestamp + "]";
     }
 }

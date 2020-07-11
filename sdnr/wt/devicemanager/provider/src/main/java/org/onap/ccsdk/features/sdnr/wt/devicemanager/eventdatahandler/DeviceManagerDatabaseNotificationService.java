@@ -52,32 +52,32 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceManagerDatabaseNotificationService implements NotificationService, EquipmentService, FaultService,NotificationDelayedListener<ProblemNotificationXml> {
+public class DeviceManagerDatabaseNotificationService implements NotificationService, EquipmentService, FaultService,
+        NotificationDelayedListener<ProblemNotificationXml> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerDatabaseNotificationService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerDatabaseNotificationService.class);
 
-	private final @NonNull DataProvider databaseService;
+    private final @NonNull DataProvider databaseService;
     private final @NonNull WebSocketServiceClientInternal webSocketService;
-    private @NonNull
-    final DevicemanagerNotificationDelayService notificationDelayService;
-    private @NonNull
-    final DcaeForwarderInternal aotsDcaeForwarder;
+    private @NonNull final DevicemanagerNotificationDelayService notificationDelayService;
+    private @NonNull final DcaeForwarderInternal aotsDcaeForwarder;
 
-	private final @NonNull MaintenanceServiceImpl maintenanceService;
+    private final @NonNull MaintenanceServiceImpl maintenanceService;
 
     /**
-     * @param databaseService  to access database
+     * @param databaseService to access database
      * @param maintenanceService
      * @param webSocketService to send notifications
      * @param notificationDelayService filter to prevent toggle alarms
      * @param aotsDcaeForwarder
      */
     public DeviceManagerDatabaseNotificationService(@NonNull DataProvider databaseService,
-            @NonNull MaintenanceServiceImpl maintenanceService, @NonNull WebSocketServiceClientInternal webSocketService,
+            @NonNull MaintenanceServiceImpl maintenanceService,
+            @NonNull WebSocketServiceClientInternal webSocketService,
             @NonNull DevicemanagerNotificationDelayService notificationDelayService,
             @NonNull DcaeForwarderInternal aotsDcaeForwarder) {
         super();
-        HtAssert.nonnull(databaseService, maintenanceService,webSocketService, notificationDelayService);
+        HtAssert.nonnull(databaseService, maintenanceService, webSocketService, notificationDelayService);
 
         this.databaseService = databaseService;
         this.maintenanceService = maintenanceService;
@@ -99,7 +99,8 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
     @Override
     public void changeNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId, @Nullable String attributeName, @Nullable String newValue) {
-        EventlogEntity eventlogEntity = new EventlogNotificationBuilder(nodeId, counter, timeStamp, objectId, attributeName, newValue).build();
+        EventlogEntity eventlogEntity =
+                new EventlogNotificationBuilder(nodeId, counter, timeStamp, objectId, attributeName, newValue).build();
         databaseService.writeEventLog(eventlogEntity);
         webSocketService.sendViaWebsockets(nodeId.getValue(), new AttributeValueChangedNotificationXml(eventlogEntity));
     }
@@ -107,7 +108,8 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
     @Override
     public void creationNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId) {
-        EventlogEntity eventlogEntity = new EventlogNotificationBuilder(nodeId, counter, timeStamp, objectId, "creation", null).build();
+        EventlogEntity eventlogEntity =
+                new EventlogNotificationBuilder(nodeId, counter, timeStamp, objectId, "creation", null).build();
         databaseService.writeEventLog(eventlogEntity);
         webSocketService.sendViaWebsockets(nodeId.getValue(), new ObjectCreationNotificationXml(eventlogEntity));
     }
@@ -116,7 +118,8 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
     @Override
     public void deletionNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId) {
-        EventlogEntity eventlogEntity = new EventlogNotificationBuilder(nodeId, counter, timeStamp, objectId, "deletion", null).build();
+        EventlogEntity eventlogEntity =
+                new EventlogNotificationBuilder(nodeId, counter, timeStamp, objectId, "deletion", null).build();
         databaseService.writeEventLog(eventlogEntity);
         webSocketService.sendViaWebsockets(nodeId.getValue(), new ObjectDeletionNotificationXml(eventlogEntity));
     }
@@ -139,44 +142,42 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
 
         ProblemNotificationXml notificationXml = new ProblemNotificationXml(faultNotification);
         String nodeName = faultNotification.getNodeId();
-        if(NotificationDelayFilter.isEnabled())
-        {
-            if(notificationXml.getSeverity() == InternalSeverity.NonAlarmed) {
+        if (NotificationDelayFilter.isEnabled()) {
+            if (notificationXml.getSeverity() == InternalSeverity.NonAlarmed) {
                 this.notificationDelayService.getInstance(nodeName, this).clearAlarmNotification(notificationXml);
             } else {
-            	this.notificationDelayService.getInstance(nodeName, this).pushAlarmNotification(notificationXml);
+                this.notificationDelayService.getInstance(nodeName, this).pushAlarmNotification(notificationXml);
             }
-        }
-        else
-        {
-             this.pushAlarmIfNotInMaintenance(nodeName,notificationXml);
+        } else {
+            this.pushAlarmIfNotInMaintenance(nodeName, notificationXml);
         }
         // ToggleAlarmFilter functionality
-//        if (notificationDelayService.processNotification(notificationXml.getSeverity() == InternalSeverity.NonAlarmed,
-//                notificationXml.getProblem(), notificationXml)) {
-//	        if (notificationDelayService.processNotification(notificationXml)) {
-//	            aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(nodeName, notificationXml);
-//	        }
-//        }
+        //        if (notificationDelayService.processNotification(notificationXml.getSeverity() == InternalSeverity.NonAlarmed,
+        //                notificationXml.getProblem(), notificationXml)) {
+        //	        if (notificationDelayService.processNotification(notificationXml)) {
+        //	            aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(nodeName, notificationXml);
+        //	        }
+        //        }
         // end of ToggleAlarmFilter
 
         this.webSocketService.sendViaWebsockets(nodeName, notificationXml);
     }
-    private void pushAlarmIfNotInMaintenance(String nodeName,ProblemNotificationXml notificationXml)
-    {
-         if(!this.maintenanceService.isONFObjectInMaintenance(nodeName, notificationXml.getObjectId(), notificationXml.getProblem()))
-         {
-             this.aotsDcaeForwarder.sendProblemNotification(nodeName, notificationXml);
-         }
-         else
-         {
-             LOG.debug("Notification will not be sent to external services. Device "+nodeName+" is in maintenance mode");
-         }
+
+    private void pushAlarmIfNotInMaintenance(String nodeName, ProblemNotificationXml notificationXml) {
+        if (!this.maintenanceService.isONFObjectInMaintenance(nodeName, notificationXml.getObjectId(),
+                notificationXml.getProblem())) {
+            this.aotsDcaeForwarder.sendProblemNotification(nodeName, notificationXml);
+        } else {
+            LOG.debug("Notification will not be sent to external services. Device " + nodeName
+                    + " is in maintenance mode");
+        }
     }
+
     @Override
     public void faultNotification(@NonNull NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId, @Nullable String problem, @Nullable SeverityType severity) {
-        FaultNotificationBuilder2 bFaultlog = new FaultNotificationBuilder2(nodeId, counter, timeStamp, objectId, problem, severity, SourceType.Netconf);
+        FaultNotificationBuilder2 bFaultlog = new FaultNotificationBuilder2(nodeId, counter, timeStamp, objectId,
+                problem, severity, SourceType.Netconf);
         faultNotification(bFaultlog.build());
 
     }
@@ -193,7 +194,7 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
             FaultcurrentBuilder bFaultcurrent = new FaultcurrentBuilder();
             bFaultcurrent.fieldsFrom(problem);
             databaseService.updateFaultCurrent(bFaultcurrent.build());
-            });
+        });
     }
 
     @Override
@@ -209,9 +210,9 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
 
     }
 
-	@Override
-	public void onNotificationDelay(String nodeName,ProblemNotificationXml notification) {
-		LOG.debug("Got delayed event of type :: {}", ProblemNotificationXml.class.getSimpleName());
-        this.pushAlarmIfNotInMaintenance(nodeName,notification);
-	}
+    @Override
+    public void onNotificationDelay(String nodeName, ProblemNotificationXml notification) {
+        LOG.debug("Got delayed event of type :: {}", ProblemNotificationXml.class.getSimpleName());
+        this.pushAlarmIfNotInMaintenance(nodeName, notification);
+    }
 }

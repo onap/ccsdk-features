@@ -23,23 +23,29 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 
 public interface DeviceManagerServiceProvider {
 
-    /** @return Get a dataprovider**/
-    @NonNull DataProvider getDataProvider();
+    /** @return Get a dataprovider **/
+    @NonNull
+    DataProvider getDataProvider();
 
     /** @return Get notification service **/
-    @NonNull NotificationService getNotificationService();
+    @NonNull
+    NotificationService getNotificationService();
 
     /** @return Get service for handling fault **/
-    @NonNull FaultService getFaultService();
+    @NonNull
+    FaultService getFaultService();
 
     /** @return Get service for handling fault **/
-    @NonNull EquipmentService getEquipmentService();
+    @NonNull
+    EquipmentService getEquipmentService();
 
     /** @return Get Active and available inventory service */
-    @NonNull AaiService getAaiService();
+    @NonNull
+    AaiService getAaiService();
 
     /** @return MaintenanceService object for maintenance service */
-    @NonNull MaintenanceService getMaintenanceService();
+    @NonNull
+    MaintenanceService getMaintenanceService();
 
     /** @return related service instance */
     @NonNull
@@ -50,5 +56,6 @@ public interface DeviceManagerServiceProvider {
     EventHandlingService getEventHandlingService();
 
     /** @return Get configuration descriptor */
-    @NonNull ConfigurationFileRepresentation getConfigurationFileRepresentation();
+    @NonNull
+    ConfigurationFileRepresentation getConfigurationFileRepresentation();
 }

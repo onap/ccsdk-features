@@ -33,13 +33,16 @@ public interface NotificationService extends DeviceManagerService {
     void eventNotification(@NonNull EventlogEntity eventNotification);
 
     /** create notification for an object **/
-    void creationNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp, @Nullable String objectId);
+    void creationNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
+            @Nullable String objectId);
 
     /** create notification of object **/
     void deletionNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId);
 
-    /** change notification of attribute of object
+    /**
+     * change notification of attribute of object
+     * 
      * @param nodeId of device
      * @param counter provided
      * @param timeStamp provided

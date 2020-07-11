@@ -42,11 +42,11 @@ class DcaeProviderWorker implements AutoCloseable {
     public DcaeProviderWorker(DcaeConfig configuration, String entityName, DeviceManagerImpl deviceManager) {
 
         //Start services
-        LOG.info("Configuration: "+configuration);
+        LOG.info("Configuration: " + configuration);
         int heartbeatSeconds = configuration.getTimerPeriodSeconds();
-        if ( heartbeatSeconds < MIN_HEARTBEAT_TIME_SECONDS ) {
+        if (heartbeatSeconds < MIN_HEARTBEAT_TIME_SECONDS) {
             heartbeatSeconds = MIN_HEARTBEAT_TIME_SECONDS;
-            LOG.info("Adjust heartbeat intervall to minimum of { } seconds.",heartbeatSeconds);
+            LOG.info("Adjust heartbeat intervall to minimum of { } seconds.", heartbeatSeconds);
         }
 
         dcaepClient = new DcaeSenderImpl(configuration.getEventReveicerUrl(), configuration.getUserCredentials());
@@ -57,7 +57,7 @@ class DcaeProviderWorker implements AutoCloseable {
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
         Runnable task = new DcaeProviderTask(dcaeMessages);
 
-        LOG.info("Fault task created with "+heartbeatSeconds+" Seconds");
+        LOG.info("Fault task created with " + heartbeatSeconds + " Seconds");
         this.taskReference = this.scheduler.scheduleAtFixedRate(task, 0, heartbeatSeconds, TimeUnit.SECONDS);
         LOG.info("Fault task scheduled");
     }
@@ -73,7 +73,7 @@ class DcaeProviderWorker implements AutoCloseable {
             this.scheduler.shutdown();
             this.scheduler.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException | SecurityException e) {
-            LOG.debug("Schedler shutdown interrupted with exception: ",e);
+            LOG.debug("Schedler shutdown interrupted with exception: ", e);
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }

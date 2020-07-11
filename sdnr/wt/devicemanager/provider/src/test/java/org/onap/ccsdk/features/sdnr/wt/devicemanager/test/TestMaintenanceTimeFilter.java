@@ -30,8 +30,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 
 public class TestMaintenanceTimeFilter {
 
-    private static String DEFAULT1 = "EsMaintenanceFilter [start=1970-01-01T00:00Z[UTC], end=1970-01-01T00:00Z[UTC], definition=EsMaintenanceFilterDefinition [objectIdRef=, problem=], description=]";
-    private static String DEFAULT2 = "EsMaintenanceFilter [start=1970-01-01T00:00Z[UTC], end=2018-01-01T10:00+05:00, definition=EsMaintenanceFilterDefinition [objectIdRef=, problem=], description=]";
+    private static String DEFAULT1 =
+            "EsMaintenanceFilter [start=1970-01-01T00:00Z[UTC], end=1970-01-01T00:00Z[UTC], definition=EsMaintenanceFilterDefinition [objectIdRef=, problem=], description=]";
+    private static String DEFAULT2 =
+            "EsMaintenanceFilter [start=1970-01-01T00:00Z[UTC], end=2018-01-01T10:00+05:00, definition=EsMaintenanceFilterDefinition [objectIdRef=, problem=], description=]";
 
     @Test
     public void testBasic() {
@@ -50,7 +52,7 @@ public class TestMaintenanceTimeFilter {
         now = ZonedDateTime.parse("2018-05-01T10:00:00+05:00");
         res = MaintenanceCalculator.isInPeriod(start, end, now);
         System.out.println("Within: " + res);
-        assertTrue("within period",res);
+        assertTrue("within period", res);
 
         now = ZonedDateTime.parse("2019-05-01T10:00:00+05:00");
         res = MaintenanceCalculator.isInPeriod(start, end, now);
@@ -76,11 +78,11 @@ public class TestMaintenanceTimeFilter {
 
         now = MaintenanceCalculator.valueOf("2000-01-01T00:00Z");
         res = MaintenanceCalculator.isONFObjectInMaintenance(mb.build(), "Interface1", "Problem1", now);
-        assertTrue("within period",res);
+        assertTrue("within period", res);
 
         now = MaintenanceCalculator.valueOf("2002-01-01T00:00Z");
         res = MaintenanceCalculator.isONFObjectInMaintenance(mb.build(), "", "", now);
-        assertFalse("outside period",res);
+        assertFalse("outside period", res);
 
     }
 

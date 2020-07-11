@@ -28,32 +28,33 @@ public class ToggleAlarmConfig implements Configuration {
     private static final String PROPERTY_KEY_DELAY = "taDelay";
 
     private static final boolean DEFAULT_VALUE_ENABLED = true;
-    private static final long DEFAULT_VALUE_DELAY = 3000;  //in ms
+    private static final long DEFAULT_VALUE_DELAY = 3000; //in ms
 
-	private final ConfigurationFileRepresentation configuration;
+    private final ConfigurationFileRepresentation configuration;
 
     public ToggleAlarmConfig(ConfigurationFileRepresentation configuration) {
-		this.configuration = configuration;
-		this.configuration.addSection(SECTION_MARKER_TA);
-		defaults();
+        this.configuration = configuration;
+        this.configuration.addSection(SECTION_MARKER_TA);
+        defaults();
     }
 
     public boolean isEnabled() {
         return configuration.getPropertyBoolean(SECTION_MARKER_TA, PROPERTY_KEY_ENABLED);
     }
+
     public long getDelay() {
         return configuration.getPropertyLong(SECTION_MARKER_TA, PROPERTY_KEY_DELAY).orElse(DEFAULT_VALUE_DELAY);
     }
 
-	@Override
-	public String getSectionName() {
-		return SECTION_MARKER_TA;
-	}
+    @Override
+    public String getSectionName() {
+        return SECTION_MARKER_TA;
+    }
 
-	@Override
-	public void defaults() {
-		//Add default if not available
-		configuration.setPropertyIfNotAvailable(SECTION_MARKER_TA, PROPERTY_KEY_ENABLED, DEFAULT_VALUE_ENABLED);
-		configuration.setPropertyIfNotAvailable(SECTION_MARKER_TA, PROPERTY_KEY_DELAY, DEFAULT_VALUE_DELAY);
-	}
+    @Override
+    public void defaults() {
+        //Add default if not available
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_TA, PROPERTY_KEY_ENABLED, DEFAULT_VALUE_ENABLED);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER_TA, PROPERTY_KEY_DELAY, DEFAULT_VALUE_DELAY);
+    }
 }

@@ -77,6 +77,7 @@ public class AaiWebApiClient extends BaseHTTPClient {
 
     /**
      * Create and specify defition parametrs of pnf
+     * 
      * @param pnfId name
      * @param type type
      * @param model model
@@ -94,6 +95,7 @@ public class AaiWebApiClient extends BaseHTTPClient {
 
     /**
      * Unregister
+     * 
      * @param pnfId name
      * @return true if http response code was 200 or false if not.
      */
@@ -104,6 +106,7 @@ public class AaiWebApiClient extends BaseHTTPClient {
 
     /**
      * Send registration request
+     * 
      * @param pnfId name
      * @return error accoring to http response code or -1
      */
