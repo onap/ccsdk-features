@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "3987dcf3_4ee6992c",
+        "filename": "sdnr/wt/devicemanager/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/aaiconnector/impl/config/AaiConfig.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-07-11T06:59:07Z",
+      "side": 1,
+      "message": "better to keep each params in separate line but aligned !",
+      "revId": "45c7d46d01ae84dac13bf7f68f99f4fb83f11b44",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7a02b481_ce200c51",
         "filename": "sdnr/wt/devicemanager/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/dcaeconnector/impl/DcaeMessages.java",
         "patchSetId": 1
