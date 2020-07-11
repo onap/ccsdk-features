@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d85c810c_b867336d",
+        "filename": "sdnr/wt/devicemanager/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/aaiconnector/impl/config/AaiConfig.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2020-07-11T08:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3987dcf3_4ee6992c",
+      "revId": "45c7d46d01ae84dac13bf7f68f99f4fb83f11b44",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a02b481_ce200c51",
         "filename": "sdnr/wt/devicemanager/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/dcaeconnector/impl/DcaeMessages.java",
         "patchSetId": 1
@@ -51,6 +69,24 @@
       "revId": "45c7d46d01ae84dac13bf7f68f99f4fb83f11b44",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96eef2fd_35511af3",
+        "filename": "sdnr/wt/devicemanager/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/dcaeconnector/impl/DcaeMessages.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2020-07-11T08:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "994c14e1_37dd9633",
+      "revId": "45c7d46d01ae84dac13bf7f68f99f4fb83f11b44",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     },
     {
       "key": {
@@ -89,6 +125,24 @@
     },
     {
       "key": {
+        "uuid": "4d3643f1_70e50beb",
+        "filename": "sdnr/wt/devicemanager/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/dcaeconnector/impl/DcaeMessages.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2020-07-11T08:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aba61fd1_c319b874",
+      "revId": "45c7d46d01ae84dac13bf7f68f99f4fb83f11b44",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "932bc0a2_3385832a",
         "filename": "sdnr/wt/devicemanager/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/test/TestDevMgrPropertiesFile.java",
         "patchSetId": 1
@@ -103,6 +157,24 @@
       "revId": "45c7d46d01ae84dac13bf7f68f99f4fb83f11b44",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4faae08_f54de4d7",
+        "filename": "sdnr/wt/devicemanager/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/test/TestDevMgrPropertiesFile.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2020-07-11T08:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "932bc0a2_3385832a",
+      "revId": "45c7d46d01ae84dac13bf7f68f99f4fb83f11b44",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
