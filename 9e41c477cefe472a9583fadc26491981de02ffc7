@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "65bdffe2_955f9101",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/FaultNotificationClient.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-07-11T06:54:24Z",
+      "side": 1,
+      "message": "keep same as before, to ease readbility",
+      "revId": "9e41c477cefe472a9583fadc26491981de02ffc7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11eb667e_f89bbccc",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/PNFMountPointClient.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-07-11T06:54:24Z",
+      "side": 1,
+      "message": "avoide contatination using + within same line to ease readability.",
+      "revId": "9e41c477cefe472a9583fadc26491981de02ffc7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "077b5d86_89bff8f9",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/test/PNFRegistrationConfigTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-07-11T06:54:24Z",
+      "side": 1,
+      "message": "keep same as before, to ease readbility",
+      "revId": "9e41c477cefe472a9583fadc26491981de02ffc7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa2733f8_4dd3a536",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/test/TestDMaaPFaultVESMsgConsumer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-07-11T06:54:24Z",
+      "side": 1,
+      "message": "keep same as before, to ease readbility",
+      "revId": "9e41c477cefe472a9583fadc26491981de02ffc7",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
