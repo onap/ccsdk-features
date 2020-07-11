@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "33672880_59fb0c4a",
+        "filename": "sdnr/wt/mountpoint-state-provider/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointstateprovider/test/GeneralConfigTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-07-11T06:49:19Z",
+      "side": 1,
+      "message": "keep as before, just to ease readability.",
+      "revId": "e97104bbeeadc632b14927a4e109cadd3cdaab86",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
