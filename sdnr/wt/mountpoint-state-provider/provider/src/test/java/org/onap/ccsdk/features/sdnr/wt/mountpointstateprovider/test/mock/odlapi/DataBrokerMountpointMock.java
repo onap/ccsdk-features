@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk feature sdnr wt
  *  ================================================================================
@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============LICENSE_END=========================================================
- ******************************************************************************/
+ */
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.odlapi;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -61,45 +61,45 @@ public class DataBrokerMountpointMock implements DataBroker, BindingService {
         return readOnlyTransaction;
     }
 
-      public ReadWriteTransaction newReadWriteTransaction1() {
-         return null;
+    public ReadWriteTransaction newReadWriteTransaction1() {
+        return null;
     }
 
     public org.opendaylight.mdsal.binding.api.@NonNull WriteTransaction newWriteOnlyTransaction1() {
         return null;
     }
 
-	@Override
-	public @NonNull ReadTransaction newReadOnlyTransaction() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public @NonNull ReadTransaction newReadOnlyTransaction() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public org.opendaylight.mdsal.binding.api.@NonNull ReadWriteTransaction newReadWriteTransaction() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public org.opendaylight.mdsal.binding.api.@NonNull ReadWriteTransaction newReadWriteTransaction() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public org.opendaylight.mdsal.binding.api.@NonNull WriteTransaction newWriteOnlyTransaction() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public org.opendaylight.mdsal.binding.api.@NonNull WriteTransaction newWriteOnlyTransaction() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public <T extends DataObject, L extends org.opendaylight.mdsal.binding.api.DataTreeChangeListener<T>> @NonNull ListenerRegistration<L> registerDataTreeChangeListener(
-			org.opendaylight.mdsal.binding.api.@NonNull DataTreeIdentifier<T> treeId, @NonNull L listener) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public <T extends DataObject, L extends org.opendaylight.mdsal.binding.api.DataTreeChangeListener<T>> @NonNull ListenerRegistration<L> registerDataTreeChangeListener(
+            org.opendaylight.mdsal.binding.api.@NonNull DataTreeIdentifier<T> treeId, @NonNull L listener) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public @NonNull TransactionChain createTransactionChain(
-			org.opendaylight.mdsal.binding.api.@NonNull TransactionChainListener listener) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public @NonNull TransactionChain createTransactionChain(
+            org.opendaylight.mdsal.binding.api.@NonNull TransactionChainListener listener) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 
 

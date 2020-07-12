@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,7 +14,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- ******************************************************************************/
+ */
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 
@@ -38,8 +38,8 @@ public class MountpointNodeConnectListenerImpl implements NetconfNodeConnectList
         NetconfNode netconfNode = accessor.getNetconfNode();
         //, MountPoint mountpoint, DataBroker netconfNodeDataBroker;
 
-        LOG.debug("In onEnterConnected of MountpointNodeConnectListenerImpl - nNodeId = "+nNodeId.getValue()+
-                " IP Address = "+netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
+        LOG.debug("In onEnterConnected of MountpointNodeConnectListenerImpl - nNodeId = " + nNodeId.getValue()
+                + " IP Address = " + netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
 
         JSONObject obj = new JSONObject();
         obj.put("NodeId", nNodeId.getValue());
@@ -52,7 +52,7 @@ public class MountpointNodeConnectListenerImpl implements NetconfNodeConnectList
     @Override
     public void onLeaveConnected(NodeId nNodeId, Optional<NetconfNode> optionalNetconfNode) {
 
-        LOG.debug("In onLeaveConnected of MountpointNodeConnectListenerImpl - nNodeId = "+nNodeId);
+        LOG.debug("In onLeaveConnected of MountpointNodeConnectListenerImpl - nNodeId = " + nNodeId);
 
         JSONObject obj = new JSONObject();
         obj.put("NodeId", nNodeId.getValue());
