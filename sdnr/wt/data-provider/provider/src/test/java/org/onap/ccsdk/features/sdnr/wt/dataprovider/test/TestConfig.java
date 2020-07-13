@@ -21,12 +21,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Map;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +38,7 @@ public class TestConfig {
     private static final Logger LOG = LoggerFactory.getLogger(TestConfig.class);
 
     private static final String TESTFILENAME = "testconfig.properties";
+    private static final String HOSTNAME = "localhost";
 
     @After
     @Before
@@ -53,18 +52,23 @@ public class TestConfig {
 
     @Test
     public void test() {
+        int databasePort = setSDNRDBURLEnv();
+
         ConfigurationFileRepresentation configuration = new ConfigurationFileRepresentation(TESTFILENAME);
-        setSDNRDBURLEnv();
         EsConfig esConfig = new EsConfig(configuration);
         LOG.info("Defaultconfiguration: {}", esConfig.toString());
         assertEquals("http", esConfig.getHosts()[0].protocol.getValue());
-        assertEquals(9200, esConfig.getHosts()[0].port);
-        assertEquals("sdnrdb", esConfig.getHosts()[0].hostname);
+        assertEquals(databasePort, esConfig.getHosts()[0].port);
+        assertEquals(HOSTNAME, esConfig.getHosts()[0].hostname);
 
     }
 
-    public static void setSDNRDBURLEnv() {
-        setEnv("SDNRDBURL", "http://sdnrdb:9200");
+    public static int setSDNRDBURLEnv() {
+        int databasePort = Integer
+                .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200");
+        System.out.println("DB Port: " + databasePort);
+        setEnv("SDNRDBURL", "http://"+HOSTNAME+":"+databasePort);
+        return databasePort;
     }
 
     public static void setEnv(String key, String value) {

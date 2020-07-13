@@ -24,10 +24,8 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -35,7 +33,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.MediatorServerDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
@@ -56,7 +53,7 @@ public class TestMediatorServerService {
 
         dbProvider = new ElasticSearchDataProvider(TestCRUDforDatabase.hosts);
         dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
-        dbRawProvider = new HtDatabaseClient(TestCRUDforDatabase.hosts);
+        dbRawProvider = HtDatabaseClient.getClient(TestCRUDforDatabase.hosts);
         service = new MediatorServerDataProvider(TestCRUDforDatabase.hosts);
 
 

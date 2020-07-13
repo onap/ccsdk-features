@@ -21,10 +21,12 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.test;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.IOException;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -47,7 +49,7 @@ public class TestDbClient {
     @BeforeClass
     public static void init() throws Exception {
 
-        dbClient = new HtDatabaseClient(hosts);
+        dbClient = HtDatabaseClient.getClient(hosts);
         dbClient.waitForYellowStatus(20000);
 
     }

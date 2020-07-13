@@ -96,7 +96,7 @@ public class HostInfo {
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(dbUrl);
         if (!matcher.find() || matcher.groupCount() < 2) {
-            throw new ParseException("url " + dbUrl + " not parseable", 0);
+            throw new ParseException("url '" + dbUrl + "' not parseable. Expected http://xyz", 0);
         }
         Protocol p = Protocol.getValueOf(matcher.group(1));
         String host = matcher.group(2);

@@ -41,10 +41,18 @@ public class ClusterSettingsRequest extends BaseRequest {
         this.persistent = new JSONObject();
         this.data.put("persistent", this.persistent);
         this.allowAutoCreateIndex(autoCreateIndex);
+
     }
 
     public ClusterSettingsRequest allowAutoCreateIndex(boolean allow) {
         this.persistent.put("action.auto_create_index", String.valueOf(allow));
+        this.setQuery(this.data);
+        return this;
+    }
+
+    public ClusterSettingsRequest maxCompilationsPerMinute(long executions) {
+        //this.persistent.put("script.max_compilations_per_minute" ,executions);
+        this.persistent.put("script.max_compilations_rate", String.format("%d/1m", executions));
         this.setQuery(this.data);
         return this;
     }

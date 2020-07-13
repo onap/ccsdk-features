@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk features
  * ================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,26 +19,27 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
+package org.onap.ccsdk.features.sdnr.wt.common.database;
 
-import javax.annotation.Nonnull;
+public class HtDatabaseClientException extends Exception {
+    // constants
+    private static final long serialVersionUID = 1L;
+    // end of constants
 
-public class GetRequest extends BaseRequest {
+    // variables
+    private Throwable rootCause;
+    // end of variables
 
-    private final String alias;
-    private final String esId;
-
-    public GetRequest(String alias, String dataType, @Nonnull String esId) {
-        super("GET", String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId)));
-        this.alias = alias;
-        this.esId = esId;
+    // constructors
+    public HtDatabaseClientException(String message, Throwable rootCause) {
+        super(message, rootCause);
+        this.rootCause = rootCause;
     }
+    // end of constructors
 
-    protected String getAlias() {
-        return this.alias;
+    // getters and setters
+    public Throwable getRootCause() {
+        return rootCause;
     }
-
-    protected String getEsId() {
-        return this.esId;
-    }
+    // end of getters and setters
 }

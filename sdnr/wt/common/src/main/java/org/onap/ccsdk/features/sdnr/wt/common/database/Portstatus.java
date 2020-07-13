@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -14,12 +14,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  * ============LICENSE_END==========================================================================
- */
+ ******************************************************************************/
 
 package org.onap.ccsdk.features.sdnr.wt.common.database;
 
 import java.io.IOException;
-import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.channels.SocketChannel;
+
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 
 public class Portstatus {
@@ -37,16 +40,16 @@ public class Portstatus {
             throw new IllegalArgumentException("Invalid start port: " + port);
         }
 
-        Socket ss = null;
+        SocketChannel channel = null;
+        SocketAddress socketAddress = new InetSocketAddress(dnsName, port);
         try {
-            ss = new Socket(dnsName, port);
-            ss.setReuseAddress(true);
+            channel = SocketChannel.open(socketAddress);
             return true;
         } catch (IOException e) {
         } finally {
-            if (ss != null) {
+            if (channel != null) {
                 try {
-                    ss.close();
+                    channel.close();
                 } catch (IOException e) {
                     /* should not be thrown */
                 }

@@ -39,7 +39,7 @@ public class UpdateResponse extends BaseResponse {
         super(response);
         JSONObject o = this.getJson(response);
 
-        this.result = o.getString("result");
+        this.result = o == null ? null : o.getString("result");
     }
 
     public boolean succeeded() {

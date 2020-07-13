@@ -48,6 +48,11 @@ public class EsVersion {
         this.revision = Integer.parseInt(hlp[2]);
     }
 
+    @Override
+    public String toString() {
+        return String.format("%d.%d.%d", this.major, this.minor, this.revision);
+    }
+
     /**
      * @param major
      * @param minor

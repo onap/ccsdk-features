@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk features
  * ================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,24 +21,22 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-import javax.annotation.Nonnull;
+/**
+ * @author Michael Dürre
+ *
+ */
+public class Delete7Request extends DeleteRequest {
 
-public class GetRequest extends BaseRequest {
-
-    private final String alias;
-    private final String esId;
-
-    public GetRequest(String alias, String dataType, @Nonnull String esId) {
-        super("GET", String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId)));
-        this.alias = alias;
-        this.esId = esId;
+    public Delete7Request(String alias, String esId) {
+        super(alias, "_doc", esId);
     }
 
-    protected String getAlias() {
-        return this.alias;
+    public Delete7Request(String alias, String esId, boolean refresh) {
+        super(alias, "_doc", esId, refresh);
     }
 
-    protected String getEsId() {
-        return this.esId;
+    public Delete7Request(DeleteRequest request) {
+        this(request.getAlias(), request.getEsId(), request.doRefresh());
     }
+
 }

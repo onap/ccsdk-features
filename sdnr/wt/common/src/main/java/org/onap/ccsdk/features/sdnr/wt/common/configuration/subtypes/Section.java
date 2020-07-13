@@ -25,29 +25,41 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.exception.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author Michael Dürre, Herbert Eiselt
  *
  *         subset of configuration identified by its name
  */
 public class Section {
 
+    //Interfaces
+    public interface EnvGetter {
+        String getenv(String substring);
+    }
+
     // constants
     private static final Logger LOG = LoggerFactory.getLogger(Section.class);
     private static final String DELIMITER = "=";
     private static final String COMMENTCHARS[] = {"#", ";"};
+    private static final String ENVVARIABLE = "${";
+    private static final String REGEXENVVARIABLE = "(\\$\\{[A-Z0-9_-]+\\})";
     // end of constants
+    private final Pattern pattern;
 
-    // variables
+    // variables for test purpose
+    private static EnvGetter envGetter = (mkey) -> System.getenv(mkey);
+
     private final String name;
     private final List<String> rawLines;
     private final LinkedHashMap<String, SectionValue> values;
@@ -59,6 +71,7 @@ public class Section {
         this.name = name;
         this.rawLines = new ArrayList<>();
         this.values = new LinkedHashMap<>();
+        this.pattern = Pattern.compile(REGEXENVVARIABLE);
     }
     //end of constructors
 
@@ -96,11 +109,9 @@ public class Section {
             value = values.get(key).getValue();
         }
         //try to read env var
-        if (value != null && value.contains("${")) {
+        if (value != null && value.contains(ENVVARIABLE)) {
 
             LOG.debug("try to find env var(s) for {}", value);
-            final String regex = "(\\$\\{[A-Z0-9_-]+\\})";
-            final Pattern pattern = Pattern.compile(regex);
             final Matcher matcher = pattern.matcher(value);
             String tmp = new String(value);
             while (matcher.find() && matcher.groupCount() > 0) {
@@ -108,7 +119,8 @@ public class Section {
                 if (mkey != null) {
                     try {
                         LOG.debug("match found for v={} and env key={}", tmp, mkey);
-                        String env = System.getenv(mkey.substring(2, mkey.length() - 1));
+                        //String env=System.getenv(mkey.substring(2,mkey.length()-1));
+                        String env = envGetter.getenv(mkey.substring(2, mkey.length() - 1));
                         tmp = tmp.replace(mkey, env == null ? "" : env);
                     } catch (SecurityException e) {
                         LOG.warn("unable to read env {}: {}", value, e);
@@ -119,8 +131,6 @@ public class Section {
         }
         return value;
     }
-
-
 
     public void setProperty(String key, String value) {
         boolean isuncommented = this.isCommentLine(key);
@@ -169,8 +179,6 @@ public class Section {
             uncommented = false;
         }
     }
-
-
 
     public String[] toLines() {
         List<String> lines = new ArrayList<>();
@@ -241,6 +249,19 @@ public class Section {
     @Override
     public String toString() {
         return "Section [name=" + name + ", rawLines=" + rawLines + ", values=" + values + "]";
+    }
+
+    // static methods
+    public static void setEnvGetter(@NonNull EnvGetter newEnvGetter) {
+        if (Objects.nonNull(newEnvGetter)) {
+            envGetter = newEnvGetter;
+        } else {
+            throw new IllegalArgumentException("Null not allowed here");
+        }
+    }
+
+    public static EnvGetter getEnvGetter() {
+        return envGetter;
     }
     // end of public methods
 

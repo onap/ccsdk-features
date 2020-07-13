@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk features
  * ================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,24 +21,30 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-import javax.annotation.Nonnull;
+/**
+ * @author Michael Dürre
+ *
+ */
+public class Index7Request extends IndexRequest {
 
-public class GetRequest extends BaseRequest {
-
-    private final String alias;
-    private final String esId;
-
-    public GetRequest(String alias, String dataType, @Nonnull String esId) {
-        super("GET", String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId)));
-        this.alias = alias;
-        this.esId = esId;
+    public Index7Request(String alias) {
+        super(alias, "_doc");
     }
 
-    protected String getAlias() {
-        return this.alias;
+    public Index7Request(String alias, String esId) {
+        super(alias, "_doc", esId);
     }
 
-    protected String getEsId() {
-        return this.esId;
+    public Index7Request(String alias, String esId, boolean refresh) {
+        super(alias, "_doc", esId, refresh);
     }
+
+    /**
+     * @param request
+     */
+    public Index7Request(IndexRequest request) {
+        this(request.getAlias(), request.getEsId(), request.doRefresh());
+        this.setQuery(request.getQuery());
+    }
+
 }
