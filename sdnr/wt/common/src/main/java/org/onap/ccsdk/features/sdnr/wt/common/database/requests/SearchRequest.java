@@ -25,13 +25,27 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 
 public class SearchRequest extends BaseRequest {
 
+    private final String alias;
+
+    public SearchRequest(String uri) {
+        super("POST", uri);
+        this.alias = null;
+    }
+
     public SearchRequest(String alias, String dataType) {
         super("POST", String.format("/%s/%s/_search", alias, dataType));
+        this.alias = alias;
     }
 
     @Override
     public void setQuery(QueryBuilder query) {
         super.setQuery(query);
     }
+
+    public String getAlias() {
+        return this.alias;
+    }
+
+
 
 }

@@ -21,14 +21,17 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -56,7 +59,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultlog;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.GranularityPeriodType;
@@ -112,7 +114,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Pagination;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.PaginationBuilder;
@@ -130,7 +131,7 @@ public class TestCRUDforDatabase {
 
         dbProvider = new ElasticSearchDataProvider(hosts);
         dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
-        dbRawProvider = new HtDatabaseClient(hosts);
+        dbRawProvider = HtDatabaseClient.getClient(hosts);
     }
 
     public static void trySleep(long ms) {

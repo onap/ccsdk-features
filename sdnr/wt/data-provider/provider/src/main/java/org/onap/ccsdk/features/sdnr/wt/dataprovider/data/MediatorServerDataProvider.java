@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
@@ -55,7 +54,7 @@ public class MediatorServerDataProvider implements AutoCloseable {
         super();
         LOG.info("Start {}", this.getClass().getName());
         this.entries = new HashMap<>();
-        this.dbClient = new HtDatabaseClient(hosts, authUsername, authPassword);
+        this.dbClient = HtDatabaseClient.getClient(hosts, authUsername, authPassword);
         this.mediatorserverRW = new DataObjectAcessor<>(dbClient, Entity.MediatorServer, Data.class);
         this.scheduler.scheduleAtFixedRate(onTick, this.REFRESH_INTERVAL, this.REFRESH_INTERVAL, TimeUnit.SECONDS);
     }
@@ -80,7 +79,7 @@ public class MediatorServerDataProvider implements AutoCloseable {
     }
 
     /**
-     * 
+     *
      * @param dbServerId
      * @return url or null if not exists
      */

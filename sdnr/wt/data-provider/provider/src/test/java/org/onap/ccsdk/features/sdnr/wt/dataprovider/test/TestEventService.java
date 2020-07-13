@@ -24,22 +24,18 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
-import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
-import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.HtDatabaseEventsService;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
@@ -84,7 +80,7 @@ public class TestEventService {
 
         dbProvider = new ElasticSearchDataProvider(TestCRUDforDatabase.hosts);
         dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
-        dbRawProvider = new HtDatabaseClient(TestCRUDforDatabase.hosts);
+        dbRawProvider = HtDatabaseClient.getClient(TestCRUDforDatabase.hosts);
 
         try {
             service = new HtDatabaseEventsService(dbRawProvider, dbProvider);
