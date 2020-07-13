@@ -46,10 +46,9 @@ public class TestDataMappings {
 
         private final String json;
 
-        public HtDatabaseClientHelper(String jsonResponse, HostInfo[] hosts) {
+        public HtDatabaseClientHelper(String jsonResponse, HostInfo[] hosts) throws Exception {
             super(hosts);
             this.json = jsonResponse;
-
         }
 
         @Override
@@ -61,7 +60,7 @@ public class TestDataMappings {
     private static class MapResult<T extends DataObject> {
         public final List<T> mappedData;
 
-        public MapResult(String dataType, Class<T> cls, String dbJson) throws ClassNotFoundException {
+        public MapResult(String dataType, Class<T> cls, String dbJson) throws Exception {
             System.out.println(dbJson);
             DatabaseClient db = new HtDatabaseClientHelper(dbJson, HOSTINFOS);
             EsDataObjectReaderWriter<T> dbrw = new EsDataObjectReaderWriter<>(db, dataType, cls);

@@ -35,8 +35,6 @@ public class DeleteResponse extends BaseResponse {
             JSONObject o = this.getJson(response);
             if (o != null) {
                 this.isDeleted = "deleted".equals(o.getString("result"));
-            } else {
-                this.isDeleted = false;
             }
         } else {
             this.isDeleted = false;

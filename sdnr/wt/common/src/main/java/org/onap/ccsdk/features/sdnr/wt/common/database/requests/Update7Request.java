@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk features
  * ================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,24 +21,20 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-import javax.annotation.Nonnull;
+/**
+ * @author Michael Dürre
+ *
+ *         https://github.com/elastic/elasticsearch/blob/7.1/rest-api-spec/src/main/resources/rest-api-spec/api/update.json
+ */
+public class Update7Request extends UpdateRequest {
 
-public class GetRequest extends BaseRequest {
-
-    private final String alias;
-    private final String esId;
-
-    public GetRequest(String alias, String dataType, @Nonnull String esId) {
-        super("GET", String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId)));
-        this.alias = alias;
-        this.esId = esId;
+    public Update7Request(String alias, String esId, int retries, boolean refresh) {
+        super(String.format("/%s/_update/%s", alias, BaseRequest.urlEncodeValue(esId), retries), refresh);
     }
 
-    protected String getAlias() {
-        return this.alias;
+    public Update7Request(UpdateRequest request) {
+        this(request.getAlias(), request.getEsId(), request.getRetries(), request.doRefresh());
+        this.setQuery(request.getQuery());
     }
 
-    protected String getEsId() {
-        return this.esId;
-    }
 }

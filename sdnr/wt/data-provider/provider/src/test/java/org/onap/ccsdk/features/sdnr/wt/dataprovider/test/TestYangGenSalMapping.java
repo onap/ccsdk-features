@@ -25,12 +25,10 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONObject;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.common.database.DatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
@@ -38,6 +36,8 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo.Protocol;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.BoolQueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.CreateIndexRequest;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.EsDataObjectReaderWriter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -119,19 +119,22 @@ public class TestYangGenSalMapping {
     }
 
     @Test
-    public void test2() throws ClassNotFoundException {
+    public void test2() throws Exception {
 
+        final String IDX = "inventorytest";
         int databasePort = Integer
                 .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200");
         System.out.println("DB Port: " + databasePort);
 
         HostInfo[] HOSTINFOS = new HostInfo[] {new HostInfo("localhost", databasePort, Protocol.HTTP)};
-        DatabaseClient db = new HtDatabaseClient(HOSTINFOS);
+        HtDatabaseClient db = new HtDatabaseClient(HOSTINFOS);
 
         EsDataObjectReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data> dataRW =
-                new EsDataObjectReaderWriter<>(db, "inventorytest",
+                new EsDataObjectReaderWriter<>(db, IDX,
                         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data.class);
-
+        if (!db.isExistsIndex(IDX)) {
+            db.createIndex(new CreateIndexRequest(IDX));
+        }
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data d1;
         d1 = getInventoryDataBuilder("MyDescription", 23L).build();
         String id = dataRW.write(d1, null);
@@ -140,6 +143,9 @@ public class TestYangGenSalMapping {
         d2 = dataRW.read(id);
 
         out(d2.toString());
+        if (db.isExistsIndex(IDX)) {
+            db.deleteIndex(new DeleteIndexRequest(IDX));
+        }
 
     }
 
@@ -225,7 +231,7 @@ public class TestYangGenSalMapping {
 
 
     @Test
-    public void test6() throws IOException, ClassNotFoundException {
+    public void test6() throws Exception {
         out(method());
         HtDatabaseClient dbClient = new HtDatabaseClient(new HostInfo[] {new HostInfo("sdnrdb", 9200, Protocol.HTTP)});
         String PMDATA15M_TYPE = "historicalperformance15min";
@@ -264,7 +270,7 @@ public class TestYangGenSalMapping {
     }
 
     @Test
-    public void test7() throws IOException, ClassNotFoundException {
+    public void test7() throws Exception {
         out(method());
         String ESDATATYPE_MEDIATORSERVER = Entity.MediatorServer.getName();
         HtDatabaseClient dbClient = new HtDatabaseClient(new HostInfo[] {new HostInfo("sdnrdb", 9200, Protocol.HTTP)});

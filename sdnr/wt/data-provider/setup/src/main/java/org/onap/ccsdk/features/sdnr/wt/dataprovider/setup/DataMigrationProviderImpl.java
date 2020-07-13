@@ -72,7 +72,11 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
         if (timeoutms > 0) {
             Portstatus.waitSecondsTillAvailable(timeoutms / 1000, hosts);
         }
-        this.dbClient = new HtDatabaseClient(hosts, username, password, trustAll);
+        try {
+            this.dbClient = new HtDatabaseClient(hosts, username, password, trustAll);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Can not reach database with parameters.",e);
+        }
     }
 
     @Override

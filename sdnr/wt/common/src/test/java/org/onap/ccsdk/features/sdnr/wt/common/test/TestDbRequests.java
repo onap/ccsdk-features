@@ -51,6 +51,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteByQueryRe
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteIndexResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.GetResponse;
+import org.onap.ccsdk.features.sdnr.wt.common.database.responses.IndexResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ListIndicesResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.NodeStatsResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
@@ -200,7 +201,7 @@ public class TestDbRequests {
         }
         this.insert(IDX, ID, JSON);
         // delete data
-        DeleteRequest request2 = new DeleteRequest(IDX, IDX, ID);
+        DeleteRequest request2 = new DeleteRequest(IDX, dbClient.isVersion7() ? "_doc" : IDX, ID);
         DeleteResponse response2 = null;
         try {
             response2 = dbClient.delete(request2);
@@ -215,7 +216,7 @@ public class TestDbRequests {
             fail(e.getMessage());
         }
         // verify data deleted
-        GetRequest request4 = new GetRequest(IDX, IDX, ID);
+        GetRequest request4 = new GetRequest(IDX, dbClient.isVersion7() ? "_doc" : IDX, ID);
         GetResponse response4 = null;
         try {
             response4 = dbClient.get(request4);
@@ -233,8 +234,11 @@ public class TestDbRequests {
      */
     private JSONObject defaultMappings(String idx, boolean useStrict) {
         String mapping = "{}";
-        return new JSONObject(String.format("{\"%s\":{%s\"properties\":%s}}", idx,
-                useStrict ? "\"dynamic\": false," : "\"dynamic\": true,", mapping));
+        return dbClient.isVersion7()
+                ? new JSONObject(String.format("{%s\"properties\":%s}",
+                        useStrict ? "\"dynamic\": false," : "\"dynamic\": true,", mapping))
+                : new JSONObject(String.format("{\"%s\":{%s\"properties\":%s}}", idx,
+                        useStrict ? "\"dynamic\": false," : "\"dynamic\": true,", mapping));
     }
 
     @Test
@@ -325,7 +329,7 @@ public class TestDbRequests {
         this.insert(IDX, ID, JSON);
         this.insert(IDX, ID2, JSON2);
         this.insert(IDX, ID3, JSON3);
-        SearchRequest request = new SearchRequest(IDX, IDX);
+        SearchRequest request = new SearchRequest(IDX, dbClient.isVersion7() ? "_doc" : IDX);
         request.setQuery(QueryBuilders.matchAllQuery());
         SearchResponse response = null;
         try {
@@ -336,7 +340,7 @@ public class TestDbRequests {
         assertNotNull(response);
         assertEquals("not all items found", 3, response.getHits().length);
         assertEquals("incorrect index", IDX, response.getHits()[0].getIndex());
-        assertEquals("incorrect type", IDX, response.getHits()[0].getType());
+        assertEquals("incorrect type", dbClient.isVersion7() ? "_doc" : IDX, response.getHits()[0].getType());
         this.deleteIndex(IDX);
     }
 
@@ -354,7 +358,7 @@ public class TestDbRequests {
             fail("unable to create index");
         }
         this.insert(IDX, ID, JSON);
-        UpdateRequest request = new UpdateRequest(IDX, IDX, ID);
+        UpdateRequest request = new UpdateRequest(IDX, dbClient.isVersion7() ? "_doc" : IDX, ID);
         UpdateResponse response = null;
         try {
             request.source(new JSONObject(JSON2));
@@ -371,7 +375,7 @@ public class TestDbRequests {
             fail(e.getMessage());
         }
         // verify update
-        GetRequest request3 = new GetRequest(IDX, IDX, ID);
+        GetRequest request3 = new GetRequest(IDX, dbClient.isVersion7() ? "_doc" : IDX, ID);
         GetResponse response3 = null;
         try {
             response3 = dbClient.get(request3);
@@ -397,7 +401,7 @@ public class TestDbRequests {
             fail("unable to create index");
         }
         this.insert(IDX, ID, JSON);
-        UpdateByQueryRequest request = new UpdateByQueryRequest(IDX, IDX);
+        UpdateByQueryRequest request = new UpdateByQueryRequest(IDX, dbClient.isVersion7() ? "_doc" : IDX);
         UpdateByQueryResponse response = null;
         try {
             request.source(ID, new JSONObject(JSON2));
@@ -414,7 +418,7 @@ public class TestDbRequests {
             fail(e.getMessage());
         }
         // verify update
-        GetRequest request3 = new GetRequest(IDX, IDX, ID);
+        GetRequest request3 = new GetRequest(IDX, dbClient.isVersion7() ? "_doc" : IDX, ID);
         GetResponse response3 = null;
         try {
             response3 = dbClient.get(request3);
@@ -434,9 +438,10 @@ public class TestDbRequests {
         final String JSON3 = "{ \"node-id\":\"sim3\",\"severity\":\"minor\"}";
         final String JSON4 = "{ \"node-id\":\"sim4\",\"severity\":\"warning\"}";
         final String JSON5 = "{ \"node-id\":\"sim5\",\"severity\":\"major\"}";
-        final String MAPPINGS = String.format("{\"" + IDX + "\":{\"properties\":%s}}",
-                "{\"node-id\":{\"type\": \"keyword\"},\"severity\": {\"type\": \"keyword\"}}");
-        // create index with mapping keyword
+        final String MAPPINGS =
+                String.format(dbClient.isVersion7() ? "{\"properties\":%s}" : "{\"" + IDX + "\":{\"properties\":%s}}",
+                        "{\"node-id\":{\"type\": \"keyword\"},\"severity\": {\"type\": \"keyword\"}}");
+        //create index with mapping keyword
         CreateIndexResponse iresponse = null;
         try {
             if (!dbClient.isExistsIndex(IDX)) {
@@ -448,6 +453,7 @@ public class TestDbRequests {
             this.deleteIndex(IDX);
             fail("unable to create index: " + e1.getMessage());
         }
+
 
         // fill index
         this.insert(IDX, null, JSON);
@@ -462,7 +468,7 @@ public class TestDbRequests {
             fail(e.getMessage());
         }
 
-        SearchRequest request = new SearchRequest(IDX, IDX);
+        SearchRequest request = new SearchRequest(IDX, dbClient.isVersion7() ? "_doc" : IDX);
         request.setQuery(QueryBuilders.matchAllQuery().aggregations("severity").size(0));
         SearchResponse response = null;
         try {
@@ -501,7 +507,7 @@ public class TestDbRequests {
         System.out.println(stats.getNodeStatistics());
     }
 
-    // @Test
+    //@Test
     public void testPreventAutoCreateIndex() {
         final String IDX1 = "acidx1";
         final String ID1 = "acid1";
@@ -511,7 +517,7 @@ public class TestDbRequests {
 
         ClusterSettingsResponse settingsResponse = null;
         String esId = null;
-        // set setting to allow autocreate
+        //set setting to allow autocreate
         try {
             settingsResponse = dbClient.setupClusterSettings(new ClusterSettingsRequest(true));
         } catch (IOException e) {
@@ -519,10 +525,10 @@ public class TestDbRequests {
         }
         assertNotNull(settingsResponse);
         assertTrue(settingsResponse.isAcknowledged());
-        // test if something new can be created
+        //test if something new can be created
         esId = dbClient.doWriteRaw(IDX1, IDX1, ID1, OBJ);
         assertEquals(ID1, esId);
-        // set setting to deny autocreate
+        //set setting to deny autocreate
         try {
             settingsResponse = dbClient.setupClusterSettings(new ClusterSettingsRequest(false));
         } catch (IOException e) {
@@ -530,10 +536,10 @@ public class TestDbRequests {
         }
         assertNotNull(settingsResponse);
         assertTrue(settingsResponse.isAcknowledged());
-        // test if something new cannot be created
+        //test if something new cannot be created
         esId = dbClient.doWriteRaw(IDX2, IDX2, ID2, OBJ);
         assertNull(esId);
-        // set setting to allow autocreate
+        //set setting to allow autocreate
         try {
             settingsResponse = dbClient.setupClusterSettings(new ClusterSettingsRequest(true));
         } catch (IOException e) {
@@ -559,5 +565,6 @@ public class TestDbRequests {
 
         }
     }
+
 
 }

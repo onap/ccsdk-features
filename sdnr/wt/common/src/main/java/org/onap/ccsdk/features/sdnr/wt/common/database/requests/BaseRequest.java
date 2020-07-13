@@ -35,7 +35,7 @@ public abstract class BaseRequest {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseRequest.class);
 
-    public static final int DEFAULT_RETRIES = 1;
+    public static final int DEFAULT_RETRIES = 3;
 
     protected final Request request;
     private String query;

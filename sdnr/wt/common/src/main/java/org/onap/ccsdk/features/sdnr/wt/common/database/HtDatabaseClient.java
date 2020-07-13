@@ -59,30 +59,31 @@ import org.slf4j.LoggerFactory;
 public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, AutoCloseable {
 
     private static final boolean REFRESH_AFTER_REWRITE_DEFAULT = true;
-    private static final boolean TRUSTALL_DEFAULT = false;
+    public static final boolean TRUSTALL_DEFAULT = false;
+    private static final long READ_MAX_SIZE = 9999;
 
     private final Logger LOG = LoggerFactory.getLogger(HtDatabaseClient.class);
 
     private boolean doRefreshAfterWrite;
 
-    public HtDatabaseClient(HostInfo[] hosts) {
+    public HtDatabaseClient(HostInfo[] hosts) throws Exception {
         this(hosts, REFRESH_AFTER_REWRITE_DEFAULT);
     }
 
-    public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite) {
+    public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite) throws Exception {
         this(hosts, refreshAfterWrite, null, null, TRUSTALL_DEFAULT);
     }
 
-    public HtDatabaseClient(HostInfo[] hosts, String username, String password) {
+    public HtDatabaseClient(HostInfo[] hosts, String username, String password) throws Exception {
         this(hosts, username, password, TRUSTALL_DEFAULT);
     }
 
-    public HtDatabaseClient(HostInfo[] hosts, String username, String password, boolean trustAll) {
+    public HtDatabaseClient(HostInfo[] hosts, String username, String password, boolean trustAll) throws Exception {
         this(hosts, REFRESH_AFTER_REWRITE_DEFAULT, username, password, trustAll);
     }
 
     public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite, String username, String password,
-            boolean trustAll) {
+            boolean trustAll) throws Exception {
         super(hosts, username, password, trustAll);
         this.doRefreshAfterWrite = refreshAfterWrite;
     }
@@ -133,7 +134,17 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
     }
 
     @Override
+    public String doWriteRaw(String dataTypeName, String esId, String json, boolean syncAfterWrite) {
+        return this.doWriteRaw(dataTypeName, dataTypeName, esId, json, syncAfterWrite);
+    }
+
+    @Override
     public @Nullable String doWriteRaw(String indexName, String dataTypeName, @Nullable String esId, String json) {
+        return this.doWriteRaw(indexName, dataTypeName, esId, json, this.doRefreshAfterWrite);
+    }
+
+    @Override
+    public String doWriteRaw(String indexName, String dataTypeName, String esId, String json, boolean syncAfterWrite) {
 
         IndexResponse response = null;
         IndexRequest indexRequest = new IndexRequest(indexName, dataTypeName, esId, this.doRefreshAfterWrite);
@@ -229,7 +240,6 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 
         long total = 0;
         LOG.debug("NetworkIndex query and read: {}", dataTypeName);
-
         SearchRequest searchRequest = new SearchRequest(alias, dataTypeName);
         searchRequest.setQuery(queryBuilder);
         SearchResponse response = null;
@@ -250,7 +260,8 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 
     @Override
     public @Nonnull SearchResult<SearchHit> doReadAllJsonData(String dataTypeName, boolean ignoreException) {
-        return doReadByQueryJsonData(dataTypeName, QueryBuilders.matchAllQuery(), ignoreException);
+        return doReadByQueryJsonData(dataTypeName, QueryBuilders.matchAllQuery().size(READ_MAX_SIZE).from(0),
+                ignoreException);
     }
 
     public @Nonnull SearchResult<SearchHit> doReadAllJsonData(String alias, String dataType, boolean ignoreException) {
@@ -277,9 +288,9 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
             UpdateResponse response = this.update(request);
             success = response.succeeded();
         } catch (IOException e) {
-            LOG.warn("Problem updating {} with id {} and data {}: {}", dataTypeName, esId, json, e);
+            LOG.warn("Problem updating {} with id {} and data {}: '{}'", dataTypeName, esId, json, e.getMessage());
         }
-        //		if(this.doRefreshAfterWrite) {
+        //		if (this.doRefreshAfterWrite) {
         //			this.doRefresh(dataTypeName);
         //		}
         return success ? esId : null;
@@ -320,6 +331,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
         //		}
         return del;
     }
+
 
 
 }
