@@ -23,14 +23,12 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.DataObjectAcessorPm.Intervall;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerOutputBuilder;
@@ -110,7 +108,7 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         super();
         LOG.info("Start {}", this.getClass().getName());
 
-        this.dbClient = new HtDatabaseClient(hosts, authUsername, authPassword, trustAllCerts);
+        this.dbClient = HtDatabaseClient.getClient(hosts, authUsername, authPassword, trustAllCerts);
         this.mediatorserverRW = new DataObjectAcessor<>(dbClient, Entity.MediatorServer,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data.class);
         this.mediatorserverRW.setWriteInterface(MediatorServerEntity.class);

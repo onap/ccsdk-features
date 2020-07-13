@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk features
  * ================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,24 +21,26 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-import javax.annotation.Nonnull;
+/**
+ * @author Michael Dürre
+ *
+ */
+public class Search7Request extends SearchRequest {
 
-public class GetRequest extends BaseRequest {
-
-    private final String alias;
-    private final String esId;
-
-    public GetRequest(String alias, String dataType, @Nonnull String esId) {
-        super("GET", String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId)));
-        this.alias = alias;
-        this.esId = esId;
+    /**
+     * @param alias
+     * @param dataType
+     */
+    public Search7Request(String alias) {
+        super(String.format("/%s/_search", alias));
     }
 
-    protected String getAlias() {
-        return this.alias;
+    /**
+     * @param request
+     */
+    public Search7Request(SearchRequest request) {
+        this(request.getAlias());
+        this.setQuery(request.getQuery());
     }
 
-    protected String getEsId() {
-        return this.esId;
-    }
 }

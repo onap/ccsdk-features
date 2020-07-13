@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.Portstatus;
@@ -53,8 +52,8 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ListAliasesResp
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ListIndicesResponse;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentData;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataMigrationReport;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataContainer;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataMigrationReport;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
 import org.slf4j.Logger;
@@ -72,7 +71,11 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
         if (timeoutms > 0) {
             Portstatus.waitSecondsTillAvailable(timeoutms / 1000, hosts);
         }
-        this.dbClient = new HtDatabaseClient(hosts, username, password, trustAll);
+        try {
+            this.dbClient = HtDatabaseClient.getClient(hosts, username, password, trustAll);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Can not reach database with parameters.",e);
+        }
     }
 
     @Override
