@@ -72,7 +72,7 @@ public class BaseHTTPClient {
     private static final int DEFAULT_HTTP_TIMEOUT_MS = 30000; // in ms
 
     private final boolean trustAll;
-    private final String baseUrl;
+    private String baseUrl;
 
     private int timeout = DEFAULT_HTTP_TIMEOUT_MS;
     private SSLContext sc = null;
@@ -99,7 +99,15 @@ public class BaseHTTPClient {
         }
     }
 
-    protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
+    public void setBaseUrl(String base) {
+        if (!base.endsWith("/")) {
+            base += "/";
+        }
+        this.baseUrl = base;
+    }
+
+    @Nonnull
+    protected BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
             throws IOException {
         return this.sendRequest(uri, method, body != null ? body.getBytes(CHARSET) : null, headers);
     }

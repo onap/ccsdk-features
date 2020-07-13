@@ -45,7 +45,7 @@ public class SearchResponse extends BaseResponse {
     private void handleResult(JSONObject result) {
         if (result != null && this.isResponseSucceeded()) {
             JSONObject hitsouter = result.getJSONObject("hits");
-            this.total = hitsouter.getLong("total");
+            this.total = this.getTotalFromHits(hitsouter);
             JSONArray a = hitsouter.getJSONArray("hits");
             SearchHit[] hits = new SearchHit[a.length()];
             for (int i = 0; i < a.length(); i++) {
@@ -83,5 +83,19 @@ public class SearchResponse extends BaseResponse {
             }
         }
         return entries;
+    }
+
+    /**
+     * @param hits
+     * @return
+     */
+    private long getTotalFromHits(JSONObject hits) {
+        Object o = hits.get("total");
+        if (o instanceof Long || o instanceof Integer) {
+            return hits.getLong("total");
+        } else if (o instanceof JSONObject) {
+            return hits.getJSONObject("total").getLong("value");
+        }
+        return 0;
     }
 }

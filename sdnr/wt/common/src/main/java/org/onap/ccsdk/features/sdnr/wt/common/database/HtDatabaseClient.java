@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
@@ -35,7 +34,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.GetIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.GetRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.IndexRequest;
-import org.onap.ccsdk.features.sdnr.wt.common.database.requests.RefreshIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.UpdateByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.UpdateRequest;
@@ -43,7 +41,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteByQueryRe
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.DeleteResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.GetResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.IndexResponse;
-import org.onap.ccsdk.features.sdnr.wt.common.database.responses.RefreshIndexResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.UpdateByQueryResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.UpdateResponse;
@@ -59,34 +56,69 @@ import org.slf4j.LoggerFactory;
 public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, AutoCloseable {
 
     private static final boolean REFRESH_AFTER_REWRITE_DEFAULT = true;
-    private static final boolean TRUSTALL_DEFAULT = false;
+    public static final boolean TRUSTALL_DEFAULT = false;
+    private static final long TIMOUT_MS_DEFAULT = 30000;
+    private static final long READ_MAX_SIZE = 9999;
+    private final static long SLEEPTIMEMS = 5000;
 
     private final Logger LOG = LoggerFactory.getLogger(HtDatabaseClient.class);
 
     private boolean doRefreshAfterWrite;
 
-    public HtDatabaseClient(HostInfo[] hosts) {
-        this(hosts, REFRESH_AFTER_REWRITE_DEFAULT);
-    }
-
-    public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite) {
-        this(hosts, refreshAfterWrite, null, null, TRUSTALL_DEFAULT);
-    }
-
-    public HtDatabaseClient(HostInfo[] hosts, String username, String password) {
-        this(hosts, username, password, TRUSTALL_DEFAULT);
-    }
-
-    public HtDatabaseClient(HostInfo[] hosts, String username, String password, boolean trustAll) {
-        this(hosts, REFRESH_AFTER_REWRITE_DEFAULT, username, password, trustAll);
-    }
-
-    public HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite, String username, String password,
-            boolean trustAll) {
+    private HtDatabaseClient(HostInfo[] hosts, boolean refreshAfterWrite, String username, String password,
+            boolean trustAll) throws Exception {
         super(hosts, username, password, trustAll);
         this.doRefreshAfterWrite = refreshAfterWrite;
     }
 
+    /*----------------------------------
+     * static factory function
+     */
+
+    static public HtDatabaseClient getClient(HostInfo[] hosts) throws HtDatabaseClientException {
+        return getClient(hosts, REFRESH_AFTER_REWRITE_DEFAULT, null, null, TRUSTALL_DEFAULT, TIMOUT_MS_DEFAULT);
+    }
+
+    static public HtDatabaseClient getClient(HostInfo[] hosts, String username, String password)
+            throws HtDatabaseClientException {
+        return getClient(hosts, REFRESH_AFTER_REWRITE_DEFAULT, username, password, TRUSTALL_DEFAULT, TIMOUT_MS_DEFAULT);
+    }
+
+    static public HtDatabaseClient getClient(HostInfo[] hosts, String username, String password, boolean trustAll)
+            throws HtDatabaseClientException {
+        return getClient(hosts, REFRESH_AFTER_REWRITE_DEFAULT, username, password, trustAll, TIMOUT_MS_DEFAULT);
+    }
+
+    static public HtDatabaseClient getClient(HostInfo[] hosts, String username, String password, boolean trustAll,
+            long timeoutms) throws HtDatabaseClientException {
+        return getClient(hosts, REFRESH_AFTER_REWRITE_DEFAULT, username, password, trustAll, TIMOUT_MS_DEFAULT);
+    }
+
+    static public HtDatabaseClient getClient(HostInfo[] hosts, boolean refreshAfterWrite, String username,
+            String password, boolean trustAll, long timeoutms) throws HtDatabaseClientException {
+        long waiting = 0;
+        HtDatabaseClient client = null;
+        Exception exceptionWas = null;
+
+        do {
+            try {
+                client = new HtDatabaseClient(hosts, refreshAfterWrite, username, password, trustAll);
+                exceptionWas = null;
+            } catch (Exception e) {
+                try {
+                    Thread.sleep(SLEEPTIMEMS);
+                } catch (InterruptedException e1) {
+                    Thread.currentThread().interrupt();
+                }
+                waiting += SLEEPTIMEMS;
+                exceptionWas = e;
+            }
+        } while (client == null && waiting < timeoutms);
+        if (client == null) {
+            throw new HtDatabaseClientException("Can not reach database server. Client not started.", exceptionWas);
+        }
+        return client;
+    }
 
     /*----------------------------------
      * Functions
@@ -133,7 +165,17 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
     }
 
     @Override
+    public String doWriteRaw(String dataTypeName, String esId, String json, boolean syncAfterWrite) {
+        return this.doWriteRaw(dataTypeName, dataTypeName, esId, json, syncAfterWrite);
+    }
+
+    @Override
     public @Nullable String doWriteRaw(String indexName, String dataTypeName, @Nullable String esId, String json) {
+        return this.doWriteRaw(indexName, dataTypeName, esId, json, this.doRefreshAfterWrite);
+    }
+
+    @Override
+    public String doWriteRaw(String indexName, String dataTypeName, String esId, String json, boolean syncAfterWrite) {
 
         IndexResponse response = null;
         IndexRequest indexRequest = new IndexRequest(indexName, dataTypeName, esId, this.doRefreshAfterWrite);
@@ -148,22 +190,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
             LOG.warn("Response null during write: {} {}", esId, json);
             return null;
         }
-        //		if(this.doRefreshAfterWrite) {
-        //			this.doRefresh(dataTypeName);
-        //		}
         return response.getId();
-    }
-
-    private void doRefresh(String dataTypeName) {
-        try {
-            RefreshIndexResponse response = this.refreshIndex(new RefreshIndexRequest(dataTypeName));
-            if (!response.succeeded()) {
-                LOG.warn("seems that index {} was not refreshed", dataTypeName);
-            }
-        } catch (IOException e) {
-            LOG.warn("problem with refreshing index: {}", e);
-        }
-
     }
 
     @Override
@@ -181,9 +208,6 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
         } catch (IOException e) {
             LOG.warn("Problem deleting from db: {}", e.getMessage());
         }
-        //		if(this.doRefreshAfterWrite) {
-        //			this.doRefresh(dataTypeName);
-        //		}
         return response != null ? response.isDeleted() : false;
     }
 
@@ -229,7 +253,6 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 
         long total = 0;
         LOG.debug("NetworkIndex query and read: {}", dataTypeName);
-
         SearchRequest searchRequest = new SearchRequest(alias, dataTypeName);
         searchRequest.setQuery(queryBuilder);
         SearchResponse response = null;
@@ -250,7 +273,8 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
 
     @Override
     public @Nonnull SearchResult<SearchHit> doReadAllJsonData(String dataTypeName, boolean ignoreException) {
-        return doReadByQueryJsonData(dataTypeName, QueryBuilders.matchAllQuery(), ignoreException);
+        return doReadByQueryJsonData(dataTypeName, QueryBuilders.matchAllQuery().size(READ_MAX_SIZE).from(0),
+                ignoreException);
     }
 
     public @Nonnull SearchResult<SearchHit> doReadAllJsonData(String alias, String dataType, boolean ignoreException) {
@@ -277,11 +301,8 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
             UpdateResponse response = this.update(request);
             success = response.succeeded();
         } catch (IOException e) {
-            LOG.warn("Problem updating {} with id {} and data {}: {}", dataTypeName, esId, json, e);
+            LOG.warn("Problem updating {} with id {} and data {}: '{}'", dataTypeName, esId, json, e.getMessage());
         }
-        //		if(this.doRefreshAfterWrite) {
-        //			this.doRefresh(dataTypeName);
-        //		}
         return success ? esId : null;
     }
 
@@ -296,9 +317,6 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
         } catch (IOException e) {
             LOG.warn("Problem updating items in {} with query {} and data {}: {}", dataTypeName, query, json, e);
         }
-        //		if(this.doRefreshAfterWrite) {
-        //			this.doRefresh(dataTypeName);
-        //		}
         return success;
     }
 
@@ -315,11 +333,9 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
         } catch (IOException e) {
             LOG.warn("Problem delete in {} with query {}:{} ", dataTypeName, query.toJSON(), e);
         }
-        //		if(this.doRefreshAfterWrite) {
-        //			this.doRefresh(dataTypeName);
-        //		}
         return del;
     }
+
 
 
 }

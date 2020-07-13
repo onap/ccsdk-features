@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BaseResponse {
+
     private static final Logger LOG = LoggerFactory.getLogger(BaseResponse.class);
 
     private final int responseCode;
@@ -45,14 +46,10 @@ public class BaseResponse {
     }
 
     public boolean isResponseSucceeded() {
-        return this.responseCode < 300;
+        return this.responseCode < 300 && this.responseCode >= 200;
     }
 
     JSONObject getJson(Response response) {
-        if (response == null) {
-            LOG.warn("unable to parse response. response is null.");
-            return null;
-        }
         try {
             String sresponse = EntityUtils.toString(response.getEntity());
             LOG.debug("parsing response={}", sresponse);
@@ -95,4 +92,6 @@ public class BaseResponse {
         }
 
     }
+
+
 }

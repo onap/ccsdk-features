@@ -54,9 +54,10 @@ public class CreateIndexRequest extends BaseRequest {
         return this;
     }
 
-    public void settings(JSONObject settings) {
+    public CreateIndexRequest settings(JSONObject settings) {
         this.settings = settings;
         this.setRequest();
+        return this;
     }
 
     public boolean hasMappings() {
