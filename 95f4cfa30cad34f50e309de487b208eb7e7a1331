@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0d1d1636_f54dcb7a",
+        "filename": "sdnr/wt/common/src/main/java/org/onap/ccsdk/features/sdnr/wt/common/database/Portstatus.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-07-14T16:59:00Z",
+      "side": 1,
+      "message": "Copyright Header Updation is wrong, have Highstreet added to Copyright with Update Writes.",
+      "revId": "95f4cfa30cad34f50e309de487b208eb7e7a1331",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
