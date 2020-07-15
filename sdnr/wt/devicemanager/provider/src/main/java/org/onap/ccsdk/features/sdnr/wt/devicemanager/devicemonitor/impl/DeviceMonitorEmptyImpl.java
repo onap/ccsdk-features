@@ -17,7 +17,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl;
 
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.DeviceMonitoredNe;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 
 public class DeviceMonitorEmptyImpl implements DeviceMonitor {
@@ -29,7 +28,7 @@ public class DeviceMonitorEmptyImpl implements DeviceMonitor {
     public void removeMountpointIndication(String mountPointNodeName) {}
 
     @Override
-    public void deviceConnectMasterIndication(String mountPointNodeName, DeviceMonitoredNe ne) {}
+    public void deviceConnectMasterIndication(String mountPointNodeName, NetworkElement ne) {}
 
     @Override
     public void deviceDisconnectIndication(String mountPointNodeName) {}
@@ -39,9 +38,5 @@ public class DeviceMonitorEmptyImpl implements DeviceMonitor {
 
     @Override
     public void close() throws Exception {}
-
-    @Override
-    public void deviceConnectMasterIndication(String mountPointNodeName, NetworkElement ne) {}
-
 
 }

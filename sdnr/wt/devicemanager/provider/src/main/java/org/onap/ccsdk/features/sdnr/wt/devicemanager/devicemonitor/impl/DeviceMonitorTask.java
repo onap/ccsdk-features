@@ -132,7 +132,7 @@ public class DeviceMonitorTask implements Runnable {
      * @param neParam that connected
      */
 
-    public void deviceConnectIndication(DeviceMonitoredNe neParam) {
+    public void deviceConnectIndication(@Nullable DeviceMonitoredNe neParam) {
         LOG.info("{} {} Connect {} and stop.", LOGMARKER, tickCounter, mountPointName);
         clear(DeviceMonitorProblems.connectionLossOAM);
         synchronized (lockNe) {

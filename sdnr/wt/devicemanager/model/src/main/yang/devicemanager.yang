@@ -6,6 +6,7 @@ module devicemanager {
 
   import data-provider {
     prefix data-provider;
+    revision-date 2019-08-01;
   }
 
   organization
