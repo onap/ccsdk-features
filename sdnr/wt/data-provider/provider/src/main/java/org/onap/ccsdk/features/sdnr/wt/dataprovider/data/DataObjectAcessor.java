@@ -24,38 +24,35 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.EsDataObjectReaderWriter;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.EsDataObjectReaderWriter2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DataObjectAcessor<T extends DataObject> extends EsDataObjectReaderWriter<T> {
+public class DataObjectAcessor<T extends DataObject> extends EsDataObjectReaderWriter2<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataObjectAcessor.class);
 
-    public DataObjectAcessor(HtDatabaseClient dbClient, Entity entity, Class<T> clazz) throws ClassNotFoundException {
-        this(dbClient, entity, clazz, true);
+    DataObjectAcessor(HtDatabaseClient dbClient, Entity entity, Class<T> clazz) throws ClassNotFoundException {
+        super(dbClient, entity, clazz);
         LOG.info("Create {}", this.getClass().getName());
     }
 
-    public DataObjectAcessor(HtDatabaseClient dbClient, Entity entity, Class<T> clazz, boolean idSupported)
-            throws ClassNotFoundException {
-        super(dbClient, entity, clazz);
-        if (idSupported) {
-            setEsIdAttributeName("_id");
-        }
+    public QueryResult<T> getData(EntityInput input) {
+
+        QueryByFilter queryByFilter = new QueryByFilter(input);
+        QueryBuilder queryBuilder = queryByFilter.getQueryBuilderByFilter();
+        // Exception handling during user input for invalid filter input.
+        // This wrong filter by user is allowed an results into empty data.
+        boolean ignoreException = queryBuilder.contains("range");
+
+        LOG.info("Request: {} filter {} ignoreException{}:", this.getDataTypeName(), queryByFilter, ignoreException);
+
+        SearchResult<T> result = doReadAll(queryBuilder, ignoreException);
+        return new QueryResult<>(queryByFilter, result);
     }
 
-    QueryResult<T> getData(EntityInput input) {
-        long page = QueryByFilter.getPage(input);
-        long pageSize = QueryByFilter.getPageSize(input);
-        LOG.info("Request: {}", this.getDataTypeName());
-        QueryBuilder query = QueryByFilter.fromFilter(input.getFilter()).from((page - 1) * pageSize).size(pageSize);
-        QueryByFilter.setSortOrder(query, input.getSortorder());
-        SearchResult<T> result = doReadAll(query, query.contains("range"));
-        return new QueryResult<>(page, pageSize, result);
-    }
 
 }

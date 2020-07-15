@@ -33,7 +33,9 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.elalto.ElAltoReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformationR2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin.GuilinReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin.GuilinReleaseInformationR2;
 
 public abstract class ReleaseInformation {
 
@@ -138,8 +140,12 @@ public abstract class ReleaseInformation {
                 return new ElAltoReleaseInformation();
             case FRANKFURT_R1:
                 return new FrankfurtReleaseInformation();
-            case GUILIN:
+            case FRANKFURT_R2:
+                return new FrankfurtReleaseInformationR2();
+            case GUILIN_R1:
                 return new GuilinReleaseInformation();
+            case GUILIN_R2:
+                return new GuilinReleaseInformationR2();
             default:
                 return null;
         }

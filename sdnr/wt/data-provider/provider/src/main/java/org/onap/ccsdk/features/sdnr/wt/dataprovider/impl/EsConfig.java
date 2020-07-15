@@ -26,7 +26,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
@@ -52,13 +51,12 @@ public class EsConfig implements Configuration, IEsConfig {
     private static final String PROPERTY_KEY_AUTH_PASSWORD = "esAuthPassword";
 
 
-    private static String defaultHostinfo = "${SDNRDBURL}";//printHosts(new HostInfo[] { new HostInfo("sdnrdb", 9200, Protocol.HTTP) });
+    private static String defaultHostinfo = "${SDNRDBURL}";
     private static final String DEFAULT_VALUE_CLUSTER = "";
     /** check db data in this interval [in seconds] 0 deactivated */
     private static final String DEFAULT_ARCHIVE_INTERVAL_SEC = "0";
     /** keep data for this time [in seconds] 30 days */
     private static final String DEFAULT_ARCHIVE_LIMIT_SEC = String.valueOf(60L * 60L * 24L * 30L);
-    //private static final String DEFAULT_KEY_NODE = "elasticsearchnode";
     private static final String DEFAULT_VALUE_NODE = "elasticsearchnode";
     private static final String DEFAULT_VALUE_DBUSERNAME = "${SDNRDBUSERNAME}";
     private static final String DEFAULT_VALUE_DBPASSWORD = "${SDNRDBPASSWORD}";

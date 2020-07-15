@@ -30,6 +30,8 @@
                interface="org.opendaylight.mdsal.binding.api.RpcProviderService"
                odl:type="default"/>
 
+<!--     <reference id="bundleService" interface="org.apache.karaf.bundle.core.BundleService" odl:type="default"/> -->
+
     <bean id="readyServlet"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.ReadyHttpServlet">
     </bean>
@@ -41,7 +43,8 @@
     </service>
 
     <bean id="aboutServlet"
-          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.AboutHttpServlet">
+          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet">
+<!--           <property name="bundleService" ref="bundleService"/> -->
     </bean>
     <service interface="javax.servlet.http.HttpServlet"
              ref="aboutServlet">
@@ -58,17 +61,26 @@
             <entry key="alias" value="/ms"/>
         </service-properties>
     </service>
+    <bean id="treeServlet"
+          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet">
+    </bean>
+    <service interface="javax.servlet.http.HttpServlet" ref="treeServlet">
+        <service-properties>
+            <entry key="alias" value="/tree"/>
+        </service-properties>
+    </service>
 
     <bean id="provider"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataProviderImpl"
           init-method="init" destroy-method="close">
         <property name="rpcProviderService" ref="rpcProviderService"/>
         <property name="aboutServlet" ref="aboutServlet"/>
+        <property name="treeServlet" ref="treeServlet"/>
         <property name="mediatorServerServlet" ref="msServlet"/>
     </bean>
 
     <bean id="yangServlet"
-          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.YangSchemaHttpServlet">
+          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangSchemaHttpServlet">
     </bean>
     <service interface="javax.servlet.http.HttpServlet"
              ref="yangServlet">

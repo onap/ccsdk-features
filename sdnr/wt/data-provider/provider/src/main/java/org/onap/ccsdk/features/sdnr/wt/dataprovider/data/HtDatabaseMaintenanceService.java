@@ -46,15 +46,15 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
     private final EsDataObjectReaderWriter2<MaintenanceEntity> maintenanceRW;
     private final EsDataObjectReaderWriter2<NetworkElementConnectionEntity> requiredNeRW;
 
-    HtDatabaseMaintenanceService(@NonNull HtDatabaseClient client) throws ClassNotFoundException {
+    public HtDatabaseMaintenanceService(@NonNull HtDatabaseClient client) throws ClassNotFoundException {
         HtAssert.nonnull(client);
 
         // Create control structure
         maintenanceRW = new EsDataObjectReaderWriter2<>(client, Entity.Maintenancemode, MaintenanceEntity.class,
-                MaintenanceBuilder.class).setEsIdAttributeName("_id");
+                MaintenanceBuilder.class, true).setEsIdAttributeName("_id");
 
         requiredNeRW = new EsDataObjectReaderWriter2<>(client, Entity.NetworkelementConnection,
-                NetworkElementConnectionEntity.class, NetworkElementConnectionBuilder.class)
+                NetworkElementConnectionEntity.class, NetworkElementConnectionBuilder.class, true)
                         .setEsIdAttributeName("_id");
 
     }
