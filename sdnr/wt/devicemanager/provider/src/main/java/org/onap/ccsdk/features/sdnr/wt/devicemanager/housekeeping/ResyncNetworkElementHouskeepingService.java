@@ -133,7 +133,7 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
                             this.databaseClientEvents.clearFaultsCurrentOfNode(mountpointName);
                             nodeNamesHandled.add(mountpointName);
                         } else {
-                            if (deviceManager.getNeByMountpoint(mountpointName) != null) {
+                            if (deviceManager.getConnectedNeByMountpoint(mountpointName) != null) {
                                 LOG.info("At node known mountpoint {}", mountpointName);
                                 nodeNamesHandled.add(mountpointName);
                             } else {
@@ -152,7 +152,7 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
                 LOG.info("Start refresh mountpoint task {}", refreshCounter);
                 // for(String nodeName:nodeNamesOutput) {
                 for (String nodeName : nodeNamesHandled) {
-                    NetworkElement ne = deviceManager.getNeByMountpoint(nodeName);
+                    NetworkElement ne = deviceManager.getConnectedNeByMountpoint(nodeName);
                     if (ne != null) {
                         LOG.info("Refresh mountpoint {}", nodeName);
                         ne.warmstart();

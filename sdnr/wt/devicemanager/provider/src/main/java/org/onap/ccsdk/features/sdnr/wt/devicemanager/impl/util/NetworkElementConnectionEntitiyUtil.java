@@ -45,7 +45,6 @@ public class NetworkElementConnectionEntitiyUtil {
     private static final QName QNAME_COREMODEL =
             QName.create("urn:onf:params:xml:ns:yang:core-model", "2017-03-20", "core-model").intern();
 
-
     /**
      * Update devicetype and let all other field empty
      * 

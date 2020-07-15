@@ -1,4 +1,4 @@
-/**
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -36,18 +36,28 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.StreamNameType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
+import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class NetconfAccessorImpl implements NetconfAccessor {
 
     private static final Logger log = LoggerFactory.getLogger(NetconfAccessorImpl.class);
+
+    private static final @NonNull InstanceIdentifier<Topology> NETCONF_TOPO_IID =
+            InstanceIdentifier.create(NetworkTopology.class).child(Topology.class,
+                    new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
     private final NodeId nodeId;
     private final DataBroker dataBroker;
@@ -58,7 +68,7 @@ public class NetconfAccessorImpl implements NetconfAccessor {
 
     /**
      * Contains all data to access and manage netconf device
-     * 
+     *
      * @param nodeId of managed netconf node
      * @param netconfNode information
      * @param dataBroker to access node
@@ -75,7 +85,14 @@ public class NetconfAccessorImpl implements NetconfAccessor {
         this.transactionUtils = transactionUtils;
 
         ConnectionStatus csts = netconfNode != null ? netconfNode.getConnectionStatus() : null;
-        this.capabilities = Capabilities.getAvailableCapabilities(csts != null ? netconfNode : null);
+        if (csts == null) {
+            throw new IllegalStateException(String.format("connection status for %s is not connected", nodeId));
+        }
+        Capabilities tmp = Capabilities.getAvailableCapabilities(netconfNode);
+        if (tmp.getCapabilities().size() <= 0) {
+            throw new IllegalStateException(String.format("no capabilities found for %s", nodeId));
+        }
+        this.capabilities = tmp;
     }
 
     /**
