@@ -29,20 +29,20 @@ import java.util.concurrent.TimeUnit;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.MediatorServerDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
 
 /**
  * @author Michael Dürre
- *
  */
 public class TestMediatorServerService {
-    private static final String SERVERID = null;
     private static ElasticSearchDataProvider dbProvider;
     private static HtDatabaseClient dbRawProvider;
     private static MediatorServerDataProvider service = null;
@@ -50,13 +50,11 @@ public class TestMediatorServerService {
 
     @BeforeClass
     public static void init() throws Exception {
-
-        dbProvider = new ElasticSearchDataProvider(TestCRUDforDatabase.hosts);
+        HostInfo[] hosts = HostInfoForTest.get();
+        dbProvider = new ElasticSearchDataProvider(hosts);
         dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
-        dbRawProvider = HtDatabaseClient.getClient(TestCRUDforDatabase.hosts);
-        service = new MediatorServerDataProvider(TestCRUDforDatabase.hosts);
-
-
+        dbRawProvider = HtDatabaseClient.getClient(hosts);
+        service = new MediatorServerDataProvider(hosts);
     }
 
     @Test

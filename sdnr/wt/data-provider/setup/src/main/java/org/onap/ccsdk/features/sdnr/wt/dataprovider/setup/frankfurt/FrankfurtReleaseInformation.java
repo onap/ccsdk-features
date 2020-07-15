@@ -86,7 +86,7 @@ public class FrankfurtReleaseInformation extends ReleaseInformation {
 
         ClusterSettingsResponse response = null;
         try {
-            response = dbClient.setupClusterSettings(new ClusterSettingsRequest(false));
+            response = dbClient.setupClusterSettings(new ClusterSettingsRequest(false).maxCompilationsPerMinute(400));
         } catch (IOException e) {
             LOG.warn("problem setting up cluster: {}", e);
         }

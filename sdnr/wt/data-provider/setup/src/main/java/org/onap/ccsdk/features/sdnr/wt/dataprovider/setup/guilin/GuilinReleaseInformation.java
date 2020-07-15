@@ -22,16 +22,15 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.KeepDataSearchHitConverter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
 
 public class GuilinReleaseInformation extends ReleaseInformation {
 
@@ -40,7 +39,7 @@ public class GuilinReleaseInformation extends ReleaseInformation {
      * @param dbMap
      */
     public GuilinReleaseInformation() {
-        super(Release.GUILIN, createDBMap());
+        super(Release.GUILIN_R1, createDBMap());
 
     }
 
@@ -63,7 +62,7 @@ public class GuilinReleaseInformation extends ReleaseInformation {
 
     @Override
     public SearchHitConverter getConverter(Release dst, ComponentName comp) {
-        if (dst == Release.GUILIN) {
+        if (dst == Release.GUILIN_R1) {
             return new KeepDataSearchHitConverter(comp);
         }
         return null;

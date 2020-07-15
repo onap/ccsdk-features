@@ -25,7 +25,13 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.DataObjectAcessorPm.Intervall;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor.DataObjectAcessorPm;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor.DataObjectAcessorPm.Intervall;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor.DataObjectAcessorStatus;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor.DataObjectAcessorWithId;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.entity.HtDatabaseEventsService;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.entity.HtDatabaseMaintenanceService;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryResult;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceInput;
@@ -77,17 +83,15 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
     private static final String EXCEPTION_UNABLE_TO_UPDATE_IN_DATABASE = "unable to update data in database";
     private static final String EXCEPTION_UNABLE_TO_REMOVE_FROM_DATABASE = "unable to remove data from database";
 
-    private static final boolean DEFAULT_TRUSTALLCERTS = false;
-
     private final HtDatabaseClient dbClient;
-    private final DataObjectAcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultcurrent.list.output.Data> eventRWFaultCurrent;
-    private final DataObjectAcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultlog.list.output.Data> eventRWFaultLog;
-    private final DataObjectAcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data> mediatorserverRW;
-    private final DataObjectAcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.maintenance.list.output.Data> maintenanceRW;
-    private final DataObjectAcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data> equipmentRW;
-    private final DataObjectAcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.connectionlog.list.output.Data> connnectionlogRW;
-    private final DataObjectAcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.eventlog.list.output.Data> eventlogRW;
-    private final DataObjectAcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.network.element.connection.list.output.Data> networkelementConnectionRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultcurrent.list.output.Data> eventRWFaultCurrent;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultlog.list.output.Data> eventRWFaultLog;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data> mediatorserverRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.maintenance.list.output.Data> maintenanceRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data> equipmentRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.connectionlog.list.output.Data> connnectionlogRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.eventlog.list.output.Data> eventlogRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.network.element.connection.list.output.Data> networkelementConnectionRW;
     private final DataObjectAcessorPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> pm15mRW;
     private final DataObjectAcessorPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._24h.list.output.Data> pm24hRW;
 
@@ -100,7 +104,7 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
     }
 
     public ElasticSearchDataProvider(HostInfo[] hosts) throws Exception {
-        this(hosts, null, null, DEFAULT_TRUSTALLCERTS);
+        this(hosts, null, null, HtDatabaseClient.TRUSTALL_DEFAULT);
     }
 
     public ElasticSearchDataProvider(HostInfo[] hosts, String authUsername, String authPassword, boolean trustAllCerts)
@@ -108,31 +112,32 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         super();
         LOG.info("Start {}", this.getClass().getName());
 
+
         this.dbClient = HtDatabaseClient.getClient(hosts, authUsername, authPassword, trustAllCerts);
-        this.mediatorserverRW = new DataObjectAcessor<>(dbClient, Entity.MediatorServer,
+        this.mediatorserverRW = new DataObjectAcessorWithId<>(dbClient, Entity.MediatorServer,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data.class);
         this.mediatorserverRW.setWriteInterface(MediatorServerEntity.class);
 
-        this.maintenanceRW = new DataObjectAcessor<>(dbClient, Entity.Maintenancemode,
+        this.maintenanceRW = new DataObjectAcessorWithId<>(dbClient, Entity.Maintenancemode,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.maintenance.list.output.Data.class);
         this.maintenanceRW.setWriteInterface(MaintenanceEntity.class);
 
-        this.equipmentRW = new DataObjectAcessor<>(dbClient, Entity.Inventoryequipment,
+        this.equipmentRW = new DataObjectAcessorWithId<>(dbClient, Entity.Inventoryequipment,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data.class);
 
-        this.eventRWFaultCurrent = new DataObjectAcessor<>(dbClient, Entity.Faultcurrent,
+        this.eventRWFaultCurrent = new DataObjectAcessorWithId<>(dbClient, Entity.Faultcurrent,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultcurrent.list.output.Data.class);
 
-        this.eventRWFaultLog = new DataObjectAcessor<>(dbClient, Entity.Faultlog,
+        this.eventRWFaultLog = new DataObjectAcessorWithId<>(dbClient, Entity.Faultlog,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultlog.list.output.Data.class);
 
-        this.connnectionlogRW = new DataObjectAcessor<>(dbClient, Entity.Connectionlog,
+        this.connnectionlogRW = new DataObjectAcessorWithId<>(dbClient, Entity.Connectionlog,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.connectionlog.list.output.Data.class);
 
-        this.eventlogRW = new DataObjectAcessor<>(dbClient, Entity.Eventlog,
+        this.eventlogRW = new DataObjectAcessorWithId<>(dbClient, Entity.Eventlog,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.eventlog.list.output.Data.class);
 
-        this.networkelementConnectionRW = new DataObjectAcessor<>(dbClient, Entity.NetworkelementConnection,
+        this.networkelementConnectionRW = new DataObjectAcessorWithId<>(dbClient, Entity.NetworkelementConnection,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.network.element.connection.list.output.Data.class);
         this.networkelementConnectionRW.setWriteInterface(NetworkElementConnectionEntity.class);
 
