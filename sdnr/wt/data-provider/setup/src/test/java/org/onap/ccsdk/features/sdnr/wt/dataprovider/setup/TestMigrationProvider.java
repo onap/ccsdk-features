@@ -27,7 +27,6 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.DataMigrationProviderImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataMigrationReport;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 
@@ -42,16 +41,20 @@ public class TestMigrationProvider {
             .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200"))};
 
     @Test
-    public void testCreateImport() {
+    public void testCreateImport() throws Exception {
         DataMigrationProviderImpl provider = new DataMigrationProviderImpl(hosts, null, null, true, 5000);
 
         try {
+
+
             //create el alto db infrastructure
-            provider.initDatabase(Release.FRANKFURT_R1, 5, 1, "", true, 10000);
+            if (!provider.initDatabase(null, 5, 1, "", true, 10000)) {
+                fail("unable to init database");
+            }
             //import data into database
-            DataMigrationReport report = provider.importData(FRANKFURT_BACKUP_FILE, false, Release.FRANKFURT_R1);
+            DataMigrationReport report = provider.importData(FRANKFURT_BACKUP_FILE, false, Release.FRANKFURT_R2);
             assertTrue(report.completed());
-            assertEquals(Release.FRANKFURT_R1, provider.autoDetectRelease());
+            assertEquals(Release.FRANKFURT_R2, provider.autoDetectRelease());
         } catch (Exception e) {
             fail(e.getMessage());
         }

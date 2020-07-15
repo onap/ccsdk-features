@@ -21,9 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
@@ -34,28 +32,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 public class TestNuMappings {
 
     @Test
-    public void test33() {
-        Faultcurrent c = new FaultcurrentBuilder().setSeverity(SeverityType.Critical).build();
+    public void testMapObjectToJson() throws IOException {
         YangToolsMapper mapper = new YangToolsMapper();
-        try {
-            System.out.println(mapper.writeValueAsString(c) + "<=>" + SeverityType.Critical.getName());
-        } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            Faultcurrent f = mapper.readValue("{\"severity\":\"Critical\"}", Faultcurrent.class);
-            System.out.println(f);
-            System.out.println(mapper.writeValueAsString(f));
-        } catch (JsonParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
+        Faultcurrent c = new FaultcurrentBuilder().setSeverity(SeverityType.Critical).build();
+        String json = mapper.writeValueAsString(c);
+        assertTrue("Critical expected", json.contains(SeverityType.Critical.getName()));
     }
+
+    @Test
+    public void testMapJsonToObject() throws IOException {
+        YangToolsMapper mapper = new YangToolsMapper();
+
+        Faultcurrent f = mapper.readValue("{\"severity\":\"Critical\"}", Faultcurrent.class);
+        assertTrue("Critical expected", f.getSeverity().equals(SeverityType.Critical));
+    }
+
 }

@@ -27,11 +27,12 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
 public enum Release {
 
     EL_ALTO("el alto", "_v1", new EsVersion(2, 2, 0), new EsVersion(2, 2, 0)), FRANKFURT_R1("frankfurt-R1", "-v2",
-            new EsVersion(6, 4, 3), new EsVersion(6, 8, 6)), FRANKFURT_R2("frankfurt-R2", "", new EsVersion(6, 4, 3),
-                    new EsVersion(6, 8, 6)), FRANKFURT_R3("frankfurt-R3", "", new EsVersion(6, 4, 3),
-                            new EsVersion(6, 8, 6)),
+            new EsVersion(6, 4, 3), new EsVersion(6, 8, 6)), FRANKFURT_R2("frankfurt-R2", "-v3", new EsVersion(7, 0, 1),
+                    new EsVersion(7, 6, 1)),
+    //FRANKFURT_R3("frankfurt-R3","",new EsVersion(6,4,3),new EsVersion(6,8,6)),
 
-    GUILIN("guilin", "", new EsVersion(6, 4, 3), new EsVersion(6, 8, 6));
+    GUILIN_R1("guilin-R1", "-v4", new EsVersion(6, 4, 3), new EsVersion(6, 8, 6)), GUILIN_R2("guilin-R2", "-v5",
+            new EsVersion(7, 0, 1), new EsVersion(7, 6, 1));
 
     public static final Release CURRENT_RELEASE = Release.FRANKFURT_R1;
 
@@ -67,6 +68,9 @@ public enum Release {
     }
 
     public static Release getValueBySuffix(String suffix) {
+        if (!suffix.startsWith("-")) {
+            suffix = "-" + suffix;
+        }
         for (Release r : Release.values()) {
             if (r.dbSuffix.equals(suffix))
                 return r;
