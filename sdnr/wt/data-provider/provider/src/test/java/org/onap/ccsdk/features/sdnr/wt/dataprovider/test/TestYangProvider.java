@@ -48,7 +48,6 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.YangFileProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.YangFilename;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.YangSchemaHttpServlet;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

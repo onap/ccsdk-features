@@ -46,6 +46,7 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     private MsServlet mediatorServerServlet;
     private DataProviderServiceImpl rpcApiService;
     private AboutHttpServlet aboutServlet;
+    private DataTreeHttpServlet treeServlet;
     private HtDatabaseClient dbClient;
 
     // Blueprint 1
@@ -66,12 +67,17 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
         this.aboutServlet = aboutServlet;
     }
 
+    public void setTreeServlet(DataTreeHttpServlet treeServlet) {
+        this.treeServlet = treeServlet;
+    }
+
     public void init() throws Exception {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
         // Start RPC Service
         this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.mediatorServerServlet);
+        this.treeServlet.setDatabaseClient(this.rpcApiService.getRawClient());
         LOG.info("Session Initiated end. Initialization done");
     }
 

@@ -41,6 +41,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceInput;
@@ -123,12 +124,11 @@ public class TestCRUDforDatabase {
 
     private static ElasticSearchDataProvider dbProvider;
     private static HtDatabaseClient dbRawProvider;
-    public static HostInfo[] hosts = new HostInfo[] {new HostInfo("localhost", Integer
-            .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200"))};
 
     @BeforeClass
     public static void init() throws Exception {
 
+        HostInfo[] hosts = HostInfoForTest.get();
         dbProvider = new ElasticSearchDataProvider(hosts);
         dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
         dbRawProvider = HtDatabaseClient.getClient(hosts);
@@ -337,7 +337,6 @@ public class TestCRUDforDatabase {
 
         // ==UPDATE============================
         System.out.println("Trying to update...");
-        final String name2 = "sim88";
         final String url2 = "10.5.10.2";
         final long port2 = 5960;
 

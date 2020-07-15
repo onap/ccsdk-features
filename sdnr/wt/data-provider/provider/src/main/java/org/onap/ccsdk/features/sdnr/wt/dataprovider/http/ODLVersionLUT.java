@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.http;
 
 public class ODLVersionLUT {
 
@@ -27,8 +27,8 @@ public class ODLVersionLUT {
         if (onapCCSDKVersion == null) {
             return def;
         }
-        if (onapCCSDKVersion.startsWith("1.6.")) {
-            return "ONAP Guillin";
+        if (onapCCSDKVersion.startsWith("2.0.")) {
+            return "ONAP Guilin";
         }
         if (onapCCSDKVersion.startsWith("1.5.")) {
             return "ONAP Frankfurt";
@@ -39,6 +39,9 @@ public class ODLVersionLUT {
         if (onapCCSDKVersion.startsWith("1.3.")) {
             return "ONAP El Alto";
         }
+        if (onapCCSDKVersion.startsWith("1.2.")) {
+            return "ONAP Guilin";
+        }
         return def;
     }
 
@@ -47,8 +50,8 @@ public class ODLVersionLUT {
         if (onapCCSDKVersion == null) {
             return def;
         }
-        if (onapCCSDKVersion.startsWith("1.6.")) {
-            return "sodium-SRX (0.11.X)";
+        if (onapCCSDKVersion.startsWith("2.")) {
+            return "sodium-SR3 (0.11.3)";
         }
         if (onapCCSDKVersion.startsWith("1.5.")) {
             return "neon-SR1 (0.10.1)";
@@ -58,6 +61,9 @@ public class ODLVersionLUT {
         }
         if (onapCCSDKVersion.startsWith("1.3.")) {
             return "fluorine-SR2 (0.9.2)";
+        }
+        if (onapCCSDKVersion.startsWith("1.2.")) {
+            return "sodium-SR3 (0.11.3)";
         }
         return def;
     }

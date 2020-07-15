@@ -23,7 +23,9 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.http;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.Attributes;
@@ -35,11 +37,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+//import org.apache.karaf.bundle.core.BundleInfo;
+//import org.apache.karaf.bundle.core.BundleService;
 import org.onap.ccsdk.features.sdnr.wt.common.Resources;
 import org.onap.ccsdk.features.sdnr.wt.common.file.PomFile;
 import org.onap.ccsdk.features.sdnr.wt.common.file.PomPropertiesFile;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ODLVersionLUT;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.SystemInfo;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +74,7 @@ public class AboutHttpServlet extends HttpServlet {
     private static final String PLACEHOLDER_MDSAL_VERSION = "{mdsal-version}";
     private static final String PLACEHOLDER_YANGTOOLS_VERSION = "{yangtools-version}";
     private static final String PLACEHOLDER_KARAF_INFO = "{karaf-info}";
+    private static final String PLACEHOLDER_DEVICEMANAGER_TABLE = "{devicemanagers}";
     private static final String README_FILE = "README.md";
 
     private final String groupId = "org.onap.ccsdk.features.sdnr.wt";
@@ -76,13 +82,21 @@ public class AboutHttpServlet extends HttpServlet {
 
     private final Map<String, String> data;
     private final String readmeContent;
+    //	private BundleService bundleService;
+
 
     public AboutHttpServlet() {
 
         this.data = new HashMap<>();
         this.collectStaticData();
         this.readmeContent = this.render(this.getResourceFileContent(README_FILE));
+        //BundleContext  context = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+
     }
+
+    //	public void setBundleService(BundleService bundleService) {
+    //		this.bundleService = bundleService;
+    //	}
 
     /**
      * collect static versioning data
@@ -96,7 +110,7 @@ public class AboutHttpServlet extends HttpServlet {
         this.data.put(PLACEHOLDER_ODLUX_REVISION, this.getPomProperty("odlux.buildno"));
         this.data.put(PLACEHOLDER_PACAKGE_VERSION, this.getManifestValue("Bundle-Version"));
         this.data.put(PLACEHOLDER_CCSDK_VERSION, ccsdkVersion);
-        this.data.put(PLACEHOLDER_ONAP_RELEASEVERSION, "1.8.1-SNAPSHOT");
+        this.data.put(PLACEHOLDER_ONAP_RELEASEVERSION, "2.0.0-SNAPSHOT");
         this.data.put(PLACEHOLDER_MDSAL_VERSION, SystemInfo.getMdSalVersion(UNKNOWN));
         this.data.put(PLACEHOLDER_YANGTOOLS_VERSION, SystemInfo.getYangToolsVersion(UNKNOWN));
         this.data.put(PLACEHOLDER_PACKAGE_GITHASH, this.getGitHash(UNKNOWN));
@@ -170,6 +184,7 @@ public class AboutHttpServlet extends HttpServlet {
         LOG.info("collecting dynamic data");
         try {
             this.data.put(PLACEHOLDER_KARAF_INFO, SystemInfo.get());
+            this.data.put(PLACEHOLDER_DEVICEMANAGER_TABLE, this.getDevicemanagerBundles());
         } catch (Exception e) {
             LOG.warn("problem collecting system data: {}", e);
         }
@@ -262,6 +277,28 @@ public class AboutHttpServlet extends HttpServlet {
             LOG.warn(EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE, e);
         }
         return null;
+    }
+
+    private String getDevicemanagerBundles() {
+        //		if(this.bundleService==null) {
+        //			LOG.debug("no bundle service available");
+        //			return "";
+        //		}
+        //		
+        //		List<String> ids = new ArrayList<String>();
+        //		List<Bundle> bundles = bundleService.selectBundles("0", ids , true);
+        //		if(bundles==null || bundles.size()<=0) {
+        //			LOG.debug("no bundles found");
+        //			return "";
+        //		}
+        //		LOG.debug("found {} bundles",bundles.size());
+        //		MarkdownTable table = new MarkdownTable();
+        //		for(Bundle bundle:bundles) {
+        //			BundleInfo info = this.bundleService.getInfo(bundle);
+        //			table.addRow(new String[] {String.valueOf(info.getBundleId()),info.getVersion(),info.getName(),info.getState().toString()});
+        //		}
+        //		return table.toMarkDown();
+        return "";
     }
 
     /**

@@ -26,16 +26,11 @@ import java.io.IOException;
 import org.onap.ccsdk.features.sdnr.wt.common.database.ExtRestClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
-import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
-import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.AggregationEntries;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SortOrder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Filter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Sortorder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +44,7 @@ public class DataObjectAcessorPm<T extends DataObject> extends DataObjectAcessor
     private static final String KEY = "node-name";
 
 
-    enum Intervall {
+    public enum Intervall {
         PMDATA15M("historicalperformance15min", "historicalperformance15min"), PMDATA24H("historicalperformance24h",
                 "historicalperformance24h");
 
@@ -75,7 +70,8 @@ public class DataObjectAcessorPm<T extends DataObject> extends DataObjectAcessor
 
     public DataObjectAcessorPm(HtDatabaseClient dbClient, Intervall mode, Entity entity, Class<T> clazz)
             throws ClassNotFoundException {
-        super(dbClient, entity, clazz, false);
+        super(dbClient, entity, clazz);
+        LOG.info("DataObjectAcessorPm");
         this.dbClient = dbClient;
         this.mode = mode;
     }
@@ -87,47 +83,24 @@ public class DataObjectAcessorPm<T extends DataObject> extends DataObjectAcessor
      * @return
      * @throws IOException
      */
-    QueryResult<String> getDataLtpList(EntityInput input) throws IOException {
-        long page = QueryByFilter.getPage(input);
-        long pageSize = QueryByFilter.getPageSize(input);
-        Filter nodeFilter = QueryByFilter.getFilter(input.getFilter(), NODE_KEY);
-        if (nodeFilter != null) {
-            SearchRequest request = new SearchRequest(mode.getIndex(), mode.getType());
-            request.setQuery(
-                    QueryBuilders.matchQuery(NODE_KEY, nodeFilter.getFiltervalue()).aggregations(UUID_KEY).size(0));
-            try {
-                SearchResponse response = this.dbClient.search(request);
-                AggregationEntries aggs = response.getAggregations(UUID_KEY);
-                String[] uuids = aggs.getKeysAsPagedStringList(pageSize, pageSize * (page - 1));
-                long totalSize = aggs.size();
-                return new QueryResult<String>(page, pageSize, new SearchResult<String>(uuids, totalSize));
-            } catch (IOException e) {
-                throw new IOException("problem reading ltps for req=" + request, e);
-            }
-        } else {
-            String msg = "no nodename in filter found ";
-            LOG.debug(msg);
-            throw new IllegalArgumentException(msg);
+    public QueryResult<String> getDataLtpList(EntityInput input) throws IOException {
+
+        QueryByFilter queryByFilter = new QueryByFilter(input);
+        SearchRequest request =
+                queryByFilter.getSearchRequestByFilter(NODE_KEY, UUID_KEY, mode.getIndex(), mode.getType());
+        try {
+            SearchResponse response = this.dbClient.search(request);
+            AggregationEntries aggs = response.getAggregations(UUID_KEY);
+            String[] uuids =
+                    aggs.getKeysAsPagedStringList(queryByFilter.getPageSize(), queryByFilter.getPageStartIndex());
+            long totalSize = aggs.size();
+            return new QueryResult<String>(queryByFilter.getPage(), queryByFilter.getPageSize(),
+                    new SearchResult<String>(uuids, totalSize));
+        } catch (IOException e) {
+            throw new IOException("problem reading ltps for req=" + request, e);
         }
     }
 
-    //	QueryResult<String> getDataDeviceList(EntityInput input) throws IOException {
-    //
-    //		long page = QueryByFilter.getPage(input);
-    //		long pageSize = QueryByFilter.getPageSize(input);
-    //
-    //		SearchRequest request = new SearchRequest(mode.getIndex(), mode.getType());
-    //		request.setQuery(QueryBuilders.matchAllQuery().aggregations(KEY).size(0));
-    ////		try {
-    //			SearchResponse response = this.dbClient.search(request);
-    //			AggregationEntries aggs = response.getAggregations(KEY);
-    //			String[] uuids = aggs.getKeysAsPagedStringList(pageSize, pageSize * (page - 1));
-    //			long totalSize = aggs.size();
-    //			return new QueryResult<String>(page, pageSize, new SearchResult<String>(uuids, totalSize));
-    ////		} catch (IOException e) {
-    ////			throw new IOException("problem reading nodes for req="+request, e);
-    ////		}
-    //	}
     /**
      * get aggregated devices list
      * 
@@ -135,31 +108,19 @@ public class DataObjectAcessorPm<T extends DataObject> extends DataObjectAcessor
      * @return
      * @throws IOException
      */
-    QueryResult<String> getDataDeviceList(EntityInput input) throws IOException {
+    public QueryResult<String> getDataDeviceList(EntityInput input) throws IOException {
 
-        long page = QueryByFilter.getPage(input);
-        long pageSize = QueryByFilter.getPageSize(input);
-
-        Sortorder soNode = QueryByFilter.getSortOrder(input.getSortorder(), KEY);
-        SearchRequest request = new SearchRequest(mode.getIndex(), mode.getType());
-        QueryBuilder query = null;
-        if (soNode != null) {
-            query = QueryBuilders.matchAllQuery()
-                    .aggregations(KEY,
-                            soNode.getSortorder() == SortOrder.Ascending
-                                    ? org.onap.ccsdk.features.sdnr.wt.common.database.queries.SortOrder.ASCENDING
-                                    : org.onap.ccsdk.features.sdnr.wt.common.database.queries.SortOrder.DESCENDING)
-                    .size(0);
-        } else {
-            query = QueryBuilders.matchAllQuery().aggregations(KEY).size(0);
-        }
-        request.setQuery(query);
+        QueryByFilter queryByFilter = new QueryByFilter(input);
+        SearchRequest request =
+                queryByFilter.getSearchRequestBySortOrder(NODE_KEY, UUID_KEY, mode.getIndex(), mode.getType());
         try {
             SearchResponse response = this.dbClient.search(request);
             AggregationEntries aggs = response.getAggregations(KEY);
-            String[] uuids = aggs.getKeysAsPagedStringList(pageSize, pageSize * (page - 1));
+            String[] uuids =
+                    aggs.getKeysAsPagedStringList(queryByFilter.getPageSize(), queryByFilter.getPageStartIndex());
             long totalSize = aggs.size();
-            return new QueryResult<String>(page, pageSize, new SearchResult<String>(uuids, totalSize));
+            return new QueryResult<String>(queryByFilter.getPage(), queryByFilter.getPageSize(),
+                    new SearchResult<String>(uuids, totalSize));
         } catch (IOException e) {
             throw new IOException("problem reading nodes for req=" + request, e);
         }

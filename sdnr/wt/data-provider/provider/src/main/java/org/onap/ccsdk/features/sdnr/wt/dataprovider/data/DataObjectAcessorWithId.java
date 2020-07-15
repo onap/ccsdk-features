@@ -21,12 +21,21 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
 
-import java.util.HashMap;
+import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * @author Michael Dürre
- *
- */
-public class DataTreeObject extends HashMap<String, DataTreeChildObject> {
+public class DataObjectAcessorWithId<T extends DataObject> extends DataObjectAcessor<T> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DataObjectAcessorWithId.class);
+
+    public DataObjectAcessorWithId(HtDatabaseClient dbClient, Entity entity, Class<T> clazz)
+            throws ClassNotFoundException {
+        super(dbClient, entity, clazz);
+        setEsIdAttributeName("_id");
+        LOG.info("Create {}", this.getClass().getName());
+    }
 
 }
