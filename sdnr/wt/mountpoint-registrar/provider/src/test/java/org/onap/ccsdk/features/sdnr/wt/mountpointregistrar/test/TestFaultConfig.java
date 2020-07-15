@@ -52,12 +52,12 @@ public class TestFaultConfig {
     // @formatter:on
 
     private ConfigurationFileRepresentation cfg;
-
+    private static final String CONFIGURATIONFILE = "test2.properties";
     @Test
     public void test() {
         try {
-            Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
-            cfg = new ConfigurationFileRepresentation("test.properties");
+            Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
+            cfg = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
             FaultConfig faultCfg = new FaultConfig(cfg);
             assertEquals("fault", faultCfg.getSectionName());
             assertEquals("org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer",
@@ -78,13 +78,13 @@ public class TestFaultConfig {
             assertEquals("25000", faultCfg.getClientConnectTimeout());
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
     @After
     public void cleanUp() {
-        File file = new File("test.properties");
+        File file = new File(CONFIGURATIONFILE);
         if (file.exists()) {
             System.out.println("File exists, Deleting it");
             file.delete();

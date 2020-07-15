@@ -18,19 +18,22 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
+import java.io.IOException;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.PNFMountPointClient;
 
-public class TestDMaaPPNFRegVESMsgConsumer extends DMaaPPNFRegVESMsgConsumer {
+public class TestDMaaPPNFRegVESMsgConsumer {
 
     private static final String DEFAULT_SDNRUSER = "admin";
     private static final String DEFAULT_SDNRPASSWD = "admin";
     private static final String DEFAULT_SDNRBASEURL = "http://localhost:8181";
+    private static final String CONFIGURATIONFILE = "test4.properties";
 
     // @formatter:off
     private static final String pnfRegMsg_TLS = "{\n"
-            + "  \"event\": {\n"
+    + "  \"event\": {\n"
             + "    \"commonEventHeader\": {\n"
             + "      \"domain\": \"pnfRegistration\",\n"
             + "      \"eventId\": \"NSHMRIACQ01M01123401_1234 BestInClass\",\n"
@@ -82,7 +85,6 @@ public class TestDMaaPPNFRegVESMsgConsumer extends DMaaPPNFRegVESMsgConsumer {
             + "  }\n"
             + "}\n"
             + "";
-
     private static final String pnfRegMsg_SSH = "{\n"
             + "  \"event\": {\n"
             + "    \"commonEventHeader\": {\n"
@@ -136,7 +138,6 @@ public class TestDMaaPPNFRegVESMsgConsumer extends DMaaPPNFRegVESMsgConsumer {
             + "  }\n"
             + "}\n"
             + "";
-
     private static final String pnfRegMsg_OTHER = "{\n"
             + "  \"event\": {\n"
             + "    \"commonEventHeader\": {\n"
@@ -231,10 +232,22 @@ public class TestDMaaPPNFRegVESMsgConsumer extends DMaaPPNFRegVESMsgConsumer {
             + "";
     // @formatter:on
 
+    private GeneralConfigForTest cfgTest;
+
+    @Before
+    public void before() throws IOException {
+        cfgTest = new GeneralConfigForTest(CONFIGURATIONFILE);
+    }
+
+    @After
+    public void after() {
+        cfgTest.close();
+    }
+
     @Test
     public void processMsgTest() {
 
-        DMaaPPNFRegVESMsgConsumer pnfRegMsgConsumer = new TestDMaaPPNFRegVESMsgConsumer();
+        DMaaPPNFRegVESMsgConsumer pnfRegMsgConsumer = new DMaaPPNFRegVESMsgConsumer(cfgTest.getCfg());
         try {
             pnfRegMsgConsumer.processMsg(pnfRegMsg);
             pnfRegMsgConsumer.processMsg(pnfRegMsg_SSH);
@@ -246,31 +259,9 @@ public class TestDMaaPPNFRegVESMsgConsumer extends DMaaPPNFRegVESMsgConsumer {
         }
     }
 
-    @Override
-    public PNFMountPointClient getPNFMountPointClient(String baseUrl) {
-        return new TestPNFMountPointClient();
-    }
-
-    @Override
-    public String getSDNRUser() {
-        return DEFAULT_SDNRUSER;
-    }
-
-    @Override
-    public String getSDNRPasswd() {
-        return DEFAULT_SDNRPASSWD;
-    }
-
-    @Override
-    public String getBaseUrl() {
-        return DEFAULT_SDNRBASEURL;
-    }
-
     @Test
     public void Test1() {
-        TestGeneralConfig cfgTest = new TestGeneralConfig();
-        cfgTest.test();
-        DMaaPPNFRegVESMsgConsumer pnfConsumer = new DMaaPPNFRegVESMsgConsumer();
+        DMaaPPNFRegVESMsgConsumer pnfConsumer = new DMaaPPNFRegVESMsgConsumer(cfgTest.getCfg());
         System.out.println(pnfConsumer.getBaseUrl());
         System.out.println(pnfConsumer.getSDNRUser());
         System.out.println(pnfConsumer.getSDNRPasswd());

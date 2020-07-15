@@ -37,7 +37,7 @@ import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.PNFRegistrationC
 
 public class TestDMaaPVESMsgConsumerMain {
 
-    private static final String CONFIGURATIONFILE = "test.properties";
+    private static final String CONFIGURATIONFILE = "test1.properties";
     // @formatter:off
     private static final String TESTCONFIG_GENERAL = "[general]\n"
             + "dmaapEnabled=false\n"
@@ -100,8 +100,8 @@ public class TestDMaaPVESMsgConsumerMain {
             + "fetchPause=WORLD\n"
             + "\n"
             + "";
-    public GeneralConfig generalConfig;
     // @formatter:on
+    public GeneralConfig generalConfig;
     Map<String, Configuration> configMap = new HashMap<String, Configuration>();
     DMaaPVESMsgConsumerMain dmaapMain;
 
@@ -144,24 +144,24 @@ public class TestDMaaPVESMsgConsumerMain {
     public void testDMaaPVESMsgConsumerMainMapOfStringConfiguration() {
         preTest1();
         assertNotNull(configMap);
-        dmaapMain = new DMaaPVESMsgConsumerMain(configMap);
+        dmaapMain = new DMaaPVESMsgConsumerMain(configMap, generalConfig);
     }
 
     @Test
     public void testDMaaPVESMsgConsumerMainMapOfStringConfiguration1() {
         preTest2();
         assertNotNull(configMap);
-        dmaapMain = new DMaaPVESMsgConsumerMain(configMap);
+        dmaapMain = new DMaaPVESMsgConsumerMain(configMap, generalConfig);
     }
 
     @After
     public void postTest() {
-        File file = new File("test.properties");
+        File file = new File(CONFIGURATIONFILE);
         if (file.exists()) {
             System.out.println("File exists, Deleting it");
             file.delete();
         }
-        List<DMaaPVESMsgConsumer> consumers = DMaaPVESMsgConsumerMain.getConsumers();
+        List<DMaaPVESMsgConsumer> consumers = dmaapMain.getConsumers();
         for (DMaaPVESMsgConsumer consumer : consumers) {
             // stop all consumers
             consumer.stopConsumer();
