@@ -16,6 +16,24 @@
       "revId": "1382b6265dbf7a0233953e2f3727ca729ce22df2",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dbad4f90_e6fdf697",
+        "filename": "sdnr/wt/data-provider/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/data/DataObjectAcessorWithId.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2020-07-15T17:25:51Z",
+      "side": 1,
+      "message": "Change to 2020",
+      "parentUuid": "1b21c74e_2347d534",
+      "revId": "1382b6265dbf7a0233953e2f3727ca729ce22df2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
