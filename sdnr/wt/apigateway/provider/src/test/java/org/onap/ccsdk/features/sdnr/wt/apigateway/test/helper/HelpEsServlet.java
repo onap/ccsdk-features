@@ -21,14 +21,14 @@
 package org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.onap.ccsdk.features.sdnr.wt.apigateway.EsServlet;
 
 public class HelpEsServlet extends EsServlet implements IPublicServlet {
+
+    private static final long serialVersionUID = 6502905928958752573L;
 
     public static final String RESPONSE_GET = "This is the response get";
     public static final String RESPONSE_POST = "This is the response post";

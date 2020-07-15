@@ -23,9 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.apigateway.test;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-
 import javax.servlet.ServletException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

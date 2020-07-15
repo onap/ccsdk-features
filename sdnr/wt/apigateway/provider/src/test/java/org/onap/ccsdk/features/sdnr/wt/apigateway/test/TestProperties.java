@@ -21,12 +21,10 @@
 package org.onap.ccsdk.features.sdnr.wt.apigateway.test;
 
 import static org.junit.Assert.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -25,17 +25,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class EsServlet extends BaseServlet {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -3996363343749995011L;
     private static final String OFFLINE_RESPONSE_MESSAGE = "Database interface is offline";
-    private static Logger LOG = LoggerFactory.getLogger(EsServlet.class);
 
     private static boolean trustAll = false;
 

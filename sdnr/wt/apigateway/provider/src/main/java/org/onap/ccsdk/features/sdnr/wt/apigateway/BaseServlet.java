@@ -32,7 +32,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -41,15 +40,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class BaseServlet extends HttpServlet {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 7403047480257892794L;
     private static Logger LOG = LoggerFactory.getLogger(BaseServlet.class);
     private static SSLContext sc;
@@ -66,11 +61,6 @@ public abstract class BaseServlet extends HttpServlet {
 
     protected abstract String getRemoteUrl(String uri);
 
-    /**
-     *
-     * @throws NoSuchAlgorithmException
-     * @throws KeyManagementException
-     */
     private static void setupSslTrustAll(boolean trustall) throws NoSuchAlgorithmException, KeyManagementException {
 
         sc = SSLContext.getInstance("TLSv1.2");
