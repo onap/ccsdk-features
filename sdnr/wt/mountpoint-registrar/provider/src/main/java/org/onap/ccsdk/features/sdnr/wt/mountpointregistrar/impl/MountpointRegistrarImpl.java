@@ -21,11 +21,9 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +38,7 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
     private GeneralConfig generalConfig;
     private boolean dmaapEnabled = false;
     private Map<String, Configuration> configMap = new HashMap<>();
+    private DMaaPVESMsgConsumerMain dmaapConsumerMain = null;
 
     // Blueprint 1
     public MountpointRegistrarImpl() {
@@ -63,7 +62,8 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
         dmaapEnabled = generalConfig.getEnabled();
         if (dmaapEnabled) { // start dmaap consumer thread only if dmaapEnabled=true
             LOG.info("DMaaP seems to be enabled, starting consumer(s)");
-            dmaapVESMsgConsumerMain = new Thread(new DMaaPVESMsgConsumerMain(configMap));
+            dmaapConsumerMain = new DMaaPVESMsgConsumerMain(configMap, generalConfig);
+            dmaapVESMsgConsumerMain = new Thread(dmaapConsumerMain);
             dmaapVESMsgConsumerMain.start();
         } else {
             LOG.info("DMaaP seems to be disabled, not starting any consumer(s)");
@@ -72,7 +72,7 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
 
     /**
      * Reflect status for Unit Tests
-     * 
+     *
      * @return Text with status
      */
     public String isInitializationOk() {
@@ -85,11 +85,12 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
         boolean dmaapEnabledNewVal = generalConfig.getEnabled();
         if (!dmaapEnabled && dmaapEnabledNewVal) { // Dmaap disabled earlier (or during bundle startup) but enabled later, start Consumer(s)
             LOG.info("DMaaP is enabled, starting consumer(s)");
-            dmaapVESMsgConsumerMain = new Thread(new DMaaPVESMsgConsumerMain(configMap));
+            dmaapConsumerMain = new DMaaPVESMsgConsumerMain(configMap, generalConfig);
+            dmaapVESMsgConsumerMain = new Thread(dmaapConsumerMain);
             dmaapVESMsgConsumerMain.start();
         } else if (dmaapEnabled && !dmaapEnabledNewVal) { // Dmaap enabled earlier (or during bundle startup) but disabled later, stop consumer(s)
             LOG.info("DMaaP is disabled, stopping consumer(s)");
-            List<DMaaPVESMsgConsumer> consumers = DMaaPVESMsgConsumerMain.getConsumers();
+            List<DMaaPVESMsgConsumer> consumers = dmaapConsumerMain.getConsumers();
             for (DMaaPVESMsgConsumer consumer : consumers) {
                 // stop all consumers
                 consumer.stopConsumer();

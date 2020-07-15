@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,14 +29,18 @@ import org.slf4j.LoggerFactory;
 public class DMaaPVESMsgConsumerMain implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DMaaPVESMsgConsumerMain.class);
-
+    private static final String pnfRegClass =
+            "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer";
+    private static final String faultClass =
+            "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer";
     boolean threadsRunning = false;
-    static List<DMaaPVESMsgConsumer> consumers = new LinkedList<>();
-    public GeneralConfig config;
+    List<DMaaPVESMsgConsumer> consumers = new LinkedList<>();
     public PNFRegistrationConfig pnfRegistrationConfig;
     public FaultConfig faultConfig;
+    public GeneralConfig generalConfig;
 
-    public DMaaPVESMsgConsumerMain(Map<String, Configuration> configMap) {
+    public DMaaPVESMsgConsumerMain(Map<String, Configuration> configMap, GeneralConfig generalConfig) {
+        this.generalConfig = generalConfig;
         configMap.forEach((k, v) -> initialize(k, v));
     }
 
@@ -77,6 +80,7 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
                     pnfRegistrationConfig.getClientReadTimeout());
             consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT,
                     pnfRegistrationConfig.getClientConnectTimeout());
+            threadsRunning = createConsumer("pnfRegistration", consumerProperties);
         } else if (domain.equalsIgnoreCase("fault")) {
             this.faultConfig = (FaultConfig) domainConfig;
             consumerClass = faultConfig.getConsumerClass();
@@ -97,16 +101,11 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
                     faultConfig.getClientReadTimeout());
             consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT,
                     faultConfig.getClientConnectTimeout());
+            threadsRunning = createConsumer("fault", consumerProperties);
         }
-
-        if (consumerClass != null) {
-            LOG.info("Calling createConsumer : {}", consumerClass);
-            threadsRunning = createConsumer(consumerClass, consumerProperties);
-        }
-
     }
 
-    private static boolean updateThreadState(List<DMaaPVESMsgConsumer> consumers) {
+    private boolean updateThreadState(List<DMaaPVESMsgConsumer> consumers) {
         boolean threadsRunning = false;
         for (DMaaPVESMsgConsumer consumer : consumers) {
             if (consumer.isRunning()) {
@@ -116,35 +115,21 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
         return threadsRunning;
     }
 
-    static boolean createConsumer(String consumerClassName, Properties properties) {
-        Class<?> consumerClass = null;
+    public boolean createConsumer(String consumerType, Properties properties) {
+        DMaaPVESMsgConsumerImpl consumer = null;
 
-        try {
-            consumerClass = Class.forName(consumerClassName);
-        } catch (Exception e) {
-            LOG.error("Could not find DMaap VES Message consumer class {}", consumerClassName, e);
-        }
+        if (consumerType.equalsIgnoreCase("pnfRegistration"))
+            consumer = new DMaaPPNFRegVESMsgConsumer(generalConfig);
+        else if (consumerType.equalsIgnoreCase("fault"))
+            consumer = new DMaaPFaultVESMsgConsumer(generalConfig);
 
-        if (consumerClass != null) {
-            LOG.debug("Calling handleConsumerClass");
-            handleConsumerClass(consumerClass, consumerClassName, properties, consumers);
-        }
+        handleConsumer(consumer, properties, consumers);
         return !consumers.isEmpty();
     }
 
-    private static boolean handleConsumerClass(Class<?> consumerClass, String consumerClassName, Properties properties,
+    private boolean handleConsumer(DMaaPVESMsgConsumer consumer, Properties properties,
             List<DMaaPVESMsgConsumer> consumers) {
-        DMaaPVESMsgConsumer consumer = null;
-
-        try {
-            consumer = (DMaaPVESMsgConsumer) consumerClass.newInstance();
-            LOG.debug("Successfully created an instance of consumerClass : {}", consumerClassName);
-        } catch (Exception e) {
-            LOG.error("Could not create consumer from class {}", consumerClassName, e);
-        }
-
         if (consumer != null) {
-            LOG.info("Initializing consumer {}({})", consumerClassName, properties);
             consumer.init(properties);
 
             if (consumer.isReady()) {
@@ -152,15 +137,16 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
                 consumerThread.start();
                 consumers.add(consumer);
 
-                LOG.info("Started consumer thread ({} : {})", consumerClassName, properties);
+                LOG.info("Started consumer thread ({} : {})", consumer.getClass().getSimpleName(), properties);
                 return true;
             } else {
-                LOG.debug("Consumer {} is not ready", consumerClassName);
+                LOG.debug("Consumer {} is not ready", consumer.getClass().getSimpleName());
             }
         }
         return false;
     }
 
+    @Override
     public void run() {
         while (threadsRunning) {
             threadsRunning = updateThreadState(consumers);
@@ -178,7 +164,7 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
         LOG.info("No listener threads running - exiting");
     }
 
-    public static List<DMaaPVESMsgConsumer> getConsumers() {
+    public List<DMaaPVESMsgConsumer> getConsumers() {
         return consumers;
     }
 

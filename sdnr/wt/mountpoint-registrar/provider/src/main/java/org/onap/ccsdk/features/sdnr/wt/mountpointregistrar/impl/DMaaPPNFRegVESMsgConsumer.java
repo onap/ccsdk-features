@@ -18,13 +18,11 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
 
@@ -35,6 +33,12 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
     private static final String DEFAULT_PASSWORD = "netconf";
     private static final String DEFAULT_SDNRUSER = "admin";
     private static final String DEFAULT_SDNRPASSWD = "admin";
+
+    private final GeneralConfig generalConfig;
+
+    public DMaaPPNFRegVESMsgConsumer(GeneralConfig generalConfig) {
+        this.generalConfig = generalConfig;
+    }
 
     @Override
     public void processMsg(String msg) {
@@ -105,15 +109,15 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
     }
 
     public String getBaseUrl() {
-        return GeneralConfig.getBaseUrl();
+        return generalConfig.getBaseUrl();
     }
 
     public String getSDNRUser() {
-        return GeneralConfig.getSDNRUser() != null ? GeneralConfig.getSDNRUser() : DEFAULT_SDNRUSER;
+        return generalConfig.getSDNRUser() != null ? generalConfig.getSDNRUser() : DEFAULT_SDNRUSER;
     }
 
     public String getSDNRPasswd() {
-        return GeneralConfig.getSDNRPasswd() != null ? GeneralConfig.getSDNRPasswd() : DEFAULT_SDNRPASSWD;
+        return generalConfig.getSDNRPasswd() != null ? generalConfig.getSDNRPasswd() : DEFAULT_SDNRPASSWD;
     }
 
     public PNFMountPointClient getPNFMountPointClient(String baseUrl) {

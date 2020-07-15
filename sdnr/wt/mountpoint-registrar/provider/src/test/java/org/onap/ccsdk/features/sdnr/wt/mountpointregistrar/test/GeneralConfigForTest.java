@@ -18,37 +18,49 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
-import static org.junit.Assert.assertEquals;
+import com.google.common.io.Files;
+import java.io.File;
 import java.io.IOException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import java.nio.charset.StandardCharsets;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.GeneralConfig;
 
-public class TestGeneralConfig {
+public class GeneralConfigForTest implements AutoCloseable {
 
-    private static final String CONFIGURATIONFILE = "test1.properties";
+    // @formatter:off
+    private static final String TESTCONFIG_CONTENT = "[general]\n"
+            + "dmaapEnabled=false\n"
+            + "baseUrl=http://localhost:8181\n"
+            + "sdnrUser=admin\n"
+            + "sdnrPasswd=admin\n"
+            + "";
+    // @formatter:on
 
-    private GeneralConfigForTest config;
+    private GeneralConfig cfg ;
+    private String filename;
 
-    @Before
-    public void before() throws IOException {
-        config = new GeneralConfigForTest(CONFIGURATIONFILE);
+    GeneralConfigForTest(String filename) throws IOException {
+
+            Files.asCharSink(new File(filename), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
+            ConfigurationFileRepresentation globalCfg = new ConfigurationFileRepresentation(filename);
+            this.filename = filename;
+            this.cfg = new GeneralConfig(globalCfg);
+
     }
 
-    @Test
-    public void test() throws IOException {
-            GeneralConfig cfg = config.getCfg();
-
-            assertEquals(false, cfg.getEnabled());
-            assertEquals("http://localhost:8181", cfg.getBaseUrl());
-            assertEquals("admin", cfg.getSDNRUser());
-            assertEquals("admin", cfg.getSDNRPasswd());
-            assertEquals("general", cfg.getSectionName());
+    public GeneralConfig getCfg() {
+        return cfg;
     }
 
-    @After
-    public void cleanUp() {
-        config.close();
+
+    @Override
+    public
+    void close() {
+        File file = new File(filename);
+        if (file.exists()) {
+            System.out.println("File exists, Deleting it");
+            file.delete();
+        }
+
     }
 }

@@ -44,11 +44,11 @@ public class GeneralConfig implements Configuration {
     private static final String DEFAULT_VALUE_BASEURL = "http://localhost:8181";
 
 
-    private static ConfigurationFileRepresentation configuration;
+    private ConfigurationFileRepresentation configuration;
 
     public GeneralConfig(ConfigurationFileRepresentation configuration) {
-        GeneralConfig.configuration = configuration;
-        GeneralConfig.configuration.addSection(SECTION_MARKER);
+        this.configuration = configuration;
+        configuration.addSection(SECTION_MARKER);
         defaults();
     }
 
@@ -57,15 +57,15 @@ public class GeneralConfig implements Configuration {
         return enabled;
     }
 
-    public static String getBaseUrl() {
+    public String getBaseUrl() {
         return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_BASEURL);
     }
 
-    public static String getSDNRUser() {
+    public String getSDNRUser() {
         return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_USER);
     }
 
-    public static String getSDNRPasswd() {
+    public String getSDNRPasswd() {
         return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_USERPASSWD);
     }
 
