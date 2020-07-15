@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo7;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
 import org.slf4j.Logger;
@@ -35,39 +36,39 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterSettingsR
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterSettingsResponse;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 
-public class FrankfurtReleaseInformation extends ReleaseInformation {
+public class FrankfurtReleaseInformationR2 extends ReleaseInformation {
 
-    private final Logger LOG = LoggerFactory.getLogger(FrankfurtReleaseInformation.class);
+    private final Logger LOG = LoggerFactory.getLogger(FrankfurtReleaseInformationR2.class);
     private final Map<Release, Map<ComponentName, SearchHitConverter>> converters = new HashMap<>();
 
-    public FrankfurtReleaseInformation() {
-        super(Release.FRANKFURT_R1, createDBMap());
+    public FrankfurtReleaseInformationR2() {
+        super(Release.FRANKFURT_R2, createDBMap());
     }
 
     private static Map<ComponentName, DatabaseInfo> createDBMap() {
         Map<ComponentName, DatabaseInfo> map = new HashMap<>();
-        map.put(ComponentName.CONNECTIONLOG, new DatabaseInfo("connectionlog", "connectionlog",
+        map.put(ComponentName.CONNECTIONLOG, new DatabaseInfo7("connectionlog", "connectionlog",
                 "{\"node-id\": {\"type\": \"keyword\"},\"timestamp\": {\"type\": \"date\"},\"status\": {\"type\": \"keyword\"}}"));
-        map.put(ComponentName.EVENTLOG, new DatabaseInfo("eventlog", "eventlog",
+        map.put(ComponentName.EVENTLOG, new DatabaseInfo7("eventlog", "eventlog",
                 "{\"node-id\": {\"type\": \"keyword\"},\"source-type\": {\"type\": \"keyword\"},\"timestamp\": {\"type\": \"date\"},\"new-value\": {\"type\": \"keyword\"},\"attribute-name\": {\"type\": \"keyword\"},\"counter\": {\"type\": \"long\"},\"object-id\": {\"type\": \"keyword\"}}"));
-        map.put(ComponentName.FAULTCURRENT, new DatabaseInfo("faultcurrent", "faultcurrent",
+        map.put(ComponentName.FAULTCURRENT, new DatabaseInfo7("faultcurrent", "faultcurrent",
                 "{\"node-id\": {\"type\": \"keyword\"},\"severity\": {\"type\": \"keyword\"},\"timestamp\": {\"type\": \"date\"},\"problem\": {\"type\": \"keyword\"},\"counter\": {\"type\": \"long\"},\"object-id\":{\"type\": \"keyword\"}}"));
-        map.put(ComponentName.FAULTLOG, new DatabaseInfo("faultlog", "faultlog",
+        map.put(ComponentName.FAULTLOG, new DatabaseInfo7("faultlog", "faultlog",
                 "{\"node-id\": {\"type\": \"keyword\"},\"severity\": {\"type\": \"keyword\"},\"timestamp\": {\"type\": \"date\"},\"problem\": {\"type\": \"keyword\"},\"counter\": {\"type\": \"long\"},\"object-id\":{\"type\": \"keyword\"},\"source-type\":{\"type\": \"keyword\"}}"));
-        map.put(ComponentName.INVENTORY, new DatabaseInfo("inventoryequipment", "inventoryequipment",
+        map.put(ComponentName.INVENTORY, new DatabaseInfo7("inventoryequipment", "inventoryequipment",
                 "{\"date\": {\"type\": \"keyword\"},\"model-identifier\": {\"type\": \"keyword\"},\"manufacturer-identifier\": {\"type\": \"keyword\"},\"type-name\": {\"type\": \"keyword\"},\"description\": {\"type\": \"keyword\"},\"uuid\": {\"type\": \"keyword\"},\"version\": {\"type\": \"keyword\"},\"parent-uuid\": {\"type\": \"keyword\"},\"contained-holder\": {\"type\": \"keyword\"},\"node-id\": {\"type\": \"keyword\"},\"tree-level\": {\"type\": \"long\"},\"part-type-id\": {\"type\": \"keyword\"},\"serial\": {\"type\": \"keyword\"}}"));
-        map.put(ComponentName.HISTORICAL_PERFORMANCE_15M, new DatabaseInfo("historicalperformance15min",
+        map.put(ComponentName.HISTORICAL_PERFORMANCE_15M, new DatabaseInfo7("historicalperformance15min",
                 "historicalperformance15min",
                 "{\"node-name\":{\"type\": \"keyword\"},\"timestamp\":{\"type\": \"date\"},\"suspect-interval-flag\":{\"type\":\"boolean\"},\"scanner-id\":{\"type\": \"keyword\"},\"uuid-interface\":{\"type\": \"keyword\"},\"layer-protocol-name\":{\"type\": \"keyword\"},\"granularity-period\":{\"type\": \"keyword\"},\"radio-signal-id\":{\"type\": \"keyword\"}}"));
-        map.put(ComponentName.HISTORICAL_PERFORMANCE_24H, new DatabaseInfo("historicalperformance24h",
+        map.put(ComponentName.HISTORICAL_PERFORMANCE_24H, new DatabaseInfo7("historicalperformance24h",
                 "historicalperformance24h",
                 "{\"node-name\":{\"type\": \"keyword\"},\"timestamp\":{\"type\": \"date\"},\"suspect-interval-flag\":{\"type\":\"boolean\"},\"scanner-id\":{\"type\": \"keyword\"},\"uuid-interface\":{\"type\": \"keyword\"},\"layer-protocol-name\":{\"type\": \"keyword\"},\"granularity-period\":{\"type\": \"keyword\"},\"radio-signal-id\":{\"type\": \"keyword\"}}"));
-        map.put(ComponentName.REQUIRED_NETWORKELEMENT, new DatabaseInfo("networkelement-connection",
+        map.put(ComponentName.REQUIRED_NETWORKELEMENT, new DatabaseInfo7("networkelement-connection",
                 "networkelement-connection",
                 "{\"node-id\": {\"type\": \"keyword\"},\"host\": {\"type\": \"keyword\"},\"port\": {\"type\": \"long\"},\"username\": {\"type\": \"keyword\"},\"password\": {\"type\": \"keyword\"},\"core-model-capability\": {\"type\": \"keyword\"},\"device-type\": {\"type\": \"keyword\"},\"is-required\": {\"type\": \"boolean\"},\"status\": {\"type\": \"keyword\"}}"));
-        map.put(ComponentName.MEDIATOR_SERVER, new DatabaseInfo("mediator-server", "mediator-server",
+        map.put(ComponentName.MEDIATOR_SERVER, new DatabaseInfo7("mediator-server", "mediator-server",
                 "{\"url\":{\"type\": \"keyword\"},\"name\":{\"type\": \"keyword\"}}"));
-        map.put(ComponentName.MAINTENANCE, new DatabaseInfo("maintenancemode", "maintenancemode",
+        map.put(ComponentName.MAINTENANCE, new DatabaseInfo7("maintenancemode", "maintenancemode",
                 "{\"node-id\": {\"type\": \"keyword\"},\"start\": {\"type\": \"date\"},\"end\": {\"type\": \"date\"},\"description\": {\"type\": \"keyword\"},\"active\": {\"type\": \"boolean\"}},\"date_detection\":false}}"));
         return map;
     }

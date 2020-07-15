@@ -1,4 +1,4 @@
-/**
+/*
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -19,7 +19,6 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 import java.util.Date;
 import java.util.List;
-
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogEntity;
@@ -67,7 +66,7 @@ public interface DataProvider extends ArchiveCleanProvider {
 
     /**
      * write internal equipment to database
-     * 
+     *
      * @param internalEquipment with mandatory fields.
      */
     void writeInventory(Inventory internalEquipment);
@@ -76,17 +75,19 @@ public interface DataProvider extends ArchiveCleanProvider {
      *
      * @param networkElementConnectionEntitiy to wirte to DB
      * @param nodeId Id for this DB element
+     * @return if succeeded
      */
-    void updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy,
+    boolean updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy,
             String nodeId);
 
     /**
      * Update after new mountpoint registration
-     * 
+     *
      * @param networkElementConnectionEntitiy data
      * @param nodeId of device (mountpoint name)
+     * @return if succeeded
      */
-    void updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy, String nodeId);
+    boolean updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy, String nodeId);
 
     void removeNetworkConnection(String nodeId);
 

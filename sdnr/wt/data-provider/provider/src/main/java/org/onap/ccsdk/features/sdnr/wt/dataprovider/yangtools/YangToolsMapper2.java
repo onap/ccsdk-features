@@ -59,16 +59,25 @@ public class YangToolsMapper2<T extends DataObject> extends ObjectMapper {
 
     private final Logger LOG = LoggerFactory.getLogger(YangToolsMapper2.class);
     private static final long serialVersionUID = 1L;
-    private static String ENTITY = "Entity";
     private static String BUILDER = "Builder";
 
-    private @Nullable Class<T> clazz;
-    private @Nullable Class<? extends Builder<? extends T>> builderClazz;
+    private @Nullable final Class<T> clazz;
+    private @Nullable final Class<? extends Builder<? extends T>> builderClazz;
 
     private BundleContext context;
 
-    public <X extends T, B extends Builder<X>> YangToolsMapper2(Class<T> clazz, Class<B> builderClazz)
-            throws ClassNotFoundException {
+    /**
+     * Generic Object creation of yangtools java class builder pattern.
+     * 
+     * @param <X> Class of DataObject
+     * @param <B> Builder for the class.
+     * @param clazz specifies class to be mapped
+     * @param builderClazz is the builder for class with name pattern "clazzBuilder".<br>
+     *        If null the clazz is expected to support normal jackson build pattern.
+     * @throws ClassNotFoundException if builderClazz not available in bundle
+     */
+    public <X extends T, B extends Builder<X>> YangToolsMapper2(@NonNull Class<T> clazz,
+            @Nullable Class<B> builderClazz) throws ClassNotFoundException {
         super();
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
@@ -84,11 +93,6 @@ public class YangToolsMapper2<T extends DataObject> extends ObjectMapper {
         context = bundle != null ? bundle.getBundleContext() : null;
     }
 
-    public YangToolsMapper2() throws ClassNotFoundException {
-        this(null, null);
-    }
-
-
     @Override
     public String writeValueAsString(Object value) throws JsonProcessingException {
         return super.writeValueAsString(value);
@@ -101,11 +105,12 @@ public class YangToolsMapper2<T extends DataObject> extends ObjectMapper {
      * @param clazz class with interface.
      * @return builder for interface or null if not existing
      */
-    @SuppressWarnings("unchecked")
-    public @Nullable <T extends DataObject> Builder<T> getBuilder(Class<T> clazz) {
+    public @Nullable Builder<? extends T> getBuilder(Class<T> clazz) {
         try {
-            //Class<?> clazzBuilder = getBuilderClass(getBuilderClassName(clazz));
-            return (Builder<T>) builderClazz.newInstance();
+            if (builderClazz != null)
+                return (Builder<? extends T>) builderClazz.newInstance();
+            else
+                return null;
         } catch (InstantiationException | IllegalAccessException e) {
             LOG.debug("Problem ", e);
             return null;
@@ -169,12 +174,6 @@ public class YangToolsMapper2<T extends DataObject> extends ObjectMapper {
      */
     private static String getBuilderClassName(Class<?> clazz) {
         return clazz.getName() + BUILDER;
-        //		String clazzName = clazz.getName();
-        //		if (clazzName.endsWith(ENTITY)) {
-        //			return clazzName.replace(ENTITY, BUILDER);
-        //		} else {
-        //			return clazzName + BUILDER;
-        //		}
     }
 
     /**

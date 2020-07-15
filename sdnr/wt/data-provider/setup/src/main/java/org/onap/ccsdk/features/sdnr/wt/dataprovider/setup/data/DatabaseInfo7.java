@@ -19,14 +19,26 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
-
-import java.util.HashMap;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
 /**
  * @author Michael Dürre
  *
  */
-public class DataTreeObject extends HashMap<String, DataTreeChildObject> {
+public class DatabaseInfo7 extends DatabaseInfo {
 
+    public DatabaseInfo7(String alias, String doctype, String mapping) {
+        super(alias, alias, doctype, mapping);
+    }
+
+    public DatabaseInfo7(String index, String alias, String doctype, String mapping, String settingsformat) {
+        super(index, alias, doctype, mapping, settingsformat);
+    }
+
+    @Override
+    public String getMapping(boolean useStrict) {
+        return this.mapping == null ? null
+                : String.format("{%s\"properties\":%s}", useStrict ? "\"dynamic\": false," : "\"dynamic\": true,",
+                        this.mapping);
+    }
 }

@@ -1,5 +1,5 @@
 module data-provider {
-  
+
   yang-version 1.1;
   namespace "urn:opendaylight:params:xml:ns:yang:data-provider";
   prefix odluxprovider;
@@ -191,7 +191,7 @@ module data-provider {
       }
       enum NtsManager {
         description
-          "Simulation of device";
+          "Manage adapter to simulate devices";
       }
       enum Nonsupported {
         description
@@ -200,6 +200,18 @@ module data-provider {
       enum Unknown {
         description
           "Device type at this point of time unknown";
+      }
+      enum O-RAN-FH {
+        description
+          "implements RAN according to o-ran*.yang fro for fronthaule";
+      }
+      enum O-ROADM {
+          description
+            "implements Open ROADM";
+        }
+      enum O1-TR069 {
+          description
+            "implements O1 RAN interface according to TR069";
       }
     }
     description
@@ -272,7 +284,7 @@ module data-provider {
       }
     }
     description
-      "The enumeration with the options for granularity period of the 
+      "The enumeration with the options for granularity period of the
        performance data similar to g.874.1-model";
   }
 
@@ -466,7 +478,7 @@ module data-provider {
       type string;
       mandatory true;
       description
-        "Key to get/set configuration entry in database. Normally Mountpoint 
+        "Key to get/set configuration entry in database. Normally Mountpoint
          name is used as key id of node.";
     }
     leaf node-id {
@@ -559,7 +571,7 @@ module data-provider {
 
   grouping pmdata-microwave {
     description
-      "Consolidated performance information of all microwave model interface 
+      "Consolidated performance information of all microwave model interface
        PACs";
     leaf es {
       type int32;
@@ -855,7 +867,7 @@ module data-provider {
       default "-99";
       config false;
       description
-        "Lowest temperature (in degree Celsius) of the radio module inside the 
+        "Lowest temperature (in degree Celsius) of the radio module inside the
          outdoor unit.";
     }
     leaf rf-temp-max {
@@ -864,7 +876,7 @@ module data-provider {
       default "-99";
       config false;
       description
-        "Highest temperature (in degree Celsius) of the radio module inside the 
+        "Highest temperature (in degree Celsius) of the radio module inside the
          outdoor unit.";
     }
     leaf rf-temp-avg {
@@ -873,7 +885,7 @@ module data-provider {
       default "-99";
       config false;
       description
-        "Averaged temperature (in degree Celsius) of the radio module inside 
+        "Averaged temperature (in degree Celsius) of the radio module inside
          the outdoor unit.";
     }
     leaf defect-blocks-sum {
@@ -882,7 +894,7 @@ module data-provider {
       default "-1";
       config false;
       description
-        "Total number of blocks that were defect after receiving and could not 
+        "Total number of blocks that were defect after receiving and could not
          be corrected by the FEC.";
     }
     leaf time-period {
@@ -904,9 +916,9 @@ module data-provider {
       default "-1";
       config false;
       description
-        "Counts the number of Bytes of Ethernet traffic (before header 
-         compression) transmitted within a second and keeps the highest value 
-         within the measurement period. Field to be left blank for all types of 
+        "Counts the number of Bytes of Ethernet traffic (before header
+         compression) transmitted within a second and keeps the highest value
+         within the measurement period. Field to be left blank for all types of
          TDM containers.";
     }
     leaf tx-ethernet-bytes-max-m {
@@ -915,9 +927,9 @@ module data-provider {
       default "-1";
       config false;
       description
-        "Counts the number of Bytes of Ethernet traffic (before header 
-         compression) transmitted within a minute and keeps the highest value 
-         with in the measurement period. Field to be left blank for all types 
+        "Counts the number of Bytes of Ethernet traffic (before header
+         compression) transmitted within a minute and keeps the highest value
+         with in the measurement period. Field to be left blank for all types
          of TDM containers.";
     }
     leaf tx-ethernet-bytes-sum {
@@ -926,8 +938,8 @@ module data-provider {
       default "-1";
       config false;
       description
-        "Total number of Bytes of Ethernet traffic (before header compression) 
-         transmitted (in direction out of the device) during the measurement 
+        "Total number of Bytes of Ethernet traffic (before header compression)
+         transmitted (in direction out of the device) during the measurement
         period. Field to be left blank for all types of TDM containers.";
     }
   }
@@ -970,7 +982,7 @@ module data-provider {
 
   grouping inventory-entity {
     description
-      "One equipment entity in a list of a network element that could be rack, 
+      "One equipment entity in a list of a network element that could be rack,
        card, backplane, module";
     leaf id {
       type string;
@@ -996,7 +1008,7 @@ module data-provider {
     leaf uuid {
       type string;
       description
-        "Unique inventory id of this node for this equipment, provided by 
+        "Unique inventory id of this node for this equipment, provided by
          network element";
     }
     leaf-list contained-holder {
@@ -1022,7 +1034,7 @@ module data-provider {
     leaf date {
       type string;
       description
-        "manufactured-thing/equipment-instance/manufacture-date: Date 
+        "manufactured-thing/equipment-instance/manufacture-date: Date
          information provided by manufacturer. No specific format. ()";
     }
     leaf version {

@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor;
 
 import java.io.IOException;
 
@@ -30,6 +30,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.AggregationEntries;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.status.output.Data;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.status.output.DataBuilder;
@@ -43,12 +44,12 @@ public class DataObjectAcessorStatus extends DataObjectAcessor<Data> {
     private final Entity entity;
 
     public DataObjectAcessorStatus(HtDatabaseClient dbClient, Entity entity) throws ClassNotFoundException {
-        super(dbClient, entity, Data.class, false);
+        super(dbClient, entity, Data.class);
         this.dbClient = dbClient;
         this.entity = entity;
     }
 
-    QueryResult<Data> getDataStatus() throws IOException {
+    public QueryResult<Data> getDataStatus() throws IOException {
         SearchRequest request = getNewInstanceOfSearchRequest(entity);
         request.setQuery(QueryBuilders.matchAllQuery().aggregations(ESDATATYPE_FAULTCURRENT_SEVERITY_KEY).size(0));
         SearchResponse response = this.dbClient.search(request);

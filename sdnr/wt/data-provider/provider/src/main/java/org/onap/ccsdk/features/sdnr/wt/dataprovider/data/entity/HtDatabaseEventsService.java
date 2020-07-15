@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.entity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -34,6 +35,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.BoolQueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.RangeQueryBuilder;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.EsDataObjectReaderWriter2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.ArchiveCleanProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
@@ -113,7 +115,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
                     ConnectionlogEntity.class, ConnectionlogBuilder.class);
 
             networkelementConnectionDB = new EsDataObjectReaderWriter2<>(client, Entity.NetworkelementConnection,
-                    NetworkElementConnectionEntity.class, NetworkElementConnectionBuilder.class)
+                    NetworkElementConnectionEntity.class, NetworkElementConnectionBuilder.class, true)
                             .setEsIdAttributeName("_id");
 
             pmData15mDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance15min, PmdataEntity.class,
@@ -271,15 +273,64 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
     // -- Networkelement
 
+
+    /**
+     * join base with parameters of toJoin (only non null values)
+     * 
+     * @param base base object
+     * @param toJoin object with new property values
+     * @return new joined object
+     */
+    @SuppressWarnings("unused")
+    private NetworkElementConnectionEntity joinNe(NetworkElementConnectionEntity base,
+            NetworkElementConnectionEntity toJoin) {
+        if (base == null) {
+            return toJoin;
+        }
+        NetworkElementConnectionBuilder builder = new NetworkElementConnectionBuilder(base);
+        if (toJoin != null) {
+            if (toJoin.isIsRequired() != null) {
+                builder.setIsRequired(toJoin.isIsRequired());
+            }
+            if (toJoin.getCoreModelCapability() != null) {
+                builder.setCoreModelCapability(toJoin.getCoreModelCapability());
+            }
+            if (toJoin.getDeviceType() != null) {
+                builder.setDeviceType(toJoin.getDeviceType());
+            }
+            if (toJoin.getHost() != null) {
+                builder.setHost(toJoin.getHost());
+            }
+            if (toJoin.getNodeDetails() != null) {
+                builder.setNodeDetails(toJoin.getNodeDetails());
+            }
+            if (toJoin.getPassword() != null) {
+                builder.setPassword(toJoin.getPassword());
+            }
+            if (toJoin.getPort() != null) {
+                builder.setPort(toJoin.getPort());
+            }
+            if (toJoin.getStatus() != null) {
+                builder.setStatus(toJoin.getStatus());
+            }
+            if (toJoin.getUsername() != null) {
+                builder.setUsername(toJoin.getUsername());
+            }
+        }
+        return builder.build();
+    }
+
     /**
      *
      * @param networkElementConnectionEntitiy to wirte to DB
      * @param nodeId Id for this DB element
      */
     @Override
-    public void updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy,
+    public boolean updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy,
             String nodeId) {
-        this.networkelementConnectionDB.update(networkElementConnectionEntitiy, nodeId);
+        return this.networkelementConnectionDB.update(networkElementConnectionEntitiy, nodeId) != null;
+        //		NetworkElementConnectionEntity e = this.networkelementConnectionDB.read(nodeId);
+        //		this.networkelementConnectionDB.write(this.joinNe(e, networkElementConnectionEntitiy), nodeId);
     }
 
     /**
@@ -289,10 +340,14 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
      * @param nodeId of device (mountpoint name)
      */
     @Override
-    public void updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy,
+    public boolean updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy,
             String nodeId) {
-        this.networkelementConnectionDB.updateOrCreate(networkElementConnectionEntitiy, nodeId,
-                Arrays.asList("is-required", "username", "password"));
+        LOG.info("update networkelement-connection for {} with data {}", nodeId, networkElementConnectionEntitiy);
+        return this.networkelementConnectionDB.updateOrCreate(networkElementConnectionEntitiy, nodeId,
+                Arrays.asList("is-required", "username", "password")) != null;
+        //		NetworkElementConnectionEntity e = this.networkelementConnectionDB.read(nodeId);
+        //		this.networkelementConnectionDB.write(this.joinNe(e, networkElementConnectionEntitiy), nodeId);
+
     }
 
     /* please do not remove */

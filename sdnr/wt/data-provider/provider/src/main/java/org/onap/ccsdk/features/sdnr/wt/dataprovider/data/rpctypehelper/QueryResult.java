@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper;
 
 import java.math.BigInteger;
 
@@ -42,11 +42,22 @@ public class QueryResult<T> {
         pagination = x.build();
     }
 
+    public QueryResult(QueryByFilter queryByFilter, SearchResult<T> result) {
+        this.result = result;
+
+        PaginationBuilder x = new PaginationBuilder();
+        x.setPage(BigInteger.valueOf(queryByFilter.getPage()));
+        x.setSize(queryByFilter.getPageSize());
+        x.setTotal(BigInteger.valueOf(result.getTotal()));
+        pagination = x.build();
+    }
+
+
     public SearchResult<T> getResult() {
         return result;
     }
 
-    PaginationOutputG getPagination() {
+    public PaginationOutputG getPagination() {
         return pagination;
     }
 

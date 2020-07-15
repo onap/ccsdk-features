@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -33,6 +33,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.BoolQueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.RangeQueryBuilder;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor.DataObjectAcessorPm;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
@@ -42,12 +43,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QueryByFilter {
+class QueryByFilterStatic {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataObjectAcessorPm.class);
     private static final List<String> timestampValueNames = Arrays.asList("timestamp", "start", "end");
 
-    private QueryByFilter() {
+    private QueryByFilterStatic() {
         //Hide
     }
 
@@ -55,7 +56,6 @@ public class QueryByFilter {
         return getPage(input, 1);
     }
 
-    @SuppressWarnings("null")
     private static long getPage(EntityInput input, long defaultValue) {
         return input.getPagination() != null ? input.getPagination().getPage().longValue() : defaultValue;
     }
@@ -64,7 +64,6 @@ public class QueryByFilter {
         return getPageSize(input, 1);
     }
 
-    @SuppressWarnings("null")
     private static long getPageSize(EntityInput input, long defaultValue) {
         return input.getPagination() != null ? input.getPagination().getSize().longValue() : defaultValue;
     }
