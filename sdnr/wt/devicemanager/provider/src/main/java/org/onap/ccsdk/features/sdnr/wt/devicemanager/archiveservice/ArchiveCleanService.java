@@ -24,11 +24,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.ArchiveCleanProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,11 @@ public class ArchiveCleanService implements AutoCloseable, IConfigChangedListene
     private final IEsConfig esConfig;
     private Future<?> taskReference;
     private boolean isMaster;
+    private final ClusterSingletonServiceRegistration cssRegistration;
 
-    public ArchiveCleanService(IEsConfig config, ArchiveCleanProvider... indexCleanList) {
+    public ArchiveCleanService(IEsConfig config, ClusterSingletonServiceProvider clusterSingletonServiceProvider,
+            ArchiveCleanProvider... indexCleanList) {
+
         this.esConfig = config;
         this.esConfig.registerConfigChangedListener(this);
 
@@ -59,6 +63,9 @@ public class ArchiveCleanService implements AutoCloseable, IConfigChangedListene
         this.taskReference = null;
 
         this.reinit();
+
+        this.cssRegistration = clusterSingletonServiceProvider.registerClusterSingletonService(this);
+
     }
 
     private void reinit() {
@@ -125,6 +132,7 @@ public class ArchiveCleanService implements AutoCloseable, IConfigChangedListene
     public void close() throws Exception {
         this.esConfig.unregisterConfigChangedListener(this);
         this.scheduler.shutdown();
+        this.cssRegistration.close();
     }
 
     @Override

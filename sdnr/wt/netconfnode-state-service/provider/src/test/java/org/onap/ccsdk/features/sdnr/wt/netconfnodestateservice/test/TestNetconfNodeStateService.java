@@ -1,30 +1,29 @@
 /*
- * ============LICENSE_START======================================================= ONAP : ccsdk
- * feature sdnr wt ================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
- * ================================================================================ Licensed under
- * the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * ============LICENSE_START=======================================================
+ * ONAP : ccsdk feature sdnr wt
+ *  ================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * All rights reserved.
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License. ============LICENSE_END=========================================================
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ============LICENSE_END=========================================================
  */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import com.google.common.util.concurrent.ListenableFuture;
-
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,10 +33,12 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
+import org.eclipse.jdt.annotation.NonNull;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeConnectListener;
@@ -48,13 +49,16 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfAcces
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeStateServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.rpc.NetconfnodeStateServiceRpcApiImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.ClusterSingletonServiceProviderMock;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.DataBrokerNetconfMock;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.MountPointMock;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.MountPointServiceMock;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.NotificationPublishServiceMock;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.RpcProviderRegistryMock;
+import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -63,6 +67,8 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.AvailableCapabilitiesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapabilityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.AttributeChangeNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.AttributeChangeNotificationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.FaultNotification;
@@ -78,22 +84,29 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class TestNetconfNodeStateService {
+public class TestNetconfNodeStateService extends Mockito {
 
     private static Path KARAF_ETC = Paths.get("etc");
     private static NetconfNodeStateServiceImpl netconfStateService;
     private static MountPointMock mountPoint;
-    private static DataBrokerNetconfMock dataBrokerNetconf;
+    //private static DataBrokerNetconfMock dataBrokerNetconf;
+    private static DataBroker dataBrokerNetconf;
+    private @NonNull
+    static DataTreeChangeListener<Node> listener;
+    private @NonNull
+    static ClusteredDataTreeChangeListener<Node> listenerClustered;
+
 
     private static final Logger LOG = LoggerFactory.getLogger(TestNetconfNodeStateService.class);
 
     @BeforeClass
-    public static void before() throws InterruptedException, IOException {
+    public static <T extends DataObject, L extends DataTreeChangeListener<T>> void before() throws InterruptedException, IOException {
 
         System.out.println("Logger: " + LOG.getClass().getName() + " " + LOG.getName());
         // Call System property to get the classpath value
@@ -104,8 +117,36 @@ public class TestNetconfNodeStateService {
         Files.createDirectories(etc);
 
         // Create mocks
-        dataBrokerNetconf = new DataBrokerNetconfMock();
-        dataBrokerNetconf.newReadWriteTransaction();
+        //dataBrokerNetconf = new DataBrokerNetconfMock();
+        //dataBrokerNetconf.newReadWriteTransaction();
+        dataBrokerNetconf = mock(DataBroker.class);
+        ArgumentCaptor<DataTreeIdentifier<?>> argument1 = ArgumentCaptor.forClass(DataTreeIdentifier.class);
+        ArgumentCaptor<DataTreeChangeListener<?>> argument2 = ArgumentCaptor.forClass(DataTreeChangeListener.class);
+        when(dataBrokerNetconf.registerDataTreeChangeListener(any(), any())).thenAnswer(
+                invocation -> {
+                    Object pListener = invocation.getArguments()[1];
+                    System.out.println("Register " + pListener.getClass().getName());
+                    if (pListener instanceof ClusteredDataTreeChangeListener) {
+                        System.out.println("Clustered listener");
+                        listenerClustered = (ClusteredDataTreeChangeListener<Node>) pListener;
+                    } else if (pListener instanceof DataTreeChangeListener) {
+                        System.out.println("Listener");
+                        listener = (DataTreeChangeListener<Node>) pListener;
+                    }
+                    return new ListenerRegistration<L>() {
+                        @Override
+                        public L getInstance() {
+                            return (L) pListener;
+                        }
+
+                        @Override
+                        public void close() {
+                        }
+                    };
+
+                }
+);
+
         mountPoint = new MountPointMock();
         ClusterSingletonServiceProvider clusterSingletonService = new ClusterSingletonServiceProviderMock();
         MountPointService mountPointService = new MountPointServiceMock(mountPoint);
@@ -182,6 +223,11 @@ public class TestNetconfNodeStateService {
         System.out.println("Test5: On Connect");
         NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();
         netconfNodeBuilder.setConnectionStatus(ConnectionStatus.Connected);
+        AvailableCapabilityBuilder availableCapabilityBuilder = new AvailableCapabilityBuilder();
+        availableCapabilityBuilder.setCapability("network-element");
+        AvailableCapabilitiesBuilder availableCapabilitesBuilder = new AvailableCapabilitiesBuilder();
+        availableCapabilitesBuilder.setAvailableCapability(Arrays.asList(availableCapabilityBuilder.build()));
+        netconfNodeBuilder.setAvailableCapabilities(availableCapabilitesBuilder.build());
         NetconfNode rootNodeNetconf = netconfNodeBuilder.build();
 
         String nodeIdString = "Test";
@@ -205,8 +251,8 @@ public class TestNetconfNodeStateService {
         mountPoint.setDatabrokerAbsent(false);
 
         Collection<DataTreeModification<Node>> changes = Arrays.asList(ntn);
-        dataBrokerNetconf.sendClusteredChanges(changes);
-        dataBrokerNetconf.sendChanges(changes);
+        sendClusteredChanges(changes);
+        sendChanges(changes);
         Thread.sleep(300);
         //verify that it was called one time and nodeId is the expected
         ArgumentCaptor<NetconfAccessor> varArgs = ArgumentCaptor.forClass(NetconfAccessor.class);
@@ -238,8 +284,8 @@ public class TestNetconfNodeStateService {
         when(ntn.getRootNode()).thenReturn(dom);
 
         Collection<DataTreeModification<Node>> changes = Arrays.asList(ntn);
-        dataBrokerNetconf.sendClusteredChanges(changes);
-        dataBrokerNetconf.sendChanges(changes);
+        sendClusteredChanges(changes);
+        sendChanges(changes);
     }
 
     @Test
@@ -326,6 +372,13 @@ public class TestNetconfNodeStateService {
         }
     }
 
+    public void sendChanges(Collection<DataTreeModification<Node>> changes) {
+        listener.onDataTreeChanged(changes);
+    }
+
+    public void sendClusteredChanges(Collection<DataTreeModification<Node>> changes) {
+        listenerClustered.onDataTreeChanged(changes);
+    }
 
 
 }

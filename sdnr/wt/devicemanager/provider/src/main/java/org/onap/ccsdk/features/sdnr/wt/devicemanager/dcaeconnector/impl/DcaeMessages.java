@@ -251,7 +251,7 @@ public class DcaeMessages {
         }
 
         NetworkElement optionalNe =
-                deviceManager != null ? deviceManager.getNeByMountpoint(mountpointName) : null;
+                deviceManager != null ? deviceManager.getConnectedNeByMountpoint(mountpointName) : null;
         InventoryInformationDcae neInventory = InventoryInformationDcae.getDefault();
         if (optionalNe != null) {
             Optional<InventoryProvider> inventoryProvider = optionalNe.getService(InventoryProvider.class);

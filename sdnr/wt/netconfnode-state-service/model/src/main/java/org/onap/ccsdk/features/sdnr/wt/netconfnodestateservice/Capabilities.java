@@ -73,7 +73,7 @@ public class Capabilities {
 
     @SuppressWarnings("null")
     public static Capabilities getUnavailableCapabilities(NetconfNode nnode) {
-        LOG.info("GetAvailableCapabilities for node");
+        LOG.info("GetUnavailableCapabilities for node");
         Capabilities capabilities = new Capabilities();
         if (nnode != null) {
             UnavailableCapabilities availableCapabilites = nnode.getUnavailableCapabilities();
