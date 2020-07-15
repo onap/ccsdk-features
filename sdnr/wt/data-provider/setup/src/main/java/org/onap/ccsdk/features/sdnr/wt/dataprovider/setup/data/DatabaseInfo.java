@@ -28,7 +28,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 public class DatabaseInfo {
     public final String doctype;
     public final String alias;
-    private final String mapping;
+    protected final String mapping;
     private final String settingsFormat;
     private final String index;
 

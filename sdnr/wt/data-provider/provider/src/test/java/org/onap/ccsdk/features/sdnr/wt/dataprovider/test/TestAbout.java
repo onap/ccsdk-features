@@ -24,7 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.AboutHttpServlet;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;

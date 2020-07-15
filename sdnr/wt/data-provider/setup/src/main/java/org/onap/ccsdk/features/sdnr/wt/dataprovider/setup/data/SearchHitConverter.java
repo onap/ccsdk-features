@@ -22,9 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.elalto.ElAltoReleaseInformation;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformation;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin.GuilinReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 
 public interface SearchHitConverter {
 
@@ -46,17 +44,8 @@ public interface SearchHitConverter {
 
     public static class Factory {
         public static SearchHitConverter getInstance(Release src, Release dst, ComponentName component) {
-            switch (src) {
-                case EL_ALTO:
-                    return new ElAltoReleaseInformation().getConverter(dst, component);
-                case FRANKFURT_R1:
-                    return new FrankfurtReleaseInformation().getConverter(dst, component);
-                case GUILIN:
-                    return new GuilinReleaseInformation().getConverter(dst, component);
-                default:
-                    return null;
-
-            }
+            ReleaseInformation ri = ReleaseInformation.getInstance(src);
+            return ri != null ? ri.getConverter(dst, component) : null;
         }
     }
 
