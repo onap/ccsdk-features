@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.MyProperties;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpEsServlet;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpServletBase;
-
 import java.io.*;
 import javax.servlet.ServletException;
 

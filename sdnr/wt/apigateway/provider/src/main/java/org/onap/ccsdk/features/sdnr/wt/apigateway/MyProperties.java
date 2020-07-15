@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +41,6 @@ public class MyProperties {
     private static final String DEFAULT_TRUSTINSECURE = "0";
     private static final String DEFAULT_ESDATABASE = "http://sdnrdb:9200";
     private static final String DEFAULT_AAI = "off";
-
-    @Override
-    public String toString() {
-        return "MyProperties [aaiBase=" + aaiBase + ", aaiHeaders=" + aaiHeaders + ", esBase=" + esBase
-                + ", trustInsecure=" + trustInsecure + ", corsEnabled=" + corsEnabled + "]";
-    }
 
     private static MyProperties mObj;
 
@@ -168,4 +161,9 @@ public class MyProperties {
         return mObj;
     }
 
+    @Override
+    public String toString() {
+        return "MyProperties [aaiBase=" + aaiBase + ", aaiHeaders=" + aaiHeaders + ", esBase=" + esBase
+                + ", trustInsecure=" + trustInsecure + ", corsEnabled=" + corsEnabled + "]";
+    }
 }

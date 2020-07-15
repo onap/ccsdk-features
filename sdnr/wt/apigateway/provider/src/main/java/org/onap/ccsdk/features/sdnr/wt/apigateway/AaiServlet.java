@@ -27,9 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 
 public class AaiServlet extends BaseServlet {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 5946205120796162644L;
     private static final String OFFLINE_RESPONSE_MESSAGE = "AAI interface is offline";
     private static boolean trustAll = false;

@@ -21,15 +21,14 @@
 package org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.onap.ccsdk.features.sdnr.wt.apigateway.AaiServlet;
 
 public class HelpAaiServlet extends AaiServlet implements IPublicServlet {
 
+    private static final long serialVersionUID = 1L;
     public static final String RESPONSE_GET = "This is the response get";
     public static final String RESPONSE_POST = "This is the response post";
     public static final String RESPONSE_PUT = "This is the response put";
