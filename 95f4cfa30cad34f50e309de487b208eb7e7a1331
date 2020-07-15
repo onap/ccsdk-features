@@ -16,6 +16,24 @@
       "revId": "95f4cfa30cad34f50e309de487b208eb7e7a1331",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88a4a1cb_daf77c57",
+        "filename": "sdnr/wt/common/src/main/java/org/onap/ccsdk/features/sdnr/wt/common/database/Portstatus.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2020-07-15T08:55:26Z",
+      "side": 1,
+      "message": "Double checked camel project to find this or similar code: This code is not from there.\nCode is from highstreet. Changed the license accordingly.",
+      "parentUuid": "0d1d1636_f54dcb7a",
+      "revId": "95f4cfa30cad34f50e309de487b208eb7e7a1331",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
