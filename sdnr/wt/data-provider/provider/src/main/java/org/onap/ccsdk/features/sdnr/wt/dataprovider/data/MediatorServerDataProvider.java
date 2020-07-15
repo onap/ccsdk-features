@@ -40,7 +40,7 @@ public class MediatorServerDataProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MediatorServerDataProvider.class);
 
     private final HtDatabaseClient dbClient;
-    private final DataObjectAcessor<Data> mediatorserverRW;
+    private final DataObjectAcessorWithId<Data> mediatorserverRW;
     private final int REFRESH_INTERVAL = 60;
     private final Map<String, Data> entries;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -55,7 +55,7 @@ public class MediatorServerDataProvider implements AutoCloseable {
         LOG.info("Start {}", this.getClass().getName());
         this.entries = new HashMap<>();
         this.dbClient = HtDatabaseClient.getClient(hosts, authUsername, authPassword);
-        this.mediatorserverRW = new DataObjectAcessor<>(dbClient, Entity.MediatorServer, Data.class);
+        this.mediatorserverRW = new DataObjectAcessorWithId<>(dbClient, Entity.MediatorServer, Data.class);
         this.scheduler.scheduleAtFixedRate(onTick, this.REFRESH_INTERVAL, this.REFRESH_INTERVAL, TimeUnit.SECONDS);
     }
 

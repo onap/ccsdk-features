@@ -32,14 +32,14 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.KeepDataSearchHit
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
 
-public class GuilinReleaseInformation extends ReleaseInformation {
+public class GuilinReleaseInformationR2 extends ReleaseInformation {
 
     /**
      * @param r
      * @param dbMap
      */
-    public GuilinReleaseInformation() {
-        super(Release.GUILIN_R1, createDBMap());
+    public GuilinReleaseInformationR2() {
+        super(Release.GUILIN_R2, createDBMap());
 
     }
 
@@ -62,7 +62,7 @@ public class GuilinReleaseInformation extends ReleaseInformation {
 
     @Override
     public SearchHitConverter getConverter(Release dst, ComponentName comp) {
-        if (dst == Release.GUILIN_R1) {
+        if (dst == Release.GUILIN_R2) {
             return new KeepDataSearchHitConverter(comp);
         }
         return null;

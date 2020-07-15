@@ -43,12 +43,12 @@ public class DataObjectAcessorStatus extends DataObjectAcessor<Data> {
     private final Entity entity;
 
     public DataObjectAcessorStatus(HtDatabaseClient dbClient, Entity entity) throws ClassNotFoundException {
-        super(dbClient, entity, Data.class, false);
+        super(dbClient, entity, Data.class);
         this.dbClient = dbClient;
         this.entity = entity;
     }
 
-    QueryResult<Data> getDataStatus() throws IOException {
+    public QueryResult<Data> getDataStatus() throws IOException {
         SearchRequest request = getNewInstanceOfSearchRequest(entity);
         request.setQuery(QueryBuilders.matchAllQuery().aggregations(ESDATATYPE_FAULTCURRENT_SEVERITY_KEY).size(0));
         SearchResponse response = this.dbClient.search(request);

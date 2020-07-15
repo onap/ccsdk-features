@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.common.database.Portstatus;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
@@ -55,6 +54,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataContainer;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataMigrationReport;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ReleaseGroup;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,19 +63,13 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
 
 
     private static final Logger LOG = LoggerFactory.getLogger(DataMigrationProviderImpl.class);
+
     private final HtDatabaseClient dbClient;
 
     public DataMigrationProviderImpl(HostInfo[] hosts, String username, String password, boolean trustAll,
-            long timeoutms) {
+            long timeoutms) throws Exception {
 
-        if (timeoutms > 0) {
-            Portstatus.waitSecondsTillAvailable(timeoutms / 1000, hosts);
-        }
-        try {
-            this.dbClient = HtDatabaseClient.getClient(hosts, username, password, trustAll);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Can not reach database with parameters.",e);
-        }
+        dbClient = HtDatabaseClient.getClient(hosts, username, password, trustAll, timeoutms);
     }
 
     @Override
@@ -125,7 +119,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
                 for (SearchHit item : data) {
                     if (!dryrun) {
                         String id = this.dbClient.doWriteRaw(indexName, dataTypeName, item.getId(),
-                                item.getSourceAsString());
+                                item.getSourceAsString(), true);
                         if (!item.getId().equals(id)) {
                             LOG.warn("entry for {} with original id {} was written with another id {}",
                                     component.getValue(), item.getId(), id);
@@ -268,6 +262,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
         return entries;
     }
 
+
     @Override
     public boolean initDatabase(Release release, int numShards, int numReplicas, String dbPrefix, boolean forceRecreate,
             long timeoutms) {
@@ -277,6 +272,16 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
         EsVersion dbVersion = this.readActualVersion();
         if (dbVersion == null) {
             return false;
+        }
+        LOG.info("detected database version {}", dbVersion);
+        if (release == null) {
+            release = ReleaseGroup.CURRENT_RELEASE.getLatestCompatibleRelease(dbVersion);
+            if (release == null) {
+                LOG.warn("unable to autodetect release for this database version for release {}",
+                        ReleaseGroup.CURRENT_RELEASE.name());
+                return false;
+            }
+            LOG.info("autodetect release {}", release);
         }
         if (!release.isDbInRange(dbVersion)) {
             LOG.warn("db version {} maybe not compatible with release {}", dbVersion, release);
@@ -341,6 +346,20 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
         AliasesEntryList entries = this.readAliases();
         if (entries == null) {
             return false;
+        }
+        if (release == null) {
+            EsVersion dbVersion = this.readActualVersion();
+            if (dbVersion == null) {
+                return false;
+            }
+            LOG.info("detected database version {}", dbVersion);
+            release = ReleaseGroup.CURRENT_RELEASE.getLatestCompatibleRelease(dbVersion);
+            if (release == null) {
+                LOG.warn("unable to autodetect release for this database version for release {}",
+                        ReleaseGroup.CURRENT_RELEASE.name());
+                return false;
+            }
+            LOG.info("autodetect release {}", release);
         }
         ReleaseInformation ri = ReleaseInformation.getInstance(release);
         AcknowledgedResponse response;

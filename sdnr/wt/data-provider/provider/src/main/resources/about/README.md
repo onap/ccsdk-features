@@ -1,4 +1,4 @@
-
+## Version Info
 |  |  |
 | --- | ----- |
 | ONAP release | {release-name} |
@@ -12,6 +12,11 @@
 | ODLUX version | {odlux-revision} |
 | Cluster size | {cluster-size} |
 
+## Device manager
+
+{devicemanagers}
+
+## System Info
 ```
 {karaf-info}
 ```

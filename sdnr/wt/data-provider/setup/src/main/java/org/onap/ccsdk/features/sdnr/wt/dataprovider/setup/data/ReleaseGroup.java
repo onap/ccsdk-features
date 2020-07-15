@@ -19,28 +19,48 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
 
 /**
  * @author Michael Dürre
  *
  */
-public class DataTreeChildObject {
+public enum ReleaseGroup {
 
-    private final String label;
-    private final String ownSeverity;
-    private final String childrenSeveritySummary;
-    private final boolean isMatch;
-    private final Map<String, DataTreeChildObject> children;
+    EL_ALTO(Release.EL_ALTO), FRANKFURT(Release.FRANKFURT_R1, Release.FRANKFURT_R2), GUILIN(Release.GUILIN_R1,
+            Release.GUILIN_R2);
 
-    public DataTreeChildObject(String label, boolean isMatch, Map<String, DataTreeChildObject> children,
-            String ownSeverity, String childrenSeveritySummary) {
-        this.label = label;
-        this.isMatch = isMatch;
-        this.children = children;
-        this.ownSeverity = ownSeverity;
-        this.childrenSeveritySummary = childrenSeveritySummary;
+    public static final ReleaseGroup CURRENT_RELEASE = FRANKFURT;
+
+    private final List<Release> releases;
+
+    ReleaseGroup(Release... values) {
+        this.releases = new ArrayList<Release>();
+        if (values != null) {
+            for (Release r : values) {
+                this.releases.add(r);
+            }
+        }
     }
+
+    /**
+     * @param dbVersion
+     * @return
+     */
+    public Release getLatestCompatibleRelease(EsVersion dbVersion) {
+        Release match = null;
+        for (Release r : this.releases) {
+            if (r.isDbInRange(dbVersion)) {
+                match = r;
+            }
+        }
+        return match;
+    }
+
+
 }

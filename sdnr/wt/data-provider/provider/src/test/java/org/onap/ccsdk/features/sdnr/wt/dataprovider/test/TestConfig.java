@@ -22,13 +22,15 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
 import static org.junit.Assert.assertEquals;
+
 import java.io.File;
-import java.lang.reflect.Field;
-import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section.EnvGetter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.EsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +40,8 @@ public class TestConfig {
     private static final Logger LOG = LoggerFactory.getLogger(TestConfig.class);
 
     private static final String TESTFILENAME = "testconfig.properties";
-    private static final String HOSTNAME = "localhost";
+    private static String ENVSDNRDBURL = "SDNRDBURL";
+    private static String SDNRDBURL = "http://sdnrdb:9200";
 
     @After
     @Before
@@ -52,35 +55,16 @@ public class TestConfig {
 
     @Test
     public void test() {
-        int databasePort = setSDNRDBURLEnv();
-
+        EnvGetter env = Section.getEnvGetter();
+        Section.setEnvGetter((envname) -> {
+            return envname.equals(ENVSDNRDBURL) ? SDNRDBURL : env.getenv(envname);
+        });
         ConfigurationFileRepresentation configuration = new ConfigurationFileRepresentation(TESTFILENAME);
         EsConfig esConfig = new EsConfig(configuration);
         LOG.info("Defaultconfiguration: {}", esConfig.toString());
         assertEquals("http", esConfig.getHosts()[0].protocol.getValue());
-        assertEquals(databasePort, esConfig.getHosts()[0].port);
-        assertEquals(HOSTNAME, esConfig.getHosts()[0].hostname);
+        assertEquals(9200, esConfig.getHosts()[0].port);
+        assertEquals("sdnrdb", esConfig.getHosts()[0].hostname);
 
-    }
-
-    public static int setSDNRDBURLEnv() {
-        int databasePort = Integer
-                .valueOf(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200");
-        System.out.println("DB Port: " + databasePort);
-        setEnv("SDNRDBURL", "http://"+HOSTNAME+":"+databasePort);
-        return databasePort;
-    }
-
-    public static void setEnv(String key, String value) {
-        try {
-            Map<String, String> env = System.getenv();
-            Class<?> cl = env.getClass();
-            Field field = cl.getDeclaredField("m");
-            field.setAccessible(true);
-            Map<String, String> writableEnv = (Map<String, String>) field.get(env);
-            writableEnv.put(key, value);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to set environment variable", e);
-        }
     }
 }

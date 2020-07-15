@@ -50,6 +50,7 @@ public class MavenDatabasePluginInitFile {
         ReleaseInformation ri = ReleaseInformation.getInstance(release);
         Set<ComponentName> comps = ri.getComponents();
         List<String> lines = new ArrayList<>();
+        lines.add("PUT:_cluster/settings/:{\"persistent\":{\"action.auto_create_index\":\"true\"}}");
         for (ComponentName c : comps) {
             lines.add(String.format("PUT:%s/:{" + settings + "," + mappings + "}", ri.getIndex(c), shards, replicas,
                     ri.getDatabaseMapping(c)));

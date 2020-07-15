@@ -26,17 +26,17 @@ import static org.junit.Assert.fail;
 import java.util.Set;
 
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section.EnvGetter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.AboutHttpServlet;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataProviderImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.StatusChangedHandler.StatusKey;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DataProviderService;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
-
-import net.bytebuddy.implementation.bytecode.StackSize;
 
 /**
  * @author Michael Dürre
@@ -44,28 +44,35 @@ import net.bytebuddy.implementation.bytecode.StackSize;
  */
 public class TestImplementation {
 
+    static String XY = "http://localhost:"
+            + (System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200");
+
     @Test
     public void test() {
-        TestConfig.setSDNRDBURLEnv();
+        //TestConfig.setSDNRDBURLEnv("http://localhost:"+(System.getProperty("databaseport") != null ? System.getProperty("databaseport") : "49200"));
+        EnvGetter env = Section.getEnvGetter();
+        Section.setEnvGetter((xy) -> {
+            System.out.println("Search " + xy);
+            return xy.equals("SDNRDBURL") ? XY : env.getenv(xy);
+        });
         DataProviderImpl impl = new DataProviderImpl();
         impl.setRpcProviderService(new RpcProviderService() {
 
             @Override
             public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
                     T implementation, Set<InstanceIdentifier<?>> paths) {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
                     T implementation) {
-                // TODO Auto-generated method stub
                 return null;
             }
         });
         impl.setMediatorServerServlet(new MsServlet());
         impl.setAboutServlet(new AboutHttpServlet());
+        impl.setTreeServlet(new DataTreeHttpServlet());
         try {
             impl.init();
         } catch (Exception e) {
