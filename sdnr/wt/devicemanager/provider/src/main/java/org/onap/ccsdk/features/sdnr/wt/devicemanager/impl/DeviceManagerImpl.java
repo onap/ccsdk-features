@@ -39,7 +39,6 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -81,7 +80,6 @@ import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketmanagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,15 +125,12 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     private DataProvider dataProvider;
 
     // Handler
-    private DeviceManagerNetconfConnectHandler forTest;
+    private DeviceManagerNetconfConnectHandler deviceManagerNetconfConnectHandler;
 
     // Attributes
-    private final ConcurrentHashMap<String, NetworkElement> networkElementRepresentations;
     private final List<NetworkElementFactory> factoryList;
 
     private DeviceManagerDatabaseNotificationService deviceManagerDatabaseAndNotificationService;
-    private ClusterSingletonServiceRegistration cssRegistration;
-    private ClusterSingletonServiceRegistration cssRegistration2;
 
     ConfigurationFileRepresentation config;
     private Boolean devicemanagerInitializationOk;
@@ -145,7 +140,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         LOG.info("Creating provider for {}", APPLICATION_NAME);
         this.devicemanagerInitializationOk = false;
         this.factoryList = new CopyOnWriteArrayList<>();
-        this.networkElementRepresentations = new ConcurrentHashMap<>();
 
         this.dataBroker = null;
         this.mountPointService = null;
@@ -223,12 +217,10 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
                 new RpcPushNotificationsHandler(webSocketService, dataProvider, aotsDcaeForwarder);
         this.odlEventListenerHandler =
                 new ODLEventListenerHandler(myDbKeyNameExtended, webSocketService, dataProvider, aotsDcaeForwarder);
-        this.archiveCleanService = new ArchiveCleanService(iEntityDataProvider.getEsConfig(), dataProvider);
-        this.housekeepingService = new ConnectionStatusHousekeepingService(this.dataBroker, dataProvider);
-        this.cssRegistration =
-                this.clusterSingletonServiceProvider.registerClusterSingletonService(this.archiveCleanService);
-        this.cssRegistration2 =
-                this.clusterSingletonServiceProvider.registerClusterSingletonService(this.housekeepingService);
+        this.archiveCleanService = new ArchiveCleanService(iEntityDataProvider.getEsConfig(),
+                clusterSingletonServiceProvider, dataProvider);
+        this.housekeepingService = new ConnectionStatusHousekeepingService(config, clusterSingletonServiceProvider,
+                this.dataBroker, dataProvider);
         // PM
         this.performanceManager = new PerformanceManagerImpl(60, this, dataProvider, config);
         // DM
@@ -251,8 +243,8 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
         // service
         LOG.debug("start NetconfSubscriptionManager Service");
-        this.forTest = new DeviceManagerNetconfConnectHandler(netconfNodeStateService, odlEventListenerHandler,
-                deviceMonitor, this, factoryList);
+        this.deviceManagerNetconfConnectHandler = new DeviceManagerNetconfConnectHandler(netconfNodeStateService,
+                clusterSingletonServiceProvider, odlEventListenerHandler, deviceMonitor, this, factoryList);
 
         writeToEventLog(APPLICATION_NAME, "startup", "done");
         this.devicemanagerInitializationOk = true;
@@ -275,8 +267,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         close(notificationDelayService);
         close(archiveCleanService);
         close(housekeepingService);
-        close(forTest);
-        close(cssRegistration, cssRegistration2);
+        close(deviceManagerNetconfConnectHandler);
         LOG.info("DeviceManagerImpl closing done");
     }
 
@@ -406,9 +397,9 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
      * @param mountpoint mount point name
      * @return null or NE specific data
      */
-    public @Nullable NetworkElement getNeByMountpoint(String mountpoint) {
+    public @Nullable NetworkElement getConnectedNeByMountpoint(String mountpoint) {
 
-        return networkElementRepresentations.get(mountpoint);
+        return this.deviceManagerNetconfConnectHandler.getConnectedNeByMountpoint(mountpoint);
 
     }
 

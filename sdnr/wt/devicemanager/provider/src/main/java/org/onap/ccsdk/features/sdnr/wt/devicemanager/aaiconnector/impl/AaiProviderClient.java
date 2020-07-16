@@ -63,7 +63,8 @@ public class AaiProviderClient implements AaiService, AutoCloseable {
         if (this.config.isOff()) {
             return;
         }
-        NetworkElement ne = this.deviceManager != null ? this.deviceManager.getNeByMountpoint(mountPointName) : null;
+        NetworkElement ne =
+                this.deviceManager != null ? this.deviceManager.getConnectedNeByMountpoint(mountPointName) : null;
         Optional<InventoryProvider> oip = ne != null ? ne.getService(InventoryProvider.class) : Optional.empty();
         this.onDeviceRegistered(mountPointName,
                 oip.isPresent() ? oip.get().getInventoryInformation("MWPS") : InventoryInformationDcae.getDefault());
