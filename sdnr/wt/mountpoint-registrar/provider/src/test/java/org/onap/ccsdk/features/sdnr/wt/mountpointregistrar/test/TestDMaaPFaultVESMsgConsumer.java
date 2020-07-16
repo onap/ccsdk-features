@@ -18,15 +18,18 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
+import java.io.IOException;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.FaultNotificationClient;
 
-public class TestDMaaPFaultVESMsgConsumer extends DMaaPFaultVESMsgConsumer {
+public class TestDMaaPFaultVESMsgConsumer {
 
     private static final String DEFAULT_SDNRUSER = "admin";
     private static final String DEFAULT_SDNRPASSWD = "admin";
     private static final String DEFAULT_SDNRBASEURL = "http://localhost:8181";
+    private static final String CONFIGURATIONFILE = "test2.properties";
 
     // @formatter:off
     private static final String faultVESMsg = ""
@@ -112,9 +115,21 @@ public class TestDMaaPFaultVESMsgConsumer extends DMaaPFaultVESMsgConsumer {
             + "}";
     // @formatter:on
 
+    private GeneralConfigForTest cfgTest;
+
+    @Before
+    public void before() throws IOException {
+        cfgTest = new GeneralConfigForTest(CONFIGURATIONFILE);
+    }
+    @After
+    public void after() {
+        cfgTest.close();
+    }
+
+
     @Test
-    public void test() {
-        DMaaPFaultVESMsgConsumer faultMsgConsumer = new TestDMaaPFaultVESMsgConsumer();
+    public void test() throws IOException {
+        DMaaPFaultVESMsgConsumer faultMsgConsumer = new DMaaPFaultVESMsgConsumer(cfgTest.getCfg());
         try {
 
             faultMsgConsumer.processMsg(faultVESMsg.replace("@eventSeverity@", "CRITICAL"));
@@ -130,42 +145,4 @@ public class TestDMaaPFaultVESMsgConsumer extends DMaaPFaultVESMsgConsumer {
         }
     }
 
-    @Override
-    public FaultNotificationClient getFaultNotificationClient(String baseUrl) {
-        return new TestFaultNotificationClient();
-    }
-
-    @Override
-    public String getSDNRUser() {
-        return DEFAULT_SDNRUSER;
-    }
-
-    @Override
-    public String getSDNRPasswd() {
-        return DEFAULT_SDNRPASSWD;
-    }
-
-    @Override
-    public String getBaseUrl() {
-        return DEFAULT_SDNRBASEURL;
-    }
-
-    @Test
-    public void Test1() {
-        TestGeneralConfig cfgTest = new TestGeneralConfig();
-        cfgTest.test();
-        DMaaPFaultVESMsgConsumer faultConsumer = new DMaaPFaultVESMsgConsumer();
-        System.out.println(faultConsumer.getBaseUrl());
-        System.out.println(faultConsumer.getSDNRUser());
-        System.out.println(faultConsumer.getSDNRPasswd());
-    }
-
-    /*
-     * @Test public void Test2() { TestGeneralConfig cfgTest = new
-     * TestGeneralConfig(); cfgTest.test1(); //cfgTest.test();
-     * DMaaPFaultVESMsgConsumer faultConsumer = new DMaaPFaultVESMsgConsumer();
-     * System.out.println(faultConsumer.getBaseUrl());
-     * System.out.println(faultConsumer.getSDNRUser());
-     * System.out.println(faultConsumer.getSDNRPasswd()); }
-     */
 }

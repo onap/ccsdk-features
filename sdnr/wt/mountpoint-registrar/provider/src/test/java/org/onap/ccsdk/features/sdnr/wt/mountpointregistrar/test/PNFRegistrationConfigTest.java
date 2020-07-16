@@ -50,12 +50,13 @@ public class PNFRegistrationConfigTest {
             + "";
     // @formatter:on
     private ConfigurationFileRepresentation cfg;
+    private static final String configFile = "test.properties";
 
     @Test
     public void test() {
         try {
-            Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
-            cfg = new ConfigurationFileRepresentation("test.properties");
+            Files.asCharSink(new File(configFile), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
+            cfg = new ConfigurationFileRepresentation(configFile);
             PNFRegistrationConfig pnfCfg = new PNFRegistrationConfig(cfg);
             assertEquals("pnfRegistration", pnfCfg.getSectionName());
             assertEquals("org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer",
@@ -76,14 +77,14 @@ public class PNFRegistrationConfigTest {
             assertEquals("25000", pnfCfg.getClientConnectTimeout());
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
     }
 
     @After
     public void cleanUp() {
-        File file = new File("test.properties");
+        File file = new File(configFile);
         if (file.exists()) {
             System.out.println("File exists, Deleting it");
             file.delete();
