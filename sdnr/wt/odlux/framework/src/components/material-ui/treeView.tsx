@@ -77,15 +77,18 @@ type TreeViewComponentBaseProps<TData = {}> = WithTheme & WithStyles<typeof styl
   itemHeight?: number;
   depthOffset?: number;
   searchMode?: SearchMode;
+
 }
 
 type TreeViewComponentWithInternalStateProps<TData = { }> = TreeViewComponentBaseProps<TData> & {
+  initialSearchTerm? : string;
   onItemClick?: (item: TreeItem<TData>) => void;
   onFolderClick?: (item: TreeItem<TData>) => void;
 }
 
 type TreeViewComponentWithExternalSearchProps<TData = {}> = TreeViewComponentBaseProps<TData> & {
   items: ExternalTreeItem<TData>[];
+  initialSearchTerm? : string;
   searchTerm: string;
   onSearch: (searchTerm: string) => void;
   onItemClick?: (item: TreeItem<TData>) => void;
@@ -94,6 +97,7 @@ type TreeViewComponentWithExternalSearchProps<TData = {}> = TreeViewComponentBas
 
 type TreeViewComponentWithExternalStateProps<TData = {}> = TreeViewComponentBaseProps<TData> & TreeViewComponentState<TData> & {
   items: ExternalTreeItem<TData>[];
+  initialSearchTerm? : string;
   searchTerm: string;
   onSearch: (searchTerm: string) => void;
   onItemClick: (item: TreeItem<TData>) => void;
@@ -137,7 +141,7 @@ class TreeViewComponent<TData = { }> extends React.Component<TreeViewComponentPr
       expandedItems: [],
       activeItem: undefined,
       searchTerm: undefined,
-      searchTermValue: undefined
+      searchTermValue: props.initialSearchTerm
     };
   }
 

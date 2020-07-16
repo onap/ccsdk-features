@@ -16,6 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 import { requestRest } from '../../../../framework/src/services/restService';
+import { convertPropertyNames, replaceHyphen } from '../../../../framework/src/utilities/yangHelper';
 
 import { InventoryTreeNode, InventoryType } from '../models/inventory';
 import { getTree, getElement } from '../fakeData';
@@ -24,12 +25,44 @@ import { getTree, getElement } from '../fakeData';
  * Represents a web api accessor service for all maintenence entries related actions.
  */
 class InventoryService {
-  public async getInventoryTree(searchTerm?: string): Promise<InventoryTreeNode> {
-    return await getTree(searchTerm);
+  public async getInventoryTree(mountId: string, searchTerm: string = ""): Promise<InventoryTreeNode | null> {
+    //return await getTree(searchTerm);
+    const path = `/tree/read-inventoryequipment-tree/${mountId}`;
+    const body = {
+      "query": searchTerm
+    };
+    const inventoryTree = await requestRest<InventoryTreeNode>(path, { method: "POST" , body: JSON.stringify(body)});
+    return inventoryTree && convertPropertyNames(inventoryTree, replaceHyphen) || null;
   }
 
-  public async getInventoryEntry(id: string): Promise<InventoryType| undefined> {
-    return await getElement(id);
+  public async getInventoryEntry(id: string): Promise<InventoryType | undefined> {
+    const path = `/restconf/operations/data-provider:read-inventory-list`;
+    const body = {
+      "input": {
+        "filter": [
+          { property: "id", filtervalue: id },
+        ],
+        "sortorder": [],
+        "pagination": {
+          "size": 1,
+          "page": 1
+        }
+      }
+    };
+    const inventoryTreeElement = await requestRest<{
+      output: {
+        "pagination": {
+          "size": number,
+          "page": number,
+          "total": number
+        },
+        "data": InventoryType[]
+      }
+    }>(path, { method: "POST", body: JSON.stringify(body) });
+
+    return inventoryTreeElement && inventoryTreeElement.output && inventoryTreeElement.output.pagination && inventoryTreeElement.output.pagination.total >= 1 &&
+      inventoryTreeElement.output.data && convertPropertyNames(inventoryTreeElement.output.data[0], replaceHyphen) || undefined;
+   // return await getElement(id);
   }
 
 }

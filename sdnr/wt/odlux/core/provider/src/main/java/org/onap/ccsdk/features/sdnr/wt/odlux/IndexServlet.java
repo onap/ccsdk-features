@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.file.Files;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -32,40 +31,40 @@ import org.slf4j.LoggerFactory;
 
 public class IndexServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 3039669437157215355L;
-	private static Logger LOG = LoggerFactory.getLogger(IndexServlet.class);
+    private static final long serialVersionUID = 3039669437157215355L;
+    private static Logger LOG = LoggerFactory.getLogger(IndexServlet.class);
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (req.getRequestURI() != null && req.getRequestURI().contains("favicon.ico")) {
-			this.sendFile(resp, "etc/favicon.ico","image/x-icon");
-		} else {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (req.getRequestURI() != null && req.getRequestURI().contains("favicon.ico")) {
+            this.sendFile(resp, "etc/favicon.ico", "image/x-icon");
+        } else {
 
-			LOG.debug("redirect to odlux/index.html");
-			resp.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-			resp.setHeader("Location", "odlux/index.html");
-		}
-	}
+            LOG.debug("redirect to odlux/index.html");
+            resp.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+            resp.setHeader("Location", "odlux/index.html");
+        }
+    }
 
-	private void sendFile(HttpServletResponse response, String filename, String mimeType) {
-		File f = new File(filename);
-		if (f.exists()) {
-			try {
-				byte[] bytes = Files.readAllBytes(f.toPath());
-				response.setContentType(mimeType);
-				response.setContentLength(bytes.length);
-				response.setStatus(HttpURLConnection.HTTP_OK);
-				OutputStream os = response.getOutputStream();
-				os.write(bytes);
-				os.flush();
-				os.close();
-			} catch (IOException e) {
-				LOG.debug("problem sending {}: {}", filename, e);
-			}
-		} else {
-			LOG.debug("file not found: {}",filename);
-			response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
-		}
-	}
+    private void sendFile(HttpServletResponse response, String filename, String mimeType) {
+        File f = new File(filename);
+        if (f.exists()) {
+            try {
+                byte[] bytes = Files.readAllBytes(f.toPath());
+                response.setContentType(mimeType);
+                response.setContentLength(bytes.length);
+                response.setStatus(HttpURLConnection.HTTP_OK);
+                OutputStream os = response.getOutputStream();
+                os.write(bytes);
+                os.flush();
+                os.close();
+            } catch (IOException e) {
+                LOG.debug("problem sending {}: {}", filename, e);
+            }
+        } else {
+            LOG.debug("file not found: {}", filename);
+            response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+        }
+    }
 
 }

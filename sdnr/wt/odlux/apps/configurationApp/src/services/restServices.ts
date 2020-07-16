@@ -57,6 +57,18 @@ class RestService {
   public setConfigData(path: string, data: any) {
     return requestRestExt<{ [key: string]: any }>(path, { method: "PUT", body: JSON.stringify(data) });
   }
+
+  public executeRpc(path: string, data: any) {
+    return requestRestExt<{ [key: string]: any }>(path, { method: "POST", body: JSON.stringify(data) });
+  }
+
+  /** Removes the element by restconf path.
+  * @param path The restconf path to identify the note to update.
+  * @returns The restconf result.
+  */
+  public removeConfigElement(path: string) {
+    return requestRestExt<{ [key: string]: any }>(path, { method: "DELETE" });
+  }
 }
 
 export const restService = new RestService();

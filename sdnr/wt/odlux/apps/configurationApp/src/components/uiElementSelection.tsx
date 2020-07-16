@@ -39,6 +39,7 @@ export const UiElementSelection = (props: selectionProps) => {
         ? (<FormControl style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
             <InputLabel htmlFor={`select-${element.id}`} >{element.label}</InputLabel>
             <Select
+                title={(element.options.find(o => o.key === value.toString().toLowerCase()) || { description: undefined }).description}
                 required={!!element.mandatory}
                 error={!!error}
                 onChange={(e) => { props.onChange(e.target.value as string) }}
@@ -50,7 +51,9 @@ export const UiElementSelection = (props: selectionProps) => {
                     id: `select-${element.id}`,
                 }}
             >
-                {element.options.map(option => (<MenuItem key={option.key} title={option.description} value={option.key}>{option.key}</MenuItem>))}
+          {element.options.map(option => (
+            <MenuItem key={option.key} title={option.description} value={option.key}>{option.key}</MenuItem>
+          ))}
             </Select>
             <FormHelperText>{error}</FormHelperText>
         </FormControl>)

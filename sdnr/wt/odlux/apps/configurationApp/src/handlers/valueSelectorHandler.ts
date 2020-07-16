@@ -18,7 +18,7 @@
 
 import { IActionHandler } from "../../../../framework/src/flux/action";
 import { ViewSpecification } from "../models/uiModels";
-import { EnableValueSelector, SetSelectedValue, UpdateDeviceDescription, SetCollectingSelectionData, UpdatViewDescription } from "../actions/deviceActions";
+import { EnableValueSelector, SetSelectedValue, UpdateDeviceDescription, SetCollectingSelectionData, UpdatViewDescription, UpdatOutputData } from "../actions/deviceActions";
 
 export interface IValueSelectorState {
   collectingData: boolean;
@@ -62,7 +62,7 @@ export const valueSelectorHandler: IActionHandler<IValueSelectorState> = (state 
       onValueSelected: nc,
       listData: [],
     };
-  } else if (action instanceof UpdateDeviceDescription || action instanceof UpdatViewDescription) {
+  } else if (action instanceof UpdateDeviceDescription || action instanceof UpdatViewDescription || action instanceof UpdatOutputData) {
     state = {
       ...state,
       collectingData: false,

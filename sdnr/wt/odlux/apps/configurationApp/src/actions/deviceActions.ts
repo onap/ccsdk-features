@@ -2,12 +2,14 @@ import { Action } from '../../../../framework/src/flux/action';
 import { Dispatch } from '../../../../framework/src/flux/store';
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 import { PushAction, ReplaceAction } from "../../../../framework/src/actions/navigationActions";
+import { AddErrorInfoAction } from "../../../../framework/src/actions/errorActions";
 
+import { DisplayModeType, DisplaySpecification } from '../handlers/viewDescriptionHandler';
 import { restService } from "../services/restServices";
 import { YangParser } from "../yang/yangParser";
 import { Module } from "../models/yang";
-import { ViewSpecification, ViewElement, isViewElementReference, isViewElementList, isViewElementObjectOrList } from "../models/uiModels";
-import { AddErrorInfoAction } from "../../../../framework/src/actions/errorActions";
+import { ViewSpecification, ViewElement, isViewElementReference, isViewElementList, isViewElementObjectOrList, isViewElementRpc, isViewElementChoise, ViewElementChoiseCase } from "../models/uiModels";
+import { element } from 'prop-types';
 
 export class EnableValueSelector extends Action {
   constructor(public listSpecification: ViewSpecification, public listData: any[], public keyProperty: string, public onValueSelected : (value: any) => void ) {
@@ -34,7 +36,13 @@ export class UpdateDeviceDescription extends Action {
 }
 
 export class UpdatViewDescription extends Action {
-  constructor(public vPath: string, public view: ViewSpecification, public viewData: any, public displayAsList: boolean = false, public key?: string ) {
+  constructor (public vPath: string, public viewData: any, public displaySpecification: DisplaySpecification = { displayMode: DisplayModeType.doNotDisplay } ) {
+    super();
+  }
+}
+
+export class UpdatOutputData extends Action {
+  constructor (public outputData: any) {
     super();
   }
 }
@@ -159,7 +167,7 @@ const getReferencedDataList = async (refPath: string, dataPath: string, modules:
   return null;
 }
 
-const resolveViewDescription = (defaultNS: string | null, vPath: string, view: ViewSpecification, viewData: any, displayAsList: boolean = false, key?: string): UpdatViewDescription =>{
+const resolveViewDescription = (defaultNS: string | null, vPath: string, view: ViewSpecification): ViewSpecification =>{
 
   // check if-feature | when | and resolve all references.
   view = { ...view };
@@ -173,28 +181,72 @@ const resolveViewDescription = (defaultNS: string | null, vPath: string, view: V
     }
     return acc;
   }, {});
-  return new UpdatViewDescription(vPath, view, viewData, displayAsList, key);
+  return view;
 }
+
+const flatenViewElements = (defaultNS: string | null, parentPath: string, elements: { [name: string]: ViewElement }, views: ViewSpecification[], currentPath: string ): { [name: string]: ViewElement } => {
+  if (!elements) return {};
+  return Object.keys(elements).reduce<{ [name: string]: ViewElement }>((acc, cur) => {
+    const elm = elements[cur];
+
+    // remove the detault namespace, and only the default namespace, sine it seems that this is also not in the restconf response
+    const elmKey = defaultNS && elm.id.replace(new RegExp(`^${defaultNS}:`, "i"), "") || elm.id;
+    const key = parentPath ? `${parentPath}.${elmKey}` : elmKey;
+
+    if (isViewElementRpc(elm)) {
+      console.warn(`Flaten of RFC not supported ! [${currentPath}][${elm.label}]`);
+      return acc;
+    } else if (isViewElementObjectOrList(elm)) {
+      const view = views[+elm.viewId];
+      const inner = view && flatenViewElements(defaultNS, key, view.elements, views, `${currentPath}/${view.name}`);
+      inner && Object.keys(inner).forEach(k => (acc[k] = inner[k]));
+    } else if (isViewElementChoise(elm)) {
+     acc[key] = {
+        ...elm,
+        id: key,
+        cases: Object.keys(elm.cases).reduce<{ [name: string]: ViewElementChoiseCase }>((accCases, curCases) => {
+          const caseElement = elm.cases[curCases];
+          accCases[curCases] = {
+            ...caseElement,
+            // Hint: do not use key it contains elmKey, which shell be omitted for cases.
+            elements: flatenViewElements(defaultNS, /*key*/ parentPath, caseElement.elements, views, `${currentPath}/${elm.label}`)
+          };
+          return accCases;
+        }, {}),
+      };
+    } else {
+      acc[key] = {
+        ...elm,
+        id: key,
+      };
+    }
+    return acc;
+  }, {});
+};
 
 export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
   const pathParts = splitVPath(vPath, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
   const { configuration: { deviceDescription: { nodeId, modules, views } }, framework: { navigationState } } = getState();
   let dataPath = `/restconf/config/network-topology:network-topology/topology/topology-netconf/node/${nodeId}/yang-ext:mount`;
+
+  let inputViewSpecification: ViewSpecification | undefined = undefined;
+  let outputViewSpecification: ViewSpecification | undefined = undefined;
+
   let viewSpecification: ViewSpecification = views[0];
   let viewElement: ViewElement;
 
   let dataMember: string;
   let extractList: boolean = false;
 
-  let currentNS : string | null = null;
-  let defaultNS : string | null = null;
+  let currentNS: string | null = null;
+  let defaultNS: string | null = null;
 
   dispatch(new SetCollectingSelectionData(true));
   try {
     for (let ind = 0; ind < pathParts.length; ++ind) {
       const [property, key] = pathParts[ind];
       const namespaceInd = property && property.indexOf(":") || -1;
-      const namespace : string | null = namespaceInd > -1 ? (currentNS = property.slice(0, namespaceInd)) : currentNS;
+      const namespace: string | null = namespaceInd > -1 ? (currentNS = property.slice(0, namespaceInd)) : currentNS;
 
       if (ind === 0) { defaultNS = namespace };
 
@@ -206,6 +258,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
           dispatch(new SetCollectingSelectionData(false));
           throw new Error("No key for list [" + property + "]");
         } else if (vPath.endsWith("[]") && pathParts.length - 1 === ind) {
+
           // empty key is used for new element
           if (viewElement && "viewId" in viewElement) viewSpecification = views[+viewElement.viewId];
           const data = Object.keys(viewSpecification.elements).reduce<{ [name: string]: any }>((acc, cur) => {
@@ -215,7 +268,16 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
             }
             return acc;
           }, {});
-          return dispatch(resolveViewDescription(defaultNS, vPath, viewSpecification, data, false, isViewElementList(viewElement!) && viewElement.key || undefined));
+
+          // create display specification
+          const ds: DisplaySpecification = {
+            displayMode: DisplayModeType.displayAsObject,
+            viewSpecification: resolveViewDescription(defaultNS, vPath, viewSpecification),
+            keyProperty: isViewElementList(viewElement!) && viewElement.key || undefined
+          };
+
+          // update display specification
+          return dispatch(new UpdatViewDescription(vPath, data, ds));
         }
         if (viewElement && isViewElementList(viewElement) && viewSpecification.parentView === "0") {
           // check if there is a reference as key
@@ -247,11 +309,27 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
         extractList = false;
       }
 
-      if (viewElement && "viewId" in viewElement) viewSpecification = views[+viewElement.viewId];
+      if (viewElement && "viewId" in viewElement) {
+        viewSpecification = views[+viewElement.viewId];
+      } else if (viewElement.uiType === "rpc") {
+        viewSpecification = views[+(viewElement.inputViewId || 0)];
+
+        // create new instance & flaten
+        inputViewSpecification = viewElement.inputViewId != null && {
+          ...views[+(viewElement.inputViewId || 0)],
+          elements: flatenViewElements(defaultNS, "", views[+(viewElement.inputViewId || 0)].elements, views, viewElement.label),
+        } || undefined;
+        outputViewSpecification = viewElement.outputViewId != null && {
+          ...views[+(viewElement.outputViewId || 0)],
+          elements: flatenViewElements(defaultNS, "", views[+(viewElement.outputViewId || 0)].elements, views, viewElement.label),
+        } || undefined;
+
+      }
     }
 
     let data: any = {};
-    if (viewSpecification && viewSpecification.id !== "0") {
+    // do not get any data from netconf if there is no view specified || this is the root element [0] || this is an rpc
+    if (viewSpecification && !(viewSpecification.id === "0" || viewElement!.uiType === "rpc")) {
       const restResult = (await restService.getConfigData(dataPath));
       if (!restResult.data) {
         // special case: if this is a list without any response
@@ -259,7 +337,15 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
           if (!isViewElementList(viewElement!)) {
             throw new Error(`vPath: [${vPath}]. ViewElement has no key.`);
           }
-          return dispatch(resolveViewDescription(defaultNS, vPath, viewSpecification, [], extractList, viewElement.key));
+          // create display specification
+          const ds: DisplaySpecification = {
+            displayMode: extractList ? DisplayModeType.displayAsList : DisplayModeType.displayAsObject,
+            viewSpecification: resolveViewDescription(defaultNS, vPath, viewSpecification),
+            keyProperty: viewElement.key
+          };
+
+          // update display specification
+          return dispatch(new UpdatViewDescription(vPath, [], ds));
         }
         throw new Error(`Did not get response from Server. Status: [${restResult.status}]`);
       } else if (restResult.status < 200 || restResult.status > 299) {
@@ -278,9 +364,33 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
       data = extractList
         ? data[viewElement!.label] || [] // if the list is empty, it does not exist
         : data;
+
+    } else if (viewElement! && viewElement!.uiType === "rpc") {
+      // set data to defaults
+      data = {};
+      inputViewSpecification && Object.keys(inputViewSpecification.elements).forEach(key => {
+        const elm = inputViewSpecification && inputViewSpecification.elements[key];
+        if (elm && elm.default != undefined) {
+          data[elm.id] = elm.default;
+        }
+      });
     }
 
-    return dispatch(resolveViewDescription(defaultNS, vPath, viewSpecification, data, extractList, isViewElementList(viewElement!) && viewElement.key || undefined));
+    // create display specification
+    const ds: DisplaySpecification = viewElement! && viewElement!.uiType === "rpc"
+      ? {
+        displayMode: DisplayModeType.displayAsRPC,
+        inputViewSpecification: inputViewSpecification && resolveViewDescription(defaultNS, vPath, inputViewSpecification),
+        outputViewSpecification: outputViewSpecification && resolveViewDescription(defaultNS, vPath, outputViewSpecification),
+      }
+      : {
+        displayMode: extractList ? DisplayModeType.displayAsList : DisplayModeType.displayAsObject,
+        viewSpecification: resolveViewDescription(defaultNS, vPath, viewSpecification),
+        keyProperty: isViewElementList(viewElement!) && viewElement.key || undefined,
+      };
+
+    // update display specification
+    return dispatch(new UpdatViewDescription(vPath, data, ds));
     // https://beta.just-run.it/#/configuration/Sim12600/core-model:network-element/ltp[LTP-MWPS-TTP-01]
     // https://beta.just-run.it/#/configuration/Sim12600/core-model:network-element/ltp[LTP-MWPS-TTP-01]/lp
   } catch (error) {
@@ -290,7 +400,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
   } finally {
     return;
   }
-}
+};
 
 export const updateDataActionAsyncCreator = (vPath: string, data: any) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
   const pathParts = splitVPath(vPath, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
@@ -313,7 +423,7 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
       const namespace: string | null = namespaceInd > -1 ? (currentNS = property.slice(0, namespaceInd)) : currentNS;
 
       if (ind === 0) { defaultNS = namespace };
-      viewElement = viewSpecification.elements[property];
+      viewElement = viewSpecification.elements[property] || viewSpecification.elements[`${namespace}:${property}`];
       if (!viewElement) throw Error("Property [" + property + "] does not exist.");
 
       if (isViewElementList(viewElement) && !key) {
@@ -330,7 +440,7 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
           isNew = key;
           if (!key) {
             dispatch(new SetCollectingSelectionData(false));
-            throw new Error("No value for key [" + viewElement.key +"] in list [" + property + "]");
+            throw new Error("No value for key [" + viewElement.key + "] in list [" + property + "]");
           }
         }
       }
@@ -363,14 +473,183 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
       }
     }
 
-    return isNew
-      ? dispatch(new ReplaceAction(`/configuration/${nodeId}/${vPath.replace(/\[\]$/i,`[${isNew}]`)}`)) // navigate to new element
-      : dispatch(resolveViewDescription(defaultNS, vPath, viewSpecification, data, embedList, isViewElementList(viewElement!) && viewElement.key || undefined));
+    if (isNew) {
+      return dispatch(new ReplaceAction(`/configuration/${nodeId}/${vPath.replace(/\[\]$/i, `[${isNew}]`)}`)) // navigate to new element
+    }
+
+    // create display specification
+    const ds: DisplaySpecification = {
+      displayMode: embedList ? DisplayModeType.displayAsList : DisplayModeType.displayAsObject,
+      viewSpecification: resolveViewDescription(defaultNS, vPath, viewSpecification),
+      keyProperty: isViewElementList(viewElement!) && viewElement.key || undefined,
+    };
+
+    // update display specification
+    return dispatch(new UpdatViewDescription(vPath, data, ds));
   } catch (error) {
     history.back();
     dispatch(new AddErrorInfoAction({ title: "Problem", message: error.message || `Could not change ${dataPath}` }));
-    dispatch(new SetCollectingSelectionData(false));
+
   } finally {
+    dispatch(new SetCollectingSelectionData(false));
     return;
   }
-}
+};
+
+export const removeElementActionAsyncCreator = (vPath: string) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
+  const pathParts = splitVPath(vPath, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
+  const { configuration: { deviceDescription: { nodeId, views } } } = getState();
+  let dataPath = `/restconf/config/network-topology:network-topology/topology/topology-netconf/node/${nodeId}/yang-ext:mount`;
+  let viewSpecification: ViewSpecification = views[0];
+  let viewElement: ViewElement;
+
+  let currentNS: string | null = null;
+  let defaultNS: string | null = null;
+
+  dispatch(new SetCollectingSelectionData(true));
+  try {
+    for (let ind = 0; ind < pathParts.length; ++ind) {
+      let [property, key] = pathParts[ind];
+      const namespaceInd = property && property.indexOf(":") || -1;
+      const namespace: string | null = namespaceInd > -1 ? (currentNS = property.slice(0, namespaceInd)) : currentNS;
+
+      if (ind === 0) { defaultNS = namespace };
+      viewElement = viewSpecification.elements[property] || viewSpecification.elements[`${namespace}:${property}`];
+      if (!viewElement) throw Error("Property [" + property + "] does not exist.");
+
+      if (isViewElementList(viewElement) && !key) {
+        if (viewElement && viewElement.isList && viewSpecification.parentView === "0") {
+          throw new Error("Found a list at root level of a module w/o a refenrece key.");
+        }
+        if (pathParts.length - 1 > ind) {
+          dispatch(new SetCollectingSelectionData(false));
+          throw new Error("No key for list [" + property + "]");
+        } else if (vPath.endsWith("[]") && pathParts.length - 1 === ind) {
+          // remove the whole table
+        }
+      }
+
+      dataPath += `/${property}${key ? `/${key.replace(/\//ig, "%2F")}` : ""}`;
+
+      if (viewElement && "viewId" in viewElement) {
+        viewSpecification = views[+viewElement.viewId];
+      } else if (viewElement.uiType === "rpc") {
+        viewSpecification = views[+(viewElement.inputViewId || 0)];
+      }
+    }
+
+    const updateResult = await restService.removeConfigElement(dataPath);
+    if (updateResult.status < 200 || updateResult.status > 299) {
+      const message = updateResult.data && updateResult.data.errors && updateResult.data.errors.error && updateResult.data.errors.error[0] && updateResult.data.errors.error[0]["error-message"] || "";
+      throw new Error(`Server Error. Status: [${updateResult.status}]\n${message || updateResult.message || ''}`);
+    }
+  } catch (error) {
+    dispatch(new AddErrorInfoAction({ title: "Problem", message: error.message || `Could not remove ${dataPath}` }));
+  } finally {
+    dispatch(new SetCollectingSelectionData(false));
+  }
+
+
+};
+
+export const executeRpcActionAsyncCreator = (vPath: string, data: any) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
+  const pathParts = splitVPath(vPath, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
+  const { configuration: { deviceDescription: { nodeId, views }, viewDescription: oldViewDescription } } = getState();
+  let dataPath = `/restconf/operations/network-topology:network-topology/topology/topology-netconf/node/${nodeId}/yang-ext:mount`;
+  let viewSpecification: ViewSpecification = views[0];
+  let viewElement: ViewElement;
+  let dataMember: string;
+  let embedList: boolean = false;
+  let isNew: string | false = false;
+
+  let currentNS: string | null = null;
+  let defaultNS: string | null = null;
+
+  dispatch(new SetCollectingSelectionData(true));
+  try {
+    for (let ind = 0; ind < pathParts.length; ++ind) {
+      let [property, key] = pathParts[ind];
+      const namespaceInd = property && property.indexOf(":") || -1;
+      const namespace: string | null = namespaceInd > -1 ? (currentNS = property.slice(0, namespaceInd)) : currentNS;
+
+      if (ind === 0) { defaultNS = namespace };
+      viewElement = viewSpecification.elements[property] || viewSpecification.elements[`${namespace}:${property}`];
+      if (!viewElement) throw Error("Property [" + property + "] does not exist.");
+
+      if (isViewElementList(viewElement) && !key) {
+        embedList = true;
+      //   if (viewElement && viewElement.isList && viewSpecification.parentView === "0") {
+      //     throw new Error("Found a list at root level of a module w/o a refenrece key.");
+      //   }
+      //   if (pathParts.length - 1 > ind) {
+      //     dispatch(new SetCollectingSelectionData(false));
+      //     throw new Error("No key for list [" + property + "]");
+      //   } else if (vPath.endsWith("[]") && pathParts.length - 1 === ind) {
+      //     // handle new element
+      //     key = viewElement.key && String(data[viewElement.key]) || "";
+      //     isNew = key;
+      //     if (!key) {
+      //       dispatch(new SetCollectingSelectionData(false));
+      //       throw new Error("No value for key [" + viewElement.key + "] in list [" + property + "]");
+      //     }
+      //   }
+      }
+
+      dataPath += `/${property}${key ? `/${key.replace(/\//ig, "%2F")}` : ""}`;
+      dataMember = viewElement.label;
+      embedList = false;
+
+      if (viewElement && "viewId" in viewElement) {
+        viewSpecification = views[+viewElement.viewId];
+      } else if (viewElement.uiType === "rpc") {
+        viewSpecification = views[+(viewElement.inputViewId || 0)];
+      }
+    }
+
+    // re-inflate formerly flatten rpc data
+    data = data && Object.keys(data).reduce < { [name: string ]: any }>((acc, cur) => {
+      const pathParts = cur.split(".");
+      let pos = 0;
+      const updatePath = (obj: any, key: string) => {
+        obj[key] = (pos >= pathParts.length)
+          ? data[cur]
+          : updatePath(obj[key] || {}, pathParts[pos++]);
+        return obj;
+      }
+      updatePath(acc, pathParts[pos++]);
+      return acc;
+    }, {}) || null;
+
+    // embed the list -> key: list
+    data = embedList
+      ? { [viewElement!.label]: data }
+      : data;
+
+    // embed the first element list[key]
+    data = isNew
+      ? [data]
+      : data;
+
+    // do not post root member (0)
+    if ((viewSpecification && viewSpecification.id !== "0") || (dataMember! && !data)) {
+      const updateResult = await restService.executeRpc(dataPath, { [`${defaultNS}:input`]: data || {} });
+      if (updateResult.status < 200 || updateResult.status > 299) {
+        const message = updateResult.data && updateResult.data.errors && updateResult.data.errors.error && updateResult.data.errors.error[0] && updateResult.data.errors.error[0]["error-message"] || "";
+        throw new Error(`Server Error. Status: [${updateResult.status}]\n${message || updateResult.message || ''}`);
+      }
+      const viewData = { ...oldViewDescription.viewData, output: updateResult.data || null};
+      dispatch(new UpdatOutputData(viewData));
+    } else {
+      throw new Error(`There is NO RPC specified.`);
+    }
+
+
+    // // update display specification
+    // return
+  } catch (error) {
+    dispatch(new AddErrorInfoAction({ title: "Problem", message: error.message || `Could not change ${dataPath}` }));
+
+  } finally {
+    dispatch(new SetCollectingSelectionData(false));
+  }
+};

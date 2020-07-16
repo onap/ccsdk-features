@@ -1,3 +1,21 @@
+/**
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt odlux
+ * =================================================================================================
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ * ============LICENSE_END==========================================================================
+ */
+
 import { InventoryTreeNode, InventoryType } from "models/inventory";
 import { convertPropertyNames, replaceHyphen } from "../../../../framework/src/utilities/yangHelper";
 
@@ -30,31 +48,31 @@ const deleay = (time: number) => () => new Promise<number>(resolve => setTimeout
 const getTreeElements = (searchTerm: string | null, treeLevel: number = 0, parentUUID: string | null = null): [InventoryTreeNode, boolean] => {
   const elements = (data.filter(e => e["tree-level"] === treeLevel && (!parentUUID || e["parent-uuid"] === parentUUID)) || [])
   let elementMatch = false;
-  const treeeNode = elements.reduce<InventoryTreeNode>((acc, cur) => {
-    const [children, childMatch] = getTreeElements(searchTerm, treeLevel + 1, cur["node-id"]);
-    const isMatch = searchTerm ? Object.keys(cur).some(k => String((cur as any)[k]).indexOf(searchTerm)) : false;
+  const treeNode = elements.reduce<InventoryTreeNode>((acc, cur) => {
+    const [children, childMatch] = getTreeElements(searchTerm, treeLevel + 1, cur["uuid"]);
+    const isMatch = searchTerm ? Object.keys(cur).some(k => String((cur as any)[k]).indexOf(searchTerm) > -1) : false;
     elementMatch = elementMatch || isMatch || childMatch;
     if (!searchTerm || isMatch || childMatch) {
-      acc[cur["node-id"]] = {
-        label: cur["node-id"],
+      acc[cur["uuid"]] = {
+        label: cur["uuid"],
         children: children,
-        isMatch: false,
+        isMatch: isMatch,
       };
     }
     return acc;
   }, {});
 
-  return [treeeNode, elementMatch]
+  return [treeNode, elementMatch]
 };
 
-export const getTree = async (searchTerm: string | null = null) : Promise<InventoryTreeNode> => {
+export const getTree = async (searchTerm: string | null = null): Promise<InventoryTreeNode> => {
   await deleay(600);
   const [node] = getTreeElements(searchTerm);
   return node;
 };
 
-export const getElement = async (id: string ): Promise<InventoryType | undefined> => {
+export const getElement = async (id: string): Promise<InventoryType | undefined> => {
   await deleay(600);
-  const res = data.find(e => e.id === id);
+  const res = data.find(e => e.uuid === id);
   return res && convertPropertyNames(res, replaceHyphen) as unknown as InventoryType;
 };

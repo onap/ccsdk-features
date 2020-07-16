@@ -109,12 +109,28 @@ export type ViewElementUnion = ViewElementBase & {
   "elements": ViewElement[];
 }
 
+export type ViewElementChoiseCase = { id: string, label: string, description?: string, elements: { [name: string]: ViewElement }  };
+
 export type ViewElementChoise = ViewElementBase & {
   "uiType": "choise";
-  "cases": { [name: string]: { id: string, label: string, description?: string, elements: { [name: string]: ViewElement } } };
+  "cases": {
+    [name: string]: ViewElementChoiseCase;
+  }
+}
+
+// https://tools.ietf.org/html/rfc7950#section-7.14.1
+export type ViewElementRpc = ViewElementBase & {
+  "uiType": "rpc";
+  "inputViewId"?: string;
+  "outputViewId"?: string;
+}
+
+export type ViewElementEmpty = ViewElementBase & {
+  "uiType": "empty";
 }
 
 export type ViewElement =
+  | ViewElementEmpty
   | ViewElementBits
   | ViewElementBinary
   | ViewElementString
@@ -125,7 +141,8 @@ export type ViewElement =
   | ViewElementSelection
   | ViewElementReference
   | ViewElementUnion
-  | ViewElementChoise;
+  | ViewElementChoise
+  | ViewElementRpc;
 
 export const isViewElementString = (viewElement: ViewElement): viewElement is ViewElementString => {
   return viewElement && viewElement.uiType === "string";
@@ -167,16 +184,25 @@ export const isViewElementChoise = (viewElement: ViewElement): viewElement is Vi
   return viewElement && viewElement.uiType === "choise";
 }
 
+export const isViewElementRpc = (viewElement: ViewElement): viewElement is ViewElementRpc => {
+  return viewElement && viewElement.uiType === "rpc";
+}
+
+export const isViewElementEmpty = (viewElement: ViewElement): viewElement is ViewElementRpc => {
+  return viewElement && viewElement.uiType === "empty";
+}
+
+export const ResolveFunction = Symbol("IsResolved");
 
 export type ViewSpecification = {
   "id": string;
-  "name": string;
+  "name"?: string;
   "title"?: string;
   "parentView"?: string;
   "language": string;
   "ifFeature"?: string;
   "when"?: string;
-  "uses"?: string[];
+  "uses"?: (string[]) & { [ResolveFunction]?: () => void };
   "elements": { [name: string]: ViewElement };
   readonly "canEdit": boolean;
 }

@@ -164,7 +164,8 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
     event.preventDefault();
 
     this.setState({ busy: true });
-    const token = await authenticationService.authenticateUser(this.state.username, this.state.password, this.state.scope);
+    // const token = await authenticationService.authenticateUserOAuth(this.state.username, this.state.password, this.state.scope);
+    const token = await authenticationService.authenticateUserBasicAuth(this.state.username, this.state.password, this.state.scope); 
     this.props.dispatch(new UpdateAuthentication(token));
     this.setState({ busy: false });
 

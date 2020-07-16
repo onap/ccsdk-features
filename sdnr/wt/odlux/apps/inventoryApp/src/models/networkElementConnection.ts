@@ -1,6 +1,6 @@
-/*
+/**
  * ============LICENSE_START========================================================================
- * ONAP : ccsdk feature sdnr wt
+ * ONAP : ccsdk feature sdnr wt odlux
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
@@ -15,16 +15,23 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles;
 
-import java.util.List;
-
-public interface OdluxBundleResourceAccess {
-
-    boolean hasResource(String fn);
-
-    String getResourceFileContent(String fn, List<String> bundleNames);
-
-    String getBundleName();
-
+export type NetworkElementConnection = {
+  id?: string;
+  nodeId: string;
+  host: string;
+  port: number;
+  username?: string;
+  password?: string;
+  isRequired?: boolean;
+  status?: "connected" | "mounted" | "unmounted" | "connecting" | "disconnected" | "idle";
+  coreModelCapability?: string;
+  deviceType?: string;
+  nodeDetails?: {
+    availableCapabilities: string[];
+    unavailableCapabilities: {
+      failureReason: string;
+      capability: string;
+    }[];
+  }
 }

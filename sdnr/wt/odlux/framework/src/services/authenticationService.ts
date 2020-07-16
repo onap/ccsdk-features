@@ -26,7 +26,7 @@ type AuthTokenResponse = {
 
 
 class AuthenticationService {
-  public async authenticateUser(email: string, password: string, scope: string): Promise<AuthToken | null> {
+  public async authenticateUserOAuth(email: string, password: string, scope: string): Promise<AuthToken | null> {
     const result = await requestRest<string>(`oauth2/token`, {
       method: "POST",
       headers: {
@@ -46,6 +46,24 @@ class AuthenticationService {
       token_type: resultObj.token_type,
       expires: (new Date().valueOf()) + (resultObj.expires_in * 1000)
     } || null;
+  }
+
+   public async authenticateUserBasicAuth(email: string, password: string, scope: string): Promise<AuthToken | null> {
+    const result = await requestRest<string>(`restconf/modules`, {
+      method: "GET",
+      headers: {
+        'Authorization':  "Basic " + btoa(email + ":" + password)
+      },
+    }, false);
+    if (result) {
+      return {
+          username: email,
+          access_token:  btoa(email + ":" + password),
+          token_type: "Basic",
+          expires: (new Date()).valueOf() + 2678400000 // 31 days
+      }
+    }
+    return null;
   }
 }
 

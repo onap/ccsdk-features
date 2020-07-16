@@ -61,16 +61,19 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   editNetworkElement: async (element: UpdateNetworkElement, mountElement: NetworkElementConnection) => {
 
     const values = Object.keys(element);
+    console.log("edit element");
+    console.log(values);
 
     //make sure properties are there in case they get renamed
     const idProperty = propertyOf<UpdateNetworkElement>("id");
     const isRequiredProperty = propertyOf<UpdateNetworkElement>("isRequired");
+   
 
     if (values.length === 2 && values.includes(idProperty as string) && values.includes(isRequiredProperty as string)) {
       // do not mount network element, if only isRequired is changed
       await dispatcher.dispatch(editNetworkElementAsyncActionCreator(element));
 
-    } else {
+    } else if(!(values.length===1 &&values.includes(idProperty as string))) { //do not edit or mount element, if only id was saved into object (no changes made!)
       await dispatcher.dispatch(editNetworkElementAsyncActionCreator(element));
       await dispatcher.dispatch(mountNetworkElementAsyncActionCreator(mountElement));
     }

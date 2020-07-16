@@ -25,8 +25,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 /**
- * At startup of each karaf bundle, each UI module creates an instance of this class via blueprint.
- * Initialize method gets called at loading of bundle.
+ * At startup of each karaf bundle, each UI module creates an instance of this class via blueprint. Initialize method
+ * gets called at loading of bundle.
  */
 
 public class OdluxBundle {
@@ -103,12 +103,12 @@ public class OdluxBundle {
     public String getResourceFileContent(String filename) {
         return this.loadFileContent(this.getResource(filename));
     }
-  
+
     protected URL getResource(String filename) {
         return ClassLoaderUtilExt.getResource(filename, this.getClass());
     }
 
-    protected String loadFileContent(final URL url ) {
+    protected String loadFileContent(final URL url) {
         if (url == null)
             return null;
         LOG.debug("try to load res " + url.toString());
@@ -124,15 +124,14 @@ public class OdluxBundle {
         } catch (IOException e) {
             LOG.warn("could not load resfile " + url.toString() + ": " + e.getMessage());
             return null;
-        }
-        finally {
-        	if(in!=null) {
-        		try {
-					in.close();
-				} catch (IOException e) {
-					
-				}
-        	}
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+
+                }
+            }
         }
 
         return sb.toString();

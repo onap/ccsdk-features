@@ -22,11 +22,11 @@ import java.util.*;
 
 
 /**
- * This class is extremely useful for loading resources and classes in a fault tolerant manner
- * that works across different applications servers.
+ * This class is extremely useful for loading resources and classes in a fault tolerant manner that works across
+ * different applications servers.
  *
- * It has come out of many months of frustrating use of multiple application servers at Atlassian,
- * please don't change things unless you're sure they're not going to break in one server or another!
+ * It has come out of many months of frustrating use of multiple application servers at Atlassian, please don't change
+ * things unless you're sure they're not going to break in one server or another!
  *
  * It was brought in from oscore trunk revision 147.
  *
@@ -37,58 +37,59 @@ public class ClassLoaderUtil {
     //~ Methods ////////////////////////////////////////////////////////////////
 
     /**
-     * Load all resources with a given name, potentially aggregating all results
-     * from the searched classloaders.  If no results are found, the resource name
-     * is prepended by '/' and tried again.
+     * Load all resources with a given name, potentially aggregating all results from the searched classloaders. If no
+     * results are found, the resource name is prepended by '/' and tried again.
      *
      * This method will try to load the resources using the following methods (in order):
      * <ul>
-     *  <li>From Thread.currentThread().getContextClassLoader()
-     *  <li>From ClassLoaderUtil.class.getClassLoader()
-     *  <li>callingClass.getClassLoader()
+     * <li>From Thread.currentThread().getContextClassLoader()
+     * <li>From ClassLoaderUtil.class.getClassLoader()
+     * <li>callingClass.getClassLoader()
      * </ul>
      *
      * @param resourceName The name of the resources to load
      * @param callingClass The Class object of the calling object
      */
-     public static Iterator<URL> getResources(String resourceName, Class<?> callingClass, boolean aggregate) throws IOException {
+    public static Iterator<URL> getResources(String resourceName, Class<?> callingClass, boolean aggregate)
+            throws IOException {
 
-         AggregateIterator<URL> iterator = new AggregateIterator<>();
+        AggregateIterator<URL> iterator = new AggregateIterator<>();
 
-         iterator.addEnumeration(Thread.currentThread().getContextClassLoader().getResources(resourceName));
+        iterator.addEnumeration(Thread.currentThread().getContextClassLoader().getResources(resourceName));
 
-         if (!iterator.hasNext() || aggregate) {
-             iterator.addEnumeration(ClassLoaderUtil.class.getClassLoader().getResources(resourceName));
-         }
+        if (!iterator.hasNext() || aggregate) {
+            iterator.addEnumeration(ClassLoaderUtil.class.getClassLoader().getResources(resourceName));
+        }
 
-         if (!iterator.hasNext() || aggregate) {
-             ClassLoader cl = callingClass.getClassLoader();
+        if (!iterator.hasNext() || aggregate) {
+            ClassLoader cl = callingClass.getClassLoader();
 
-             if (cl != null) {
-                 iterator.addEnumeration(cl.getResources(resourceName));
-             }
-         }
+            if (cl != null) {
+                iterator.addEnumeration(cl.getResources(resourceName));
+            }
+        }
 
-         if (!iterator.hasNext() && resourceName != null && (resourceName.length() == 0 || resourceName.charAt(0) != '/')) {
-             return getResources('/' + resourceName, callingClass, aggregate);
-         }
+        if (!iterator.hasNext() && resourceName != null
+                && (resourceName.length() == 0 || resourceName.charAt(0) != '/')) {
+            return getResources('/' + resourceName, callingClass, aggregate);
+        }
 
-         return iterator;
-     }
+        return iterator;
+    }
 
     /**
-    * Load a given resource.
-    *
-    * This method will try to load the resource using the following methods (in order):
-    * <ul>
-    *  <li>From Thread.currentThread().getContextClassLoader()
-    *  <li>From ClassLoaderUtil.class.getClassLoader()
-    *  <li>callingClass.getClassLoader()
-    * </ul>
-    *
-    * @param resourceName The name IllegalStateException("Unable to call ")of the resource to load
-    * @param callingClass The Class object of the calling object
-    */
+     * Load a given resource.
+     *
+     * This method will try to load the resource using the following methods (in order):
+     * <ul>
+     * <li>From Thread.currentThread().getContextClassLoader()
+     * <li>From ClassLoaderUtil.class.getClassLoader()
+     * <li>callingClass.getClassLoader()
+     * </ul>
+     *
+     * @param resourceName The name IllegalStateException("Unable to call ")of the resource to load
+     * @param callingClass The Class object of the calling object
+     */
     public static URL getResource(String resourceName, Class<?> callingClass) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(resourceName);
 
@@ -112,13 +113,13 @@ public class ClassLoaderUtil {
     }
 
     /**
-    * This is a convenience method to load a resource as a stream.
-    *
-    * The algorithm used to find the resource is given in getResource()
-    *
-    * @param resourceName The name of the resource to load
-    * @param callingClass The Class object of the calling object
-    */
+     * This is a convenience method to load a resource as a stream.
+     *
+     * The algorithm used to find the resource is given in getResource()
+     *
+     * @param resourceName The name of the resource to load
+     * @param callingClass The Class object of the calling object
+     */
     public static InputStream getResourceAsStream(String resourceName, Class<?> callingClass) {
         URL url = getResource(resourceName, callingClass);
 
@@ -130,20 +131,20 @@ public class ClassLoaderUtil {
     }
 
     /**
-    * Load a class with a given name.
-    *
-    * It will try to load the class in the following order:
-    * <ul>
-    *  <li>From Thread.currentThread().getContextClassLoader()
-    *  <li>Using the basic Class.forName()
-    *  <li>From ClassLoaderUtil.class.getClassLoader()
-    *  <li>From the callingClass.getClassLoader()
-    * </ul>
-    *
-    * @param className The name of the class to load
-    * @param callingClass The Class object of the calling object
-    * @throws ClassNotFoundException If the class cannot be found anywhere.
-    */
+     * Load a class with a given name.
+     *
+     * It will try to load the class in the following order:
+     * <ul>
+     * <li>From Thread.currentThread().getContextClassLoader()
+     * <li>Using the basic Class.forName()
+     * <li>From ClassLoaderUtil.class.getClassLoader()
+     * <li>From the callingClass.getClassLoader()
+     * </ul>
+     *
+     * @param className The name of the class to load
+     * @param callingClass The Class object of the calling object
+     * @throws ClassNotFoundException If the class cannot be found anywhere.
+     */
     public static Class<?> loadClass(String className, Class<?> callingClass) throws ClassNotFoundException {
         try {
             return Thread.currentThread().getContextClassLoader().loadClass(className);
@@ -161,8 +162,8 @@ public class ClassLoaderUtil {
     }
 
     /**
-     * Aggregates Enumeration instances into one iterator and filters out duplicates.  Always keeps one
-     * ahead of the enumerator to protect against returning duplicates.
+     * Aggregates Enumeration instances into one iterator and filters out duplicates. Always keeps one ahead of the
+     * enumerator to protect against returning duplicates.
      */
     static class AggregateIterator<E> implements Iterator<E> {
 

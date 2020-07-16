@@ -16,11 +16,10 @@
  * ============LICENSE_END==========================================================================
  */
 package org.onap.ccsdk.features.sdnr.odlux.test;
-import static org.junit.Assert.*;
 
+import static org.junit.Assert.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.odlux.ResFilesServlet;
 
@@ -29,15 +28,16 @@ public class TestLoadResources {
     @Test
     public void test() {
         ResFilesServlet servlet = new ResFilesServlet();
-        String indexhtml=null;
-        indexhtml=servlet.loadFileContent("odlux/index.html");
+        String indexhtml = null;
+        indexhtml = servlet.loadFileContent("odlux/index.html");
         assertNotNull(indexhtml);
         final String regex = "require\\(\\[.*\"run\".*\\]";
-        final Pattern pattern = Pattern.compile(regex,Pattern.MULTILINE);
+        final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
         System.out.println(indexhtml);
         final Matcher matcher = pattern.matcher(indexhtml);
-        assertTrue("Can not find patter '"+regex+"'",matcher.find());
+        assertTrue("Can not find patter '" + regex + "'", matcher.find());
     }
+
     @Test
     public void test2() {
 

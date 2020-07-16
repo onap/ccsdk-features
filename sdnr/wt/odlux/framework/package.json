@@ -24,7 +24,7 @@
   "author": "Matthias Fischer",
   "license": "Apache-2.0",
   "peerDependencies": {
-    "@types/node": "11.9.5",
+    "@types/node": "11.11.6",
     "@types/react": "16.9.19",
     "@types/react-dom": "16.9.5",
     "@types/react-router-dom": "4.3.1",
@@ -44,6 +44,8 @@
     "@types/jsonwebtoken": "7.2.8"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.0.0",
+    "@types/x2js": "^3.1.0",
     "http-server": "^0.11.1"
   }
 }

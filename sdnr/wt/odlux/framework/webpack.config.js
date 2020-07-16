@@ -45,6 +45,7 @@ module.exports = (env) => {
       app: [
         "./app.tsx",
         "./services",
+        "./components/objectDump",
         "./components/material-table",
         "./components/material-ui",
         "./utilities/elasticSearch",
@@ -127,7 +128,10 @@ module.exports = (env) => {
         baseUrl: '',
         pathUrl: '',
         processOutput: function (assets) {
-          return 'require.config(' + JSON.stringify(assets, null, 2) + ')';
+          let mainConfig =  JSON.stringify(assets, null, 2);
+          mainConfig = mainConfig.slice(0,-1); // remove closing bracket from string
+          const entireConfig = mainConfig.concat(", waitSeconds: 30}"); // add waitSeconds to config
+          return 'require.config(' + entireConfig + ')';
         }
       }),
       // new HtmlWebpackPlugin({

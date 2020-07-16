@@ -1,8 +1,8 @@
-/*
+/**
  * ============LICENSE_START========================================================================
- * ONAP : ccsdk feature sdnr wt
+ * ONAP : ccsdk feature sdnr wt odlux
  * =================================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -15,16 +15,17 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles;
 
-import java.util.List;
+import { Action } from "../../../../framework/src/flux/action";
+import { PanelId } from "models/panelId";
 
-public interface OdluxBundleResourceAccess {
 
-    boolean hasResource(String fn);
+export class SetPanelAction extends Action {
+    constructor(public panelId: PanelId) {
+      super();
+    }
+  }
 
-    String getResourceFileContent(String fn, List<String> bundleNames);
-
-    String getBundleName();
-
-}
+export const setPanelAction = (panelId: PanelId) => {
+    return new SetPanelAction(panelId);
+  }

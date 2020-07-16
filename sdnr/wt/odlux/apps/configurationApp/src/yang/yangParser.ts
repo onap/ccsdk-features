@@ -15,10 +15,12 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-
-
 import { Token, Statement, Module, Identity } from "../models/yang";
-import { ViewSpecification, ViewElement, isViewElementObjectOrList, ViewElementBase, isViewElementReference, ViewElementChoise, ViewElementBinary, ViewElementString, isViewElementString, isViewElementNumber, ViewElementNumber, Expression, YangRange, ViewElementUnion } from "../models/uiModels";
+import {
+  ViewSpecification, ViewElement, isViewElementObjectOrList, ViewElementBase,
+  isViewElementReference, ViewElementChoise, ViewElementBinary, ViewElementString, isViewElementString,
+  isViewElementNumber, ViewElementNumber, Expression, YangRange, ViewElementUnion, ViewElementRpc, isViewElementRpc, ResolveFunction
+} from "../models/uiModels";
 import { yangService } from "../services/yangService";
 
 export const splitVPath = (vPath: string, vPathParser: RegExp): RegExpMatchArray[] => {
@@ -263,7 +265,8 @@ class YangLexer {
 }
 
 export class YangParser {
-  private _groupingsToResolve: (() => void)[] = [];
+  private _groupingsToResolve: ViewSpecification[] = [];
+
   private _identityToResolve: (() => void)[] = [];
   private _unionsToResolve: (() => void)[] = [];
   private _modulesToResolve: (() => void)[] = [];
@@ -410,11 +413,13 @@ export class YangParser {
     this._modulesToResolve.push(() => {
       Object.keys(module.elements).forEach(key => {
         const viewElement = module.elements[key];
-        if (!isViewElementObjectOrList(viewElement)) {
-          throw new Error(`Module: [${module}]. Only List or Object allowed on root level.`);
+        if (!(isViewElementObjectOrList(viewElement) || isViewElementRpc(viewElement))) {
+          console.error(new Error(`Module: [${module}]. Only Object, List or RPC are allowed on root level.`));
         }
-        const viewIdIndex = Number(viewElement.viewId);
-        module.views[key] = this._views[viewIdIndex];
+        if (isViewElementObjectOrList(viewElement)) {
+          const viewIdIndex = Number(viewElement.viewId);
+          module.views[key] = this._views[viewIdIndex];
+        }
         this._views[0].elements[key] = module.elements[key];
       });
     });
@@ -431,8 +436,8 @@ export class YangParser {
     });
 
     // process all groupings
-    this._groupingsToResolve.forEach(cb => {
-      try { cb(); } catch (error) {
+    this._groupingsToResolve.filter(vs => vs.uses && vs.uses[ResolveFunction]).forEach(vs => {
+      try { vs.uses![ResolveFunction]!(); } catch (error) {
         console.warn(`Error resolving: [${error.message}]`);
       }
     });
@@ -470,7 +475,6 @@ export class YangParser {
       return result;
     }
 
-
     const baseIdentites: Identity[] = [];
     Object.keys(this.modules).forEach(modKey => {
       const module = this.modules[modKey];
@@ -478,7 +482,7 @@ export class YangParser {
         const identity = module.identities[idKey];
         if (identity.base != null) {
           const base = this.resolveIdentity(identity.base, module);
-          base.children ?.push(identity);
+          base.children?.push(identity);
         } else {
           baseIdentites.push(identity);
         }
@@ -765,20 +769,60 @@ export class YangParser {
       }, []));
     }
 
-    const rpcs = this.extractNodes(statement, "rpc");
-    if (rpcs && rpcs.length > 0) {
-      // todo:
+    const rpcStms = this.extractNodes(statement, "rpc");
+    if (rpcStms && rpcStms.length > 0) {
+      elements.push(...rpcStms.reduce<ViewElementRpc[]>((accRpc, curRpc) => {
+        if (!curRpc.arg) {
+          throw new Error(`Module: [${context.name}]${currentPath}. Found rpc without name.`);
+        }
+
+        const description = this.extractValue(curRpc, "description") || undefined;
+        const configValue = this.extractValue(curRpc, "config");
+        const config = configValue == null ? true : configValue.toLocaleLowerCase() !== "false";
+
+        let inputViewId: string | undefined = undefined;
+        let outputViewId: string | undefined = undefined;
+
+        const input = this.extractNodes(curRpc, "input") || undefined;
+        const output = this.extractNodes(curRpc, "output") || undefined;
+
+        if (input && input.length > 0) {
+          const [inputView, inputSubViews] = this.extractSubViews(input[0], parentId, context, `${currentPath}/${context.name}:${curRpc.arg}`);
+          subViews.push(inputView, ...inputSubViews);
+          inputViewId = inputView.id;
+        }
+
+        if (output && output.length > 0) {
+          const [outputView, outputSubViews] = this.extractSubViews(output[0], parentId, context, `${currentPath}/${context.name}:${curRpc.arg}`);
+          subViews.push(outputView, ...outputSubViews);
+          outputViewId = outputView.id;
+        }
+
+        const element: ViewElementRpc = {
+          uiType: "rpc",
+          id: parentId === 0 ? `${context.name}:${curRpc.arg}` : curRpc.arg,
+          label: curRpc.arg,
+          config: config,
+          description: description,
+          inputViewId: inputViewId,
+          outputViewId: outputViewId,
+        };
+
+        accRpc.push(element);
+
+        return accRpc;
+      }, []));
     }
 
-    if (!statement.arg) {
-      throw new Error(`Module: [${context.name}]. Found statement without name.`);
-    }
+    // if (!statement.arg) {
+    //   throw new Error(`Module: [${context.name}]. Found statement without name.`);
+    // }
 
     const viewSpec: ViewSpecification = {
       id: String(currentId),
       parentView: String(parentId),
-      name: statement.arg,
-      title: statement.arg,
+      name: statement.arg != null ? statement.arg : undefined,
+      title: statement.arg != null ? statement.arg : undefined,
       language: "en-us",
       canEdit: false,
       ifFeature: ifFeature,
@@ -804,6 +848,8 @@ export class YangParser {
     if (usesRefs && usesRefs.length > 0) {
 
       viewSpec.uses = (viewSpec.uses || []);
+      const resolveFunctions : (()=>void)[] = [];
+
       for (let i = 0; i < usesRefs.length; ++i) {
         const groupingName = usesRefs[i].arg;
         if (!groupingName) {
@@ -812,9 +858,14 @@ export class YangParser {
 
         viewSpec.uses.push(this.resolveReferencePath(groupingName, context));
 
-        this._groupingsToResolve.push(() => {
+        resolveFunctions.push(() => {
           const groupingViewSpec = this.resolveGrouping(groupingName, context);
           if (groupingViewSpec) {
+
+            // resolve recursive
+            const resolveFunc = groupingViewSpec.uses && groupingViewSpec.uses[ResolveFunction];
+            resolveFunc && resolveFunc();
+
             Object.keys(groupingViewSpec.elements).forEach(key => {
               const elm = groupingViewSpec.elements[key];
               viewSpec.elements[key] = {
@@ -826,6 +877,19 @@ export class YangParser {
           }
         });
       }
+
+      viewSpec.uses[ResolveFunction] = () => {
+        resolveFunctions.forEach(res => {
+          try {
+            res();
+          } catch (error) {
+            console.error(error);
+          }
+        });
+        viewSpec?.uses![ResolveFunction] = undefined;
+      }
+
+      this._groupingsToResolve.push(viewSpec);
     }
 
     return [viewSpec, subViews];
@@ -1117,10 +1181,9 @@ export class YangParser {
       /*  9.11.  The empty Built-In Type
           The empty built-in type represents a leaf that does not have any
           value, it conveys information by its presence or absence. */
-      console.warn(`found type: empty in [${module.name}][${currentPath}][${element.label}]`);
       return {
         ...element,
-        uiType: "string",
+        uiType: "empty",
       };
     } else if (type === "union") {
       // todo: ❗ handle union ⚡

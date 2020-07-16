@@ -46,15 +46,15 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
         super(null, BUNDLENAME_APP);
 
     }
+
     @Override
-    protected String loadFileContent(URL url)
-    {
+    protected String loadFileContent(URL url) {
         return loadFileContent(url, OdluxBundleLoaderImpl.getInstance().getLoadedBundles(this.getBundleName()));
     }
 
     @Override
     public String getResourceFileContent(String fn, List<String> bundleNames) {
-        return loadFileContent(this.getResource(fn),bundleNames);
+        return loadFileContent(this.getResource(fn), bundleNames);
     }
 
     private static String loadFileContent(URL url, List<String> bundlesNamesList) {
@@ -64,7 +64,7 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
         LOG.debug("try to load res " + url.toString());
         StringBuilder sb = new StringBuilder();
         Matcher matcher;
-        BufferedReader in=null;
+        BufferedReader in = null;
         try {
             in = new BufferedReader(new InputStreamReader(url.openStream()));
 
@@ -73,8 +73,8 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
                 if (url.getFile().endsWith("index.html")) {
                     matcher = patternRequire.matcher(inputLine);
                     if (matcher.find()) {
-                        inputLine = inputLine.substring(0, matcher.start(1)) + "\"" + String.join("\",\"", bundlesNamesList)
-                                + "\"" + inputLine.substring(matcher.end(1));
+                        inputLine = inputLine.substring(0, matcher.start(1)) + "\""
+                                + String.join("\",\"", bundlesNamesList) + "\"" + inputLine.substring(matcher.end(1));
                     }
                     matcher = patternFunction.matcher(inputLine);
                     if (matcher.find()) {
@@ -89,26 +89,25 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
                                 hlp += bundle + ".register();" + LR;
                             }
                         }
-                        inputLine = inputLine.substring(0, matcher.start(1)) + hlp
-                                + inputLine.substring(matcher.start(1));
+                        inputLine =
+                                inputLine.substring(0, matcher.start(1)) + hlp + inputLine.substring(matcher.start(1));
                     }
                 }
                 sb.append(inputLine + LR);
             }
-          
+
         } catch (IOException e) {
             LOG.warn("could not load resfile {} : {}", url, e.getMessage());
             return null;
-        }
-		finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (IOException e) {
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
 
-			}
-		}
+            }
+        }
 
         return sb.toString();
     }

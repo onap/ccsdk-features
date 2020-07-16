@@ -59,6 +59,9 @@ const ToggleContainer: React.FunctionComponent<toggleProps> = (props) => {
 
     const children = React.Children.toArray(props.children);
 
+    //hide filter if visible + table
+    //put current name into state, let container handle stuff itelf, register for togglestate, get right via set name
+
     return (
         <>
             <div className={classes.toggleButtonContainer} >

@@ -20,12 +20,10 @@ package org.onap.ccsdk.features.sdnr.wt.odlux;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles.OdluxBundleLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,34 +44,35 @@ public class ResFilesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-    	final String fn = req.getRequestURI();
+        final String fn = req.getRequestURI();
         LOG.debug("Get request with for URI: {}", fn);
 
         OdluxBundleLoader odluxBundleLoader = OdluxBundleLoaderImpl.getInstance();
-		if (odluxBundleLoader != null) {
-			String fileContent = odluxBundleLoader.getResourceContent(fn, indexBundle);
-			if (fileContent != null) {
-				//Store header info
-				String mimeType = getMimeType(fn);
-				byte[] byteContent = fileContent.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-				int length = byteContent.length;
+        if (odluxBundleLoader != null) {
+            String fileContent = odluxBundleLoader.getResourceContent(fn, indexBundle);
+            if (fileContent != null) {
+                //Store header info
+                String mimeType = getMimeType(fn);
+                byte[] byteContent = fileContent.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                int length = byteContent.length;
 
-				LOG.debug("Found file in resources. Name {} mimetype {} length {}  and write to output stream", fn, mimeType, length);
-				resp.setContentType(mimeType);
-				resp.setContentLength(length);
-				resp.setStatus(HttpURLConnection.HTTP_OK);
-				OutputStream os = resp.getOutputStream();
-				os.write(byteContent);
-				os.flush();
-				os.close();
-			} else {
-				LOG.debug("File {} not found in res.", fn);
-				resp.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
-			}
-		} else {
-			LOG.debug("BundleLoaderInstance to found.", fn);
-			resp.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
-		}
+                LOG.debug("Found file in resources. Name {} mimetype {} length {}  and write to output stream", fn,
+                        mimeType, length);
+                resp.setContentType(mimeType);
+                resp.setContentLength(length);
+                resp.setStatus(HttpURLConnection.HTTP_OK);
+                OutputStream os = resp.getOutputStream();
+                os.write(byteContent);
+                os.flush();
+                os.close();
+            } else {
+                LOG.debug("File {} not found in res.", fn);
+                resp.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+            }
+        } else {
+            LOG.debug("BundleLoaderInstance to found.", fn);
+            resp.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+        }
     }
 
     public String loadFileContent(String filename) {
@@ -82,7 +81,7 @@ public class ResFilesServlet extends HttpServlet {
 
     //Provide own function that can be overloaded for test
     public String getMimeType(String fileName) {
-    	return getServletContext().getMimeType(fileName);
+        return getServletContext().getMimeType(fileName);
     }
 
 }

@@ -22,43 +22,15 @@ import { withRouter, RouteComponentProps, Route, Switch, Redirect } from 'react-
 import { faShoppingBag } from '@fortawesome/free-solid-svg-icons'; // select app icon
 import applicationManager from '../../../framework/src/services/applicationManager';
 
-import connect, { Connect, IDispatcher } from '../../../framework/src/flux/connect';
-import { IApplicationStoreState } from "../../../framework/src/store/applicationStore";
+import { InventoryTreeView } from './views/treeview';
+import Dashboard from "./views/dashboard";
 
-import { Dashboard } from './views/dashboard';
 import inventoryAppRootHandler from './handlers/inventoryAppRootHandler';
-
-import { createInventoryElementsProperties, createInventoryElementsActions, inventoryElementsReloadAction } from "./handlers/inventoryElementsHandler";
-
-let currentMountId: string | undefined = undefined;
-
-const mapProps = (state: IApplicationStoreState) => ({
-  inventoryProperties: createInventoryElementsProperties(state),
-});
-
-const mapDisp = (dispatcher: IDispatcher) => ({
-  inventoryActions: createInventoryElementsActions(dispatcher.dispatch, true)
-});
-
-const InventoryApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ mountId?: string }> & Connect<typeof mapProps, typeof mapDisp>) => {
-  if (currentMountId !== props.match.params.mountId) {
-    currentMountId = props.match.params.mountId || undefined;
-    window.setTimeout(() => {
-      if (currentMountId) {
-        props.inventoryActions.onFilterChanged("nodeId", currentMountId);
-        props.inventoryProperties.showFilter;
-        props.inventoryActions.onRefresh();
-      }
-    });
-  }
-  return (
-    <Dashboard />
-  )
-});
 
 const App = withRouter((props: RouteComponentProps) => (
   <Switch>
-    <Route path={`${props.match.path}/:mountId?`} component={InventoryApplicationRouteAdapter} />
+    <Route path={`${props.match.path}/:mountId`} component={InventoryTreeView} />
+    <Route path={`${props.match.path}`} component={Dashboard} /> 
     <Redirect to={`${props.match.path}`} />
   </Switch>
 ));

@@ -25,9 +25,11 @@ import connect, { IDispatcher, Connect } from "../../../../framework/src/flux/co
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 import MaterialTable, { ColumnModel, ColumnType, MaterialTableCtorType } from "../../../../framework/src/components/material-table";
 import { Loader } from "../../../../framework/src/components/material-ui/loader";
+import { renderObject } from '../../../../framework/src/components/objectDump';
 
-import { SetSelectedValue, splitVPath, updateDataActionAsyncCreator, updateViewActionAsyncCreator } from "../actions/deviceActions";
-import { ViewSpecification, isViewElementString, isViewElementNumber, isViewElementBoolean, isViewElementObjectOrList, isViewElementSelection, isViewElementChoise, ViewElement, ViewElementChoise, isViewElementUnion } from "../models/uiModels";
+import { DisplayModeType } from '../handlers/viewDescriptionHandler';
+import { SetSelectedValue, splitVPath, updateDataActionAsyncCreator, updateViewActionAsyncCreator, removeElementActionAsyncCreator, executeRpcActionAsyncCreator } from "../actions/deviceActions";
+import { ViewSpecification, isViewElementString, isViewElementNumber, isViewElementBoolean, isViewElementObjectOrList, isViewElementSelection, isViewElementChoise, ViewElement, ViewElementChoise, isViewElementUnion, isViewElementRpc, ViewElementRpc, isViewElementEmpty } from "../models/uiModels";
 
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
@@ -36,17 +38,14 @@ import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
 import SaveIcon from '@material-ui/icons/Save';
 import EditIcon from '@material-ui/icons/Edit';
 import Tooltip from "@material-ui/core/Tooltip";
-import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import IconButton from "@material-ui/core/IconButton";
 
-import InputAdornment from "@material-ui/core/InputAdornment";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "@material-ui/core/Link";
-import FormHelperText from '@material-ui/core/FormHelperText';
 
 import { UIElementReference } from '../components/uiElementReference';
 import { UiElementNumber } from '../components/uiElementNumber';
@@ -54,6 +53,7 @@ import { UiElementString } from '../components/uiElementString';
 import { UiElementBoolean } from '../components/uiElementBoolean';
 import { UiElementSelection } from '../components/uiElementSelection';
 import { UIElementUnion } from '../components/uiElementUnion';
+import { Button } from '@material-ui/core';
 
 const styles = (theme: Theme) => createStyles({
   header: {
@@ -110,6 +110,9 @@ const styles = (theme: Theme) => createStyles({
       },
     },
   },
+  uiView: {
+    overflowY: "auto",
+  },
   section: {
     padding: "15px",
     borderBottom: `2px solid ${theme.palette.divider}`,
@@ -130,15 +133,16 @@ const mapProps = (state: IApplicationStoreState) => ({
   vPath: state.configuration.viewDescription.vPath,
   nodeId: state.configuration.deviceDescription.nodeId,
   viewData: state.configuration.viewDescription.viewData,
-  viewSpecification: state.configuration.viewDescription.viewSpecification,
-  displayAsList: state.configuration.viewDescription.displayAsList,
-  keyProperty: state.configuration.viewDescription.keyProperty,
+  outputData: state.configuration.viewDescription.outputData,
+  displaySpecification: state.configuration.viewDescription.displaySpecification,
 });
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
   onValueSelected: (value: any) => dispatcher.dispatch(new SetSelectedValue(value)),
   onUpdateData: (vPath: string, data: any) => dispatcher.dispatch(updateDataActionAsyncCreator(vPath, data)),
   reloadView: (vPath: string) => dispatcher.dispatch(updateViewActionAsyncCreator(vPath)),
+  removeElement: (vPath: string) => dispatcher.dispatch(removeElementActionAsyncCreator(vPath)),
+  executeRpc: (vPath: string, data: any) => dispatcher.dispatch(executeRpcActionAsyncCreator(vPath, data)),
 });
 
 const SelectElementTable = MaterialTable as MaterialTableCtorType<{ [key: string]: any }>;
@@ -171,49 +175,59 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     }
   }
 
+  private static getChoisesFromElements = (elements: { [name: string]: ViewElement }, viewData: any) => {
+    return Object.keys(elements).reduce((acc, cur) => {
+      const elm = elements[cur];
+      if (isViewElementChoise(elm)) {
+        const caseKeys = Object.keys(elm.cases);
+
+        // find the right case for this choise, use the first one with data, at least use index 0
+        const selectedCase = caseKeys.find(key => {
+          const caseElm = elm.cases[key];
+          return Object.keys(caseElm.elements).some(caseElmKey => {
+            const caseElmElm = caseElm.elements[caseElmKey];
+            return viewData[caseElmElm.label] !== undefined || viewData[caseElmElm.id] != undefined;
+          });
+        }) || caseKeys[0];
+
+        // extract all data of the active case
+        const caseElements = elm.cases[selectedCase].elements;
+        const data = Object.keys(caseElements).reduce((dataAcc, dataCur) => {
+          const dataElm = caseElements[dataCur];
+          if (isViewElementEmpty(dataElm)) {
+            dataAcc[dataElm.label] = null;
+          } else if (viewData[dataElm.label] !== undefined) {
+            dataAcc[dataElm.label] = viewData[dataElm.label];
+          } else if (viewData[dataElm.id] !== undefined) {
+            dataAcc[dataElm.id] = viewData[dataElm.id];
+          }
+          return dataAcc;
+        }, {} as { [name: string]: any });
+
+        acc[elm.id] = {
+          selectedCase,
+          data,
+        };
+      }
+      return acc;
+    }, {} as { [path: string]: { selectedCase: string, data: { [property: string]: any } } }) || {}
+  }
+
   static getDerivedStateFromProps(nextProps: ConfigurationApplicationComponentProps, prevState: ConfigurationApplicationComponentState & { [OldProps]: ConfigurationApplicationComponentProps }) {
 
     if (!prevState || !prevState[OldProps] || (prevState[OldProps].viewData !== nextProps.viewData)) {
-      const isNew: boolean = nextProps.vPath ?.endsWith("[]") || false;
+      const isNew: boolean = nextProps.vPath?.endsWith("[]") || false;
       const state = {
         ...prevState,
         isNew: isNew,
         editMode: isNew,
         viewData: nextProps.viewData || null,
         [OldProps]: nextProps,
-        choises: nextProps.viewSpecification && Object.keys(nextProps.viewSpecification.elements).reduce((acc, cur) => {
-          const elm = nextProps.viewSpecification.elements[cur];
-          if (isViewElementChoise(elm)) {
-            const caseKeys = Object.keys(elm.cases);
-
-            // find the right case for this choise, use the first one with data, at least use index 0
-            const selectedCase = caseKeys.find(key => {
-              const caseElm = elm.cases[key];
-              return Object.keys(caseElm.elements).some(caseElmKey => {
-                const caseElmElm = caseElm.elements[caseElmKey];
-                return nextProps.viewData[caseElmElm.label] != null || nextProps.viewData[caseElmElm.id] != null;
-              });
-            }) || caseKeys[0];
-
-            // extract all data of the active case
-            const caseElements = elm.cases[selectedCase].elements;
-            const data = Object.keys(caseElements).reduce((dataAcc, dataCur) => {
-              const dataElm = caseElements[dataCur];
-              if (nextProps.viewData[dataElm.label] !== undefined) {
-                dataAcc[dataElm.label] = nextProps.viewData[dataElm.label];
-              } else if (nextProps.viewData[dataElm.id] !== undefined) {
-                dataAcc[dataElm.id] = nextProps.viewData[dataElm.id];
-              }
-              return dataAcc;
-            }, {} as { [name: string]: any });
-
-            acc[elm.id] = {
-              selectedCase,
-              data,
-            };
-          }
-          return acc;
-        }, {} as { [path: string]: { selectedCase: string, data: { [property: string]: any } } }) || {}
+        choises: nextProps.displaySpecification.displayMode === DisplayModeType.doNotDisplay
+          ? null
+          : nextProps.displaySpecification.displayMode === DisplayModeType.displayAsRPC
+            ? nextProps.displaySpecification.inputViewSpecification && ConfigurationApplicationComponent.getChoisesFromElements(nextProps.displaySpecification.inputViewSpecification.elements, nextProps.viewData) || []
+            : ConfigurationApplicationComponent.getChoisesFromElements(nextProps.displaySpecification.viewSpecification.elements, nextProps.viewData)
       }
       return state;
     }
@@ -233,10 +247,46 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     });
   }
 
+  private collectData = (elements: { [name: string]: ViewElement }) => {
+    // ensure only active choises will be contained
+    const viewData : { [key: string]: any }= { ...this.state.viewData };
+    const choiseKeys = Object.keys(elements).filter(elmKey => isViewElementChoise(elements[elmKey]));
+    const elementsToRemove = choiseKeys.reduce((acc, curChoiceKey) => {
+      const currentChoice = elements[curChoiceKey] as ViewElementChoise;
+      const selectedCase = this.state.choises[curChoiceKey].selectedCase;
+      Object.keys(currentChoice.cases).forEach(caseKey => {
+        const caseElements = currentChoice.cases[caseKey].elements;
+        if (caseKey === selectedCase) {
+          Object.keys(caseElements).forEach(caseElementKey => {
+            const elm = caseElements[caseElementKey];
+            if (isViewElementEmpty(elm)) {
+              // insert null for all empty elements
+              viewData[elm.id] = null;
+            }
+          });
+          return;
+        };
+        Object.keys(caseElements).forEach(caseElementKey => {
+          acc.push(caseElements[caseElementKey]);
+        });
+      });
+      return acc;
+    }, [] as ViewElement[]);
+
+    return viewData && Object.keys(viewData).reduce((acc, cur) => {
+      if (!elementsToRemove.some(elm => elm.label === cur || elm.id === cur)) {
+        acc[cur] = viewData[cur];
+      }
+      return acc;
+    }, {} as { [key: string]: any });
+  }
+
   private renderUIElement = (uiElement: ViewElement, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
     const isKey = (uiElement.label === keyProperty);
     const canEdit = editMode && (isNew || (uiElement.config && !isKey));
-    if (isViewElementSelection(uiElement)) {
+    if (isViewElementEmpty(uiElement)) {
+      return null;
+    } else if (isViewElementSelection(uiElement)) {
 
       return <UiElementSelection
         key={uiElement.id}
@@ -283,8 +333,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         readOnly={!canEdit}
         disabled={editMode && !canEdit}
         onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
-    }
-    else {
+    } else {
       if (process.env.NODE_ENV !== "production") {
         console.error(`Unknown element type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
       }
@@ -391,16 +440,18 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         acc.references.push(elm);
       } else if (isViewElementChoise(elm)) {
         acc.choises.push(elm);
+      } else if (isViewElementRpc(elm)) {
+        acc.rpcs.push(elm);
       } else {
         acc.elements.push(elm);
       }
       return acc;
-    }, { elements: [] as ViewElement[], references: [] as ViewElement[], choises: [] as ViewElementChoise[] });
+    }, { elements: [] as ViewElement[], references: [] as ViewElement[], choises: [] as ViewElementChoise[], rpcs: [] as ViewElementRpc[] });
 
     sections.elements = sections.elements.sort(orderFunc);
 
     return (
-      <>
+      <div className={classes.uiView}>
         <div className={classes.section} />
         {sections.elements.length > 0
           ? (
@@ -425,7 +476,16 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
             </div>
           ) : null
         }
-      </>
+        {sections.rpcs.length > 0
+          ? (
+            <div className={classes.section}>
+              {sections.rpcs.map(element => (
+                <UIElementReference key={element.id} element={element} disabled={editMode} onOpenReference={(elm) => { this.navigate(`/${elm.id}`) }} />
+              ))}
+            </div>
+          ) : null
+        }
+      </div>
     );
   };
 
@@ -442,7 +502,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       }
     };
 
-    const { classes } = this.props;
+    const { classes, removeElement } = this.props;
 
     return (
       <SelectElementTable stickyHeader idProperty={listKeyProperty} rows={listData} customActionButtons={[addNewElementAction]} columns={
@@ -457,11 +517,13 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
           }
           return acc;
         }, []).concat([{
-          property: "Actions", disableFilter: true, disableSorting: true, type: ColumnType.custom, customControl: (row => {
+          property: "Actions", disableFilter: true, disableSorting: true, type: ColumnType.custom, customControl: ( ({ rowData })=> {
             return (
               <Tooltip title={"Remove"} >
-                <IconButton className={classes.button} onClick={event => {
-
+                <IconButton className={classes.button} onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  removeElement(`${this.props.vPath}[${rowData[listKeyProperty]}]`)
                 }} >
                   <RemoveIcon />
                 </IconButton>
@@ -476,10 +538,73 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     );
   }
 
+  private renderUIViewRPC(inputViewSpecification: ViewSpecification | undefined, inputViewData: { [key: string]: any }, outputViewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) {
+    const { classes } = this.props;
+
+    const orderFunc = (vsA: ViewElement, vsB: ViewElement) => {
+      if (keyProperty) {
+        // if (vsA.label === vsB.label) return 0;
+        if (vsA.label === keyProperty) return -1;
+        if (vsB.label === keyProperty) return +1;
+      }
+
+      // if (vsA.uiType === vsB.uiType) return 0;
+      // if (vsA.uiType !== "object" && vsB.uiType !== "object") return 0;
+      // if (vsA.uiType === "object") return +1;
+      return -1;
+    };
+
+    const sections = inputViewSpecification && Object.keys(inputViewSpecification.elements).reduce((acc, cur) => {
+      const elm = inputViewSpecification.elements[cur];
+      if (isViewElementObjectOrList(elm)) {
+        console.error("Object should not appear in RPC view !");
+      } else if (isViewElementChoise(elm)) {
+        acc.choises.push(elm);
+      } else if (isViewElementRpc(elm)) {
+        console.error("RPC should not appear in RPC view !");
+      } else {
+        acc.elements.push(elm);
+      }
+      return acc;
+    }, { elements: [] as ViewElement[], references: [] as ViewElement[], choises: [] as ViewElementChoise[], rpcs: [] as ViewElementRpc[] })
+      || { elements: [] as ViewElement[], references: [] as ViewElement[], choises: [] as ViewElementChoise[], rpcs: [] as ViewElementRpc[] };
+
+    sections.elements = sections.elements.sort(orderFunc);
+
+    return (
+      <>
+        <div className={classes.section} />
+        {sections.elements.length > 0
+          ? (
+            <div className={classes.section}>
+              {sections.elements.map(element => this.renderUIElement(element, inputViewData, keyProperty, editMode, isNew))}
+            </div>
+          ) : null
+        }
+        {sections.choises.length > 0
+          ? (
+            <div className={classes.section}>
+              {sections.choises.map(element => this.renderUIChoise(element, inputViewData, keyProperty, editMode, isNew))}
+            </div>
+          ) : null
+        }
+        <Button onClick={() => {
+          const resultingViewData = inputViewSpecification && this.collectData(inputViewSpecification.elements);
+          this.props.executeRpc(this.props.vPath!, resultingViewData);
+        }} >Exec</Button>
+        {outputViewData !== undefined
+          ? (
+            renderObject(outputViewData)          )
+          : null
+        }
+        </>
+    );
+  };
+
   private renderBreadCrumps() {
     const { editMode } = this.state;
-    const { viewSpecification, displayAsList } = this.props;
-    const { vPath, match: { url, path }, nodeId } = this.props;
+    const { displaySpecification } = this.props;
+    const { vPath, nodeId } = this.props;
     const pathParts = splitVPath(vPath!, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
     let lastPath = `/configuration`;
     let basePath = `/configuration/${nodeId}`;
@@ -527,33 +652,11 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
           }} ><ArrowBack /></Fab>
         ) || null}
         { /* do not show edit if this is a list or it can't be edited */
-          !displayAsList && viewSpecification.canEdit && (<div>
+          displaySpecification.displayMode === DisplayModeType.displayAsObject && displaySpecification.viewSpecification.canEdit && (<div>
             <Fab color="secondary" aria-label="edit" className={this.props.classes.fab} onClick={() => {
               if (this.state.editMode) {
-
                 // ensure only active choises will be contained
-                const choiseKeys = Object.keys(viewSpecification.elements).filter(elmKey => isViewElementChoise(viewSpecification.elements[elmKey]));
-                const elementsToRemove = choiseKeys.reduce((acc, cur) => {
-                  const choise = viewSpecification.elements[cur] as ViewElementChoise;
-                  const selectedCase = this.state.choises[cur].selectedCase;
-                  Object.keys(choise.cases).forEach(caseKey => {
-                    if (caseKey === selectedCase) return;
-                    const caseElements = choise.cases[caseKey].elements;
-                    Object.keys(caseElements).forEach(caseElementKey => {
-                      acc.push(caseElements[caseElementKey]);
-                    });
-                  });
-                  return acc;
-                }, [] as ViewElement[]);
-
-                const viewData = this.state.viewData;
-                const resultingViewData = viewData && Object.keys(viewData).reduce((acc, cur) => {
-                  if (!elementsToRemove.some(elm => elm.label === cur || elm.id === cur)) {
-                    acc[cur] = viewData[cur];
-                  }
-                  return acc;
-                }, {} as { [key: string]: any });
-
+                const resultingViewData = this.collectData(displaySpecification.viewSpecification.elements);
                 this.props.onUpdateData(this.props.vPath!, resultingViewData);
               }
               this.setState({ editMode: !editMode });
@@ -595,15 +698,19 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
   }
 
   private renderValueEditor() {
-    const { keyProperty, displayAsList, viewSpecification } = this.props;
+    const { displaySpecification: ds, outputData } = this.props;
     const { viewData, editMode, isNew } = this.state;
 
     return (
       <div className={this.props.classes.container}>
         {this.renderBreadCrumps()}
-        {displayAsList && viewData instanceof Array
-          ? this.renderUIViewList(viewSpecification, keyProperty!, viewData)
-          : this.renderUIView(viewSpecification, viewData!, keyProperty, editMode, isNew)
+        {ds.displayMode === DisplayModeType.doNotDisplay
+          ? null
+          : ds.displayMode === DisplayModeType.displayAsList && viewData instanceof Array
+            ? this.renderUIViewList(ds.viewSpecification, ds.keyProperty!, viewData)
+            : ds.displayMode === DisplayModeType.displayAsRPC
+              ? this.renderUIViewRPC(ds.inputViewSpecification, viewData!, outputData, undefined, true, false)
+              : this.renderUIView(ds.viewSpecification, viewData!, ds.keyProperty, editMode, isNew)
         }
       </div >
     );

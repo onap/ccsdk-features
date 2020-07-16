@@ -20,7 +20,6 @@ package org.onap.ccsdk.features.sdnr.odlux.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.odlux.OdluxBundleLoaderImpl;
 import org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles.OdluxBundle;
@@ -45,10 +44,10 @@ public class TestBundleLoaderImpl {
         bundle2.initialize();
         assertNotNull(bundle1.getResourceFileContent("index.html"));
         assertNotNull(bundle2.getResourceFileContent("index2.html"));
-        assertEquals(loaded+2, loader.getNumberOfBundles());
+        assertEquals(loaded + 2, loader.getNumberOfBundles());
         loader.addBundle(bundle1);
         loader.addBundle(bundle2);
-        assertEquals(loaded+2, loader.getNumberOfBundles());
+        assertEquals(loaded + 2, loader.getNumberOfBundles());
         loader.removeBundle(bundle1);
         loader.removeBundle(bundle2);
         assertEquals(loaded, loader.getNumberOfBundles());
@@ -56,10 +55,10 @@ public class TestBundleLoaderImpl {
         assertTrue(bundle1.hasResource("index.html"));
         assertTrue(bundle2.hasResource("index2.html"));
         assertNotNull(bundle1.getLoader());
-        assertEquals(0,bundle1.getIndex());
+        assertEquals(0, bundle1.getIndex());
         bundle1.clean();
         bundle2.clean();
-        assertEquals(loaded,loader.getNumberOfBundles());
+        assertEquals(loaded, loader.getNumberOfBundles());
 
 
     }

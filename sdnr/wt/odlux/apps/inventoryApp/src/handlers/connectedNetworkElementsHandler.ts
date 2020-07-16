@@ -16,35 +16,21 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { ExternalTreeItem } from '../../../../framework/src/components/material-ui/treeView';
+import { createExternal, IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
+import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
 
-export { HitEntry, Result } from '../../../../framework/src/models';
+import { NetworkElementConnection } from '../models/networkElementConnection';
 
-export type InventoryType = {
-  treeLevel: number;
-  parentUuid: string;
-  nodeId: string;
-  uuid: string;
-  containedHolder?: (string)[] | null;
-  manufacturerName?: string;
-  manufacturerIdentifier: string;
-  serial: string;
-  date: string;
-  version: string;
-  description: string;
-  partTypeId: string;
-  modelIdentifier: string;
-  typeName: string;
-}
+export interface IConnectedNetworkElementsState extends IExternalTableState<NetworkElementConnection> { }
 
-export type InventoryTreeNode = {
-  [key: string]: {
-    label: string;
-    children?: InventoryTreeNode;
-    isMatch?: boolean;
-    ownSeverity?: string;
-    childrenSeveritySummary?: string;
-  }
-}
+// create eleactic search material data fetch handler
+const connectedNetworkElementsSearchHandler = createSearchDataHandler<NetworkElementConnection>('network-element-connection', { status: "Connected" });
 
-export type TreeDemoItem = ExternalTreeItem<string>;
+export const {
+  actionHandler: connectedNetworkElementsActionHandler,
+  createActions: createConnectedNetworkElementsActions,
+  createProperties: createConnectedNetworkElementsProperties,
+  reloadAction: connectedNetworkElementsReloadAction,
+
+  // set value action, to change a value
+} = createExternal<NetworkElementConnection>(connectedNetworkElementsSearchHandler, appState => appState.inventory.connectedNetworkElements);

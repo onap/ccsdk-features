@@ -146,6 +146,10 @@ module.exports = (env) => {
           target: "http://localhost:48181",
           secure: false
         },
+        "/tree/": {
+          target: "http://localhost:48181",
+          secure: false
+        },
         "/websocket": {
           target: "http://localhost:48181",
           ws: true,

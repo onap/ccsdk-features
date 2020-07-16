@@ -18,18 +18,16 @@
 package org.onap.ccsdk.features.sdnr.odlux.test;
 
 import static org.junit.Assert.*;
-
+import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.odlux.OdluxBundleLoaderImpl;
 import org.onap.ccsdk.features.sdnr.wt.odlux.ResFilesServlet;
@@ -43,7 +41,7 @@ public class TestResFileServlet {
     @Test
     public void test() throws ServletException {
         servlet = new PublicResFilesServlet();
-		servlet.init();
+        servlet.init();
 
         OdluxBundleLoader loader = OdluxBundleLoaderImpl.getInstance();
         OdluxBundle b = new OdluxBundle();
@@ -96,9 +94,10 @@ public class TestResFileServlet {
         public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             super.doGet(req, resp);
         }
+
         @Override
         public String getMimeType(String fileName) {
-        	return "mimetype";
+            return "mimetype";
         }
     }
 }

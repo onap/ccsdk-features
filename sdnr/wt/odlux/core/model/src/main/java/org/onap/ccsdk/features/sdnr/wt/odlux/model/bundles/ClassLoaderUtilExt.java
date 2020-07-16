@@ -37,7 +37,7 @@ public class ClassLoaderUtilExt {
         try {
             urls = getResources(resourceName, callingClass, true);
         } catch (IOException e) {
-            LOG.debug("No resource {}",resourceName);
+            LOG.debug("No resource {}", resourceName);
         }
         if (urls != null) {
             while (urls.hasNext()) {
@@ -50,11 +50,9 @@ public class ClassLoaderUtilExt {
         if (url == null) {
             LOG.debug("res currently not found. try to find with bundle");
             Bundle b = FrameworkUtil.getBundle(callingClass);
-            if(b!=null)
-            {
+            if (b != null) {
                 url = b.getEntry(resourceName);
-            }
-            else {
+            } else {
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 url = loader.getResource(resourceName);
             }
