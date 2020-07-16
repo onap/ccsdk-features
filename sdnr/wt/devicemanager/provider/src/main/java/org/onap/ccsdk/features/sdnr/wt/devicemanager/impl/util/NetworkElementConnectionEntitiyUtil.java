@@ -15,9 +15,6 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-/**
- *
- */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util;
 
 import javax.annotation.Nonnull;
@@ -45,10 +42,9 @@ public class NetworkElementConnectionEntitiyUtil {
     private static final QName QNAME_COREMODEL =
             QName.create("urn:onf:params:xml:ns:yang:core-model", "2017-03-20", "core-model").intern();
 
-
     /**
      * Update devicetype and let all other field empty
-     * 
+     *
      * @param deviceType that should be updated
      * @return NetworkElementConnectionEntity with related parameter
      */
@@ -60,7 +56,7 @@ public class NetworkElementConnectionEntitiyUtil {
 
     /**
      * Provide device specific data
-     * 
+     *
      * @param nodeId mountpoint id
      * @param nNode data
      * @return NetworkElementConnectionEntity specific information
