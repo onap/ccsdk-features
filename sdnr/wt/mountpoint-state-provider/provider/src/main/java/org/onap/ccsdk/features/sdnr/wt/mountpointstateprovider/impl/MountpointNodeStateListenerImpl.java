@@ -21,14 +21,12 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener {
+public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MountpointNodeStateListenerImpl.class);
 
     @Override
@@ -67,6 +65,10 @@ public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener
         obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
 
         MountpointStatePublisher.stateObjects.add(obj);
+    }
+
+    @Override
+    public void close() throws Exception {
     }
 
 }
