@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.config.DmConfig;
@@ -158,8 +159,7 @@ public class DeviceMonitorImpl implements DeviceMonitor, IConfigChangedListener 
      * @param mountPointNodeName name of mount point
      * @param ne to monitor
      */
-    @Override
-    synchronized public void deviceConnectMasterIndication(String mountPointNodeName, DeviceMonitoredNe ne) {
+    synchronized private void deviceConnectMasterIndication(String mountPointNodeName, @Nullable DeviceMonitoredNe ne) {
 
         LOG.debug("ne changes to connected state {}", mountPointNodeName);
         createMonitoringTask(mountPointNodeName);
