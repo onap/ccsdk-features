@@ -35,10 +35,10 @@ public class PNFRegistrationConfig implements Configuration {
     private static final String DEFAULT_VALUE_CONSUMER_PROTOCOL = "http";
 
     public static final String PROPERTY_KEY_CONSUMER_USERNAME = "username";
-    private static final String DEFAULT_VALUE_CONSUMER_USERNAME = "username";
+    private static final String DEFAULT_VALUE_CONSUMER_USERNAME = "${DMAAP_PNFREG_TOPIC_USERNAME}";
 
     public static final String PROPERTY_KEY_CONSUMER_PASSWORD = "password";
-    private static final String DEFAULT_VALUE_CONSUMER_PASSWORD = "password";
+    private static final String DEFAULT_VALUE_CONSUMER_PASSWORD = "${DMAAP_PNFREG_TOPIC_PASSWORD}";
 
     public static final String PROPERTY_KEY_CONSUMER_HOST_PORT = "host";
     private static final String DEFAULT_VALUE_CONSUMER_HOST_PORT = "onap-dmaap:3904";

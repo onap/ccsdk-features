@@ -35,10 +35,10 @@ public class GeneralConfig implements Configuration {
     private static final String PROPERTY_KEY_ENABLED = "dmaapEnabled"; //"enabled";
 
     private static final String PROPERTY_KEY_USER = "sdnrUser";
-    private static final String DEFAULT_VALUE_USER = "admin";
+    private static final String DEFAULT_VALUE_USER = "${SDNRUSERNAME}";
 
     private static final String PROPERTY_KEY_USERPASSWD = "sdnrPasswd";
-    private static final String DEFAULT_VALUE_USERPASSWD = "admin";
+    private static final String DEFAULT_VALUE_USERPASSWD = "${SDNRPASSWORD}";
 
     private static final String PROPERTY_KEY_BASEURL = "baseUrl";
     private static final String DEFAULT_VALUE_BASEURL = "http://localhost:8181";
