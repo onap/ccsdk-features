@@ -50,15 +50,15 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     /**
      * list of all sessionids
-      */
+     */
     private static final List<String> sessionIds = new ArrayList<>();
     /**
      * map of sessionid <=> UserScopes
-      */
+     */
     private static final HashMap<String, UserScopes> userScopesList = new HashMap<>();
     /**
      * map of class.hashCode <=> class
-      */
+     */
     private static final HashMap<String, WebSocketManagerSocket> clientList = new HashMap<>();
     private final String myUniqueSessionId;
 
@@ -132,7 +132,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
      *
      * @param request is a json object {"data":"scopes","scopes":["scope1","scope2",...]}
      * @return if handled
-      */
+     */
     private boolean manageClientRequest(String request) {
         boolean ret = false;
         try {
@@ -159,7 +159,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     /*
      * broadcast message to all your clients
-      */
+     */
     private void manageClientRequest2(String request) {
         try {
             JSONObject o = new JSONObject(request);

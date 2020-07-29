@@ -26,7 +26,7 @@ public class UserScopes {
     /**
      * 
      * @param jsonArray array of Strings
-      */
+     */
     public void setScopes(JSONArray jsonArray) {
         this.scopes = jsonArray;
     }
