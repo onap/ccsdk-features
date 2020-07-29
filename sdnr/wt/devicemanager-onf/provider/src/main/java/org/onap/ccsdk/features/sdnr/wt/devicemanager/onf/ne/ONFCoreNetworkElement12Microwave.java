@@ -172,7 +172,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
      *
      * @param uuidString of the equipment-pac
      */
-    private synchronized void syncEquipmentPac(String uuidString) {
+    private void syncEquipmentPac(String uuidString) {
 
         int problems = microwaveEventListener.removeObjectsCurrentProblemsOfNode(nodeId, uuidString);
         LOG.debug("Removed {} problems for uuid {}", problems, uuidString);
@@ -192,7 +192,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
      * Read during startup all relevant structure and status parameters from device
      */
     @Override
-    public synchronized void initialReadFromNetworkElement() {
+    public void initialReadFromNetworkElement() {
         LOG.debug("Get info about {}", getMountpoint());
 
         int problems = microwaveEventListener.removeAllCurrentProblemsOfNode(nodeId);
@@ -203,13 +203,17 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
 
         // Step 2.2: read ne from data store
         readNetworkElementAndInterfaces();
+        LOG.debug("NETCONF read network element and interfaces completed");
         equipment.readNetworkElementEquipment();
+        LOG.debug("NETCONF read equipment completed");
 
         // Step 2.3: read the existing faults and add to DB
         FaultData resultList = readAllCurrentProblemsOfNode();
+        LOG.debug("NETCONF read current problems completed");
         equipment.addProblemsofNode(resultList);
 
         microwaveEventListener.initCurrentProblemStatus(nodeId, resultList);
+        LOG.debug("DB write current problems completed");
         equipmentService.writeEquipment(equipment.getEquipmentData());
 
         LOG.info("Found info at {} for device {} number of problems: {}", getMountpoint(), getUuId(),
@@ -256,6 +260,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
 
                 idxStart = resultList.size();
                 uuid = Helper.nnGetUniversalId(lp.getUuid());
+                @Nullable
                 Class<?> lpClass = getLpExtension(lp);
 
                 ONFLayerProtocolName lpName = ONFLayerProtocolName.valueOf(lp.getLayerProtocolName());
@@ -321,7 +326,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
                 QName qName = QName.create(capability, revision, conditionalPackage);
                 res = this.microwaveModel.getClassForLtpExtension(qName);
             } catch (IllegalArgumentException e) {
-                LOG.debug("Can not create QName from ({}{}{}): {}", capability, revision, conditionalPackage,
+                LOG.warn("Can not create QName from ({}{}{}): {}", capability, revision, conditionalPackage,
                         e.getMessage());
             }
         }

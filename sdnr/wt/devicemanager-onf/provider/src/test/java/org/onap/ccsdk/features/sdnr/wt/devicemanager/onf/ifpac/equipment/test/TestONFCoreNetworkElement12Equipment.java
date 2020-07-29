@@ -81,8 +81,7 @@ public class TestONFCoreNetworkElement12Equipment {
     @Test
     public void test() {
         when(capabilities.isSupportingNamespaceAndRevision(WrapperEquipmentPacRev170402.QNAME)).thenReturn(true);
-        ONFCoreNetworkElement12Equipment onfCoreEqpt =
-                new ONFCoreNetworkElement12Equipment(netconfAccessor, coreData, capabilities);
+        ONFCoreNetworkElement12Equipment onfCoreEqpt = new ONFCoreNetworkElement12Equipment(netconfAccessor, coreData);
         onfCoreEqpt.addProblemsofNode(faultData);
         onfCoreEqpt.addProblemsofNodeObject("ABCD");
         onfCoreEqpt.getInventoryInformation(Arrays.asList("TESTINV"));
@@ -96,8 +95,7 @@ public class TestONFCoreNetworkElement12Equipment {
     @Test
     public void test1() {
         when(capabilities.isSupportingNamespaceAndRevision(WrapperEquipmentPacRev170402.QNAME)).thenReturn(false);
-        ONFCoreNetworkElement12Equipment onfCoreEqpt =
-                new ONFCoreNetworkElement12Equipment(netconfAccessor, coreData, capabilities);
+        ONFCoreNetworkElement12Equipment onfCoreEqpt = new ONFCoreNetworkElement12Equipment(netconfAccessor, coreData);
     }
 
 }
