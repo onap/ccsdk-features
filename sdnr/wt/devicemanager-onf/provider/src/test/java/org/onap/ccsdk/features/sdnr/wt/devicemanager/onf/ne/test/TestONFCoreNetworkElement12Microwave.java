@@ -94,86 +94,7 @@ public class TestONFCoreNetworkElement12Microwave {
 
     @Test
     public void test() {
-        optionalNe = new NetworkElement() {
-
-            @Override
-            public @Nullable List<Label> getLabel() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable List<Extension> getExtension() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable OperationalState getOperationalState() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable LifecycleState getLifecycleState() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable AdministrativeState getAdministrativeState() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable AdministrativeControl getAdministrativeControl() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable List<Name> getName() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable UniversalId getUuid() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable List<LocalId> getLocalId() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public <E$$ extends Augmentation<NetworkElement>> @Nullable E$$ augmentation(Class<E$$> augmentationType) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public Class<? extends DataContainer> getImplementedInterface() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable List<Ltp> getLtp() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable List<Fd> getFd() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-        };
+    	optionalNe = mock(NetworkElement.class);
 
         when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 NETWORKELEMENT_IID)).thenReturn(optionalNe);
@@ -182,62 +103,9 @@ public class TestONFCoreNetworkElement12Microwave {
                 new ONFCoreNetworkElement12Microwave(accessor, serviceProvider, configuration, onfMicrowaveModel);
         onfCoreNetworkElement12MW.prepareCheck();
 
-        EventlogEntity eventlogEntity = new EventlogEntity() {
-
-            @Override
-            public @Nullable String getId() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable DateAndTime getTimestamp() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable String getObjectId() {
-                // TODO Auto-generated method stub
-                return "ABCD";
-            }
-
-            @Override
-            public @Nullable String getNodeId() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable Integer getCounter() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable SourceType getSourceType() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable String getNewValue() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable String getAttributeName() {
-                // TODO Auto-generated method stub
-                return "/network-element/extension[value-name=\"top-level-equipment\"]/value"; // "/equipment-pac/equipment-current-problems";
-            }
-
-            @Override
-            public Class<? extends DataContainer> getImplementedInterface() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-        };
+        EventlogEntity eventlogEntity = mock(EventlogEntity.class);
+        when(eventlogEntity.getObjectId()).thenReturn("ABCD");
+        when(eventlogEntity.getAttributeName()).thenReturn("/network-element/extension[value-name=\"top-level-equipment\"]/value");
 
         onfCoreNetworkElement12MW.notificationActor(eventlogEntity);
 
@@ -253,62 +121,9 @@ public class TestONFCoreNetworkElement12Microwave {
                 new ONFCoreNetworkElement12Microwave(accessor, serviceProvider, configuration, onfMicrowaveModel);
         onfCoreNetworkElement12MW.prepareCheck();
 
-        EventlogEntity eventlogEntity = new EventlogEntity() {
-
-            @Override
-            public @Nullable String getId() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable DateAndTime getTimestamp() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable String getObjectId() {
-                // TODO Auto-generated method stub
-                return "ABCD";
-            }
-
-            @Override
-            public @Nullable String getNodeId() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable Integer getCounter() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable SourceType getSourceType() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable String getNewValue() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public @Nullable String getAttributeName() {
-                // TODO Auto-generated method stub
-                return "/equipment-pac/equipment-current-problems";
-            }
-
-            @Override
-            public Class<? extends DataContainer> getImplementedInterface() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-        };
+        EventlogEntity eventlogEntity = mock(EventlogEntity.class);
+        when(eventlogEntity.getObjectId()).thenReturn("ABCD");
+        when(eventlogEntity.getAttributeName()).thenReturn("/equipment-pac/equipment-current-problems");
 
         onfCoreNetworkElement12MW.notificationActor(eventlogEntity);
     }

@@ -102,7 +102,7 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
         this.nodeId = getAcessor().get().getNodeId();
         this.isNetworkElementCurrentProblemsSupporting12 =
                 acessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElementPac.QNAME);
-        this.equipment = new ONFCoreNetworkElement12Equipment(acessor, this, acessor.getCapabilites());
+        this.equipment = new ONFCoreNetworkElement12Equipment(acessor, this);
         WrapperPTPModelRev170208.initSynchronizationExtension(acessor);
         LOG.debug("support necurrent-problem-list={}", this.isNetworkElementCurrentProblemsSupporting12);
     }
@@ -141,7 +141,7 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
      * Read from NetworkElement and verify LTPs have changed. If the NE has changed, update to the new structure. From
      * initial state it changes also.
      */
-    protected synchronized boolean readNetworkElementAndInterfaces() {
+    protected boolean readNetworkElementAndInterfaces() {
 
         LOG.debug("Update mountpoint if changed {}", getMountpoint());
 

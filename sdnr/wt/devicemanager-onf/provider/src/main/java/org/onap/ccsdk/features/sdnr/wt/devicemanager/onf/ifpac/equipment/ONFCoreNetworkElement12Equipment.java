@@ -27,7 +27,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.OnfInterfacePac;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.EquipmentData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationDcae;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -54,32 +53,41 @@ public class ONFCoreNetworkElement12Equipment {
     private static final int EQUIPMENTROOTLEVEL = 0;
 
     private final NetworkElementCoreData coreData;
-    private final OnfInterfacePac equipmentPac;
+    private final @Nullable OnfInterfacePac equipmentPac;
     private final NetconfAccessor acessor;
 
     private final ValueNameList extensionList;
-    private final List<UniversalId> topLevelEqUuidList;
+    private final @NonNull List<UniversalId> topLevelEqUuidList;
     private final @NonNull FaultData globalProblemList;
     private final @NonNull List<ExtendedEquipment> globalEquipmentList;
 
+    public ONFCoreNetworkElement12Equipment(NetconfAccessor acessor, NetworkElementCoreData coreData) {
+        this(acessor, coreData, false);
+    }
+
     public ONFCoreNetworkElement12Equipment(NetconfAccessor acessor, NetworkElementCoreData coreData,
-            Capabilities capabilities) {
+            Boolean disabled) {
         LOG.debug("Initialize class: {} " + ONFCoreNetworkElement12Equipment.class.getName());
         this.acessor = acessor;
         this.coreData = coreData;
-        if (capabilities.isSupportingNamespaceAndRevision(WrapperEquipmentPacRev170402.QNAME)) {
+        String reason;
+        if (disabled) {
+            this.equipmentPac = null;
+            reason = "disabled";
+        } else if (acessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperEquipmentPacRev170402.QNAME)) {
             this.equipmentPac = new WrapperEquipmentPacRev170402(acessor);
-            LOG.debug("Equipement pac supported {}", WrapperEquipmentPacRev170402.QNAME);
+            reason = "WrapperEquipmentPacRev170402.QNAME";
         } else {
             this.equipmentPac = null;
-            LOG.debug("Equipement pac not supported {}", WrapperEquipmentPacRev170402.QNAME);
+            reason = "unsupported";
         }
+        LOG.debug("Equipement pac initialization '{}'", reason);
+
+        globalEquipmentList = new ArrayList<>();
 
         extensionList = new ValueNameList();
         topLevelEqUuidList = new ArrayList<>();
-        globalEquipmentList = new ArrayList<>();
         globalProblemList = new FaultData();
-
         initClassVars();
     }
 
@@ -192,8 +200,8 @@ public class ONFCoreNetworkElement12Equipment {
                 equipmentList.add(
                         new ExtendedEquipment(this.getMountpoint(), parentUuid.getValue(), equipment, path, treeLevel));
 
-                if (this.equipmentPac != null) {
-                    this.equipmentPac.readTheFaults(uuid, problemList);
+                if (equipmentPac != null) {
+                    equipmentPac.readTheFaults(uuid, problemList);
 
                     List<ContainedHolder> containedHolderListe = equipment.getContainedHolder();
                     if (containedHolderListe != null) {
