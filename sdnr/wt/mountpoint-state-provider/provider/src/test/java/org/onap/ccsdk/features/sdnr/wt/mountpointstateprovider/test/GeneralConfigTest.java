@@ -44,14 +44,14 @@ public class GeneralConfigTest {
             + "maxAgeMs=250\n"
             + "MessageSentThreadOccurance=50\n";
     // @formatter:on
-
+    private final String fileName = "test.properties";
     private ConfigurationFileRepresentation globalCfg;
 
     @Test
-    public void test() {
-        try {
-            Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
-            globalCfg = new ConfigurationFileRepresentation("test.properties");
+    public void test() throws IOException {
+
+            Files.asCharSink(new File(fileName), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
+            globalCfg = new ConfigurationFileRepresentation(fileName);
             GeneralConfig cfg = new GeneralConfig(globalCfg);
             assertEquals("onap-dmap:3904", cfg.getHostPort());
             assertEquals(false, cfg.getEnabled());
@@ -65,15 +65,12 @@ public class GeneralConfigTest {
             assertEquals("HTTPNOAUTH", cfg.getTransportType());
             assertEquals("general", cfg.getSectionName());
 
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
     }
 
     @After
     public void cleanUp() {
-        File file = new File("test.properties");
+        File file = new File(fileName);
         if (file.exists()) {
             System.out.println("File exists, Deleting it");
             file.delete();

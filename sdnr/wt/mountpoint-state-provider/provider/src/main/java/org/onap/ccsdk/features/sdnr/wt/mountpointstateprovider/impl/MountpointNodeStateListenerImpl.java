@@ -20,14 +20,28 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateListener;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MountpointNodeStateListenerImpl.class);
+    private NetconfNodeStateService netconfNodeStateService;
+    private MountpointStatePublisherMain mountpointStatePublisher;
+    private ListenerRegistration<MountpointNodeStateListenerImpl> registeredNodeStateListener;
+
+    public MountpointNodeStateListenerImpl(NetconfNodeStateService netconfNodeStateService) {
+        this.netconfNodeStateService = netconfNodeStateService;
+    }
+
+    public void start(MountpointStatePublisherMain mountpointStatePublisher) {
+        this.mountpointStatePublisher = mountpointStatePublisher;
+        registeredNodeStateListener = netconfNodeStateService.registerNetconfNodeStateListener(this);
+    }
 
     @Override
     public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
@@ -39,7 +53,7 @@ public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener
         obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
         obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
 
-        MountpointStatePublisher.stateObjects.add(obj);
+        mountpointStatePublisher.addToPublish(obj);
     }
 
     @Override
@@ -52,7 +66,7 @@ public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener
         obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
         obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
 
-        MountpointStatePublisher.stateObjects.add(obj);
+        mountpointStatePublisher.addToPublish(obj);
     }
 
     @Override
@@ -64,11 +78,16 @@ public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener
         obj.put("NetConfNodeState", "Removed");
         obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
 
-        MountpointStatePublisher.stateObjects.add(obj);
+        mountpointStatePublisher.addToPublish(obj);
+    }
+
+    public void stop() throws Exception {
+        this.close();
     }
 
     @Override
     public void close() throws Exception {
+        registeredNodeStateListener.close();
     }
 
 }
