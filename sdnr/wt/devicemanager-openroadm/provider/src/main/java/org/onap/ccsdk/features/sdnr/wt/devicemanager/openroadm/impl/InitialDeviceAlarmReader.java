@@ -1,0 +1,154 @@
+/*
+ * ============LICENSE_START=======================================================
+ * ONAP : ccsdk features
+ * ================================================================================
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
+ * All rights reserved.
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ============LICENSE_END=========================================================
+ *
+ */
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl;
+
+import java.util.List;
+import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.ActiveAlarmList;
+import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.OrgOpenroadmAlarmListener;
+import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.Severity;
+import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.active.alarm.list.ActiveAlarms;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultlog;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Shabnam Sultana
+ *
+ *         Class to read the initial alarms at the time of device registration
+ *
+ **/
+
+public class InitialDeviceAlarmReader {
+    // variables
+    private Integer count = 1;
+    private static final Logger log = LoggerFactory.getLogger(OrgOpenroadmAlarmListener.class);
+    private final NetconfAccessor netConfAccesor;
+    private final @NonNull FaultService faultEventListener;
+    private final DataProvider dataProvider;
+    // end of variables
+
+    // constructors
+    public InitialDeviceAlarmReader(NetconfAccessor accessor, DeviceManagerServiceProvider serviceProvider) {
+        this.netConfAccesor = accessor;
+        this.faultEventListener = serviceProvider.getFaultService();
+        this.dataProvider = serviceProvider.getDataProvider();
+    }
+    // end of constructors
+
+    // protected methods
+    // Mapping the alarm data with the fault data
+    protected FaultData writeFaultData() {
+        FaultData faultData = new FaultData();
+        if (this.getActiveAlarmList(this.netConfAccesor).getActiveAlarms() != null) {
+            List<ActiveAlarms> activeAlarms = this.getActiveAlarmList(this.netConfAccesor).getActiveAlarms();
+            if (!activeAlarms.isEmpty()) {
+                for (ActiveAlarms activeAlarm : activeAlarms) {
+                    faultData.add(this.netConfAccesor.getNodeId(), this.count, activeAlarm.getRaiseTime(),
+                            activeAlarm.getResource().getDevice().getNodeId().getValue(),
+                            activeAlarm.getProbableCause().getCause().getName(),
+                            checkSeverityValue(activeAlarm.getSeverity()));
+                    count = count + 1;
+                }
+                return faultData;
+            }
+        }
+        return faultData;
+    }
+
+    // Write into the FaultLog
+    protected void writeAlarmLog(FaultData faultData) {
+        if (faultData != null) {
+            List<Faultlog> faultLog = faultData.getProblemList();
+            for (Faultlog fe : faultLog) {
+                this.dataProvider.writeFaultLog(fe);
+            }
+        }
+    }
+
+    // Use the FaultService for Alarm notifications
+    protected void faultService() {
+        this.faultEventListener.initCurrentProblemStatus(this.netConfAccesor.getNodeId(), writeFaultData());
+        writeAlarmLog(writeFaultData());
+    }
+    // end of protected methods
+
+    // private methods
+
+    // Read Alarm Data
+    private ActiveAlarmList getActiveAlarmList(NetconfAccessor accessor) {
+        final Class<ActiveAlarmList> classAlarm = ActiveAlarmList.class;
+        log.info("Get Alarm data for element {}", accessor.getNodeId().getValue());
+        InstanceIdentifier<ActiveAlarmList> alarmDataIid = InstanceIdentifier.builder(classAlarm).build();
+
+        ActiveAlarmList alarmData = accessor.getTransactionUtils().readData(accessor.getDataBroker(),
+                LogicalDatastoreType.OPERATIONAL, alarmDataIid);
+
+        log.info("AlarmData {}", alarmData.toString());
+        return alarmData;
+    }
+
+    // Mapping Severity of AlarmNotification to SeverityType of FaultLog
+    private SeverityType checkSeverityValue(Severity severity) {
+        SeverityType severityType = null;
+        log.info("Device Severity: {}", severity.getName());
+
+        switch (severity.getName()) {
+            case ("warning"):
+                severityType = SeverityType.Warning;
+                break;
+            case ("major"):
+                severityType = SeverityType.Major;
+                break;
+            case ("minor"):
+                severityType = SeverityType.Minor;
+                break;
+            case ("clear"):
+                severityType = SeverityType.NonAlarmed;
+                break;
+            case ("critical"):
+                severityType = SeverityType.Critical;
+                break;
+            case ("indeterminate"):
+                severityType = SeverityType.Critical;
+                break;
+            default:
+                severityType = SeverityType.Critical;
+                break;
+
+        }
+        return severityType;
+
+    }
+    // end of private methods
+
+
+
+}
