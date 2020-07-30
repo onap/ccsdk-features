@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c68c153e_57c27e25",
+        "filename": "sdnr/wt/mountpoint-state-provider/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointstateprovider/impl/MountpointStatePublisherMain.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-07-30T08:27:30Z",
+      "side": 1,
+      "message": "Add Copyright Header",
+      "revId": "d307001f4415a516bcf30753989ab4a0e58fea1e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9a89a5c_b184d2f2",
+        "filename": "sdnr/wt/mountpoint-state-provider/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointstateprovider/test/mock/NetconfNodeStateServiceMock.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-07-30T08:27:30Z",
+      "side": 1,
+      "message": "Add Copyright Header",
+      "revId": "d307001f4415a516bcf30753989ab4a0e58fea1e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
