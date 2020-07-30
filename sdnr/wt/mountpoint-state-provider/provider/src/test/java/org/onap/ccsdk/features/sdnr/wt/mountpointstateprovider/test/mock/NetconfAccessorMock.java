@@ -37,15 +37,10 @@ public class NetconfAccessorMock implements NetconfAccessor {
 
     private final NodeId nNodeId;
     private final NetconfNode netconfNode;
-    private final MountPoint mountpoint;
-    private final DataBroker netconfNodeDataBroker;
 
-    public NetconfAccessorMock(NodeId nNodeId, NetconfNode netconfNode, MountPoint mountpoint,
-            DataBroker netconfNodeDataBroker) {
+    public NetconfAccessorMock(NodeId nNodeId, NetconfNode netconfNode) {
         this.nNodeId = nNodeId;
         this.netconfNode = netconfNode;
-        this.mountpoint = mountpoint;
-        this.netconfNodeDataBroker = netconfNodeDataBroker;
     }
 
     @Override
@@ -65,12 +60,12 @@ public class NetconfAccessorMock implements NetconfAccessor {
 
     @Override
     public DataBroker getDataBroker() {
-        return netconfNodeDataBroker;
+        return null;
     }
 
     @Override
     public MountPoint getMountpoint() {
-        return mountpoint;
+        return null;
     }
 
     @Override

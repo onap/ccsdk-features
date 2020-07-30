@@ -38,7 +38,7 @@ public class GeneralConfig implements Configuration {
     private static final String DEFAULT_VALUE_PUBLISHER_TRANSPORTTYPE = "HTTPNOAUTH";
 
     public static final String PROPERTY_KEY_PUBLISHER_HOST_PORT = "host";
-    private static final String DEFAULT_VALUE_PUBLISHER_HOST_PORT = "onap-dmap:3904";
+    private static final String DEFAULT_VALUE_PUBLISHER_HOST_PORT = "onap-dmaap:3904";
 
     public static final String PROPERTY_KEY_PUBLISHER_TOPIC = "topic";
     private static final String DEFAULT_VALUE_PUBLISHER_TOPIC = "unauthenticated.SDNR_MOUNTPOINT_STATE_INFO";
