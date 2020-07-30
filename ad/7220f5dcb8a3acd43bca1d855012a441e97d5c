@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: John  Keeney <John.Keeney@est.tech>
+Code-Review+1: Henrik Andersson <henrik.b.andersson@est.tech>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Thu, 30 Jul 2020 18:08:54 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/110280
+Project: ccsdk/features
+Branch: refs/heads/master
