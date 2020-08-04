@@ -50,5 +50,9 @@
             <artifactId>aaf-shiro-aafrealm-osgi-bundle</artifactId>
             <version>${aaf-shiro-bundle.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.saaj-api-1.3</artifactId>
+        </dependency>
     </dependencies>
 </project>
