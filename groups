@@ -1,4 +1,5 @@
 # UUID                                                                         	Group Name
 #
+6f3d79e93f0189121acca295467009e8a8c61cc6                                       	saml/onap-gerrit-ccsdk-features-committers
 daebbf523be390041a1a9c0e340a6d833aae5043                                       	GitHub Replication
 ldap:cn=onap-gerrit-ccsdk-features-committers,ou=Groups,dc=freestandards,dc=org	ldap/onap-gerrit-ccsdk-features-committers
