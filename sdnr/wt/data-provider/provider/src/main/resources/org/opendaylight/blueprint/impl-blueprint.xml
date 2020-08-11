@@ -43,7 +43,7 @@
     </service>
 
     <bean id="aboutServlet"
-          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet">
+          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.AboutHttpServlet">
 <!--           <property name="bundleService" ref="bundleService"/> -->
     </bean>
     <service interface="javax.servlet.http.HttpServlet"
@@ -80,7 +80,7 @@
     </bean>
 
     <bean id="yangServlet"
-          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangSchemaHttpServlet">
+          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.YangSchemaHttpServlet">
     </bean>
     <service interface="javax.servlet.http.HttpServlet"
              ref="yangServlet">
