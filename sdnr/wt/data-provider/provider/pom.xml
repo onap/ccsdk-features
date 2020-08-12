@@ -48,10 +48,7 @@
 
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-        <buildtime>${maven.build.timestamp}</buildtime>
         <databaseport>49402</databaseport>
-        <odlux.buildno>56.139cd6d(20/07/08)</odlux.buildno>
     </properties>
 
     <dependencies>
