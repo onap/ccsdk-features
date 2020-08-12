@@ -19,11 +19,13 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryByFilter;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryResult;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.EsDataObjectReaderWriter2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;

@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor.DataObjectAcessorWithId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data;
 import org.slf4j.Logger;
@@ -47,14 +48,14 @@ public class MediatorServerDataProvider implements AutoCloseable {
     private boolean isRunning;
 
     public MediatorServerDataProvider(HostInfo[] hosts) throws Exception {
-        this(hosts, null, null);
+        this(hosts, null, null, false);
     }
 
-    public MediatorServerDataProvider(HostInfo[] hosts, String authUsername, String authPassword) throws Exception {
+    public MediatorServerDataProvider(HostInfo[] hosts, String authUsername, String authPassword, boolean trustAll) throws Exception {
         super();
         LOG.info("Start {}", this.getClass().getName());
         this.entries = new HashMap<>();
-        this.dbClient = HtDatabaseClient.getClient(hosts, authUsername, authPassword);
+        this.dbClient = HtDatabaseClient.getClient(hosts, authUsername, authPassword, trustAll);
         this.mediatorserverRW = new DataObjectAcessorWithId<>(dbClient, Entity.MediatorServer, Data.class);
         this.scheduler.scheduleAtFixedRate(onTick, this.REFRESH_INTERVAL, this.REFRESH_INTERVAL, TimeUnit.SECONDS);
     }

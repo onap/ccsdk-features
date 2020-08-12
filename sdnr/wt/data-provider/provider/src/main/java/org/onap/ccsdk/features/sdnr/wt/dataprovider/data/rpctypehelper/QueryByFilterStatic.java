@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -32,6 +32,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.BoolQueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.RangeQueryBuilder;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor.DataObjectAcessorPm;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;

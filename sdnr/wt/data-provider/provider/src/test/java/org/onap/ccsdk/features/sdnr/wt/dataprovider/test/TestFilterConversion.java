@@ -34,7 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.QueryByFilter;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryByFilter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SortOrder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Filter;

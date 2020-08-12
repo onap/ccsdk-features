@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.entity;
 
 import java.util.ArrayList;
 import java.util.List;

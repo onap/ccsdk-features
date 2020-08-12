@@ -22,10 +22,10 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.impl;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.AboutHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.ReadyHttpServlet;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;

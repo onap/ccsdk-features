@@ -38,7 +38,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.HtDatabaseEventsService;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.entity.HtDatabaseEventsService;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;

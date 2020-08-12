@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper;
 
 import java.math.BigInteger;
 

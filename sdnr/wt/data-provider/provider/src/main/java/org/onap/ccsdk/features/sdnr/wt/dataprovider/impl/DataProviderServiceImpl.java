@@ -21,11 +21,11 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.impl;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -94,8 +94,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
 public class DataProviderServiceImpl implements DataProviderService, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataProviderServiceImpl.class);
@@ -116,7 +114,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
                 esConfig.getBasicAuthPassword(), esConfig.trustAllCerts());
         this.dataProvider.waitForYellowDatabaseStatus(DATABASE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         this.mediatorServerDataProvider = new MediatorServerDataProvider(esConfig.getHosts(),
-                esConfig.getBasicAuthUsername(), esConfig.getBasicAuthPassword());
+                esConfig.getBasicAuthUsername(), esConfig.getBasicAuthPassword(),esConfig.trustAllCerts());
         mediatorServerServlet.setDataProvider(this.mediatorServerDataProvider);
         // Register ourselves as the REST API RPC implementation
         LOG.info("Register RPC Service " + DataProviderServiceImpl.class.getSimpleName());

@@ -19,39 +19,32 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.http;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 //import org.apache.karaf.bundle.core.BundleInfo;
 //import org.apache.karaf.bundle.core.BundleService;
 import org.onap.ccsdk.features.sdnr.wt.common.Resources;
 import org.onap.ccsdk.features.sdnr.wt.common.file.PomFile;
 import org.onap.ccsdk.features.sdnr.wt.common.file.PomPropertiesFile;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AboutHttpServlet extends HttpServlet {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(AboutHttpServlet.class);
@@ -107,7 +100,6 @@ public class AboutHttpServlet extends HttpServlet {
         this.data.put(PLACEHOLDER_ONAP_RELEASENAME, ODLVersionLUT.getONAPReleaseName(ccsdkVersion, UNKNOWN));
         this.data.put(PLACEHOLDER_ODL_RELEASENAME, ODLVersionLUT.getOdlVersion(ccsdkVersion, UNKNOWN));
         this.data.put(PLACEHOLDER_BUILD_TIMESTAMP, props != null ? props.getBuildDate().toString() : "");
-        this.data.put(PLACEHOLDER_ODLUX_REVISION, this.getPomProperty("odlux.buildno"));
         this.data.put(PLACEHOLDER_PACAKGE_VERSION, this.getManifestValue("Bundle-Version"));
         this.data.put(PLACEHOLDER_CCSDK_VERSION, ccsdkVersion);
         this.data.put(PLACEHOLDER_ONAP_RELEASEVERSION, "2.0.0-SNAPSHOT");
@@ -154,7 +146,7 @@ public class AboutHttpServlet extends HttpServlet {
 
     /**
      * load git.commit.id from jar /META-INF/git.properties
-     * 
+     *
      * @param def
      */
     private String getGitHash(String def) {
@@ -192,7 +184,7 @@ public class AboutHttpServlet extends HttpServlet {
 
     /**
      * get value for key out of /META-INF/MANIFEST.MF
-     * 
+     *
      * @param key
      * @return
      */
@@ -215,7 +207,7 @@ public class AboutHttpServlet extends HttpServlet {
 
     /**
      * get object representation of /META-INF/maven/groupId/artifactId/pom.properties
-     * 
+     *
      * @return
      */
     private PomPropertiesFile getPomProperties() {
@@ -236,7 +228,7 @@ public class AboutHttpServlet extends HttpServlet {
 
     /**
      * get value for key out of /META-INF/maven/groupId/artifactId/pom.xml in properties section
-     * 
+     *
      * @param key
      * @return
      */
@@ -259,7 +251,7 @@ public class AboutHttpServlet extends HttpServlet {
 
     /**
      * get parent pom version out of /META-INF/maven/groupId/artifactId/pom.xml
-     * 
+     *
      * @return
      */
     private String getPomParentVersion() {
@@ -284,7 +276,7 @@ public class AboutHttpServlet extends HttpServlet {
         //			LOG.debug("no bundle service available");
         //			return "";
         //		}
-        //		
+        //
         //		List<String> ids = new ArrayList<String>();
         //		List<Bundle> bundles = bundleService.selectBundles("0", ids , true);
         //		if(bundles==null || bundles.size()<=0) {
@@ -303,7 +295,7 @@ public class AboutHttpServlet extends HttpServlet {
 
     /**
      * get file by uri from resources and write out to response stream
-     * 
+     *
      * @param uri
      * @param resp
      */
@@ -330,7 +322,7 @@ public class AboutHttpServlet extends HttpServlet {
 
     /**
      * create http response contentType by filename
-     * 
+     *
      * @param filename
      * @return
      */
@@ -358,7 +350,7 @@ public class AboutHttpServlet extends HttpServlet {
 
     /**
      * render this.readmeContent with this.data
-     * 
+     *
      * @return
      */
     private String render() {
@@ -367,7 +359,7 @@ public class AboutHttpServlet extends HttpServlet {
 
     /**
      * render content with this.data
-     * 
+     *
      * @param content
      * @return
      */

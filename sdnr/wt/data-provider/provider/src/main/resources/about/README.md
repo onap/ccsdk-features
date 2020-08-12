@@ -9,7 +9,6 @@
 | Yangtools version | {yangtools-version}  |
 | MD-SAL version | {mdsal-version} |
 | SDN-R packages version | {package-version} ({package-githash}) |
-| ODLUX version | {odlux-revision} |
 | Cluster size | {cluster-size} |
 
 ## Device manager

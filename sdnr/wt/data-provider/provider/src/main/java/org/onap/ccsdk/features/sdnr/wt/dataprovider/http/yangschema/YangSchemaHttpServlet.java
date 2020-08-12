@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.http;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -28,7 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.YangFileProvider;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

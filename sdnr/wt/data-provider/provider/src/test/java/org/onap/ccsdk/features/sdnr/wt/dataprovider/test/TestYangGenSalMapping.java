@@ -209,7 +209,6 @@ public class TestYangGenSalMapping {
         out(generatedNode.toString()); // Print it with specified indentation
     }
 
-
     @Test
     public void test5() throws IOException {
         // @formatter:off
@@ -270,9 +269,7 @@ public class TestYangGenSalMapping {
         // Map to JSON String to Object
         Data generatedNode = mapper.readValue(jsonString.getBytes(), Data.class);
         out(generatedNode.toString()); // Print it with specified indentation
-
     }
-
 
     @Test
     public void test6() throws Exception {

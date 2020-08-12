@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor;
 
 import java.io.IOException;
 
@@ -30,6 +30,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.AggregationEntries;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.status.output.Data;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.status.output.DataBuilder;

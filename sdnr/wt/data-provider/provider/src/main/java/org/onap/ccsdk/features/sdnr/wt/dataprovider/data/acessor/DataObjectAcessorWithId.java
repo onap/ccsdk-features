@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk features
  * ================================================================================
- * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.data;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;

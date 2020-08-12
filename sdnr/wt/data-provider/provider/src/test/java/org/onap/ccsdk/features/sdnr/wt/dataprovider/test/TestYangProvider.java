@@ -45,9 +45,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.YangFileProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.YangFilename;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.YangSchemaHttpServlet;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangFileProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangFilename;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangSchemaHttpServlet;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
