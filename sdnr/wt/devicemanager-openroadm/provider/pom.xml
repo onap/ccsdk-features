@@ -60,12 +60,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <artifactId>byte-buddy</artifactId>
             <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
             <version>1.9.10</version>
             <scope>test</scope>
         </dependency>
-
         <!-- end for testing -->
         <dependency>
             <groupId>${project.groupId}</groupId>

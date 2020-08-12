@@ -37,7 +37,6 @@
 
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -47,7 +46,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.onap.ccsdk.sli.core</groupId>
                 <artifactId>sli-core-artifacts</artifactId>
@@ -55,7 +53,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -97,7 +94,6 @@
             <artifactId>jackson-core</artifactId>
             <version>2.9.8</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
@@ -113,7 +109,6 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.onap.ccsdk.sli.core</groupId>
             <artifactId>sli-common</artifactId>

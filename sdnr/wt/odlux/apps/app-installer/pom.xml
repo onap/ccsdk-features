@@ -122,7 +122,6 @@
             <artifactId>sdnr-wt-odlux-app-configurationApp</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>
