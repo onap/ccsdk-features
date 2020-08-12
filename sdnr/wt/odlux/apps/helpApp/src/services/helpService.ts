@@ -55,7 +55,7 @@ class HelpService {
         }, []);
       }
 
-      this.tocNodeCollection = result && mapNodesCollection(result);
+      this.tocNodeCollection = result && mapNodesCollection(result) || null;
     }
     return this.tocNodeCollection || null;
   }

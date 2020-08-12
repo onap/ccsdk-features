@@ -67,7 +67,6 @@ const actionHandlers = {
   alarmLogEntries: alarmLogEntriesActionHandler,
   currentOpenPanel: currentOpenPanelHandler,
   faultStatus: faultStatusHandler,
-  stuckAlarms: stuckAlarmHandler,
   listenForPartialUpdates: arePartialUpdatesActiveHandler
 };
 

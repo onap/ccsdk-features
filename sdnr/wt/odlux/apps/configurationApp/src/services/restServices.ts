@@ -23,10 +23,10 @@ import { NetworkElementConnection } from "../models/networkElementConnection";
 
 class RestService {
   public async getCapabilitiesByMoutId(nodeId: string): Promise<{ "capabilityOrigin": string, "capability": string }[] | null> {
-    const path = `/restconf/operational/network-topology:network-topology/topology/topology-netconf/node/${nodeId}`;
-    const capabilitiesResult = await requestRest<{ node: { "node-id": string, "netconf-node-topology:available-capabilities": { "available-capability": { "capabilityOrigin": string, "capability": string }[] }}[] }>(path, { method: "GET" });
-    return capabilitiesResult && capabilitiesResult.node && capabilitiesResult.node.length > 0 &&
-      capabilitiesResult.node[0]["netconf-node-topology:available-capabilities"]["available-capability"].map(obj => convertPropertyNames(obj, replaceHyphen)) || null;
+    const path = `/rests/data/network-topology:network-topology/topology=topology-netconf/node=${nodeId}`;
+    const capabilitiesResult = await requestRest<{"network-topology:node": {"node-id": string, "netconf-node-topology:available-capabilities": { "available-capability": { "capability-origin": string, "capability": string }[] }}[] }>(path, { method: "GET" });
+    return capabilitiesResult && capabilitiesResult["network-topology:node"] && capabilitiesResult["network-topology:node"].length > 0 &&
+      capabilitiesResult["network-topology:node"][0]["netconf-node-topology:available-capabilities"]["available-capability"].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || null;
   }
 
   public async getMountedNetworkElementByMountId(nodeId: string): Promise<NetworkElementConnection | null> {
@@ -34,13 +34,13 @@ class RestService {
     // const connectedNetworkElement = await requestRest<NetworkElementConnection>(path, { method: "GET" });
     // return connectedNetworkElement || null;
 
-    const path = "/restconf/operations/data-provider:read-network-element-connection-list";
-    const body = { "input": { "filter": [{ "property": "node-id", "filtervalue": nodeId }], "sortorder": [], "pagination": { "size": 1, "page": 1 } } };
-    const networkElementResult = await requestRest<{ output: { data: NetworkElementConnection[] } }>(path, { method: "POST", body: JSON.stringify(body) });
-    return networkElementResult && networkElementResult.output && networkElementResult.output.data &&
-      networkElementResult.output.data.map(obj => convertPropertyNames(obj, replaceHyphen))[0] || null;
+    const path = "/rests/operations/data-provider:read-network-element-connection-list";
+    const body = { "data-provider:input": { "filter": [{ "property": "node-id", "filtervalue": nodeId }], "sortorder": [], "pagination": { "size": 1, "page": 1 } } };
+    const networkElementResult = await requestRest<{ "data-provider:output": { data: NetworkElementConnection[] } }>(path, { method: "POST", body: JSON.stringify(body) });
+    return networkElementResult && networkElementResult["data-provider:output"] && networkElementResult["data-provider:output"].data &&
+      networkElementResult["data-provider:output"].data.map(obj => convertPropertyNames(obj, replaceHyphen))[0] || null;
   }
-
+ 
   /** Reads the config data by restconf path.
   * @param path The restconf path to be used for read.
   * @returns The data.

@@ -16,12 +16,12 @@
  * ============LICENSE_END==========================================================================
  */
 import { requestRest } from "../../../../framework/src/services/restService";
-import { Result, PostResponse } from "../../../../framework/src/models/elasticSearch";
+import { Result, SingeResult } from "../../../../framework/src/models/elasticSearch";
 import { FaultType, Faults, DeletedStuckAlarms } from "../models/fault";
 
 
 export const getFaultStateFromDatabase = async (): Promise<FaultType | null> => {
-  const path = 'restconf/operations/data-provider:read-status';
+  const path = 'rests/operations/data-provider:read-status';
   const result = await requestRest<Result<Faults>>(path, { method: "POST" });
 
   let faultType: FaultType = {
@@ -32,8 +32,8 @@ export const getFaultStateFromDatabase = async (): Promise<FaultType | null> => 
   }
   let faults: Faults[] | null = null;
 
-  if (result && result.output && result.output.data) {
-    faults = result.output.data;
+  if (result && result["data-provider:output"] && result["data-provider:output"].data) {
+    faults = result["data-provider:output"].data;
     faultType = {
       Critical: faults[0].faults.criticals,
       Major: faults[0].faults.majors,
@@ -46,8 +46,8 @@ export const getFaultStateFromDatabase = async (): Promise<FaultType | null> => 
 }
 
 export const clearStuckAlarms = async (nodeNames: string[]) => {
-  const path = 'restconf/operations/devicemanager:clear-current-fault-by-nodename'
-  const result = await requestRest<DeletedStuckAlarms>(path, { method: 'Post', body: JSON.stringify({ input: { nodenames: nodeNames } }) })
+  const path = 'rests/operations/devicemanager:clear-current-fault-by-nodename'
+  const result = await requestRest<SingeResult<DeletedStuckAlarms>>(path, { method: 'Post', body: JSON.stringify({ input: { nodenames: nodeNames } }) })
   return result;
 
 }

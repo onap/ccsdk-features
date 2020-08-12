@@ -33,9 +33,9 @@ class ConnectService {
    * Inserts a network elements.
    */
   public async createNetworkElement(element: NetworkElementConnection): Promise<NetworkElementConnection | null> {
-    const path = `/restconf/operations/data-provider:create-network-element-connection`;
+    const path = `/rests/operations/data-provider:create-network-element-connection`;
     const result = await requestRest<NetworkElementConnection>(path, {
-      method: "POST", body: JSON.stringify(convertPropertyNames({ input: element }, replaceUpperCase))
+      method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": element }, replaceUpperCase))
     });
     return result || null;
   }
@@ -44,9 +44,9 @@ class ConnectService {
   * Updates a network element.
   */
   public async updateNetworkElement(element: UpdateNetworkElement): Promise<NetworkElementConnection | null> {
-    const path = `/restconf/operations/data-provider:update-network-element-connection`;
+    const path = `/rests/operations/data-provider:update-network-element-connection`;
     const result = await requestRest<NetworkElementConnection>(path, {
-      method: "POST", body: JSON.stringify(convertPropertyNames({ input: element }, replaceUpperCase))
+      method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": element }, replaceUpperCase))
     });
     return result || null;
   }
@@ -58,16 +58,16 @@ class ConnectService {
     const query = {
       "id": element.id
     };
-    const path = `/restconf/operations/data-provider:delete-network-element-connection`;
+    const path = `/rests/operations/data-provider:delete-network-element-connection`;
     const result = await requestRest<NetworkElementConnection>(path, {
-      method: "POST", body: JSON.stringify(convertPropertyNames({ input: query }, replaceUpperCase))
+      method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": query }, replaceUpperCase))
     });
     return result || null;
   }
 
   /** Mounts network element. */
   public async mountNetworkElement(networkElement: NetworkElementConnection): Promise<boolean> {
-    const path = 'restconf/config/network-topology:network-topology/topology/topology-netconf/node/' + networkElement.nodeId;
+    const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + networkElement.nodeId;
     const mountXml = [
       '<node xmlns="urn:TBD:params:xml:ns:yang:network-topology">',
       `<node-id>${networkElement.nodeId}</node-id>`,
@@ -106,7 +106,7 @@ class ConnectService {
 
   /** Unmounts a network element by its id. */
   public async unmountNetworkElement(nodeId: string): Promise<boolean> {
-    const path = 'restconf/config/network-topology:network-topology/topology/topology-netconf/node/' + nodeId;
+    const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
 
     try {
       const result = await requestRest<string>(path, {
@@ -126,7 +126,7 @@ class ConnectService {
 
   /** Yang capabilities of the selected network elements. */
   public async infoNetworkElement(nodeId: string): Promise<TopologyNode | null> {
-    const path = 'restconf/operational/network-topology:network-topology/topology/topology-netconf/node/' + nodeId;
+    const path = '/rests/operational/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
     const topologyRequestPomise = requestRest<Topology>(path, { method: "GET" });
 
     return topologyRequestPomise && topologyRequestPomise.then(result => {
@@ -138,9 +138,9 @@ class ConnectService {
    * Get the connection state of the network element.
    */
   public async getNetworkElementConnectionStatus(element: string): Promise<(ConnectionStatus)[] | null> {
-    const path = `/restconf/operations/data-provider:read-network-element-connection-list`;
+    const path = `/rests/operations/data-provider:read-network-element-connection-list`;
     const query = {
-      "input": {
+      "data-provider:input": {
         "filter": [{
           "property": "node-id",
           "filtervalue": element
@@ -152,13 +152,13 @@ class ConnectService {
       }
     }
     const result = await requestRest<Result<ConnectionStatus>>(path, { method: "POST", body: JSON.stringify(query) });
-    return result && result.output && result.output.data && result.output.data.map(ne => ({
+    return result && result["data-provider:output"] && result["data-provider:output"].data && result["data-provider:output"].data.map(ne => ({
       status: ne.status
     })) || null;
   }
 
   public async getWebUriExtensionForNetworkElementAsync(ne: string) {
-    const path = 'restconf/config/network-topology:network-topology/topology/topology-netconf/node/' + ne + '/yang-ext:mount/core-model:network-element';
+    const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + ne + '/yang-ext:mount/core-model:network-element';
     try {
       const result = await requestRest<any>(path, { method: "GET" });
 
@@ -182,7 +182,7 @@ class ConnectService {
     let webUris: guiCutThrough[] = []
 
     ne.forEach(nodeId => {
-      const path = 'restconf/config/network-topology:network-topology/topology/topology-netconf/node/' + nodeId + '/yang-ext:mount/core-model:network-element';
+      const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId + '/yang-ext:mount/core-model:network-element';
 
       // add search request to array
       promises.push(requestRest<any>(path, { method: "GET" })

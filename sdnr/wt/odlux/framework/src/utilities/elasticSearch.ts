@@ -33,14 +33,14 @@ type dataType = { [prop: string]: propType };
 */
 export function createSearchDataHandler<TResult>(typeName: (() => string) | string, additionalFilters?: {} | null | undefined): DataCallback<(TResult)> {
   const fetchData: DataCallback<(TResult)> = async (pageIndex, rowsPerPage, orderBy, order, filter) => {
-    const url = `/restconf/operations/data-provider:read-${typeof typeName === "function" ? typeName(): typeName}-list`;
+    const url = `/rests/operations/data-provider:read-${typeof typeName === "function" ? typeName(): typeName}-list`;
 
     filter = { ...filter, ...additionalFilters };
 
     const filterKeys = filter && Object.keys(filter) || [];
 
     const query = {
-      input: {
+      "data-provider:input": {
         filter: filterKeys.filter(f => filter![f] != null && filter![f] !== "").map(property => ({ property, filtervalue: filter![property]})),
         sortorder: orderBy ? [{ property: orderBy, sortorder: order === "desc" ? "descending" : "ascending" }] : [],
         pagination: { size: rowsPerPage, page: (pageIndex != null && pageIndex > 0 && pageIndex || 0) +1 }
@@ -60,12 +60,12 @@ export function createSearchDataHandler<TResult>(typeName: (() => string) | stri
     if (result) {
       let rows: TResult[] = [];
 
-      if (result && result.output && result.output.data) {
-        rows = result.output.data.map(obj => convertPropertyNames(obj, replaceHyphen)) || []
+      if (result && result["data-provider:output"] && result["data-provider:output"].data) {
+        rows = result["data-provider:output"].data.map(obj => convertPropertyNames(obj, replaceHyphen)) || []
       }
 
       const data = {
-        page: result.output.pagination && result.output.pagination.page != null && result.output.pagination.page - 1  || 0 , total: result.output.pagination && result.output.pagination.total || 0, rows: rows
+        page: +(result["data-provider:output"].pagination && result["data-provider:output"].pagination.page != null && result["data-provider:output"].pagination.page - 1  || 0) , total: +(result["data-provider:output"].pagination && result["data-provider:output"].pagination.total || 0), rows: rows
       };
       return data;
     }

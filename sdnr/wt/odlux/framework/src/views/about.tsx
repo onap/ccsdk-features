@@ -44,7 +44,7 @@ class AboutComponent extends React.Component<any, AboutState> {
     requestRestExt<string>('/about').then((response) => {
       const content = response.status == 200 ? response.data : `${response.status} ${response.message}` || "Server error";
       const loadedSucessfully = response.status == 200 ? true : false;
-      this.setState({ content: content, isContentLoadedSucessfully: loadedSucessfully });
+      this.setState({ content: content || null, isContentLoadedSucessfully: loadedSucessfully });
     }).catch((error) => {
       this.setState({ content: error })
     })

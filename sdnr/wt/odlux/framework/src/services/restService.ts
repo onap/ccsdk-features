@@ -33,7 +33,7 @@ export const formEncode = (params: { [key: string]: string | number }) => Object
 /** Sends a rest request to the given path. 
  * @returns The data, or null it there was any error
  */
-export async function requestRest<TData>(path: string = '', init: RequestInit = {}, authenticate: boolean = true, isResource: boolean = false): Promise<TData | null> {
+export async function requestRest<TData>(path: string = '', init: RequestInit = {}, authenticate: boolean = true, isResource: boolean = false): Promise<TData | null | undefined> {
   const res = await requestRestExt<TData>(path, init, authenticate, isResource);
   if (res && res.status >= 200 && res.status < 300) {
     return res.data;
@@ -42,9 +42,9 @@ export async function requestRest<TData>(path: string = '', init: RequestInit = 
 }
 
 /** Sends a rest request to the given path and reports the server state. 
- *  @returns An object with the server state, a message and the data.
+ *  @returns An object with the server state, a message and the data or undefined in case of a json parse error.
  */
-export async function requestRestExt<TData>(path: string = '', init: RequestInit = {}, authenticate: boolean = true, isResource: boolean = false): Promise<{ status: number, message?: string, data: TData | null }> {
+export async function requestRestExt<TData>(path: string = '', init: RequestInit = {}, authenticate: boolean = true, isResource: boolean = false): Promise<{ status: number, message?: string, data: TData | null | undefined }> {
   const result: { status: number, message?: string, data: TData | null } = {
     status: -1,
     data: null,
@@ -99,7 +99,7 @@ export async function requestRestExt<TData>(path: string = '', init: RequestInit
       ...result,
       status: fetchResult.status,
       message: error && error.message || String(error),
-      data: null
+      data: undefined
     };
   }
 }
