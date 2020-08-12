@@ -1,0 +1,609 @@
+module data-provider-openroadm-pm-types {
+
+    yang-version 1.1;
+    namespace "urn:opendaylight:params:xml:ns:yang:data-provider-openroadm-pm-types";
+    prefix pmt;
+
+    import data-provider-v2 {
+        prefix uxp;
+    }
+
+    organization
+      "highstreet technologies GmbH";
+    contact
+      "Web:   <https://highstreet-technologies.com>
+       ONAP:  <https://wiki.onap.org/display/DW/ODLUX+DB+API>";
+
+    description
+      "This module defines the perfromance measurement name identities
+       for SDN controller northbound APIs.
+       
+       Copyright 2020 highstreet technologies GmbH Intellectual Property.
+       All rights reserved.
+       
+       Licensed under the Apache License, Version 2.0 (the 'License');
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+       
+         http://www.apache.org/licenses/LICENSE-2.0
+       
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an 'AS IS' BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.";
+
+    revision 2020-04-13 {
+        description
+          "Initial revision";
+        reference
+          "https://jira.onap.org/browse/SDNC-???";
+    }
+
+    // --- typedef
+    identity performance-measurement-type-id {
+        base uxp:performance-measurement-type-id;
+        description
+          "An abstract base performance measurement type which must not be used as 
+           reference in data objects.";
+    }
+
+    // [sko] no need to define vendor extension - yang augment should be used
+    //       SDN Conroller will ignor such values.
+    // identity vendorExtension {
+    //     base performance-measurement-type-id;
+    //     description
+    //       "vendor extension";
+    // }
+
+    identity bitErrorRate {
+        base performance-measurement-type-id;
+        description
+          "Bit error rate (BER)";
+    }
+    identity opticalPowerOutput {
+        base performance-measurement-type-id;
+        description
+          "Optical Power Output (OPOUT-OTS, OPOUT-OMS, OPT-OCH). Total optical power includes Variable Optical Attenuator (VOA) attenuation";
+    }
+    identity opticalReturnLoss {
+        base performance-measurement-type-id;
+        description
+          "Optical Return Loss (ORL-OTS) - at MW port(s) B";
+    }
+    identity opticalPowerInput {
+        base performance-measurement-type-id;
+        description
+          "Optical Power Input (OPIN-OTS, OPIN-OMS, OPR-OCH). Total optical power";
+    }
+    identity codeViolations {
+        base performance-measurement-type-id;
+        description
+          "Code Violations (CV)";
+    }
+
+    // [sko] exists already in G826
+    // identity erroredSeconds {
+    //     base performance-measurement-type-id;
+    //     description
+    //       "Errored Seconds (ES)";
+    // }
+
+    // [sko] exists already in G826
+    // identity severelyErroredSeconds {
+    //     base performance-measurement-type-id;
+    //     description
+    //       "Severely Errored Seconds (SES)";
+    // }
+
+    identity unavailableSeconds {
+        base performance-measurement-type-id;
+        description
+          "Unavailable Seconds (UAS)";
+    }
+    identity inFrames {
+        base performance-measurement-type-id;
+        description
+          "In frames (INFRAMES-E)";
+    }
+    identity inFramesErrored {
+        base performance-measurement-type-id;
+        description
+          "In frames errored (INFRAMESERR-E)";
+    }
+    identity outFrames {
+        base performance-measurement-type-id;
+        description
+          "Out frames (OUTFRAMES-E)";
+    }
+    identity erroredSecondsEthernet {
+        base performance-measurement-type-id;
+        description
+          "Errored Seconds Ethernet (ES-E)";
+    }
+    identity severelyErroredSecondsEthernet {
+        base performance-measurement-type-id;
+        description
+          "Severely Errored Seconds, Ethernet (SES-E)";
+    }
+    identity unavailableSecondsEthernet {
+        base performance-measurement-type-id;
+        description
+          "Unavailable Seconds, Ethernet (UAS-E)";
+    }
+    identity erroredBlockCount {
+        base performance-measurement-type-id;
+        description
+          "Errored block count";
+    }
+    identity delay {
+        base performance-measurement-type-id;
+        description
+          "Number of frames between a DMValue toggle event and the received DMp signal value toggle event";
+    }
+    identity defectSeconds {
+        base performance-measurement-type-id;
+        description
+          "Defect Seconds (DS)";
+    }
+    identity backwardIncomingAlignmentError {
+        base performance-measurement-type-id;
+        description
+          "Backward Incoming Alignment Error (BIAE)";
+    }
+    identity incomingAlignmentError {
+        base performance-measurement-type-id;
+        description
+          "Incoming Alignment Error (IAE)";
+    }
+    identity opticalPowerOutputMin {
+        base performance-measurement-type-id;
+        description
+          "Minimum Optical Power Output (OPOUT-OTS). Total optical power includes Variable Optical Attenuator (VOA) attenuation";
+    }
+    identity opticalPowerOutputMax {
+        base performance-measurement-type-id;
+        description
+          "Maximum Optical Power Output (OPOUT-OTS). Total optical power includes Variable Optical Attenuator (VOA) attenuation";
+    }
+    identity opticalPowerOutputAvg {
+        base performance-measurement-type-id;
+        description
+          "Average Optical Power Output (OPOUT-OTS). Total optical power includes Variable Optical Attenuator (VOA) attenuation";
+    }
+    identity opticalPowerInputMin {
+        base performance-measurement-type-id;
+        description
+          "Minimum Optical Power Input (OPIN-OTS). Total optical power";
+    }
+    identity opticalPowerInputMax {
+        base performance-measurement-type-id;
+        description
+          "Maximum Optical Power Input (OPIN-OTS). Total optical power";
+    }
+    identity opticalPowerInputAvg {
+        base performance-measurement-type-id;
+        description
+          "Average Optical Power Input (OPIN-OTS). Total optical power";
+    }
+    identity opticalPowerOutputOSC {
+        base performance-measurement-type-id;
+        description
+          "OSC Optical Power Output (OPT-OSC). OSC Transmit power on MW port";
+    }
+    identity opticalPowerOutputOSCMin {
+        base performance-measurement-type-id;
+        description
+          "Minimum OSC Optical Power Output (OPT-OSC). OSC Transmit power on MW port";
+    }
+    identity opticalPowerOutputOSCMax {
+        base performance-measurement-type-id;
+        description
+          "Maximum OSC Optical Power Output (OPT-OSC). OSC Transmit power on MW port";
+    }
+    identity opticalPowerOutputOSCAvg {
+        base performance-measurement-type-id;
+        description
+          "Average OSC Optical Power Output (OPT-OSC). OSC Transmit power on MW port";
+    }
+    identity opticalPowerInputOSC {
+        base performance-measurement-type-id;
+        description
+          "OSC Optical Power Input (OPR-OSC). OSC Receive power on MW port";
+    }
+    identity opticalPowerInputOSCMin {
+        base performance-measurement-type-id;
+        description
+          "Minimum OSC Optical Power Input (OPR-OSC). OSC Receive power on MW port";
+    }
+    identity opticalPowerInputOSCMax {
+        base performance-measurement-type-id;
+        description
+          "Maximum OSC Optical Power Input (OPR-OSC). OSC Receive power on MW port";
+    }
+    identity opticalPowerInputOSCAvg {
+        base performance-measurement-type-id;
+        description
+          "Average OSC Optical Power Input (OPR-OSC). OSC Receive power on MW port";
+    }
+    identity preFECCorrectedErrors {
+        base performance-measurement-type-id;
+        description
+          "pFEC corrected Errors";
+    }
+    identity totalOpticalPowerInput {
+        base performance-measurement-type-id;
+        description
+          "Total Optical Power Input.";
+    }
+    identity totalOpticalPowerInputMin {
+        base performance-measurement-type-id;
+        description
+          "Minimum Total Optical Power Input.";
+    }
+    identity totalOpticalPowerInputMax {
+        base performance-measurement-type-id;
+        description
+          "Maximum Total Optical Power Input.";
+    }
+    identity totalOpticalPowerInputAvg {
+        base performance-measurement-type-id;
+        description
+          "Average Total Optical Power Input.";
+    }
+    identity FECCorrectableBlocks {
+        base performance-measurement-type-id;
+        description
+          "FEC Correctable Blocks.";
+    }
+    identity FECUncorrectableBlocks {
+        base performance-measurement-type-id;
+        description
+          "FEC Uncorrectable Blocks.";
+    }
+    identity BIPErrorCounter {
+        base performance-measurement-type-id;
+        description
+          "BIP Error Counter";
+    }
+    identity protectionSwitchingCount {
+        base performance-measurement-type-id;
+        description
+          "Protection Switching Count (PSC)";
+    }
+    identity protectionSwitchingDuration {
+        base performance-measurement-type-id;
+        description
+          "Protection Switching Duration in seconds (PSD)";
+    }
+    identity erroredBlockCountTCM1-up {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM1 up direction.";
+    }
+    identity erroredBlockCountTCM2-up {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM2 up direction.";
+    }
+    identity erroredBlockCountTCM3-up {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM3 up direction.";
+    }
+    identity erroredBlockCountTCM4-up {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM4 up direction.";
+    }
+    identity erroredBlockCountTCM5-up {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM5 up direction.";
+    }
+    identity erroredBlockCountTCM6-up {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM6 up direction.";
+    }
+    identity delayTCM1-up {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM1 up direction.";
+    }
+    identity delayTCM2-up {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM2 up direction.";
+    }
+    identity delayTCM3-up {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM3 up direction.";
+    }
+    identity delayTCM4-up {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM4 up direction.";
+    }
+    identity delayTCM5-up {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM5 up direction.";
+    }
+    identity delayTCM6-up {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM6 up direction.";
+    }
+    identity erroredBlockCountTCM1-down {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM1 down direction.";
+    }
+    identity erroredBlockCountTCM2-down {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM2 down direction.";
+    }
+    identity erroredBlockCountTCM3-down {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM3 down direction.";
+    }
+    identity erroredBlockCountTCM4-down {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM4 down direction.";
+    }
+    identity erroredBlockCountTCM5-down {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM5 down direction.";
+    }
+    identity erroredBlockCountTCM6-down {
+        base performance-measurement-type-id;
+        description
+          "errored Blocks Count on TCM6 down direction.";
+    }
+    identity delayTCM1-down {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM1 down direction.";
+    }
+    identity delayTCM2-down {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM2 down direction.";
+    }
+    identity delayTCM3-down {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM3 down direction.";
+    }
+    identity delayTCM4-down {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM4 down direction.";
+    }
+    identity delayTCM5-down {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM5 down direction.";
+    }
+    identity delayTCM6-down {
+        base performance-measurement-type-id;
+        description
+          "Delay on TCM6 down direction.";
+    }
+    identity partialRateDiscard {
+        base performance-measurement-type-id;
+        description
+          "Discarded packet as a result of policing or rate limiting for subrate ethernet.";
+    }
+    identity erroredSecondsTCM1-up {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM1 up direction.";
+    }
+    identity erroredSecondsTCM2-up {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM2 up direction.";
+    }
+    identity erroredSecondsTCM3-up {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM3 up direction.";
+    }
+    identity erroredSecondsTCM4-up {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM4 up direction.";
+    }
+    identity erroredSecondsTCM5-up {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM5 up direction.";
+    }
+    identity erroredSecondsTCM6-up {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM6 up direction.";
+    }
+    identity severelyErroredSecondsTCM1-up {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM1 up direction.";
+    }
+    identity severelyErroredSecondsTCM2-up {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM2 up direction.";
+    }
+    identity severelyErroredSecondsTCM3-up {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM3 up direction.";
+    }
+    identity severelyErroredSecondsTCM4-up {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM4 up direction.";
+    }
+    identity severelyErroredSecondsTCM5-up {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM5 up direction.";
+    }
+    identity severelyErroredSecondsTCM6-up {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM6 up direction.";
+    }
+    identity unavailableSecondsTCM1-up {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM1 up direction.";
+    }
+    identity unavailableSecondsTCM2-up {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM2 up direction.";
+    }
+    identity unavailableSecondsTCM3-up {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM3 up direction.";
+    }
+    identity unavailableSecondsTCM4-up {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM4 up direction.";
+    }
+    identity unavailableSecondsTCM5-up {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM5 up direction.";
+    }
+    identity unavailableSecondsTCM6-up {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM6 up direction.";
+    }
+    identity erroredSecondsTCM1-down {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM1 down direction.";
+    }
+    identity erroredSecondsTCM2-down {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM2 down direction.";
+    }
+    identity erroredSecondsTCM3-down {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM3 down direction.";
+    }
+    identity erroredSecondsTCM4-down {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM4 down direction.";
+    }
+    identity erroredSecondsTCM5-down {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM5 down direction.";
+    }
+    identity erroredSecondsTCM6-down {
+        base performance-measurement-type-id;
+        description
+          "errored Seconds Count on TCM6 down direction.";
+    }
+    identity severelyErroredSecondsTCM1-down {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM1 down direction.";
+    }
+    identity severelyErroredSecondsTCM2-down {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM2 down direction.";
+    }
+    identity severelyErroredSecondsTCM3-down {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM3 down direction.";
+    }
+    identity severelyErroredSecondsTCM4-down {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM4 down direction.";
+    }
+    identity severelyErroredSecondsTCM5-down {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM5 down direction.";
+    }
+    identity severelyErroredSecondsTCM6-down {
+        base performance-measurement-type-id;
+        description
+          "severely Errored Seconds Count on TCM6 down direction.";
+    }
+    identity unavailableSecondsTCM1-down {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM1 down direction.";
+    }
+    identity unavailableSecondsTCM2-down {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM2 down direction.";
+    }
+    identity unavailableSecondsTCM3-down {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM3 down direction.";
+    }
+    identity unavailableSecondsTCM4-down {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM4 down direction.";
+    }
+    identity unavailableSecondsTCM5-down {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM5 down direction.";
+    }
+    identity unavailableSecondsTCM6-down {
+        base performance-measurement-type-id;
+        description
+          "unavailable Seconds Count on TCM6 down direction.";
+    }
+    identity fecCorrectedCodewords {
+        base performance-measurement-type-id;
+        description
+          "FEC Corrected Codewords Counter";
+    }
+    identity fecUncorrectedCodewords {
+        base performance-measurement-type-id;
+        description
+          "FEC Uncorrected Codewords Counter";
+    }
+    identity fecSymbolErrors {
+        base performance-measurement-type-id;
+        description
+          "FEC Symbol Error Counter";
+    }
+    identity localFaultSeconds {
+        base performance-measurement-type-id;
+        description
+          "Local Fault Seconds";
+    }
+    identity remoteFaultSeconds {
+        base performance-measurement-type-id;
+        description
+          "Remote Fault Seconds";
+    }
+}

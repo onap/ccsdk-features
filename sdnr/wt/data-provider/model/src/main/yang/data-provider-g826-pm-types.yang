@@ -1,0 +1,97 @@
+module data-provider-g826-pm-types {
+
+    yang-version 1.1;
+    namespace "urn:opendaylight:params:xml:ns:yang:data-provider-g836-pm-types";
+    prefix pmt;
+
+    import data-provider-v2 {
+        prefix uxp;
+    }
+
+    organization
+      "highstreet technologies GmbH";
+    contact
+      "Web:   <https://highstreet-technologies.com>
+       ONAP:  <https://wiki.onap.org/display/DW/ODLUX+DB+API>";
+
+    description
+      "This module defines the perfromance measurement name identities
+       for SDN controller northbound APIs.
+       
+       Copyright 2020 highstreet technologies GmbH Intellectual Property.
+       All rights reserved.
+       
+       Licensed under the Apache License, Version 2.0 (the 'License');
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+       
+         http://www.apache.org/licenses/LICENSE-2.0
+       
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an 'AS IS' BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.";
+
+    revision 2020-04-13 {
+        description
+          "Initial revision";
+        reference
+          "ITU T-REC-G.826 2002-12";
+    }
+
+    // --- typedef
+    identity performance-measurement-type-id {
+        base uxp:performance-measurement-type-id;
+        description
+          "An abstract base performance measurement type which must not be 
+           used as reference in data objects.";
+    }
+
+    identity errored-block {
+        base performance-measurement-type-id;
+        description
+          "errored block (EB):
+           A block in which one or more bits are in error.";
+    }
+
+    identity errored-second {
+        base performance-measurement-type-id;
+        description
+          "errored second (ES): 
+           A one-second period with one or more errored blocks or at least 
+           one defect.";
+    }
+
+    identity severely-errored-second {
+        base performance-measurement-type-id;
+        description
+          "severely errored second (SES): 
+           A one-second period which contains ≥30% errored blocks or at least 
+           one defect. SES is a subset of ES.";
+    }
+
+    identity errored-second-ratio {
+        base performance-measurement-type-id;
+        description
+          "errored second ratio (ESR): 
+           The ratio of ES to total seconds in available time during a fixed 
+           measurement interval. ";
+    }
+
+    identity severely-errored-second-ratio {
+        base performance-measurement-type-id;
+        description
+          "severely errored second ratio (SESR):
+           The ratio of SES to total seconds in available time during a fixed 
+           measurement interval.";
+    }
+
+    identity background-block-error-ratio {
+        base performance-measurement-type-id;
+        description
+          "background block error ratio (BBER): 
+           The ratio of Background Block Errors (BBE) to total blocks in 
+           available time during a fixed measurement interval.";
+    }
+}

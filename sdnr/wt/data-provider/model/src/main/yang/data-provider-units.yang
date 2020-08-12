@@ -1,0 +1,86 @@
+module data-provider-units {
+
+    yang-version 1.1;
+    namespace "urn:opendaylight:params:xml:ns:yang:data-provider-units";
+    prefix unit;
+
+    import data-provider-v2 {
+        prefix uxp;
+    }
+
+    organization
+      "highstreet technologies GmbH";
+    contact
+      "Web:   <https://highstreet-technologies.com>
+       ONAP:  <https://wiki.onap.org/display/DW/ODLUX+DB+API>";
+
+    description
+      "This module defines the unit names.
+       
+       Copyright 2020 highstreet technologies GmbH Intellectual Property.
+       All rights reserved.
+       
+       Licensed under the Apache License, Version 2.0 (the 'License');
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+       
+         http://www.apache.org/licenses/LICENSE-2.0
+       
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an 'AS IS' BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.";
+
+    revision 2020-04-13 {
+        description
+          "Initial revision";
+        reference
+          "ITU T-REC-G.826 2002-12";
+    }
+
+    // --- typedef
+    identity performance-measurement-unit-id {
+        base uxp:performance-measurement-unit-id;
+        description
+          "An abstract base performance measurement type which must not be 
+           used as reference in data objects.";
+    }
+
+    identity celsius {
+        base "performance-measurement-unit-id";
+        description
+          "°C: Grad Felsius";
+    }
+
+    identity dBm {
+        base "performance-measurement-unit-id";
+        description
+          "dBm is unit of level used to indicate that a power ratio is expressed in 
+           decibels (dB) with reference to one milliwatt (mW).";
+    }
+
+    identity dB {
+        base "performance-measurement-unit-id";
+        description
+          "dB: decibels";
+    }
+
+    identity fahrenheit {
+        base "performance-measurement-unit-id";
+        description
+          "°F: Grad Fahrenheit";
+    }
+
+    identity mW {
+        base "performance-measurement-unit-id";
+        description
+          "mW: milliwatt";
+    }
+
+    identity kHz {
+        base "performance-measurement-unit-id";
+        description
+          "kHz: kiloherz";
+    }
+}
