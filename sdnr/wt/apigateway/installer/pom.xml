@@ -62,7 +62,6 @@
             <artifactId>${application.name}-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>

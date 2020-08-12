@@ -69,7 +69,6 @@
             <artifactId>${application.name}-setup</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
     </dependencies>
 
     <build>

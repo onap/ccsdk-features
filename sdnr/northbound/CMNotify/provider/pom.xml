@@ -58,7 +58,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
@@ -116,7 +115,6 @@
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.onap.ccsdk.sli.core</groupId>
             <artifactId>sli-common</artifactId>
@@ -130,11 +128,6 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-test-model</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-broker-impl</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -159,7 +152,6 @@
             <artifactId>testng</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-common-util</artifactId>
@@ -168,18 +160,9 @@
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-core-api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
             <artifactId>yang-data-impl</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-broker-impl</artifactId>
-            <type>test-jar</type>
-            <classifier>tests</classifier>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -47,12 +47,10 @@
     </licenses>
 
     <dependencies>
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-odlux-core-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 </project>

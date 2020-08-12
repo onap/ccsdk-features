@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -13,10 +12,10 @@
 	<groupId>org.onap.ccsdk.features.lib.doorman</groupId>
 	<artifactId>doorman</artifactId>
 
+	<name>ccsdk-features :: ${project.artifactId}</name>
 	<description>Doorman - Request prioritization and aggregation queue</description>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -30,7 +29,6 @@
 			<artifactId>rlock</artifactId>
 			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -47,6 +45,5 @@
 			<scope>test</scope>
 		</dependency>
 
-	</dependencies>
-
+	    </dependencies>
 </project>

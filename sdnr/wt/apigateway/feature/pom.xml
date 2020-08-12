@@ -52,12 +52,10 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-apigateway-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 </project>
