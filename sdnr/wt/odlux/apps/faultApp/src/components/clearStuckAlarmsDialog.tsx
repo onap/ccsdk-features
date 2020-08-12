@@ -30,25 +30,29 @@ export enum ClearStuckAlarmsDialogMode {
 const mapDispatch = (dispatcher: IDispatcher) => ({
     clearStuckAlarmsAsync: clearStuckAlarmAsyncAction(dispatcher.dispatch),
     reloadCurrentProblemsAction: () => dispatcher.dispatch(currentProblemsReloadAction)
-})
+});
 
 type clearStuckAlarmsProps = Connect<typeof undefined, typeof mapDispatch> & {
-    numberDevices: Number,
-    mode: ClearStuckAlarmsDialogMode,
-    stuckAlarms: string[]
-    onClose: () => void
+    numberDevices: Number;
+    mode: ClearStuckAlarmsDialogMode;
+    stuckAlarms: string[];
+    onClose: () => void;
 }
 
 type ClearStuckAlarmsState = {
-    clearAlarmsSuccessful: boolean,
-    errormessage: string,
-    unclearedAlarms: string[]
+    clearAlarmsSuccessful: boolean;
+    errormessage: string;
+    unclearedAlarms: string[];
 }
 
 class ClearStuckAlarmsDialogComponent extends React.Component<clearStuckAlarmsProps, ClearStuckAlarmsState>{
     constructor(props: clearStuckAlarmsProps) {
         super(props);
-        this.state = { clearAlarmsSuccessful: true, errormessage: '', unclearedAlarms: [] }
+        this.state = { 
+            clearAlarmsSuccessful: true, 
+            errormessage: '', 
+            unclearedAlarms: [] 
+        };
     }
 
     onClose = (event: React.MouseEvent) => {
@@ -62,19 +66,14 @@ class ClearStuckAlarmsDialogComponent extends React.Component<clearStuckAlarmsPr
         event.preventDefault();
         const result = await this.props.clearStuckAlarmsAsync(this.props.stuckAlarms);
 
-        if (result) {
-            if (result.output.nodenames) {
-                if (result.output.nodenames.length !== this.props.stuckAlarms.length) { //show errormessage if not all devices were cleared
-                    const undeletedAlarm = this.props.stuckAlarms.filter(item => !result.output.nodenames.includes(item))
-                    const error = "The alarms of the following devices couldn't be refreshed: ";
-                    this.setState({ clearAlarmsSuccessful: false, errormessage: error, unclearedAlarms: undeletedAlarm })
-                    return;
-                }
-            }
-        }
-        else { //show errormessage if no devices were cleared
-            this.setState({ clearAlarmsSuccessful: false, errormessage: "Alarms couldn't be refreshed.", unclearedAlarms: [] })
+        if (result && result["data-provider:output"].nodenames && result["data-provider:output"].nodenames.length !== this.props.stuckAlarms.length) { //show errormessage if not all devices were cleared
+            const undeletedAlarm = this.props.stuckAlarms.filter(item => !result["data-provider:output"].nodenames.includes(item));
+            const error = "The alarms of the following devices couldn't be refreshed: ";
+            this.setState({ clearAlarmsSuccessful: false, errormessage: error, unclearedAlarms: undeletedAlarm });
             return;
+
+        } else { //show errormessage if no devices were cleared
+            this.setState({ clearAlarmsSuccessful: false, errormessage: "Alarms couldn't be refreshed.", unclearedAlarms: [] });
         }
 
         this.props.reloadCurrentProblemsAction();
@@ -132,5 +131,5 @@ class ClearStuckAlarmsDialogComponent extends React.Component<clearStuckAlarmsPr
     }
 }
 
-const ClearStuckAlarmsDialog = connect(undefined, mapDispatch)(ClearStuckAlarmsDialogComponent)
+const ClearStuckAlarmsDialog = connect(undefined, mapDispatch)(ClearStuckAlarmsDialogComponent);
 export default ClearStuckAlarmsDialog;

@@ -46,7 +46,7 @@
     <properties>
         <buildtime>${maven.build.timestamp}</buildtime>
         <distversion>ONAP Frankfurt (Neon, mdsal ${odl.mdsal.version})</distversion>
-        <buildno>56.139cd6d(20/07/08)</buildno>
+        <buildno>57.3e1d5cf(20/08/11)</buildno>
         <odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
     </properties>
 
@@ -54,6 +54,10 @@
         <resources>
             <resource>
                 <directory>dist</directory>
+                <targetPath>odlux</targetPath>
+            </resource>
+            <resource>
+                <directory>src2/main/resources</directory>
                 <targetPath>odlux</targetPath>
             </resource>
         </resources>
@@ -172,11 +176,20 @@
                     <basedir>${project.build.directory}/classes/odlux</basedir>
                     <includes>
                         <include>app.js</include>
+                        <include>version.json</include>
                     </includes>
                     <replacements>
                         <replacement>
                             <token>##odlux.version##</token>
                             <value>${odlux.version}</value>
+                        </replacement>
+                         <replacement>
+                            <token>##buildno##</token>
+                            <value>${buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##build-timestamp##</token>
+                            <value>${buildtime}</value>
                         </replacement>
                     </replacements>
                 </configuration>

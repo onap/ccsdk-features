@@ -127,33 +127,33 @@ module.exports = (env) => {
       },
       proxy: {
         "/oauth2/": {
-          target: "http://localhost:48181",
-          secure: false
-        },
-        "/yang-schema/": {
-          target: "http://localhost:48181",
+          target: "http://10.20.6.29:48181",
           secure: false
         },
         "/database/": {
-          target: "http://localhost:48181",
+          target: "http://10.20.6.29:48181",
           secure: false
         },
         "/restconf/": {
-          target: "http://localhost:48181",
+          target: "http://10.20.6.29:48181",
+          secure: false
+        },
+        "/rests/": {
+          target: "http://10.20.6.29:48181",
           secure: false
         },
         "/help/": {
-          target: "http://localhost:48181",
+          target: "http://10.20.6.29:48181",
           secure: false
         },
         "/tree/": {
-          target: "http://localhost:48181",
+          target: "http://10.20.6.29:48181",
           secure: false
         },
         "/websocket": {
-          target: "http://localhost:48181",
+          target: "http://10.20.6.29:48181",
           ws: true,
-          changeOrigin: false,
+          changeOrigin: true,
           secure: false
         }
       }

@@ -34,7 +34,7 @@ class MaintenenceService {
   * Adds or updates one maintenence entry to the backend.
   */
   public async writeMaintenenceEntry(maintenenceEntry: MaintenenceEntry): Promise<PostResponse | null> {
-    const path = `/restconf/operations/data-provider:create-maintenance`;
+    const path = `/rests/operations/data-provider:create-maintenance`;
 
     const query = {
       "id": maintenenceEntry._id,
@@ -45,7 +45,7 @@ class MaintenenceService {
       "start": convertToISODateString(maintenenceEntry.start)
     };
 
-    const result = await requestRest<PostResponse>(path, { method: "POST", body: JSON.stringify(convertPropertyNames({ input: query }, replaceUpperCase)) });
+    const result = await requestRest<PostResponse>(path, { method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": query }, replaceUpperCase)) });
     return result || null;
   }
 
@@ -53,7 +53,7 @@ class MaintenenceService {
   * Deletes one maintenence entry by its mountId from the backend.
   */
   public async deleteMaintenenceEntry(maintenenceEntry: MaintenenceEntry): Promise<(DeleteResponse) | null> {
-    const path = `/restconf/operations/data-provider:delete-maintenance`;
+    const path = `/rests/operations/data-provider:delete-maintenance`;
 
     const query = {
       "id": maintenenceEntry._id,
@@ -63,7 +63,7 @@ class MaintenenceService {
       "end": convertToISODateString(maintenenceEntry.end),
       "start": convertToISODateString(maintenenceEntry.start)
     };
-    const result = await requestRest<DeleteResponse>(path, { method: "POST", body: JSON.stringify(convertPropertyNames({ input: query }, replaceUpperCase)) });
+    const result = await requestRest<DeleteResponse>(path, { method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": query }, replaceUpperCase)) });
     return result || null;
   }
 }

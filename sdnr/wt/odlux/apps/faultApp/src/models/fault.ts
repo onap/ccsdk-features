@@ -61,7 +61,5 @@ export type Faults = {
 };
 
 export type DeletedStuckAlarms = {
-  output: {
     nodenames: string[]
-  }
 }

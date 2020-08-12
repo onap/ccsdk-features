@@ -36,9 +36,9 @@ class InventoryService {
   }
 
   public async getInventoryEntry(id: string): Promise<InventoryType | undefined> {
-    const path = `/restconf/operations/data-provider:read-inventory-list`;
+    const path = `/rests/operations/data-provider:read-inventory-list`;
     const body = {
-      "input": {
+      "data-provider:input": {
         "filter": [
           { property: "id", filtervalue: id },
         ],

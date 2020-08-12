@@ -83,8 +83,8 @@ class MediatorService {
 
     const result = await requestRest<Result<MediatorServer>>(path, { method: "POST", body: JSON.stringify({ input: data }) });
 
-    if (result && result.output.data[0]) {
-      const firstResult = result.output.data[0];
+    if (result && result["data-provider:output"].data[0]) {
+      const firstResult = result["data-provider:output"].data[0];
 
       return {
         id: firstResult.id,

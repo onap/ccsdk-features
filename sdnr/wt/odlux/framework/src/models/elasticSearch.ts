@@ -16,15 +16,20 @@
  * ============LICENSE_END==========================================================================
  */
 export type Result<TSource extends {}> = {
-  output: {
+  "data-provider:output": {
     pagination?: {
-      size: number,
-      page: number,
-      total: number
+      size: number;
+      page: number;
+      total: number;
     },
     data: TSource[];
   }
 }
+
+export type SingeResult<TSource extends {}> = {
+  "data-provider:output": TSource;
+}
+
 
 export type HitEntry<TSource extends {}> = {
   _index: string;

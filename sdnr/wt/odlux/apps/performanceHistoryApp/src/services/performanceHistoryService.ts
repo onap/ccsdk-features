@@ -47,13 +47,13 @@ class PerformanceService {
 
 
     if (selectedTimePeriod === "15min") {
-      path = '/restconf/operations/data-provider:read-pmdata-15m-ltp-list';
+      path = '/rests/operations/data-provider:read-pmdata-15m-ltp-list';
     } else {
-      path = '/restconf/operations/data-provider:read-pmdata-24h-ltp-list';
+      path = '/rests/operations/data-provider:read-pmdata-24h-ltp-list';
     }
 
     const result = await requestRest<Result<string>>(path, { method: "POST", body: JSON.stringify(convertPropertyNames({ input: query }, replaceUpperCase)) });
-    return result && result.output && result.output.data && result.output.data.map(ne => ({ key: ne })) || null;
+    return result && result["data-provider:output"] && result["data-provider:output"].data && result["data-provider:output"].data.map(ne => ({ key: ne })) || null;
   }
 
 
@@ -62,9 +62,9 @@ class PerformanceService {
   * Gets all devices from the performanceHistory 15min backend.
   */
   public async getDeviceListfromPerf15minHistory(): Promise<(DeviceListType)[] | null> {
-    const path = '/restconf/operations/data-provider:read-pmdata-15m-device-list';
+    const path = '/rests/operations/data-provider:read-pmdata-15m-device-list';
     const query = {
-      "input": {
+      "data-provider:input": {
         "filter": [],
         "sortorder": [],
         "pagination": {
@@ -75,7 +75,7 @@ class PerformanceService {
     };
 
     const result = await requestRest<Result<string>>(path, { method: "POST", body: JSON.stringify(query) });
-    return result && result.output && result.output.data && result.output.data.map(ne => ({
+    return result && result["data-provider:output"] && result["data-provider:output"].data && result["data-provider:output"].data.map(ne => ({
       nodeId: ne
     })) || null;
   }
@@ -84,9 +84,9 @@ class PerformanceService {
    * Gets all devices from the performanceHistory 24h backend.
    */
   public async getDeviceListfromPerf24hHistory(): Promise<(DeviceListType)[] | null> {
-    const path = '/restconf/operations/data-provider:read-pmdata-24h-device-list';
+    const path = '/rests/operations/data-provider:read-pmdata-24h-device-list';
     const query = {
-      "input": {
+      "data-provider:input": {
         "filter": [],
         "sortorder": [],
         "pagination": {
@@ -97,7 +97,7 @@ class PerformanceService {
     };
 
     const result = await requestRest<Result<string>>(path, { method: "POST", body: JSON.stringify(query) });
-    return result && result.output && result.output.data && result.output.data.map(ne => ({
+    return result && result["data-provider:output"] && result["data-provider:output"].data && result["data-provider:output"].data.map(ne => ({
       nodeId: ne
     })) || null;
   }

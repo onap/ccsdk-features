@@ -89,7 +89,8 @@ export const splitVPath = (vPath: string, vPathParser : RegExp): [string, string
 
 const getReferencedDataList = async (refPath: string, dataPath: string, modules: { [name: string]: Module }, views: ViewSpecification[]) => {
   const pathParts = splitVPath(refPath, /(?:(?:([^\/\:]+):)?([^\/]+))/g);  // 1 = opt: namespace / 2 = property
-  let referencedModule = modules[pathParts[0][0]];
+  const defaultNS = pathParts[0][0];
+  let referencedModule = modules[defaultNS];
 
   let dataMember: string;
   let view: ViewSpecification;
@@ -121,14 +122,17 @@ const getReferencedDataList = async (refPath: string, dataPath: string, modules:
             throw new Error(`Server Error. Status: [${restResult.status}]\n${message || restResult.message || ''}`);
           }
 
-          let dataRaw = restResult.data[dataMember!];
+          let dataRaw = restResult.data[`${defaultNS}:${dataMember!}`];
+          if (dataRaw === undefined) {
+              dataRaw = restResult.data[dataMember!];
+          }
           dataRaw = dataRaw instanceof Array
             ? dataRaw[0]
             : dataRaw;
 
           data = dataRaw && dataRaw[viewElement.label] || [];
           const keys: string[] = data.map((entry: { [key: string]: any } )=> entry[viewElement.key!]);
-          resultingDataUrls.push(...keys.map(key => `${dataUrl}/${viewElement.label.replace(/\//ig, "%2F")}/${key.replace(/\//ig, "%2F")}`));
+          resultingDataUrls.push(...keys.map(key => `${dataUrl}/${viewElement.label.replace(/\//ig, "%2F")}=${key.replace(/\//ig, "%2F")}`));
         }
         dataMember = viewElement.label;
       } else {
@@ -149,7 +153,10 @@ const getReferencedDataList = async (refPath: string, dataPath: string, modules:
           const message = restResult.data && restResult.data.errors && restResult.data.errors.error && restResult.data.errors.error[0] && restResult.data.errors.error[0]["error-message"] || "";
           throw new Error(`Server Error. Status: [${restResult.status}]\n${message || restResult.message || ''}`);
         }
-        let dataRaw = restResult.data[dataMember!];
+        let dataRaw = restResult.data[`${defaultNS}:${dataMember!}`];
+        if (dataRaw === undefined) {
+            dataRaw = restResult.data[dataMember!];
+        }
         dataRaw = dataRaw instanceof Array
           ? dataRaw[0]
           : dataRaw;
@@ -227,7 +234,7 @@ const flatenViewElements = (defaultNS: string | null, parentPath: string, elemen
 export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
   const pathParts = splitVPath(vPath, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
   const { configuration: { deviceDescription: { nodeId, modules, views } }, framework: { navigationState } } = getState();
-  let dataPath = `/restconf/config/network-topology:network-topology/topology/topology-netconf/node/${nodeId}/yang-ext:mount`;
+  let dataPath = `/rests/data/network-topology:network-topology/topology=topology-netconf/node=${nodeId}/yang-ext:mount`;
 
   let inputViewSpecification: ViewSpecification | undefined = undefined;
   let outputViewSpecification: ViewSpecification | undefined = undefined;
@@ -302,7 +309,11 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
         }
         extractList = true;
       } else {
-        dataPath += `/${property}${key ? `/${key.replace(/\//ig, "%2F")}` : ""}`;
+        // normal case 
+        dataPath += `/${property}${key ? `=${key.replace(/\//ig, "%2F")}` : ""}`;
+
+        // in case of the root element the required namespace will be added later,
+        // while extracting the data
         dataMember = namespace === defaultNS
           ? viewElement.label
           : `${namespace}:${viewElement.label}`;
@@ -352,7 +363,11 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
         const message = restResult.data.errors && restResult.data.errors.error && restResult.data.errors.error[0] && restResult.data.errors.error[0]["error-message"] || "";
         throw new Error(`Server Error. Status: [${restResult.status}]\n${message}`);
       } else {
-        data = restResult.data[dataMember!]; // extract dataMember
+        // https://tools.ietf.org/html/rfc7951#section-4 the root element may countain a namesapce or not !  
+        data = restResult.data[`${defaultNS}:${dataMember!}`];
+        if (data === undefined) {
+           data = restResult.data[dataMember!]; // extract dataMember w/o namespace
+        }
       }
 
       // extract the first element list[key]
@@ -405,7 +420,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
 export const updateDataActionAsyncCreator = (vPath: string, data: any) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
   const pathParts = splitVPath(vPath, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
   const { configuration: { deviceDescription: { nodeId, views } } } = getState();
-  let dataPath = `/restconf/config/network-topology:network-topology/topology/topology-netconf/node/${nodeId}/yang-ext:mount`;
+  let dataPath = `/rests/data/network-topology:network-topology/topology=topology-netconf/node=${nodeId}/yang-ext:mount`;
   let viewSpecification: ViewSpecification = views[0];
   let viewElement: ViewElement;
   let dataMember: string;
@@ -445,7 +460,7 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
         }
       }
 
-      dataPath += `/${property}${key ? `/${key.replace(/\//ig, "%2F")}` : ""}`;
+      dataPath += `/${property}${key ? `=${key.replace(/\//ig, "%2F")}` : ""}`;
       dataMember = viewElement.label;
       embedList = false;
 
@@ -466,7 +481,7 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
 
     // do not extract root member (0)
     if (viewSpecification && viewSpecification.id !== "0") {
-      const updateResult = await restService.setConfigData(dataPath, { [dataMember!]: data }); // extractDataMember
+      const updateResult = await restService.setConfigData(dataPath, { [`${defaultNS}:${dataMember!}`]: data }); // addDataMember using defaultNS
       if (updateResult.status < 200 || updateResult.status > 299) {
         const message = updateResult.data && updateResult.data.errors && updateResult.data.errors.error && updateResult.data.errors.error[0] && updateResult.data.errors.error[0]["error-message"] || "";
         throw new Error(`Server Error. Status: [${updateResult.status}]\n${message || updateResult.message || ''}`);
@@ -499,7 +514,7 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
 export const removeElementActionAsyncCreator = (vPath: string) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
   const pathParts = splitVPath(vPath, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
   const { configuration: { deviceDescription: { nodeId, views } } } = getState();
-  let dataPath = `/restconf/config/network-topology:network-topology/topology/topology-netconf/node/${nodeId}/yang-ext:mount`;
+  let dataPath = `/rests/data/network-topology:network-topology/topology=topology-netconf/node=${nodeId}/yang-ext:mount`;
   let viewSpecification: ViewSpecification = views[0];
   let viewElement: ViewElement;
 
@@ -529,7 +544,7 @@ export const removeElementActionAsyncCreator = (vPath: string) => async (dispatc
         }
       }
 
-      dataPath += `/${property}${key ? `/${key.replace(/\//ig, "%2F")}` : ""}`;
+      dataPath += `/${property}${key ? `=${key.replace(/\//ig, "%2F")}` : ""}`;
 
       if (viewElement && "viewId" in viewElement) {
         viewSpecification = views[+viewElement.viewId];
@@ -555,7 +570,7 @@ export const removeElementActionAsyncCreator = (vPath: string) => async (dispatc
 export const executeRpcActionAsyncCreator = (vPath: string, data: any) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
   const pathParts = splitVPath(vPath, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
   const { configuration: { deviceDescription: { nodeId, views }, viewDescription: oldViewDescription } } = getState();
-  let dataPath = `/restconf/operations/network-topology:network-topology/topology/topology-netconf/node/${nodeId}/yang-ext:mount`;
+  let dataPath = `/rests/operations/network-topology:network-topology/topology=topology-netconf/node=${nodeId}/yang-ext:mount`;
   let viewSpecification: ViewSpecification = views[0];
   let viewElement: ViewElement;
   let dataMember: string;
@@ -595,7 +610,7 @@ export const executeRpcActionAsyncCreator = (vPath: string, data: any) => async 
       //   }
       }
 
-      dataPath += `/${property}${key ? `/${key.replace(/\//ig, "%2F")}` : ""}`;
+      dataPath += `/${property}${key ? `=${key.replace(/\//ig, "%2F")}` : ""}`;
       dataMember = viewElement.label;
       embedList = false;
 
@@ -637,8 +652,7 @@ export const executeRpcActionAsyncCreator = (vPath: string, data: any) => async 
         const message = updateResult.data && updateResult.data.errors && updateResult.data.errors.error && updateResult.data.errors.error[0] && updateResult.data.errors.error[0]["error-message"] || "";
         throw new Error(`Server Error. Status: [${updateResult.status}]\n${message || updateResult.message || ''}`);
       }
-      const viewData = { ...oldViewDescription.viewData, output: updateResult.data || null};
-      dispatch(new UpdatOutputData(viewData));
+      dispatch(new UpdatOutputData(updateResult.data));
     } else {
       throw new Error(`There is NO RPC specified.`);
     }
