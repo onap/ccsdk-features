@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Verified+1: KAPIL SINGAL <ks220y@att.com>
+Code-Review+2: KAPIL SINGAL <ks220y@att.com>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Thu, 13 Aug 2020 12:30:18 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/111206
+Project: ccsdk/features
+Branch: refs/heads/master
