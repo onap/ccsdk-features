@@ -36,7 +36,7 @@
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-data-provider-setup</artifactId>
     <version>1.0.1-SNAPSHOT</version>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
     <licenses>
