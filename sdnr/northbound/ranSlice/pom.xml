@@ -3,10 +3,7 @@
   ~ ============LICENSE_START=======================================================
   ~ ONAP : ccsdk features
   ~ ================================================================================
-  ~ Copyright (C) 2018 highstreet technologies GmbH Intellectual Property.
-  ~ All rights reserved.
-  ~ ================================================================================
-  ~ Update Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
+  ~ Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
   ~ ================================================================================
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -34,18 +31,20 @@
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
-    <artifactId>sdnr-northbound</artifactId>
+    <artifactId>ranSlice</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>ccsdk-features :: ${project.artifactId}</name>
-    <description>SDN-R RAN, OOF PCI ANR POC, A1 Adapter, CMNotify</description>
+    <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
     <modules>
-        <module>oofpcipoc</module>
-        <module>a1Adapter</module>
-        <module>CMNotify</module>
-        <module>ranSlice</module>
-        <module>features</module>
+        <module>model</module>
+        <module>feature</module>
+        <module>provider</module>
+        <module>installer</module>
     </modules>
+
+    <properties>
+        <feature-name>ranSlice</feature-name>
+    </properties>
 </project>
