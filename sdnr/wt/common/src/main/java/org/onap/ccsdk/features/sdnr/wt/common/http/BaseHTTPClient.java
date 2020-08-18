@@ -107,7 +107,7 @@ public class BaseHTTPClient {
     }
 
     @Nonnull
-    protected BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
+    public BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
             throws IOException {
         return this.sendRequest(uri, method, body != null ? body.getBytes(CHARSET) : null, headers);
     }

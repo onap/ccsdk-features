@@ -24,27 +24,22 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 
-import java.io.IOException;
-
-import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
-import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MountpointStateProviderImpl implements AutoCloseable, IConfigChangedListener {
+public class MountpointStateProviderImpl implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MountpointStateProviderImpl.class);
     private static final String APPLICATION_NAME = "mountpoint-state-provider";
-    private static final String CONFIGURATIONFILE = "etc/mountpoint-state-provider.properties";
 
     private NetconfNodeStateService netconfNodeStateService;
-    private GeneralConfig generalConfig;
-    private boolean dmaapEnabled = false;
+    private NetconfNetworkElementService netconfNetworkElementService;
 
     private MountpointNodeConnectListenerImpl nodeConnectListener;
     private MountpointNodeStateListenerImpl nodeStateListener;
-    private MountpointStatePublisherMain mountpointStatePublisher;
+    private MountpointStatePublisher mountpointStatePublisher;
 
     public MountpointStateProviderImpl() {
         LOG.info("Creating provider class for {}", APPLICATION_NAME);
@@ -56,73 +51,41 @@ public class MountpointStateProviderImpl implements AutoCloseable, IConfigChange
         this.netconfNodeStateService = netconfNodeStateService;
     }
 
+    public void setNetconfNetworkElementService(NetconfNetworkElementService netconfNetworkElementService) {
+        this.netconfNetworkElementService = netconfNetworkElementService;
+    }
+
     public void init() {
         LOG.info("Init call for {}", APPLICATION_NAME);
-        ConfigurationFileRepresentation configFileRepresentation =
-                new ConfigurationFileRepresentation(CONFIGURATIONFILE);
-        configFileRepresentation.registerConfigChangedListener(this);
 
         nodeConnectListener = new MountpointNodeConnectListenerImpl(netconfNodeStateService);
         nodeStateListener = new MountpointNodeStateListenerImpl(netconfNodeStateService);
 
-        generalConfig = new GeneralConfig(configFileRepresentation);
-        if (generalConfig.getEnabled()) { //dmaapEnabled
-            startPublishing();
-        }
+        startPublishing();
     }
 
     /**
      * Reflect status for Unit Tests
-     * 
+     *
      * @return Text with status
      */
     public String isInitializationOk() {
         return "No implemented";
     }
 
-    @Override
-    public void onConfigChanged() {
-        LOG.info("Service configuration state changed. Enabled: {}", generalConfig.getEnabled());
-        boolean dmaapEnabledNewVal = generalConfig.getEnabled();
-
-        // DMaap disabled earlier (or during bundle startup) but enabled later, start publisher(s)
-        if (!dmaapEnabled && dmaapEnabledNewVal) {
-            LOG.info("DMaaP is enabled, starting Publisher");
-            startPublishing();
-        } else if (dmaapEnabled && !dmaapEnabledNewVal) {
-            // DMaap enabled earlier (or during bundle startup) but disabled later, stop publisher(s)
-            LOG.info("DMaaP is disabled, stop publisher");
-            stopPublishing();
-        }
-        dmaapEnabled = dmaapEnabledNewVal;
-    }
-
     public void startPublishing() {
-        mountpointStatePublisher = new MountpointStatePublisherMain(generalConfig);
-        mountpointStatePublisher.start();
+        mountpointStatePublisher = new MountpointStatePublisher(netconfNetworkElementService.getServiceProvider().getVESCollectorService());
+        Thread t = new Thread(mountpointStatePublisher);
+        t.start();
 
         nodeConnectListener.start(mountpointStatePublisher);
         nodeStateListener.start(mountpointStatePublisher);
     }
 
-    public void stopPublishing() {
-        try {
-            nodeConnectListener.stop();
-            nodeStateListener.stop();
-            mountpointStatePublisher.stop();
-        } catch (Exception e) {
-            LOG.error("Exception while stopping publisher ", e);
-        }
-    }
-
     @Override
     public void close() throws Exception {
         LOG.info("{} closing ...", this.getClass().getName());
-        try {
-            mountpointStatePublisher.stop();
-        } catch (IOException | InterruptedException e) {
-            LOG.error("Exception while stopping publisher ", e);
-        }
+        mountpointStatePublisher.stop();
         close(nodeConnectListener, nodeStateListener);
         LOG.info("{} closing done", APPLICATION_NAME);
     }

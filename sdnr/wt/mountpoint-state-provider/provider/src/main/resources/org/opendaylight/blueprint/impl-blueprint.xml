@@ -29,9 +29,14 @@
     <reference id="netconfNodeStateService"
                availability="mandatory" activation="eager"
                interface="org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService"/>
+               
+    <reference id="netconfNetworkElementService"
+               availability="mandatory" activation="eager"
+               interface="org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService"/>
 
     <bean id="provider" class="org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStateProviderImpl" init-method="init" destroy-method="close">
         <property name="netconfNodeStateService" ref="netconfNodeStateService"/>
+        <property name="netconfNetworkElementService" ref="netconfNetworkElementService"/>
     </bean>
 
 </blueprint>

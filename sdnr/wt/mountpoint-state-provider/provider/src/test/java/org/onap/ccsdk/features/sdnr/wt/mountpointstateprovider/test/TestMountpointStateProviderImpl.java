@@ -24,108 +24,46 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test;
 
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.FileNotFoundException;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStateProviderImpl;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TestMountpointStateProviderImpl {
-
-    private static Path KARAF_ETC = Paths.get("etc");
-    private static MountpointStateProviderImpl mountpointStateProvider;
-
     private static final Logger LOG = LoggerFactory.getLogger(TestMountpointStateProviderImpl.class);
+    private MountpointStateProviderImpl mountpointStateProvider;
 
 
+    @Test
+    public void before() throws InterruptedException, IOException {
+        NetconfNodeStateService netconfNodeStateService = mock(NetconfNodeStateService.class);
+        DeviceManagerServiceProvider serviceProvider = mock(DeviceManagerServiceProvider.class);
+        VESCollectorService vesCollectorService = mock(VESCollectorService.class);
+        NetconfNetworkElementService netconfNetworkElementService = mock(NetconfNetworkElementService.class);
 
-    @BeforeClass
-    public static void before() throws InterruptedException, IOException {
+        when(netconfNetworkElementService.getServiceProvider()).thenReturn(serviceProvider);
+        when(serviceProvider.getVESCollectorService()).thenReturn(vesCollectorService);
 
-        System.out.println("Logger: " + LOG.getClass().getName() + " " + LOG.getName());
-        // Call System property to get the classpath value
-        Path etc = KARAF_ETC;
-        delete(etc);
-
-        System.out.println("Create empty:" + etc.toString());
-        Files.createDirectories(etc);
-
-        // Create mocks
-
-        // start using blueprint interface
-        try {
-            mountpointStateProvider = new MountpointStateProviderImpl();
-
-            //mountpointStateProvider.init(); // Can't be tested as this invokes a thread. Mockito doesn't help either
-        } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            fail("Not initialized" + sw.toString());
-        }
-        System.out.println("Initialization status: " + mountpointStateProvider.isInitializationOk());
-        System.out.println("Initialization done");
+        mountpointStateProvider = new MountpointStateProviderImpl();
+        mountpointStateProvider.setNetconfNetworkElementService(netconfNetworkElementService);
+        mountpointStateProvider.setNetconfNodeStateService(netconfNodeStateService);
+        mountpointStateProvider.init();
     }
 
-    @AfterClass
-    public static void after() throws InterruptedException, IOException {
+    /*   @After
+    public void after() throws InterruptedException, IOException {
 
-        System.out.println("Start shutdown");
-        // close using blueprint interface
         try {
-            mountpointStateProvider.close();
+             mountpointStateProvider.close();
         } catch (Exception e) {
             System.out.println(e);
         }
-        delete(KARAF_ETC);
-
-    }
-
-    @Test
-    public void test1() {
-        System.out.println("Test1: slave mountpoint");
-        System.out.println("Initialization status: " + mountpointStateProvider.isInitializationOk());
-        System.out.println("Test2: Done");
-    }
-
-    // ********************* Private
-
-    private static void delete(Path etc) throws IOException {
-        if (Files.exists(etc)) {
-            System.out.println("Found and remove:" + etc.toString());
-            delete(etc.toFile());
-        }
-    }
-
-    private static void delete(File f) throws IOException {
-        if (f.isDirectory()) {
-            for (File c : f.listFiles()) {
-                delete(c);
-            }
-        }
-        if (!f.delete()) {
-            throw new FileNotFoundException("Failed to delete file: " + f);
-        }
-    }
-    /*	@Test
-    	public void testInit() {
-    
-    	}
-    
-    	@Test
-    	public void testOnConfigChanged() {
-    		//fail("Not yet implemented");
-    	}*/
-
+    }*/
 }

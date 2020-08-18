@@ -34,14 +34,14 @@ import org.slf4j.LoggerFactory;
 public class MountpointNodeConnectListenerImpl implements NetconfNodeConnectListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MountpointNodeConnectListenerImpl.class);
     private NetconfNodeStateService netconfNodeStateService;
-    private MountpointStatePublisherMain mountpointStatePublisher;
+    private MountpointStatePublisher mountpointStatePublisher;
     private ListenerRegistration<MountpointNodeConnectListenerImpl> registeredNodeConnectListener;
 
     public MountpointNodeConnectListenerImpl(NetconfNodeStateService netconfNodeStateService) {
         this.netconfNodeStateService = netconfNodeStateService;
     }
 
-    public void start(MountpointStatePublisherMain mountpointStatePublisher) {
+    public void start(MountpointStatePublisher mountpointStatePublisher) {
         this.mountpointStatePublisher = mountpointStatePublisher;
         registeredNodeConnectListener = netconfNodeStateService.registerNetconfNodeConnectListener(this);
     }

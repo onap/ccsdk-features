@@ -58,4 +58,8 @@ public interface DeviceManagerServiceProvider {
     /** @return Get configuration descriptor */
     @NonNull
     ConfigurationFileRepresentation getConfigurationFileRepresentation();
+
+    /** @return Get VES Collector Service for publishing VES messages to the VES Collector */
+    @NonNull
+    VESCollectorService getVESCollectorService();
 }

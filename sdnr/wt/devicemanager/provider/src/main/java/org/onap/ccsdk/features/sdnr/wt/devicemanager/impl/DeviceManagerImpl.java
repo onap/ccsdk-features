@@ -73,7 +73,9 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.MaintenanceService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.DevicemanagerNotificationDelayService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.VESCollectorClient;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPointService;
@@ -123,6 +125,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     private ConnectionStatusHousekeepingService housekeepingService;
     private NetconfNodeStateService netconfNodeStateService;
     private DataProvider dataProvider;
+    private VESCollectorClient vesCollectorClient;
 
     // Handler
     private DeviceManagerNetconfConnectHandler deviceManagerNetconfConnectHandler;
@@ -205,6 +208,8 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         this.dcaeProviderClient = new DcaeProviderClient(config, esConfig.getCluster(), this);
 
         this.aaiProviderClient = new AaiProviderClient(config, this);
+
+        this.vesCollectorClient = new VESCollectorClient(config);
         // EM
         String myDbKeyNameExtended = MYDBKEYNAMEBASE + "-" + esConfig.getCluster();
 
@@ -268,6 +273,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         close(archiveCleanService);
         close(housekeepingService);
         close(deviceManagerNetconfConnectHandler);
+        close(vesCollectorClient);
         LOG.info("DeviceManagerImpl closing done");
     }
 
@@ -350,7 +356,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
     /**
      * Used to close all Services, that should support AutoCloseable Pattern
-     * 
+     *
      * @param toClose
      */
     private void close(AutoCloseable... toCloseList) {
@@ -384,7 +390,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
     /**
      * Indication if init() of devicemanager successfully done.
-     * 
+     *
      * @return true if init() was sucessfull. False if not done or not successfull.
      */
     public boolean isDevicemanagerInitializationOk() {
@@ -393,7 +399,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
     /**
      * Get NE object. Used by DCAE Service
-     * 
+     *
      * @param mountpoint mount point name
      * @return null or NE specific data
      */
@@ -406,6 +412,11 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     @Override
     public void writeToEventLog(String objectId, String msg, String value) {
         this.odlEventListenerHandler.writeEventLog(objectId, msg, value);
+    }
+
+    @Override
+    public @NonNull VESCollectorService getVESCollectorService() {
+        return this.vesCollectorClient;
     }
 
 
