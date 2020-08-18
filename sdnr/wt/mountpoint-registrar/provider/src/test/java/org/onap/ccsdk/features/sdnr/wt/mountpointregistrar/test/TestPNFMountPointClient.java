@@ -52,7 +52,7 @@ public class TestPNFMountPointClient extends PNFMountPointClient {
     }
 
     @Override
-    protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
+    public @Nonnull BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
             throws IOException {
         System.out.println("In overridden sendRequest in TestPNFMountPointClient");
         return new BaseHTTPResponse(200, body);

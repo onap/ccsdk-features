@@ -21,17 +21,15 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import com.google.common.io.Files;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import org.junit.After;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
-import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.GeneralConfig;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointNodeStateListenerImpl;
-import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStatePublisherMain;
+import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStatePublisher;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.NetconfNodeMock;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.NetconfNodeStateServiceMock;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
@@ -39,37 +37,23 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 
 public class TestMountpointNodeStateListenerImpl {
 
-    // @formatter:off
-    private static final String TESTCONFIG_CONTENT =
-            "[general]\n"
-            + "dmaapEnabled=false\n"
-            + "TransportType=HTTPNOAUTH\n"
-            + "host=onap-dmap:3904\n"
-            + "topic=unauthenticated.SDNR_MOUNTPOINT_STATE_INFO\n"
-            + "contenttype=application/json\n"
-            + "timeout=20000\n"
-            + "limit=10000\n"
-            + "maxBatchSize=100\n"
-            + "maxAgeMs=250\n"
-            + "MessageSentThreadOccurance=50\n";
-    // @formatter:on
-    private final String fileName = "test2.properties";
-    private ConfigurationFileRepresentation globalCfg;
-
     NetconfNodeStateServiceMock netconfNodeStateServiceMock = new NetconfNodeStateServiceMock();
     MountpointNodeStateListenerImpl nodeStateListener =
             new MountpointNodeStateListenerImpl(netconfNodeStateServiceMock);
-    MountpointStatePublisherMain mountpointStatePublisher;
+    MountpointStatePublisher mountpointStatePublisher;
     NetconfNodeMock netconfNodeMock = new NetconfNodeMock();
     NetconfNode netconfNode = netconfNodeMock.getNetconfNode();
     NodeId nNodeId = new NodeId("nSky");
+    VESCollectorService vesCollectorService;
 
     @Before
-    public void initialize() throws IOException {
-        Files.asCharSink(new File(fileName), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
-        globalCfg = new ConfigurationFileRepresentation(fileName);
-        GeneralConfig cfg = new GeneralConfig(globalCfg);
-        mountpointStatePublisher = new MountpointStatePublisherMain(cfg);
+    public void initialize() {
+        DeviceManagerServiceProvider serviceProvider = mock(DeviceManagerServiceProvider.class);
+        vesCollectorService = mock(VESCollectorService.class);
+        NetconfNetworkElementService netconfNetworkElementService = mock(NetconfNetworkElementService.class);
+        when(netconfNetworkElementService.getServiceProvider()).thenReturn(serviceProvider);
+        when(serviceProvider.getVESCollectorService()).thenReturn(vesCollectorService);
+        mountpointStatePublisher = new MountpointStatePublisher(vesCollectorService);
         nodeStateListener.start(mountpointStatePublisher);
     }
 
@@ -90,16 +74,6 @@ public class TestMountpointNodeStateListenerImpl {
     @Test
     public void testOnRemoved() {
         nodeStateListener.onRemoved(nNodeId);
-    }
-
-    @After
-    public void after() {
-        File file = new File(fileName);
-        if (file.exists()) {
-            System.out.println("File exists, Deleting it");
-            file.delete();
-        }
-
     }
 
 }

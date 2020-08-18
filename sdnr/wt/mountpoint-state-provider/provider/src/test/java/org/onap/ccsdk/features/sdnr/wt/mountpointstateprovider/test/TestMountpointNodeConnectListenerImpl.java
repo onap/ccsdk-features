@@ -18,19 +18,19 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import com.google.common.io.Files;
-import java.io.File;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
-import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.GeneralConfig;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointNodeConnectListenerImpl;
-import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStatePublisherMain;
+import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStatePublisher;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.NetconfAccessorMock;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.NetconfNodeMock;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.NetconfNodeStateServiceMock;
@@ -40,39 +40,32 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 
 public class TestMountpointNodeConnectListenerImpl {
 
-    // @formatter:off
-    private static final String TESTCONFIG_CONTENT =
-            "[general]\n"
-            + "dmaapEnabled=false\n"
-            + "TransportType=HTTPNOAUTH\n"
-            + "host=onap-dmap:3904\n"
-            + "topic=unauthenticated.SDNR_MOUNTPOINT_STATE_INFO\n"
-            + "contenttype=application/json\n"
-            + "timeout=20000\n"
-            + "limit=10000\n"
-            + "maxBatchSize=100\n"
-            + "maxAgeMs=250\n"
-            + "MessageSentThreadOccurance=50\n";
-    // @formatter:on
-    private final String fileName = "test1.properties";
-    private ConfigurationFileRepresentation globalCfg;
-
-
-    NetconfNodeStateServiceMock netconfNodeStateServiceMock = new NetconfNodeStateServiceMock();
-    MountpointNodeConnectListenerImpl nodeConnectListener =
-            new MountpointNodeConnectListenerImpl(netconfNodeStateServiceMock);
-    MountpointStatePublisherMain mountpointStatePublisher;
-    NetconfNodeMock netconfNodeMock = new NetconfNodeMock();
-    NetconfNode netconfNode = netconfNodeMock.getNetconfNode();
-    NodeId nNodeId = new NodeId("nSky");
-    NetconfAccessor accessor = new NetconfAccessorMock(nNodeId, netconfNode);
+    DeviceManagerServiceProvider serviceProvider;
+    MountpointStatePublisher mountpointStatePublisher;
+    NetconfNodeStateServiceMock netconfNodeStateServiceMock;
+    MountpointNodeConnectListenerImpl nodeConnectListener;
+    NetconfNodeMock netconfNodeMock;
+    NetconfNode netconfNode;
+    NodeId nNodeId;
+    NetconfAccessor accessor;
+    VESCollectorService vesCollectorService;
 
     @Before
     public void initialize() throws IOException {
-        Files.asCharSink(new File(fileName), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
-        globalCfg = new ConfigurationFileRepresentation(fileName);
-        GeneralConfig cfg = new GeneralConfig(globalCfg);
-        mountpointStatePublisher = new MountpointStatePublisherMain(cfg);
+        serviceProvider = mock(DeviceManagerServiceProvider.class);
+        netconfNodeStateServiceMock = new NetconfNodeStateServiceMock();
+        netconfNodeMock = new NetconfNodeMock();
+        netconfNode = netconfNodeMock.getNetconfNode();
+        vesCollectorService = mock(VESCollectorService.class);
+        NetconfNetworkElementService netconfNetworkElementService = mock(NetconfNetworkElementService.class);
+        nNodeId = new NodeId("nSky");
+        accessor = new NetconfAccessorMock(nNodeId, netconfNode);
+
+        mountpointStatePublisher = new MountpointStatePublisher(vesCollectorService);
+        when(netconfNetworkElementService.getServiceProvider()).thenReturn(serviceProvider);
+        when(serviceProvider.getVESCollectorService()).thenReturn(vesCollectorService);
+
+        nodeConnectListener = new MountpointNodeConnectListenerImpl(netconfNodeStateServiceMock);
         nodeConnectListener.start(mountpointStatePublisher);
     }
 
@@ -90,18 +83,8 @@ public class TestMountpointNodeConnectListenerImpl {
 
     @Test
     public void testClose() throws Exception {
-        //assertEquals(MountpointStatePublisher.stateObjects.size(), 0);
+        assertEquals(mountpointStatePublisher.getStateObjects().size(), 0);
         nodeConnectListener.close();
-    }
-
-    @After
-    public void after() {
-        File file = new File(fileName);
-        if (file.exists()) {
-            System.out.println("File exists, Deleting it");
-            file.delete();
-        }
-
     }
 
 }
