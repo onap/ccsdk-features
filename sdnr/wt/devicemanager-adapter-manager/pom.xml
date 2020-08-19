@@ -34,27 +34,20 @@
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>sdnr-wt</artifactId>
+    <artifactId>sdnr-wt-devicemanager-adapter-manager-top</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
-    <description>SDN-R wireless transport micro-services</description>
 
     <modules>
-        <module>common</module>
-        <module>apigateway</module>
-        <module>websocketmanager2</module>
-        <module>helpserver</module>
-        <module>data-provider</module>
-        <module>netconfnode-state-service</module>
-        <module>mountpoint-state-provider</module>
-        <module>devicemanager</module>
-        <module>devicemanager-onf</module>
-        <module>devicemanager-openroadm</module>
-        <module>devicemanager-adapter-manager</module>
-        <module>mountpoint-registrar</module> 
-        <module>odlux</module> 
-        <module>featureaggregator</module> 
+        <module>model</module>
+        <module>provider</module>
+        <module>feature</module>
+        <module>installer</module>
     </modules>
+
+    <properties>
+        <feature-name>sdnr-wt-devicemanager-adapter-manager</feature-name>
+    </properties>
 </project>
