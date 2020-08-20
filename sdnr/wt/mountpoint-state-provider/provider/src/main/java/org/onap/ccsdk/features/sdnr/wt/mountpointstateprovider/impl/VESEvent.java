@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VESEvent {
-    public Map<String, Object> event = new HashMap<String, Object>();
+    private Map<String, Object> event = new HashMap<>();
 
     public void addEventObjects(Object eventObject) {
         if (eventObject instanceof VESCommonEventHeaderPOJO)

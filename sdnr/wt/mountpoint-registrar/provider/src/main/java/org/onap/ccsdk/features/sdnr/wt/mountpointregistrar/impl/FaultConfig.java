@@ -23,10 +23,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRep
 public class FaultConfig implements Configuration {
     private static final String SECTION_MARKER = "fault";
 
-    private static final String PROPERTY_KEY_CONSUMER_CLASS = "faultConsumerClass";
-    private static final String DEFAULT_VALUE_CONSUMER_CLASS =
-            "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer";
-
     public static final String PROPERTY_KEY_CONSUMER_TRANSPORTTYPE = "TransportType";
     private static final String DEFAULT_VALUE_CONSUMER_TRANSPORTTYPE = "HTTPNOAUTH";
 
@@ -85,8 +81,6 @@ public class FaultConfig implements Configuration {
     @Override
     public void defaults() {
 
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLASS,
-                DEFAULT_VALUE_CONSUMER_CLASS);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TRANSPORTTYPE,
                 DEFAULT_VALUE_CONSUMER_TRANSPORTTYPE);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PROTOCOL,
@@ -115,10 +109,6 @@ public class FaultConfig implements Configuration {
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT,
                 DEFAULT_VALUE_CONSUMER_CLIENT_CONNECTTIMEOUT);
 
-    }
-
-    public String getConsumerClass() {
-        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLASS);
     }
 
     public String getHostPort() {

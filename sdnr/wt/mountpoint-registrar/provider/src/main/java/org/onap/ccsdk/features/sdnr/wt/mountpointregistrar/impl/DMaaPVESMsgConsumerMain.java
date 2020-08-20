@@ -29,15 +29,18 @@ import org.slf4j.LoggerFactory;
 public class DMaaPVESMsgConsumerMain implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DMaaPVESMsgConsumerMain.class);
-    private static final String pnfRegClass =
+    private static final String _PNFREG_CLASS =
             "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer";
-    private static final String faultClass =
+    private static final String _FAULT_CLASS =
             "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer";
+    private static final String _PNFREG_DOMAIN = "pnfRegistration";
+    private static final String _FAULT_DOMAIN = "fault";
+
     boolean threadsRunning = false;
     List<DMaaPVESMsgConsumer> consumers = new LinkedList<>();
-    public PNFRegistrationConfig pnfRegistrationConfig;
-    public FaultConfig faultConfig;
-    public GeneralConfig generalConfig;
+    private PNFRegistrationConfig pnfRegistrationConfig;
+    private FaultConfig faultConfig;
+    private GeneralConfig generalConfig;
 
     public DMaaPVESMsgConsumerMain(Map<String, Configuration> configMap, GeneralConfig generalConfig) {
         this.generalConfig = generalConfig;
@@ -48,11 +51,11 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
         LOG.debug("In initialize method : Domain = {} and domainConfig = {}", domain, domainConfig);
         String consumerClass = null;
         Properties consumerProperties = new Properties();
-        if (domain.equalsIgnoreCase("pnfregistration")) {
+        if (domain.equalsIgnoreCase(_PNFREG_DOMAIN)) {
             this.pnfRegistrationConfig = (PNFRegistrationConfig) domainConfig;
 
-            consumerClass = pnfRegistrationConfig.getConsumerClass();
-            LOG.debug("Consumer class = " + consumerClass);
+            consumerClass = _PNFREG_CLASS;
+            LOG.debug("Consumer class = {}",consumerClass);
 
             consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_TRANSPORTTYPE,
                     pnfRegistrationConfig.getTransportType());
@@ -80,10 +83,10 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
                     pnfRegistrationConfig.getClientReadTimeout());
             consumerProperties.put(PNFRegistrationConfig.PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT,
                     pnfRegistrationConfig.getClientConnectTimeout());
-            threadsRunning = createConsumer("pnfRegistration", consumerProperties);
-        } else if (domain.equalsIgnoreCase("fault")) {
+            threadsRunning = createConsumer(_PNFREG_DOMAIN, consumerProperties);
+        } else if (domain.equalsIgnoreCase(_FAULT_DOMAIN)) {
             this.faultConfig = (FaultConfig) domainConfig;
-            consumerClass = faultConfig.getConsumerClass();
+            consumerClass = _FAULT_CLASS;
             LOG.debug("Consumer class = {}", consumerClass);
             consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_TRANSPORTTYPE, faultConfig.getTransportType());
             consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_HOST_PORT, faultConfig.getHostPort());
@@ -101,7 +104,7 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
                     faultConfig.getClientReadTimeout());
             consumerProperties.put(FaultConfig.PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT,
                     faultConfig.getClientConnectTimeout());
-            threadsRunning = createConsumer("fault", consumerProperties);
+            threadsRunning = createConsumer(_FAULT_DOMAIN, consumerProperties);
         }
     }
 
@@ -118,9 +121,9 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
     public boolean createConsumer(String consumerType, Properties properties) {
         DMaaPVESMsgConsumerImpl consumer = null;
 
-        if (consumerType.equalsIgnoreCase("pnfRegistration"))
+        if (consumerType.equalsIgnoreCase(_PNFREG_DOMAIN))
             consumer = new DMaaPPNFRegVESMsgConsumer(generalConfig);
-        else if (consumerType.equalsIgnoreCase("fault"))
+        else if (consumerType.equalsIgnoreCase(_FAULT_DOMAIN))
             consumer = new DMaaPFaultVESMsgConsumer(generalConfig);
 
         handleConsumer(consumer, properties, consumers);

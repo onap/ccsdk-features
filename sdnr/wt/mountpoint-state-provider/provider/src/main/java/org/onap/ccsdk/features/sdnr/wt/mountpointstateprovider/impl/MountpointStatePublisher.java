@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class MountpointStatePublisher implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MountpointStatePublisher.class);
-    private List<JSONObject> stateObjects = new LinkedList<JSONObject>();
+    private List<JSONObject> stateObjects = new LinkedList<>();
     private boolean publish = true;
     private int publishPause = 5000; // Default pause between fetch - 5 seconds
     private VESCollectorService vesCollectorService;
@@ -68,15 +68,14 @@ public class MountpointStatePublisher implements Runnable {
 
     public String createVESMessage(JSONObject msg, VESCollectorCfgService vesCfg) {
         MountpointStateVESMessageFormatter vesFormatter = new MountpointStateVESMessageFormatter(vesCfg);
-        String vesMsg = vesFormatter.createVESMessage(msg);
-        return vesMsg;
+        return vesFormatter.createVESMessage(msg);
     }
 
     @Override
     public void run() {
         while (publish) {
             try {
-                if (getStateObjects().size() > 0) {
+                if (!getStateObjects().isEmpty()) {
                     JSONObject obj = ((LinkedList<JSONObject>) getStateObjects()).removeFirst();
                     String vesMsg = createVESMessage(obj, vesCollectorService.getConfig());
                     this.vesCollectorService.publishVESMessage(vesMsg);

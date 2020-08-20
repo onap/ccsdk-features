@@ -46,12 +46,12 @@ public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener
     @Override
     public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
 
-        LOG.info("In onCreated of MountpointNodeStateListenerImpl - nNodeId = " + nNodeId.getValue() + " IP Address = "
-                + netconfNode.getHost().getIpAddress().getIpv4Address().toString());
+        LOG.info("In onCreated of MountpointNodeStateListenerImpl - nNodeId = {}, IP Address = {}",nNodeId.getValue(),
+                netconfNode.getHost().getIpAddress().getIpv4Address().toString());
         JSONObject obj = new JSONObject();
-        obj.put("NodeId", nNodeId.getValue());
-        obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
-        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+        obj.put(Constants.NODEID, nNodeId.getValue());
+        obj.put(Constants.NETCONFNODESTATE, netconfNode.getConnectionStatus().toString());
+        obj.put(Constants.TIMESTAMP, java.time.Clock.systemUTC().instant());
 
         mountpointStatePublisher.addToPublish(obj);
     }
@@ -59,12 +59,12 @@ public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener
     @Override
     public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
 
-        LOG.info("In onStateChange of MountpointNodeStateListenerImpl - nNodeId = " + nNodeId.getValue()
-                + " IP Address = " + netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
+        LOG.info("In onStateChange of MountpointNodeStateListenerImpl - nNodeId = {}, IP Address = {}",nNodeId.getValue(),
+                netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
         JSONObject obj = new JSONObject();
-        obj.put("NodeId", nNodeId.getValue());
-        obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
-        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+        obj.put(Constants.NODEID, nNodeId.getValue());
+        obj.put(Constants.NETCONFNODESTATE, netconfNode.getConnectionStatus().toString());
+        obj.put(Constants.TIMESTAMP, java.time.Clock.systemUTC().instant());
 
         mountpointStatePublisher.addToPublish(obj);
     }
@@ -72,11 +72,11 @@ public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener
     @Override
     public void onRemoved(NodeId nNodeId) {
 
-        LOG.info("In onRemoved of MountpointNodeStateListenerImpl - nNodeId = " + nNodeId);
+        LOG.info("In onRemoved of MountpointNodeStateListenerImpl - nNodeId = {}",nNodeId);
         JSONObject obj = new JSONObject();
-        obj.put("NodeId", nNodeId.getValue());
-        obj.put("NetConfNodeState", "Removed");
-        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+        obj.put(Constants.NODEID, nNodeId.getValue());
+        obj.put(Constants.NETCONFNODESTATE, "Removed");
+        obj.put(Constants.TIMESTAMP, java.time.Clock.systemUTC().instant());
 
         mountpointStatePublisher.addToPublish(obj);
     }

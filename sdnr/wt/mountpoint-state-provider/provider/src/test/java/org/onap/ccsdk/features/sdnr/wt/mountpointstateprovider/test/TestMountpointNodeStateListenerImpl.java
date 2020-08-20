@@ -74,6 +74,7 @@ public class TestMountpointNodeStateListenerImpl {
     @Test
     public void testOnRemoved() {
         nodeStateListener.onRemoved(nNodeId);
+        assertNotEquals(mountpointStatePublisher.getStateObjects().size(), 0);
     }
 
 }

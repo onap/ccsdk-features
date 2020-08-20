@@ -68,7 +68,7 @@ public class FaultNotificationClient extends BaseHTTPClient {
         message = updateFaultPayload(faultNodeId, faultCounter, faultOccurrenceTime, faultObjectId, faultReason,
                 faultSeverity);
 
-        LOG.debug("Payload after updating values is: " + message);
+        LOG.debug("Payload after updating values is: {}",message);
 
         return sendFaultRequest("POST", message) == 200;
 
@@ -88,7 +88,7 @@ public class FaultNotificationClient extends BaseHTTPClient {
 
 
     private int sendFaultRequest(String method, String message) {
-        LOG.debug("In sendFaultRequest - " + method + " " + message);
+        LOG.debug("In sendFaultRequest - {}-{}",method,message);
         BaseHTTPResponse response;
         try {
             String uri = FAULT_NOTIFICATION_URI;
@@ -96,7 +96,7 @@ public class FaultNotificationClient extends BaseHTTPClient {
             LOG.debug("finished with responsecode {}", response.code);
             return response.code;
         } catch (IOException e) {
-            LOG.warn("problem sending fault message {} : {}", e.getMessage());
+            LOG.warn("problem sending fault message {}", e.getMessage());
             return -1;
         }
     }

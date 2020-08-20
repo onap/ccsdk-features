@@ -102,8 +102,6 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
     @Override
     public void close() throws Exception {
         LOG.info("{} closing ...", this.getClass().getName());
-        //close(updateService, configService, mwtnService); issue#1
-        //close(updateService, mwtnService);
         LOG.info("{} closing done", APPLICATION_NAME);
     }
 

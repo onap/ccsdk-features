@@ -29,7 +29,6 @@ public class DMaaPFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(DMaaPFaultVESMsgConsumer.class);
 
-    //private static int faultCounter = 0;
     private static final String DEFAULT_SDNRUSER = "admin";
     private static final String DEFAULT_SDNRPASSWD = "admin";
 
@@ -46,6 +45,7 @@ public class DMaaPFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
         String faultObjectId;
         String faultReason;
         String faultSeverity;
+        String vesDomain;
         int faultSequence;
         ObjectMapper oMapper = new ObjectMapper();
         JsonNode dmaapMessageRootNode;
@@ -53,6 +53,11 @@ public class DMaaPFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
         LOG.info("Fault VES Message is - {}", msg);
         try {
             dmaapMessageRootNode = oMapper.readTree(msg);
+            vesDomain = dmaapMessageRootNode.at("/event/commonEventHeader/domain").textValue();
+            if (!vesDomain.equalsIgnoreCase("fault")) {
+                LOG.warn("Received {} domain VES Message in DMaaP Fault topic, ignoring it", vesDomain);
+                return;
+            }
             faultNodeId = dmaapMessageRootNode.at("/event/commonEventHeader/sourceName").textValue();
             faultOccurrenceTime =
                     dmaapMessageRootNode.at("/event/faultFields/alarmAdditionalInformation/eventTime").textValue();
@@ -60,7 +65,6 @@ public class DMaaPFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
             faultReason = dmaapMessageRootNode.at("/event/faultFields/specificProblem").textValue();
             faultSeverity = dmaapMessageRootNode.at("/event/faultFields/eventSeverity").textValue();
             faultSequence = dmaapMessageRootNode.at("/event/commonEventHeader/sequence").intValue();
-            //faultCounter++;
 
             if (faultSeverity.equalsIgnoreCase("critical")) {
                 faultSeverity = SeverityType.Critical.toString();

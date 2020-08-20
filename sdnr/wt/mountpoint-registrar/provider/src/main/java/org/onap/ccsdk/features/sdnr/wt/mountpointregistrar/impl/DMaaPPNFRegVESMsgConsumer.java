@@ -100,8 +100,14 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
             LOG.debug("Setting RESTConf Authorization values - {} : {}", sdnrUser, sdnrPasswd);
             mountpointClient.setAuthorization(sdnrUser, sdnrPasswd);
 
-            mountpointClient.pnfMountPointCreate(pnfId, pnfIPv4Address, pnfCommProtocol, pnfKeyId, pnfUsername,
-                    pnfPasswd, pnfCommPort);
+            if ((null != pnfId) && (null != pnfIPv4Address) && (null != pnfCommProtocol) && (null != pnfUsername)
+                    && (null != pnfCommPort)) {
+                mountpointClient.pnfMountPointCreate(pnfId, pnfIPv4Address, pnfCommProtocol, pnfKeyId, pnfUsername,
+                        pnfPasswd, pnfCommPort);
+            } else {
+                LOG.warn("One of the mandatory fields has a null value - pnfId = {} : pnfIPv4Address = {} : pnfCommProtocol = {} : pnfUsername {} : "
+                        + "pnfCommPort {}", pnfId, pnfIPv4Address, pnfCommProtocol, pnfUsername, pnfCommPort, "- not invoking mountpoint creation");
+            }
         } catch (IOException e) {
             LOG.info("Cannot parse json object, ignoring the received PNF Registration VES Message. Reason: {}",
                     e.getMessage());

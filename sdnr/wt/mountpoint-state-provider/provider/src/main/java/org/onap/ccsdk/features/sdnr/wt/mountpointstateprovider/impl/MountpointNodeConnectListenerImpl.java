@@ -51,13 +51,13 @@ public class MountpointNodeConnectListenerImpl implements NetconfNodeConnectList
         NodeId nNodeId = accessor.getNodeId();
         NetconfNode netconfNode = accessor.getNetconfNode();
 
-        LOG.debug("In onEnterConnected of MountpointNodeConnectListenerImpl - nNodeId = " + nNodeId.getValue()
-                + " IP Address = " + netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
+        LOG.debug("In onEnterConnected of MountpointNodeConnectListenerImpl - nNodeId = {}, IP Address = {}",nNodeId.getValue()
+                ,netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
 
         JSONObject obj = new JSONObject();
-        obj.put("NodeId", nNodeId.getValue());
-        obj.put("NetConfNodeState", netconfNode.getConnectionStatus().toString());
-        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+        obj.put(Constants.NODEID, nNodeId.getValue());
+        obj.put(Constants.NETCONFNODESTATE, netconfNode.getConnectionStatus().toString());
+        obj.put(Constants.TIMESTAMP, java.time.Clock.systemUTC().instant());
 
         mountpointStatePublisher.addToPublish(obj);
     }
@@ -65,12 +65,12 @@ public class MountpointNodeConnectListenerImpl implements NetconfNodeConnectList
     @Override
     public void onLeaveConnected(NodeId nNodeId, Optional<NetconfNode> optionalNetconfNode) {
 
-        LOG.debug("In onLeaveConnected of MountpointNodeConnectListenerImpl - nNodeId = " + nNodeId);
+        LOG.debug("In onLeaveConnected of MountpointNodeConnectListenerImpl - nNodeId = {}",nNodeId);
 
         JSONObject obj = new JSONObject();
-        obj.put("NodeId", nNodeId.getValue());
-        obj.put("NetConfNodeState", "Unmounted");
-        obj.put("TimeStamp", java.time.Clock.systemUTC().instant());
+        obj.put(Constants.NODEID, nNodeId.getValue());
+        obj.put(Constants.NETCONFNODESTATE, "Unmounted");
+        obj.put(Constants.TIMESTAMP, java.time.Clock.systemUTC().instant());
 
         mountpointStatePublisher.addToPublish(obj);
     }
