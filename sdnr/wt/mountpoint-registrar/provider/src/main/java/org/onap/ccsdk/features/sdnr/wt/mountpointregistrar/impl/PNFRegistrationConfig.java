@@ -24,10 +24,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRep
 public class PNFRegistrationConfig implements Configuration {
     private static final String SECTION_MARKER = "pnfRegistration";
 
-    private static final String PROPERTY_KEY_CONSUMER_CLASS = "pnfRegConsumerClass";
-    private static final String DEFAULT_VALUE_CONSUMER_CLASS =
-            "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer";
-
     public static final String PROPERTY_KEY_CONSUMER_TRANSPORTTYPE = "TransportType";
     private static final String DEFAULT_VALUE_CONSUMER_TRANSPORTTYPE = "HTTPNOAUTH";
 
@@ -86,8 +82,6 @@ public class PNFRegistrationConfig implements Configuration {
     @Override
     public void defaults() {
 
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLASS,
-                DEFAULT_VALUE_CONSUMER_CLASS);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_TRANSPORTTYPE,
                 DEFAULT_VALUE_CONSUMER_TRANSPORTTYPE);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_PROTOCOL,
@@ -115,10 +109,6 @@ public class PNFRegistrationConfig implements Configuration {
                 DEFAULT_VALUE_CONSUMER_CLIENT_READTIMEOUT);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT,
                 DEFAULT_VALUE_CONSUMER_CLIENT_CONNECTTIMEOUT);
-    }
-
-    public String getConsumerClass() {
-        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLASS);
     }
 
     public String getHostPort() {

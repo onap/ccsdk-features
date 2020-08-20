@@ -32,7 +32,6 @@ public class PNFRegistrationConfigTest {
 
     // @formatter:off
     private static final String TESTCONFIG_CONTENT = "[pnfRegistration]\n"
-            + "pnfRegConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer\n"
             + "TransportType=HTTPNOAUTH\n"
             + "Protocol=http\n"
             + "username=username\n"
@@ -59,8 +58,6 @@ public class PNFRegistrationConfigTest {
             cfg = new ConfigurationFileRepresentation(configFile);
             PNFRegistrationConfig pnfCfg = new PNFRegistrationConfig(cfg);
             assertEquals("pnfRegistration", pnfCfg.getSectionName());
-            assertEquals("org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer",
-                    pnfCfg.getConsumerClass());
             assertEquals("HTTPNOAUTH", pnfCfg.getTransportType());
             assertEquals("onap-dmap:3904", pnfCfg.getHostPort());
             assertEquals("unauthenticated.VES_PNFREG_OUTPUT", pnfCfg.getTopic());

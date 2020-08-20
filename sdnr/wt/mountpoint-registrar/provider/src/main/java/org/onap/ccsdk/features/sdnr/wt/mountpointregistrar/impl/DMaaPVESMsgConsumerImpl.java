@@ -19,13 +19,11 @@
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 
 import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.onap.dmaap.mr.client.MRClientFactory;
 import org.onap.dmaap.mr.client.MRConsumer;
 import org.onap.dmaap.mr.client.response.MRConsumerResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
 
@@ -34,7 +32,6 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
     private final String name = this.getClass().getSimpleName();
     private Properties properties = null;
     private MRConsumer consumer = null;
-    private MRConsumerResponse consumerResponse = null;
     private boolean running = false;
     private boolean ready = false;
     private int fetchPause = 5000; // Default pause between fetch - 5 seconds
@@ -45,7 +42,7 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
     }
 
     /*
-     * Thread to fetch messages from the DMaaP topic. Waits for the messages to arrive on the topic until a certain timeout and returns. 
+     * Thread to fetch messages from the DMaaP topic. Waits for the messages to arrive on the topic until a certain timeout and returns.
      * If no data arrives on the topic, sleeps for a certain time period before checking again
      */
     @Override
@@ -56,16 +53,17 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
             while (running) {
                 try {
                     boolean noData = true;
+                    MRConsumerResponse consumerResponse = null;
                     consumerResponse = consumer.fetchWithReturnConsumerResponse(timeout, -1);
                     for (String msg : consumerResponse.getActualMessages()) {
                         noData = false;
-                        LOG.debug(name + " received ActualMessage from DMaaP VES Message topic:\n" + msg);
+                        LOG.debug("{} received ActualMessage from DMaaP VES Message topic {}", name,msg);
                         processMsg(msg);
                     }
 
                     if (noData) {
-                        LOG.debug(name + " received ResponseCode: " + consumerResponse.getResponseCode());
-                        LOG.debug(name + " received ResponseMessage: " + consumerResponse.getResponseMessage());
+                        LOG.debug("{} received ResponseCode: {}", name, consumerResponse.getResponseCode());
+                        LOG.debug("{} received ResponseMessage: {}", name, consumerResponse.getResponseMessage());
                         if ((consumerResponse.getResponseCode() == null)
                                 && (consumerResponse.getResponseMessage().contains("SocketTimeoutException"))) {
                             LOG.warn("Client timeout while waiting for response from Server {}",
@@ -82,7 +80,7 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
     }
 
     /*
-     * Create a consumer by specifying  properties containing information such as topic name, timeout, URL etc 
+     * Create a consumer by specifying  properties containing information such as topic name, timeout, URL etc
      */
     @Override
     public void init(Properties properties) {
@@ -90,23 +88,23 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
         try {
 
             String timeoutStr = properties.getProperty("timeout");
-            LOG.debug("timeoutStr: " + timeoutStr);
+            LOG.debug("timeoutStr: {}", timeoutStr);
 
             if ((timeoutStr != null) && (timeoutStr.length() > 0)) {
                 timeout = parseTimeOutValue(timeoutStr);
             }
 
             String fetchPauseStr = properties.getProperty("fetchPause");
-            LOG.debug("fetchPause(Str): " + fetchPauseStr);
+            LOG.debug("fetchPause(Str): {}",fetchPauseStr);
             if ((fetchPauseStr != null) && (fetchPauseStr.length() > 0)) {
                 fetchPause = parseFetchPause(fetchPauseStr);
             }
-            LOG.debug("fetchPause: " + fetchPause);
+            LOG.debug("fetchPause: {} ",fetchPause);
 
             this.consumer = MRClientFactory.createConsumer(properties);
             ready = true;
         } catch (Exception e) {
-            LOG.error("Error initializing DMaaP VES Message consumer from file " + properties, e);
+            LOG.error("Error initializing DMaaP VES Message consumer from file {} {}",properties, e);
         }
     }
 
@@ -114,7 +112,7 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
         try {
             return Integer.parseInt(timeoutStr);
         } catch (NumberFormatException e) {
-            LOG.error("Non-numeric value specified for timeout (" + timeoutStr + ")");
+            LOG.error("Non-numeric value specified for timeout ({})",timeoutStr);
         }
         return timeout;
     }
@@ -123,14 +121,14 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
         try {
             return Integer.parseInt(fetchPauseStr);
         } catch (NumberFormatException e) {
-            LOG.error("Non-numeric value specified for fetchPause (" + fetchPauseStr + ")");
+            LOG.error("Non-numeric value specified for fetchPause ({})",fetchPauseStr);
         }
         return fetchPause;
     }
 
     private void pauseThread() throws InterruptedException {
         if (fetchPause > 0) {
-            LOG.debug(String.format("No data received from fetch.  Pausing %d ms before retry", fetchPause));
+            LOG.debug("No data received from fetch.  Pausing {} ms before retry", fetchPause);
             Thread.sleep(fetchPause);
         } else {
             LOG.debug("No data received from fetch.  No fetch pause specified - retrying immediately");
@@ -156,6 +154,7 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
         running = false;
     }
 
-    public abstract void processMsg(String msg) throws Exception;
+    /*@Override
+    public abstract void processMsg(String msg) throws Exception;*/
 
 }

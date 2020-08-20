@@ -32,7 +32,6 @@ public class TestFaultConfig {
 
     // @formatter:off
     private static final String TESTCONFIG_CONTENT = "[fault]\n"
-            + "faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer\n"
             + "TransportType=HTTPNOAUTH\n"
             + "Protocol=http\n"
             + "username=username\n"
@@ -60,8 +59,6 @@ public class TestFaultConfig {
             cfg = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
             FaultConfig faultCfg = new FaultConfig(cfg);
             assertEquals("fault", faultCfg.getSectionName());
-            assertEquals("org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer",
-                    faultCfg.getConsumerClass());
             assertEquals("HTTPNOAUTH", faultCfg.getTransportType());
             assertEquals("onap-dmap:3904", faultCfg.getHostPort());
             assertEquals("unauthenticated.SEC_FAULT_OUTPUT", faultCfg.getTopic());

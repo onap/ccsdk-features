@@ -32,7 +32,7 @@ public class GeneralConfig implements Configuration {
 
     private static final String SECTION_MARKER = "general";
 
-    private static final String PROPERTY_KEY_ENABLED = "dmaapEnabled"; //"enabled";
+    private static final String PROPERTY_KEY_ENABLED = "dmaapEnabled";
 
     private static final String PROPERTY_KEY_USER = "sdnrUser";
     private static final String DEFAULT_VALUE_USER = "${SDNRUSERNAME}";
@@ -53,8 +53,7 @@ public class GeneralConfig implements Configuration {
     }
 
     public Boolean getEnabled() {
-        Boolean enabled = configuration.getPropertyBoolean(SECTION_MARKER, PROPERTY_KEY_ENABLED);
-        return enabled;
+        return configuration.getPropertyBoolean(SECTION_MARKER, PROPERTY_KEY_ENABLED);
     }
 
     public String getBaseUrl() {

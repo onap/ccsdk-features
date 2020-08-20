@@ -42,7 +42,7 @@ public class TestMountpointStateProviderImpl {
 
 
     @Test
-    public void before() throws InterruptedException, IOException {
+    public void test() throws InterruptedException, IOException {
         NetconfNodeStateService netconfNodeStateService = mock(NetconfNodeStateService.class);
         DeviceManagerServiceProvider serviceProvider = mock(DeviceManagerServiceProvider.class);
         VESCollectorService vesCollectorService = mock(VESCollectorService.class);
@@ -57,13 +57,4 @@ public class TestMountpointStateProviderImpl {
         mountpointStateProvider.init();
     }
 
-    /*   @After
-    public void after() throws InterruptedException, IOException {
-
-        try {
-             mountpointStateProvider.close();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }*/
 }

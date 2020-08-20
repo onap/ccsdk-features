@@ -31,9 +31,6 @@ import org.slf4j.LoggerFactory;
 
 public class MountpointStateVESMessageFormatter {
     private static final Logger LOG = LoggerFactory.getLogger(MountpointStateVESMessageFormatter.class);
-    private static final String VES_DOMAIN = "notification";
-    private static final String VES_PRIORITY = "Normal";
-    private static final String VES_CHANGETYPE = "ConnectionState";
 
     private VESCollectorCfgService vesCfg;
     static long sequenceNo = 0;
@@ -42,10 +39,20 @@ public class MountpointStateVESMessageFormatter {
         this.vesCfg = vesCfg;
     }
 
-    public String createVESMessage(JSONObject obj) {
-        LOG.debug("JSON Object to format to VES is - {}", obj.toString());
-        String vesMsg = "{}";
+    private static void incrSequenceNo() {
         sequenceNo++;
+    }
+
+    private long getSequenceNo() {
+        return sequenceNo;
+    }
+
+    public String createVESMessage(JSONObject obj) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("JSON Object to format to VES is - {0}", obj);
+        }
+        String vesMsg = "{}";
+        MountpointStateVESMessageFormatter.incrSequenceNo();
 
         VESCommonEventHeaderPOJO vesCommonEventHeader = createVESCommonEventHeader(obj);
         VESNotificationFieldsPOJO vesNotificationFields = createVESNotificationFields(obj);
@@ -59,7 +66,7 @@ public class MountpointStateVESMessageFormatter {
             vesMsg = objMapper.writeValueAsString(vesEvent);
             LOG.debug("VES message to be published - {}", vesMsg);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOG.warn("Exception {} while processing JSON Message - {}", e, obj);
         }
 
         return vesMsg;
@@ -69,9 +76,9 @@ public class MountpointStateVESMessageFormatter {
     private VESNotificationFieldsPOJO createVESNotificationFields(JSONObject obj) {
         VESNotificationFieldsPOJO vesNotificationFields = new VESNotificationFieldsPOJO();
 
-        vesNotificationFields.setChangeIdentifier(obj.getString("NodeId"));
-        vesNotificationFields.setChangeType(VES_CHANGETYPE);
-        vesNotificationFields.setNewState(obj.getString("NetConfNodeState"));
+        vesNotificationFields.setChangeIdentifier(obj.getString(Constants.NODEID));
+        vesNotificationFields.setChangeType(Constants.VES_CHANGETYPE);
+        vesNotificationFields.setNewState(obj.getString(Constants.NETCONFNODESTATE));
 
         return vesNotificationFields;
     }
@@ -79,17 +86,17 @@ public class MountpointStateVESMessageFormatter {
     private VESCommonEventHeaderPOJO createVESCommonEventHeader(JSONObject obj) {
         VESCommonEventHeaderPOJO vesCommonEventHeader = new VESCommonEventHeaderPOJO();
 
-        vesCommonEventHeader.setDomain(VES_DOMAIN);
+        vesCommonEventHeader.setDomain(Constants.VES_DOMAIN);
         vesCommonEventHeader
-                .setEventId(obj.getString("NodeId") + "_" + obj.getString("NetConfNodeState") + "_" + sequenceNo);
+                .setEventId(obj.getString(Constants.NODEID) + "_" + obj.getString(Constants.NETCONFNODESTATE) + "_" + getSequenceNo());
         vesCommonEventHeader
-                .setEventName(obj.getString("NodeId") + "_" + obj.getString("NetConfNodeState") + "_" + sequenceNo);
-        vesCommonEventHeader.setSourceName(obj.getString("NodeId"));
-        vesCommonEventHeader.setPriority(VES_PRIORITY);
+                .setEventName(obj.getString(Constants.NODEID) + "_" + obj.getString(Constants.NETCONFNODESTATE) + "_" + getSequenceNo());
+        vesCommonEventHeader.setSourceName(obj.getString(Constants.NODEID));
+        vesCommonEventHeader.setPriority(Constants.VES_PRIORITY);
         vesCommonEventHeader.setReportingEntityName(this.vesCfg.getReportingEntityName());
-        vesCommonEventHeader.setSequence(sequenceNo);
+        vesCommonEventHeader.setSequence(getSequenceNo());
 
-        Instant time = (Instant) obj.get("TimeStamp");
+        Instant time = (Instant) obj.get(Constants.TIMESTAMP);
         vesCommonEventHeader.setLastEpochMicrosec(time.toEpochMilli() * 100);
         vesCommonEventHeader.setStartEpochMicrosec(time.toEpochMilli() * 100);
 

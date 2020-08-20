@@ -21,15 +21,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @JsonPropertyOrder({"arrayOfNamedHashMap", "changeContact", "changeIdentifier", "changeType", "newState", "oldState", "notificationFieldsVersion"})
 public class VESNotificationFieldsPOJO {
 
-    private ArrayList<HashMap<String, Object>> arrayOfNamedHashMap = new ArrayList<HashMap<String, Object>>();
+    private List<HashMap<String, Object>> arrayOfNamedHashMap = new ArrayList<>();
     @JsonIgnore
-    private HashMap<String, Object> namedHashMap = new HashMap<String, Object>();
+    private Map<String, Object> namedHashMap = new HashMap<>();
     @JsonIgnore
-    private HashMap<String, String> hashMap = new HashMap<String, String>();
+    private Map<String, String> hashMap = new HashMap<>();
     @JsonIgnore
     private String changeContact = "";
     private String changeIdentifier = "";
@@ -42,11 +44,11 @@ public class VESNotificationFieldsPOJO {
     private String stateInterface = "";
     private String notificationFieldsVersion = "2.0";
 
-    public ArrayList<HashMap<String, Object>> getArrayOfNamedHashMap() {
+    public List<HashMap<String, Object>> getArrayOfNamedHashMap() {
         return arrayOfNamedHashMap;
     }
 
-    public void setArrayOfNamedHashMap(ArrayList<HashMap<String, Object>> arrayOfNamedHashMap) {
+    public void setArrayOfNamedHashMap(List<HashMap<String, Object>> arrayOfNamedHashMap) {
         this.arrayOfNamedHashMap = arrayOfNamedHashMap;
     }
 
