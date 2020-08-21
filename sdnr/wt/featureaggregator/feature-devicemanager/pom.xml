@@ -92,6 +92,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-devicemanager-onf14-feature</artifactId>
+            <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-mountpoint-registrar-feature</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
@@ -100,6 +107,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-mountpoint-state-provider-feature</artifactId>
+            <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-devicemanager-adapter-manager-feature</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
