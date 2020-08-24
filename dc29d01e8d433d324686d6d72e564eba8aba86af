@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a3c2b437_d71c2958",
+        "filename": "sdnr/wt/devicemanager-onf14/feature/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 6580
+      },
+      "writtenOn": "2020-08-24T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "42283088_a7709c14",
+      "range": {
+        "startLine": 6,
+        "startChar": 18,
+        "endLine": 6,
+        "endChar": 22
+      },
+      "revId": "dc29d01e8d433d324686d6d72e564eba8aba86af",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0ea251cd_797b63f7",
         "filename": "sdnr/wt/devicemanager-onf14/feature/pom.xml",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "960ba0c3_01dc9c39",
+        "filename": "sdnr/wt/devicemanager-onf14/feature/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 6580
+      },
+      "writtenOn": "2020-08-24T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0ea251cd_797b63f7",
+      "range": {
+        "startLine": 9,
+        "startChar": 2,
+        "endLine": 10,
+        "endChar": 1
+      },
+      "revId": "dc29d01e8d433d324686d6d72e564eba8aba86af",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6f0f05c6_e14bbe70",
         "filename": "sdnr/wt/devicemanager-onf14/provider/copyright",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "dc29d01e8d433d324686d6d72e564eba8aba86af",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f8f0fe3_8dd315af",
+        "filename": "sdnr/wt/devicemanager-onf14/provider/copyright",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 6580
+      },
+      "writtenOn": "2020-08-24T08:47:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6f0f05c6_e14bbe70",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 3
+      },
+      "revId": "dc29d01e8d433d324686d6d72e564eba8aba86af",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
