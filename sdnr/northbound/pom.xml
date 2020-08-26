@@ -43,7 +43,6 @@
 
     <modules>
         <module>oofpcipoc</module>
-        <module>a1Adapter</module>
         <module>CMNotify</module>
         <module>ranSlice</module>
         <module>features</module>
