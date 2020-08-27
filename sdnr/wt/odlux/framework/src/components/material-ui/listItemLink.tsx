@@ -50,7 +50,7 @@ export const ListItemLink = withStyles(styles)((props: IListItemLinkProps) => {
             : null
           }
         { typeof Primary === 'string'
-          ? <ListItemText primary={ Primary } style={{ padding: 0 }} /> 
+          ? <ListItemText aria-label={"link-to-"+Primary.toLowerCase()} primary={ Primary } style={{ padding: 0 }} /> 
           : <Primary />
           }
         </ListItem>

@@ -24,38 +24,59 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { InputProps } from "@material-ui/core/Input";
 
 const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        iconDark: {
-            color: '#ff8800'
-        },
-        iconLight: {
-            color: 'orange'
-        },
-        padding: {
-            paddingLeft: 10,
-            paddingRight: 10
-        },
-    }),
+  createStyles({
+    iconDark: {
+      color: '#ff8800'
+    },
+    iconLight: {
+      color: 'orange'
+    },
+    padding: {
+      paddingLeft: 10,
+      paddingRight: 10
+    },
+  }),
 );
 
-type ifwhenProps = { element: ViewElementBase, id: any, label: any, style: any, helperText: string, error: boolean, toogleTooltip(value: boolean): void, [x: string]: any };
+type IfwhenProps = InputProps & {
+  label: string;
+  element: ViewElementBase;
+  helperText: string;
+  error: boolean;
+  onChangeTooltipVisuability(value: boolean): void;
+};
 
-export const IfWhenTextInput = (props: ifwhenProps) => {
+export const IfWhenTextInput = (props: IfwhenProps) => {
 
-    const { element, toogleTooltip, id, label, helperText: errorText, error, style, ...otherProps } = props;
-    const classes = useStyles();
+  const { element, onChangeTooltipVisuability: toogleTooltip, id, label, helperText: errorText, error, style, ...otherProps } = props;
+  const classes = useStyles();
 
 
-    const ifFeature = element.ifFeature ? <Tooltip onMouseMove={e => props.toogleTooltip(false)} onMouseOut={e => props.toogleTooltip(true)} title={element.ifFeature}><InputAdornment position="start"><FontAwesomeIcon icon={faAdjust} className={classes.iconDark}></FontAwesomeIcon></InputAdornment></Tooltip> : null;
-    const whenFeature = element.when ? (<Tooltip className={classes.padding} onMouseMove={e => props.toogleTooltip(false)} onMouseOut={e => props.toogleTooltip(true)} title={element.when}>
-        <InputAdornment className={classes.padding} position="end"><FontAwesomeIcon icon={faAdjust} className={classes.iconLight}></FontAwesomeIcon></InputAdornment></Tooltip>) : null;
+  const ifFeature = element.ifFeature
+    ? (
+        <Tooltip onMouseMove={e => props.onChangeTooltipVisuability(false)} onMouseOut={e => props.onChangeTooltipVisuability(true)} title={element.ifFeature}>
+          <InputAdornment position="start">
+            <FontAwesomeIcon icon={faAdjust} className={classes.iconDark} />
+          </InputAdornment>
+        </Tooltip>
+      )
+    : null;
 
-    return (
-        <FormControl error={error} style={style}>
-            <InputLabel htmlFor={id} >{label}</InputLabel>
-            <Input  {...otherProps} id={id} endAdornment={<div>{ifFeature}{whenFeature}</div>} />
-            <FormHelperText>{errorText}</FormHelperText>
-        </FormControl>
+  const whenFeature = element.when
+    ? (
+        <Tooltip className={classes.padding} onMouseMove={() => props.onChangeTooltipVisuability(false)} onMouseOut={() => props.onChangeTooltipVisuability(true)} title={element.when}>
+          <InputAdornment className={classes.padding} position="end">
+            <FontAwesomeIcon icon={faAdjust} className={classes.iconLight}/>
+          </InputAdornment>
+        </Tooltip>
+      ) 
+    : null;
 
-    );
+  return (
+    <FormControl error={error} style={style}>
+      <InputLabel htmlFor={id} >{label}</InputLabel>
+      <Input id={id} endAdornment={<div>{ifFeature}{whenFeature}</div>} {...otherProps}  />
+      <FormHelperText>{errorText}</FormHelperText>
+    </FormControl>
+  );
 }

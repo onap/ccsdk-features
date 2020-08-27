@@ -40,11 +40,23 @@ class AboutComponent extends React.Component<any, AboutState> {
     this.textarea = React.createRef();
     this.loadAboutContent();
   }
+  private getMarkOdluxVersionMarkdownTable(data:{version:string,build:string}|null|undefined):string{
+    if(!data) {
+      return "";
+    }
+    return `| | |\n| --- | --- |\n| Version | ${data.version} |\n| Build timestamp | ${data.build}|`
+  }
   private loadAboutContent(): void {
-    requestRestExt<string>('/about').then((response) => {
+    const baseUri = window.location.pathname.substring(0,window.location.pathname.lastIndexOf("/")+1);
+    const p1 = requestRestExt<string>('/about');
+    const p2 = requestRestExt<{version:string,build:string}>(`${baseUri}version.json`);
+    Promise.all([p1,p2]).then((responses) => {
+      const response = responses[0];
+      const response2 = responses[1];    
       const content = response.status == 200 ? response.data : `${response.status} ${response.message}` || "Server error";
+      const content2 = `\n## ODLUX Version Info\n`+(response2.status == 200 ? this.getMarkOdluxVersionMarkdownTable(response2.data) : `${response2.status} ${response2.message}` || "ODLUX Server error");
       const loadedSucessfully = response.status == 200 ? true : false;
-      this.setState({ content: content || null, isContentLoadedSucessfully: loadedSucessfully });
+      this.setState({ content: (content + content2) || null, isContentLoadedSucessfully: loadedSucessfully });
     }).catch((error) => {
       this.setState({ content: error })
     })

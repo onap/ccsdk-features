@@ -120,6 +120,11 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
     }
   })
 
+  React.useEffect(()=>{
+    // trigger a resize if menu changed in case elements have to re-arrange
+    window.dispatchEvent(new Event('menu-resized'));
+  }, [isOpen])
+
   return (
     <Drawer
       variant="permanent"

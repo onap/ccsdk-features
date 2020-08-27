@@ -234,7 +234,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                       }}
                       role="checkbox"
                       aria-checked={isSelected}
-                      aria-label={`${(this.props.tableId ? this.props.tableId : 'table')}-row-${(index + 1)}`}
+                      aria-label={`${(this.props.tableId ? this.props.tableId : 'table')}-row`}
                       tabIndex={-1}
                       key={entryId}
                       selected={isSelected}
@@ -284,10 +284,10 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
           rowsPerPage={rowsPerPage}
           page={page}
           backIconButtonProps={{
-            'aria-label': 'Previous Page',
+            'aria-label': 'previous-page',
           }}
           nextIconButtonProps={{
-            'aria-label': 'Next Page',
+            'aria-label': 'next-page',
           }}
           onChangePage={this.onHandleChangePage}
           onChangeRowsPerPage={this.onHandleChangeRowsPerPage}

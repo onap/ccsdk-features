@@ -101,8 +101,8 @@ class TitleBarComponent extends React.Component<TitleBarProps, { anchorEl: HTMLE
     // create notificationInfo element
     const notificationInfo = state.framework.applicationState.isWebsocketAvailable != undefined ?
       (state.framework.applicationState.isWebsocketAvailable ?
-        <Typography variant="body1" className={classes.notificationInfo}>Notifications <FontAwesomeIcon className={classes.connected} icon={faDotCircle} />  |</Typography> : <Typography variant="body1" className={classes.notificationInfo}>Notifications <FontAwesomeIcon className={classes.notConnected} icon={faBan} /> |</Typography>)
-      : <Typography variant="body1" className={classes.notificationInfo}>Notifications N/A |</Typography>;
+        <Typography aria-label="notifications-are-active" variant="body1" className={classes.notificationInfo}>Notifications <FontAwesomeIcon className={classes.connected} icon={faDotCircle} />  |</Typography> : <Typography aria-label="notifications-are-inactive" variant="body1" className={classes.notificationInfo}>Notifications <FontAwesomeIcon className={classes.notConnected} icon={faBan} /> |</Typography>)
+      : <Typography variant="body1" aria-label="notifications-are-not-available" className={classes.notificationInfo}>Notifications N/A |</Typography>;
 
 
     // add notificationInfo element before help

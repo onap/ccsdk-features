@@ -171,7 +171,11 @@ module.exports = (env) => {
           new webpack.WatchIgnorePlugin([
             /css\.d\.ts$/,
             /less\.d\.ts$/
-          ])
+          ]),
+          new CopyWebpackPlugin([{
+            from: './assets/version.json',
+            to: './version.json'
+          }])
         ]
     ],
 
@@ -207,6 +211,10 @@ module.exports = (env) => {
           secure: false
         },
         "/help/": {
+          target: "http://10.20.6.29:48181",
+          secure: false
+        },
+        "/about": {
           target: "http://10.20.6.29:48181",
           secure: false
         },

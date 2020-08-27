@@ -284,8 +284,12 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
   private renderUIElement = (uiElement: ViewElement, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
     const isKey = (uiElement.label === keyProperty);
     const canEdit = editMode && (isNew || (uiElement.config && !isKey));
-    if (isViewElementEmpty(uiElement)) {
+    
+    // do not show elements w/o any value from the backend
+    if (viewData[uiElement.id] == null && !editMode) {
       return null;
+    } else  if (isViewElementEmpty(uiElement)) {
+      return null;  
     } else if (isViewElementSelection(uiElement)) {
 
       return <UiElementSelection
@@ -300,7 +304,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     } else if (isViewElementBoolean(uiElement)) {
       return <UiElementBoolean
         key={uiElement.id}
-        inputValue={viewData[uiElement.id] || ''}
+        inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
         value={uiElement}
         readOnly={!canEdit}
         disabled={editMode && !canEdit}
@@ -309,7 +313,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     } else if (isViewElementString(uiElement)) {
       return <UiElementString
         key={uiElement.id}
-        inputValue={viewData[uiElement.id] || ''}
+        inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
         value={uiElement}
         isKey={isKey}
         readOnly={!canEdit}

@@ -74,11 +74,11 @@ class EnhancedTableFilterComponent extends React.Component<IEnhancedTableFilterC
                 ? null
                 : (col.type === ColumnType.boolean)
                   ? <Select className={classes.input} aria-label={col.title ? (col.title as string).toLowerCase() + ' filter' : `${ind + 1}-filter`} value={filter[col.property] !== undefined ? filter[col.property] : ''} onChange={this.createFilterHandler(col.property)} inputProps={{ name: `${col.property}-bool`, id: `${col.property}-bool` }} >
-                    <MenuItem value={undefined} >
+                    <MenuItem value={undefined} aria-label="none-value" >
                       <em>None</em>
                     </MenuItem>
-                    <MenuItem value={true as any as string}>{col.labels ? col.labels["true"] : "true"}</MenuItem>
-                    <MenuItem value={false as any as string}>{col.labels ? col.labels["false"] : "false"}</MenuItem>
+                    <MenuItem aria-label="true-value" value={true as any as string}>{col.labels ? col.labels["true"] : "true"}</MenuItem>
+                    <MenuItem aria-label="false-value" value={false as any as string}>{col.labels ? col.labels["false"] : "false"}</MenuItem>
                   </Select>
                   : <Input className={classes.input} inputProps={{ 'aria-label': col.title ? (col.title as string).toLowerCase() + ' filter' : `${ind + 1}-filter` }} value={filter[col.property] || ''} onChange={this.createFilterHandler(col.property)} />}
             </TableCell>

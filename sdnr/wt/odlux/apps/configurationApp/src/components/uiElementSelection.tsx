@@ -17,13 +17,11 @@
  */
 
 import * as React from 'react';
-import { baseProps } from './baseProps';
+import { BaseProps } from './baseProps';
 import { ViewElementSelection } from '../models/uiModels'
 import { FormControl, InputLabel, Select, FormHelperText, MenuItem } from '@material-ui/core';
 
-
-
-type selectionProps = baseProps;
+type selectionProps = BaseProps;
 
 export const UiElementSelection = (props: selectionProps) => {
 
