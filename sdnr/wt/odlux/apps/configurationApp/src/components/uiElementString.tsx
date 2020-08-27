@@ -16,14 +16,14 @@
  * ============LICENSE_END==========================================================================
  */
 
+import * as React from "react"
 import { Tooltip, TextField } from "@material-ui/core";
 import { ViewElementString } from "../models/uiModels";
-import * as React from "react"
-import { baseProps } from "./baseProps";
+import { BaseProps } from "./baseProps";
 import { IfWhenTextInput } from "./ifWhenTextInput";
 import { checkRange, checkPattern } from "./verifyer";
 
-type stringEntryProps = baseProps & { isKey: boolean };
+type stringEntryProps = BaseProps & { isKey: boolean };
 
 export const UiElementString = (props: stringEntryProps) => {
 
@@ -40,9 +40,9 @@ export const UiElementString = (props: stringEntryProps) => {
             let errorMessage = "";
             const result = checkRange(element, data.length);
 
-            if (result.length > 0)
+            if (result.length > 0) {
                 errorMessage += result;
-
+            }
 
             const patternResult = checkPattern(element.pattern, data)
 
@@ -69,7 +69,7 @@ export const UiElementString = (props: stringEntryProps) => {
 
     return (
         <Tooltip title={isTooltipVisible ? element.description || '' : ''}>
-            <IfWhenTextInput element={element} toogleTooltip={(val: boolean) => setTooltipVisibility(val)}
+            <IfWhenTextInput element={element} onChangeTooltipVisuability={setTooltipVisibility}
                 spellCheck={false} autoFocus margin="dense"
                 id={element.id} label={props.isKey ? "🔑 " + element.label : element.label} type="text" value={props.inputValue}
                 style={{ width: 485, marginLeft: 20, marginRight: 20 }}

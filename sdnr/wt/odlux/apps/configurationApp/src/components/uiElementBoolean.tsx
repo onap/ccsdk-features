@@ -16,29 +16,28 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { ViewElementBoolean } from "../models/uiModels";
 import * as React from "react"
 import { MenuItem, FormHelperText, Select, FormControl, InputLabel } from "@material-ui/core";
-import { baseProps } from "./baseProps";
 
-type booleanInputProps = baseProps;
+import { ViewElementBoolean } from "../models/uiModels";
+import { BaseProps } from "./baseProps";
 
-export const UiElementBoolean = (props: booleanInputProps) => {
+type BooleanInputProps = BaseProps<boolean>;
+
+export const UiElementBoolean = (props: BooleanInputProps) => {
 
     const element = props.value as ViewElementBoolean;
 
-    let error = "";
     const value = String(props.inputValue).toLowerCase();
-    if (element.mandatory && value !== "true" && value !== "false") {
-        error = "Error";
-    }
+    const mandetoryError = element.mandatory && value !== 'true' && value !== 'false';
+    
     return (!props.readOnly || element.id != null
         ? (<FormControl style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
             <InputLabel htmlFor={`select-${element.id}`} >{element.label}</InputLabel>
             <Select
                 required={!!element.mandatory}
-                error={!!error}
-                onChange={(e) => { props.onChange(e.target.value as any) }}
+                error={mandetoryError}
+                onChange={(e) => { props.onChange(e.target.value === 'true') }}
                 readOnly={props.readOnly}
                 disabled={props.disabled}
                 value={value}
@@ -51,7 +50,7 @@ export const UiElementBoolean = (props: booleanInputProps) => {
                 <MenuItem value={'false'}>{element.falseValue || 'False'}</MenuItem>
 
             </Select>
-            <FormHelperText>{error}</FormHelperText>
+            <FormHelperText>{mandetoryError ? "Value is mandetory" : ""}</FormHelperText>
         </FormControl>)
         : null
     );

@@ -142,6 +142,7 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
                 label="Remember me"
               />
               <Button
+                aria-label="login-button"
                 type="submit"
                 fullWidth
                 variant="contained"

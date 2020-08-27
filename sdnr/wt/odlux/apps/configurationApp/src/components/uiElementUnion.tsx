@@ -17,77 +17,75 @@
  */
 
 import * as React from 'react'
-import { baseProps } from './baseProps';
+import { BaseProps } from './baseProps';
 import { Tooltip } from '@material-ui/core';
 import { IfWhenTextInput } from './ifWhenTextInput';
 import { ViewElementUnion, isViewElementString, isViewElementNumber, isViewElementObject, ViewElementNumber } from '../models/uiModels';
 import { checkRange, checkPattern } from './verifyer';
 
-type UiElementUnionProps = { isKey: boolean } & baseProps;
+type UiElementUnionProps = { isKey: boolean } & BaseProps;
 
 export const UIElementUnion = (props: UiElementUnionProps) => {
 
-    const [isError, setError] = React.useState(false);
-    const [helperText, setHelperText] = React.useState("");
-    const [isTooltipVisible, setTooltipVisibility] = React.useState(true);
+  const [isError, setError] = React.useState(false);
+  const [helperText, setHelperText] = React.useState("");
+  const [isTooltipVisible, setTooltipVisibility] = React.useState(true);
 
-    const element = props.value as ViewElementUnion;
+  const element = props.value as ViewElementUnion;
 
-    const verifyValues = (data: string) => {
+  const verifyValues = (data: string) => {
 
-        let foundObjectElements = 0;
-        let errorMessage = "";
-        let isPatternCorrect = null;
+    let foundObjectElements = 0;
+    let errorMessage = "";
+    let isPatternCorrect = null;
 
-        for (let i = 0; i < element.elements.length; i++) {
-            const unionElement = element.elements[i];
+    for (let i = 0; i < element.elements.length; i++) {
+      const unionElement = element.elements[i];
 
-            if (isViewElementNumber(unionElement)) {
+      if (isViewElementNumber(unionElement)) {
 
-                errorMessage = checkRange(unionElement, Number(data));
+        errorMessage = checkRange(unionElement, Number(data));
 
-            } else if (isViewElementString(unionElement)) {
-                errorMessage += checkRange(unionElement, data.length);
-                isPatternCorrect = checkPattern(unionElement.pattern, data).isValid;
-
-
-            } else if (isViewElementObject(unionElement)) {
-                foundObjectElements++;
-            }
-
-            if (isPatternCorrect || errorMessage.length === 0) {
-                break;
-            }
-        }
-
-        if (errorMessage.length > 0 || isPatternCorrect !== null && !isPatternCorrect) {
-            setError(true);
-            setHelperText("Input is wrong.");
-        } else {
-            setError(false);
-            setHelperText("");
-        }
-
-        if (foundObjectElements > 0 && foundObjectElements != element.elements.length) {
-            throw new Error(`The union element ${element.id} can't be changed.`);
-
-        } else {
-            props.onChange(data);
-        }
-    };
+      } else if (isViewElementString(unionElement)) {
+        errorMessage += checkRange(unionElement, data.length);
+        isPatternCorrect = checkPattern(unionElement.pattern, data).isValid;
 
 
+      } else if (isViewElementObject(unionElement)) {
+        foundObjectElements++;
+      }
 
-    return <Tooltip title={isTooltipVisible ? element.description || '' : ''}>
-        <IfWhenTextInput element={element} toogleTooltip={(val: boolean) => setTooltipVisibility(val)}
-            spellCheck={false} autoFocus margin="dense"
-            id={element.id} label={props.isKey ? "🔑 " + element.label : element.label} type="text" value={props.inputValue}
-            onChange={(e: any) => { verifyValues(e.target.value) }}
-            error={isError}
-            style={{ width: 485, marginLeft: 20, marginRight: 20 }}
-            readOnly={props.readOnly}
-            disabled={props.disabled}
-            helperText={helperText}
-        />
-    </Tooltip>;
+      if (isPatternCorrect || errorMessage.length === 0) {
+        break;
+      }
+    }
+
+    if (errorMessage.length > 0 || isPatternCorrect !== null && !isPatternCorrect) {
+      setError(true);
+      setHelperText("Input is wrong.");
+    } else {
+      setError(false);
+      setHelperText("");
+    }
+
+    if (foundObjectElements > 0 && foundObjectElements != element.elements.length) {
+      throw new Error(`The union element ${element.id} can't be changed.`);
+
+    } else {
+      props.onChange(data);
+    }
+  };
+
+  return <Tooltip title={isTooltipVisible ? element.description || '' : ''}>
+    <IfWhenTextInput element={element} onChangeTooltipVisuability={setTooltipVisibility}
+      spellCheck={false} autoFocus margin="dense"
+      id={element.id} label={props.isKey ? "🔑 " + element.label : element.label} type="text" value={props.inputValue}
+      onChange={(e: any) => { verifyValues(e.target.value) }}
+      error={isError}
+      style={{ width: 485, marginLeft: 20, marginRight: 20 }}
+      readOnly={props.readOnly}
+      disabled={props.disabled}
+      helperText={helperText}
+    />
+  </Tooltip>;
 }

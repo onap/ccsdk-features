@@ -138,9 +138,9 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
       <>
         <AppBar position="static" >
           <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="fault tabs">
-            <Tab label="Current Problem List" value="CurrentProblem" />
-            <Tab label={`Alarm Notifications (${this.props.faultNotifications.faults.length})`} value="AlarmNotifications" />
-            <Tab label="Alarm Log" value="AlarmLog" />
+            <Tab aria-label="current-problem-list-tab" label="Current Problem List" value="CurrentProblem" />
+            <Tab aria-label="alarm-notifications-list-tab" label={`Alarm Notifications (${this.props.faultNotifications.faults.length})`} value="AlarmNotifications" />
+            <Tab aria-label="alarm-log-tab" label="Alarm Log" value="AlarmLog" />
           </Tabs>
         </AppBar>
         {

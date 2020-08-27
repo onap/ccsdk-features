@@ -57,12 +57,20 @@ class FaultStatusComponent extends React.Component<FaultStatusComponentProps> {
     const { classes, faultStatus } = this.props;
 
     return (
-      <Typography variant="body1" color="inherit" >
+      <>
+      <Typography variant="body1" color="inherit" aria-label="critical-alarms">
         Alarm Status: <FontAwesomeIcon className={`${classes.icon} ${classes.critical}`} icon={faExclamationTriangle} /> { faultStatus.critical  } |
+        </Typography>
+        <Typography variant="body1" color="inherit" aria-label="major-alarms">
         <FontAwesomeIcon className={`${classes.icon} ${classes.major}`} icon={faExclamationTriangle} /> { faultStatus.major } |
+        </Typography>
+        <Typography variant="body1" color="inherit" aria-label="minor-alarms">
         <FontAwesomeIcon className={`${classes.icon} ${classes.minor}`} icon={faExclamationTriangle} /> { faultStatus.minor } |
+        </Typography>
+        <Typography variant="body1" color="inherit" aria-label="warning-alarms">
         <FontAwesomeIcon className={`${classes.icon} ${classes.warning}`} icon={faExclamationTriangle} /> { faultStatus.warning } |
       </Typography>
+      </>
     );
   };
 }
