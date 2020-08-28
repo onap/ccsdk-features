@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3db051eb_eb111042",
+        "filename": "sdnr/wt/odlux/apps/apiDemo/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-08-28T13:18:17Z",
+      "side": 1,
+      "message": "Why are these being skipped ?",
+      "revId": "4bd84bebdaa0c2d82050fbedd1fa8260eb62146d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
