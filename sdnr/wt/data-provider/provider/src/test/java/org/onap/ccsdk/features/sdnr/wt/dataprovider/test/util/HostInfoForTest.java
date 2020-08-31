@@ -41,7 +41,7 @@ public class HostInfoForTest {
         int port;
 
         String portAsString = System.getProperty("databaseport");
-        if (portAsString == null | portAsString.isEmpty())
+        if (portAsString == null || portAsString.isEmpty())
             port = 49200;
         else
             port = Integer.valueOf(portAsString);

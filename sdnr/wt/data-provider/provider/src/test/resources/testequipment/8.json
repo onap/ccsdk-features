@@ -1,0 +1,17 @@
+{
+	"description": "WS/p8.module/a2.module#5",
+	"date": "2013-04-13T00:00:00.0Z",
+	"version": "a2.module-newest",
+	"node-id": "sim1",
+	"uuid": "a2.module-1.1.6.5",
+	"parent-uuid": "CARD-1.1.6.0",
+	"contained-holder": [
+		"SUBRACK-1.65.0.0"
+	],
+	"tree-level": 2,
+	"manufacturer-identifier": "ONF-Wireless-Transport",
+	"serial": "310330008",
+	"part-type-id": "3EM23141AD01",
+	"model-identifier": "CRPQABVFAA",
+	"type-name": "a2.module"
+}

@@ -1,0 +1,18 @@
+ {
+	"description": "MWR-ng Dir#6.5-Ch#1",
+	"date": "2014-01-16T00:00:00.0Z",
+	"version": "MWR-ng",
+	"node-id": "sim1",
+	"uuid": "IDU-1.65.0.0",
+	"parent-uuid": "network-element",
+	"contained-holder": [
+		"PORT-1.65.1.4",
+		"PORT-1.65.1.2"
+	],
+	"tree-level": 0,
+	"manufacturer-identifier": "ONF-Wireless-Transport",
+	"serial": "WAUZZI",
+	"part-type-id": "3DB76047BAAA02",
+	"model-identifier": "model-id-s3s",
+	"type-name": "MWR-ng"
+}

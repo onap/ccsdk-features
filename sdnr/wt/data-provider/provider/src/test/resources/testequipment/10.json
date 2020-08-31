@@ -1,0 +1,15 @@
+ {
+	"description": "MWR#56Ch#1/a2.moduletraff",
+	"date": "2017-09-09T00:00:00.0Z",
+	"version": "a2.module-newest",
+	"node-id": "sim1",
+	"uuid": "a2.module-1.56.1.2",
+	"parent-uuid": "ODU-1.56.0.0",
+	"contained-holder": [],
+	"tree-level": 1,
+	"manufacturer-identifier": "ONF-Wireless-Transport",
+	"serial": "Serial1",
+	"part-type-id": "Partnumber",
+	"model-identifier": "model-id",
+	"type-name": "a2.module"
+}
