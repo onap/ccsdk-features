@@ -1,0 +1,15 @@
+ {
+	"description": "MWR#55Ch#1/RxDiv",
+	"date": "2014-01-07T00:00:00.0Z",
+	"version": "2017",
+	"node-id": "sim1",
+	"uuid": "CARD-1.55.1.4",
+	"parent-uuid": "IDU-1.55.0.0",
+	"contained-holder": [],
+	"tree-level": 1,
+	"manufacturer-identifier": "ONF-Wireless-Transport",
+	"serial": "Serie2017-12",
+	"part-type-id": "partNo2017-12",
+	"model-identifier": "model-id-s3s",
+	"type-name": "RxDiv"
+}

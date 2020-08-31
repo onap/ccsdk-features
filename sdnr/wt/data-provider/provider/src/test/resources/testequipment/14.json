@@ -1,0 +1,15 @@
+{
+	"description": "WS/DS3",
+	"date": "2008-10-21T00:00:00.0Z",
+	"version": "unknown",
+	"node-id": "sim1",
+	"uuid": "CARD-1.1.8.0",
+	"parent-uuid": "SHELF-1.1.0.0",
+	"contained-holder": [],
+	"tree-level": 1,
+	"manufacturer-identifier": "ONF-Wireless-Transport",
+	"serial": "sd-dsa-eqw",
+	"part-type-id": "unknown",
+	"model-identifier": "model-id-s3s",
+	"type-name": "p4.module"
+}

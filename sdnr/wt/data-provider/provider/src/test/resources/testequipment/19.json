@@ -1,0 +1,20 @@
+ {
+	"description": "WS/CORE-MAIN",
+	"date": "2015-08-17T00:00:00.0Z",
+	"version": "123",
+	"node-id": "sim1",
+	"uuid": "CARD-1.1.1.0",
+	"parent-uuid": "SHELF-1.1.0.0",
+	"contained-holder": [
+		"PORT-1.1.1.6",
+		"PORT-1.1.1.5",
+		"PORT-1.1.1.8",
+		"PORT-1.1.1.7"
+	],
+	"tree-level": 1,
+	"manufacturer-identifier": "SAN",
+	"serial": "asdf-asdasd-asd",
+	"part-type-id": "part-number-2",
+	"model-identifier": "model-id-2",
+	"type-name": "latest"
+}

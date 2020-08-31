@@ -1,0 +1,17 @@
+ {
+	"description": "WS/CORE-MAIN/a2.module#5",
+	"date": "2005-11-09T00:00:00.0Z",
+	"version": "a2.module-newest",
+	"node-id": "sim1",
+	"uuid": "a2.module-1.1.1.5",
+	"parent-uuid": "CARD-1.1.1.0",
+	"contained-holder": [
+		"SUBRACK-1.15.0.0"
+	],
+	"tree-level": 2,
+	"manufacturer-identifier": "ONF-Wireless-Transport",
+	"serial": "0003548168",
+	"part-type-id": "3FE25774AA01",
+	"model-identifier": "VAUIAEYAAA",
+	"type-name": "a2.module"
+}

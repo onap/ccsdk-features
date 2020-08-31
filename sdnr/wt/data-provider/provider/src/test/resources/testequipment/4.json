@@ -1,0 +1,15 @@
+ {
+	"description": "MWR#65Ch#1/a2.moduletraff",
+	"date": "2013-04-13T00:00:00.0Z",
+	"version": "a2.module-newest",
+	"node-id": "sim1",
+	"uuid": "a2.module-1.65.1.2",
+	"parent-uuid": "IDU-1.65.0.0",
+	"contained-holder": [],
+	"tree-level": 1,
+	"manufacturer-identifier": "ONF-Wireless-Transport",
+	"serial": "310330008",
+	"part-type-id": "3EM23141AD01",
+	"model-identifier": "CRPQABVFAA",
+	"type-name": "a2.module"
+}

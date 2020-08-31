@@ -102,10 +102,13 @@ public interface DataProvider extends ArchiveCleanProvider {
     /**
      * @param list
      */
-    void doWritePerformanceData(List<PmdataEntity> list);
+    void  doWritePerformanceData(List<PmdataEntity> list);
+
+    void doWritePerformanceData2(List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity> list);
+
 
     /**
-     * @return
+     * @return raw database client
      */
     HtDatabaseClient getRawClient();
 
