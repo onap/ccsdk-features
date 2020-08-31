@@ -22,19 +22,21 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.http;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.MarkdownTable;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ReadyHttpServlet extends HttpServlet {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(ReadyHttpServlet.class);
@@ -43,7 +45,7 @@ public class ReadyHttpServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        if (isReady()) {
+        if (isReady() && this.getBundleStatesNotActiveCount()==0) {
             resp.setStatus(HttpServletResponse.SC_OK);
         } else {
 
@@ -63,4 +65,31 @@ public class ReadyHttpServlet extends HttpServlet {
         status = s;
         LOG.info("status is set to ready: {}", status);
     }
+
+    private int getBundleStatesNotActiveCount() {
+        Bundle thisbundle = FrameworkUtil.getBundle(this.getClass());
+        BundleContext context = thisbundle ==null?null:thisbundle.getBundleContext();
+        if (context == null) {
+            LOG.debug("no bundle context available");
+            return 0;
+        }
+        Bundle[] bundles = context.getBundles();
+        if (bundles == null || bundles.length <= 0) {
+            LOG.debug("no bundles found");
+            return 0;
+        }
+        LOG.debug("found {} bundles", bundles.length);
+        MarkdownTable table = new MarkdownTable();
+        table.setHeader(new String[] {"Bundle-Id","Version","Symbolic-Name","Status"});
+        int cntNotActive=0;
+        for (Bundle bundle : bundles) {
+
+            if(bundle.getState()!=Bundle.ACTIVE) {
+                cntNotActive++;
+            }
+
+        }
+        return cntNotActive;
+    }
+
 }

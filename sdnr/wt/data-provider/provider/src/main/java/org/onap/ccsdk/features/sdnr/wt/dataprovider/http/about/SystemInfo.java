@@ -42,7 +42,6 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -54,12 +53,20 @@ public class SystemInfo {
     private static OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
     protected static boolean showMemoryPools = false;
 
+    public static String getOnapVersion(String def) {
+        return getOnapVersion("", def);
+    }
+
     public static String getMdSalVersion(String def) {
         return getMdSalVersion("", def);
     }
 
     public static String getYangToolsVersion(String def) {
         return getYangToolsVersion("", def);
+    }
+
+    public static String getOnapVersion(String baseOdlDirectory, String def) {
+        return getFeatureVersionByFolder(baseOdlDirectory, "system/org/onap/sdnc/northbound/sdnc-northbound-all/", def);
     }
 
     public static String getMdSalVersion(String baseOdlDirectory, String def) {

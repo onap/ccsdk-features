@@ -38,6 +38,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.Resources;
 import org.onap.ccsdk.features.sdnr.wt.common.file.PomFile;
 import org.onap.ccsdk.features.sdnr.wt.common.file.PomPropertiesFile;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +62,6 @@ public class AboutHttpServlet extends HttpServlet {
     private static final String PLACEHOLDER_ONAP_RELEASEVERSION = "{release-version}";
     private static final String PLACEHOLDER_ODL_RELEASENAME = "{odl-version}";
     private static final String PLACEHOLDER_BUILD_TIMESTAMP = "{build-time}";
-    private static final String PLACEHOLDER_ODLUX_REVISION = "{odlux-revision}";
     private static final String PLACEHOLDER_PACKAGE_GITHASH = "{package-githash}";
     private static final String PLACEHOLDER_PACAKGE_VERSION = "{package-version}";
     private static final String PLACEHOLDER_CCSDK_VERSION = "{ccsdk-version}";
@@ -69,10 +71,12 @@ public class AboutHttpServlet extends HttpServlet {
     private static final String PLACEHOLDER_KARAF_INFO = "{karaf-info}";
     private static final String PLACEHOLDER_DEVICEMANAGER_TABLE = "{devicemanagers}";
     private static final String README_FILE = "README.md";
+    private static final String NO_DEVICEMANAGERS_RUNNING_MESSAGE = null;
 
     private final String groupId = "org.onap.ccsdk.features.sdnr.wt";
     private final String artifactId = "sdnr-wt-data-provider-provider";
 
+    private final Map<Integer,String> BUNDLESTATE_LUT;
     private final Map<String, String> data;
     private final String readmeContent;
     //	private BundleService bundleService;
@@ -83,7 +87,13 @@ public class AboutHttpServlet extends HttpServlet {
         this.data = new HashMap<>();
         this.collectStaticData();
         this.readmeContent = this.render(this.getResourceFileContent(README_FILE));
-        //BundleContext  context = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+        this.BUNDLESTATE_LUT = new HashMap<>();
+        this.BUNDLESTATE_LUT.put(Bundle.UNINSTALLED, "uninstalled");
+        this.BUNDLESTATE_LUT.put(Bundle.INSTALLED, "installed");
+        this.BUNDLESTATE_LUT.put(Bundle.RESOLVED, "resolved");
+        this.BUNDLESTATE_LUT.put(Bundle.STARTING, "starting");
+        this.BUNDLESTATE_LUT.put(Bundle.STOPPING, "stopping");
+        this.BUNDLESTATE_LUT.put(Bundle.ACTIVE, "active");
 
     }
 
@@ -97,13 +107,14 @@ public class AboutHttpServlet extends HttpServlet {
     private void collectStaticData() {
         PomPropertiesFile props = this.getPomProperties();
         final String ccsdkVersion = this.getPomParentVersion();
+        final String mdsalVersion = SystemInfo.getMdSalVersion(UNKNOWN);
         this.data.put(PLACEHOLDER_ONAP_RELEASENAME, ODLVersionLUT.getONAPReleaseName(ccsdkVersion, UNKNOWN));
-        this.data.put(PLACEHOLDER_ODL_RELEASENAME, ODLVersionLUT.getOdlVersion(ccsdkVersion, UNKNOWN));
+        this.data.put(PLACEHOLDER_ODL_RELEASENAME, ODLVersionLUT.getOdlVersion(mdsalVersion, UNKNOWN));
         this.data.put(PLACEHOLDER_BUILD_TIMESTAMP, props != null ? props.getBuildDate().toString() : "");
         this.data.put(PLACEHOLDER_PACAKGE_VERSION, this.getManifestValue("Bundle-Version"));
         this.data.put(PLACEHOLDER_CCSDK_VERSION, ccsdkVersion);
-        this.data.put(PLACEHOLDER_ONAP_RELEASEVERSION, "2.0.0-SNAPSHOT");
-        this.data.put(PLACEHOLDER_MDSAL_VERSION, SystemInfo.getMdSalVersion(UNKNOWN));
+        this.data.put(PLACEHOLDER_ONAP_RELEASEVERSION, SystemInfo.getOnapVersion(UNKNOWN));
+        this.data.put(PLACEHOLDER_MDSAL_VERSION, mdsalVersion);
         this.data.put(PLACEHOLDER_YANGTOOLS_VERSION, SystemInfo.getYangToolsVersion(UNKNOWN));
         this.data.put(PLACEHOLDER_PACKAGE_GITHASH, this.getGitHash(UNKNOWN));
     }
@@ -272,25 +283,34 @@ public class AboutHttpServlet extends HttpServlet {
     }
 
     private String getDevicemanagerBundles() {
-        //		if(this.bundleService==null) {
-        //			LOG.debug("no bundle service available");
-        //			return "";
-        //		}
-        //
-        //		List<String> ids = new ArrayList<String>();
-        //		List<Bundle> bundles = bundleService.selectBundles("0", ids , true);
-        //		if(bundles==null || bundles.size()<=0) {
-        //			LOG.debug("no bundles found");
-        //			return "";
-        //		}
-        //		LOG.debug("found {} bundles",bundles.size());
-        //		MarkdownTable table = new MarkdownTable();
-        //		for(Bundle bundle:bundles) {
-        //			BundleInfo info = this.bundleService.getInfo(bundle);
-        //			table.addRow(new String[] {String.valueOf(info.getBundleId()),info.getVersion(),info.getName(),info.getState().toString()});
-        //		}
-        //		return table.toMarkDown();
-        return "";
+        Bundle thisbundle = FrameworkUtil.getBundle(this.getClass());
+        BundleContext context = thisbundle ==null?null:thisbundle.getBundleContext();
+        if (context == null) {
+            LOG.debug("no bundle context available");
+            return "";
+        }
+        Bundle[] bundles = context.getBundles();
+        if (bundles == null || bundles.length <= 0) {
+            LOG.debug("no bundles found");
+            return NO_DEVICEMANAGERS_RUNNING_MESSAGE;
+        }
+        LOG.debug("found {} bundles", bundles.length);
+        MarkdownTable table = new MarkdownTable();
+        table.setHeader(new String[] {"Bundle-Id","Version","Symbolic-Name","Status"});
+        String name;
+        for (Bundle bundle : bundles) {
+            name = bundle.getSymbolicName();
+            if(!(name.contains("devicemanager") && name.contains("provider"))) {
+                continue;
+            }
+            if(name.equals("org.onap.ccsdk.features.sdnr.wt.sdnr-wt-devicemanager-provider")) {
+                continue;
+            }
+            table.addRow(new String[] {String.valueOf(bundle.getBundleId()), bundle.getVersion().toString(), name,
+                BUNDLESTATE_LUT.getOrDefault(bundle.getState(),"unknown")});
+
+        }
+        return table.toMarkDown();
     }
 
     /**
