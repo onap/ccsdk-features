@@ -23,8 +23,13 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 
 import java.util.Arrays;
 import java.util.List;
-
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.ConsoleAppender;
@@ -293,17 +298,13 @@ public class Program {
     }
 
     private static void cmd_dbimport(CommandLine cmd) throws Exception {
-        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
-        String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
-        String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
+        DatabaseOptions options = new DatabaseOptions(cmd);
         String filename = getOptionOrDefault(cmd, OPTION_OUTPUTFILE_SHORT, null);
-        boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, DEFAULT_TRUSTINSECURESSL);
         if (filename == null) {
             throw new Exception("please add output file parameter");
         }
-        long timeoutms = getTimeoutOptionMillis(cmd);
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(dbUrl)},
-                username, password, trustAll, timeoutms);
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(options.getUrl())},
+                options.getUsername(), options.getPassword(), options.doTrustAll(), options.getTimeoutMs());
         DataMigrationReport report = service.importData(filename, false);
         LOG.info(report);
         if (!report.completed()) {
@@ -313,17 +314,13 @@ public class Program {
     }
 
     private static void cmd_dbexport(CommandLine cmd) throws Exception {
-        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
-        String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
-        String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
+        DatabaseOptions options = new DatabaseOptions(cmd);
         String filename = getOptionOrDefault(cmd, OPTION_OUTPUTFILE_SHORT, null);
-        boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, DEFAULT_TRUSTINSECURESSL);
         if (filename == null) {
             throw new Exception("please add output file parameter");
         }
-        long timeoutms = getTimeoutOptionMillis(cmd);
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(dbUrl)},
-                username, password, trustAll, timeoutms);
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(options.getUrl())},
+                options.getUsername(), options.getPassword(), options.doTrustAll(), options.getTimeoutMs());
         DataMigrationReport report = service.exportData(filename);
         LOG.info(report);
         if (!report.completed()) {
@@ -343,29 +340,21 @@ public class Program {
 
     private static void cmd_clear_db(CommandLine cmd) throws Exception {
         Release r = getOptionOrDefault(cmd, OPTION_VERSION_SHORT, (Release) null);
-        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
+        DatabaseOptions options = new DatabaseOptions(cmd);
         String dbPrefix = getOptionOrDefault(cmd, OPTION_DATABASEPREFIX_SHORT, DEFAULT_DBPREFIX);
-        String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
-        String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
-        boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, DEFAULT_TRUSTINSECURESSL);
-        long timeoutms = getTimeoutOptionMillis(cmd);
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(dbUrl)},
-                username, password, trustAll, timeoutms);
-        if (!service.clearDatabase(r, dbPrefix, timeoutms)) {
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(options.getUrl())},
+                options.getUsername(), options.getPassword(), options.doTrustAll(), options.getTimeoutMs());
+        if (!service.clearDatabase(r, dbPrefix, options.getTimeoutMs())) {
             throw new Exception("failed to init database");
         }
         LOG.info("database clear completed successfully");
     }
 
     private static void cmd_clear_db_complete(CommandLine cmd) throws Exception {
-        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
-        String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
-        String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
-        boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, DEFAULT_TRUSTINSECURESSL);
-        long timeoutms = getTimeoutOptionMillis(cmd);
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(dbUrl)},
-                username, password, trustAll, timeoutms);
-        if (!service.clearCompleteDatabase(timeoutms)) {
+        DatabaseOptions options = new DatabaseOptions(cmd);
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(options.getUrl())},
+                options.getUsername(), options.getPassword(), options.doTrustAll(), options.getTimeoutMs());
+        if (!service.clearCompleteDatabase(options.getTimeoutMs())) {
             throw new Exception("failed to init database");
         }
         LOG.info("database complete clear completed successfully");
@@ -375,16 +364,12 @@ public class Program {
         Release r = getOptionOrDefault(cmd, OPTION_VERSION_SHORT, (Release) null);
         int numShards = getOptionOrDefault(cmd, OPTION_SHARDS_SHORT, DEFAULT_SHARDS);
         int numReplicas = getOptionOrDefault(cmd, OPTION_REPLICAS_SHORT, DEFAULT_REPLICAS);
-        String dbUrl = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
+        DatabaseOptions options = new DatabaseOptions(cmd);
         String dbPrefix = getOptionOrDefault(cmd, OPTION_DATABASEPREFIX_SHORT, DEFAULT_DBPREFIX);
-        String username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
-        String password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
-        boolean trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, DEFAULT_TRUSTINSECURESSL);
-        long timeoutms = getTimeoutOptionMillis(cmd);
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(dbUrl)},
-                username, password, trustAll, timeoutms);
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(options.getUrl())},
+                options.getUsername(), options.getPassword(), options.doTrustAll(), options.getTimeoutMs());
         boolean forceRecreate = cmd.hasOption(OPTION_FORCE_RECREATE_SHORT);
-        if (!service.initDatabase(r, numShards, numReplicas, dbPrefix, forceRecreate, timeoutms)) {
+        if (!service.initDatabase(r, numShards, numReplicas, dbPrefix, forceRecreate, options.getTimeoutMs())) {
             throw new Exception("failed to init database");
         }
         LOG.info("database init completed successfully");
@@ -425,7 +410,7 @@ public class Program {
 
     /**
      * create option for argparse lib
-     * 
+     *
      * @param opt short option string
      * @param longOpt long option string
      * @param hasArg flag if has a parameter after option tag
@@ -440,4 +425,35 @@ public class Program {
         return o;
     }
     // end of private methods
+
+    private static class DatabaseOptions{
+        private final String url;
+        private final String username;
+        private final String password;
+        private final boolean trustAll;
+        private final long timeoutMs;
+
+        public String getUrl() {
+            return this.url;
+        }
+        public String getUsername() {
+            return this.username;
+        }
+        public String getPassword() {
+            return this.password;
+        }
+        public boolean doTrustAll() {
+            return this.trustAll;
+        }
+        public long getTimeoutMs() {
+            return this.timeoutMs;
+        }
+        public DatabaseOptions(CommandLine cmd) throws ParseException {
+            this.url = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
+            this.username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
+            this.password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
+            this.trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, DEFAULT_TRUSTINSECURESSL);
+            this.timeoutMs = getTimeoutOptionMillis(cmd);
+        }
+    }
 }

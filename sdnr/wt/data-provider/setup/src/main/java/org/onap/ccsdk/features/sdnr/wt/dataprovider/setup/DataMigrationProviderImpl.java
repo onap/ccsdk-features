@@ -344,6 +344,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
         }
         //check aliases
         AliasesEntryList entries = this.readAliases();
+        IndicesEntryList entries2 = this.readIndices();
         if (entries == null) {
             return false;
         }
@@ -381,9 +382,22 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
                         return false;
                     }
                 }
+                else {
+                    //try to find malformed typed index with alias name
+                    IndicesEntry entry2ToDelete = entries2.findByIndex(aliasToDelete);
+                    if (entry2ToDelete != null) {
+                        try {
+                            LOG.info("deleting index {}", entry2ToDelete.getName());
+                            response = this.dbClient.deleteIndex(new DeleteIndexRequest(entry2ToDelete.getName()));
+                            LOG.info(response.isResponseSucceeded() ? "succeeded" : "failed");
+                        } catch (IOException e) {
+                            LOG.error(e.getMessage());
+                            return false;
+                        }
+                    }
+                }
             }
         }
-        IndicesEntryList entries2 = this.readIndices();
         if (entries2 == null) {
             return false;
         }
