@@ -52,6 +52,7 @@
         <module>apps/performanceHistoryApp</module>
         <module>apps/eventLogApp</module>
         <module>apps/configurationApp</module>
+        <module>apps/networkMapApp</module>
         <module>apps/linkCalculationApp</module>
         <module>apps/app-feature</module>
         <module>apps/app-installer</module>
