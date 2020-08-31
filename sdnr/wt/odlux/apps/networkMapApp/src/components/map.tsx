@@ -39,6 +39,7 @@ import apartment from '../../icons/apartment.png';
 import datacenter from '../../icons/datacenter.png';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
+import SearchBar from './searchBar';
 import { verifyResponse, IsTileServerReachableAction, handleConnectionError } from '../actions/connectivityAction';
 import ConnectionInfo from './connectionInfo'
 import { ApplicationStore } from '../../../../framework/src/store/applicationStore';
@@ -561,6 +562,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                     this.state.isPopupOpen &&
                     <MapPopup onClose={() => { this.setState({ isPopupOpen: false }); }} />
                 }
+                <SearchBar />
                 <ConnectionInfo />
             </div>
         </>

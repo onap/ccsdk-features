@@ -16,35 +16,10 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { combineActionHandler } from '../../../../framework/src/flux/middleware';
+import { Action } from '../../../../framework/src/flux/action';
 
-import { DetailsReducer, DetailsStoreState } from "./detailsReducer";
-import { PopupsReducer, popupStoreState } from "./popupReducer";
-import { MapReducer, mapState } from "./mapReducer";
-import { SearchReducer, searchState } from "./searchReducer";
-import { connectivityState, ConnectivityReducer } from './connectivityReducer';
-
-export interface INetworkAppStoreState{
-    details: DetailsStoreState,
-    popup: popupStoreState,
-    map: mapState,
-    search: searchState,
-    connectivity: connectivityState
-}
-
-declare module '../../../../framework/src/store/applicationStore' {
-    interface IApplicationStoreState {
-      network: INetworkAppStoreState
+export class SetSearchValueAction extends Action{
+    constructor(public value: string){
+        super();
     }
-  }
-
-const appHandler = {
-    details: DetailsReducer, 
-    popup: PopupsReducer, 
-    map: MapReducer, 
-    search: SearchReducer,
-    connectivity: ConnectivityReducer};
-
-export const networkmapRootHandler = combineActionHandler<INetworkAppStoreState>(appHandler)
-
-export default networkmapRootHandler;
+}
