@@ -6,6 +6,7 @@ module data-provider-v2 {
 
   import org-openroadm-pm-types {
     prefix org-openroadm-pm-types;
+    revision-date 2019-11-29;
     reference
       "OpenROADM: YANG definitions of performance management types";
   }

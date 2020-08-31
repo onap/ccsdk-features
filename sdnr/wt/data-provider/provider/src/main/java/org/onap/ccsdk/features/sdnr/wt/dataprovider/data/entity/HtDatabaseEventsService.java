@@ -25,9 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
 import javax.annotation.Nonnull;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -83,6 +81,8 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     private final EsDataObjectReaderWriter2<NetworkElementConnectionEntity> networkelementConnectionDB;
     private final EsDataObjectReaderWriter2<PmdataEntity> pmData15mDB;
     private final EsDataObjectReaderWriter2<PmdataEntity> pmData24hDB;
+    private final EsDataObjectReaderWriter2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity> pmData15mDBv2;
+    private final EsDataObjectReaderWriter2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity> pmData24hDBv2;
 
     @SuppressWarnings("unused")
     private final ElasticSearchDataProvider dataProvider;
@@ -123,6 +123,15 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
             pmData24hDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance24h, PmdataEntity.class,
                     PmdataEntityBuilder.class);
+
+            pmData15mDBv2 = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance15min,
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity.class,
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntityBuilder.class);
+
+            pmData24hDBv2 = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance24h,
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity.class,
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntityBuilder.class);
+
 
         } catch (Exception e) {
             LOG.error("Can not start database client. Exception: {}", e);
@@ -251,7 +260,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
     /**
      * write internal equipment to database
-     * 
+     *
      * @param internalEquipment with mandatory fields.
      */
     @Override
@@ -276,7 +285,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
     /**
      * join base with parameters of toJoin (only non null values)
-     * 
+     *
      * @param base base object
      * @param toJoin object with new property values
      * @return new joined object
@@ -335,7 +344,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
     /**
      * Update after new mountpoint registration
-     * 
+     *
      * @param networkElementConnectionEntitiy data
      * @param nodeId of device (mountpoint name)
      */
@@ -411,7 +420,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
     /**
      * Verify status of client
-     * 
+     *
      * @param event that is printed with message
      * @return true if client is null
      */
@@ -425,7 +434,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
     /**
      * Verify status of client
-     * 
+     *
      * @param message to print including {} for object printout.
      * @return true if client is null
      */
@@ -443,7 +452,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     private static class EsEventBase {
         /**
          * Query to get older Elements
-         * 
+         *
          * @param netconfTimeStamp to identify older Elements
          * @return QueryBuilder for older elements related to timestamp
          */
@@ -454,7 +463,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     private static class EsFaultLogDevicemanager {
         /**
          * Get older Elements
-         * 
+         *
          * @param netconfTimeStamp to identify query elements older than this timestamp.
          * @return QueryBuilder for related elements
          */
@@ -513,15 +522,51 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         });
 
     }
+    @Override
+    public void doWritePerformanceData2(
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity> list) {
 
+        list.forEach(elem -> {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.GranularityPeriodType
+            granularityPeriod = nnGetGranularityPeriodType2(elem.getGranularityPeriod());
+            //_id": "Sim12600/LP-MWPS-TTP-01/2017-07-04T15:15:00.0+00:00"
+            StringBuffer id = new StringBuffer();
+            DateAndTime date = elem.getTimeStamp();
+            id.append(elem.getNodeName());
+            id.append("/");
+            id.append(elem.getUuidInterface());
+            id.append("/");
+            id.append(date != null ? date.getValue() : "null");
+
+            switch (granularityPeriod) {
+                case Period15Min:
+                    pmData15mDB.write(elem, id.toString());
+                    break;
+                case Period24Hours:
+                    pmData24hDB.write(elem, id.toString());
+                    break;
+                case Unknown:
+                default:
+                    LOG.debug("Unknown granularity {} id {}", granularityPeriod, id);
+                    break;
+            }
+        });
+    }
     @NonNull
     GranularityPeriodType nnGetGranularityPeriodType(@Nullable GranularityPeriodType granularityPeriod) {
         return granularityPeriod != null ? granularityPeriod : GranularityPeriodType.Unknown;
+    }
+    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.GranularityPeriodType nnGetGranularityPeriodType2(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.@Nullable GranularityPeriodType granularityPeriod) {
+        return granularityPeriod != null ? granularityPeriod :
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.GranularityPeriodType.Unknown;
     }
 
     @Override
     public HtDatabaseClient getRawClient() {
         return this.client;
     }
+
+
 
 }

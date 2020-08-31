@@ -1,4 +1,4 @@
-package org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev200327;
+package org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev191129;
 import java.lang.String;
 import java.lang.UnsupportedOperationException;
 

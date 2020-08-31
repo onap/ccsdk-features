@@ -1,0 +1,17 @@
+{
+	"description": "WS/CORE-MAIN/a2.module#8",
+	"date": "2010-02-05T00:00:00.0Z",
+	"version": "a2.module-newest",
+	"node-id": "sim1",
+	"uuid": "a2.module-1.1.1.8",
+	"parent-uuid": "CARD-1.1.1.0",
+	"contained-holder": [
+		"SUBRACK-1.18.0.0"
+	],
+	"tree-level": 2,
+	"manufacturer-identifier": "ONF-Wireless-Transport",
+	"serial": "01T441601301",
+	"part-type-id": "1AB376720002",
+	"model-identifier": "NGI7AMLMAA",
+	"type-name": "a2.module"
+}

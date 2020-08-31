@@ -1,0 +1,20 @@
+ {
+	"description": "WS/p8.module",
+	"date": "2013-10-21T00:00:00.0Z",
+	"version": "234",
+	"node-id": "sim1",
+	"uuid": "CARD-1.1.5.0",
+	"parent-uuid": "SHELF-1.1.0.0",
+	"contained-holder": [
+		"PORT-1.1.5.6",
+		"PORT-1.1.5.5",
+		"PORT-1.1.5.8",
+		"PORT-1.1.5.7"
+	],
+	"tree-level": 1,
+	"manufacturer-identifier": "SAN",
+	"serial": "africa",
+	"part-type-id": "part-number-12",
+	"model-identifier": "model-id-12",
+	"type-name": "p8.module"
+}
