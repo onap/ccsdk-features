@@ -21,7 +21,12 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ODLVersionLUT {
+
+    private static Map<String,String> odlMdsalVersionLUT=null;
 
     public static String getONAPReleaseName(String onapCCSDKVersion, String def) {
         if (onapCCSDKVersion == null) {
@@ -45,26 +50,26 @@ public class ODLVersionLUT {
         return def;
     }
 
-    public static String getOdlVersion(String onapCCSDKVersion, String def) {
+    public static String getOdlVersion(String mdsalVersion, String def) {
 
-        if (onapCCSDKVersion == null) {
+        if (mdsalVersion == null) {
             return def;
         }
-        if (onapCCSDKVersion.startsWith("2.")) {
-            return "sodium-SR3 (0.11.3)";
+        if(odlMdsalVersionLUT==null) {
+            odlMdsalVersionLUT = new HashMap<>();
+            odlMdsalVersionLUT.put("5.0.14","magnesium-SR2 (0.12.2)");
+            odlMdsalVersionLUT.put("5.0.10","magnesium-SR1 (0.12.1)");
+            odlMdsalVersionLUT.put("5.0.9","magnesium-SR0 (0.12.0)");
+            odlMdsalVersionLUT.put("4.0.14","sodium-SR3 (0.11.3)");
+            odlMdsalVersionLUT.put("4.0.11","sodium-SR2 (0.11.2)");
+            odlMdsalVersionLUT.put("4.0.6","sodium-SR1 (0.11.1)");
+            odlMdsalVersionLUT.put("4.0.4","sodium-SR0 (0.11.0)");
+            odlMdsalVersionLUT.put("3.0.13","neon-SR3 (0.10.3)");
+            odlMdsalVersionLUT.put("3.0.10","neon-SR2 (0.10.2)");
+            odlMdsalVersionLUT.put("3.0.8","neon-SR1 (0.10.1)");
+            odlMdsalVersionLUT.put("3.0.6","neon-SR0 (0.10.0)");
         }
-        if (onapCCSDKVersion.startsWith("1.5.")) {
-            return "neon-SR1 (0.10.1)";
-        }
-        if (onapCCSDKVersion.startsWith("1.4.")) {
-            return "neon-SR1 (0.10.1)";
-        }
-        if (onapCCSDKVersion.startsWith("1.3.")) {
-            return "fluorine-SR2 (0.9.2)";
-        }
-        if (onapCCSDKVersion.startsWith("1.2.")) {
-            return "sodium-SR3 (0.11.3)";
-        }
-        return def;
+
+        return odlMdsalVersionLUT.getOrDefault(mdsalVersion, def);
     }
 }
