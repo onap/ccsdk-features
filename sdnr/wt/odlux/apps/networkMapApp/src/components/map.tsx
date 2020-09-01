@@ -18,7 +18,6 @@
 
 import * as React from 'react'
 import * as mapboxgl from 'mapbox-gl';
-import InfoIcon from '@material-ui/icons/Info';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 
@@ -44,6 +43,7 @@ import { verifyResponse, IsTileServerReachableAction, handleConnectionError } fr
 import ConnectionInfo from './connectionInfo'
 import { ApplicationStore } from '../../../../framework/src/store/applicationStore';
 import { showIconLayers, addBaseLayers, swapLayersBack } from '../utils/mapLayers';
+import Statistics from './statistics'
 
 
 
@@ -553,8 +553,6 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
     render() {
 
-        const reachabe = this.props.isTopoServerReachable && this.props.isTileServerReachable;
-
         return <>
 
             <div id="map" style={{ width: "70%", position: 'relative' }} ref={myRef} >
@@ -563,6 +561,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                     <MapPopup onClose={() => { this.setState({ isPopupOpen: false }); }} />
                 }
                 <SearchBar />
+                <Statistics />
                 <ConnectionInfo />
             </div>
         </>
@@ -585,9 +584,6 @@ const mapStateToProps = (state: IApplicationStoreState) => ({
     isTopoServerReachable: state.network.connectivity.isToplogyServerAvailable,
     isTileServerReachable: state.network.connectivity.isTileServerAvailable,
     showIcons: state.network.map.allowIconSwitch
-
-
-
 });
 
 const mapDispatchToProps = (dispatcher: IDispatcher) => ({
