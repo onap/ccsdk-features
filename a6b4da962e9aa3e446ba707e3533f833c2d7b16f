@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c8af32d_f90ba648",
+        "filename": "sdnr/wt/devicemanager-openroadm/installer/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-09-02T15:54:11Z",
+      "side": 0,
+      "message": "what formatter did you use? which removed this blank line.\n\nAs per https://wiki.onap.org/display/DW/SDN-R+Code+style there will always be a blank line after copyright header.",
+      "revId": "a6b4da962e9aa3e446ba707e3533f833c2d7b16f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
