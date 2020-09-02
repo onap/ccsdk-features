@@ -110,11 +110,6 @@ public class OpenroadmNetworkElement implements NetworkElement {
         readInterfaceData(device);
         // Writing initial alarms at the time of device registration
         initialAlarmReader.faultService();
-        // faultEventListener.initCurrentProblemStatus(this.netconfAccessor.getNodeId(),
-        // oScaFaultListener.writeFaultData(this.sequenceNumber));
-        // oScaFaultListener.writeAlarmLog(oScaFaultListener.writeFaultData(this.sequenceNumber));
-        // this.sequenceNumber = this.sequenceNumber + 1;
-
         pmDataEntity = this.openRoadmPmData.buildPmDataEntity(this.openRoadmPmData.getPmData(this.netconfAccessor));
         if (!pmDataEntity.isEmpty()) {
             this.databaseService.doWritePerformanceData(pmDataEntity);
