@@ -78,9 +78,7 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
                 sb.append(", ");
             }
             sb.append(edit);
-
             EventlogBuilder eventlogBuilder = new EventlogBuilder();
-
             InstanceIdentifier<?> target = edit.getTarget();
             if (target != null) {
                 eventlogBuilder.setObjectId(target.getPathArguments().toString());
@@ -91,13 +89,11 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
                 eventlogBuilder.setAttributeName(target.getTargetType().getName());
             }
             eventlogBuilder.setNodeId(netconfAccessor.getNodeId().getValue());
-
             eventlogBuilder.setNewValue(String.valueOf(edit.getOperation()));
             eventlogBuilder.setTimestamp(notification.getChangeTime());
             eventlogBuilder.setCounter(counter);
             eventlogBuilder.setSourceType(SourceType.Netconf);
             databaseProvider.writeEventLog(eventlogBuilder.build());
-
             log.info("onDeviceConfigChange (2) {}", sb);
             counter++;
         }
@@ -107,7 +103,6 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
     public void onCreateTechInfoNotification(CreateTechInfoNotification notification) {
         // TODO Auto-generated method stub
         log.info("onCreateTechInfoNotification(1){}", notification);
-
         EventlogBuilder eventlogBuilder = new EventlogBuilder();
         eventlogBuilder.setId(notification.getShelfId()).setAttributeName(notification.getShelfId())
                 .setObjectId(notification.getShelfId()).setNodeId(this.netconfAccessor.getNodeId().getValue())
@@ -115,7 +110,6 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
         databaseProvider.writeEventLog(eventlogBuilder.build());
         log.info("Create-techInfo Notification written ");
         counter++;
-
     }
     // end of public methods
 
