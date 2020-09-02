@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dca93528_abadc613",
+        "filename": "sdnr/northbound/ranSlice/provider/derby.log",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2020-09-02T15:19:55Z",
+      "side": 1,
+      "message": "This file should be part of the commit.",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 0
+      },
+      "revId": "be832450c15f96f193bc51a9ee10f7806c335d8c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
