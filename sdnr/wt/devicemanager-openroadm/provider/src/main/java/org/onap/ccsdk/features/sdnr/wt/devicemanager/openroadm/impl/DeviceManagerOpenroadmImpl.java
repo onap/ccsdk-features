@@ -81,13 +81,13 @@ public class DeviceManagerOpenroadmImpl implements AutoCloseable {
     }
     // end of public methods
 
+    // private methods
     /**
      * Used to close all Services, that should support AutoCloseable Pattern
      *
      * @param toClose
      * @throws Exception
      */
-    // private methods
     private void close(AutoCloseable... toCloseList) {
         for (AutoCloseable element : toCloseList) {
             if (element != null) {

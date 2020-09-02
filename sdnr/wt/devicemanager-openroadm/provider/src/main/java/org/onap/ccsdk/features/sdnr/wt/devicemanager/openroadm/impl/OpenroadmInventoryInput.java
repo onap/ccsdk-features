@@ -45,11 +45,6 @@ public class OpenroadmInventoryInput {
     private final NetconfAccessor accessor;
     // end of variables
 
-    /**
-     * @param netconfAccessor
-     * @param readDevice
-     */
-
     // constructors
     public OpenroadmInventoryInput(NetconfAccessor netconfAccessor, OrgOpenroadmDevice readDevice) {
         this.openRoadmDevice = readDevice;
