@@ -15,7 +15,6 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-
 import * as React from 'react'
 
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
@@ -30,7 +29,7 @@ type props = Connect<typeof mapStateToProps, typeof mapDispatchToProps>;
 const ConnectionInfo: React.FunctionComponent<props> = (props) => {
 
     return (
-        (props.isCalculationServerReachable === false)?  <Paper style={{padding:5, position: 'absolute', top: 160, width: 230, left:"40%"}}>
+        (props.isCalculationServerReachable === false)?  <Paper style={{padding:5, width: 230, position:"absolute", top:"40%", left:"40%"}}>
         <div style={{display: 'flex', flexDirection: 'column'}}>
         <div style={{'alignSelf': 'center', marginBottom:5}}> <Typography> <FontAwesomeIcon icon={faExclamationTriangle} /> Connection Error</Typography></div>
         {props.isCalculationServerReachable === false && <Typography> Calculation data can't be loaded.</Typography>}
