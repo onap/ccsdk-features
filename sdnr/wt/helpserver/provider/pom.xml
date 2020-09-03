@@ -41,6 +41,7 @@
     <name>ccsdk-features :: ${project.artifactId}</name>
 
     <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
         <checkstyle.skip>true</checkstyle.skip>
     </properties>
 
@@ -70,6 +71,7 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>

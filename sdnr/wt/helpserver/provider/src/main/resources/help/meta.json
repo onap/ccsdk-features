@@ -120,6 +120,36 @@
                     }
                 },
                 "label": "EventLog"
+            },
+            "networkApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/networkMap/README.md",
+                        "label": "NetworkMap"
+                    },
+                    "current": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/networkMap/README.md",
+                        "label": "NetworkMap"
+                    }
+                },
+                "label": "NetworkMap"
+            },
+            "linkCalculationApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/linkCalculator/README.md",
+                        "label": "LinkCalculator"
+                    },
+                    "current": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/linkCalculator/README.md",
+                        "label": "LinkCalculator"
+                    }
+                },
+                "label": "LinkCalculator"
             }
         },
         "versions": {

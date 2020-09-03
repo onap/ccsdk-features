@@ -19,7 +19,7 @@ The following filters are supported by all tables based on the data type of the 
 
 |Data type | Possible Filter | Example |
 | ---------|---------------|---------|
-| Text | Any characters or numbers, matches exactly unless a * is used. The * acts as a wildcard and can be used for contains, ends with and begins with queries. |Test, Tes*, *t |
+| Text | Any characters or numbers, matches exactly unless a * or a ? are used. Both special characters act as wildcards, which can be used for contains, ends with and begins with queries. The * matches any number of characters whereas the ? matches exactly one character. Both wildcards can be used in the same query. |Test, T*, *st, Te?t, ?est |
 | Numeric | < or <= or > or >= or exact number |>5000, 20, <=82 |
 | Boolean |None (no filter set), true or false |true, false |
 
