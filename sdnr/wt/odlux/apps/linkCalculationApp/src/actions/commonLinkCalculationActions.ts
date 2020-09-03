@@ -81,24 +81,24 @@ export class UpdateLatLonAction extends Action{
         
     }
 }
+export class UpdatePolAction extends Action{
+    constructor(public polarization: string){
+        super();
+    }
+}
 export class isCalculationServerReachableAction extends Action{
     constructor(public reachable: boolean){
         super();
     }
 }
+export class updateAltitudeAction extends Action{
+    constructor(
+        public amslA:number,
+        public aglA:number,
+        public amslB:number,
+        public aglB:number
+        ){
+        super();
+    }
+}
 
-// export const checkCalculationsServerConnectivityAction = (callback: Promise<any>) => (dispatcher: Dispatch, getState: () => IApplicationStoreState)=>{
-//     callback
-//     .then(res =>{ 
-//         const {linkCalculation:{calculations: {isCalculationServerAvailable}}} = getState();
-//         if(!isToplogyServerAvailable){
-//             dispatcher(new IsTopologyServerReachableAction(true))
-//         }
-//     })
-//     .catch(error=>{
-//         const {network:{connectivity: {isToplogyServerAvailable}}} = getState();
-//         if(isToplogyServerAvailable){
-//            dispatcher(new IsTopologyServerReachableAction(false))
-//         }
-//     })
-// }
