@@ -15,14 +15,13 @@
 * the License.
 * ============LICENSE_END==========================================================================
 */
-// main state handler
 
 import { combineActionHandler } from '../../../../framework/src/flux/middleware';
 
 // ** do not remove **
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { IActionHandler } from '../../../../framework/src/flux/action';;
-import { UpdateLinkIdAction, UpdateFrequencyAction , UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, updateHideForm, UpdateFslCalculation, UpdateSiteAction, UpdateDistanceAction, isCalculationServerReachableAction} from '../actions/commonLinkCalculationActions';
+import { UpdateLinkIdAction, UpdateFrequencyAction , UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, updateHideForm, UpdateFslCalculation, UpdateSiteAction, UpdateDistanceAction, isCalculationServerReachableAction, UpdatePolAction, updateAltitudeAction} from '../actions/commonLinkCalculationActions';
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
@@ -48,7 +47,12 @@ export type ILinkCalculationAppStateState= {
   rainAtt : number,
   siteA: any,
   siteB: any,
-  reachable: boolean
+  reachable: boolean,
+  polarization : string | null,
+  amslA: number, 
+  amslB:number, 
+  aglA: number, 
+  aglB:number
 }
 
 const initialState: ILinkCalculationAppStateState ={
@@ -65,7 +69,12 @@ const initialState: ILinkCalculationAppStateState ={
   siteB: '',
   rainVal : 0,
   rainAtt: 0,
-  reachable : true
+  reachable : true,
+  polarization : 'Horizontal',
+  amslA: 0, 
+  amslB:0, 
+  aglA: 0, 
+  aglB:0
 }
 
 
@@ -102,7 +111,12 @@ export const LinkCalculationHandler: IActionHandler<ILinkCalculationAppStateStat
   }
   else if(action instanceof isCalculationServerReachableAction){
     state = Object.assign({}, state, { reachable: action.reachable });
-}
+  }
+  else if (action instanceof UpdatePolAction){
+    state = Object.assign({}, state, {polarization: action.polarization})
+  }else if (action instanceof updateAltitudeAction){
+    state = Object.assign({}, state, {amslA:action.amslA, amslB:action.amslA, aglA:action.aglA, aglB:action.aglB})
+  }
   return state
 }
 

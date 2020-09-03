@@ -15,6 +15,7 @@
 * the License.
 * ============LICENSE_END==========================================================================
 */
+
 // app configuration and main entry point for the app
 
 import * as React from "react";
@@ -27,13 +28,14 @@ import  LinkCalculation  from './views/linkCalculationComponent';
 import LinkCalculationAppRootHandler from './handlers/linkCalculationAppRootHandler';
 import connect, { Connect, IDispatcher } from '../../../framework/src/flux/connect';
 import { IApplicationStoreState } from "../../../framework/src/store/applicationStore";
-import { UpdateLinkIdAction, UpdateLatLonAction, updateHideForm, UpdateSiteAction, UpdateDistanceAction } from "./actions/commonLinkCalculationActions";
+import { UpdateLinkIdAction, UpdateLatLonAction, updateHideForm, UpdateSiteAction, UpdateDistanceAction, isCalculationServerReachableAction, updateAltitudeAction } from "./actions/commonLinkCalculationActions";
 
 
 let currentLinkId: string | null = null;
 let lastUrl: string = "/linkCalculation";
 
 const mapProps = (state: IApplicationStoreState) => ({
+  reachable: state.linkCalculation.calculations.reachable
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
@@ -50,6 +52,12 @@ const mapDisp = (dispatcher: IDispatcher) => ({
     dispatcher.dispatch(new UpdateLatLonAction(Lat1, Lon1, Lat2, Lon2))
     dispatcher.dispatch(new updateHideForm (true))
   },
+  updateAltitude : (amslA:number, aglA:number, amslB:number, aglB:number) => {
+    dispatcher.dispatch(new updateAltitudeAction(amslA,aglA,amslB,aglB))
+  }
+  // UpdateConectivity : (reachable:boolean) => {
+  //   dispatcher.dispatch (new isCalculationServerReachableAction (reachable))
+  // }
 });
 
 
@@ -69,7 +77,6 @@ const LinkCalculationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComp
     if (data !== undefined && data.length>0){
 
     
-    
     const lat1 = data.split('&')[0].split('=')[1]
     const lon1 = data.split('&')[1].split('=')[1]
     const lat2 = data.split('&')[2].split('=')[1]
@@ -80,12 +87,20 @@ const LinkCalculationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComp
 
     const distance = data.split('&')[8].split('=')[1]
 
+    const amslA = data.split('&')[9].split('=')[1]
+    const aglA = data.split('&')[10].split('=')[1]
+
+    const amslB = data.split('&')[11].split('=')[1]
+    const aglB = data.split('&')[12].split('=')[1]
+
 
     props.updateSiteName(String(siteNameA), String(siteNameB))
+
     props.updateDistance(Number(distance))
 
-
     props.updateLatLon(Number(lat1),Number(lon1),Number(lat2),Number(lon2))
+
+    props.updateAltitude (Number(amslA), Number(aglA), Number(amslB), Number(aglB))
     
     }
     
