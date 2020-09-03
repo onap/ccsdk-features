@@ -24,7 +24,6 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataMigrationReport;
@@ -54,7 +53,7 @@ public class TestMigrationProvider {
             //import data into database
             DataMigrationReport report = provider.importData(FRANKFURT_BACKUP_FILE, false, Release.FRANKFURT_R2);
             assertTrue(report.completed());
-            assertEquals(Release.FRANKFURT_R2, provider.autoDetectRelease());
+            assertEquals(Release.CURRENT_RELEASE, provider.autoDetectRelease());
         } catch (Exception e) {
             fail(e.getMessage());
         }

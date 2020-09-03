@@ -23,7 +23,6 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 
 import java.util.Map;
 import java.util.Set;
-
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.IndicesEntryList;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
@@ -35,7 +34,6 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.elalto.ElAltoReleaseIn
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformationR2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin.GuilinReleaseInformation;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin.GuilinReleaseInformationR2;
 
 public abstract class ReleaseInformation {
 
@@ -53,7 +51,7 @@ public abstract class ReleaseInformation {
 
     /**
      * get database alias for component
-     * 
+     *
      * @param name
      * @return alias or null if not exists
      */
@@ -67,7 +65,7 @@ public abstract class ReleaseInformation {
 
     /**
      * get index name for component
-     * 
+     *
      * @param comp
      * @return null if component does not exists in this release, otherwise index name
      */
@@ -77,7 +75,7 @@ public abstract class ReleaseInformation {
 
     /**
      * get index name for component with prefix
-     * 
+     *
      * @param comp
      * @param prefix
      * @return null if component does not exists in this release, otherwise index name
@@ -88,7 +86,7 @@ public abstract class ReleaseInformation {
 
     /**
      * get database datatype (doctype) for component
-     * 
+     *
      * @param name
      * @return datatype or null if not exists
      */
@@ -102,7 +100,7 @@ public abstract class ReleaseInformation {
 
     /**
      * get database doctype definition for component
-     * 
+     *
      * @param name
      * @return mappings or null if not exists
      */
@@ -112,7 +110,7 @@ public abstract class ReleaseInformation {
 
     /**
      * get database settings definition for component
-     * 
+     *
      * @param name
      * @return settings or null if not exists
      */
@@ -122,7 +120,7 @@ public abstract class ReleaseInformation {
 
     /**
      * get converter for component data
-     * 
+     *
      * @param dst destination release
      * @param comp component to convert
      * @return
@@ -144,8 +142,6 @@ public abstract class ReleaseInformation {
                 return new FrankfurtReleaseInformationR2();
             case GUILIN_R1:
                 return new GuilinReleaseInformation();
-            case GUILIN_R2:
-                return new GuilinReleaseInformationR2();
             default:
                 return null;
         }
@@ -192,7 +188,7 @@ public abstract class ReleaseInformation {
     protected abstract boolean runPreInitCommands(HtDatabaseClient dbClient);
 
     /**
-     * 
+     *
      * @param dbClient
      * @return if succeeded or not
      */

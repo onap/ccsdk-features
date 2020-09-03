@@ -24,6 +24,10 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterSettingsRequest;
+import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterSettingsResponse;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo7;
@@ -31,10 +35,6 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterSettingsRequest;
-import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterSettingsResponse;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 
 public class FrankfurtReleaseInformationR2 extends ReleaseInformation {
 
@@ -45,7 +45,7 @@ public class FrankfurtReleaseInformationR2 extends ReleaseInformation {
         super(Release.FRANKFURT_R2, createDBMap());
     }
 
-    private static Map<ComponentName, DatabaseInfo> createDBMap() {
+    public static Map<ComponentName, DatabaseInfo> createDBMap() {
         Map<ComponentName, DatabaseInfo> map = new HashMap<>();
         map.put(ComponentName.CONNECTIONLOG, new DatabaseInfo7("connectionlog", "connectionlog",
                 "{\"node-id\": {\"type\": \"keyword\"},\"timestamp\": {\"type\": \"date\"},\"status\": {\"type\": \"keyword\"}}"));
