@@ -18,6 +18,8 @@
 
 export const URL_API="/topology"
 export const URL_TILE_API = '/tiles';
+//'/tiles'
+//'http://tile.openstreetmap.org'
 
 
 export const OSM_STYLE = {
@@ -26,14 +28,17 @@ export const OSM_STYLE = {
         'raster-tiles': {
             'type': 'raster',
             'tiles': [
+                //'https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg'
                URL_TILE_API+'/{z}/{x}/{y}.png'
-
+               // 'http://192.168.178.107/osm/{z}/{x}/{y}.png'
             ],
             'tileSize': 256,
             'attribution':
                 'Data by <a target="_top" rel="noopener" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" rel="noopener" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'
         }
     },
+    "glyphs": "http://localhost:3000/fonts/_output/{fontstack}/{range}.pbf",
+    //"glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
     'layers': [
         {
             'id': 'simple-tiles',

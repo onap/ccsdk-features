@@ -126,11 +126,11 @@ class ConnectService {
 
   /** Yang capabilities of the selected network elements. */
   public async infoNetworkElement(nodeId: string): Promise<TopologyNode | null> {
-    const path = '/rests/operational/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
+    const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
     const topologyRequestPomise = requestRest<Topology>(path, { method: "GET" });
 
     return topologyRequestPomise && topologyRequestPomise.then(result => {
-      return result && result.node && result.node[0] || null;
+      return result && result["network-topology:node"] && result["network-topology:node"][0] || null;
     });
   }
 

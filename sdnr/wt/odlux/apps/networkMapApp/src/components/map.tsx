@@ -18,6 +18,7 @@
 
 import * as React from 'react'
 import * as mapboxgl from 'mapbox-gl';
+import InfoIcon from '@material-ui/icons/Info';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 
@@ -39,11 +40,11 @@ import datacenter from '../../icons/datacenter.png';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
 import SearchBar from './searchBar';
+import IconSwitch from './iconSwitch'
 import { verifyResponse, IsTileServerReachableAction, handleConnectionError } from '../actions/connectivityAction';
 import ConnectionInfo from './connectionInfo'
 import { ApplicationStore } from '../../../../framework/src/store/applicationStore';
 import { showIconLayers, addBaseLayers, swapLayersBack } from '../utils/mapLayers';
-import Statistics from './statistics'
 
 
 
@@ -553,6 +554,8 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
     render() {
 
+        const reachabe = this.props.isTopoServerReachable && this.props.isTileServerReachable;
+
         return <>
 
             <div id="map" style={{ width: "70%", position: 'relative' }} ref={myRef} >
@@ -561,7 +564,22 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                     <MapPopup onClose={() => { this.setState({ isPopupOpen: false }); }} />
                 }
                 <SearchBar />
-                <Statistics />
+
+
+                <Paper style={{ padding: 5, position: 'absolute', display: 'flex', flexDirection: "column", top: 70, width: 200, marginLeft: 5 }}>
+                    <div style={{ display: 'flex', flexDirection: "row" }}>
+                        <Typography style={{ fontWeight: "bold", flex: "1", color: reachabe ? "black" : "lightgrey" }} >Statistics</Typography>
+                        <Tooltip style={{ alignSelf: "flex-end" }} title="Gets updated when the map stops moving.">
+                            <InfoIcon fontSize="small" />
+                        </Tooltip>
+                    </div>
+
+                    <Typography style={{ color: reachabe ? "black" : "lightgrey" }}>Sites: {this.props.siteCount}</Typography>
+                    <Typography style={{ color: reachabe ? "black" : "lightgrey" }}>Links: {this.props.linkCount}</Typography>
+
+
+                </Paper>
+                <IconSwitch visible={this.props.zoom > 11} />
                 <ConnectionInfo />
             </div>
         </>
@@ -584,6 +602,9 @@ const mapStateToProps = (state: IApplicationStoreState) => ({
     isTopoServerReachable: state.network.connectivity.isToplogyServerAvailable,
     isTileServerReachable: state.network.connectivity.isTileServerAvailable,
     showIcons: state.network.map.allowIconSwitch
+
+
+
 });
 
 const mapDispatchToProps = (dispatcher: IDispatcher) => ({

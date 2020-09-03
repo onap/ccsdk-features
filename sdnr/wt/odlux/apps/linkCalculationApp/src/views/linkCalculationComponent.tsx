@@ -2,7 +2,7 @@
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
  * =================================================================================================
- * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -19,11 +19,11 @@ import * as React from "react";
 
 import { Connect, connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
-import { TextField, Tabs, Tab, Typography, AppBar, Button, Tooltip } from '@material-ui/core';
+import { TextField, Tabs, Tab, Typography, AppBar, Button, Tooltip, Checkbox, Table, TableCell, TableHead, TableRow, TableBody, Paper } from '@material-ui/core';
 import DenseTable from '../components/denseTable'
 
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
-import { UpdateFrequencyAction, UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, UpdateFslCalculation, isCalculationServerReachableAction } from "../actions/commonLinkCalculationActions";
+import { UpdateFrequencyAction, UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, UpdateFslCalculation, isCalculationServerReachableAction, UpdatePolAction, UpdateDistanceAction, updateAltitudeAction } from "../actions/commonLinkCalculationActions";
 import { faPlaneArrival } from "@fortawesome/free-solid-svg-icons";
 
 const mapProps = (state: IApplicationStoreState) => ({
@@ -40,7 +40,12 @@ const mapProps = (state: IApplicationStoreState) => ({
   siteA: state.linkCalculation.calculations.siteA,
   siteB: state.linkCalculation.calculations.siteB,
   distance: state.linkCalculation.calculations.distance,
-  reachable :state.linkCalculation.calculations.reachable
+  reachable :state.linkCalculation.calculations.reachable,
+  polarization:state.linkCalculation.calculations.polarization,
+  amslA:state.linkCalculation.calculations.amslA,
+  amslB:state.linkCalculation.calculations.amslB,
+  aglA:state.linkCalculation.calculations.aglA,
+  aglB:state.linkCalculation.calculations.aglB
 });
 
 const BASE_URL="/topology/services"
@@ -52,9 +57,7 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
 
   },
   updateLatLon: (Lat1: number, Lon1: number, Lat2: number, Lon2: number) => {
-
     dispatcher.dispatch(new UpdateLatLonAction(Lat1, Lon1, Lat2, Lon2))
-
   },
   
   updateRainValue: (rainVal: number) => {
@@ -76,18 +79,31 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
 
   UpdateConectivity : (reachable:boolean) => {
     dispatcher.dispatch (new isCalculationServerReachableAction (reachable))
+  },
+
+  updatePolarization :(polarization:any)=>{
+    dispatcher.dispatch (new UpdatePolAction(polarization))
+  },
+
+  updateAutoDistance : (distance:number)=>{
+    dispatcher.dispatch (new UpdateDistanceAction(distance))
   }
 });
 
-class LinkCalculation extends React.Component<Connect<typeof mapProps, typeof mapDispatch>, { rainMethodDisplay: boolean }> {
+type linkCalculationProps = Connect<typeof mapProps, typeof mapDispatch>;
+
+class LinkCalculation extends React.Component<linkCalculationProps, {rainMethodDisplay: boolean, horizontalBoxChecked: boolean}> {
   constructor(props: any) {
     super(props)
-    this.state = { rainMethodDisplay: true }
-  }
-
-  handleChange = (e: number) => {
-    this.props.updateFrequency(e)
-  }
+    this.state = { rainMethodDisplay: false,
+      horizontalBoxChecked: true
+                }
+    } 
+  updateAutoDistance = async (lat1: number, lon1: number, lat2: number, lon2: number)=>{
+     const result = await fetch(BASE_URL+'/calculations/distance/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2)
+      const json = await result.json()
+      return json.distanceInKm
+      }
 
   updateLatLon = (e: any) => {
     
@@ -96,6 +112,13 @@ class LinkCalculation extends React.Component<Connect<typeof mapProps, typeof ma
     if (e.target.id == 'Lat2') this.props.updateLatLon(this.props.lat1, this.props.lon1, e.target.value, this.props.lon2)
     if (e.target.id == 'Lon2') this.props.updateLatLon(this.props.lat1, this.props.lon1, this.props.lat2, e.target.value)
 
+  }
+
+  updatePoli = (val: string) =>{
+
+    this.setState({horizontalBoxChecked: !this.state.horizontalBoxChecked});
+    this.props.updatePolarization(val);
+    //this.forceUpdate();
   }
 
   LatLonToDMS = (value: number, isLon: boolean = false) => {
@@ -114,24 +137,23 @@ class LinkCalculation extends React.Component<Connect<typeof mapProps, typeof ma
     }
   }
 
-  calRain = (lat1: any, lon1: any, lat2: any, lon2: any, frequency: any) => {
-    fetch(BASE_URL+'/calculations/rain/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' + frequency)
+  rainAttCal = (lat1: any, lon1: any, lat2: any, lon2: any, frequency: any, distance: number, polarization : any) => {
+    fetch(BASE_URL+'/calculations/rain/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' + frequency+ '/'+ distance + '/' + polarization)
       .then(res => res.json())
       .then(result => { this.props.UpdateRainAtt(result.RainAtt) })
   }
 
 
-  updateRainValue = (lat1: any, lon1: any, lat2: any, lon2: any) => {
-    fetch(BASE_URL+'/calculations/rain/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2)
-      .then(res => res.json())
-      .then(result => { this.props.updateRainValue(result.RainAtt) })
-  }
-
-
-  specificRain = (rainfall: number, frequency: number) => {
-    fetch(BASE_URL+'/calculations/rain/' + rainfall + '/' + frequency)
+  manualRain = (rainfall: number, frequency: number, distance:number, polarization : any) => {
+    fetch(BASE_URL+'/calculations/rain/' + rainfall + '/' + frequency + '/' + distance+ '/' + polarization)
       .then(res => res.json())
       .then(result => { this.props.specificRain(result.RainAtt) })
+    }
+
+  updateRainValue = (lat1: any, lon1: any, lat2: any, lon2: any) => {
+      fetch(BASE_URL+'/calculations/rainval/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2)
+        .then(res => res.json())
+        .then(result => {this.props.updateRainValue(result.rainFall) })
     }
 
     FSL = (distance:number, frequency:number) => {
@@ -140,17 +162,22 @@ class LinkCalculation extends React.Component<Connect<typeof mapProps, typeof ma
       .then (result => {this.props.FSL(result.free)})
     }
 
-  buttonHandler =() => {
+   
+
+  buttonHandler = async () => {
+      this.props.updateAutoDistance(await this.updateAutoDistance(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2))
+
       this.FSL(this.props.distance, this.props.frequency)
 
       if (this.state.rainMethodDisplay === true){
 
-        this.specificRain(this.props.rainVal, this.props.frequency); 
+        this.manualRain(this.props.rainVal, this.props.frequency, this.props.distance, this.props.polarization); 
       }
       else {
-        this.calRain(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency);
         this.updateRainValue(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2)
+        this.rainAttCal(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency, this.props.distance, this.props.polarization);
       }
+
   }
 
   componentDidMount = () => {
@@ -158,51 +185,31 @@ class LinkCalculation extends React.Component<Connect<typeof mapProps, typeof ma
     .then(res => {if (res.ok) {this.props.reachable===false && this.props.UpdateConectivity(true)}else {this.props.reachable===true && this.props.UpdateConectivity(false)} })
     .catch (res => {this.props.reachable===true && this.props.UpdateConectivity(false)} )
   }
-  
+
+  handleChange =(e:any) => {
+  this.props.updatePolarization(e.target.value)
+  }
+
+  // AbsorptionAttW = () => {
+  //   fetch(BASE_URL+'/calculations/FSL/' + distance + '/' + frequency)
+  //   .then(res=>res.json())
+  //   .then (result => {this.props.FSL(result.free)})
+  // }
+
+  // AbsorptionAttOx =() => {
+  //   fetch(BASE_URL+'/calculations/FSL/' + distance + '/' + frequency)
+  //   .then(res=>res.json())
+  //   .then (result => {this.props.FSL(result.free)})
+  // }
+
+  componentDidUpdate(prevProps: linkCalculationProps){
+
+    console.log("comp updated. New props:"+this.props.polarization);
+    console.log(prevProps.polarization);
+  }
+
   render() {
-    console.log(this.props);
-    const data = [
-
-      { name: "Site Name", val1: this.props.siteA, val2: '', val3:  this.props.siteB},
-      { name: "Latitude", val1: this.props.lat1 && this.LatLonToDMS(this.props.lat1), val2:'', val3: this.props.lat2 && this.LatLonToDMS(this.props.lat2) },
-      { name: "Longitude", val1: this.props.lon1 && this.LatLonToDMS(this.props.lon1, true), val2:'', val3: this.props.lon2 && this.LatLonToDMS(this.props.lon2, true) },
-      { name: "Azimuth in °", val1: '', val2: '' , val3:''},
-      { name: "", val1: '', val2: '' , val3:''},
-      { name: "Distance (km)", val1: '', val2: (this.props.distance).toFixed(3) ,val3:'' },
-      {name: 'Polarization', val1:'', val2: <div><input type='checkbox' id='Horizontal' value ="Horizontal"></input>Horizontal<br />
-      <input type='checkbox' id='Vertical' value ="Vertical"></input>Vertical
-      </div>, val3:''},
-      {name : 'Frequency (GHz)', val1: '', val2:  <div> 
-      <select onChange={(e) => this.handleChange(Number(e.target.value))}>
-      <option value='' >Select Freq</option>
-      <option value='7' >7 GHz</option>
-      <option value='11' >11 GHz</option>
-      <option value='15' >15 GHz</option>
-      <option value='23' >23 GHz</option>
-      <option value='26' >26 GHz</option>
-      <option value='28' >28 GHz</option>
-      <option value='38' >38 GHz</option>
-      <option value='42' >42 GHz</option>
-      <option value='80' >80 GHz</option>
-        </select></div>,val3: ''},
-      {name: 'Free Space Loss (dB)' ,val1: '', val2: this.props.fsl,val3: ''},
-      {name:'Rain Model', val1:'', val2: <div>
-      <select onChange={e => { this.setState({ rainMethodDisplay: !this.state.rainMethodDisplay }) }} >
-        <option value='' >Select Rain Method</option>
-        <option value='itu' onSelect={e => { this.setState({ rainMethodDisplay: false }) }}>ITU-R P.837-7</option>
-        <option value='manual' onSelect={(e) => { this.updateRainValue(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2) }}  >Specific Rain</option>
-      </select> </div>, val3:''},
-      {name: 'Rainfall Rate (mm/h)', val1: '', val2:<label>
-       <input type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => { this.props.updateRainValue(Number(e.target.value)) }}
-        value={this.props.rainVal} disabled={this.state.rainMethodDisplay === false ? true : false}>
-      </input></label>, val3:''},
-      {name: 'Rain Loss (dB/km)', val1: '', val2: this.props.rainAtt, val3: ''},
-      {name: '', val1:'', val2:<button style={{color: '#222', fontFamily:'Arial', boxAlign: 'center', display:'inline-block', insetInlineStart: '20' }}
-      onClick = {(e) => this.buttonHandler()} >Calculate</button>, val3:'' }
-     
-    ];
-
-
+    
     return <div>
       Link Calculation app. LinkId: {this.props.linkId} <br />
 
@@ -230,17 +237,133 @@ class LinkCalculation extends React.Component<Connect<typeof mapProps, typeof ma
           </div>
         </form>
         }
+
+<Paper style={{borderRadius:"0px"}}>
+       <div style={{ height:600, overflow:"auto"}}>
+            <Table stickyHeader size="small" aria-label="a dense table" >
+                <TableHead>
+                    <TableRow>
+                    <TableCell >{""}  </TableCell>
+                    <TableCell >{"Site A"}</TableCell>
+                    <TableCell > {""} </TableCell>
+                    <TableCell >{"Site B"}  </TableCell>
+                </TableRow>
+                </TableHead>
+              <TableBody>
+                <TableRow>
+                    <TableCell >{"Site Name"}  </TableCell>
+                    <TableCell >{this.props.siteA}</TableCell>
+                    <TableCell > {""} </TableCell>
+                    <TableCell >{this.props.siteB}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Latitude"}  </TableCell>
+                    <TableCell >{this.props.lat1  && this.LatLonToDMS(this.props.lat1)} </TableCell>
+                    <TableCell > {""} </TableCell>
+                    <TableCell >{this.props.lat2 && this.LatLonToDMS(this.props.lat2)}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Longitude"}  </TableCell>
+                    <TableCell >{this.props.lon1 && this.LatLonToDMS(this.props.lon1)}</TableCell>
+                    <TableCell > {""} </TableCell>
+                    <TableCell >{this.props.lon2 && this.LatLonToDMS(this.props.lon2)}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Azimuth"}  </TableCell>
+                    <TableCell >{""}</TableCell>
+                    <TableCell > {""} </TableCell>
+                    <TableCell >{""}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Average Mean Sea Level"}  </TableCell>
+                    <TableCell >{this.props.amslA + ' m'}</TableCell>
+                    <TableCell > {""} </TableCell>
+                    <TableCell >{this.props.amslB+ ' m'}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Antenna Height Above Ground"}  </TableCell>
+                    <TableCell >{this.props.aglA+ ' m'}</TableCell>
+                    <TableCell > {""} </TableCell>
+                    <TableCell >{this.props.aglB+ ' m'}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Distance"}  </TableCell>
+                    <TableCell >{""}</TableCell>
+                    <TableCell > {this.props.distance.toFixed(3)+ ' km'} </TableCell>
+                    <TableCell >{""}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Polarization"}  </TableCell>
+                    <TableCell >{""}</TableCell>
+                    <TableCell > {<form><input type='checkbox' id='Horizontal' value ="Horizontal" checked= {this.props.polarization==='Horizontal'} onClick= {(e: any) => this.props.updatePolarization(e.target.value)}></input>Horizontal<br />
+                    <input type='checkbox' id='Vertical' value ="Vertical" checked= {this.props.polarization==='Vertical'} onClick= {(e:any)=>{this.props.updatePolarization(e.target.value)}}></input>Vertical</form>} </TableCell>
+                    <TableCell >{""}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Frequency"}  </TableCell>
+                    <TableCell >{""}</TableCell>
+                    <TableCell > {<select onChange={(e) => this.props.updateFrequency(Number(e.target.value))}>
+                        <option value='' >Select Freq</option>
+                        <option value='7' >7 GHz</option>
+                        <option value='11' >11 GHz</option>
+                        <option value='15' >15 GHz</option>
+                        <option value='23' >23 GHz</option>
+                        <option value='26' >26 GHz</option>
+                        <option value='28' >28 GHz</option>
+                        <option value='38' >38 GHz</option>
+                        <option value='42' >42 GHz</option>
+                        <option value='80' >80 GHz</option>
+                        </select>} 
+                      </TableCell>
+                    <TableCell >{""}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Free Space Loss"}  </TableCell>
+                    <TableCell >{""}</TableCell>
+                    <TableCell > {this.props.fsl + ' dB'} </TableCell>
+                    <TableCell >{""}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Rain Model"}  </TableCell>
+                    <TableCell >{""}</TableCell>
+                    <TableCell > {<select onChange = {(e) => {e.target.value === 'itu' ? this.setState({ rainMethodDisplay: false}):this.setState({ rainMethodDisplay: true}) }}>
+                      <option >Select Rain Method</option>
+                      <option value='itu' >ITU-R P.837-7</option>
+                      <option value='manual'  >Specific Rain</option>
+                      </select>} </TableCell>
+                    <TableCell >{""} </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Rainfall Rate"}  </TableCell>
+                    <TableCell >{""}</TableCell>
+                    <TableCell > {<form><input type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => { this.props.updateRainValue(Number(e.target.value)) }}
+                    value={this.props.rainVal} disabled={this.state.rainMethodDisplay === false ? true : false}>
+                    </input>  mm/hr</form> } </TableCell>
+                    <TableCell >{""}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{"Rain Loss"}  </TableCell>
+                    <TableCell >{""}</TableCell>
+                    <TableCell > {this.props.rainAtt + ' dB'} </TableCell>
+                    <TableCell >{""}  </TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell >{""}  </TableCell>
+                    <TableCell >{""}</TableCell>
+                    <TableCell > {<button style={{color: '#222', fontFamily:'Arial', boxAlign: 'center', display:'inline-block', insetInlineStart: '20' }}
+                    onClick = {(e) => this.buttonHandler()} >Calculate</button>} </TableCell>
+                    <TableCell >{""}  </TableCell>
+                </TableRow>
+
+                </TableBody>
+            </Table>
+            </div>
+        </Paper>
       
-        <DenseTable height={600} width={1300} hover={true} headers={["", "Site A","", "Site B"]} data={data}> </DenseTable>
-
-          
-
-      
-    </div>
-
-  }
-
-
+        
+        
+        </div>
+    }
 }
 
 export default connect(mapProps, mapDispatch)(LinkCalculation);

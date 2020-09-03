@@ -19,6 +19,7 @@
 import * as React from 'react';
 import  Map from './components/map'
 import Details from './components/details/details'
+import SearchBar from './components/searchBar'
 
 function MainView() {
   return (

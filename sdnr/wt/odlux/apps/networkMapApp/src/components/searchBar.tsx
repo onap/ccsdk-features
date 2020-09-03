@@ -84,6 +84,7 @@ const SearchBar: React.FunctionComponent<searchBarProps> = (props) =>{
              if(suceededResults.length==0){
               setAnchorEl(divRef.current);
               setErrorMessage("No element found.")
+              //hide element after x secs
 
              }else{
               suceededResults[0].json().then(result =>{

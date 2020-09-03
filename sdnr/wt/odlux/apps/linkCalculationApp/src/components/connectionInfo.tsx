@@ -15,7 +15,6 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-
 import * as React from 'react'
 
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
