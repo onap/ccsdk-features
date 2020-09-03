@@ -21,43 +21,25 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import java.io.IOException;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterSettingsRequest;
+import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterSettingsResponse;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.KeepDataSearchHitConverter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformationR2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GuilinReleaseInformation extends ReleaseInformation {
 
-    /**
-     * @param r
-     * @param dbMap
-     */
+    private final Logger LOG = LoggerFactory.getLogger(GuilinReleaseInformation.class);
     public GuilinReleaseInformation() {
-        super(Release.GUILIN_R1, createDBMap());
+        super(Release.GUILIN_R1, FrankfurtReleaseInformationR2.createDBMap());
 
-    }
-
-    private static Map<ComponentName, DatabaseInfo> createDBMap() {
-        Map<ComponentName, DatabaseInfo> map = new HashMap<>();
-        map.put(ComponentName.EVENTLOG, new DatabaseInfo("eventlog", "eventlog", ""));
-        map.put(ComponentName.FAULTCURRENT, new DatabaseInfo("faultcurrent", "faultcurrent", ""));
-        map.put(ComponentName.FAULTLOG, new DatabaseInfo("faultlog", "faultlog", ""));
-        map.put(ComponentName.INVENTORY, new DatabaseInfo("inventoryequipment", "inventoryequipment", ""));
-        map.put(ComponentName.HISTORICAL_PERFORMANCE_15M,
-                new DatabaseInfo("historicalperformance15min", "historicalperformance15min", ""));
-        map.put(ComponentName.HISTORICAL_PERFORMANCE_24H,
-                new DatabaseInfo("historicalperformance24h", "historicalperformance24h", ""));
-        map.put(ComponentName.REQUIRED_NETWORKELEMENT,
-                new DatabaseInfo("networkelement-connection", "networkelement-connection", ""));
-        map.put(ComponentName.MEDIATOR_SERVER, new DatabaseInfo("mediator-server", "mediator-server", ""));
-        map.put(ComponentName.MAINTENANCE, new DatabaseInfo("maintenancemode", "maintenancemode", ""));
-        return map;
     }
 
     @Override
@@ -70,7 +52,13 @@ public class GuilinReleaseInformation extends ReleaseInformation {
 
     @Override
     protected boolean runPreInitCommands(HtDatabaseClient dbClient) {
-        return true;
+        ClusterSettingsResponse response = null;
+        try {
+            response = dbClient.setupClusterSettings(new ClusterSettingsRequest(false).maxCompilationsPerMinute(400));
+        } catch (IOException e) {
+            LOG.warn("problem setting up cluster: {}", e);
+        }
+        return response == null ? false : response.isAcknowledged();
     }
 
     @Override

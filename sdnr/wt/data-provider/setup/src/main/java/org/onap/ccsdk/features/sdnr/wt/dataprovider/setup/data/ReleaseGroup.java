@@ -23,7 +23,6 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
 
 /**
@@ -32,10 +31,9 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
  */
 public enum ReleaseGroup {
 
-    EL_ALTO(Release.EL_ALTO), FRANKFURT(Release.FRANKFURT_R1, Release.FRANKFURT_R2), GUILIN(Release.GUILIN_R1,
-            Release.GUILIN_R2);
+    EL_ALTO(Release.EL_ALTO), FRANKFURT(Release.FRANKFURT_R1, Release.FRANKFURT_R2), GUILIN(Release.GUILIN_R1);
 
-    public static final ReleaseGroup CURRENT_RELEASE = FRANKFURT;
+    public static final ReleaseGroup CURRENT_RELEASE = GUILIN;
 
     private final List<Release> releases;
 
