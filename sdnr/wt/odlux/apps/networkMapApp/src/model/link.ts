@@ -25,6 +25,6 @@ export type link = {id: string,
      siteB: string,
     azimuthA: number,
     azimuthB: number,
-    locationA:{lon: number, lat: number},
-    locationB:{lon: number, lat: number}
+    locationA: { lon: number, lat: number, amsl?:number, antennaHeight?: number },
+    locationB: { lon: number, lat: number, amsl?:number, antennaHeight?: number },
  };

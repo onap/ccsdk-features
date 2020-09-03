@@ -19,6 +19,9 @@
 import * as mapboxgl from 'mapbox-gl';
 import { Feature } from 'model/Feature';
 
+const fibreLinkColor = "#1154d9";
+const microwaveLinkColor="#039903";
+
 
 export const addBaseLayers = (map: mapboxgl.Map, selectedPoint: Feature|null, selectedLine: Feature|null) => {
        
@@ -50,7 +53,7 @@ export const addBaseLayers = (map: mapboxgl.Map, selectedPoint: Feature|null, se
     });
 
     map.addLayer({
-        'id': 'lines',
+        'id': 'microwave-lines',
         'type': 'line',
         'source': 'lines',
         'layout': {
@@ -58,13 +61,29 @@ export const addBaseLayers = (map: mapboxgl.Map, selectedPoint: Feature|null, se
             'line-cap': 'round'
         },
         'paint': {
-            'line-color': '#888',
+            'line-color': microwaveLinkColor,
             'line-width': 2
-        }
+        },
+        'filter': ['==', 'type', 'microwave']
     });
 
     map.addLayer({
-        'id': 'selectedLine',
+        'id': 'fibre-lines',
+        'type': 'line',
+        'source': 'lines',
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        },
+        'paint': {
+            'line-color': fibreLinkColor,
+            'line-width': 2
+        },
+        'filter': ['==', 'type', 'fibre']
+    });
+
+    map.addLayer({
+        'id': 'selectedLineMicrowave',
         'type': 'line',
         'source': 'selectedLine',
         'layout': {
@@ -72,9 +91,25 @@ export const addBaseLayers = (map: mapboxgl.Map, selectedPoint: Feature|null, se
             'line-cap': 'round'
         },
         'paint': {
-            'line-color': '#888',
+            'line-color': microwaveLinkColor,
             'line-width': 4
-        }
+        },
+        'filter': ['==', 'type', 'microwave']
+    });
+
+    map.addLayer({
+        'id': 'selectedLineFibre',
+        'type': 'line',
+        'source': 'selectedLine',
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        },
+        'paint': {
+            'line-color': fibreLinkColor,
+            'line-width': 4
+        },
+        'filter': ['==', 'type', 'fibre']
     });
 
 
@@ -136,7 +171,7 @@ export const removeBaseLayers = (map: mapboxgl.Map) => {
 
 let checkedLayers = false;
 
-const createFilter = (type:'street lamp'|'high rise building'|'data center', selectedSiteId?:string) =>{
+const createFilter = (type:'street lamp'|'high rise building'|'data center'|'factory', selectedSiteId?:string) =>{
 
     return selectedSiteId === undefined ? ['==', 'type', type] : ["all", ['==', 'type', type], ['!=', 'id', selectedSiteId]]
 }
@@ -159,11 +194,11 @@ export const showIconLayers = (map: mapboxgl.Map, show: boolean, selectedSiteId?
             });
             checkedLayers=true;
 
-            if(elements.length>0 && elements.length<1000){
+        if(elements.length>0 && elements.length<1000){
 
         if (map.getLayer('point-lamps') === undefined) {
             map.removeLayer('points');
-
+            map.setLayoutProperty('alarmedPoints', 'visibility', 'none');
             map.setLayoutProperty('selectedPoints', 'visibility', 'none');
 
             map.addLayer({
@@ -201,6 +236,70 @@ export const showIconLayers = (map: mapboxgl.Map, show: boolean, selectedSiteId?
                     'icon-image': 'data-center',
                     'icon-size': 0.1
                 } });
+
+                map.addLayer({
+                    'id': 'point-factory',
+                    'type': 'symbol',
+                    'source': 'points',
+                    'filter': createFilter("factory", selectedSiteId),
+                    'layout': {
+                        'icon-allow-overlap': true,
+                        'icon-image': 'factory',
+                        'icon-size': 0.2
+                    }
+                });
+
+                //alarm layers
+
+                map.addLayer({
+                    'id': 'point-lamps-alarm',
+                    'type': 'symbol',
+                    'source': 'alarmedPoints',
+                    'layout': {
+                        'icon-allow-overlap': true,
+                        'icon-image': 'lamp-red',
+                        'icon-size': 0.1
+    
+                    },
+                    'filter': createFilter("street lamp"),
+                });
+    
+                map.addLayer({
+                    'id': 'point-building-alarm',
+                    'type': 'symbol',
+                    'source': 'alarmedPoints',
+                    'filter': createFilter("high rise building"),
+                    'layout': {
+                        'icon-allow-overlap': true,
+                        'icon-image': 'house-red',
+                        'icon-size': 0.1
+                    }
+                });
+    
+                map.addLayer({
+                    'id': 'point-data-center-alarm',
+                    'type': 'symbol',
+                    'source': 'alarmedPoints',
+                    'filter': createFilter("data center"),
+                    'layout': {
+                        'icon-allow-overlap': true,
+                        'icon-image': 'data-center_red',
+                        'icon-size': 0.1
+                    } });
+
+                    map.addLayer({
+                        'id': 'point-factory-alarm',
+                        'type': 'symbol',
+                        'source': 'alarmedPoints',
+                        'filter': createFilter("factory"),
+                        'layout': {
+                            'icon-allow-overlap': true,
+                            'icon-image': 'factory-red',
+                            'icon-size': 0.2
+                        }
+                    });
+
+
 
             map.addLayer({
                 id: 'point-remaining',
@@ -251,6 +350,19 @@ export const showIconLayers = (map: mapboxgl.Map, show: boolean, selectedSiteId?
                     'icon-size': 0.15
                 }
             });
+
+
+            map.addLayer({
+                'id': 'select-point-factory',
+                'type': 'symbol',
+                'source': 'selectedPoints',
+                'filter': ['==', 'type', 'factory'],
+                'layout': {
+                    'icon-allow-overlap': true,
+                    'icon-image': 'factory',
+                    'icon-size': 0.3
+                }
+            });
             }
         }
         }
@@ -270,14 +382,22 @@ export const swapLayersBack = (map: mapboxgl.Map) =>{
     if (map.getLayer('points') === undefined) {
 
         map.setLayoutProperty('selectedPoints', 'visibility', 'visible');
+        map.setLayoutProperty('alarmedPoints', 'visibility', 'visible');
+
 
         map.removeLayer('point-building');
         map.removeLayer('point-lamps');
         map.removeLayer('point-data-center');
+        map.removeLayer('point-factory');
         map.removeLayer('point-remaining');
         map.removeLayer('select-point-data-center');
         map.removeLayer('select-point-buildings');
         map.removeLayer('select-point-lamps');
+        map.removeLayer('select-point-factory');
+        map.removeLayer('point-building-alarm');
+        map.removeLayer('point-lamps-alarm');
+        map.removeLayer('point-data-center-alarm');
+        map.removeLayer('point-factory-alarm');
 
 
 

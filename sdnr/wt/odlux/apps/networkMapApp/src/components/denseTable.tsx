@@ -26,7 +26,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Button, Tooltip } from '@material-ui/core';
 
-type props = { headers: string[], height:number,  navigate?(applicationName: string, path?: string):void, onLinkClick?(id: string): void, data: any[], hover: boolean, onClick?(id: string): void, actions?:boolean  };
+type props = { headers: string[], height:number,  navigate?(applicationName: string, path?: string):void, onLinkClick?(id: string): void, data: any[], hover: boolean, ariaLabel: string, onClick?(id: string): void, actions?:boolean  };
 
 
 const styles = makeStyles({
@@ -81,13 +81,13 @@ const DenseTable: React.FunctionComponent<props> = (props) => {
                        
 
                         return (
-                            <TableRow key={index} hover={props.hover} onMouseOver={e => handleHover(e,row.name)} onClick={ e =>  handleClick(e, row.name)}>
+                            <TableRow aria-label={props.ariaLabel} key={index} hover={props.hover} onMouseOver={e => handleHover(e,row.name)} onClick={ e =>  handleClick(e, row.name)}>
 
                                 {
                                     values.map((data:any) => {
                                        
                                         if(data!== undefined)
-                                        return <TableCell >  {data} </TableCell>
+                                        return <TableCell>  {data} </TableCell>
                                         else
                                         return null;
                                     })
@@ -95,12 +95,15 @@ const DenseTable: React.FunctionComponent<props> = (props) => {
                                 {
 
                                     props.actions && <TableCell >  
-<div style={{display:"flex"}}>                                           
+<div style={{display:"flex"}}>
+    <Tooltip title="Connect">
+    <Button className={classes.button} disabled={true} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("connect", row.simulatorId ? row.simulatorId : row.name)}}>C</Button>
+    </Tooltip>                                           
     <Tooltip title="Configure">
-    <Button className={classes.button} disabled={row.status!=="connected"} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("configuration", row.simulatorId ? row.simulatorId : row.name)}}>C</Button>
+    <Button className={classes.button} disabled={true} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("configuration", row.simulatorId ? row.simulatorId : row.name)}}>C</Button>
     </Tooltip>
     <Tooltip title="Fault">
-    <Button className={classes.button} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("fault", row.simulatorId ? row.simulatorId : row.name)}}>F</Button>
+    <Button className={classes.button} disabled={true} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("fault", row.simulatorId ? row.simulatorId : row.name)}}>F</Button>
     </Tooltip>
     </div> 
     </TableCell>

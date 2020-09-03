@@ -50,10 +50,9 @@ const Details: React.FunctionComponent<porps> = (props) => {
 
     }, []);
 
-    // if url changed
+    // if url changed, load details data
     React.useEffect(() => {
         const detailsId = getDetailsIdFromUrl();
-        console.log(detailsId)
         if (detailsId !== null && props.data?.name !== detailsId) {
             loadDetailsData(detailsId)
         }
@@ -154,16 +153,17 @@ const Details: React.FunctionComponent<porps> = (props) => {
                 })
     }
 
+    const panelId = props.data!== null ? (isSite(props.data) ? 'site-details-panel' : 'link-details-panel' ): 'details-panel';
 
     return (<div style={{ width: '30%', background: "#bbbdbf", padding: "20px", alignSelf:"stretch" }}>
-        <Paper style={{ height:"100%"}} id="site-details-panel"  >
+        <Paper style={{ height:"100%"}} id={panelId} aria-label={panelId}  >
             {
                 props.breadcrumbs.length > 0 &&
-                <Breadcrumbs style={{ marginLeft: "15px", marginTop: "5px" }} aria-label="breadcrumb">
-                    <Link color="inherit" href="/" onClick={backClick}>
+                <Breadcrumbs style={{ marginLeft: "15px", marginTop: "5px" }} aria-label="breadcrumbs-navigation">
+                    <Link aria-label="parent-element" color="inherit" href="/" onClick={backClick}>
                         {props.breadcrumbs[0].id}
                     </Link>
-                    <Link>
+                    <Link aria-label="child-element" color="textSecondary">
                         {props.data?.name}
                     </Link>
                 </Breadcrumbs>
@@ -171,7 +171,7 @@ const Details: React.FunctionComponent<porps> = (props) => {
             {
                 props.data !== null ?
                     createDetailPanel(props.data)
-                    : <Typography style={{ marginTop: "5px" }} align="center" variant="body1">{message}</Typography>
+                    : <Typography aria-label="details-panel-alt-message" style={{ marginTop: "5px" }} align="center" variant="body1">{message}</Typography>
 
             }
         </Paper>

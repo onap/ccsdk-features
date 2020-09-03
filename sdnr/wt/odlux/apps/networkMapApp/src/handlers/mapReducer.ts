@@ -50,7 +50,7 @@ export const MapReducer: IActionHandler<mapState> = (state=initialState, action:
     
     if(action instanceof HighlightLinkAction){
       
-        state = Object.assign({}, state, {selectedSite: null, selectedLink:{type: "Feature", geometry:{type:"LineString", coordinates:[[action.link.locationA.lon,action.link.locationA.lat ],[action.link.locationB.lon,action.link.locationB.lat ]]}}})
+        state = Object.assign({}, state, {selectedSite: null, selectedLink:{type: "Feature", properties:{id:action.link.id, type: action.link.type}, geometry:{type:"LineString", coordinates:[[action.link.locationA.lon,action.link.locationA.lat ],[action.link.locationB.lon,action.link.locationB.lat ]]}}})
 
 
     }

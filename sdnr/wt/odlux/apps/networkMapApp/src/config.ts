@@ -27,11 +27,10 @@ export const OSM_STYLE = {
             'type': 'raster',
             'tiles': [
                URL_TILE_API+'/{z}/{x}/{y}.png'
-
             ],
             'tileSize': 256,
             'attribution':
-                'Data by <a target="_top" rel="noopener" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" rel="noopener" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }
     },
     'layers': [
@@ -40,7 +39,7 @@ export const OSM_STYLE = {
             'type': 'raster',
             'source': 'raster-tiles',
             'minzoom': 0,
-            'maxzoom': 22
+            'maxzoom': 18
         }
     ]
 };

@@ -79,11 +79,13 @@ const SearchBar: React.FunctionComponent<searchBarProps> = (props) =>{
         const linkResult = fetch(`${URL_API}/link/${props.searchterm}`);
   
            Promise.all([ siteResult, linkResult]).then((result)=>{
-              const suceededResults = result.filter(el=> el!==undefined);
+              const suceededResults = result.filter(el=> el.ok);
   
              if(suceededResults.length==0){
               setAnchorEl(divRef.current);
               setErrorMessage("No element found.")
+              // hide message after 3 sec
+              window.setTimeout(()=>{setAnchorEl(null)}, 3000);
 
              }else{
               suceededResults[0].json().then(result =>{
@@ -115,7 +117,7 @@ const SearchBar: React.FunctionComponent<searchBarProps> = (props) =>{
           disabled={!reachabe}
             className={classes.input}
             placeholder="Find sites or links by name"
-            inputProps={{ 'aria-label': 'search sites or links' }}
+            inputProps={{ 'aria-label': 'networkmap-searchbar' }}
             value={props.searchterm}
             onChange={e=> props.setSearchTerm(e.currentTarget.value)}
           />

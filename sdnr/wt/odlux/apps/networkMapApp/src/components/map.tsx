@@ -30,24 +30,18 @@ import { SetPopupPositionAction, SelectMultipleLinksAction, SelectMultipleSitesA
 import { Feature } from '../model/Feature';
 import { HighlightLinkAction, HighlightSiteAction, SetCoordinatesAction, SetStatistics } from '../actions/mapActions';
 import { addDistance, getUniqueFeatures } from '../utils/mapUtils';
-import { location } from '../handlers/mapReducer'
-import { Typography, Paper, Tooltip } from '@material-ui/core';
-import { elementCount } from '../model/count';
-import lamp from '../../icons/lamp.png';
-import apartment from '../../icons/apartment.png';
-import datacenter from '../../icons/datacenter.png';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
 import SearchBar from './searchBar';
 import { verifyResponse, IsTileServerReachableAction, handleConnectionError } from '../actions/connectivityAction';
 import ConnectionInfo from './connectionInfo'
-import { ApplicationStore } from '../../../../framework/src/store/applicationStore';
-import { showIconLayers, addBaseLayers, swapLayersBack } from '../utils/mapLayers';
-import Statistics from './statistics'
-
-
-
-
+import { showIconLayers, addBaseLayers } from '../utils/mapLayers';
+import lamp from '../../icons/lamp.png';
+import apartment from '../../icons/apartment.png';
+import datacenter from '../../icons/datacenter.png';
+import factory from '../../icons/factory.png';
+import Statistics from './statistics';
+import IconSwitch from './iconSwitch';
 
 type coordinates = { lat: number, lon: number, zoom: number }
 
@@ -71,7 +65,10 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
     componentDidMount() {
 
+        // resize the map, if menu gets collapsed
         window.addEventListener("menu-resized", this.handleResize);
+
+        // try if connection to tile + topologyserver is available
 
         fetch(URL_TILE_API + '/10/0/0.png')
             .then(res => {
@@ -138,6 +135,13 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                     map.addImage('house', image);
                 });
 
+                map.loadImage(
+                    factory,
+                    function (error: any, image: any) {
+                        if (error) throw error;
+                        map.addImage('factory', image);
+                    });               
+
             const boundingBox = map.getBounds();
 
 
@@ -145,7 +149,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 .then(result => verifyResponse(result))
                 .then(result => result.json())
                 .then(features => {
-                    if (map.getLayer('lines')) {
+                    if (map.getLayer('fibre-lines')) {
                         (map.getSource('lines') as mapboxgl.GeoJSONSource).setData(features);
                     }
                 })
@@ -160,8 +164,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                         (map.getSource('points') as mapboxgl.GeoJSONSource).setData(features);
                     }
                 })
-                .catch(error => this.props.handleConnectionError(error));;
-
+                .catch(error => this.props.handleConnectionError(error));
         });
 
         map.on('click', (e: any) => {
@@ -170,7 +173,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
                 var clickedLines = getUniqueFeatures(map.queryRenderedFeatures([[e.point.x - 5, e.point.y - 5],
                 [e.point.x + 5, e.point.y + 5]], {
-                    layers: ['lines']
+                    layers: ['microwave-lines', 'fibre-lines']
                 }), "id");
 
                 const clickedPoints = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['points'] }), "id");
@@ -182,14 +185,12 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                     if (alarmedSites.length > 0) {
                         alarmedSites.forEach(alarm => {
                             const index = clickedPoints.findIndex(item => item.properties!.id === alarm.properties!.id);
-                            console.log(index);
 
                             if (index !== -1) {
                                 clickedPoints[index].properties!.alarmed = true;
                                 clickedPoints[index].properties!.type = "alarmed";
                             }
                         });
-                        console.log(clickedPoints);
                     }
 
                     this.showSitePopup(clickedPoints, e.point.x, e.point.y);
@@ -203,12 +204,13 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 const clickedLamps = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-lamps'] }), "id");
                 const buildings = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-building'] }), "id");
                 const houses = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-data-center'] }), "id");
+                const factories = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-factory'] }), "id");
 
-                const combinedFeatures = [...clickedLamps, ...buildings, ...houses];
+                const combinedFeatures = [...clickedLamps, ...buildings, ...houses, ...factories];
 
                 const clickedLines = getUniqueFeatures(map.queryRenderedFeatures([[e.point.x - 5, e.point.y - 5],
                 [e.point.x + 5, e.point.y + 5]], {
-                    layers: ['lines']
+                    layers: ['microwave-lines', 'fibre-lines']
                 }), "id");
 
                 if (combinedFeatures.length > 0)
@@ -231,6 +233,8 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 this.props.updateMapPosition(lat, lon, mapZoom)
             }
 
+            // update the url to current lat,lon,zoom values
+
             const currentUrl = window.location.href;
             const parts = currentUrl.split(URL_BASEPATH);
             const detailsPath = parts[1].split("/details/");
@@ -241,16 +245,17 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
             else {
                 this.props.history.replace(`/${URL_BASEPATH}/${map.getCenter().lat.toFixed(4)},${map.getCenter().lng.toFixed(4)},${mapZoom.toFixed(2)}`)
             }
-
-            const boundingBox = map.getBounds();
-
+            
+            //switch icon layers if applicable
             showIconLayers(map, this.props.showIcons, this.props.selectedSite?.properties.id);
+
+            //update statistics
+            const boundingBox = map.getBounds();
 
             fetch(`${URL_API}/info/count/${boundingBox.getWest()},${boundingBox.getSouth()},${boundingBox.getEast()},${boundingBox.getNorth()}`)
                 .then(result => verifyResponse(result))
                 .then(res => res.json())
                 .then(result => {
-                    console.log(result);
                     if (result.links !== this.props.linkCount || result.sites !== this.props.siteCount) {
                         this.props.setStatistics(result.links, result.sites);
                     }
@@ -277,9 +282,12 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 map.setLayoutProperty('selectedPoints', 'visibility', 'none');
 
                 if (mapZoom <= 4) {
-                    map.setPaintProperty('lines', 'line-width', 1);
+                    map.setPaintProperty('fibre-lines', 'line-width', 1);
+                    map.setPaintProperty('microwave-lines', 'line-width', 1);
+
                 } else {
-                    map.setPaintProperty('lines', 'line-width', 2);
+                    map.setPaintProperty('fibre-lines', 'line-width', 2);
+                    map.setPaintProperty('microwave-lines', 'line-width', 2);
                 }
             }
         });
@@ -301,7 +309,8 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
                         map.setFilter('point-lamps', ['==', 'type', 'street lamp']);
                         map.setFilter('point-data-center', ['==', 'type', 'data center']);
-                        map.setFilter('point-building', ['==', 'type', 'high rise building'])
+                        map.setFilter('point-building', ['==', 'type', 'high rise building']);
+                        map.setFilter('point-factory', ['==', 'type', 'factory'])
 
                         if (this.props.selectedSite?.properties.type !== undefined) {
                             switch (this.props.selectedSite?.properties.type) {
@@ -313,7 +322,9 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                                     break;
                                 case 'high rise building':
                                     map.setFilter('point-building', ["all", ['==', 'type', 'high rise building'], ['!=', 'id', this.props.selectedSite.properties.id]])
-
+                                    break;
+                                case 'factory':
+                                    map.setFilter('point-factory', ["all", ['==', 'type', 'factory'], ['!=', 'id', this.props.selectedSite.properties.id]]);
                                     break;
                             }
                         }
@@ -336,6 +347,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                         map.setFilter('point-lamps', ['==', 'type', 'street lamp']);
                         map.setFilter('point-data-center', ['==', 'type', 'data center']);
                         map.setFilter('point-building', ['==', 'type', 'high rise building']);
+                        map.setFilter('point-factory', ['==', 'type', 'factory']);
                     }
 
                     if (map.getSource("selectedLine") !== undefined) {
@@ -367,7 +379,6 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
             if (prevProps.showIcons !== this.props.showIcons) {
                 if (map && map.getZoom() > 11) {
-                    console.log(this.props.showIcons);
                     showIconLayers(map, this.props.showIcons, this.props.selectedSite?.properties.id);
                 }
             }
@@ -386,6 +397,10 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 }
             }
         }
+    }
+
+    componentWillUnmount(){
+        window.removeEventListener("menu-resized", this.handleResize);
     }
 
     handleResize = () => {
@@ -432,10 +447,6 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
         }
     }
 
-
-    //TODO: how to handle if too much data gets loaded? (1 mio points...?)
-    // data might have gotten collected, reload if necessary!
-    //always save count, if count and current view count differ -> reload last boundingbox
     loadNetworkData = async (bbox: mapboxgl.LngLatBounds) => {
         if (!isLoadingInProgress) { // only load data if loading not in progress
             isLoadingInProgress = true;
@@ -458,7 +469,6 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
                     await this.draw('lines', `${URL_API}/links/geoJson/${increasedBoundingBox.west},${increasedBoundingBox.south},${increasedBoundingBox.east},${increasedBoundingBox.north}`);
                     await this.draw('points', `${URL_API}/sites/geoJson/${increasedBoundingBox.west},${increasedBoundingBox.south},${increasedBoundingBox.east},${increasedBoundingBox.north}`);
-                    console.log("bbox is bigger");
 
                 } else if (lastBoundingBox.contains(bbox.getNorthEast()) && lastBoundingBox.contains(bbox.getSouthWest())) { // last one contains new one
                     // bbox is contained in last one, do nothing
@@ -506,17 +516,13 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 })
                 .catch(error => this.props.handleConnectionError(error));;
         }
-
     }
-
-
 
     showLinkPopup = (links: mapboxgl.MapboxGeoJSONFeature[], top: number, left: number) => {
 
         if (links.length > 1) {
 
             const ids = links.map(feature => feature.properties!.id as string);
-
             this.props.setPopupPosition(top, left);
             this.props.selectMultipleLinks(ids);
             this.setState({ isPopupOpen: true });
@@ -562,6 +568,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 }
                 <SearchBar />
                 <Statistics />
+                <IconSwitch visible={this.props.zoom>11} />
                 <ConnectionInfo />
             </div>
         </>

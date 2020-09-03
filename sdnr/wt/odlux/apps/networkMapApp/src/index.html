@@ -17,10 +17,11 @@
 
   <script>
     // run the application
-    require(["app","connectApp","faultApp", "networkMapApp", "configurationApp"], function (app, connectApp, faultApp, networkMapApp, configurationApp) {
+    require(["app","connectApp","faultApp", "networkMapApp", "configurationApp", "linkCalculationApp"], function (app, connectApp, faultApp, networkMapApp, configurationApp, linkCalculationApp) {
       connectApp.register();
       //faultApp.register();
       configurationApp.register();
+      linkCalculationApp.register();
       networkMapApp.register();
       app("./app.tsx").runApplication();
     });

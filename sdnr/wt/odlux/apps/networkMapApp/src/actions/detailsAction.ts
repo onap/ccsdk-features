@@ -117,8 +117,6 @@ running=true;
     
 
     result.forEach((res: any, index)=>{
-      console.log("value")
-     console.log(res);
      if(res !==null && res.node!==null){
 
       list[index].status = res.node[0]["netconf-node-topology:connection-status"];
@@ -137,28 +135,4 @@ running=true;
   dispatcher(new IsBusyCheckingDeviceListAction(false));
 
   });
-
-  /*  result.forEach((res: Promise<any>, index)=>{
-      console.log("value")
-     console.log(res);
-     console.log(res.value);
-     if(res.value!==null){
-      list[index].status = res.value.node[0]["netconf-node-topology:connection-status"];
-     }else{
-      list[index].status = "Not connected";
-     }*/
-    
-  
-
-
-
-
-  //get devices
-  //wait on all to finish
-  //update array
-
-
-
-
-
 }

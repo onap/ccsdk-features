@@ -81,28 +81,28 @@ const SiteDetails: React.FunctionComponent<props> = (props) => {
         <h2 >{props.site.name}</h2>
         {
             props.site.operator !== '' && props.site.operator !== null ?
-                <TextField disabled={true} value={props.site.operator} label="Operator" /> :
-                <TextField disabled={true} value="Unkown" label="Operator" style={{ marginTop: "5px" }} />
+                <TextField aria-label="operator" disabled={true} value={props.site.operator} label="Operator" /> :
+                <TextField aria-label="operator" disabled={true} value="Unkown" label="Operator" style={{ marginTop: "5px" }} />
         }
         {
             props.site.type !== undefined && props.site.type.length > 0 &&
-            <TextField disabled={true} value={props.site.type} label="Type" style={{ marginTop: "5px" }} />
+            <TextField aria-label="type" disabled={true} value={props.site.type} label="Type" style={{ marginTop: "5px" }} />
         }
         {
             props.site.address !== undefined && props.site.address.length > 0 &&
-            <TextField disabled={true} value={props.site.address} label="Adress" style={{ marginTop: "5px" }} />
+            <TextField aria-label="adress" disabled={true} value={props.site.address} label="Adress" style={{ marginTop: "5px" }} />
         }
         {
             props.site.heighAGLInMeters !== undefined && props.site.heighAGLInMeters > 0 &&
-            <TextField disabled={true} value={props.site.heighAGLInMeters} label="AMSL in meters" style={{ marginTop: "5px" }} />
+            <TextField aria-label="amsl-in-meters" disabled={true} value={props.site.heighAGLInMeters} label="AMSL in meters" style={{ marginTop: "5px" }} />
         }
         {
             props.site.antennaHeightAGLInMeters !== undefined && props.site.antennaHeightAGLInMeters > 0 &&
-            <TextField disabled={true} value={props.site.antennaHeightAGLInMeters} label="Atenna above ground in meters" style={{ marginTop: "5px" }} />
+            <TextField aria-label="antenna-above-ground-in-meters" disabled={true} value={props.site.antennaHeightAGLInMeters} label="Atenna above ground in meters" style={{ marginTop: "5px" }} />
         }
          
-        <TextField style={{ marginTop: "5px" }} disabled={true} value={LatLonToDMS(props.site.geoLocation.lat)} label="Latitude" />
-        <TextField style={{ marginTop: "5px" }} disabled={true} value={LatLonToDMS(props.site.geoLocation.lon, true)} label="Longitude" />
+        <TextField aria-label="latitude" style={{ marginTop: "5px" }} disabled={true} value={LatLonToDMS(props.site.geoLocation.lat)} label="Latitude" />
+        <TextField aria-label="longitude" style={{ marginTop: "5px" }} disabled={true} value={LatLonToDMS(props.site.geoLocation.lon, true)} label="Longitude" />
 
         <AppBar position="static" style={{ marginTop: "5px", background: '#2E3B55' }}>
             <Tabs id="site-tabs" value={value} onChange={onHandleTabChange} aria-label="simple tabs example">
@@ -115,12 +115,12 @@ const SiteDetails: React.FunctionComponent<props> = (props) => {
             <>
                 {
                     props.site.links.length === 0 &&
-                    <Typography variant="body1" style={{ marginTop: '10px' }}>No links available.</Typography>
+                    <Typography aria-label="no-links-available" variant="body1" style={{ marginTop: '10px' }}>No links available.</Typography>
                 }
                
                 {
                     props.site.links.length > 0 &&
-                    <DenseTable height={height} hover={true} headers={["Link Name", "Azimuth in °"]}  data={linkRows} onClick={props.onLinkClick}  ></DenseTable>
+                    <DenseTable ariaLabel="available-links-table-entry" height={height} hover={true} headers={["Link Name", "Azimuth in °"]}  data={linkRows} onClick={props.onLinkClick}  ></DenseTable>
                /**
                 * 
                 * */
@@ -136,12 +136,12 @@ const SiteDetails: React.FunctionComponent<props> = (props) => {
             <>
                 {
                     props.site.devices.length === 0 &&
-                    <Typography variant="body1" style={{ marginTop: '10px' }}>No nodes available.</Typography>
+                    <Typography aria-label="no-nodes-avilable" variant="body1" style={{ marginTop: '10px' }}>No nodes available.</Typography>
                 }
 
                 {
                     props.site.devices.length>0 && props.updatedDevices !== null &&
-                    <DenseTable navigate={props.navigate} height={height} hover={false} headers={["ID","Name","Type", "Manufacturer","Owner","Status", "Ports", "Actions"]} actions={true} data={props.updatedDevices!} />
+                    <DenseTable ariaLabel="available-nodes-table-entry" navigate={props.navigate} height={height} hover={false} headers={["ID","Name","Type", "Manufacturer","Owner","Status", "Ports", "Actions"]} actions={true} data={props.updatedDevices!} />
                 }
             </>
         }

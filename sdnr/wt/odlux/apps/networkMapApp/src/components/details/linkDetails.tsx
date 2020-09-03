@@ -32,8 +32,7 @@ const LinkDetails: React.FunctionComponent<props> = (props) => {
     const [height, setHeight] = React.useState(330);
 
     const handleResize = () =>{
-        console.log("resize")
-        const el = document.getElementById('site-details-panel')?.getBoundingClientRect();
+        const el = document.getElementById('link-details-panel')?.getBoundingClientRect();
         const el2 = document.getElementById('site-tabs')?.getBoundingClientRect();
 
         if(el && el2){
@@ -69,7 +68,7 @@ const LinkDetails: React.FunctionComponent<props> = (props) => {
        const distance = props.link.length > 0 ? props.link.length : props.link.calculatedLength;
        const azimuthA = props.link.azimuthA;
        const azimuthB = props.link.azimuthB;
-       window.open(`/#/linkCalculation?lat1=${siteA.lat}&lon1=${siteA.lon}&lat2=${siteB.lat}&lon2=${siteB.lon}&siteA=${nameA}&siteB=${nameB}&azimuthA=${azimuthA}&azimuthB=${azimuthB}&distance=${distance}`)
+       window.open(`/#/linkCalculation?lat1=${siteA.lat}&lon1=${siteA.lon}&lat2=${siteB.lat}&lon2=${siteB.lon}&siteA=${nameA}&siteB=${nameB}&azimuthA=${azimuthA}&azimuthB=${azimuthB}&distance=${distance}&amslSiteA=${siteA.amsl}&AGLsiteA=${siteA.antennaHeight}&amslSiteB=${siteB.amsl}&AGLsiteB=${siteB.antennaHeight}`)
 
     }
 
@@ -83,15 +82,15 @@ const LinkDetails: React.FunctionComponent<props> = (props) => {
 
     return (<div style={{ paddingLeft: "15px", paddingRight: "15px", paddingTop: "0px", display: 'flex', flexDirection: 'column' }}>
         <h2>{props.link.name}</h2>
-        <TextField disabled style={{ marginTop: "5px" }} value="Unkown" label="Operator" />
-        <TextField disabled style={{ marginTop: "5px" }} value={props.link.type} label="Type" />
-        <TextField disabled style={{ marginTop: "5px" }} value={props.link.length.toFixed(2)} label="Distance planned in km" />
-        <TextField disabled style={{ marginTop: "5px" }} value={props.link.calculatedLength.toFixed(2)} label="Distance calculated in km" />
+        <TextField aria-label="operator" disabled style={{ marginTop: "5px" }} value="Unkown" label="Operator" />
+        <TextField aria-label="type" disabled style={{ marginTop: "5px" }} value={props.link.type} label="Type" />
+        <TextField aria-label="planned-distance-in-km" disabled style={{ marginTop: "5px" }} value={props.link.length.toFixed(2)} label="Distance planned in km" />
+        <TextField aria-label="calculated-distance-in-km" disabled style={{ marginTop: "5px" }} value={props.link.calculatedLength.toFixed(2)} label="Distance calculated in km" />
 
         <AppBar position="static" id="site-tabs" style={{ marginTop: "20px", background: '#2E3B55' }}>
-            <Typography style={{ margin:"5px"}}>SITE DETAILS</Typography>
+            <Typography aria-label="details-of-link-sites" style={{ margin:"5px"}}>SITE DETAILS</Typography>
         </AppBar>
-        <DenseTable height={height} hover={false} headers={["", "Site A", "Site B"]} data={data} />
+        <DenseTable ariaLabel="site-information-table-entry" height={height} hover={false} headers={["", "Site A", "Site B"]} data={data} />
         {
             props.link.type==="microwave" && <Button style={{marginTop:20}} fullWidth variant="contained" color="primary" onClick={onCalculateLinkClick}>Calculate link</Button>
         }
