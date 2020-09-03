@@ -49,7 +49,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
@@ -106,13 +106,13 @@ public class BaseHTTPClient {
         this.baseUrl = base;
     }
 
-    @Nonnull
+    @NonNull
     public BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
             throws IOException {
         return this.sendRequest(uri, method, body != null ? body.getBytes(CHARSET) : null, headers);
     }
 
-    protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, byte[] body, Map<String, String> headers)
+    protected @NonNull BaseHTTPResponse sendRequest(String uri, String method, byte[] body, Map<String, String> headers)
             throws IOException {
         if (uri == null) {
             uri = "";

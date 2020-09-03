@@ -23,7 +23,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import org.onap.ccsdk.features.sdnr.wt.common.HtAssert;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
@@ -118,8 +118,8 @@ public class MaintenanceCalculator {
      * @param pProblem problem of fault notification
      * @return true if if referenced
      */
-    private static boolean appliesToObjectReference(@Nonnull MaintenanceEntity definition, @Nonnull String pObjectIdRef,
-            @Nonnull String pProblem) {
+    private static boolean appliesToObjectReference(@NonNull MaintenanceEntity definition, @NonNull String pObjectIdRef,
+            @NonNull String pProblem) {
         HtAssert.nonnull(definition, pObjectIdRef, pProblem);
         boolean res = (definition.getObjectIdRef() == null || pObjectIdRef.contains(definition.getObjectIdRef()))
                 && (definition.getProblem() == null || pProblem.contains(definition.getProblem()));

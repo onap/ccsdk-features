@@ -20,7 +20,6 @@ package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
@@ -156,7 +155,7 @@ public class NetconfAccessorImpl implements NetconfAccessor {
                 mountpoint.getService(RpcConsumerRegistry.class);
         if (optionalRpcConsumerService.isPresent()) {
             final RpcConsumerRegistry rpcConsumerRegitry = optionalRpcConsumerService.get();
-            @Nonnull
+            @NonNull
             final NotificationsService rpcService = rpcConsumerRegitry.getRpcService(NotificationsService.class);
 
             final CreateSubscriptionInputBuilder createSubscriptionInputBuilder = new CreateSubscriptionInputBuilder();

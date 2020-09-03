@@ -18,7 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import javax.xml.bind.annotation.XmlElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalDateAndTime;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
@@ -34,7 +34,7 @@ public class MwtNotificationBase {
     private String nodeName;
     private String counter;
     private String timeStamp;
-    private @Nonnull String objectId;
+    private @NonNull String objectId;
 
     public MwtNotificationBase() {
         // For Jaxb

@@ -22,7 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools;
 
 import java.io.IOException;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.Credentials;
 import org.opendaylight.yangtools.concepts.Builder;

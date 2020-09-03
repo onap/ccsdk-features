@@ -21,7 +21,7 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPResponse;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.FaultNotificationClient;
@@ -48,7 +48,7 @@ public class TestFaultNotificationClient extends FaultNotificationClient {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
             throws IOException {
         System.out.println("In overridden sendRequest in TestFaultNotificationClient");

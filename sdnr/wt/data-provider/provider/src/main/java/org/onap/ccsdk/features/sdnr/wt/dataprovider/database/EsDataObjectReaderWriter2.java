@@ -25,9 +25,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.database.DatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
@@ -91,7 +90,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
      * @throws ClassNotFoundException
      */
     public <X extends T, @NonNull B extends Builder<X>> EsDataObjectReaderWriter2(DatabaseClient db,
-            String dataTypeName, @Nonnull Class<T> clazz, @Nullable Class<B> builderClazz, boolean syncAfterWrite)
+            String dataTypeName, @NonNull Class<T> clazz, @Nullable Class<B> builderClazz, boolean syncAfterWrite)
             throws ClassNotFoundException {
         LOG.info("Create {} for datatype {} class {}", this.getClass().getName(), dataTypeName, clazz.getName());
 
@@ -106,18 +105,18 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
     }
 
     public <X extends T, @NonNull B extends Builder<X>> EsDataObjectReaderWriter2(DatabaseClient db,
-            Entity dataTypeName, @Nonnull Class<T> clazz, @Nullable Class<B> builderClazz)
+            Entity dataTypeName, @NonNull Class<T> clazz, @Nullable Class<B> builderClazz)
             throws ClassNotFoundException {
         this(db, dataTypeName.getName(), clazz, builderClazz, false);
     }
 
     public <X extends T, @NonNull B extends Builder<X>> EsDataObjectReaderWriter2(DatabaseClient db,
-            Entity dataTypeName, @Nonnull Class<T> clazz, @Nullable Class<B> builderClazz, boolean syncAfterWrite)
+            Entity dataTypeName, @NonNull Class<T> clazz, @Nullable Class<B> builderClazz, boolean syncAfterWrite)
             throws ClassNotFoundException {
         this(db, dataTypeName.getName(), clazz, builderClazz, syncAfterWrite);
     }
 
-    public EsDataObjectReaderWriter2(DatabaseClient db, Entity dataTypeName, @Nonnull Class<T> clazz,
+    public EsDataObjectReaderWriter2(DatabaseClient db, Entity dataTypeName, @NonNull Class<T> clazz,
             boolean syncAfterWrite) throws ClassNotFoundException {
         this(db, dataTypeName.getName(), clazz, null, syncAfterWrite);
     }
@@ -196,7 +195,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
      *
      * @param writeInterfaceClazz
      */
-    public EsDataObjectReaderWriter2<T> setWriteInterface(@Nonnull Class<? extends DataObject> writeInterfaceClazz) {
+    public EsDataObjectReaderWriter2<T> setWriteInterface(@NonNull Class<? extends DataObject> writeInterfaceClazz) {
         LOG.debug("Set write interface to {}", writeInterfaceClazz);
         if (writeInterfaceClazz == null) {
             throw new IllegalArgumentException("Null not allowed here.");

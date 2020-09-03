@@ -19,7 +19,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.HtAssert;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
@@ -45,7 +45,7 @@ public class AaiProviderClient implements AaiService, AutoCloseable {
     private final ConfigurationFileRepresentation htconfig;
 
 
-    public AaiProviderClient(@Nonnull ConfigurationFileRepresentation cfg, DeviceManagerImpl devMgr) {
+    public AaiProviderClient(@NonNull ConfigurationFileRepresentation cfg, DeviceManagerImpl devMgr) {
         HtAssert.nonnull(cfg);
         this.config = new AaiConfig(cfg);
         LOG.debug("AaiProviderClient configuration setting: {}", this.config);

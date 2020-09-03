@@ -23,7 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.entity;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Fault;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultcurrentEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType;
@@ -57,7 +57,7 @@ public class FaultEntityManager {
      * @param fault to be verified
      * @return true if cleared indication
      */
-    public static boolean isNoAlarmIndication(@Nonnull Fault fault) {
+    public static boolean isNoAlarmIndication(@NonNull Fault fault) {
         return SeverityType.NonAlarmed.equals(fault.getSeverity());
     }
 

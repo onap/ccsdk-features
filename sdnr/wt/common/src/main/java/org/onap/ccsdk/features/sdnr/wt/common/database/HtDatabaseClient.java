@@ -23,8 +23,8 @@ package org.onap.ccsdk.features.sdnr.wt.common.database;
 
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
@@ -155,7 +155,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
     }
 
     @Override
-    public @Nullable String doWriteJsonString(String dataTypeName, @Nonnull IsEsObject esId, String json) {
+    public @Nullable String doWriteJsonString(String dataTypeName, @NonNull IsEsObject esId, String json) {
         return doWriteRaw(dataTypeName, esId.getEsId(), json);
     }
 
@@ -212,7 +212,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
     }
 
     @Override
-    public @Nullable String doReadJsonData(String dataTypeName, @Nonnull IsEsObject esId) {
+    public @Nullable String doReadJsonData(String dataTypeName, @NonNull IsEsObject esId) {
 
         if (esId.getEsId() == null) {
             throw new IllegalArgumentException("Read access to object without database Id");
@@ -222,7 +222,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
     }
 
     @Override
-    public @Nullable String doReadJsonData(String dataTypeName, @Nonnull String esId) {
+    public @Nullable String doReadJsonData(String dataTypeName, @NonNull String esId) {
 
         LOG.debug("NetworkIndex read: {}", dataTypeName);
         GetRequest getRequest = new GetRequest(dataTypeName, dataTypeName, esId);
@@ -236,19 +236,19 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
     }
 
     @Override
-    public @Nonnull SearchResult<SearchHit> doReadByQueryJsonData(String dataTypeName, QueryBuilder queryBuilder) {
+    public @NonNull SearchResult<SearchHit> doReadByQueryJsonData(String dataTypeName, QueryBuilder queryBuilder) {
 
         return this.doReadByQueryJsonData(dataTypeName, queryBuilder, false);
     }
 
     @Override
-    public @Nonnull SearchResult<SearchHit> doReadByQueryJsonData(String dataTypeName, QueryBuilder queryBuilder,
+    public @NonNull SearchResult<SearchHit> doReadByQueryJsonData(String dataTypeName, QueryBuilder queryBuilder,
             boolean ignoreException) {
         return this.doReadByQueryJsonData(dataTypeName, dataTypeName, queryBuilder, ignoreException);
     }
 
     @Override
-    public @Nonnull SearchResult<SearchHit> doReadByQueryJsonData(String alias, String dataTypeName,
+    public @NonNull SearchResult<SearchHit> doReadByQueryJsonData(String alias, String dataTypeName,
             QueryBuilder queryBuilder, boolean ignoreException) {
 
         long total = 0;
@@ -267,17 +267,17 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
     }
 
     @Override
-    public @Nonnull SearchResult<SearchHit> doReadAllJsonData(String dataTypeName) {
+    public @NonNull SearchResult<SearchHit> doReadAllJsonData(String dataTypeName) {
         return this.doReadAllJsonData(dataTypeName, false);
     }
 
     @Override
-    public @Nonnull SearchResult<SearchHit> doReadAllJsonData(String dataTypeName, boolean ignoreException) {
+    public @NonNull SearchResult<SearchHit> doReadAllJsonData(String dataTypeName, boolean ignoreException) {
         return doReadByQueryJsonData(dataTypeName, QueryBuilders.matchAllQuery().size(READ_MAX_SIZE).from(0),
                 ignoreException);
     }
 
-    public @Nonnull SearchResult<SearchHit> doReadAllJsonData(String alias, String dataType, boolean ignoreException) {
+    public @NonNull SearchResult<SearchHit> doReadAllJsonData(String alias, String dataType, boolean ignoreException) {
         return doReadByQueryJsonData(alias, dataType, QueryBuilders.matchAllQuery(), ignoreException);
     }
 

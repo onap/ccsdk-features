@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -238,7 +237,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
      * @return List of all mountpoint/node-names the had active alarms.
      */
     @Override
-    public @Nonnull List<String> getAllNodesWithCurrentAlarms() {
+    public @NonNull List<String> getAllNodesWithCurrentAlarms() {
         if (assertIfClientNull("No DB, can not delete for all nodes", null)) {
             return new ArrayList<>();
         }

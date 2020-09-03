@@ -17,7 +17,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InternalConnectionStatus;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
@@ -61,7 +61,7 @@ public class NetworkElementConnectionEntitiyUtil {
      * @param nNode data
      * @return NetworkElementConnectionEntity specific information
      */
-    public static NetworkElementConnectionEntity getNetworkConnection(String nodeId, @Nonnull NetconfNode nNode) {
+    public static NetworkElementConnectionEntity getNetworkConnection(String nodeId, @NonNull NetconfNode nNode) {
 
         NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
         // -- basics

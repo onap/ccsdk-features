@@ -23,8 +23,8 @@ package org.onap.ccsdk.features.sdnr.wt.common.database;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 
@@ -41,7 +41,7 @@ public interface DatabaseClient {
      * @param esId to provide id to read
      * @return String with json structure
      */
-    public @Nullable String doReadJsonData(String dataTypeName, @Nonnull IsEsObject esId);
+    public @Nullable String doReadJsonData(String dataTypeName, @NonNull IsEsObject esId);
 
     /**
      * Read JSON Object from database
@@ -50,7 +50,7 @@ public interface DatabaseClient {
      * @param esId of object to read
      * @return String with json structure
      */
-    public @Nullable String doReadJsonData(String dataTypeName, @Nonnull String esId);
+    public @Nullable String doReadJsonData(String dataTypeName, @NonNull String esId);
 
     /**
      * Provide all Objects of the specified dataTypeName.
@@ -58,7 +58,7 @@ public interface DatabaseClient {
      * @param dataTypeName to be used
      * @return SearchResult with list of elements
      */
-    public @Nonnull SearchResult<SearchHit> doReadAllJsonData(String dataTypeName);
+    public @NonNull SearchResult<SearchHit> doReadAllJsonData(String dataTypeName);
 
     /**
      * Provide all Objects that are covered by query.
@@ -67,7 +67,7 @@ public interface DatabaseClient {
      * @param queryBuilder with the query to be used.
      * @return SearchResult with list of elements
      */
-    public @Nonnull SearchResult<SearchHit> doReadByQueryJsonData(String dataTypeName, QueryBuilder queryBuilder);
+    public @NonNull SearchResult<SearchHit> doReadByQueryJsonData(String dataTypeName, QueryBuilder queryBuilder);
 
     /**
      * Write one object into Database
@@ -77,7 +77,7 @@ public interface DatabaseClient {
      * @param json String in JSON format.
      * @return esId String of the database object or null in case of write problems.
      */
-    public @Nullable String doWriteJsonString(String dataTypeName, @Nonnull IsEsObject esId, String json);
+    public @Nullable String doWriteJsonString(String dataTypeName, @NonNull IsEsObject esId, String json);
 
     /**
      * Write one object into Database

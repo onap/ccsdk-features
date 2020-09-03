@@ -21,14 +21,13 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-import javax.annotation.Nonnull;
-
+import edu.umd.cs.findbugs.annotations.NonNull;
 public class GetRequest extends BaseRequest {
 
     private final String alias;
     private final String esId;
 
-    public GetRequest(String alias, String dataType, @Nonnull String esId) {
+    public GetRequest(String alias, String dataType, @NonNull String esId) {
         super("GET", String.format("/%s/%s/%s", alias, dataType, BaseRequest.urlEncodeValue(esId)));
         this.alias = alias;
         this.esId = esId;

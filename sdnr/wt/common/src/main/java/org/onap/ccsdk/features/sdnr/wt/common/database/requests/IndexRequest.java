@@ -21,7 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 public class IndexRequest extends BaseRequest {
 

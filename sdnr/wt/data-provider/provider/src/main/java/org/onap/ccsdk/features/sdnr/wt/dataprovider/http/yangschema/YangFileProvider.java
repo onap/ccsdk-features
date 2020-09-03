@@ -34,8 +34,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +111,7 @@ public class YangFileProvider {
      * @return
      * @throws ParseException
      */
-    private @Nullable YangFilename getYangFile(@Nonnull String module, @Nullable String version) throws ParseException {
+    private @Nullable YangFilename getYangFile(@NonNull String module, @Nullable String version) throws ParseException {
         YangFilename f = null;
         List<YangFilename> list = this.findYangFiles(module);
 
@@ -148,7 +148,7 @@ public class YangFileProvider {
      * @throws IOException
      * @throws ParseException
      */
-    public int writeOutput(@Nonnull String module, @Nullable String version, @Nonnull OutputStream outputStream)
+    public int writeOutput(@NonNull String module, @Nullable String version, @NonNull OutputStream outputStream)
             throws IOException, ParseException {
         YangFilename fn = this.getYangFile(module, version);
         if (fn == null) {

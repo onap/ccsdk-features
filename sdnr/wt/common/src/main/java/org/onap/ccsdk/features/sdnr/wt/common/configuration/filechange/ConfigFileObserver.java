@@ -24,7 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import org.onap.ccsdk.features.sdnr.wt.common.file.FileWatchdog;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class ConfigFileObserver extends FileWatchdog {
         }
     }
 
-    public void registerConfigChangedListener(@Nonnull IConfigChangedListener l) {
+    public void registerConfigChangedListener(@NonNull IConfigChangedListener l) {
         if (!this.mConfigChangedHandlers.contains(l)) {
             this.mConfigChangedHandlers.add(l);
         }
