@@ -30,76 +30,194 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.BoolQueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.SortOrder;
-import org.onap.ccsdk.features.sdnr.wt.common.test.JSONAssert;
 
 
 public class TestDbQueries {
 
+    // @formatter:off 
     private static final String MATCH_ALL_QUERY =
-            "{\n" + "    \"query\": {\n" + "        \"match_all\" : {\n" + "        }\n" + "    }\n" + "}";
+            "{\n"
+            + "    \"query\": {\n"
+            + "        \"match_all\" : {\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
     private static final String MATCH_QUERY_KEY = "is-required";
     private static final Object MATCH_QUERY_VALUE = true;
-    private static final String MATCH_QUERY = "{\n" + "    \"query\": {\n" + "        \"match\" : {\n"
-            + "            \"" + MATCH_QUERY_KEY + "\" : " + MATCH_QUERY_VALUE + "\n" + "        }\n" + "    }\n" + "}";
+    private static final String MATCH_QUERY = "{\n"
+            + "    \"query\": {\n"
+            + "        \"match\" : {\n"
+            + "            \""
+            + MATCH_QUERY_KEY + "\" : "
+            + MATCH_QUERY_VALUE + "\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
     private static final String MATCH_QUERY_KEY2 = "node-id";
     private static final Object MATCH_QUERY_VALUE2 = "sim2";
     private static final String BOOL_QUERY_MUST =
-            "{\n" + "    \"query\": {\n" + "        \"bool\": {\n" + "            \"must\": [\n" + "                {\n"
-                    + "                    \"match\": {\n" + "                        \"" + MATCH_QUERY_KEY + "\": "
-                    + MATCH_QUERY_VALUE + "\n" + "                    }\n" + "                },\n"
-                    + "                {\n" + "                    \"match\": {\n" + "                        \""
-                    + MATCH_QUERY_KEY2 + "\":" + MATCH_QUERY_VALUE2 + " \n" + "                    }\n"
-                    + "                }\n" + "            ]\n" + "        }\n" + "    }\n" + "}";
-    private static final String BOOL_QUERY_MUST_SINGLE = "{\n" + "    \"query\": {\n" + "        \"bool\": {\n"
-            + "            \"must\": {\n" + "                    \"match\": {\n" + "                        \""
-            + MATCH_QUERY_KEY + "\": " + MATCH_QUERY_VALUE + "\n" + "                    }\n" + "                }\n"
-            + "        }\n" + "    }\n" + "}";
-    private static final String BOOL_QUERY_SHOULD = "{\n" + "    \"query\": {\n" + "        \"bool\": {\n"
-            + "            \"should\": [\n" + "                {\n" + "                    \"match\": {\n"
-            + "                        \"" + MATCH_QUERY_KEY + "\": " + MATCH_QUERY_VALUE + "\n"
-            + "                    }\n" + "                },\n" + "                {\n"
-            + "                    \"match\": {\n" + "                        \"" + MATCH_QUERY_KEY2 + "\":"
-            + MATCH_QUERY_VALUE2 + " \n" + "                    }\n" + "                }\n" + "            ]\n"
-            + "        }\n" + "    }\n" + "}";
-    private static final String BOOL_QUERY_SHOULD_SINGLE = "{\n" + "    \"query\": {\n" + "        \"bool\": {\n"
-            + "            \"should\": {\n" + "                    \"match\": {\n" + "                        \""
-            + MATCH_QUERY_KEY + "\": " + MATCH_QUERY_VALUE + "\n" + "                    }\n" + "                }\n"
-            + "        }\n" + "    }\n" + "}";
+            "{\n"
+            + "    \"query\": {\n"
+            + "        \"bool\": {\n"
+            + "            \"must\": [\n"
+            + "                {\n"
+                    + "                    \"match\": {\n"
+            + "                        \""
+            + MATCH_QUERY_KEY + "\": "
+                    + MATCH_QUERY_VALUE + "\n"
+            + "                    }\n"
+            + "                },\n"
+                    + "                {\n"
+            + "                    \"match\": {\n"
+            + "                        \""
+                    + MATCH_QUERY_KEY2 + "\":"
+            + MATCH_QUERY_VALUE2 + " \n"
+            + "                    }\n"
+                    + "                }\n"
+            + "            ]\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
+    private static final String BOOL_QUERY_MUST_SINGLE = "{\n"
+            + "    \"query\": {\n"
+            + "        \"bool\": {\n"
+            + "            \"must\": {\n"
+            + "                    \"match\": {\n"
+            + "                        \""
+            + MATCH_QUERY_KEY + "\": "
+            + MATCH_QUERY_VALUE + "\n"
+            + "                    }\n"
+            + "                }\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
+    private static final String BOOL_QUERY_SHOULD = "{\n"
+            + "    \"query\": {\n"
+            + "        \"bool\": {\n"
+            + "            \"should\": [\n"
+            + "                {\n"
+            + "                    \"match\": {\n"
+            + "                        \""
+            + MATCH_QUERY_KEY + "\": "
+            + MATCH_QUERY_VALUE + "\n"
+            + "                    }\n"
+            + "                },\n"
+            + "                {\n"
+            + "                    \"match\": {\n"
+            + "                        \""
+            + MATCH_QUERY_KEY2 + "\":"
+            + MATCH_QUERY_VALUE2 + " \n"
+            + "                    }\n"
+            + "                }\n"
+            + "            ]\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
+    private static final String BOOL_QUERY_SHOULD_SINGLE = "{\n"
+            + "    \"query\": {\n"
+            + "        \"bool\": {\n"
+            + "            \"should\": {\n"
+            + "                    \"match\": {\n"
+            + "                        \""
+            + MATCH_QUERY_KEY + "\": "
+            + MATCH_QUERY_VALUE + "\n"
+            + "                    }\n"
+            + "                }\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
     private static final String RANGE_QUERY_KEY = "timestamp";
     private static final String RANGE_QUERY_LTEND = "2017-08-10T20:00:00.0Z";
-    private static final String RANGE_QUERY = "{\n" + "    \"query\": {\n" + "        \"range\" : {\n"
-            + "            \"" + RANGE_QUERY_KEY + "\" : {\n" + "                \"lte\" : \"" + RANGE_QUERY_LTEND
-            + "\",\n" + "                \"boost\": 2.0\n" + "            }\n" + "        }\n" + "    }\n" + "}";
-    private static final String RANGEBOOL_QUERY = "{\n" + "    \"query\": {\n" + "        \"bool\": {\n"
-            + "            \"must\": [\n" + "                {\n" + "                    \"match\": {\n"
-            + "                        \"is-required\": true\n" + "                    }\n" + "                },\n"
-            + "                {\n" + "                    \"regexp\": {\n" + "                        \"node-id\": {\n"
+    private static final String RANGE_QUERY = "{\n"
+            + "    \"query\": {\n"
+            + "        \"range\" : {\n"
+            + "            \"" + RANGE_QUERY_KEY + "\" : {\n"
+            + "                \"lte\" : \"" + RANGE_QUERY_LTEND + "\",\n"
+            + "                \"boost\": 2.0\n"
+            + "            }\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
+    private static final String RANGEBOOL_QUERY = "{\n"
+            + "    \"query\": {\n"
+            + "        \"bool\": {\n"
+            + "            \"must\": [\n"
+            + "                {\n"
+            + "                    \"match\": {\n"
+            + "                        \"is-required\": true\n"
+            + "                    }\n"
+            + "                },\n"
+            + "                {\n"
+            + "                    \"regexp\": {\n"
+            + "                        \"node-id\": {\n"
             + "                            \"max_determinized_states\": 10000,\n"
-            + "                            \"flags\": \"ALL\",\n" + "                            \"value\": \"sim.*\"\n"
-            + "                        }\n" + "                    }\n" + "                }\n" + "            ]\n"
-            + "        }\n" + "    }\n" + "}";
+            + "                            \"flags\": \"ALL\",\n"
+            + "                            \"value\": \"sim.*\"\n"
+            + "                        }\n"
+            + "                    }\n"
+            + "                }\n"
+            + "            ]\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
     private static final String AGG_FIELD = "severity";
     private static final String AGG_QUERY =
-            "{\n" + "    \"query\": {\n" + "        \"match_all\": {}\n" + "    },\n" + "    \"aggs\": {\n"
-                    + "        \"severity\": {\n" + "            \"terms\": {\n" + "                \"field\": \""
-                    + AGG_FIELD + "\"\n" + "            }\n" + "        }\n" + "    }\n" + "}";
+            "{\n"
+            + "    \"query\": {\n"
+            + "        \"match_all\": {}\n"
+            + "    },\n"
+            + "    \"aggs\": {\n"
+            + "        \"severity\": {\n"
+            + "            \"terms\": {\n"
+            + "                \"field\": \"" + AGG_FIELD + "\"\n"
+            + "            }\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
     private static final long FROMANDSIZE_QUERY_SIZE = 20;
     private static final long FROMANDSIZE_QUERY_FROM = 120;
-    private static final String FROMANDSIZE_QUERY = "{\n" + "    \"size\": " + FROMANDSIZE_QUERY_SIZE + ",\n"
-            + "    \"query\": {\n" + "        \"match_all\": {}\n" + "    },\n" + "    \"from\":"
-            + FROMANDSIZE_QUERY_FROM + "\n" + "}";
+    private static final String FROMANDSIZE_QUERY = "{\n"
+            + "    \"size\": " + FROMANDSIZE_QUERY_SIZE + ",\n"
+            + "    \"query\": {\n"
+            + "        \"match_all\": {}\n"
+            + "    },\n"
+            + "    \"from\":" + FROMANDSIZE_QUERY_FROM + "\n"
+            + "}";
     private static final String TERMQUERY_KEY = "node-id";
     private static final String TERMQUERY_VALUE = "abc";
-    private static final String TERM_QUERY = "{\n" + "    \"query\": {\n" + "        \"term\": {\n" + "            \""
-            + TERMQUERY_KEY + "\": \"" + TERMQUERY_VALUE + "\"\n" + "        }\n" + "    }\n" + "}";
+    private static final String TERM_QUERY = "{\n"
+            + "    \"query\": {\n"
+            + "        \"term\": {\n"
+            + "            \"" + TERMQUERY_KEY + "\": \"" + TERMQUERY_VALUE + "\"\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
     private static final String SORTING_PROPERTY = "node-id";
-    private static final String SORTING_QUERY_ASC = "{\n" + "    \"query\": {\n" + "        \"match_all\": {}\n"
-            + "    },\n" + "    \"sort\": [\n" + "        {\n" + "            \"" + SORTING_PROPERTY + "\": {\n"
-            + "                \"order\": \"asc\"\n" + "            }\n" + "        }\n" + "    ]\n" + "}";
-    private static final String SORTING_QUERY_DESC = "{\n" + "    \"query\": {\n" + "        \"match_all\": {}\n"
-            + "    },\n" + "    \"sort\": [\n" + "        {\n" + "            \"" + SORTING_PROPERTY + "\": {\n"
-            + "                \"order\": \"desc\"\n" + "            }\n" + "        }\n" + "    ]\n" + "}";
-
+    private static final String SORTING_QUERY_ASC = "{\n"
+            + "    \"query\": {\n"
+            + "        \"match_all\": {}\n"
+            + "    },\n"
+            + "    \"sort\": [\n"
+            + "        {\n"
+            + "            \"" + SORTING_PROPERTY + "\": {\n"
+            + "                \"order\": \"asc\"\n"
+            + "            }\n"
+            + "        }\n"
+            + "    ]\n"
+            + "}";
+    private static final String SORTING_QUERY_DESC = "{\n"
+            + "    \"query\": {\n"
+            + "        \"match_all\": {}\n"
+            + "    },\n"
+            + "    \"sort\": [\n"
+            + "        {\n"
+            + "            \"" + SORTING_PROPERTY + "\": {\n"
+            + "                \"order\": \"desc\"\n"
+            + "            }\n"
+            + "        }\n"
+            + "    ]\n"
+            + "}";
+    // @formatter:on
     private void testEquals(String message, String json, QueryBuilder query) {
         this.testEquals(message, json, query, true);
     }

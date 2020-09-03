@@ -22,7 +22,6 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database.responses;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.elasticsearch.client.Response;

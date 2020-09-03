@@ -89,13 +89,11 @@ public class HelpServlet extends BaseServlet implements IPublicServlet {
 
     @Override
     protected boolean doTrustAll() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     protected void trustAll(boolean trust) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -120,13 +118,11 @@ public class HelpServlet extends BaseServlet implements IPublicServlet {
 
     @Override
     protected boolean trustInsecure() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     protected boolean isCorsEnabled() {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -135,6 +131,5 @@ public class HelpServlet extends BaseServlet implements IPublicServlet {
      */
     public void setOffline(boolean b) {
         this.isoff = b;
-
     }
 }

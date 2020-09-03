@@ -29,7 +29,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
-
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.ConfigFileObserver;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section;
@@ -71,6 +70,8 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
                 if (!this.mFile.createNewFile()) {
                     LOG.error("Can not create file {}", f.getAbsolutePath());
                 }
+                this.mFile.setReadable(true, false);
+                this.mFile.setWritable(true, false);
             }
             reLoad();
 

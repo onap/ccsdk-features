@@ -91,7 +91,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.UpdateByQueryResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.UpdateResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
-import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

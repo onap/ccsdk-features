@@ -29,7 +29,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.exception.ConversionException;
 import org.slf4j.Logger;
@@ -51,7 +50,8 @@ public class Section {
     // constants
     private static final Logger LOG = LoggerFactory.getLogger(Section.class);
     private static final String DELIMITER = "=";
-    private static final String COMMENTCHARS[] = {"#", ";"};
+    private static final String DEFAULT_COMMENTCHAR = "#";
+    private static final String COMMENTCHARS[] = {DEFAULT_COMMENTCHAR, ";"};
     private static final String ENVVARIABLE = "${";
     private static final String REGEXENVVARIABLE = "(\\$\\{[A-Z0-9_-]+\\})";
     // end of constants
@@ -130,6 +130,20 @@ public class Section {
             value = tmp;
         }
         return value;
+    }
+
+    public boolean addComment(String key,String comment) {
+        if (this.values.containsKey(key)) {
+            this.values.get(key).addComment(DEFAULT_COMMENTCHAR+comment);
+        }
+        return false;
+    }
+
+    public boolean removeComment(String key,String comment) {
+        if (this.values.containsKey(key)) {
+            this.values.get(key).removeComment(DEFAULT_COMMENTCHAR+comment);
+        }
+        return false;
     }
 
     public void setProperty(String key, String value) {

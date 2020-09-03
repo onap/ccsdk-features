@@ -25,13 +25,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +51,8 @@ public class TestConfig {
     private static final int TESTVALUE1 = 123;
     private static final int TESTVALUE1_2 = 1234;
     private static final boolean TESTVALUE2 = true;
+    private static final String TESTCOMMENT1 = "my comment for this value";
+    private static final String TESTCOMMENT1_2 = "my comment line 2 for this value";
     private static final String TESTVALUE3 = "http://localhost:2223";
     private static final String TESTVALUE4 = "httasdasdas";
     private static final String TESTCONTENT1 = "	[test]\n" + TESTKEY1 + "=" + TESTVALUE1 + "\n" + "#her a comment\n"
@@ -102,6 +102,8 @@ public class TestConfig {
         Section section = confiuration.addSection(SECTIONNAME);
 
         section.setProperty(TESTKEY1, String.valueOf(TESTVALUE1));
+        section.addComment(TESTKEY1, TESTCOMMENT1);
+        section.addComment(TESTKEY1, TESTCOMMENT1_2);
         section.setProperty(TESTKEY2, String.valueOf(TESTVALUE2));
         section.setProperty(TESTKEY3, String.valueOf(TESTVALUE3));
         confiuration.save();

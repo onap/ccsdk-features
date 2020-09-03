@@ -21,13 +21,13 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.HtAssert;
-import org.onap.ccsdk.features.sdnr.wt.common.test.JSONAssert;
 
 public class TestJsonAssert {
 

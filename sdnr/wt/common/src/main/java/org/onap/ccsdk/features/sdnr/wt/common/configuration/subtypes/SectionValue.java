@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  * @author Michael Dürre, Herbert Eiselt
  *
  */
@@ -35,7 +35,7 @@ class SectionValue {
     private String value;
     private final List<String> comments;
     private boolean isUncommented;
-    // end of variables    
+    // end of variables
 
     // constructors
     public SectionValue(String value, List<String> commentsForValue, boolean isuncommented) {
@@ -70,6 +70,16 @@ class SectionValue {
     public SectionValue setIsUncommented(boolean isUncommented) {
         this.isUncommented = isUncommented;
         return this;
+    }
+
+    public void addComment(String comment) {
+        this.comments.add(comment);
+        this.isUncommented = false;
+    }
+
+    public void removeComment(String comment) {
+        this.comments.remove(comment);
+        this.isUncommented = this.comments.size()==0;
     }
 
     public List<String> getComments() {
