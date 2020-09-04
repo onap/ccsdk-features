@@ -12,6 +12,9 @@
 # Generated models and features
 **/bin/*
 
+# Added for vs code
+.vscode
+
 # MANIFEST.MF is updated on every clean install
 **/src/main/resources/META-INF/
 **/src/main/yang-gen-sal
