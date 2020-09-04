@@ -126,11 +126,11 @@ class ConnectService {
 
   /** Yang capabilities of the selected network elements. */
   public async infoNetworkElement(nodeId: string): Promise<TopologyNode | null> {
-    const path = '/rests/operational/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
+    const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
     const topologyRequestPomise = requestRest<Topology>(path, { method: "GET" });
 
     return topologyRequestPomise && topologyRequestPomise.then(result => {
-      return result && result.node && result.node[0] || null;
+      return result && result["network-topology:node"] && result["network-topology:node"][0] || null;
     });
   }
 
@@ -157,25 +157,6 @@ class ConnectService {
     })) || null;
   }
 
-  public async getWebUriExtensionForNetworkElementAsync(ne: string) {
-    const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + ne + '/yang-ext:mount/core-model:network-element';
-    try {
-      const result = await requestRest<any>(path, { method: "GET" });
-
-      if (result['network-element'].extension) {
-        const webUri = result['network-element'].extension.find((item: any) => item['value-name'] === "webUri")
-        if (webUri) {
-          return webUri.value as string;
-        }
-      }
-    } catch (error) {
-      console.log(ne + ' unrechable: ' + error)
-    }
-
-    return undefined;
-
-  }
-
   public getAllWebUriExtensionsForNetworkElementListAsync(ne: string[]) {
 
     let promises: any[] = [];
@@ -187,9 +168,8 @@ class ConnectService {
       // add search request to array
       promises.push(requestRest<any>(path, { method: "GET" })
         .then(result => {
-
-          if (result != null && result['network-element'] && result['network-element'].extension) {
-            const webUri = result['network-element'].extension.find((item: any) => item['value-name'] === "webUri")
+          if (result != null && result['core-model:network-element'] && result['core-model:network-element'].extension) {
+            const webUri = result['core-model:network-element'].extension.find((item: any) => item['value-name'] === "webUri")
             if (webUri) {
               webUris.push({ webUri: webUri.value, nodeId: nodeId });
             } else {

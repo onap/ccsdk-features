@@ -42,15 +42,16 @@ export const ListItemLink = withStyles(styles)((props: IListItemLinkProps) => {
   const { icon, primary: Primary, secondary: Secondary, classes, to, exact = false } = props;
   const renderLink = (itemProps: any): JSX.Element => (<NavLink exact={ exact } to={ to } activeClassName={ classes.active } { ...itemProps } />);
 
+  const ariaLabel = typeof Primary === 'string' ? "link-to-"+Primary.toLowerCase().replace(/\s/g, "-") : "link-to-"+Primary.displayName?.toLowerCase();
   return (
        <>
-        <ListItem button component={ renderLink }>
+        <ListItem button component={ renderLink } aria-label={ariaLabel}>
           { icon
             ? <ListItemIcon>{ icon }</ListItemIcon>
             : null
           }
         { typeof Primary === 'string'
-          ? <ListItemText aria-label={"link-to-"+Primary.toLowerCase()} primary={ Primary } style={{ padding: 0 }} /> 
+          ? <ListItemText primary={ Primary } style={{ padding: 0 }} /> 
           : <Primary />
           }
         </ListItem>

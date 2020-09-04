@@ -32,5 +32,5 @@ export interface TopologyNode {
 
 export interface Topology {
   "topology-id": string;
-  node: TopologyNode[];
+  "network-topology:node": TopologyNode[];
 }
