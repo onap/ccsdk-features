@@ -580,10 +580,10 @@ module ran-network {
        subclause 2.2 and 12.1) and S-NSSAI represents an data type, that is comprised of an SST
        (Slice/Service type) and an optional SD (Slice Differentiator) field, (See TS 23.003 [13]).";
     uses PLMNId;
-    leaf sNssai {
-      type SNssai;
-      description
-        "TODO";
+    list sNSSAIList {
+      key "sNssai";
+      uses sNSSAIConfig;
+      description "List of sNSSAIs";
     }
   }
 
@@ -602,7 +602,7 @@ module ran-network {
     leaf nfInstanceID {
       type yang:uuid;
       config false;
-      mandatory true;
+      mandatory false;
       description
         "This parameter defines profile for managed NF.
          The format of the NF Instance ID shall be a
@@ -618,7 +618,7 @@ module ran-network {
     }
     leaf hostAddr {
       type inet:host;
-      mandatory true;
+      mandatory false;
       description
         "Host address of a NF";
     }
@@ -641,7 +641,7 @@ module ran-network {
     }
     leaf capacity {
       type uint16;
-      mandatory true;
+      mandatory false;
       description
         "This parameter defines static capacity information
          in the range of 0-65535, expressed as a weight relative to other
@@ -901,25 +901,132 @@ module ran-network {
       description
         "The physical location (e.g. an address) of an entity";
     }
+    leaf gNBId {
+          type int64 { range "0..4294967295"; }
+          config false;
+          description "Identifies a gNB within a PLMN. The gNB Identifier (gNB ID)
+            is part of the NR Cell Identifier (NCI) of the gNB cells.";
+          reference "gNB ID in 3GPP TS 38.300, Global gNB ID in 3GPP TS 38.413";
+        }
+  	leaf trackingArea {
+          type string;
+          description "Identifies the Tracking area controlled by the NearRTRIC";
+        }
+
     leaf-list managedBy {
       type DistinguishedName;
       config false;
       description
         "Relates to the role played by ManagementSystem";
     }
+
+    leaf-list rANNFNSSIList{
+  		type string;
+  		config true;
+  		description "Identifies the list of RAN NF NSSIs that are served by the NearRTRIC";
+  	}
+
+  	list pLMNInfoList {
+          uses PLMNInfo;
+          key "mcc mnc";
+          description "The PLMNInfoList is a list of PLMNInfo data type. It defines which PLMNs that can be served by the nearRTRIC.";
+        }
+  	list sliceProfilesList{
+  		uses SliceProfile;
+  		key "sliceProfileId";
+  		description "List of slice profiles supported by the ran slice";
+  	}
+		uses RRMPolicy_Group;
   } // Near RT RIC grouping
+
+
+
+  	grouping Configuration{
+  		leaf configParameter{
+  			type string;
+  			description "Type of the configuration parameter";
+        }
+  		leaf configValue{
+  			type int64;
+  			description "Identifies the configuration to be done for the network elements under the NearRTRIC";
+
+  		}
+  	}
+
+  	grouping SliceProfile{
+  		leaf sliceProfileId{
+  			type string;
+  			mandatory true;
+  			description "slice profile id";
+  		}
+  		leaf sNSSAI{
+  			type SNssai;
+  			mandatory false;
+  			description "The S-NSSAI may include both the SST and SD fields (in which case the S-NSSAI length is 32 bits in total), or the S-NSSAI may just include the SST field (in which case the S-NSSAI length is 8 bits only)";
+  		}
+  		leaf maxNumberofUEs{
+  			type int64 { range "0..68719476735"; }
+        		mandatory false;
+          		description "maximum number of UEs";
+  		}
+  		leaf latency{
+  			type int64 { range "0..68719476735"; }
+        		mandatory false;
+          		description "latency of the slice requested by the operator";
+  		}
+  		leaf uLThptPerSlice{
+  			type int64 { range "0..68719476735"; }
+        		mandatory false;
+          		description "uplink throughput of the slice requested by the operator";
+  		}
+  		leaf dLThptPerSlice{
+  			type int64 { range "0..68719476735"; }
+        		mandatory false;
+          		description "downlink throughput  of the slice requested by the operator";
+  		}
+  		leaf maxNumberofConns{
+  			type int64 { range "0..68719476735"; }
+        		mandatory false;
+          		description "maximum number of connections to be served by the slice";
+  		}
+  		leaf uEMobilityLevel{
+  			type string;
+  			mandatory false;
+  			description "Mobility level of the UE";
+  		}
+  		leaf-list coverageAreaList{
+  		type string;
+  		config true;
+  		description "Identifies the list of coverage areas to be served by the slice";
+  	}
+    leaf resourceSharingLevel{
+      type string;
+      description "Resource sharing level";
+    }
+  	}
+
+
+
+
+
 
   grouping GNBDUFunctionGroup {
     description
       "Represents the GNBDUFunction IOC.";
     reference
       "3GPP TS 28.541";
+    leaf gNBDUFunction-url {
+      type inet:uri;
+      description
+        "URL for the GNBDUFunction. String representing IP addr:port";
+    }
+
     leaf gNBId {
       type int64 {
         range "0..4294967295";
       }
       config false;
-      mandatory true;
+      mandatory false;
       description
         "Identifies a gNB within a PLMN. The gNB Identifier (gNB ID)
          is part of the NR Cell Identifier (NCI) of the gNB cells.";
@@ -930,7 +1037,7 @@ module ran-network {
       type int32 {
         range "22..32";
       }
-      mandatory true;
+      mandatory false;
       description
         "Indicates the number of bits for encoding the gNB ID.";
       reference
@@ -940,7 +1047,7 @@ module ran-network {
       type int64 {
         range "0..68719476735";
       }
-      mandatory true;
+      mandatory false;
       description
         "Uniquely identifies the DU at least within a gNB.";
       reference
@@ -977,6 +1084,7 @@ module ran-network {
       reference
         "3GPP TS 38.211 subclause 7.4.1.6";
     }
+    uses RRMPolicy_Group;
   }
 
   grouping NRCellDUGroup {
@@ -984,12 +1092,17 @@ module ran-network {
       "Represents the NRCellDU IOC.";
     reference
       "3GPP TS 28.541";
+    leaf nRCellDU-url {
+      type inet:uri;
+      description
+        "URL for the NR Cell DU. String representing IP addr:port";
+    }
     uses RRMPolicy_Group;
     leaf cellLocalId {
       type int32 {
         range "0..16383";
       }
-      mandatory true;
+      mandatory false;
       description
         "Identifies an NR cell of a gNB. Together with the
          corresponding gNB identifier in forms the NR Cell Identity (NCI).";
@@ -1036,7 +1149,7 @@ module ran-network {
       type int32 {
         range "0..1007";
       }
-      mandatory true;
+      mandatory false;
       description
         "The Physical Cell Identity (PCI) of the NR cell.";
       reference
@@ -1051,7 +1164,7 @@ module ran-network {
     }
     leaf arfcnDL {
       type int32;
-      mandatory true;
+      mandatory false;
       description
         "NR Absolute Radio Frequency Channel Number (NR-ARFCN) for
          downlink.";
@@ -1102,7 +1215,7 @@ module ran-network {
       type int32 {
         range "0..3279165";
       }
-      mandatory true;
+      mandatory false;
       description
         "Indicates cell defining SSB frequency domain position.
          Frequency (in terms of NR-ARFCN) of the cell defining SSB transmission.
@@ -1116,7 +1229,7 @@ module ran-network {
         range "5 | 10 | 20 | 40 | 80 | 160";
       }
       units "subframes (ms)";
-      mandatory true;
+      mandatory false;
       description
         "Indicates cell defined SSB periodicity. The SSB periodicity
          is used for the rate matching purpose.";
@@ -1126,7 +1239,7 @@ module ran-network {
         range "15 | 30 | 120 | 240";
       }
       units "kHz";
-      mandatory true;
+      mandatory false;
       description
         "Subcarrier spacing of SSB. Only the values 15 kHz or 30 kHz
          (< 6 GHz), 120 kHz or 240 kHz (> 6 GHz) are applicable.";
@@ -1138,7 +1251,7 @@ module ran-network {
         range "0..159";
       }
       units "subframes (ms)";
-      mandatory true;
+      mandatory false;
       description
         "Indicates cell defining SSB time domain position. Defined
          as the offset of the measurement window, in which to receive SS/PBCH
@@ -1150,7 +1263,7 @@ module ran-network {
         range "1..5";
       }
       units "subframes (ms)";
-      mandatory true;
+      mandatory false;
       description
         "Duration of the measurement window in which to receive
          SS/PBCH blocks.";
@@ -1191,6 +1304,23 @@ module ran-network {
     }
   }
 
+  grouping sNSSAIConfig{
+	leaf sNssai {
+        type string;
+        description "s-NSSAI of a network slice.";
+	   reference "3GPP TS 23.003";
+      }
+ 	 leaf status {
+        type string;
+        description "status of s-NSSAI";
+      }
+	list configData{
+		uses Configuration;
+		key "configParameter";
+		description "List of configurations to be done at the network elements";
+	}
+	}
+
   grouping RRMPolicy_Group {
     description
       "This IOC represents the properties of an abstract RRMPolicy. The RRMPolicy_ IOC
@@ -1205,14 +1335,13 @@ module ran-network {
        abstract RRMPolicy_ IOC.";
     leaf resourceType {
       type string;
-      mandatory true;
+      mandatory false;
       description
         "The resourceType attribute defines type of resource (PRB, RRC connected users,
          DRB usage etc.) that is subject to policy. Valid values are 'PRB', 'RRC' or 'DRB'";
     }
     list rRMPolicyMemberList {
       key "idx";
-      min-elements 1;
       description
         "It represents the list of RRMPolicyMember (s) that the managed object
          is supporting. A RRMPolicyMember <<dataType>> include the PLMNId <<dataType>>
@@ -1231,13 +1360,18 @@ module ran-network {
       "Represents the GNBCUUPFunction IOC.";
     reference
       "3GPP TS 28.541";
+    leaf gNBCUUPFunction-url {
+      type inet:uri;
+      description
+        "URL for GNBCUUPFunction. String representing IP addr:port";
+    }
     uses RRMPolicy_Group;
     leaf gNBCUUPId {
       type uint64 {
         range "0..68719476735";
       }
       config false;
-      mandatory true;
+      mandatory false;
       description
         "Identifies the gNB-CU-UP at least within a gNB-CU-CP";
       reference
@@ -1247,7 +1381,7 @@ module ran-network {
       type int32 {
         range "22..32";
       }
-      mandatory true;
+      mandatory false;
       description
         "Indicates the number of bits for encoding the gNB Id.";
       reference
@@ -1268,12 +1402,17 @@ module ran-network {
       "Represents the GNBCUCPFunction IOC.";
     reference
       "3GPP TS 28.541";
+    leaf gNBCUCPFunction-url {
+      type inet:uri;
+      description
+        "URL for GNBCUCPFunction. String representing IP addr:port";
+    }
     uses RRMPolicy_Group;
     leaf gNBId {
       type int64 {
         range "0..4294967295";
       }
-      mandatory true;
+      mandatory false;
       description
         "Identifies a gNB within a PLMN. The gNB Identifier (gNB ID)
          is part of the NR Cell Identifier (NCI) of the gNB cells.";
@@ -1284,7 +1423,7 @@ module ran-network {
       type int32 {
         range "22..32";
       }
-      mandatory true;
+      mandatory false;
       description
         "Indicates the number of bits for encoding the gNB ID.";
       reference
@@ -1294,7 +1433,7 @@ module ran-network {
       type string {
         length "1..150";
       }
-      mandatory true;
+      mandatory false;
       description
         "Identifies the Central Unit of an gNB.";
       reference
@@ -1341,11 +1480,16 @@ module ran-network {
       "Represents the NRCellCU IOC.";
     reference
       "3GPP TS 28.541";
+    leaf nRCellCU-url {
+      type inet:uri;
+      description
+        "URL for NRCellCU. String representing IP addr:port";
+    }
     leaf cellLocalId {
       type int32 {
         range "0..16383";
       }
-      mandatory true;
+      mandatory false;
       description
         "Identifies an NR cell of a gNB. Together with corresponding
          gNB ID it forms the NR Cell Identifier (NCI).";
@@ -1366,7 +1510,8 @@ module ran-network {
       description
         "Reference to corresponding NRFrequency instance.";
     }
-  } // grouping
+    uses RRMPolicy_Group;
+  } // grouping NRCellCUGroup
 
   grouping NRCellRelationGroup {
     description
@@ -1427,13 +1572,13 @@ module ran-network {
     }
     leaf nRFreqRelationRef {
       type DistinguishedName;
-      mandatory true;
+      mandatory false;
       description
         "Reference to a corresponding NRFreqRelation instance.";
     }
     leaf adjacentNRCellRef {
       type DistinguishedName;
-      mandatory true;
+      mandatory false;
       description
         "Reference to an adjacent NR cell (NRCellCU or
          ExternalNRCellCU).";
@@ -1589,7 +1734,7 @@ module ran-network {
         range "-140..-44";
       }
       units "dBm";
-      mandatory true;
+      mandatory false;
       description
         "Indicates the required minimum received Reference Symbol
          Received Power (RSRP) level in the NR frequency for cell reselection.
@@ -1603,7 +1748,7 @@ module ran-network {
         range "0..62";
       }
       units "dB";
-      mandatory true;
+      mandatory false;
       description
         "Specifies the Srxlev threshold used by the UE when
          reselecting towards a higher priority RAT/frequency than the current
@@ -1617,7 +1762,7 @@ module ran-network {
         range "0..31";
       }
       units "dB";
-      mandatory true;
+      mandatory false;
       description
         "Specifies the Squal threshold used by the UE when
          reselecting towards a higher priority RAT/frequency than the current
@@ -1631,7 +1776,7 @@ module ran-network {
         range "0..62";
       }
       units "dB";
-      mandatory true;
+      mandatory false;
       description
         "Specifies the Srxlev threshold used by the UE when
          reselecting towards a lower priority RAT/frequency than the current
@@ -1645,7 +1790,7 @@ module ran-network {
         range "0..31";
       }
       units "dB";
-      mandatory true;
+      mandatory false;
       description
         "Specifies the Squal threshold used by the UE when
          reselecting towards a lower priority RAT/frequency than the current
@@ -1659,7 +1804,7 @@ module ran-network {
         range "0..7";
       }
       units "s";
-      mandatory true;
+      mandatory false;
       description
         "Cell reselection timer for NR.";
       reference
@@ -1670,7 +1815,7 @@ module ran-network {
         range "25 | 50 | 75 | 100";
       }
       units "%";
-      mandatory true;
+      mandatory false;
       description
         "The attribute tReselectionNr (parameter TreselectionNR in
          3GPP TS 38.304) is multiplied with this scaling factor if the UE is
@@ -1684,7 +1829,7 @@ module ran-network {
         range "25 | 50 | 75 | 100";
       }
       units "%";
-      mandatory true;
+      mandatory false;
       description
         "The attribute tReselectionNr (parameter TreselectionNR in
          3GPP TS 38.304) multiplied with this scaling factor if the UE is in
@@ -1695,7 +1840,7 @@ module ran-network {
     }
     leaf nRFrequencyRef {
       type DistinguishedName;
-      mandatory true;
+      mandatory false;
       description
         "Reference to a corresponding NRFrequency instance.";
     }
