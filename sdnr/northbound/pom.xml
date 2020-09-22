@@ -39,7 +39,7 @@
     <packaging>pom</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
-    <description>SDN-R RAN, OOF PCI ANR POC, A1 Adapter, CMNotify</description>
+    <description>SDN-R RAN, OOF PCI ANR POC, A1 Adapter, CMNotify, RANSlice</description>
 
     <modules>
         <module>oofpcipoc</module>
