@@ -936,7 +936,22 @@ module ran-network {
   		key "sliceProfileId";
   		description "List of slice profiles supported by the ran slice";
   	}
-		uses RRMPolicy_Group;
+    list RRMPolicyRatio {
+      key id;
+      leaf id {
+        type string;
+        description
+          "Key leaf";
+      }
+      container attributes {
+        uses RRMPolicyRatioGroup;
+      }
+      description " The RRMPolicyRatio IOC is one realization of a RRMPolicy_ IOC, see the
+        inheritance in Figure 4.2.1.2-1. This RRM framework allows adding new policies, both
+        standardized (like RRMPolicyRatio) or as vendor specific, by inheriting from the
+        abstract RRMPolicy_ IOC. For details see subclause 4.3.36.";
+    }
+
   } // Near RT RIC grouping
 
 
@@ -1084,7 +1099,21 @@ module ran-network {
       reference
         "3GPP TS 38.211 subclause 7.4.1.6";
     }
-    uses RRMPolicy_Group;
+    list RRMPolicyRatio {
+      key id;
+      leaf id {
+        type string;
+        description
+          "Key leaf";
+      }
+      container attributes {
+        uses RRMPolicyRatioGroup;
+      }
+      description " The RRMPolicyRatio IOC is one realization of a RRMPolicy_ IOC, see the
+        inheritance in Figure 4.2.1.2-1. This RRM framework allows adding new policies, both
+        standardized (like RRMPolicyRatio) or as vendor specific, by inheriting from the
+        abstract RRMPolicy_ IOC. For details see subclause 4.3.36.";
+    }
   }
 
   grouping NRCellDUGroup {
@@ -1097,7 +1126,21 @@ module ran-network {
       description
         "URL for the NR Cell DU. String representing IP addr:port";
     }
-    uses RRMPolicy_Group;
+    list RRMPolicyRatio {
+      key id;
+      leaf id {
+        type string;
+        description
+          "Key leaf";
+      }
+      container attributes {
+        uses RRMPolicyRatioGroup;
+      }
+      description " The RRMPolicyRatio IOC is one realization of a RRMPolicy_ IOC, see the
+        inheritance in Figure 4.2.1.2-1. This RRM framework allows adding new policies, both
+        standardized (like RRMPolicyRatio) or as vendor specific, by inheriting from the
+        abstract RRMPolicy_ IOC. For details see subclause 4.3.36.";
+    }
     leaf cellLocalId {
       type int32 {
         range "0..16383";
@@ -1304,6 +1347,53 @@ module ran-network {
     }
   }
 
+  grouping RRMPolicyRatioGroup {
+
+    uses RRMPolicy_Group;    // Inherits RRMPolicy_
+
+    leaf quotaType {
+      type QuotaType;
+      mandatory false;
+      description "The type of the quota which allows to allocate resources as
+        strictly usable for defined slice(s) (strict quota) or allows that
+        resources to be used by other slice(s) when defined slice(s) do not
+        need them (float quota).";
+    }
+
+    leaf rRMPolicyMaxRatio {
+      type uint8;
+      mandatory false;
+      units percent;
+      description "The RRM policy setting the maximum percentage of radio
+        resources to be allocated to the corresponding S-NSSAI list. This
+        quota can be strict or float quota. Strict quota means resources are
+        not allowed for other sNSSAIs even when they are not used by the
+        defined sNSSAIList. Float quota resources can be used by other sNSSAIs
+        when the defined sNSSAIList do not need them. Value 0 indicates that
+        there is no maximum limit.";
+    }
+
+    leaf rRMPolicyMinRatio {
+      type uint8;
+      mandatory false;
+      units percent;
+      description "The RRM policy setting the minimum percentage of radio
+        resources to be allocated to the corresponding S-NSSAI list. This
+        quota can be strict or float quota. Strict quota means resources are
+        not allowed for other sNSSAIs even when they are not used by the
+        defined sNSSAIList. Float quota resources can be used by other sNSSAIs
+        when the defined sNSSAIList do not need them. Value 0 indicates that
+        there is no minimum limit.";
+    }
+    leaf rRMPolicyDedicatedRatio {
+      type uint8;
+      units percent;
+      description "Dedicated Ration.";
+      }
+    description "Represents the RRMPolicyRatio concrete IOC.";
+    }
+
+
   grouping sNSSAIConfig{
 	leaf sNssai {
         type string;
@@ -1342,15 +1432,15 @@ module ran-network {
     }
     list rRMPolicyMemberList {
       key "idx";
-      description
-        "It represents the list of RRMPolicyMember (s) that the managed object
-         is supporting. A RRMPolicyMember <<dataType>> include the PLMNId <<dataType>>
-         and S-NSSAI <<dataType>>.";
       leaf idx {
         type uint32;
         description
           "TODO";
       }
+      description
+        "It represents the list of RRMPolicyMember (s) that the managed object
+         is supporting. A RRMPolicyMember <<dataType>> include the PLMNId <<dataType>>
+         and S-NSSAI <<dataType>>.";
       uses rRMPolicyMemberGroup;
     }
   } // grouping
@@ -1365,7 +1455,21 @@ module ran-network {
       description
         "URL for GNBCUUPFunction. String representing IP addr:port";
     }
-    uses RRMPolicy_Group;
+    list RRMPolicyRatio {
+      key id;
+      leaf id {
+        type string;
+        description
+          "Key leaf";
+      }
+      container attributes {
+        uses RRMPolicyRatioGroup;
+      }
+      description " The RRMPolicyRatio IOC is one realization of a RRMPolicy_ IOC, see the
+        inheritance in Figure 4.2.1.2-1. This RRM framework allows adding new policies, both
+        standardized (like RRMPolicyRatio) or as vendor specific, by inheriting from the
+        abstract RRMPolicy_ IOC. For details see subclause 4.3.36.";
+    }
     leaf gNBCUUPId {
       type uint64 {
         range "0..68719476735";
@@ -1407,7 +1511,21 @@ module ran-network {
       description
         "URL for GNBCUCPFunction. String representing IP addr:port";
     }
-    uses RRMPolicy_Group;
+    list RRMPolicyRatio {
+      key id;
+      leaf id {
+        type string;
+        description
+          "Key leaf";
+      }
+      container attributes {
+        uses RRMPolicyRatioGroup;
+      }
+      description " The RRMPolicyRatio IOC is one realization of a RRMPolicy_ IOC, see the
+        inheritance in Figure 4.2.1.2-1. This RRM framework allows adding new policies, both
+        standardized (like RRMPolicyRatio) or as vendor specific, by inheriting from the
+        abstract RRMPolicy_ IOC. For details see subclause 4.3.36.";
+    }
     leaf gNBId {
       type int64 {
         range "0..4294967295";
@@ -1510,7 +1628,21 @@ module ran-network {
       description
         "Reference to corresponding NRFrequency instance.";
     }
-    uses RRMPolicy_Group;
+    list RRMPolicyRatio {
+      key id;
+      leaf id {
+        type string;
+        description
+          "Key leaf";
+      }
+      container attributes {
+        uses RRMPolicyRatioGroup;
+      }
+      description " The RRMPolicyRatio IOC is one realization of a RRMPolicy_ IOC, see the
+        inheritance in Figure 4.2.1.2-1. This RRM framework allows adding new policies, both
+        standardized (like RRMPolicyRatio) or as vendor specific, by inheriting from the
+        abstract RRMPolicy_ IOC. For details see subclause 4.3.36.";
+    }
   } // grouping NRCellCUGroup
 
   grouping NRCellRelationGroup {
