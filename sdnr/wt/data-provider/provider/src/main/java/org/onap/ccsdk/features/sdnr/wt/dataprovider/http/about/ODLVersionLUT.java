@@ -32,6 +32,9 @@ public class ODLVersionLUT {
         if (onapCCSDKVersion == null) {
             return def;
         }
+        if (onapCCSDKVersion.startsWith("2.1.")) {
+            return "ONAP Honolulu";
+        }
         if (onapCCSDKVersion.startsWith("2.0.")) {
             return "ONAP Guilin";
         }
@@ -60,6 +63,7 @@ public class ODLVersionLUT {
             odlMdsalVersionLUT.put("5.0.14","magnesium-SR2 (0.12.2)");
             odlMdsalVersionLUT.put("5.0.10","magnesium-SR1 (0.12.1)");
             odlMdsalVersionLUT.put("5.0.9","magnesium-SR0 (0.12.0)");
+            odlMdsalVersionLUT.put("4.0.17","sodium-SR4 (0.11.4)");
             odlMdsalVersionLUT.put("4.0.14","sodium-SR3 (0.11.3)");
             odlMdsalVersionLUT.put("4.0.11","sodium-SR2 (0.11.2)");
             odlMdsalVersionLUT.put("4.0.6","sodium-SR1 (0.11.1)");
