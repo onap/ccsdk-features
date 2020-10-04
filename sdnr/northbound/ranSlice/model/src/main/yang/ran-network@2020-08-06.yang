@@ -215,7 +215,7 @@ module ran-network {
   }
 
   typedef SNssai {
-    type uint32;
+    type string;
     description
       "Single Network Slice Selection Assistance Information.";
     reference
