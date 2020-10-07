@@ -85,7 +85,7 @@ export async function requestRestExt<TData>(path: string = '', init: RequestInit
     };
   }
   const contentType = fetchResult.headers.get("Content-Type") || fetchResult.headers.get("content-type");
-  const isJson = contentType && contentType.toLowerCase().startsWith("application/json");
+  const isJson = contentType && (contentType.toLowerCase().startsWith("application/json") || contentType.toLowerCase().startsWith("application/yang-data+json"));
   try {
     const data = (isJson ? await fetchResult.json() : await fetchResult.text()) as TData;
     return {

@@ -18,4 +18,10 @@
 
 import { ViewElement } from "../models/uiModels";
 
-export type BaseProps<TValue = string> = { value: ViewElement, inputValue: TValue, readOnly: boolean, disabled: boolean, onChange(newValue: TValue): void };
+export type BaseProps<TValue = string> = { 
+    value: ViewElement, 
+    inputValue: TValue, 
+    readOnly: boolean, 
+    disabled: boolean, 
+    onChange(newValue: TValue): void 
+};

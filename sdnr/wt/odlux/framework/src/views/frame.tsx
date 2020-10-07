@@ -21,6 +21,9 @@ import { HashRouter as Router, Route, Redirect, Switch } from 'react-router-dom'
 import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { faHome, faAddressBook, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 
+import { SnackbarProvider } from 'notistack';
+import { ConfirmProvider } from 'material-ui-confirm';
+
 import AppFrame from '../components/routing/appFrame';
 import TitleBar from '../components/titleBar';
 import Menu from '../components/navigationMenu';
@@ -33,7 +36,7 @@ import About from '../views/about';
 import Test from '../views/test';
 
 import applicationService from '../services/applicationManager';
-import { SnackbarProvider } from 'notistack';
+
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -63,52 +66,54 @@ class FrameComponent extends React.Component<FrameProps>{
     const registrations = applicationService.applications;
     const { classes } = this.props;
     return (
-      <SnackbarProvider maxSnack={3}>
-        <Router>
-          <div className={classes.root}>
-            <SnackDisplay />
-            <ErrorDisplay />
-            <TitleBar />
-            <Menu />
-            <main className={classes.content}>
-              {
-                <div className={classes.toolbar} /> //needed for margins, don't remove!
-              }
-              <Switch>
-                <Route exact path="/" component={() => (
-                  <AppFrame title={"Home"} icon={faHome} >
-                    <Home />
-                  </AppFrame>
-                )} />
-                <Route path="/about" component={() => (
-                  <AppFrame title={"About"} icon={faAddressBook} >
-                    <About />
-                  </AppFrame>
-                )} />
-                {process.env.NODE_ENV === "development" ? <Route path="/test" component={() => (
-                  <AppFrame title={"Test"} icon={faAddressBook} >
-                    <Test />
-                  </AppFrame>
-                )} /> : null}
-                <Route path="/login" component={() => (
-                  <AppFrame title={"Login"} icon={faSignInAlt} >
-                    <Login />
-                  </AppFrame>
-                )} />
-                {Object.keys(registrations).map(p => {
-                  const application = registrations[p];
-                  return (<Route key={application.name} path={application.path || `/${application.name}`} component={() => (
-                    <AppFrame title={application.title || (typeof application.menuEntry === 'string' && application.menuEntry) || application.name} icon={application.icon} appId={application.name} >
-                      <application.rootComponent />
+      <ConfirmProvider>
+        <SnackbarProvider maxSnack={3}>
+            <Router>
+            <div className={classes.root}>
+                <SnackDisplay />
+                <ErrorDisplay />
+                <TitleBar />
+                <Menu />
+                <main className={classes.content}>
+                {
+                    <div className={classes.toolbar} /> //needed for margins, don't remove!
+                }
+                <Switch>
+                    <Route exact path="/" component={() => (
+                    <AppFrame title={"Home"} icon={faHome} >
+                        <Home />
                     </AppFrame>
-                  )} />)
-                })}
-                <Redirect to="/" />
-              </Switch>
-            </main>
-          </div>
-        </Router>
-      </SnackbarProvider>
+                    )} />
+                    <Route path="/about" component={() => (
+                    <AppFrame title={"About"} icon={faAddressBook} >
+                        <About />
+                    </AppFrame>
+                    )} />
+                    {process.env.NODE_ENV === "development" ? <Route path="/test" component={() => (
+                    <AppFrame title={"Test"} icon={faAddressBook} >
+                        <Test />
+                    </AppFrame>
+                    )} /> : null}
+                    <Route path="/login" component={() => (
+                    <AppFrame title={"Login"} icon={faSignInAlt} >
+                        <Login />
+                    </AppFrame>
+                    )} />
+                    {Object.keys(registrations).map(p => {
+                    const application = registrations[p];
+                    return (<Route key={application.name} path={application.path || `/${application.name}`} component={() => (
+                        <AppFrame title={application.title || (typeof application.menuEntry === 'string' && application.menuEntry) || application.name} icon={application.icon} appId={application.name} >
+                        <application.rootComponent />
+                        </AppFrame>
+                    )} />)
+                    })}
+                    <Redirect to="/" />
+                </Switch>
+                </main>
+            </div>
+            </Router>
+        </SnackbarProvider>
+      </ConfirmProvider>  
     );
   }
 }
