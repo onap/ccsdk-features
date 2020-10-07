@@ -45,15 +45,19 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import { Button } from '@material-ui/core';
 import Link from "@material-ui/core/Link";
 
+import { BaseProps } from '../components/baseProps';
 import { UIElementReference } from '../components/uiElementReference';
 import { UiElementNumber } from '../components/uiElementNumber';
 import { UiElementString } from '../components/uiElementString';
 import { UiElementBoolean } from '../components/uiElementBoolean';
 import { UiElementSelection } from '../components/uiElementSelection';
 import { UIElementUnion } from '../components/uiElementUnion';
-import { Button } from '@material-ui/core';
+import { UiElementLeafList } from '../components/uiElementLeafList';
+
+import { useConfirm } from 'material-ui-confirm';
 
 const styles = (theme: Theme) => createStyles({
   header: {
@@ -281,68 +285,130 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     }, {} as { [key: string]: any });
   }
 
+  private getEditorForViewElement = (uiElement: ViewElement) : (null | React.ComponentType<BaseProps<any>>) => { 
+  if (isViewElementEmpty(uiElement)) {
+     return null;
+  } else if (isViewElementSelection(uiElement)) {
+     return UiElementSelection;
+  } else if (isViewElementBoolean(uiElement)) {
+    return UiElementBoolean;
+  } else if (isViewElementString(uiElement)) {
+      return UiElementString;
+  } else if (isViewElementNumber(uiElement)) {
+     return UiElementNumber;
+  } else if (isViewElementUnion(uiElement)) {
+     return UIElementUnion;
+  } else {
+     if (process.env.NODE_ENV !== "production") {
+       console.error(`Unknown element type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
+     }
+    return null;
+    }
+  }
+
   private renderUIElement = (uiElement: ViewElement, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
     const isKey = (uiElement.label === keyProperty);
     const canEdit = editMode && (isNew || (uiElement.config && !isKey));
-    
-    // do not show elements w/o any value from the backend
+
+     // do not show elements w/o any value from the backend
     if (viewData[uiElement.id] == null && !editMode) {
       return null;
-    } else  if (isViewElementEmpty(uiElement)) {
+    } else if (isViewElementEmpty(uiElement)) {
       return null;  
-    } else if (isViewElementSelection(uiElement)) {
-
-      return <UiElementSelection
-        key={uiElement.id}
-        inputValue={viewData[uiElement.id] || ''}
-        value={uiElement}
-        readOnly={!canEdit}
-        disabled={editMode && !canEdit}
-        onChange={(e) => { this.changeValueFor(uiElement.id, e) }}
-      />
-
-    } else if (isViewElementBoolean(uiElement)) {
-      return <UiElementBoolean
-        key={uiElement.id}
-        inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
-        value={uiElement}
-        readOnly={!canEdit}
-        disabled={editMode && !canEdit}
-        onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
-
-    } else if (isViewElementString(uiElement)) {
-      return <UiElementString
-        key={uiElement.id}
-        inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
-        value={uiElement}
-        isKey={isKey}
-        readOnly={!canEdit}
-        disabled={editMode && !canEdit}
-        onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
-
-    } else if (isViewElementNumber(uiElement)) {
-      return <UiElementNumber
-        key={uiElement.id}
-        value={uiElement}
-        inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
-        readOnly={!canEdit}
-        disabled={editMode && !canEdit}
-        onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
-    } else if (isViewElementUnion(uiElement)) {
-      return <UIElementUnion
-        key={uiElement.id}
-        isKey={false}
-        value={uiElement}
-        inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
-        readOnly={!canEdit}
-        disabled={editMode && !canEdit}
-        onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
+    } else if (uiElement.isList) {
+      /* element is a leaf-list */
+      return <UiElementLeafList
+         key={uiElement.id}
+         inputValue={viewData[uiElement.id] == null ? [] : viewData[uiElement.id]} 
+         value={uiElement}
+         readOnly={!canEdit}
+         disabled={editMode && !canEdit}
+         onChange={(e) => { this.changeValueFor(uiElement.id, e) }}
+         getEditorForViewElement = { this.getEditorForViewElement }
+      />;  
     } else {
-      if (process.env.NODE_ENV !== "production") {
-        console.error(`Unknown element type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
-      }
-      return null;
+        const Element = this.getEditorForViewElement(uiElement);
+        return Element != null   
+          ? (
+            <Element
+                key={uiElement.id}
+                inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
+                value={uiElement}
+                readOnly={!canEdit}
+                disabled={editMode && !canEdit}
+                onChange={(e) => { this.changeValueFor(uiElement.id, e) }}
+            /> )
+          : null ;
     }
+    
+    // // do not show elements w/o any value from the backend
+    // if (viewData[uiElement.id] == null && !editMode) {
+    //   return null;
+    // } else if (isViewElementEmpty(uiElement)) {
+    //   return null;  
+    // } else if (uiElement.isList) {
+    //   /* element is a leaf-list */
+    //   return <UiElementLeafList
+    //      key={uiElement.id}
+    //     inputValue={viewData[uiElement.id] || ''}
+    //     value={uiElement}
+    //     readOnly={!canEdit}
+    //     disabled={editMode && !canEdit}
+    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }}
+    //   />;  
+    // } else if (isViewElementSelection(uiElement)) {
+
+    //   return <UiElementSelection
+    //     key={uiElement.id}
+    //     inputValue={viewData[uiElement.id] || ''}
+    //     value={uiElement}
+    //     readOnly={!canEdit}
+    //     disabled={editMode && !canEdit}
+    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }}
+    //   />
+
+    // } else if (isViewElementBoolean(uiElement)) {
+    //   return <UiElementBoolean
+    //     key={uiElement.id}
+    //     inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
+    //     value={uiElement}
+    //     readOnly={!canEdit}
+    //     disabled={editMode && !canEdit}
+    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
+
+    // } else if (isViewElementString(uiElement)) {
+    //   return <UiElementString
+    //     key={uiElement.id}
+    //     inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
+    //     value={uiElement}
+    //     isKey={isKey}
+    //     readOnly={!canEdit}
+    //     disabled={editMode && !canEdit}
+    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
+
+    // } else if (isViewElementNumber(uiElement)) {
+    //   return <UiElementNumber
+    //     key={uiElement.id}
+    //     value={uiElement}
+    //     inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
+    //     readOnly={!canEdit}
+    //     disabled={editMode && !canEdit}
+    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
+    // } else if (isViewElementUnion(uiElement)) {
+    //   return <UIElementUnion
+    //     key={uiElement.id}
+    //     isKey={false}
+    //     value={uiElement}
+    //     inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
+    //     readOnly={!canEdit}
+    //     disabled={editMode && !canEdit}
+    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
+    // } else {
+    //   if (process.env.NODE_ENV !== "production") {
+    //     console.error(`Unknown element type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
+    //   }
+    //   return null;
+    // }
   };
 
   // private renderUIReference = (uiElement: ViewElement, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
@@ -399,7 +465,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
                 Object.keys(uiElement.cases).map(caseKey => {
                   const caseElm = uiElement.cases[caseKey];
                   return (
-                    <MenuItem key={caseElm.id} title={caseElm.description} value={caseKey}>{caseElm.label}</MenuItem>
+                    <MenuItem key={caseElm.id} value={caseKey}><Tooltip title={caseElm.description}><div style={{width:"100%"}}>{caseElm.label}</div></Tooltip></MenuItem>
                   );
                 })
               }
@@ -508,31 +574,41 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
     const { classes, removeElement } = this.props;
 
+    const DeleteIconWithConfirmation : React.FC<{rowData: {[key:string]:any}, onReload: () => void} > = (props) => {
+        const confirm = useConfirm();
+
+        return (
+              <Tooltip title={"Remove"} >
+                <IconButton className={classes.button} onClick={async (e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  confirm({title: "Do you really want to delete this element ?", description: "This action is permanent!", confirmationButtonProps: { color: "secondary" }})
+                    .then(() => removeElement(`${this.props.vPath}[${props.rowData[listKeyProperty]}]`))
+                    .then( props.onReload );
+                }} >
+                  <RemoveIcon />
+                </IconButton>
+              </Tooltip>
+        );
+    }
+
     return (
       <SelectElementTable stickyHeader idProperty={listKeyProperty} rows={listData} customActionButtons={[addNewElementAction]} columns={
         Object.keys(listElements).reduce<ColumnModel<{ [key: string]: any }>[]>((acc, cur) => {
           const elm = listElements[cur];
           if (elm.uiType !== "object" && listData.every(entry => entry[elm.label] != null)) {
             if (elm.label !== listKeyProperty) {
-              acc.push({ property: elm.label, type: elm.uiType === "number" ? ColumnType.numeric : ColumnType.text });
+              acc.push(elm.uiType === "boolean" ? { property: elm.label, type: ColumnType.boolean } : { property: elm.label, type: elm.uiType === "number" ? ColumnType.numeric : ColumnType.text });
             } else {
-              acc.unshift({ property: elm.label, type: elm.uiType === "number" ? ColumnType.numeric : ColumnType.text });
+              acc.unshift(elm.uiType === "boolean" ? { property: elm.label, type: ColumnType.boolean } : { property: elm.label, type: elm.uiType === "number" ? ColumnType.numeric : ColumnType.text });
             }
           }
           return acc;
         }, []).concat([{
           property: "Actions", disableFilter: true, disableSorting: true, type: ColumnType.custom, customControl: ( ({ rowData })=> {
             return (
-              <Tooltip title={"Remove"} >
-                <IconButton className={classes.button} onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  removeElement(`${this.props.vPath}[${rowData[listKeyProperty]}]`)
-                }} >
-                  <RemoveIcon />
-                </IconButton>
-              </Tooltip>
-            )
+              <DeleteIconWithConfirmation rowData={rowData} onReload={() => this.props.vPath && this.props.reloadView(this.props.vPath) } />
+            );
           })
         }])
       } onHandleClick={(ev, row) => {
@@ -725,7 +801,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       <div className={this.props.classes.outer}>
         <div className={this.props.classes.inner}>
           <Loader />
-          <h3>Collecting Data ...</h3>
+          <h3>Processing ...</h3>
         </div>
       </div>
     );

@@ -49,6 +49,9 @@ export class UpdatOutputData extends Action {
 
 export const updateNodeIdAsyncActionCreator = (nodeId: string) => async (dispatch: Dispatch, getState: () => IApplicationStoreState ) => {
 
+  dispatch(new UpdateDeviceDescription("", {}, []));
+  dispatch(new SetCollectingSelectionData(true));
+  
   const availableCapabilities = await restService.getCapabilitiesByMoutId(nodeId);
 
   if (!availableCapabilities || availableCapabilities.length <= 0) {
@@ -70,7 +73,7 @@ export const updateNodeIdAsyncActionCreator = (nodeId: string) => async (dispatc
 
   parser.postProcess();
 
-  console.log(parser.modules, parser.views)
+  dispatch(new SetCollectingSelectionData(false));
 
   return dispatch(new UpdateDeviceDescription(nodeId, parser.modules, parser.views));
 }
