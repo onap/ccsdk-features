@@ -23,5 +23,6 @@ export type BaseProps<TValue = string> = {
     inputValue: TValue, 
     readOnly: boolean, 
     disabled: boolean, 
-    onChange(newValue: TValue): void 
+    onChange(newValue: TValue): void,
+    isKey?: boolean 
 };

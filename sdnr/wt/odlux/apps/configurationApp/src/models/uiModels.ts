@@ -101,7 +101,7 @@ export type ViewElementList = (ViewElementBase & {
 export type ViewElementReference = ViewElementBase & {
   "uiType": "reference";
   "referencePath": string;
-  "ref": (currentPath: string) => ViewElement | null;
+  "ref": (currentPath: string) => [ViewElement , string] | undefined;
 }
 
 export type ViewElementUnion = ViewElementBase & {
@@ -196,13 +196,14 @@ export const ResolveFunction = Symbol("IsResolved");
 
 export type ViewSpecification = {
   "id": string;
+  "ns"?: string;
   "name"?: string;
   "title"?: string;
   "parentView"?: string;
   "language": string;
   "ifFeature"?: string;
   "when"?: string;
-  "uses"?: (string[]) & { [ResolveFunction]?: () => void };
+  "uses"?: (string[]) & { [ResolveFunction]?: (parent: string) => void };
   "elements": { [name: string]: ViewElement };
   readonly "canEdit": boolean;
 }

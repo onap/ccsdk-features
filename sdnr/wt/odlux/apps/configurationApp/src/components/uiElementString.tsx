@@ -23,7 +23,7 @@ import { BaseProps } from "./baseProps";
 import { IfWhenTextInput } from "./ifWhenTextInput";
 import { checkRange, checkPattern } from "./verifyer";
 
-type stringEntryProps = BaseProps & { isKey: boolean };
+type stringEntryProps = BaseProps;
 
 export const UiElementString = (props: stringEntryProps) => {
 
@@ -71,7 +71,7 @@ export const UiElementString = (props: stringEntryProps) => {
         <Tooltip title={isTooltipVisible ? element.description || '' : ''}>
             <IfWhenTextInput element={element} onChangeTooltipVisuability={setTooltipVisibility}
                 spellCheck={false} autoFocus margin="dense"
-                id={element.id} label={props.isKey ? "🔑 " + element.label : element.label} type="text" value={props.inputValue}
+                id={element.id} label={props?.isKey ? "🔑 " + element.label : element.label} type="text" value={props.inputValue}
                 style={{ width: 485, marginLeft: 20, marginRight: 20 }}
                 onChange={(e: any) => { verifyValues(e.target.value) }}
                 error={isError}

@@ -182,13 +182,25 @@ const resolveViewDescription = (defaultNS: string | null, vPath: string, view: V
   // check if-feature | when | and resolve all references.
   view = { ...view };
   view.elements = Object.keys(view.elements).reduce<{ [name: string]: ViewElement }>((acc, cur) => {
-    const elm = view.elements[cur];
+    const resolveHistory : ViewElement[] = [];  
+    let elm = view.elements[cur];
     const key = defaultNS && cur.replace(new RegExp(`^${defaultNS}:`, "i"),"") || cur;
-    if (isViewElementReference(elm)) {
-      acc[key] = { ...(elm.ref(vPath) || elm), id: key };
-    } else {
-      acc[key] = { ...elm, id: key };
-    }
+    while (isViewElementReference(elm)) {
+      const result = (elm.ref(vPath));  
+      if (result) {
+        const [referencedElement, referencedPath] = result;
+        if (resolveHistory.some(hist => hist === referencedElement)) {
+            console.error(`Circle reference found at: ${vPath}`, resolveHistory);
+            break;
+        }
+        elm = referencedElement;
+        vPath = referencedPath;
+        resolveHistory.push(elm);
+      }
+    } 
+    
+    acc[key] = { ...elm, id: key };
+    
     return acc;
   }, {});
   return view;

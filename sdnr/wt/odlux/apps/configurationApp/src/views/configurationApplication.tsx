@@ -332,6 +332,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
           ? (
             <Element
                 key={uiElement.id}
+                isKey={isKey}
                 inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
                 value={uiElement}
                 readOnly={!canEdit}
@@ -340,75 +341,6 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
             /> )
           : null ;
     }
-    
-    // // do not show elements w/o any value from the backend
-    // if (viewData[uiElement.id] == null && !editMode) {
-    //   return null;
-    // } else if (isViewElementEmpty(uiElement)) {
-    //   return null;  
-    // } else if (uiElement.isList) {
-    //   /* element is a leaf-list */
-    //   return <UiElementLeafList
-    //      key={uiElement.id}
-    //     inputValue={viewData[uiElement.id] || ''}
-    //     value={uiElement}
-    //     readOnly={!canEdit}
-    //     disabled={editMode && !canEdit}
-    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }}
-    //   />;  
-    // } else if (isViewElementSelection(uiElement)) {
-
-    //   return <UiElementSelection
-    //     key={uiElement.id}
-    //     inputValue={viewData[uiElement.id] || ''}
-    //     value={uiElement}
-    //     readOnly={!canEdit}
-    //     disabled={editMode && !canEdit}
-    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }}
-    //   />
-
-    // } else if (isViewElementBoolean(uiElement)) {
-    //   return <UiElementBoolean
-    //     key={uiElement.id}
-    //     inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
-    //     value={uiElement}
-    //     readOnly={!canEdit}
-    //     disabled={editMode && !canEdit}
-    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
-
-    // } else if (isViewElementString(uiElement)) {
-    //   return <UiElementString
-    //     key={uiElement.id}
-    //     inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
-    //     value={uiElement}
-    //     isKey={isKey}
-    //     readOnly={!canEdit}
-    //     disabled={editMode && !canEdit}
-    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
-
-    // } else if (isViewElementNumber(uiElement)) {
-    //   return <UiElementNumber
-    //     key={uiElement.id}
-    //     value={uiElement}
-    //     inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
-    //     readOnly={!canEdit}
-    //     disabled={editMode && !canEdit}
-    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
-    // } else if (isViewElementUnion(uiElement)) {
-    //   return <UIElementUnion
-    //     key={uiElement.id}
-    //     isKey={false}
-    //     value={uiElement}
-    //     inputValue={viewData[uiElement.id] == null ? '' : viewData[uiElement.id]}
-    //     readOnly={!canEdit}
-    //     disabled={editMode && !canEdit}
-    //     onChange={(e) => { this.changeValueFor(uiElement.id, e) }} />
-    // } else {
-    //   if (process.env.NODE_ENV !== "production") {
-    //     console.error(`Unknown element type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
-    //   }
-    //   return null;
-    // }
   };
 
   // private renderUIReference = (uiElement: ViewElement, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {

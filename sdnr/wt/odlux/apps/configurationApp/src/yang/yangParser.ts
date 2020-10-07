@@ -437,8 +437,8 @@ export class YangParser {
 
     // process all groupings
     this._groupingsToResolve.filter(vs => vs.uses && vs.uses[ResolveFunction]).forEach(vs => {
-      try { vs.uses![ResolveFunction]!(); } catch (error) {
-        console.warn(`Error resolving: [${error.message}]`);
+      try { vs.uses![ResolveFunction] !== undefined && vs.uses![ResolveFunction]!("|"); } catch (error) {
+        console.warn(`Error resolving: [${vs.name}] [${error.message}]`);
       }
     });
 
@@ -660,7 +660,7 @@ export class YangParser {
         }
         const key = this.extractValue(cur, "key") || undefined;
         if (elmConfig && !key) {
-          console.error(new Error(`Module: [${context.name}]${currentPath}. Found configurable list without key.`));
+          console.warn(`Module: [${context.name}]${currentPath}. Found configurable list without key. Assume config shell be false.`);
           elmConfig = false;
         }
         const [currentView, subViews] = this.extractSubViews(cur, currentId, context, `${currentPath}/${context.name}:${cur.arg}`);
@@ -821,6 +821,7 @@ export class YangParser {
     const viewSpec: ViewSpecification = {
       id: String(currentId),
       parentView: String(parentId),
+      ns: context.name,
       name: statement.arg != null ? statement.arg : undefined,
       title: statement.arg != null ? statement.arg : undefined,
       language: "en-us",
@@ -848,7 +849,7 @@ export class YangParser {
     if (usesRefs && usesRefs.length > 0) {
 
       viewSpec.uses = (viewSpec.uses || []);
-      const resolveFunctions : (()=>void)[] = [];
+      const resolveFunctions : ((parentElementPath: string)=>void)[] = [];
 
       for (let i = 0; i < usesRefs.length; ++i) {
         const groupingName = usesRefs[i].arg;
@@ -857,14 +858,14 @@ export class YangParser {
         }
 
         viewSpec.uses.push(this.resolveReferencePath(groupingName, context));
-
-        resolveFunctions.push(() => {
+        
+        resolveFunctions.push((parentElementPath: string) => {
           const groupingViewSpec = this.resolveGrouping(groupingName, context);
           if (groupingViewSpec) {
 
             // resolve recursive
             const resolveFunc = groupingViewSpec.uses && groupingViewSpec.uses[ResolveFunction];
-            resolveFunc && resolveFunc();
+            resolveFunc && resolveFunc(parentElementPath);
 
             Object.keys(groupingViewSpec.elements).forEach(key => {
               const elm = groupingViewSpec.elements[key];
@@ -878,14 +879,16 @@ export class YangParser {
         });
       }
 
-      viewSpec.uses[ResolveFunction] = () => {
-        resolveFunctions.forEach(res => {
-          try {
-            res();
-          } catch (error) {
-            console.error(error);
-          }
+      viewSpec.uses[ResolveFunction] = (parentElementPath: string) => {
+        const currentElementPath = `${parentElementPath} -> ${viewSpec.ns}:${viewSpec.name}`;  
+        resolveFunctions.forEach(resolve => {
+            try {
+                resolve(currentElementPath);
+            } catch (error) {
+                console.error(error);
+            }
         });
+        // console.log("Resolved "+currentElementPath, viewSpec);
         viewSpec?.uses![ResolveFunction] = undefined;
       }
 
@@ -1136,9 +1139,14 @@ export class YangParser {
         uiType: "reference",
         referencePath: refPath,
         ref(this: ViewElement, currentPath: string) {
-          const resolved = resolve(refPath, currentPath);
-          return resolved && {
-            ...resolved,
+          const elementPath = `${currentPath}/${cur.arg}`;  
+          
+          const result = resolve(refPath, elementPath);
+          if (!result) return undefined;
+
+          const [resolvedElement, resolvedPath] = result;
+          return resolvedElement && [{
+            ...resolvedElement,
             id: this.id,
             label: this.label,
             config: this.config,
@@ -1146,7 +1154,7 @@ export class YangParser {
             isList: this.isList,
             default: this.default,
             description: this.description,
-          } as ViewElement;
+          } as ViewElement , resolvedPath] || undefined;
         }
       };
       return res;
@@ -1309,7 +1317,7 @@ export class YangParser {
 
     const vPathParts = splitVPath(vPath, vPathParser).map(p => ({ ns: p[1], property: p[2], ind: p[3] }));
     const resultPathParts = !vPath.startsWith("/")
-      ? splitVPath(currentPath, vPathParser).map(p => ({ ns: p[1], property: p[2], ind: p[3] }))
+      ? splitVPath(currentPath, vPathParser).map(p => { moduleName = p[1] || moduleName ; return { ns: moduleName, property: p[2], ind: p[3] } })
       : [];
 
     for (let i = 0; i < vPathParts.length; ++i) {
@@ -1333,17 +1341,16 @@ export class YangParser {
         const view: ViewSpecification = this._views[+element.viewId];
         if (moduleName !== pathPart.ns) {
           moduleName = pathPart.ns;
-          element = view.elements[`${moduleName}:${pathPart.property}`];
-        } else {
-          element = view.elements[pathPart.property] || view.elements[`${moduleName}:${pathPart.property}`];
-        }
+        }   
+        element = view.elements[pathPart.property] || view.elements[`${moduleName}:${pathPart.property}`];
       } else {
         throw new Error("Could not resolve reference.\r\n" + vPath);
       }
       if (!element) throw new Error("Could not resolve path [" + pathPart.property + "] in [" + currentPath + "] \r\n" + vPath);
     }
 
-    return element;
+    moduleName = ""; // create the vPath for the resolved element, do not add the element itself this will be done later in the res(...) function
+    return [element, resultPathParts.slice(0,-1).map(p => `${moduleName !== p.ns ? `${moduleName=p.ns}:` : ""}${p.property}${p.ind || ''}`).join("/")];
   }
 
   private resolveView(vPath: string) {
