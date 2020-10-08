@@ -131,6 +131,7 @@
           <groupId>org.onap.ccsdk.sli.core</groupId>
           <artifactId>sli-provider-base</artifactId>
           <version>${ccsdk.sli.core.version}</version>
+          <scope>provided</scope>
       </dependency>
     </dependencies>
 
