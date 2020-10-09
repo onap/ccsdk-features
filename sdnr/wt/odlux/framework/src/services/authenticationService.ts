@@ -49,7 +49,7 @@ class AuthenticationService {
   }
 
    public async authenticateUserBasicAuth(email: string, password: string, scope: string): Promise<AuthToken | null> {
-    const result = await requestRest<string>(`restconf/modules`, {
+    const result = await requestRest<string>(`rests/data/network-topology:network-topology/topology=topology-netconf?fields=node(node-id)`, {
       method: "GET",
       headers: {
         'Authorization':  "Basic " + btoa(email + ":" + password)
