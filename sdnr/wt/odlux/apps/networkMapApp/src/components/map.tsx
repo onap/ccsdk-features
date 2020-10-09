@@ -29,19 +29,16 @@ import MapPopup from './mapPopup';
 import { SetPopupPositionAction, SelectMultipleLinksAction, SelectMultipleSitesAction } from '../actions/popupActions';
 import { Feature } from '../model/Feature';
 import { HighlightLinkAction, HighlightSiteAction, SetCoordinatesAction, SetStatistics } from '../actions/mapActions';
-import { addDistance, getUniqueFeatures } from '../utils/mapUtils';
+import { addDistance, getUniqueFeatures, increaseBoundingBox } from '../utils/mapUtils';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
 import SearchBar from './searchBar';
 import { verifyResponse, IsTileServerReachableAction, handleConnectionError } from '../actions/connectivityAction';
 import ConnectionInfo from './connectionInfo'
-import { showIconLayers, addBaseLayers } from '../utils/mapLayers';
-import lamp from '../../icons/lamp.png';
-import apartment from '../../icons/apartment.png';
-import datacenter from '../../icons/datacenter.png';
-import factory from '../../icons/factory.png';
+import { showIconLayers, addBaseLayers, addBaseSources, addIconLayers } from '../utils/mapLayers';
 import Statistics from './statistics';
 import IconSwitch from './iconSwitch';
+import { addImages } from '../services/mapImagesService';
 
 type coordinates = { lat: number, lon: number, zoom: number }
 
@@ -113,34 +110,16 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
         map.on('load', (ev) => {
 
-            addBaseLayers(map, this.props.selectedSite, this.props.selectedLink);
-            map.loadImage(
-                lamp,
-                function (error: any, image: any) {
-                    if (error) throw error;
-                    map.addImage('lamp', image);
-                });
-
-            map.loadImage(
-                datacenter,
-                function (error: any, image: any) {
-                    if (error) throw error;
-                    map.addImage('data-center', image);
-                });
-
-            map.loadImage(
-                apartment,
-                function (error: any, image: any) {
-                    if (error) throw error;
-                    map.addImage('house', image);
-                });
-
-                map.loadImage(
-                    factory,
-                    function (error: any, image: any) {
-                        if (error) throw error;
-                        map.addImage('factory', image);
-                    });               
+            addBaseSources(map, this.props.selectedSite, this.props.selectedLink);
+                
+            addImages(map, (result: boolean)=>{
+                if(map.getZoom()>11)
+                {
+                    addIconLayers(map, this.props.selectedSite?.properties.id)
+                }else{
+                    addBaseLayers(map, this.props.selectedSite, this.props.selectedLink);
+                }
+            });             
 
             const boundingBox = map.getBounds();
 
@@ -149,18 +128,18 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 .then(result => verifyResponse(result))
                 .then(result => result.json())
                 .then(features => {
-                    if (map.getLayer('fibre-lines')) {
+                    if (map.getSource('lines')) {
                         (map.getSource('lines') as mapboxgl.GeoJSONSource).setData(features);
                     }
                 })
                 .catch(error => this.props.handleConnectionError(error));
 
 
-            fetch(`${URL_API}/sites/geoJson/${boundingBox.getWest()},${boundingBox.getSouth()},${boundingBox.getEast()},${boundingBox.getNorth()}`)
+                fetch(`${URL_API}/sites/geoJson/${boundingBox.getWest()},${boundingBox.getSouth()},${boundingBox.getEast()},${boundingBox.getNorth()}`)
                 .then(result => verifyResponse(result))
                 .then(result => result.json())
                 .then(features => {
-                    if (map.getLayer('points')) {
+                    if (map.getSource('points')) {
                         (map.getSource('points') as mapboxgl.GeoJSONSource).setData(features);
                     }
                 })
@@ -201,20 +180,14 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
             } else { // data is shown as icons
 
-                const clickedLamps = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-lamps'] }), "id");
-                const buildings = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-building'] }), "id");
-                const houses = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-data-center'] }), "id");
-                const factories = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-factory'] }), "id");
-
-                const combinedFeatures = [...clickedLamps, ...buildings, ...houses, ...factories];
-
+                const clickedSites = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-lamps', 'point-building', 'point-data-center', 'point-factory', 'point-remaining'] }), "id");
                 const clickedLines = getUniqueFeatures(map.queryRenderedFeatures([[e.point.x - 5, e.point.y - 5],
                 [e.point.x + 5, e.point.y + 5]], {
                     layers: ['microwave-lines', 'fibre-lines']
                 }), "id");
 
-                if (combinedFeatures.length > 0)
-                    this.showSitePopup(combinedFeatures, e.point.x, e.point.y);
+                if (clickedSites.length > 0)
+                    this.showSitePopup(clickedSites, e.point.x, e.point.y);
                 else if (clickedLines.length != 0) {
                     this.showLinkPopup(clickedLines, e.point.x, e.point.y);
                 }
@@ -237,14 +210,18 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
             const currentUrl = window.location.href;
             const parts = currentUrl.split(URL_BASEPATH);
-            const detailsPath = parts[1].split("/details/");
+            if(parts.length>0){
 
-            if (detailsPath[1] !== undefined && detailsPath[1].length > 0) {
-                this.props.history.replace(`/${URL_BASEPATH}/${map.getCenter().lat.toFixed(4)},${map.getCenter().lng.toFixed(4)},${mapZoom.toFixed(2)}/details/${detailsPath[1]}`)
+                const detailsPath = parts[1].split("/details/");
+
+                if (detailsPath[1] !== undefined && detailsPath[1].length > 0) {
+                    this.props.history.replace(`/${URL_BASEPATH}/${map.getCenter().lat.toFixed(4)},${map.getCenter().lng.toFixed(4)},${mapZoom.toFixed(2)}/details/${detailsPath[1]}`)
+                }
+                else {
+                    this.props.history.replace(`/${URL_BASEPATH}/${map.getCenter().lat.toFixed(4)},${map.getCenter().lng.toFixed(4)},${mapZoom.toFixed(2)}`)
+                }
             }
-            else {
-                this.props.history.replace(`/${URL_BASEPATH}/${map.getCenter().lat.toFixed(4)},${map.getCenter().lng.toFixed(4)},${mapZoom.toFixed(2)}`)
-            }
+           
             
             //switch icon layers if applicable
             showIconLayers(map, this.props.showIcons, this.props.selectedSite?.properties.id);
@@ -310,7 +287,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                         map.setFilter('point-lamps', ['==', 'type', 'street lamp']);
                         map.setFilter('point-data-center', ['==', 'type', 'data center']);
                         map.setFilter('point-building', ['==', 'type', 'high rise building']);
-                        map.setFilter('point-factory', ['==', 'type', 'factory'])
+                        map.setFilter('point-factory', ['==', 'type', 'factory']);
 
                         if (this.props.selectedSite?.properties.type !== undefined) {
                             switch (this.props.selectedSite?.properties.type) {
@@ -325,7 +302,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                                     break;
                                 case 'factory':
                                     map.setFilter('point-factory', ["all", ['==', 'type', 'factory'], ['!=', 'id', this.props.selectedSite.properties.id]]);
-                                    break;
+                                    break;    
                             }
                         }
                     }
@@ -462,10 +439,8 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
                     lastBoundingBox = bbox;
 
-                    const distance = map.getCenter().distanceTo(bbox.getNorthEast()); // radius of visible area (center -> corner) (in meters)
-
                     //calculate new boundingBox
-                    const increasedBoundingBox = addDistance(bbox.getSouth(), bbox.getWest(), bbox.getNorth(), bbox.getEast(), (distance / 1000) / 2)
+                    const increasedBoundingBox = increaseBoundingBox(map);
 
                     await this.draw('lines', `${URL_API}/links/geoJson/${increasedBoundingBox.west},${increasedBoundingBox.south},${increasedBoundingBox.east},${increasedBoundingBox.north}`);
                     await this.draw('points', `${URL_API}/sites/geoJson/${increasedBoundingBox.west},${increasedBoundingBox.south},${increasedBoundingBox.east},${increasedBoundingBox.north}`);
@@ -474,7 +449,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                     // bbox is contained in last one, do nothing
                     isLoadingInProgress = false;
 
-                } else { // bbox is not fully contained in old one, extend 
+                } else { // bbox is not fully contained in old one, extend
 
                     lastBoundingBox.extend(bbox);
 

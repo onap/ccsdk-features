@@ -21,6 +21,17 @@ const EARTHRADIUSM = 6378137;
 type updatedCoordinates = { south: number, west: number, north: number, east: number };
 
 
+export const increaseBoundingBox = (map: mapboxgl.Map) =>{
+
+    const bbox = map.getBounds();
+
+    const distance = map.getCenter().distanceTo(bbox.getNorthEast()); // radius of visible area (center -> corner) (in meters)
+
+    //calculate new boundingBox
+    const increasedBoundingBox = addDistance(bbox.getSouth(), bbox.getWest(), bbox.getNorth(), bbox.getEast(), (distance / 1000) / 2);
+    return increasedBoundingBox;
+}
+
 
 
 export const addDistance = (south: number, west: number, north: number, east: number, distanceKm: number): updatedCoordinates => {
