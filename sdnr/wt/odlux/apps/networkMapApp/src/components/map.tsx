@@ -33,7 +33,7 @@ import { addDistance, getUniqueFeatures, increaseBoundingBox } from '../utils/ma
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
 import SearchBar from './searchBar';
-import { verifyResponse, IsTileServerReachableAction, handleConnectionError } from '../actions/connectivityAction';
+import { verifyResponse, setTopologyReachableAction, setTileServerReachableAction } from '../actions/connectivityAction';
 import ConnectionInfo from './connectionInfo'
 import { showIconLayers, addBaseLayers, addBaseSources, addIconLayers } from '../utils/mapLayers';
 import Statistics from './statistics';
@@ -71,14 +71,15 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
             .then(res => {
                 if (res.ok) {
                     this.setupMap();
+                    this.props.setTileServerLoaded(true);
                 } else {
                     this.props.setTileServerLoaded(false);
-                    console.error("tileserver " + URL_TILE_API + "can't be reached.")
+                    console.error("tileserver " + URL_TILE_API + " can't be reached.");
                 }
             })
             .catch(err => {
                 this.props.setTileServerLoaded(false);
-                console.error("tileserver " + URL_TILE_API + "can't be reached.")
+                console.error("tileserver " + URL_TILE_API + " can't be reached.");
             });
 
         fetch(URL_API + "/info")
@@ -119,7 +120,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 }else{
                     addBaseLayers(map, this.props.selectedSite, this.props.selectedLink);
                 }
-            });             
+            });
 
             const boundingBox = map.getBounds();
 
@@ -579,8 +580,8 @@ const mapDispatchToProps = (dispatcher: IDispatcher) => ({
     highlightSite: (site: site) => dispatcher.dispatch(new HighlightSiteAction(site)),
     updateMapPosition: (lat: number, lon: number, zoom: number) => dispatcher.dispatch(new SetCoordinatesAction(lat, lon, zoom)),
     setStatistics: (linkCount: string, siteCount: string) => dispatcher.dispatch(new SetStatistics(siteCount, linkCount)),
-    setTileServerLoaded: (reachable: boolean) => dispatcher.dispatch(new IsTileServerReachableAction(reachable)),
-    handleConnectionError: (error: Error) => dispatcher.dispatch(handleConnectionError(error))
+    setTileServerLoaded: (reachable: boolean) => dispatcher.dispatch(setTileServerReachableAction(reachable)),
+    handleConnectionError: (error: Error) => dispatcher.dispatch(setTopologyReachableAction(error))
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Map));

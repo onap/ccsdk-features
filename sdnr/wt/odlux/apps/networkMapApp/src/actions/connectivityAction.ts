@@ -42,9 +42,16 @@ export const verifyResponse = (response: Response) =>{
     }
 }
 
-export const handleConnectionError = (error: Error) => (dispatcher: Dispatch, getState: () => IApplicationStoreState)=>{
+export const setTopologyReachableAction = (error: Error) => (dispatcher: Dispatch, getState: () => IApplicationStoreState)=>{
     const {network:{connectivity: {isToplogyServerAvailable}}} = getState();
     if(isToplogyServerAvailable){
        dispatcher(new IsTopologyServerReachableAction(false))
+    }
+}
+
+export const setTileServerReachableAction = (isReachable: boolean) => (dispatcher: Dispatch, getState: () => IApplicationStoreState)=>{
+    const {network:{connectivity: {isTileServerAvailable}}} = getState();
+    if(isReachable !== isTileServerAvailable){
+       dispatcher(new IsTileServerReachableAction(isReachable))
     }
 }
