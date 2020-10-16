@@ -29,6 +29,10 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
 
     private static final String SECTION_MARKER = "VESCollector";
 
+    /** set to true if VES Collector is installed and configured */
+    private static final String PROPERTY_KEY_VES_COLLECTOR_ENABLED = "VES_COLLECTOR_ENABLED";
+    private static final boolean DEFAULT_VALUE_VES_COLLECTOR_ENABLED = false;
+
     private static final String PROPERTY_KEY_VES_COLLECTOR_IP = "VES_COLLECTOR_IP";
     private static final String DEFAULT_VALUE_VES_COLLECTOR_IP = "127.0.0.1";
 
@@ -76,6 +80,11 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
         return configuration != null ?configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_EVENTLOG_DETAIL) : DEFAULT_VALUE_EVENTLOG_DETAIL;
     }
 
+    @Override
+    public boolean isVESCollectorEnabled() {
+        return configuration.getPropertyBoolean(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_ENABLED);
+    }
+
     public boolean getTLSEnabled() {
         return configuration.getPropertyBoolean(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_TLS_ENABLED);
     }
@@ -102,6 +111,7 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
 
     @Override
     public synchronized void defaults() {
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_ENABLED, DEFAULT_VALUE_VES_COLLECTOR_ENABLED);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_TLS_ENABLED, Boolean.FALSE);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_USERNAME,
                 DEFAULT_VALUE_VES_COLLECTOR_USERNAME);

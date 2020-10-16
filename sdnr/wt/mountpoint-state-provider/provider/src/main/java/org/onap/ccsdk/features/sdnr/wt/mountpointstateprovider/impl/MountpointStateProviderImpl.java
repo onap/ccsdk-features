@@ -25,11 +25,14 @@
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorConfigChangeListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MountpointStateProviderImpl implements AutoCloseable {
+public class MountpointStateProviderImpl implements VESCollectorConfigChangeListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MountpointStateProviderImpl.class);
     private static final String APPLICATION_NAME = "mountpoint-state-provider";
@@ -40,6 +43,8 @@ public class MountpointStateProviderImpl implements AutoCloseable {
     private MountpointNodeConnectListenerImpl nodeConnectListener;
     private MountpointNodeStateListenerImpl nodeStateListener;
     private MountpointStatePublisher mountpointStatePublisher;
+    private VESCollectorService vesCollectorService;
+    private boolean vesCollectorEnabledCV = false; //Current value
 
     public MountpointStateProviderImpl() {
         LOG.info("Creating provider class for {}", APPLICATION_NAME);
@@ -60,8 +65,13 @@ public class MountpointStateProviderImpl implements AutoCloseable {
 
         nodeConnectListener = new MountpointNodeConnectListenerImpl(netconfNodeStateService);
         nodeStateListener = new MountpointNodeStateListenerImpl(netconfNodeStateService);
+        vesCollectorService = netconfNetworkElementService.getServiceProvider().getVESCollectorService();
+        vesCollectorService.registerForChanges(this);
+        boolean vesCollectorEnabled = vesCollectorService.getConfig().isVESCollectorEnabled();
 
-        startPublishing();
+        if (vesCollectorEnabled) {
+            startPublishing();
+        }
     }
 
     /**
@@ -74,7 +84,8 @@ public class MountpointStateProviderImpl implements AutoCloseable {
     }
 
     public void startPublishing() {
-        mountpointStatePublisher = new MountpointStatePublisher(netconfNetworkElementService.getServiceProvider().getVESCollectorService());
+        mountpointStatePublisher = new MountpointStatePublisher(
+                netconfNetworkElementService.getServiceProvider().getVESCollectorService());
         Thread t = new Thread(mountpointStatePublisher);
         t.start();
 
@@ -82,10 +93,16 @@ public class MountpointStateProviderImpl implements AutoCloseable {
         nodeStateListener.start(mountpointStatePublisher);
     }
 
+    public void stopPublishing() throws Exception {
+        mountpointStatePublisher.stop();
+        close(nodeConnectListener, nodeStateListener);
+    }
+
     @Override
     public void close() throws Exception {
         LOG.info("{} closing ...", this.getClass().getName());
         mountpointStatePublisher.stop();
+        vesCollectorService.deregister(this);
         close(nodeConnectListener, nodeStateListener);
         LOG.info("{} closing done", APPLICATION_NAME);
     }
@@ -103,4 +120,22 @@ public class MountpointStateProviderImpl implements AutoCloseable {
             }
         }
     }
+
+    @Override
+    public void notify(VESCollectorCfgService cfg) {
+        boolean vesCollectorEnabledPV = cfg.isVESCollectorEnabled(); // Pending value a.k.a new value
+        if (vesCollectorEnabledPV != vesCollectorEnabledCV) {
+            vesCollectorEnabledCV = vesCollectorEnabledPV;
+            if (vesCollectorEnabledPV) {
+                startPublishing();
+            } else {
+                try {
+                    stopPublishing();
+                } catch (Exception e) {
+                    LOG.debug("{}", e);
+                }
+            }
+        }
+    }
+
 }
