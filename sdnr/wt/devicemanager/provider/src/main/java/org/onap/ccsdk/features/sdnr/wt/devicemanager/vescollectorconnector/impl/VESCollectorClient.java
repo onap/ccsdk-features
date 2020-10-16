@@ -22,13 +22,17 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPResponse;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorConfigChangeListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.config.VESCollectorCfgImpl;
 import org.slf4j.Logger;
@@ -40,8 +44,10 @@ public class VESCollectorClient implements VESCollectorService, IConfigChangedLi
     private final ConfigurationFileRepresentation cfg;
     private BaseHTTPClient httpClient;
     private final Map<String, String> headerMap;
+    private List<VESCollectorConfigChangeListener> registeredObjects;
 
     public VESCollectorClient(ConfigurationFileRepresentation config) {
+        registeredObjects = new ArrayList<VESCollectorConfigChangeListener>();
         this.vesConfig = new VESCollectorCfgImpl(config);
         this.cfg = config;
         this.cfg.registerConfigChangedListener(this);
@@ -105,6 +111,21 @@ public class VESCollectorClient implements VESCollectorService, IConfigChangedLi
     public void onConfigChanged() {
         httpClient.setBaseUrl(getBaseUrl());
         setAuthorization(getConfig().getUsername(), getConfig().getPassword());
+        Iterator<VESCollectorConfigChangeListener> it = registeredObjects.iterator();
+        while (it.hasNext()) {
+            VESCollectorConfigChangeListener o = it.next();
+            o.notify(getConfig());
+        }
+    }
+
+    @Override
+    public void registerForChanges(VESCollectorConfigChangeListener o) {
+        registeredObjects.add(o);
+    }
+
+    @Override
+    public void deregister(VESCollectorConfigChangeListener o) {
+        registeredObjects.remove(o);
     }
 
 }

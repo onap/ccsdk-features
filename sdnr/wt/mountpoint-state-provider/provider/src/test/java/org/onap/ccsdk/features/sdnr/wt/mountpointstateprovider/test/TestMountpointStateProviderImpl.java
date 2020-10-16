@@ -30,6 +30,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStateProviderImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
@@ -46,10 +47,13 @@ public class TestMountpointStateProviderImpl {
         NetconfNodeStateService netconfNodeStateService = mock(NetconfNodeStateService.class);
         DeviceManagerServiceProvider serviceProvider = mock(DeviceManagerServiceProvider.class);
         VESCollectorService vesCollectorService = mock(VESCollectorService.class);
+        VESCollectorCfgService vesCollectorCfgService = mock(VESCollectorCfgService.class);
         NetconfNetworkElementService netconfNetworkElementService = mock(NetconfNetworkElementService.class);
 
         when(netconfNetworkElementService.getServiceProvider()).thenReturn(serviceProvider);
         when(serviceProvider.getVESCollectorService()).thenReturn(vesCollectorService);
+        when(vesCollectorService.getConfig()).thenReturn(vesCollectorCfgService);
+        when(vesCollectorCfgService.isVESCollectorEnabled()).thenReturn(true);
 
         mountpointStateProvider = new MountpointStateProviderImpl();
         mountpointStateProvider.setNetconfNetworkElementService(netconfNetworkElementService);

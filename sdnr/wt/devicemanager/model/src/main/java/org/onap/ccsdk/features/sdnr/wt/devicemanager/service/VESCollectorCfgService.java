@@ -25,4 +25,5 @@ public interface VESCollectorCfgService {
 
     String getReportingEntityName();
     String getEventLogMsgDetail();
+    boolean isVESCollectorEnabled();
 }

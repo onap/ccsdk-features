@@ -21,19 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
+public interface VESCollectorConfigChangeListener {
 
-
-/**
- * Interface used for publishing VES messages to the VES Collector
- *
- * @author ravi
- *
- */
-public interface VESCollectorService extends DeviceManagerService {
-
-    VESCollectorCfgService getConfig();
-    boolean publishVESMessage(String vesMsg);
-    public void registerForChanges(VESCollectorConfigChangeListener o);
-    public void deregister(VESCollectorConfigChangeListener o);
-
+    public void notify(VESCollectorCfgService cfg);
 }
