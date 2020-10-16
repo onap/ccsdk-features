@@ -28,35 +28,45 @@
 
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
-        <artifactId>odlparent-lite</artifactId>
+        <artifactId>binding-parent</artifactId>
         <version>2.1.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>sdnr-wt</artifactId>
+    <artifactId>sdnr-wt-devicemanager-oran-model</artifactId>
     <version>1.1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>bundle</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
-    <description>SDN-R wireless transport micro-services</description>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
 
-    <modules>
-        <module>common</module>
-        <module>apigateway</module>
-        <module>websocketmanager2</module>
-        <module>helpserver</module>
-        <module>data-provider</module>
-        <module>netconfnode-state-service</module>
-        <module>mountpoint-state-provider</module>
-        <module>devicemanager</module>
-        <module>devicemanager-oran</module>
-        <module>devicemanager-onf</module>
-        <module>devicemanager-onf14</module>
-        <module>devicemanager-openroadm</module>
-        <module>devicemanager-adapter-manager</module>
-        <module>mountpoint-registrar</module> 
-        <module>odlux</module> 
-        <module>featureaggregator</module> 
-    </modules>
+    <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+    </properties>
+
+    <dependencies>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/gen/**</exclude>
+                        <exclude>**/generated-sources/**</exclude>
+                        <exclude>**/yang-gen-sal/**</exclude>
+                        <exclude>**/pax/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
