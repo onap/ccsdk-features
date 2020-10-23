@@ -71,15 +71,8 @@ const DenseTable: React.FunctionComponent<props> = (props) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.data.map((row, index) => {
-
-                        
-                        var filteredRows = Object.keys(row).filter(function(e) { if(e!=="simulatorId") return row });
-                     
-                        //var filteredRows = Object.keys(row).filter(function(e) { if(e!=="simulatorId") return row[e] });
-                        var values = Object.keys(row).map(function(e) {  if(e!=="simulatorId"){ return row[e];} else return undefined });
-                       
-
+                    {props.data.map((row, index) => {  
+                        var values = Object.keys(row).map(function(e) { return row[e] });
                         return (
                             <TableRow aria-label={props.ariaLabel} key={index} hover={props.hover} onMouseOver={e => handleHover(e,row.name)} onClick={ e =>  handleClick(e, row.name)}>
 
@@ -96,14 +89,11 @@ const DenseTable: React.FunctionComponent<props> = (props) => {
 
                                     props.actions && <TableCell >  
 <div style={{display:"flex"}}>
-    <Tooltip title="Connect">
-    <Button className={classes.button} disabled={true} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("connect", row.simulatorId ? row.simulatorId : row.name)}}>C</Button>
-    </Tooltip>                                           
     <Tooltip title="Configure">
-    <Button className={classes.button} disabled={true} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("configuration", row.simulatorId ? row.simulatorId : row.name)}}>C</Button>
+    <Button className={classes.button} disabled={row.status!=="connected"} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("configuration", row.name)}}>C</Button>
     </Tooltip>
     <Tooltip title="Fault">
-    <Button className={classes.button} disabled={true} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("fault", row.simulatorId ? row.simulatorId : row.name)}}>F</Button>
+    <Button className={classes.button} disabled={row.status!=="connected"} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("fault", row.name)}}>F</Button>
     </Tooltip>
     </div> 
     </TableCell>

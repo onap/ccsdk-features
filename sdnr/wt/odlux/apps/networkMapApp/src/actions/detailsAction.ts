@@ -102,12 +102,10 @@ running=true;
   dispatcher(new IsBusyCheckingDeviceListAction(true));
 
   const promises = list.map((device)=>{
-    if(device.simulatorId){
-      return requestRest<any>("/rests/operational/network-topology:network-topology/topology/topology-netconf/node/"+device.simulatorId, { method: "GET" })
-
+    if(device.name){
+      return requestRest<any>("/rests/data/network-topology:network-topology/topology=topology-netconf/node="+device.name, { method: "GET" })
     }else{
-      return requestRest<any>("/rests/operational/network-topology:network-topology/topology/topology-netconf/node/"+device.name, { method: "GET" })
-
+      return device;
     }
 
   })
@@ -117,9 +115,8 @@ running=true;
     
 
     result.forEach((res: any, index)=>{
-     if(res !==null && res.node!==null){
-
-      list[index].status = res.node[0]["netconf-node-topology:connection-status"];
+     if(res !==null && res["network-topology:node"]){
+      list[index].status = res["network-topology:node"][0]["netconf-node-topology:connection-status"];
      }else{
       list[index].status = "Not connected";
      }
