@@ -32,7 +32,7 @@
 
     <groupId>org.onap.ccsdk.features</groupId>
     <artifactId>ccsdk-features</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <packaging>pom</packaging>
 
     <name>ccsdk-features</name>
