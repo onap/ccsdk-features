@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl.DeviceManagerOnfConfiguration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.AaiService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
@@ -27,8 +28,12 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.MaintenanceService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +62,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
     private final @NonNull AaiService aaiProviderClient;
     private final @NonNull PerformanceManager performanceManager;
     private final @NonNull EventHandlingService eventListenerHandler;
+    private final @NonNull DataProvider dataProvider;
 
 
     private final @NonNull String mountPointNodeName;
@@ -69,7 +75,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
     /**
      * Basic element for netconf device with ONF Core model V1.2
-     * 
+     *
      * @param acessor to manage device connection
      * @param serviceProvider to get devicemanager services
      */
@@ -87,6 +93,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         this.aaiProviderClient = serviceProvider.getAaiService();
         this.performanceManager = serviceProvider.getPerformanceManagerService();
         this.eventListenerHandler = serviceProvider.getEventHandlingService();
+        this.dataProvider = serviceProvider.getDataProvider();
 
 
     }
@@ -162,6 +169,25 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
     }
 
     /**
+     * @param nNode
+     * set core-model-capability
+     */
+    public void setCoreModel(@NonNull NetconfNode nNode) {
+        NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
+
+        String namespaceRevision;
+        QName QNAME_COREMODEL = QName.create("urn:onf:params:xml:ns:yang:core-model", "2017-03-20", "core-model").intern();
+
+        Capabilities availableCapabilities = Capabilities.getAvailableCapabilities(nNode);
+        namespaceRevision = availableCapabilities.getRevisionForNamespace(QNAME_COREMODEL);
+        if (Capabilities.isNamespaceSupported(namespaceRevision)) {
+            eb.setCoreModelCapability(namespaceRevision);
+        } else {
+            eb.setCoreModelCapability("Unsupported");
+        }
+        dataProvider.updateNetworkConnection22(eb.build(), acessor.getNodeId().getValue());
+    }
+    /**
      * Remove all entries from list
      */
     @Override
@@ -177,6 +203,9 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
         // Register netconf stream
         acessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
+
+        // Set core-model revision value in "core-model-capability" field
+        setCoreModel(acessor.getNetconfNode());
 
         // -- Read data from NE
         initialReadFromNetworkElement();
@@ -204,6 +233,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         maintenanceService.deleteIfNotRequired(mountPointNodeName);
         performanceManager.deRegistration(mountPointNodeName);
         aaiProviderClient.onDeviceUnregistered(mountPointNodeName);
+        faultService.removeAllCurrentProblemsOfNode(acessor.getNodeId());
     }
 
     @Override

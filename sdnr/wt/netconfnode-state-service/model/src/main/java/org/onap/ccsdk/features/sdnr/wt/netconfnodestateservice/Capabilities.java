@@ -49,6 +49,7 @@ public class Capabilities {
     private static final Logger LOG = LoggerFactory.getLogger(Capabilities.class);
 
     private static final String METHODNAME = "getCapability";
+    private static final String UNSUPPORTED = "Unsupported";
     private final List<String> capabilities = new ArrayList<>();
     private final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -218,9 +219,17 @@ public class Capabilities {
                 return QName.create(capability).getRevision().get().toString();
             }
         }
-        return "Unsupported";
+        return UNSUPPORTED;
     }
 
+    /**
+     * Verify if QName namespace is supported by capabilities
+     * @param revision result of getRevisionForNamespace()
+     * @return true if namespace is supported.
+     */
+    static public boolean isNamespaceSupported(String revision) {
+    	return revision != UNSUPPORTED;
+    }
 
     @Override
     public String toString() {
