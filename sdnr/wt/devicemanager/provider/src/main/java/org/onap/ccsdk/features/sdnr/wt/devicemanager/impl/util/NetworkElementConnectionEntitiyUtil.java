@@ -30,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementConnectionEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.network.element.connection.entity.NodeDetailsBuilder;
-import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +38,8 @@ public class NetworkElementConnectionEntitiyUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(NetworkElementConnectionEntitiyUtil.class);
 
-    private static final QName QNAME_COREMODEL =
-            QName.create("urn:onf:params:xml:ns:yang:core-model", "2017-03-20", "core-model").intern();
-
     /**
-     * Update devicetype and let all other field empty
+     * Update devicetype and let all other field emptys
      *
      * @param deviceType that should be updated
      * @return NetworkElementConnectionEntity with related parameter
@@ -75,8 +71,6 @@ public class NetworkElementConnectionEntitiyUtil {
         Capabilities availableCapabilities = Capabilities.getAvailableCapabilities(nNode);
         Capabilities unAvailableCapabilities = Capabilities.getUnavailableCapabilities(nNode);
 
-        eb.setCoreModelCapability(availableCapabilities.getRevisionForNamespace(QNAME_COREMODEL));
-
         NodeDetailsBuilder nodeDetails =
                 new NodeDetailsBuilder().setAvailableCapabilities(availableCapabilities.getCapabilities())
                         .setUnavailableCapabilities(unAvailableCapabilities.getCapabilities());
@@ -93,6 +87,7 @@ public class NetworkElementConnectionEntitiyUtil {
             LoginPassword loginPassword = (LoginPassword) credentials;
             eb.setUsername(loginPassword.getUsername()).setPassword(loginPassword.getPassword());
         }
+        eb.setCoreModelCapability("Unsupported"); // Default value. Specific value (if any) is set in the specific devicemanagers
         return eb.build();
     }
 }

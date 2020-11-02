@@ -28,6 +28,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementSe
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.LAYERPROTOCOLNAMETYPEAIRLAYER;
@@ -51,11 +52,14 @@ import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.cont
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.equipment.ContainedHolder;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.logical.termination.point.LayerProtocol;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.logical.termination.point.LayerProtocolKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,8 +129,31 @@ public class Onf14NetworkElement implements NetworkElement {
         }
     }
 
+    /**
+     * @param nNode
+     * set core-model-capability
+     */
+    public void setCoreModel(@NonNull NetconfNode nNode) {
+        NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
+        log.info("In setCoreModel for Onf14NetworkElement");
+        String namespaceRevision;
+        QName QNAME_COREMODEL14 = QName.create("urn:onf:yang:core-model-1-4", "2019-11-27", "core-model-1-4").intern();
+
+        Capabilities availableCapabilities = Capabilities.getAvailableCapabilities(nNode);
+        namespaceRevision = availableCapabilities.getRevisionForNamespace(QNAME_COREMODEL14);
+        log.info("In setCoreModel for Onf14NetworkElement- namespaceRevision = "+namespaceRevision);
+        if (Capabilities.isNamespaceSupported(namespaceRevision)) {
+            eb.setCoreModelCapability(namespaceRevision);
+        } else {
+            eb.setCoreModelCapability("Unsupported");
+        }
+        databaseService.updateNetworkConnection22(eb.build(), netconfAccessor.getNodeId().getValue());
+    }
+    
     @Override
     public void register() {
+        // Set core-model revision value in "core-model-capability" field
+        setCoreModel(netconfAccessor.getNetconfNode());
         initialReadFromNetworkElement();
         // Register netconf stream
         airInterfaceNotificationListenerHandler =
