@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "acd08c81_aac81caa",
+        "filename": "sdnr/wt/devicemanager/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/impl/util/NetworkElementConnectionEntitiyUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2020-11-02T14:18:10Z",
+      "side": 1,
+      "message": "empties !",
+      "revId": "e188564423682ac642664eb20dd4df6934491e11",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
