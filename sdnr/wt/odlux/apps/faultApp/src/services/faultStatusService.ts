@@ -47,7 +47,7 @@ export const getFaultStateFromDatabase = async (): Promise<FaultType | null> => 
 
 export const clearStuckAlarms = async (nodeNames: string[]) => {
   const path = 'rests/operations/devicemanager:clear-current-fault-by-nodename'
-  const result = await requestRest<SingeResult<DeletedStuckAlarms>>(path, { method: 'Post', body: JSON.stringify({ input: { nodenames: nodeNames } }) })
+  const result = await requestRest<any>(path, { method: 'Post', body: JSON.stringify({ input: { nodenames: nodeNames } }) })
   return result;
 
 }
