@@ -1,10 +1,11 @@
+.. _master_index:
+
 =================
 SDN-R Online help
 =================
 
 Below are the references for SDN-R User Documentation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 
 .. toctree::
    :maxdepth: 1
