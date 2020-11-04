@@ -29,8 +29,8 @@ export class AreStuckAlarmsCleared extends FaultApplicationBaseAction {
 
 
 export const clearStuckAlarmAsyncAction = (dispatch: Dispatch) => async (nodeNames: string[]) => {
-    dispatch(new AreStuckAlarmsCleared(true))
+    dispatch(new AreStuckAlarmsCleared(true));
     const result = await clearStuckAlarms(nodeNames).catch(error => { console.error(error); return undefined });
-    dispatch(new AreStuckAlarmsCleared(false))
+    dispatch(new AreStuckAlarmsCleared(false));
     return result;
 }
