@@ -78,7 +78,7 @@ public class TestOnf14NetworkElement extends Mockito {
 
         InstanceIdentifier<ControlConstruct> CONTROLCONSTRUCT_IID =
                 InstanceIdentifier.builder(ControlConstruct.class).build();
-        when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
+        when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.CONFIGURATION,
                 CONTROLCONSTRUCT_IID)).thenReturn(controlConstruct);
 
         List<UniversalId> topLevelEqList = null;
