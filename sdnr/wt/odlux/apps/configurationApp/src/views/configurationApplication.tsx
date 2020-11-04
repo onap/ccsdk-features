@@ -397,7 +397,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
                 Object.keys(uiElement.cases).map(caseKey => {
                   const caseElm = uiElement.cases[caseKey];
                   return (
-                    <MenuItem key={caseElm.id} value={caseKey}><Tooltip title={caseElm.description}><div style={{width:"100%"}}>{caseElm.label}</div></Tooltip></MenuItem>
+                    <MenuItem key={caseElm.id} value={caseKey}><Tooltip title={caseElm.description || ''}><div style={{width:"100%"}}>{caseElm.label}</div></Tooltip></MenuItem>
                   );
                 })
               }

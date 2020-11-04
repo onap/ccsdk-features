@@ -50,7 +50,7 @@ export const UiElementSelection = (props: selectionProps) => {
                 }}
             >
           {element.options.map(option => (
-            <MenuItem key={option.key} title={option.description} value={option.key}>{option.key}</MenuItem>
+            <MenuItem key={option.key} title={option.description || ''} value={option.key}>{option.key}</MenuItem>
           ))}
             </Select>
             <FormHelperText>{error}</FormHelperText>
