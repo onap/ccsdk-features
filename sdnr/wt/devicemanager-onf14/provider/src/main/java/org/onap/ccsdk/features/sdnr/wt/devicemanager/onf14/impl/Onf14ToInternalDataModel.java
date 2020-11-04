@@ -18,9 +18,11 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.Equipment;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.EquipmentInstance;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.EquipmentType;
@@ -65,7 +67,7 @@ public class Onf14ToInternalDataModel {
 
             List<String> containedHolderKeyList = new ArrayList<String>();
             @NonNull
-            List<ContainedHolder> containedHolderList = currentEq.nonnullContainedHolder();
+            Collection<ContainedHolder> containedHolderList = YangHelper.getCollection(currentEq.nonnullContainedHolder());
             for (ContainedHolder holder : containedHolderList) {
                 @Nullable
                 UniversalId occupyingFru = holder.getOccupyingFru();

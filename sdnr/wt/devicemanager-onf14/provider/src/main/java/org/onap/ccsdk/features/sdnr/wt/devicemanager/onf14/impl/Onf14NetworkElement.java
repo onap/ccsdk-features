@@ -18,10 +18,12 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
@@ -32,14 +34,6 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.LAYERPROTOCOLNAMETYPEAIRLAYER;
-import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.LayerProtocol1;
-import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.SEVERITYTYPE;
-import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.SEVERITYTYPECRITICAL;
-import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.SEVERITYTYPEMAJOR;
-import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.SEVERITYTYPEMINOR;
-import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.SEVERITYTYPENONALARMED;
-import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.SEVERITYTYPEWARNING;
-import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.air._interface.current.problems.CurrentProblemList;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.air._interface.lp.spec.AirInterfacePac;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.air._interface.pac.AirInterfaceCurrentProblems;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.ControlConstruct;
@@ -52,6 +46,12 @@ import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.cont
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.equipment.ContainedHolder;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.logical.termination.point.LayerProtocol;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.logical.termination.point.LayerProtocolKey;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.ethernet.container._2._0.rev200121.LAYERPROTOCOLNAMETYPEETHERNETCONTAINERLAYER;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.ethernet.container._2._0.rev200121.ethernet.container.lp.spec.EthernetContainerPac;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.ethernet.container._2._0.rev200121.ethernet.container.pac.EthernetContainerCurrentProblems;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.LAYERPROTOCOLNAMETYPEWIRELAYER;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.wire._interface.lp.spec.WireInterfacePac;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.wire._interface.pac.WireInterfaceCurrentProblems;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
@@ -89,6 +89,16 @@ public class Onf14NetworkElement implements NetworkElement {
     private ListenerRegistration<NotificationListener> airInterfaceNotificationListenerHandler;
     private @NonNull final Onf14AirInterfaceNotificationListener airInterfaceNotificationListener;
 
+    // ethernet container related members
+    private final List<TechnologySpecificPacKeys> ethernetContainerList = new ArrayList<TechnologySpecificPacKeys>();
+    private ListenerRegistration<NotificationListener> etherneContainerNotificationListenerHandler;
+    private @NonNull final Onf14EthernetContainerNotificationListener ethernetContainerNotificationListener;
+
+    // wire interface related members
+    private final List<TechnologySpecificPacKeys> wireInterfaceList = new ArrayList<TechnologySpecificPacKeys>();
+    private ListenerRegistration<NotificationListener> wireInterfaceNotificationListenerHandler;
+    private @NonNull final Onf14WireInterfaceNotificationListener wireInterfaceNotificationListener;
+
     Onf14NetworkElement(NetconfAccessor netconfAccess, DeviceManagerServiceProvider serviceProvider) {
         log.info("Create {}", Onf14NetworkElement.class.getSimpleName());
         this.netconfAccessor = netconfAccess;
@@ -97,6 +107,11 @@ public class Onf14NetworkElement implements NetworkElement {
         this.onf14Mapper = new Onf14ToInternalDataModel();
         this.airInterfaceNotificationListenerHandler = null;
         airInterfaceNotificationListener = new Onf14AirInterfaceNotificationListener(netconfAccess, serviceProvider);
+        this.etherneContainerNotificationListenerHandler = null;
+        ethernetContainerNotificationListener =
+                new Onf14EthernetContainerNotificationListener(netconfAccess, serviceProvider);
+        this.wireInterfaceNotificationListenerHandler = null;
+        wireInterfaceNotificationListener = new Onf14WireInterfaceNotificationListener(netconfAccess, serviceProvider);
     }
 
     public void initialReadFromNetworkElement() {
@@ -110,7 +125,16 @@ public class Onf14NetworkElement implements NetworkElement {
         log.debug("Removed all {} problems from database at registration", problems);
 
         readAllAirInterfaceCurrentProblems(resultList);
+        problems = resultList.size();
+        log.debug("NETCONF read air interface current problems completed. Got back {} problems.", problems);
+
+        readAllEhernetContainerCurrentProblems(resultList);
+        problems = resultList.size() - problems;
         log.debug("NETCONF read current problems completed. Got back {} problems.", resultList.size());
+
+        readAllWireInterfaceCurrentProblems(resultList);
+        problems = resultList.size();
+        log.debug("NETCONF read wire interface current problems completed. Got back {} problems.", problems);
 
         faultService.initCurrentProblemStatus(netconfAccessor.getNodeId(), resultList);
         log.debug("DB write current problems completed");
@@ -125,6 +149,30 @@ public class Onf14NetworkElement implements NetworkElement {
             idxStart = resultList.size();
 
             readAirInterfaceCurrentProblemForLtp(key.getLtpUuid(), key.getLocalId(), resultList);
+            debugResultList(key.getLtpUuid().getValue(), resultList, idxStart);
+        }
+    }
+
+    public void readAllEhernetContainerCurrentProblems(FaultData resultList) {
+
+        int idxStart; // Start index for debug messages
+
+        for (TechnologySpecificPacKeys key : ethernetContainerList) {
+            idxStart = resultList.size();
+
+            readEthernetConainerCurrentProblemForLtp(key.getLtpUuid(), key.getLocalId(), resultList);
+            debugResultList(key.getLtpUuid().getValue(), resultList, idxStart);
+        }
+    }
+
+    public void readAllWireInterfaceCurrentProblems(FaultData resultList) {
+
+        int idxStart; // Start index for debug messages
+
+        for (TechnologySpecificPacKeys key : wireInterfaceList) {
+            idxStart = resultList.size();
+
+            readWireInterfaceCurrentProblemForLtp(key.getLtpUuid(), key.getLocalId(), resultList);
             debugResultList(key.getLtpUuid().getValue(), resultList, idxStart);
         }
     }
@@ -149,15 +197,20 @@ public class Onf14NetworkElement implements NetworkElement {
         }
         databaseService.updateNetworkConnection22(eb.build(), netconfAccessor.getNodeId().getValue());
     }
-    
+
     @Override
     public void register() {
         // Set core-model revision value in "core-model-capability" field
         setCoreModel(netconfAccessor.getNetconfNode());
         initialReadFromNetworkElement();
+
         // Register netconf stream
         airInterfaceNotificationListenerHandler =
                 netconfAccessor.doRegisterNotificationListener(airInterfaceNotificationListener);
+        etherneContainerNotificationListenerHandler =
+                netconfAccessor.doRegisterNotificationListener(ethernetContainerNotificationListener);
+        wireInterfaceNotificationListenerHandler =
+                netconfAccessor.doRegisterNotificationListener(wireInterfaceNotificationListener);
         netconfAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
     }
 
@@ -188,26 +241,6 @@ public class Onf14NetworkElement implements NetworkElement {
         return NetworkElementDeviceType.Wireless;
     }
 
-    public static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType mapSeverity(
-            Class<? extends SEVERITYTYPE> severity) {
-
-        if (severity != null) {
-            if (severity.getTypeName() == SEVERITYTYPECRITICAL.class.getName()) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.Critical;
-            } else if (severity.getTypeName() == SEVERITYTYPEMAJOR.class.getName()) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.Major;
-            } else if (severity.getTypeName() == SEVERITYTYPEMINOR.class.getName()) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.Minor;
-            } else if (severity.getTypeName() == SEVERITYTYPEWARNING.class.getName()) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.Warning;
-            } else if (severity.getTypeName() == SEVERITYTYPENONALARMED.class.getName()) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.NonAlarmed;
-            }
-        }
-
-        return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.NonAlarmed;
-    }
-
     private void readEquipmentData() {
 
         Optional<ControlConstruct> controlConstruct = readControlConstruct(netconfAccessor);
@@ -233,8 +266,8 @@ public class Onf14NetworkElement implements NetworkElement {
             }
         }
 
-        // storing all the airInterface LTP UUIDs internally, for later usage
-        readAirInterfaceKeys(controlConstruct);
+        // storing all the LTP UUIDs internally, for later usage, for air-interface and ethernet-container
+        readKeys(controlConstruct);
     }
 
     private void addEquipmentToDb(Equipment currentEq, Equipment parentEq, long treeLevel) {
@@ -258,7 +291,7 @@ public class Onf14NetworkElement implements NetworkElement {
         // we iterate the kids of our current equipment and add them to the database recursively
         // the actual reference is here: /core-model:control-construct/equipment/contained-holder/occupying-fru
         @NonNull
-        List<ContainedHolder> holderList = currentEq.nonnullContainedHolder();
+        Collection<ContainedHolder> holderList = YangHelper.getCollection(currentEq.nonnullContainedHolder());
 
         for (ContainedHolder holder : holderList) {
             @Nullable
@@ -275,17 +308,17 @@ public class Onf14NetworkElement implements NetworkElement {
         }
     }
 
-    private void readAirInterfaceKeys(Optional<ControlConstruct> controlConstruct) {
+    private void readKeys(Optional<ControlConstruct> controlConstruct) {
 
         if (controlConstruct.isPresent()) {
             @NonNull
-            List<LogicalTerminationPoint> ltpList = controlConstruct.get().nonnullLogicalTerminationPoint();
+            Collection<LogicalTerminationPoint> ltpList = YangHelper.getCollection(controlConstruct.get().nonnullLogicalTerminationPoint());
             log.debug("Iterating the LTP list for node {}", netconfAccessor.getNodeId().getValue());
 
             // iterating all the Logical Termination Point list
             for (LogicalTerminationPoint ltp : ltpList) {
                 @NonNull
-                List<LayerProtocol> lpList = ltp.nonnullLayerProtocol();
+                List<LayerProtocol> lpList = YangHelper.getList(ltp.nonnullLayerProtocol());
                 // the Layer Protocol list should contain only one item, since we have an 1:1 relationship between the LTP and the LP
                 if (lpList.size() != 1) {
                     log.debug("Layer protocol has no 1:1 relationship with the LTP.");
@@ -296,12 +329,27 @@ public class Onf14NetworkElement implements NetworkElement {
                 @Nullable
                 Class<? extends LAYERPROTOCOLNAMETYPE> layerProtocolName = lp.getLayerProtocolName();
                 if (layerProtocolName != null) {
-                    // it the LTP has an airInterface technology extension, the layer protocol name is air-layer
+                    // if the LTP has an airInterface technology extension, the layer protocol name is air-layer
                     if (layerProtocolName.getTypeName() == LAYERPROTOCOLNAMETYPEAIRLAYER.class.getName()) {
                         TechnologySpecificPacKeys airInterfaceKey =
                                 new TechnologySpecificPacKeys(ltp.getUuid(), lp.getLocalId());
                         airInterfaceList.add(airInterfaceKey);
                         log.debug("Adding Ltp with uuid {} and local-id {} to the air-interface list",
+                                ltp.getUuid().getValue(), lp.getLocalId());
+                    }
+                    // if the LTP has an ethernetContainier technology extension, the layer protocol name is ethernet-container-layer
+                    else if (layerProtocolName.getTypeName() == LAYERPROTOCOLNAMETYPEETHERNETCONTAINERLAYER.class
+                            .getName()) {
+                        TechnologySpecificPacKeys ethernetContainerKey =
+                                new TechnologySpecificPacKeys(ltp.getUuid(), lp.getLocalId());
+                        ethernetContainerList.add(ethernetContainerKey);
+                        log.debug("Adding Ltp with uuid {} and local-id {} to the ethernet-contatinier list",
+                                ltp.getUuid().getValue(), lp.getLocalId());
+                    } else if (layerProtocolName.getTypeName() == LAYERPROTOCOLNAMETYPEWIRELAYER.class.getName()) {
+                        TechnologySpecificPacKeys wireInterfaceKey =
+                                new TechnologySpecificPacKeys(ltp.getUuid(), lp.getLocalId());
+                        wireInterfaceList.add(wireInterfaceKey);
+                        log.debug("Adding Ltp with uuid {} and local-id {} to the wire-interface list",
                                 ltp.getUuid().getValue(), lp.getLocalId());
                     }
                 }
@@ -317,11 +365,13 @@ public class Onf14NetworkElement implements NetworkElement {
                 clazzPac.getSimpleName(), netconfAccessor.getNodeId().getValue(), ltpUuid.getValue(), localId);
 
         // constructing the IID needs the augmentation exposed byy the air-interface-2-0 model
-        InstanceIdentifier<AirInterfaceCurrentProblems> airInterfaceCurrentProblem_IID =
-                InstanceIdentifier.builder(ControlConstruct.class)
-                        .child(LogicalTerminationPoint.class, new LogicalTerminationPointKey(ltpUuid))
-                        .child(LayerProtocol.class, new LayerProtocolKey(localId)).augmentation(LayerProtocol1.class)
-                        .child(AirInterfacePac.class).child(AirInterfaceCurrentProblems.class).build();
+        InstanceIdentifier<AirInterfaceCurrentProblems> airInterfaceCurrentProblem_IID = InstanceIdentifier
+                .builder(ControlConstruct.class)
+                .child(LogicalTerminationPoint.class, new LogicalTerminationPointKey(ltpUuid))
+                .child(LayerProtocol.class, new LayerProtocolKey(localId))
+                .augmentation(
+                        org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.LayerProtocol1.class)
+                .child(AirInterfacePac.class).child(AirInterfaceCurrentProblems.class).build();
 
         // reading all the current-problems list for this specific LTP and LP
         AirInterfaceCurrentProblems problems = netconfAccessor.getTransactionUtils().readData(
@@ -332,16 +382,86 @@ public class Onf14NetworkElement implements NetworkElement {
         } else if (problems.getCurrentProblemList() == null) {
             log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
         } else {
-            for (CurrentProblemList problem : problems.nonnullCurrentProblemList()) {
+            for (org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.air._interface.current.problems.CurrentProblemList problem : YangHelper.getCollection(problems
+                    .nonnullCurrentProblemList())) {
                 resultList.add(netconfAccessor.getNodeId(), (int) problem.getSequenceNumber(), problem.getTimestamp(),
-                        ltpUuid.getValue(), problem.getProblemName(), mapSeverity(problem.getProblemSeverity()));
+                        ltpUuid.getValue(), problem.getProblemName(),
+                        Onf14AirInterface.mapSeverity(problem.getProblemSeverity()));
+            }
+        }
+    }
+
+    private void readEthernetConainerCurrentProblemForLtp(UniversalId ltpUuid, String localId, FaultData resultList) {
+
+        final Class<EthernetContainerPac> clazzPac = EthernetContainerPac.class;
+
+        log.info("DBRead Get current problems for class {} from mountpoint {} for LTP uuid {} and local-id {}",
+                clazzPac.getSimpleName(), netconfAccessor.getNodeId().getValue(), ltpUuid.getValue(), localId);
+
+        // constructing the IID needs the augmentation exposed by the ethernet-container-2-0 model
+        InstanceIdentifier<EthernetContainerCurrentProblems> etherneContainerCurrentProblem_IID = InstanceIdentifier
+                .builder(ControlConstruct.class)
+                .child(LogicalTerminationPoint.class, new LogicalTerminationPointKey(ltpUuid))
+                .child(LayerProtocol.class, new LayerProtocolKey(localId))
+                .augmentation(
+                        org.opendaylight.yang.gen.v1.urn.onf.yang.ethernet.container._2._0.rev200121.LayerProtocol1.class)
+                .child(EthernetContainerPac.class).child(EthernetContainerCurrentProblems.class).build();
+
+        // reading all the current-problems list for this specific LTP and LP
+        EthernetContainerCurrentProblems problems = netconfAccessor.getTransactionUtils().readData(
+                netconfAccessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL, etherneContainerCurrentProblem_IID);
+
+        if (problems == null) {
+            log.debug("DBRead Id {} no EthernetContainerCurrentProblems", ltpUuid);
+        } else if (problems.getCurrentProblemList() == null) {
+            log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
+        } else {
+            for (org.opendaylight.yang.gen.v1.urn.onf.yang.ethernet.container._2._0.rev200121.ethernet.container.current.problems.CurrentProblemList problem : YangHelper.getCollection(problems
+                    .nonnullCurrentProblemList())) {
+                resultList.add(netconfAccessor.getNodeId(), (int) problem.getSequenceNumber(), problem.getTimestamp(),
+                        ltpUuid.getValue(), problem.getProblemName(),
+                        Onf14EthernetContainer.mapSeverity(problem.getProblemSeverity()));
+            }
+        }
+    }
+
+    private void readWireInterfaceCurrentProblemForLtp(UniversalId ltpUuid, String localId, FaultData resultList) {
+
+        final Class<WireInterfacePac> clazzPac = WireInterfacePac.class;
+
+        log.info("DBRead Get current problems for class {} from mountpoint {} for LTP uuid {} and local-id {}",
+                clazzPac.getSimpleName(), netconfAccessor.getNodeId().getValue(), ltpUuid.getValue(), localId);
+
+        // constructing the IID needs the augmentation exposed by the wire-interface-2-0 model
+        InstanceIdentifier<WireInterfaceCurrentProblems> wireInterfaceCurrentProblem_IID = InstanceIdentifier
+                .builder(ControlConstruct.class)
+                .child(LogicalTerminationPoint.class, new LogicalTerminationPointKey(ltpUuid))
+                .child(LayerProtocol.class, new LayerProtocolKey(localId))
+                .augmentation(
+                        org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.LayerProtocol1.class)
+                .child(WireInterfacePac.class).child(WireInterfaceCurrentProblems.class).build();
+
+        // reading all the current-problems list for this specific LTP and LP
+        WireInterfaceCurrentProblems problems = netconfAccessor.getTransactionUtils().readData(
+                netconfAccessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL, wireInterfaceCurrentProblem_IID);
+
+        if (problems == null) {
+            log.debug("DBRead Id {} no WireInterfaceCurrentProblems", ltpUuid);
+        } else if (problems.getCurrentProblemList() == null) {
+            log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
+        } else {
+            for (org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.wire._interface.current.problems.CurrentProblemList problem : YangHelper.getCollection(problems
+                    .nonnullCurrentProblemList())) {
+                resultList.add(netconfAccessor.getNodeId(), (int) problem.getSequenceNumber(), problem.getTimestamp(),
+                        ltpUuid.getValue(), problem.getProblemName(),
+                        Onf14WireInterface.mapSeverity(problem.getProblemSeverity()));
             }
         }
     }
 
     private Optional<ControlConstruct> readControlConstruct(NetconfAccessor netconfAccessor) {
         return Optional.ofNullable(netconfAccessor.getTransactionUtils().readData(netconfAccessor.getDataBroker(),
-                LogicalDatastoreType.OPERATIONAL, CONTROLCONSTRUCT_IID));
+                LogicalDatastoreType.CONFIGURATION, CONTROLCONSTRUCT_IID));
     }
 
     private @Nullable Equipment readEquipmentInstance(NetconfAccessor accessData, UniversalId equipmentUuid) {
@@ -354,7 +474,7 @@ public class Onf14NetworkElement implements NetworkElement {
         InstanceIdentifier<Equipment> equipmentIID = InstanceIdentifier.builder(ControlConstruct.class)
                 .child(Equipment.class, new EquipmentKey(equipmentUuid)).build();
 
-        return accessData.getTransactionUtils().readData(accessData.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
+        return accessData.getTransactionUtils().readData(accessData.getDataBroker(), LogicalDatastoreType.CONFIGURATION,
                 equipmentIID);
     }
 
