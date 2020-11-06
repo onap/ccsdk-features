@@ -612,7 +612,7 @@ module ran-network {
     leaf-list nfType {
       type NfType;
       config false;
-      min-elements 1;
+      // min-elements 1;
       description
         "Type of the Network Function";
     }
@@ -867,7 +867,7 @@ module ran-network {
     leaf-list managedElementTypeList {
       type string;
       config false;
-      min-elements 1;
+      // min-elements 1;
       description
         "The type of functionality provided by the ManagedElement.
          It may represent one ME functionality or a combination of
@@ -1180,7 +1180,7 @@ module ran-network {
     }
     list pLMNInfoList {
       key "mcc mnc";
-      min-elements 1;
+      // min-elements 1;
       description
         "The PLMNInfoList is a list of PLMNInfo data type. It defines which PLMNs that
          can be served by the NR cell, and which S-NSSAIs that can be supported by the NR cell for
@@ -1315,7 +1315,7 @@ module ran-network {
     }
     leaf-list nRSectorCarrierRef {
       type DistinguishedName;
-      min-elements 1;
+      // min-elements 1;
       description
         "Reference to corresponding NRSectorCarrier instance.";
     }
@@ -1482,14 +1482,15 @@ module ran-network {
         "'gNB-CU-UP ID' in subclause 9.3.1.15 of 3GPP TS 38.463";
     }
     leaf gNBId {
-      type int32 {
-        range "22..32";
+      type int64 {
+        range "0..4294967295";
       }
       mandatory false;
       description
-        "Indicates the number of bits for encoding the gNB Id.";
+        "Identifies a gNB within a PLMN. The gNB Identifier (gNB ID)
+         is part of the NR Cell Identifier (NCI) of the gNB cells.";
       reference
-        "gNB Id in 3GPP TS 38.300, Global gNB ID in 3GPP TS 38.413";
+        "gNB ID in 3GPP TS 38.300, Global gNB ID in 3GPP TS 38.413";
     }
     list pLMNInfoList {
       key "mcc mnc";
@@ -1559,8 +1560,8 @@ module ran-network {
     }
     list pLMNId {
       key "mcc mnc";
-      min-elements 1;
-      max-elements 1;
+      // min-elements 1;
+      // max-elements 1;
       description
         "The PLMN identifier to be used as part of the global RAN
          node identity.";
@@ -1614,7 +1615,7 @@ module ran-network {
     }
     list pLMNInfoList {
       key "mcc mnc";
-      min-elements 1;
+      // min-elements 1;
       description
         "The PLMNInfoList is a list of PLMNInfo data type. It defines which PLMNs
          that can be served by the NR cell, and which S-NSSAIs that can be supported by the
@@ -1990,8 +1991,8 @@ module ran-network {
     }
     list sAP {
       key "host port";
-      min-elements 1;
-      max-elements 1;
+      // min-elements 1;
+      // max-elements 1;
       description
         "The service access point of the managed NF service instance";
       uses SAP;
