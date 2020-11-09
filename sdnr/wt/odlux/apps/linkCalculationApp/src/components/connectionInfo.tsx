@@ -36,6 +36,7 @@ const ConnectionInfo: React.FunctionComponent<props> = (props) => {
         {props.isCalculationServerReachable === false && <Typography> Calculation data can't be loaded.</Typography>}
         </div>
     </Paper> : null
+        
 )}
 
 const mapStateToProps = (state: IApplicationStoreState) => ({

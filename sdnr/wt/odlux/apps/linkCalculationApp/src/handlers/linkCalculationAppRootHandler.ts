@@ -21,7 +21,7 @@ import { combineActionHandler } from '../../../../framework/src/flux/middleware'
 // ** do not remove **
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { IActionHandler } from '../../../../framework/src/flux/action';;
-import { UpdateLinkIdAction, UpdateFrequencyAction , UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, updateHideForm, UpdateFslCalculation, UpdateSiteAction, UpdateDistanceAction, isCalculationServerReachableAction, UpdatePolAction, updateAltitudeAction} from '../actions/commonLinkCalculationActions';
+import { UpdateLinkIdAction, UpdateFrequencyAction , UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, updateHideForm, UpdateFslCalculation, UpdateSiteAction, UpdateDistanceAction, isCalculationServerReachableAction, UpdatePolAction, updateAltitudeAction, UpdateAbsorptionLossAction, UpdateWorstMonthRainAction} from '../actions/commonLinkCalculationActions';
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
@@ -52,7 +52,10 @@ export type ILinkCalculationAppStateState= {
   amslA: number, 
   amslB:number, 
   aglA: number, 
-  aglB:number
+  aglB:number,
+  absorptionWater:number,
+  absorptionOxygen: number,
+  month: string
 }
 
 const initialState: ILinkCalculationAppStateState ={
@@ -74,7 +77,10 @@ const initialState: ILinkCalculationAppStateState ={
   amslA: 0, 
   amslB:0, 
   aglA: 0, 
-  aglB:0
+  aglB:0,
+  absorptionWater:0,
+  absorptionOxygen: 0,
+  month: ''
 }
 
 
@@ -93,7 +99,7 @@ export const LinkCalculationHandler: IActionHandler<ILinkCalculationAppStateStat
   }
   else if (action instanceof UpdateFrequencyAction){
     state = Object.assign({}, state, {frequency:action.frequency})
-}
+  }
   else if (action instanceof UpdateFslCalculation){
   state = Object.assign({}, state, {fsl:action.fsl})
   }
@@ -114,8 +120,15 @@ export const LinkCalculationHandler: IActionHandler<ILinkCalculationAppStateStat
   }
   else if (action instanceof UpdatePolAction){
     state = Object.assign({}, state, {polarization: action.polarization})
-  }else if (action instanceof updateAltitudeAction){
+  }
+  else if (action instanceof updateAltitudeAction){
     state = Object.assign({}, state, {amslA:action.amslA, amslB:action.amslA, aglA:action.aglA, aglB:action.aglB})
+  }
+  else if (action instanceof UpdateAbsorptionLossAction){
+    state = Object.assign({}, state, {absorptionOxygen:action.absorptionOxygen, absorptionWater:action.absorptionWater})
+  }
+  else if (action instanceof UpdateWorstMonthRainAction){
+    state = Object.assign({}, state, {month:action.month})
   }
   return state
 }

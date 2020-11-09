@@ -101,4 +101,18 @@ export class updateAltitudeAction extends Action{
         super();
     }
 }
+export class UpdateAbsorptionLossAction extends Action{
+        constructor(
+            public absorptionOxygen:number,
+            public absorptionWater:number,
+            
+            ){
+            super();
+        }
+}
+export class UpdateWorstMonthRainAction extends Action{
+    constructor(public month: string){
+        super();
+    }
+}
 

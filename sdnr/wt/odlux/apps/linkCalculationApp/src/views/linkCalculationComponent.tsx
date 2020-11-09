@@ -21,12 +21,15 @@ import * as React from "react";
 import { Connect, connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
 import { TextField, Tabs, Tab, Typography, AppBar, Button, Tooltip, Checkbox, Table, TableCell, TableHead, TableRow, TableBody, Paper } from '@material-ui/core';
-import DenseTable from '../components/denseTable'
+import './Style.scss'
 
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
-import { UpdateFrequencyAction, UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, UpdateFslCalculation, isCalculationServerReachableAction, UpdatePolAction, UpdateDistanceAction, updateAltitudeAction } from "../actions/commonLinkCalculationActions";
-import { faPlaneArrival } from "@fortawesome/free-solid-svg-icons";
+import { UpdateFrequencyAction, UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, UpdateFslCalculation, isCalculationServerReachableAction, UpdatePolAction, UpdateDistanceAction, updateAltitudeAction, UpdateAbsorptionLossAction, UpdateWorstMonthRainAction } from "../actions/commonLinkCalculationActions";
+import { faPlaneArrival, faAlignCenter } from "@fortawesome/free-solid-svg-icons";
 import ConnectionInfo from '../components/connectionInfo'
+import { red } from "@material-ui/core/colors";
+
+
 
 const mapProps = (state: IApplicationStoreState) => ({
   linkId: state.linkCalculation.calculations.linkId,
@@ -47,7 +50,10 @@ const mapProps = (state: IApplicationStoreState) => ({
   amslA:state.linkCalculation.calculations.amslA,
   amslB:state.linkCalculation.calculations.amslB,
   aglA:state.linkCalculation.calculations.aglA,
-  aglB:state.linkCalculation.calculations.aglB
+  aglB:state.linkCalculation.calculations.aglB,
+  absorptionOxygen : state.linkCalculation.calculations.absorptionOxygen,
+  absorptionWater : state.linkCalculation.calculations.absorptionWater,
+  month : state.linkCalculation.calculations.month
 });
 
 const BASE_URL="/topology/services"
@@ -89,38 +95,80 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
 
   updateAutoDistance : (distance:number)=>{
     dispatcher.dispatch (new UpdateDistanceAction(distance))
-  }
+  },
+
+  UpdateAbsorption : (OxLoss:number , WaterLoss:number) => {
+    dispatcher.dispatch (new UpdateAbsorptionLossAction (OxLoss, WaterLoss))
+  },
+  // UpdateWorstMonth : (worstmonth:boolean) => {
+  //   dispatcher.dispatch (new UpdateWorstMonthAction(worstmonth))
+  // }, 
+
+  UpdateWorstMonthRain : (month:string) => {
+      dispatcher.dispatch (new UpdateWorstMonthRainAction(month))
+    }
+
+  
 });
+
+
+
 
 type linkCalculationProps = Connect<typeof mapProps, typeof mapDispatch>;
 
-class LinkCalculation extends React.Component<linkCalculationProps, {rainMethodDisplay: boolean, horizontalBoxChecked: boolean}> {
+interface initialState {
+  rainMethodDisplay: boolean, 
+  horizontalBoxChecked: boolean,
+    latitude1Error: string,
+      longitude1Error:string
+      latitude2Error: string,
+     longitude2Error:string,
+     frequencyError: string,
+     rainMethodError: string,
+     worstmonth : boolean,
+     showWM : string
+     
+  
+}
+
+class LinkCalculation extends React.Component<linkCalculationProps, initialState> {
   constructor(props: any) {
-    super(props)
-    this.state = { rainMethodDisplay: false,
-      horizontalBoxChecked: true
-                }
-    } 
+    super(props);
+    this.state = {
+      rainMethodDisplay: false,
+      horizontalBoxChecked: true,
+      latitude1Error: '',
+      longitude1Error:'',
+      latitude2Error: '',
+      longitude2Error:'',
+      frequencyError: '',
+      rainMethodError: '',
+      worstmonth : false,
+      showWM: ''
+        };
+  } 
+  
   updateAutoDistance = async (lat1: number, lon1: number, lat2: number, lon2: number)=>{
      const result = await fetch(BASE_URL+'/calculations/distance/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2)
       const json = await result.json()
       return json.distanceInKm
       }
 
-  updateLatLon = (e: any) => {
+  updateLatLon = (e:any) => {
     
-    if (e.target.id == 'Lat1') this.props.updateLatLon(e.target.value, this.props.lon1, this.props.lat2, this.props.lon2)
-    if (e.target.id == 'Lon1') this.props.updateLatLon(this.props.lat1, e.target.value, this.props.lat2, this.props.lon2)
-    if (e.target.id == 'Lat2') this.props.updateLatLon(this.props.lat1, this.props.lon1, e.target.value, this.props.lon2)
-    if (e.target.id == 'Lon2') this.props.updateLatLon(this.props.lat1, this.props.lon1, this.props.lat2, e.target.value)
+    e.target.id== 'Lat1'? this.props.updateLatLon(e.target.value, this.props.lon1, this.props.lat2, this.props.lon2) : null
+    e.target.id== 'Lon1'? this.props.updateLatLon(this.props.lat1, e.target.value, this.props.lat2, this.props.lon2) : null
+    e.target.id== 'Lat2'? this.props.updateLatLon(this.props.lat1, this.props.lon1, e.target.value, this.props.lon2) : null
+    e.target.id== 'Lon2'? this.props.updateLatLon(this.props.lat1, e.target.value, this.props.lat2, e.target.value) : null
 
+   
   }
 
   updatePoli = (val: string) =>{
 
     this.setState({horizontalBoxChecked: !this.state.horizontalBoxChecked});
     this.props.updatePolarization(val);
-    //this.forceUpdate();
+   
   }
 
   LatLonToDMS = (value: number, isLon: boolean = false) => {
@@ -139,10 +187,17 @@ class LinkCalculation extends React.Component<linkCalculationProps, {rainMethodD
     }
   }
 
-  rainAttCal = (lat1: any, lon1: any, lat2: any, lon2: any, frequency: any, distance: number, polarization : any) => {
-    fetch(BASE_URL+'/calculations/rain/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' + frequency+ '/'+ distance + '/' + polarization)
+  rainAttCal = (lat1: any, lon1: any, lat2: any, lon2: any, frequency: any, distance: number, polarization : any, worstmonth:boolean) => {
+    if(!worstmonth){
+      fetch(BASE_URL+'/calculations/rain/Annual/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' + frequency+ '/'+ distance + '/' + polarization)
       .then(res => res.json())
-      .then(result => { this.props.UpdateRainAtt(result.RainAtt) })
+      .then(result => { this.props.UpdateRainAtt(result.RainAtt) ; this.props.updateRainValue(result.rainfall) })
+    }
+    else {
+      fetch(BASE_URL+'/calculations/rain/WM/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' + frequency+ '/'+ distance + '/' + polarization)
+      .then(res => res.json())
+      .then(result => { this.props.UpdateRainAtt(result.RainAtt) ; this.props.updateRainValue(result.rainfallWM); this.props.UpdateWorstMonthRain (result.month);  this.setState({showWM: '- Wm is : '})})
+    }
   }
 
 
@@ -152,33 +207,75 @@ class LinkCalculation extends React.Component<linkCalculationProps, {rainMethodD
       .then(result => { this.props.specificRain(result.RainAtt) })
     }
 
-  updateRainValue = (lat1: any, lon1: any, lat2: any, lon2: any) => {
-      fetch(BASE_URL+'/calculations/rainval/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2)
-        .then(res => res.json())
-        .then(result => {this.props.updateRainValue(result.rainFall) })
-    }
 
     FSL = (distance:number, frequency:number) => {
       fetch(BASE_URL+'/calculations/FSL/' + distance + '/' + frequency)
       .then(res=>res.json())
       .then (result => {this.props.FSL(result.free)})
     }
-
-   
-
-  buttonHandler = async () => {
-      this.props.updateAutoDistance(await this.updateAutoDistance(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2))
-
-      this.FSL(this.props.distance, this.props.frequency)
-
-      if (this.state.rainMethodDisplay === true){
-
-        this.manualRain(this.props.rainVal, this.props.frequency, this.props.distance, this.props.polarization); 
+  
+    AbsorptionAtt =(lat1: number, lon1: number, lat2: number, lon2: number, distance:number, frequency:number, worstmonth:boolean) => {
+      if(!worstmonth)
+      {
+      fetch(BASE_URL+'/calculations/absorption/Annual/' +lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' +  distance + '/' + frequency)
+      .then(res=>res.json())
+      .then (result => {this.props.UpdateAbsorption(result.OxLoss, result.WaterLoss)})
       }
       else {
-        this.updateRainValue(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2)
-        this.rainAttCal(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency, this.props.distance, this.props.polarization);
+       fetch(BASE_URL+'/calculations/absorption/WM/' +lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' +  distance + '/' + frequency)
+      .then(res=>res.json())
+      .then (result => {this.props.UpdateAbsorption(result.OxLoss, result.WaterLoss)})
       }
+    }
+
+    formValid = () => {
+      
+      this.props.lat1 === 0 ? this.setState({latitude1Error: 'Enter a number between -90 to 90'}) : null
+      this.props.lat2 === 0 ? this.setState({latitude2Error: 'Enter a number between -90 to 90'}) : null
+      this.props.lon1 === 0 ? this.setState({longitude1Error: 'Enter a number between -180 to 180' }) : null
+      this.props.lon2 === 0 ? this.setState({longitude2Error: 'Enter a number between -180 to 180' }) : null
+      this.props.frequency === 0 ? this.setState({frequencyError: 'Select a frequency' }) : this.setState({frequencyError: ''})
+      
+      this.state.rainMethodError === null  && this.props.rainVal === 0 ? this.setState({rainMethodError: 'Select the rain method'}) : this.setState({rainMethodError: ''})
+      
+      console.log(this.props.lat1 !== 0 && this.props.lat2 !== 0 && this.props.lon1 !== 0 && this.props.lon2 !==0 && this.props.frequency!==0);
+
+      return this.props.lat1 !== 0 && this.props.lat2 !== 0 && this.props.lon1 !== 0 && this.props.lon2 !==0 && this.props.frequency!==0 
+
+     }
+  
+
+    
+  buttonHandler = async () => {
+   
+     if (this.formValid()) {
+
+      this.props.updateAutoDistance(await this.updateAutoDistance(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2))
+      this.FSL(this.props.distance, this.props.frequency)
+
+      if (this.state.worstmonth===false) {
+        this.setState({showWM : ' '})
+        this.props.UpdateWorstMonthRain('')
+        this.AbsorptionAtt (this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.distance, this.props.frequency, this.state.worstmonth)
+
+        if (this.state.rainMethodDisplay === true){
+
+          this.manualRain(this.props.rainVal, this.props.frequency, this.props.distance, this.props.polarization); 
+        }
+        else {
+          // this.updateRainValue(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.state.worstmonth)
+          this.rainAttCal(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency, this.props.distance, this.props.polarization, this.state.worstmonth);
+        }
+      } 
+      else { 
+        this.AbsorptionAtt (this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.distance, this.props.frequency, this.state.worstmonth)
+
+          // this.updateRainValue(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.state.worstmonth)
+
+          this.rainAttCal(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency, this.props.distance, this.props.polarization, this.state.worstmonth);
+      }
+    }
+      else null
 
   }
 
@@ -189,177 +286,157 @@ class LinkCalculation extends React.Component<linkCalculationProps, {rainMethodD
   }
 
   handleChange =(e:any) => {
-  this.props.updatePolarization(e.target.value)
+    
+    switch (e.target.id){
+    case 'Lat1' : if ( e.target.value >90 || e.target.value<-90 )
+    { this.setState({latitude1Error: 'Enter a number between -90 to 90'})}
+    else {this.updateLatLon(e)
+       this.setState({latitude1Error: ''}) }
+    break;
+    case 'Lat2' : if ( e.target.value >90 || e.target.value<-90 )
+    { this.setState({latitude2Error: 'Enter a number between -90 to 90'})}
+    else {this.updateLatLon(e)
+       this.setState({latitude2Error: ''}) }
+    break;
+    case 'Lon1' : if ( e.target.value >180 || e.target.value<-180 )
+    { this.setState({longitude1Error: 'Enter a number between -180 to 180'})}
+    else {this.updateLatLon(e)
+       this.setState({longitude1Error: ''}) }
+    break;
+    case 'Lon2' : if ( e.target.value >180 || e.target.value<-180 )
+    { this.setState({longitude2Error: 'Enter a number between -180 to 180'})}
+    else {this.updateLatLon(e)
+       this.setState({longitude2Error: ''}) }
+    break;
+   
+    }
   }
 
-  // AbsorptionAttW = () => {
-  //   fetch(BASE_URL+'/calculations/FSL/' + distance + '/' + frequency)
-  //   .then(res=>res.json())
-  //   .then (result => {this.props.FSL(result.free)})
-  // }
-
-  // AbsorptionAttOx =() => {
-  //   fetch(BASE_URL+'/calculations/FSL/' + distance + '/' + frequency)
-  //   .then(res=>res.json())
-  //   .then (result => {this.props.FSL(result.free)})
-  // }
-
-
-  render() {
+    render() {
+    return (
     
-    return <div style={{position: 'relative'}}>
+    <div >
+      
+      {!this.props.formView && 
 
-      {!this.props.formView && <form>
-          <div>
+        <div className = 'parent'>
+
+          <div >Site A
+          <form >
+          <label>Latitude:  <input className={this.state.latitude1Error.length>0 ? 'error' : 'input'} id='Lat1' type='number' onChange={(e: any) => {this.handleChange(e)} }/></label>
+          <div style={{fontSize:12, color:'red'}}> {this.state.latitude1Error}  </div></form> 
+          <form><label>Longitude: <input className={this.state.longitude1Error.length>0 ? 'error' : 'input'} id='Lon1' type='number' onChange={(e: any) => this.handleChange(e) } /></label><div style={{fontSize:12, color:'red'}}> {this.state.longitude1Error} </div>
+          </form> 
+          </div>
           
-            <br />Site A 
-            <br /> Site Id:
-                <label style={{ marginInlineStart: 20 }}> latitude
-                <input id='Lat1' type='number' onChange={(e: any) => this.updateLatLon(e)} />
-            </label>
-            <label style={{ marginInlineStart: 20 }}>longitude
-                <input id='Lon1' type='number' onChange={(e: any) => this.updateLatLon(e)} />
-            </label><br /><br />
-
+          <div>Site B
+          <form>
+          <label>Latitude: <input className={this.state.latitude2Error.length>0 ? 'error' : 'input'} id='Lat2' type='number' onChange={(e: any) => {this.handleChange(e) }} /></label><div style={{fontSize:12, color:'red'}}> {this.state.latitude2Error} </div></form>
+          <form><label>Longitude: <input className={this.state.longitude2Error.length>0 ? 'error' : 'input'}  id='Lon2' type='number' onChange={(e: any) => {this.handleChange(e) } }/></label><div style={{fontSize:12, color:'red'}}> {this.state.longitude2Error} </div></form>
           </div>
-          <div> <br />Site B<br /> Site Id:
-                <label style={{ marginInlineStart: 20 }}> latitude
-                <input id='Lat2' type='number' onChange={(e: any) => this.updateLatLon(e)} />
-            </label>
-            <label style={{ marginInlineStart: 20 }}>longitude
-                <input id='Lon2' type='number' onChange={(e: any) => this.updateLatLon(e)} />
-            </label>
-            <br />
+          
           </div>
-        </form>
         }
 
-<Paper style={{borderRadius:"0px"}}>
-       <div style={{ height:600, overflow:"auto"}}>
-            <Table stickyHeader size="small" aria-label="a dense table" >
-                <TableHead>
-                    <TableRow>
-                    <TableCell >{""}  </TableCell>
-                    <TableCell >{"Site A"}</TableCell>
-                    <TableCell > {""} </TableCell>
-                    <TableCell >{"Site B"}  </TableCell>
-                </TableRow>
-                </TableHead>
-              <TableBody>
-                <TableRow>
-                    <TableCell >{"Site Name"}  </TableCell>
-                    <TableCell >{this.props.siteA}</TableCell>
-                    <TableCell > {""} </TableCell>
-                    <TableCell >{this.props.siteB}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Latitude"}  </TableCell>
-                    <TableCell >{this.props.lat1  && this.LatLonToDMS(this.props.lat1)} </TableCell>
-                    <TableCell > {""} </TableCell>
-                    <TableCell >{this.props.lat2 && this.LatLonToDMS(this.props.lat2)}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Longitude"}  </TableCell>
-                    <TableCell >{this.props.lon1 && this.LatLonToDMS(this.props.lon1)}</TableCell>
-                    <TableCell > {""} </TableCell>
-                    <TableCell >{this.props.lon2 && this.LatLonToDMS(this.props.lon2)}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Azimuth"}  </TableCell>
-                    <TableCell >{""}</TableCell>
-                    <TableCell > {""} </TableCell>
-                    <TableCell >{""}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Average Mean Sea Level"}  </TableCell>
-                    <TableCell >{this.props.amslA + ' m'}</TableCell>
-                    <TableCell > {""} </TableCell>
-                    <TableCell >{this.props.amslB+ ' m'}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Antenna Height Above Ground"}  </TableCell>
-                    <TableCell >{this.props.aglA+ ' m'}</TableCell>
-                    <TableCell > {""} </TableCell>
-                    <TableCell >{this.props.aglB+ ' m'}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Distance"}  </TableCell>
-                    <TableCell >{""}</TableCell>
-                    <TableCell > {this.props.distance.toFixed(3)+ ' km'} </TableCell>
-                    <TableCell >{""}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Polarization"}  </TableCell>
-                    <TableCell >{""}</TableCell>
-                    <TableCell > {<form><input type='checkbox' id='Horizontal' value ="Horizontal" checked= {this.props.polarization==='Horizontal'} onClick= {(e: any) => this.props.updatePolarization(e.target.value)}></input>Horizontal<br />
-                    <input type='checkbox' id='Vertical' value ="Vertical" checked= {this.props.polarization==='Vertical'} onClick= {(e:any)=>{this.props.updatePolarization(e.target.value)}}></input>Vertical</form>} </TableCell>
-                    <TableCell >{""}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Frequency"}  </TableCell>
-                    <TableCell >{""}</TableCell>
-                    <TableCell > {<select onChange={(e) => this.props.updateFrequency(Number(e.target.value))}>
-                        <option value='' >Select Freq</option>
-                        <option value='7' >7 GHz</option>
-                        <option value='11' >11 GHz</option>
-                        <option value='15' >15 GHz</option>
-                        <option value='23' >23 GHz</option>
-                        <option value='26' >26 GHz</option>
-                        <option value='28' >28 GHz</option>
-                        <option value='38' >38 GHz</option>
-                        <option value='42' >42 GHz</option>
-                        <option value='80' >80 GHz</option>
-                        </select>} 
-                      </TableCell>
-                    <TableCell >{""}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Free Space Loss"}  </TableCell>
-                    <TableCell >{""}</TableCell>
-                    <TableCell > {this.props.fsl + ' dB'} </TableCell>
-                    <TableCell >{""}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Rain Model"}  </TableCell>
-                    <TableCell >{""}</TableCell>
-                    <TableCell > {<select onChange = {(e) => {e.target.value === 'itu' ? this.setState({ rainMethodDisplay: false}):this.setState({ rainMethodDisplay: true}) }}>
-                      <option >Select Rain Method</option>
-                      <option value='itu' >ITU-R P.837-7</option>
-                      <option value='manual'  >Specific Rain</option>
-                      </select>} </TableCell>
-                    <TableCell >{""} </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Rainfall Rate"}  </TableCell>
-                    <TableCell >{""}</TableCell>
-                    <TableCell > {<form><input type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => { this.props.updateRainValue(Number(e.target.value)) }}
-                    value={this.props.rainVal} disabled={this.state.rainMethodDisplay === false ? true : false}>
-                    </input>  mm/hr</form> } </TableCell>
-                    <TableCell >{""}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{"Rain Loss"}  </TableCell>
-                    <TableCell >{""}</TableCell>
-                    <TableCell > {this.props.rainAtt + ' dB'} </TableCell>
-                    <TableCell >{""}  </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell >{""}  </TableCell>
-                    <TableCell >{""}</TableCell>
-                    <TableCell > {<button style={{color: '#222', fontFamily:'Arial', boxAlign: 'center', display:'inline-block', insetInlineStart: '20' }}
-                    onClick = {(e) => this.buttonHandler()} >Calculate</button>} </TableCell>
-                    <TableCell >{""}  </TableCell>
-                </TableRow>
 
-                </TableBody>
-            </Table>
-            </div>
-        </Paper>
-      <ConnectionInfo />
+        <div className='container-1'>
+          <div>{<form><input type='checkbox' id='Annual' value ="Annual" checked= {this.state.worstmonth===false} onClick= {(e: any) => this.setState ({worstmonth: false})}></input>Annual
+                      <input style={{marginLeft:10}} type='checkbox' id='Worst Month' value ="Worst" checked= {this.state.worstmonth===true} onClick= {(e:any)=>this.setState ({worstmonth: true})}></input>WM</form>}</div>
+
+
+          <div className='column1'>
+            <div>&nbsp;</div>
+          <div >Site Name</div>
+          <div>Latitude</div>
+          <div>Longitude</div>
+          <div>Azimuth</div>
+          <div>Average Mean Sea Level</div>
+          <div>Antenna Height Above Ground</div>
+          <div>Distance</div>
+          <div style={{marginTop:20}}>Polarization</div>
+          <div style={{marginTop:20}}>Frequency</div>
+          <div>Free Space Loss</div>
+          <div style={{marginTop:10}}>Rain Model</div>
+          <div style={{marginTop:20}}>Rainfall Rate</div>
+          <div>Rain Loss</div>
+          <div>Oxygen Specific Attenuation</div>
+          <div>Water Vapor Specific Attenuation</div>
+          </div>
+        
+
+          <div className='middlecolumn'>
+          <div  >Site A</div>
+          <div> {this.props.siteA }</div>
+          <div> {this.props.lat1 && this.LatLonToDMS(this.props.lat1)}</div>
+          <div>{this.props.lon1 && this.LatLonToDMS(this.props.lon1)}</div>
+          <div>0</div>
+          <div>{this.props.amslA.toFixed(2)} m</div>
+          <div>{this.props.aglA.toFixed(2)} m</div>
+        
+
+          <div className='column2'>
+          <div>{this.props.distance.toFixed(3)} km</div>
+          <div>{<form><input type='checkbox' id='Horizontal' value ="Horizontal" checked= {this.props.polarization==='Horizontal'} onClick= {(e: any) => this.props.updatePolarization(e.target.value)}></input>Horizontal
+                      <input style={{marginLeft:10}} type='checkbox' id='Vertical' value ="Vertical" checked= {this.props.polarization==='Vertical'} onClick= {(e:any)=>{this.props.updatePolarization(e.target.value)}}></input>Vertical</form>}</div>
+          
+              <div> {<select className={this.state.frequencyError.length>0 ? 'error' : 'input'}  onChange={(e) => {this.props.updateFrequency(Number(e.target.value)); e.target.value==='0'? this.setState({frequencyError: 'select a frequency'}): this.setState({frequencyError:''})}}> 
+                      
+                      <option value='0' >Select Freq</option>
+                      <option value='7' >7 GHz</option>
+                      <option value='11' >11 GHz</option>
+                      <option value='15' >15 GHz</option>
+                      <option value='23' >23 GHz</option>
+                      <option value='26' >26 GHz</option>
+                      <option value='28' >28 GHz</option>
+                      <option value='38' >38 GHz</option>
+                      <option value='42' >42 GHz</option>
+                      <option value='80' >80 GHz</option>
+                      </select>} <div style={{fontSize:12, color:'red'}}>  {this.state.frequencyError} </div> </div>
+
+          <div>{this.props.fsl.toFixed(3)} dB</div>
+
+          <div> {<select className={this.state.rainMethodError.length>0 ? 'error' : 'input'} onChange = {(e) => {e.target.value === 'itu' ? this.setState({ rainMethodDisplay: false}):this.setState({ rainMethodDisplay: true}); e.target.value===''? this.setState({rainMethodError: 'select a Rain model'}): this.setState({rainMethodError:''}) }}>
+                        <option value='' >Select Rain Method</option>
+                        <option value='itu' >ITU-R P.837-7</option>
+                        <option value='manual'  >Specific Rain</option>
+                        </select>} <div style={{fontSize:12,color:'red'}}>{this.state.rainMethodError}</div>
+            </div> 
+            <div> {<form><input type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => { this.props.updateRainValue(Number(e.target.value)) }}
+                    value={this.props.rainVal} disabled={this.state.rainMethodDisplay === false ? true : false}>
+                    </input>  mm/hr  {this.state.showWM} {this.props.month}</form> } </div>
+          <div>{this.props.rainAtt.toFixed(3)} dB</div>
+          <div>{this.props.absorptionOxygen.toFixed(3)} dB</div>
+          <div>{this.props.absorptionWater.toFixed(3)} dB</div>
+          <div>{<button style={{color: '#222', fontFamily:'Arial', boxAlign: 'center', display:'inline-block', insetInlineStart: '20' , alignSelf:'center' }}
+                    onClick = {(e) => this.buttonHandler()} >Calculate</button>} </div>
+
+
+          </div>
+          </div>
+          <div className= 'middlecolumn'>
+          <div  >Site B</div>
+          <div> {this.props.siteB}</div>
+          <div> {this.props.lat2 && this.LatLonToDMS(this.props.lat2)}</div>
+          <div>{this.props.lon2 && this.LatLonToDMS(this.props.lon2)}</div>
+          <div>0</div>
+          <div>{this.props.amslB.toFixed(2)} m</div>
+          <div>{this.props.aglB.toFixed(2)} m</div>
+
+          
+          </div>
+
+
+        </div>
+
+        
+        <ConnectionInfo />
+        
         
         
         </div>
+      )
     }
-}
+    
+  }
 
 export default connect(mapProps, mapDispatch)(LinkCalculation);
