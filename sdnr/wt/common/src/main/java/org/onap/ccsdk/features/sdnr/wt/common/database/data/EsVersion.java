@@ -22,7 +22,6 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database.data;
 
 import java.text.ParseException;
-
 import org.eclipse.jdt.annotation.NonNull;
 
 
@@ -104,6 +103,9 @@ public class EsVersion {
         if (this.equals(v)) {
             return true;
         }
+        return this.isNewerThan(v);
+    }
+    public boolean isNewerThan(EsVersion v) {
         if (this.major > v.major) {
             return true;
         } else if (this.major < v.major) {
@@ -124,6 +126,10 @@ public class EsVersion {
         if (this.equals(v)) {
             return true;
         }
+        return this.isOlderThan(v);
+    }
+
+    public boolean isOlderThan(EsVersion v) {
         if (this.major < v.major) {
             return true;
         } else if (this.major > v.major) {

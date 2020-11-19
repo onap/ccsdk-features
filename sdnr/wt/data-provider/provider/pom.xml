@@ -155,8 +155,6 @@
                                 <argument>${basedir}/../../data-provider/setup/target/sdnr-dmt.jar</argument>
                                 <argument>-c</argument>
                                 <argument>pluginfile</argument>
-                                <argument>-v</argument>
-                                <argument>v3</argument>
                                 <argument>-of</argument>
                                 <argument>${project.build.directory}/EsInit.script</argument>
                             </arguments>
@@ -172,7 +170,7 @@
                     <clusterName>testCluster</clusterName>
                     <transportPort>9500</transportPort>
                     <httpPort>${databaseport}</httpPort>
-                    <version>7.6.1</version>
+                    <version>7.9.3</version>
                     <timeout>120</timeout>
                     <pathInitScript>${project.build.directory}/EsInit.script</pathInitScript>
                 </configuration>

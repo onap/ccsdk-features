@@ -29,20 +29,26 @@ public enum Release {
     EL_ALTO("el alto", "_v1", new EsVersion(2, 2, 0), new EsVersion(2, 2, 0)),
     FRANKFURT_R1("frankfurt-R1", "-v2", new EsVersion(6, 4, 3), new EsVersion(6, 8, 6)),
     FRANKFURT_R2("frankfurt-R2", "-v3", new EsVersion(7, 0, 1), new EsVersion(7, 6, 1)),
-    GUILIN_R1("guilin-R1", "-v4", new EsVersion(7,1,1), new EsVersion(7,6,1));
+    GUILIN_R1("guilin-R1", "-v4", new EsVersion(7,1,1), new EsVersion(7,6,1)),
+	HONOLULU_R1("honolulu-R1", "-v5", new EsVersion(7,1,1), new EsVersion(8,0,0), false);
 
-    public static final Release CURRENT_RELEASE = Release.GUILIN_R1;
+    public static final Release CURRENT_RELEASE = Release.HONOLULU_R1;
 
     private final String value;
     private final String dbSuffix;
     private final EsVersion minDbVersion;
     private final EsVersion maxDbVersion;
+    private final boolean includeEndVersion;
 
-    private Release(String s, String dbsuffix, EsVersion minDbVersion, EsVersion maxDbVersion) {
+	private Release(String s, String dbsuffix, EsVersion minDbVersion, EsVersion maxDbVersion) {
+		this(s, dbsuffix, minDbVersion, maxDbVersion, true);
+	}
+    private Release(String s, String dbsuffix, EsVersion minDbVersion, EsVersion maxDbVersion, boolean includeEnd) {
         this.value = s;
         this.dbSuffix = dbsuffix;
         this.minDbVersion = minDbVersion;
         this.maxDbVersion = maxDbVersion;
+        this.includeEndVersion = includeEnd;
     }
 
     @Override
@@ -83,25 +89,20 @@ public enum Release {
         return null;
     }
 
-    /**
-     * @return
-     */
     public String getDBSuffix() {
         return this.dbSuffix;
     }
 
-    /**
-     * @return
-     */
     public EsVersion getDBVersion() {
         return this.minDbVersion;
     }
 
-    /**
-     * @param dbVersion2
-     * @return
-     */
     public boolean isDbInRange(EsVersion dbVersion) {
-        return dbVersion.isNewerOrEqualThan(minDbVersion) && dbVersion.isOlderOrEqualThan(maxDbVersion);
+        if(this.includeEndVersion) {
+            return dbVersion.isNewerOrEqualThan(minDbVersion) && dbVersion.isOlderOrEqualThan(maxDbVersion);
+        }
+        else {
+            return dbVersion.isNewerOrEqualThan(minDbVersion) && dbVersion.isOlderThan(maxDbVersion);
+        }
     }
 }

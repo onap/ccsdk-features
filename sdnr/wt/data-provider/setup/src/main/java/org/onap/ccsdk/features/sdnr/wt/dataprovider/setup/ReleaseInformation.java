@@ -34,6 +34,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.elalto.ElAltoReleaseIn
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformationR2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin.GuilinReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.honolulu.HonoluluReleaseInformation;
 
 public abstract class ReleaseInformation {
 
@@ -142,6 +143,8 @@ public abstract class ReleaseInformation {
                 return new FrankfurtReleaseInformationR2();
             case GUILIN_R1:
                 return new GuilinReleaseInformation();
+            case HONOLULU_R1:
+                return new HonoluluReleaseInformation();
             default:
                 return null;
         }

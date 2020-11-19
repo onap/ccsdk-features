@@ -19,46 +19,27 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
+package org.onap.ccsdk.features.sdnr.wt.common.test;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import javax.servlet.ServletInputStream;
 
-/**
- * @author Michael Dürre
- *
- */
-public enum ReleaseGroup {
+public class ServletInputStreamFromByteArrayInputStream extends ServletInputStream {
 
-    EL_ALTO(Release.EL_ALTO), FRANKFURT(Release.FRANKFURT_R1, Release.FRANKFURT_R2), GUILIN(Release.GUILIN_R1), HONOLULU(Release.HONOLULU_R1);
+    // variables
+    private ByteArrayInputStream bis;
+    // end of variables
 
-    public static final ReleaseGroup CURRENT_RELEASE = HONOLULU;
-
-    private final List<Release> releases;
-
-    ReleaseGroup(Release... values) {
-        this.releases = new ArrayList<Release>();
-        if (values != null) {
-            for (Release r : values) {
-                this.releases.add(r);
-            }
-        }
+    // constructors
+    public ServletInputStreamFromByteArrayInputStream(byte[] data) {
+        bis = new ByteArrayInputStream(data);
     }
+    // end of constructors
 
-    /**
-     * @param dbVersion
-     * @return
-     */
-    public Release getLatestCompatibleRelease(EsVersion dbVersion) {
-        Release match = null;
-        for (Release r : this.releases) {
-            if (r.isDbInRange(dbVersion)) {
-                match = r;
-            }
-        }
-        return match;
+    @Override
+    public int read() throws IOException {
+        return bis.read();
     }
-
 
 }
