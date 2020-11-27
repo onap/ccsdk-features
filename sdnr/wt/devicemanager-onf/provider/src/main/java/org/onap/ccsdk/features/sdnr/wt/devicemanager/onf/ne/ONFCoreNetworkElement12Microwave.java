@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.Helper;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.OnfMicrowaveModel;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl.DeviceManagerOnfConfiguration;
@@ -38,8 +39,8 @@ import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.extension.g.Extension;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.logical.termination.point.g.Lp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -76,7 +77,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
 
     /**
      * Constructor
-     * 
+     *
      * @param acessor for device
      * @param serviceProvider to get services
      * @param onfMicrowaveModel handling ofmicrosoft model data
@@ -342,7 +343,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
     @NonNull
     private static List<Extension> getExtensionList(@Nullable Lp ltp) {
         if (ltp != null) {
-            return ltp.nonnullExtension();
+            return YangHelper.getList(ltp.nonnullExtension());
         } else {
             return EMPTYLTPEXTENSIONLIST;
         }

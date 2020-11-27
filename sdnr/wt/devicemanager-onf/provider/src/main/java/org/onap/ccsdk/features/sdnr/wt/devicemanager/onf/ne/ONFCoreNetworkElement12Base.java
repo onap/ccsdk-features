@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.NetworkElementCoreData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.WrapperPTPModelRev170208;
@@ -193,12 +195,12 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
         List<Lp> res = Collections.synchronizedList(new ArrayList<Lp>());
 
         if (ne != null) {
-            List<Ltp> ltpRefList = ne.getLtp();
+            Collection<Ltp> ltpRefList = YangHelper.getCollection(ne.getLtp());
             if (ltpRefList == null) {
                 LOG.debug("DBRead NE-Interfaces: null");
             } else {
                 for (Ltp ltRefListE : ltpRefList) {
-                    List<Lp> lpList = ltRefListE.getLp();
+                    Collection<Lp> lpList = YangHelper.getCollection(ltRefListE.getLp());
                     if (lpList == null) {
                         LOG.debug("DBRead NE-Interfaces Reference List: null");
                     } else {
@@ -265,7 +267,7 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
 
     /**
      * Reading problems for the networkElement V1.2
-     * 
+     *
      * @param resultList to collect the problems
      * @return resultList with additonal problems
      */
@@ -290,8 +292,8 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
             if (problems == null) {
                 LOG.debug("DBRead no NetworkElementCurrentProblems12");
             } else {
-                for (org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.network.element.current.problems.g.CurrentProblemList problem : problems
-                        .nonnullCurrentProblemList()) {
+                for (org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.network.element.current.problems.g.CurrentProblemList problem : YangHelper
+                        .getCollection(problems.nonnullCurrentProblemList())) {
                     resultList.add(nodeId, problem.getSequenceNumber(), problem.getTimeStamp(),
                             problem.getObjectReference(), problem.getProblemName(),
                             WrapperMicrowaveModelRev181010.mapSeverity(problem.getProblemSeverity()));

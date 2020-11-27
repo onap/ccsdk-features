@@ -18,16 +18,17 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.equipment;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.Equipment;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.equipment.g.ContainedHolder;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.equipment.g.ManufacturedThing;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.manufactured.thing.g.EquipmentInstance;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.manufactured.thing.g.EquipmentType;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.manufactured.thing.g.ManufacturerProperties;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Inventory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.InventoryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +91,7 @@ public class ExtendedEquipment {
             inventoryBuilder.setUuid(getEquipment().getUuid().getValue());
             // -- String list with ids of holders
             List<String> containerHolderKeyList = new ArrayList<>();
-            List<ContainedHolder> containerHolderList = getEquipment().getContainedHolder();
+            Collection<ContainedHolder> containerHolderList = YangHelper.getCollection(getEquipment().getContainedHolder());
             if (containerHolderList != null) {
                 for (ContainedHolder containerHolder : containerHolderList) {
                     containerHolderKeyList.add(containerHolder.getUuid().getValue());

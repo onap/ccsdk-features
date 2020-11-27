@@ -17,8 +17,9 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac;
 
-import java.util.List;
+import java.util.Collection;
 import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -60,7 +61,7 @@ public class WrapperPTPModelRev170208 {
                 sb.append(" does support synchronisation.\n");
                 InstanceList ptpInstance = readPTPClockInstances(acessor);
                 if (ptpInstance != null) {
-                    List<PortDsList> dsList = ptpInstance.getPortDsList();
+                    Collection<PortDsList> dsList = YangHelper.getCollection(ptpInstance.getPortDsList());
                     if (dsList != null) {
                         int t = 0;
                         for (PortDsList portDs : dsList) {

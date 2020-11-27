@@ -4,7 +4,7 @@ module data-provider-units {
     namespace "urn:opendaylight:params:xml:ns:yang:data-provider-units";
     prefix unit;
 
-    import data-provider-v2 {
+    import data-provider {
         prefix uxp;
     }
 

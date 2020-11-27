@@ -20,13 +20,14 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 import java.util.Date;
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ConnectionlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultcurrentEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Inventory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementConnectionEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.PmdataEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
 
 public interface DataProvider extends ArchiveCleanProvider {
 
@@ -72,6 +73,13 @@ public interface DataProvider extends ArchiveCleanProvider {
     void writeInventory(Inventory internalEquipment);
 
     /**
+    * write GUI Cut through data to database
+    *
+    * @param gcData
+    */
+    void writeGuiCutThroughData(Guicutthrough gcData);
+
+    /**
      *
      * @param networkElementConnectionEntitiy to wirte to DB
      * @param nodeId Id for this DB element
@@ -102,10 +110,7 @@ public interface DataProvider extends ArchiveCleanProvider {
     /**
      * @param list
      */
-    void  doWritePerformanceData(List<PmdataEntity> list);
-
-    void doWritePerformanceData2(List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity> list);
-
+    void doWritePerformanceData(List<PmdataEntity> list);
 
     /**
      * @return raw database client

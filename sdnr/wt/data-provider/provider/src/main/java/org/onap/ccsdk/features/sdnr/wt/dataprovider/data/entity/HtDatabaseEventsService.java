@@ -40,25 +40,28 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ConnectionLogStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ConnectionlogBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ConnectionlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultcurrentBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultcurrentEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultlogBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.GranularityPeriodType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Inventory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.InventoryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.InventoryEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementConnectionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementConnectionEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.PmdataEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.PmdataEntityBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GranularityPeriodType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GuicutthroughBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GuicutthroughEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntityBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,10 +82,9 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     private EsDataObjectReaderWriter2<FaultlogEntity> eventRWFaultLogDB;
     private EsDataObjectReaderWriter2<ConnectionlogEntity> eventRWConnectionLogDB;
     private final EsDataObjectReaderWriter2<NetworkElementConnectionEntity> networkelementConnectionDB;
+    private final EsDataObjectReaderWriter2<GuicutthroughEntity> guiCutThroughDB;
     private final EsDataObjectReaderWriter2<PmdataEntity> pmData15mDB;
     private final EsDataObjectReaderWriter2<PmdataEntity> pmData24hDB;
-    private final EsDataObjectReaderWriter2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity> pmData15mDBv2;
-    private final EsDataObjectReaderWriter2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity> pmData24hDBv2;
 
     @SuppressWarnings("unused")
     private final ElasticSearchDataProvider dataProvider;
@@ -118,20 +120,14 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
                     NetworkElementConnectionEntity.class, NetworkElementConnectionBuilder.class, true)
                             .setEsIdAttributeName("_id");
 
+            guiCutThroughDB = new EsDataObjectReaderWriter2<>(client, Entity.Guicutthrough,
+                    GuicutthroughEntity.class, GuicutthroughBuilder.class);
+
             pmData15mDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance15min, PmdataEntity.class,
                     PmdataEntityBuilder.class);
 
             pmData24hDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance24h, PmdataEntity.class,
                     PmdataEntityBuilder.class);
-
-            pmData15mDBv2 = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance15min,
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity.class,
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntityBuilder.class);
-
-            pmData24hDBv2 = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance24h,
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity.class,
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntityBuilder.class);
-
 
         } catch (Exception e) {
             LOG.error("Can not start database client. Exception: {}", e);
@@ -522,44 +518,10 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         });
 
     }
-    @Override
-    public void doWritePerformanceData2(
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.PmdataEntity> list) {
 
-        list.forEach(elem -> {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.GranularityPeriodType
-            granularityPeriod = nnGetGranularityPeriodType2(elem.getGranularityPeriod());
-            //_id": "Sim12600/LP-MWPS-TTP-01/2017-07-04T15:15:00.0+00:00"
-            StringBuffer id = new StringBuffer();
-            DateAndTime date = elem.getTimeStamp();
-            id.append(elem.getNodeName());
-            id.append("/");
-            id.append(elem.getUuidInterface());
-            id.append("/");
-            id.append(date != null ? date.getValue() : "null");
-
-            switch (granularityPeriod) {
-                case Period15Min:
-                    pmData15mDB.write(elem, id.toString());
-                    break;
-                case Period24Hours:
-                    pmData24hDB.write(elem, id.toString());
-                    break;
-                case Unknown:
-                default:
-                    LOG.debug("Unknown granularity {} id {}", granularityPeriod, id);
-                    break;
-            }
-        });
-    }
     @NonNull
     GranularityPeriodType nnGetGranularityPeriodType(@Nullable GranularityPeriodType granularityPeriod) {
         return granularityPeriod != null ? granularityPeriod : GranularityPeriodType.Unknown;
-    }
-    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.GranularityPeriodType nnGetGranularityPeriodType2(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.@Nullable GranularityPeriodType granularityPeriod) {
-        return granularityPeriod != null ? granularityPeriod :
-            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.v2.rev200702.GranularityPeriodType.Unknown;
     }
 
     @Override
@@ -567,6 +529,9 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         return this.client;
     }
 
-
+    @Override
+    public void writeGuiCutThroughData(Guicutthrough gcData) {
+        guiCutThroughDB.write(gcData, null);
+    }
 
 }

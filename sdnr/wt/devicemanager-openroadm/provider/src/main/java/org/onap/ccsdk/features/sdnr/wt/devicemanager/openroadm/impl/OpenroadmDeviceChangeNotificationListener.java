@@ -31,8 +31,8 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.CreateTe
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.OrgOpenroadmDeviceListener;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.OtdrScanResult;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.change.notification.Edit;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SourceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.slf4j.Logger;

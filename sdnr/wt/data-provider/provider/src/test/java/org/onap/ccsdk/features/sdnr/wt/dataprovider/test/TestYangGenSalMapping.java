@@ -45,19 +45,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev15
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.parameters.OdlHelloMessageCapabilitiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPasswordBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SortOrder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Filter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.PaginationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Sortorder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.pmdata15m.entity.PerformanceDataBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.DataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SortOrder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.PaginationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Sortorder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.pmdata15m.entity.PerformanceDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.DataBuilder;
 
 public class TestYangGenSalMapping {
 
@@ -106,17 +106,17 @@ public class TestYangGenSalMapping {
         HostInfo[] hostInfo = HostInfoForTest.get();
         HtDatabaseClient db = HtDatabaseClient.getClient(hostInfo);
 
-        EsDataObjectReaderWriter2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data> dataRW =
+        EsDataObjectReaderWriter2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data> dataRW =
                 new EsDataObjectReaderWriter2<>(db, Entity.Inventoryequipment,
-                        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data.class);
+                        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data.class);
         if (!db.isExistsIndex(idx)) {
             db.createIndex(new CreateIndexRequest(idx));
         }
-        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data d1;
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data d1;
         d1 = getInventoryDataBuilder("MyDescription", 23L).build();
         String id = dataRW.write(d1, null);
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data d2;
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data d2;
         d2 = dataRW.read(id);
 
         out(d2.toString());
@@ -277,9 +277,9 @@ public class TestYangGenSalMapping {
         HostInfo[] hostInfo = HostInfoForTest.get();
         HtDatabaseClient dbClient = HtDatabaseClient.getClient(hostInfo);
 
-        EsDataObjectReaderWriter2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> pm15mRW =
+        EsDataObjectReaderWriter2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> pm15mRW =
                 new EsDataObjectReaderWriter2<>(dbClient, Entity.Historicalperformance15min,
-                        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data.class);
+                        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data.class);
         pm15mRW.setEsIdAttributeName("_nodeName");
 
         ReadPmdata15mListInputBuilder inputBuilder = new ReadPmdata15mListInputBuilder();
@@ -298,7 +298,7 @@ public class TestYangGenSalMapping {
         QueryBuilder query = fromFilter(input.getFilter()).from((page - 1) * pageSize).size(pageSize);
         setSortOrder(query, input.getSortorder());
 
-        SearchResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> result =
+        SearchResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> result =
                 pm15mRW.doReadAll(query);
 
         out("Found: " + result.getHits().size());
@@ -316,11 +316,11 @@ public class TestYangGenSalMapping {
         HostInfo[] hostInfo = HostInfoForTest.get();
         HtDatabaseClient dbClient = HtDatabaseClient.getClient(hostInfo);
 
-        EsDataObjectReaderWriter2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data> mediatorserverRW;
+        EsDataObjectReaderWriter2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data> mediatorserverRW;
         mediatorserverRW = new EsDataObjectReaderWriter2<>(dbClient, Entity.MediatorServer,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data.class)
+                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data.class)
                         .setWriteInterface(
-                                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.MediatorServerEntity.class)
+                                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MediatorServerEntity.class)
                         .setEsIdAttributeName("_id");
 
         CreateMediatorServerInputBuilder inputBuilder = new CreateMediatorServerInputBuilder();
@@ -356,10 +356,10 @@ public class TestYangGenSalMapping {
         return nameofCurrMethod;
     }
 
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.DataBuilder getInventoryDataBuilder(
+    private org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.DataBuilder getInventoryDataBuilder(
             String description, long treeLevel) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.DataBuilder dataBuilder =
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.DataBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.DataBuilder dataBuilder =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.DataBuilder();
         dataBuilder.setDescription(description);
         dataBuilder.setTreeLevel(treeLevel);
         return dataBuilder;
@@ -427,8 +427,8 @@ public class TestYangGenSalMapping {
 
     private static void setPagination(ReadPmdata15mListOutputBuilder outputBuilder, long page, long pageSize,
             long totalSize) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Pagination value =
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.PaginationBuilder()
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Pagination value =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.PaginationBuilder()
                         .setPage(BigInteger.valueOf(page)).setSize(pageSize).setTotal(BigInteger.valueOf(totalSize))
                         .build();
         outputBuilder.setPagination(value);
