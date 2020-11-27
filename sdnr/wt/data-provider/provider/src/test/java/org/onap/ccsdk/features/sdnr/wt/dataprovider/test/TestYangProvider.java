@@ -21,11 +21,15 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
@@ -36,22 +40,16 @@ import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Set;
-
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.common.test.ServletOutputStreamToStringWriter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangFileProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangFilename;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangSchemaHttpServlet;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class TestYangProvider {
 
@@ -129,14 +127,7 @@ public class TestYangProvider {
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
         when(req.getRequestURI()).thenReturn("/yang-schema/module1");
-        StringWriter out = new StringWriter();
-        ServletOutputStream printOut = new ServletOutputStream() {
-
-            @Override
-            public void write(int arg0) throws IOException {
-                out.write(arg0);
-            }
-        };
+        ServletOutputStreamToStringWriter printOut = new ServletOutputStreamToStringWriter();
         when(resp.getOutputStream()).thenReturn(printOut);
         servlet.doGet(req, resp);
         verify(resp).setStatus(200);
@@ -151,14 +142,7 @@ public class TestYangProvider {
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
         when(req.getRequestURI()).thenReturn("/yang-schema/module1/2020-01-01");
-        StringWriter out = new StringWriter();
-        ServletOutputStream printOut = new ServletOutputStream() {
-
-            @Override
-            public void write(int arg0) throws IOException {
-                out.write(arg0);
-            }
-        };
+        ServletOutputStreamToStringWriter printOut = new ServletOutputStreamToStringWriter();
         when(resp.getOutputStream()).thenReturn(printOut);
         servlet.doGet(req, resp);
         verify(resp).sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -172,14 +156,7 @@ public class TestYangProvider {
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
         when(req.getRequestURI()).thenReturn("/yang-schema/module2/2010-03-01");
-        StringWriter out = new StringWriter();
-        ServletOutputStream printOut = new ServletOutputStream() {
-
-            @Override
-            public void write(int arg0) throws IOException {
-                out.write(arg0);
-            }
-        };
+        ServletOutputStreamToStringWriter printOut = new ServletOutputStreamToStringWriter();
         when(resp.getOutputStream()).thenReturn(printOut);
         servlet.doGet(req, resp);
         verify(resp).setStatus(200);

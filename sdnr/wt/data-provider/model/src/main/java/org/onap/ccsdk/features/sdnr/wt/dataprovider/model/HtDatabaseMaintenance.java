@@ -19,7 +19,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.MaintenanceEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
 
 /**
  * @author herbert

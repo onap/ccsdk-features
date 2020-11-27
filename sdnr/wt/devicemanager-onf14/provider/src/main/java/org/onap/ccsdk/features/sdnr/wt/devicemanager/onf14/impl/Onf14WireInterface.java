@@ -26,28 +26,32 @@ import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author alexs
+ *
+ */
 public class Onf14WireInterface {
 
     private static final Logger log = LoggerFactory.getLogger(Onf14WireInterface.class);
 
-    public static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType mapSeverity(
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType mapSeverity(
             Class<? extends SEVERITYTYPE> severity) {
 
         if (severity != null) {
             if (severity.getTypeName() == SEVERITYTYPECRITICAL.class.getName()) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.Critical;
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType.Critical;
             } else if (severity.getTypeName() == SEVERITYTYPEMAJOR.class.getName()) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.Major;
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType.Major;
             } else if (severity.getTypeName() == SEVERITYTYPEMINOR.class.getName()) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.Minor;
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType.Minor;
             } else if (severity.getTypeName() == SEVERITYTYPEWARNING.class.getName()) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.Warning;
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType.Warning;
             } else if (severity.getTypeName() == SEVERITYTYPENONALARMED.class.getName()) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.NonAlarmed;
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType.NonAlarmed;
             }
         }
 
-        return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.NonAlarmed;
+        return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType.NonAlarmed;
     }
 
 

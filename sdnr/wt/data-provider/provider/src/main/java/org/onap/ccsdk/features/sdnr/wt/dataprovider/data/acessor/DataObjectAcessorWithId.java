@@ -22,7 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

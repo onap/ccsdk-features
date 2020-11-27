@@ -20,8 +20,8 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalSeverity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Fault;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultcurrentEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Fault;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentEntity;
 
 public class FaultEntityManager {
 

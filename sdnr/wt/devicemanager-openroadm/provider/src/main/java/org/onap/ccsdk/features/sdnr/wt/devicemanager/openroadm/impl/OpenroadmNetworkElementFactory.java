@@ -22,7 +22,6 @@
 
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl;
 
-import java.util.List;
 import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
@@ -48,9 +47,7 @@ public class OpenroadmNetworkElementFactory implements NetworkElementFactory {
     // public methods
     @Override
     public Optional<NetworkElement> create(NetconfAccessor acessor, DeviceManagerServiceProvider serviceProvider) {
-        List<String> capabilities = acessor.getCapabilites().getCapabilities();
 
-        capabilities.forEach(capability -> log.info("Capabilities for element are :{}", capability));
         if (acessor.getCapabilites().isSupportingNamespace(OrgOpenroadmDevice.QNAME)) {
             log.info("Create OpenRoadm device {} ", OpenroadmNetworkElement.class.getName());
             log.info("Node Id read by Acessor {}:", acessor.getNodeId().getValue());

@@ -4,7 +4,7 @@ module data-provider-openroadm-pm-types {
     namespace "urn:opendaylight:params:xml:ns:yang:data-provider-openroadm-pm-types";
     prefix pmt;
 
-    import data-provider-v2 {
+    import data-provider {
         prefix uxp;
     }
 
