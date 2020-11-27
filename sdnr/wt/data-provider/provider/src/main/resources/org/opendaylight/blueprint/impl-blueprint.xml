@@ -27,8 +27,7 @@
            xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" odl:use-default-for-reference-types="true">
 
     <reference id="rpcProviderService"
-               interface="org.opendaylight.mdsal.binding.api.RpcProviderService"
-               odl:type="default"/>
+               interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
     <reference id="bundleService"
                 interface="org.apache.karaf.bundle.core.BundleService" />
 

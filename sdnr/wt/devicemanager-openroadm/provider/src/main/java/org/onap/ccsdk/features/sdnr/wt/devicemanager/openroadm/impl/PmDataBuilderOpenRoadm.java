@@ -22,7 +22,10 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.rev191129.HistoricalPmList;
@@ -30,11 +33,11 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.rev191129.historical.p
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.rev191129.historical.pm.list.HistoricalPmEntry;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.rev191129.historical.pm.val.group.Measurement;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev191129.PmGranularity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.GranularityPeriodType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.PmdataEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.PmdataEntityBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.pmdata.entity.PerformanceData;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.pmdata.entity.PerformanceDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GranularityPeriodType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntityBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.pmdata.entity.PerformanceData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.pmdata.entity.PerformanceDataBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,10 +74,10 @@ public class PmDataBuilderOpenRoadm {
     // Build PM entity for writing into the database
     public List<PmdataEntity> buildPmDataEntity(HistoricalPmList historicalPmEnitityList) {
         List<PmdataEntity> pmEntitiyList = new ArrayList<>();
-        List<HistoricalPmEntry> pmDataEntryList = historicalPmEnitityList.getHistoricalPmEntry();
+        Collection<HistoricalPmEntry> pmDataEntryList = YangHelper.getCollection(historicalPmEnitityList.getHistoricalPmEntry());
         for (HistoricalPmEntry pmDataEntry : pmDataEntryList) {
             pmDataBuilder.setUuidInterface(pmDataEntry.getPmResourceType().getName());
-            List<HistoricalPm> historicalPmList = pmDataEntry.getHistoricalPm();
+            Collection<HistoricalPm> historicalPmList = YangHelper.getCollection(pmDataEntry.getHistoricalPm());
             for (HistoricalPm historicalPm : historicalPmList) {
                 log.info("PmName:{}", historicalPm.getType());
                 this.pmDataBuilder.setScannerId(historicalPm.getType().getName());
@@ -92,7 +95,7 @@ public class PmDataBuilderOpenRoadm {
 
     // private methods
     private void writeperformanceData(HistoricalPm historicalPm) {
-        List<Measurement> measurementList = historicalPm.getMeasurement();
+        Collection<Measurement> measurementList = YangHelper.getCollection(historicalPm.getMeasurement());
 
         for (Measurement measurementData : measurementList) {
             this.pmDataBuilder.setGranularityPeriod(mapGranularityPeriod(measurementData.getGranularity()))
@@ -110,7 +113,7 @@ public class PmDataBuilderOpenRoadm {
     private PerformanceData getPerformancedata(Measurement measurementData) {
         PerformanceData performanceData;
         PerformanceDataBuilder performanceDataBuilder = new PerformanceDataBuilder();
-        performanceData = performanceDataBuilder.setCses(measurementData.getBinNumber())
+        performanceData = performanceDataBuilder.setCses(YangHelper2.getInteger(measurementData.getBinNumber()))
                 .setSes(measurementData.getPmParameterValue().getUint64().intValue()).build();
         return performanceData;
     }

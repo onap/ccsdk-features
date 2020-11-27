@@ -20,7 +20,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.equipment;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.NetworkElementCoreData;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.OnfInterfacePac;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.WrapperMicrowaveModelRev181010;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
@@ -84,7 +84,7 @@ public class WrapperEquipmentPacRev170402 implements OnfInterfacePac {
                 LOG.debug("DBRead Id {} no {} name {}", interfacePacUuid, clazzProblems, clazzProblems.getName());
             } else {
                 // -- Specific part 3
-                for (CurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
+                for (CurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
                     resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                             interfacePacUuid.getValue(), problem.getProblemName(),
                             WrapperMicrowaveModelRev181010.mapSeverity(problem.getProblemSeverity()));

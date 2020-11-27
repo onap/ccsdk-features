@@ -21,15 +21,14 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-
 import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.DbFilter;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.BoolQueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
@@ -39,11 +38,14 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor.DataObjectAcessorPm;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SortOrder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Filter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Pagination;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Sortorder;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SortOrder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Pagination;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Sortorder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +66,7 @@ public class QueryByFilter {
 
     /**
      * Process input from RPC into Queries to database
-     * 
+     *
      * @param input Input from RPC, for test it could be null
      */
     public QueryByFilter(EntityInput input) {
@@ -74,13 +76,13 @@ public class QueryByFilter {
             @Nullable
             Pagination pagination = input.getPagination();
             if (pagination != null) {
-                BigInteger pageOrNull = pagination.getPage();
+                @Nullable Uint64 pageOrNull = YangHelper2.getUint64(pagination.getPage());
                 if (pageOrNull != null) {
                     page = pageOrNull.longValue();
                 }
-                Long pageSizeOrNull = pagination.getSize();
+                @Nullable Uint32 pageSizeOrNull = YangHelper2.getUint32(pagination.getSize());
                 if (pageSizeOrNull != null) {
-                    pageSize = pageSizeOrNull;
+                    pageSize = pageSizeOrNull.longValue();
                 }
             }
         }
@@ -93,10 +95,10 @@ public class QueryByFilter {
         if (fromPage < 0 || pageSize > 10000)
             throw new IllegalArgumentException("mismatching input parameters. From:" + fromPage + " size:" + pageSize);
 
-        filterList = input.getFilter();
+        filterList = YangHelper.getList(input.getFilter());
         if (filterList == null)
             filterList = emptyFilterList;
-        sortOrder = input.getSortorder();
+        sortOrder = YangHelper.getList(input.getSortorder());
         if (sortOrder == null)
             sortOrder = emptySortOrderList;
 

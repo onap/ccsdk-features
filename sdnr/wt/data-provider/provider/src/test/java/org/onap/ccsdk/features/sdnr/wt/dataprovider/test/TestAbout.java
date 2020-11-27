@@ -21,25 +21,22 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet;
-
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.common.test.ServletOutputStreamToByteArrayOutputStream;
+import org.onap.ccsdk.features.sdnr.wt.common.test.ServletOutputStreamToStringWriter;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet;
 
 public class TestAbout {
 
@@ -83,20 +80,13 @@ public class TestAbout {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getRequestURI()).thenReturn("/about");
-        StringWriter out = new StringWriter();
-        ServletOutputStream printOut = new ServletOutputStream() {
-
-            @Override
-            public void write(int arg0) throws IOException {
-                out.write(arg0);
-            }
-        };
+        ServletOutputStreamToStringWriter printOut = new ServletOutputStreamToStringWriter();
         when(response.getOutputStream()).thenReturn(printOut);
         servlet.doGet(request, response);
         verify(response).setStatus(200);
         verify(response).setContentType("text/plain");
-        System.out.println(out.getBuffer().toString());
-        assertTrue(out.getBuffer().length() > 0);
+        System.out.println(printOut.getStringWriter().getBuffer().toString());
+        assertTrue(printOut.getStringWriter().getBuffer().length() > 0);
     }
 
     @Test
@@ -105,19 +95,12 @@ public class TestAbout {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getRequestURI()).thenReturn("/about/test.bmp");
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ServletOutputStream printOut = new ServletOutputStream() {
-
-            @Override
-            public void write(int arg0) throws IOException {
-                out.write(arg0);
-            }
-        };
+        ServletOutputStreamToByteArrayOutputStream printOut = new ServletOutputStreamToByteArrayOutputStream();
         when(response.getOutputStream()).thenReturn(printOut);
         servlet.doGet(request, response);
         verify(response).setStatus(200);
         verify(response).setContentType("image/bmp");
-        assertTrue(out.size() > 0);
+        assertTrue(printOut.getByteArrayOutputStream().size() > 0);
     }
 
 

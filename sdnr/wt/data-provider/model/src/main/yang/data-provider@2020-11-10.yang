@@ -10,6 +10,13 @@ module data-provider {
       "RFC 6991: Common YANG Data Types.";
   }
 
+  import org-openroadm-pm-types {
+    prefix org-openroadm-pm-types;
+    revision-date 2019-11-29;
+    reference
+      "OpenROADM: YANG definitions of performance management types";
+  }
+  
   organization
     "highstreet technologies GmbH";
   contact
@@ -34,6 +41,13 @@ module data-provider {
      See the License for the specific language governing permissions and
      limitations under the License.";
 
+  revision 2020-11-10 {
+      description
+        "Support for GUI Cut through and V2 PM model";
+      reference
+        "https://jira.onap.org/browse/SDNC-1396";
+  }
+  
   revision 2019-08-01 {
     description
       "Initial revision";
@@ -85,6 +99,10 @@ module data-provider {
       enum maintenancemode {
         description
           "list of maintenance setting";
+      }
+      enum guicutthrough {
+        description
+           "list of GUI Cut through entries";
       }
     }
     description
@@ -287,6 +305,22 @@ module data-provider {
       "The enumeration with the options for granularity period of the
        performance data similar to g.874.1-model";
   }
+  
+  typedef entity-type {
+      type enumeration {
+        enum device {
+          description
+            "none";
+        }
+        enum ltp {
+          description
+            "none";
+        }
+      }
+      description
+        "The enumeration with the type of requested information";
+    }
+
 
   // --- grouping and builder-container
 
@@ -944,6 +978,86 @@ module data-provider {
     }
   }
 
+  identity performance-measurement-type-id {
+    description
+      "Base identity for perforamnce measurement types. A unique identification 
+       of the performance measurment value, not including the resource. 
+       Different resources can share performance measuement types. If the 
+       resource reports the same performance measurment type, it is to be 
+       considered to be the same performance measurment. 
+
+       This identity is abstract and MUST NOT be used for performence 
+       mesurement.";
+  }
+
+  identity performance-measurement-unit-id {
+    description
+      "Base identity for perforamnce measurement units. 
+
+       This identity is abstract and MUST NOT be used for performence 
+       mesurement.";
+  }
+
+  typedef performance-measurement-type-id {
+    type identityref {
+      base performance-measurement-type-id;
+    }
+    description
+      "Identifies an performance-measurement type. The description of the 
+       performance measurement type id MUST indicate if the performance 
+       measurement type is abstract or not. An abstract performance measurement 
+       type is used as a base for other performance measurement type ids
+       and will not be used as a value for an performance measurement or be 
+       present in the performance measurement inventory.";
+  }
+
+  typedef performance-measurement-unit-id {
+    type identityref {
+      base performance-measurement-unit-id;
+    }
+    description
+      "Identifies an performance-measurement unit. The description of the 
+       performance measurement unit id MUST indicate if the performance 
+       measurement unit is abstract or not. An abstract performance measurement 
+       unit is used as a base for other performance measurement unit ids
+       and will not be used as a value for an performance measurement or be 
+       present in the performance measurement inventory.";
+  }
+
+  grouping pm-measurement-grp {
+    leaf pm-key {
+      type performance-measurement-type-id;
+      description
+        "The local identifier of a pm-measurement object.";
+    }
+    leaf pm-value {
+      type org-openroadm-pm-types:pm-data-type;
+      mandatory true;
+      description
+        "The performance measurement value, measured in a certain interval.";
+    }
+    leaf pm-unit {
+      type performance-measurement-unit-id;
+      description
+        "A represention of the unit og the pm-value.";
+    }
+    description 
+      "An abstract object class representing a key-value pair for 
+       pm-measurement.";
+  }
+
+  grouping pmdata-grp {
+    list measurement {
+      key pm-key;
+      uses pm-measurement-grp;
+      description 
+        "An abstract list of perfromance mesurement values.";
+    }
+    description 
+      "An abstract object class containing a list of perfromance mesurement 
+       values.";
+  }
+
   container pmdata-entity {
     description
       "builder";
@@ -951,6 +1065,7 @@ module data-provider {
     container performance-data {
       uses pmdata-microwave;
       uses pmdata-ethernet;
+      uses pmdata-grp;
       description
         "An object combining different performance monitoring data.";
     }
@@ -961,6 +1076,7 @@ module data-provider {
     container performance-data {
       uses pmdata-microwave;
       uses pmdata-ethernet;
+      uses pmdata-grp;
       description
         "An object combining different performance monitoring data.";
     }
@@ -973,6 +1089,7 @@ module data-provider {
     container performance-data {
       uses pmdata-microwave;
       uses pmdata-ethernet;
+      uses pmdata-grp;
       description
         "An object combining different performance monitoring data.";
     }
@@ -1284,6 +1401,33 @@ module data-provider {
     uses pagination-output-g;
   }
 
+  grouping guicutthrough-entity {
+      leaf id {
+          type string;
+          mandatory true;
+          description
+            "Unique database id, node-id/uuid";
+      }
+      leaf name {
+        type string;
+        description
+          "Mountpoint Name";
+      }
+      leaf weburi {
+        type string;
+        description
+          "The URI of the system Web UI.";
+      }
+      description
+        "An object class defining the information for invoking GUI cut through to the device.";
+  }  
+
+    container guicutthrough {
+      description
+        "builder";
+      uses guicutthrough-entity;
+    }
+    
   // --- rpc
 
   rpc read-faultcurrent-list {
@@ -1671,4 +1815,24 @@ module data-provider {
       }
     }
   }
+  
+  rpc read-gui-cut-through-entry {
+      description
+        "Get GUI cut through entry according to filter";
+      input {
+        uses entity-input;
+      }
+      output {
+        container pagination {
+          uses pagination-output-g;
+          description
+            "The pagination details used by the provider to filter the data.";
+        }
+        list data {
+          uses guicutthrough-entity;
+          description
+            "The output data as list of found GUI Cut through entities";
+        }
+      }
+    }
 }

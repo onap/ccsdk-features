@@ -1,4 +1,4 @@
-/*
+/**
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
@@ -15,32 +15,3 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.types;
-
-import org.eclipse.jdt.annotation.Nullable;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-
-/**
- * Add specific constructor
- */
-public class EventlogNotificationBuilder extends EventlogBuilder {
-
-    public EventlogNotificationBuilder(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
-            @Nullable String objectId, @Nullable String attributeName, @Nullable String newValue) {
-
-        setNodeId(nodeId.getValue());
-        if (counter != null) {
-            setCounter(counter);
-        }
-        if (timeStamp != null) {
-            setTimestamp(timeStamp);
-        }
-        setObjectId(objectId);
-        setAttributeName(attributeName);
-        setNewValue(newValue);
-
-    }
-
-}

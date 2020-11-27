@@ -31,8 +31,8 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.responses.AggregationEntr
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryByFilter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryResult;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EntityInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public class DataObjectAcessorPm<T extends DataObject> extends DataObjectAcessor
 
     /**
      * get aggregated list of ltps for filter NODE_KEY
-     * 
+     *
      * @param input
      * @return
      * @throws IOException
@@ -105,7 +105,7 @@ public class DataObjectAcessorPm<T extends DataObject> extends DataObjectAcessor
 
     /**
      * get aggregated devices list
-     * 
+     *
      * @param input filter should be empty/no filter handled, only sortorder for KEY ('node-name')
      * @return
      * @throws IOException

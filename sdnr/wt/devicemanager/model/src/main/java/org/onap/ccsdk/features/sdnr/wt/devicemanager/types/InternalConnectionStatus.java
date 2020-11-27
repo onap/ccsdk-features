@@ -19,7 +19,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.types;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ConnectionLogStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 
 public class InternalConnectionStatus {
     public static ConnectionLogStatus statusFromNodeStatus(ConnectionStatus nodeStatus) {
