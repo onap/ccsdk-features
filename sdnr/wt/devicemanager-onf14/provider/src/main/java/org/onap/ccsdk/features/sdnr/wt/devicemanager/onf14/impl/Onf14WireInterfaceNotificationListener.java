@@ -28,8 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123
 import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.ObjectDeletionNotification;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.ProblemNotification;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.WireInterface20Listener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SourceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

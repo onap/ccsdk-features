@@ -18,7 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 
 /**
  * Event Forwarding for central event management by devicemanager

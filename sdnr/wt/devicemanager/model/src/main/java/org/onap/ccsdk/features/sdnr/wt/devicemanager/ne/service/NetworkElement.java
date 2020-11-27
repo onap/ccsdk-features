@@ -19,7 +19,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service;
 
 import java.util.Optional;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 public interface NetworkElement extends NetworkElementService {

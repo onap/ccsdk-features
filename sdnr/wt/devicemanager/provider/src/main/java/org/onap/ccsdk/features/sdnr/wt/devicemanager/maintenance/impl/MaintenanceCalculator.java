@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 
 import org.onap.ccsdk.features.sdnr.wt.common.HtAssert;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.MaintenanceEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

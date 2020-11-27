@@ -20,7 +20,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.types;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Inventory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 
 /**
  * Inventory means here equipment related information. This could be card, subrack.

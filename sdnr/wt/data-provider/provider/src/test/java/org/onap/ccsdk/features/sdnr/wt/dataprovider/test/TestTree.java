@@ -41,7 +41,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet.Fil
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeObject;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataTreeProviderImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 
 /**
  * @author Michael Dürre
