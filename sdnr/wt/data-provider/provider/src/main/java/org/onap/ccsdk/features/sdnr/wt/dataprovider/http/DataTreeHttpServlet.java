@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataTreeProviderImpl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class DataTreeHttpServlet extends HttpServlet {
     }
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private final DataTreeProviderImpl dataTreeProvider;

@@ -53,8 +53,8 @@ import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123
 import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.wire._interface.lp.spec.WireInterfacePac;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.wire._interface.pac.WireInterfaceCurrentProblems;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementConnectionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;

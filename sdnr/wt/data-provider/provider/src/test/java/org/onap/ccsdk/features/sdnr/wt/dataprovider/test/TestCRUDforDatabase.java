@@ -29,7 +29,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.BeforeClass;
@@ -41,84 +40,86 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper2;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMaintenanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateMediatorServerOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateNetworkElementConnectionInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateNetworkElementConnectionInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateNetworkElementConnectionOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteMaintenanceInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteMaintenanceInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteMediatorServerInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteNetworkElementConnectionInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.DeleteNetworkElementConnectionInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultlog;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.FaultlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.GranularityPeriodType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadConnectionlogListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadConnectionlogListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadConnectionlogListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadEventlogListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadEventlogListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadEventlogListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadFaultcurrentListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadFaultcurrentListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadFaultcurrentListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadFaultlogListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadFaultlogListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadFaultlogListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadInventoryListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadInventoryListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadInventoryListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadMaintenanceListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadMaintenanceListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadMaintenanceListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadMediatorServerListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadMediatorServerListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadMediatorServerListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadNetworkElementConnectionListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadNetworkElementConnectionListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadNetworkElementConnectionListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mDeviceListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mDeviceListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mDeviceListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mLtpListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mLtpListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata15mLtpListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata24hDeviceListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata24hDeviceListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata24hDeviceListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata24hListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata24hListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata24hListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata24hLtpListInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata24hLtpListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.ReadPmdata24hLtpListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateMaintenanceInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateMaintenanceInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateMaintenanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateMediatorServerInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateMediatorServerOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.UpdateNetworkElementConnectionOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.FilterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.Pagination;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.entity.input.PaginationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.mediator.server.list.output.Data;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateNetworkElementConnectionInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateNetworkElementConnectionInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateNetworkElementConnectionOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultlog;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GranularityPeriodType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mDeviceListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mDeviceListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mDeviceListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mLtpListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mLtpListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mLtpListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hDeviceListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hDeviceListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hDeviceListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Pagination;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.PaginationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data;
 
 public class TestCRUDforDatabase {
 
@@ -151,21 +152,21 @@ public class TestCRUDforDatabase {
 
         //== CLEAR AND CREATE ================================
         clearAndCreatefaultEntity("1", Entity.Faultcurrent.getName(),
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
                 SeverityType.Critical);
         createFaultEntity("Lorem Ipsum", Entity.Faultcurrent.getName(),
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
                 SeverityType.Major);
         createFaultEntity("3", Entity.Faultcurrent.getName(),
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
                 SeverityType.Minor);
         createFaultEntity("4", Entity.Faultcurrent.getName(),
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
                 SeverityType.Warning);
 
         //== READ ================================
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.status.output.Data> readOutput =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.Data> readOutput =
                 dbProvider.readStatus().getData();
         System.out.println(readOutput);
 
@@ -226,7 +227,7 @@ public class TestCRUDforDatabase {
         // ==READ===========================
         System.out.println("try to read entry");
         ReadMediatorServerListInput readinput = new ReadMediatorServerListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         ReadMediatorServerListOutputBuilder readoutput = dbProvider.readMediatorServerList(readinput);
         List<Data> data = readoutput.getData();
@@ -253,7 +254,7 @@ public class TestCRUDforDatabase {
         // ==READ============================
         System.out.println("try to read entry");
         readinput = new ReadMediatorServerListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("name").setFiltervalue(NAME2).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("name").setFiltervalue(NAME2).build()))
                 .setPagination(getPagination(20, 1)).build();
         readoutput = dbProvider.readMediatorServerList(readinput);
         data = readoutput.getData();
@@ -276,7 +277,7 @@ public class TestCRUDforDatabase {
         // ==READ/VERIFY DELETE============================
         System.out.println("try to read entry");
         readinput = new ReadMediatorServerListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("name").setFiltervalue(NAME2).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("name").setFiltervalue(NAME2).build()))
                 .setPagination(getPagination(20, 1)).build();
         readoutput = dbProvider.readMediatorServerList(readinput);
         data = readoutput.getData();
@@ -321,12 +322,12 @@ public class TestCRUDforDatabase {
         // ==READ===========================
 
         ReadNetworkElementConnectionListInput readInput = new ReadNetworkElementConnectionListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadNetworkElementConnectionListOutputBuilder readOperation =
                 dbProvider.readNetworkElementConnectionList(readInput);
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.network.element.connection.list.output.Data> data =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data> data =
                 readOperation.getData();
 
         assertNotNull(data);
@@ -392,7 +393,7 @@ public class TestCRUDforDatabase {
         }
 
         readInput = new ReadNetworkElementConnectionListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         readOperation = dbProvider.readNetworkElementConnectionList(readInput);
         data = readOperation.getData();
@@ -436,10 +437,10 @@ public class TestCRUDforDatabase {
         System.out.println("Try read...");
 
         ReadMaintenanceListInput readinput = new ReadMaintenanceListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         ReadMaintenanceListOutputBuilder readResult = dbProvider.readMaintenanceList(readinput);
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.maintenance.list.output.Data> data =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> data =
                 readResult.getData();
 
         assertNotEquals(0, data.size());
@@ -494,14 +495,14 @@ public class TestCRUDforDatabase {
 
         System.out.println("Starting fault log tests...");
         String dbId = clearAndCreatefaultEntity("1", Entity.Faultlog.getName(),
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultlogInput",
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultlogInput",
                 SeverityType.Critical);
 
         // ==READ===========================
         System.out.println("try to read entry");
 
         ReadFaultlogListInput readinput = new ReadFaultlogListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadFaultlogListOutputBuilder readResult = null;
@@ -512,7 +513,7 @@ public class TestCRUDforDatabase {
             fail("Fault log not read: " + e.getMessage());
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultlog.list.output.Data> data =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data> data =
                 readResult.getData();
 
         assertNotNull(data);
@@ -529,7 +530,7 @@ public class TestCRUDforDatabase {
 
         System.out.println("try to search entry 1");
         readinput = new ReadFaultlogListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-id").setFiltervalue("test").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-id").setFiltervalue("test").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         //== VERIFY UPDATE ================================
@@ -544,7 +545,7 @@ public class TestCRUDforDatabase {
         System.out.println("try to search entry 2");
 
         readinput = new ReadFaultlogListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-id").setFiltervalue("test*").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-id").setFiltervalue("test*").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         readResult = dbProvider.readFaultLogList(readinput);
@@ -579,7 +580,7 @@ public class TestCRUDforDatabase {
         System.out.println("Starting faultCurrent test...");
         String dbId = null;
         dbId = clearAndCreatefaultEntity("1", Entity.Faultcurrent.getName(),
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
                 SeverityType.NonAlarmed);
         assertEquals("1", dbId);
 
@@ -588,7 +589,7 @@ public class TestCRUDforDatabase {
 
 
         ReadFaultcurrentListInput readinput = new ReadFaultcurrentListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadFaultcurrentListOutputBuilder readResult = null;
@@ -599,7 +600,7 @@ public class TestCRUDforDatabase {
             fail("Fault log not read: " + e.getMessage());
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.faultcurrent.list.output.Data> data =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data> data =
                 readResult.getData();
 
 
@@ -681,7 +682,7 @@ public class TestCRUDforDatabase {
         String dbId = null;
         String json = "{\n" + "\"timestamp\": \"2019-11-01T11:28:34.7Z\",\n" + "\"status\": \"Connecting\",\n"
                 + "\"node-id\": \"sim2230\",\n"
-                + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateConnectionlogInput\"\n"
+                + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateConnectionlogInput\"\n"
                 + "}";
 
         dbId = dbRawProvider.doUpdateOrCreate(Entity.Connectionlog.getName(), initialDbId, json);
@@ -692,7 +693,7 @@ public class TestCRUDforDatabase {
         System.out.println("Try read entry");
 
         ReadConnectionlogListInput readinput = new ReadConnectionlogListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadConnectionlogListOutputBuilder readResult = null;
@@ -703,7 +704,7 @@ public class TestCRUDforDatabase {
             fail("Connection log not read: " + e.getMessage());
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.connectionlog.list.output.Data> data =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data> data =
                 readResult.getData();
 
         assertNotNull(data);
@@ -721,7 +722,7 @@ public class TestCRUDforDatabase {
         System.out.println("Try read updated entry");
 
         readinput = new ReadConnectionlogListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("status").setFiltervalue("Connected").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("status").setFiltervalue("Connected").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         try {
@@ -772,7 +773,7 @@ public class TestCRUDforDatabase {
         String dbId = null;
         String json = " {\n" + "\"timestamp\": \"2019-11-08T16:39:23.0Z\",\n" + "\"new-value\": \"done\",\n"
                 + "\"object-id\": \"SDN-Controller-0\",\n" + "\"attribute-name\": \"startup\",\n" + "\"counter\": 0,\n"
-                + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Eventlog\",\n"
+                + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Eventlog\",\n"
                 + "\"node-id\": \"SDN-Controller-0\"\n" + "}";
 
         dbId = dbRawProvider.doUpdateOrCreate(Entity.Eventlog.getName(), "1", json);
@@ -781,7 +782,7 @@ public class TestCRUDforDatabase {
         // ==READ===========================
 
         ReadEventlogListInput readinput = new ReadEventlogListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         ReadEventlogListOutputBuilder readResult = null;
         try {
@@ -791,7 +792,7 @@ public class TestCRUDforDatabase {
             fail("problem reading eventlog");
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.eventlog.list.output.Data> data =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data> data =
                 readResult.getData();
         assertEquals(1, data.size());
 
@@ -839,7 +840,7 @@ public class TestCRUDforDatabase {
                 + "    \"contained-holder\": [ ],\n" + "    \"manufacturer-name\": \"Lorem Ipsum\",\n"
                 + "    \"manufacturer-identifier\": \"ONF-Wireless-Transport\",\n" + "    \"serial\": \"sd-dsa-eqw\",\n"
                 + "    \"date\": \"2008-10-21T00:00:00.0Z\",\n"
-                + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Inventory\",\n"
+                + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory\",\n"
                 + "    \"version\": \"unknown\",\n" + "    \"description\": \"WS/DS3\",\n"
                 + "    \"part-type-id\": \"unknown\",\n" + "    \"model-identifier\": \"model-id-s3s\",\n"
                 + "    \"type-name\": \"p4.module\"}";
@@ -849,7 +850,7 @@ public class TestCRUDforDatabase {
 
         // ==READ===========================
         ReadInventoryListInput readinput = new ReadInventoryListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         ReadInventoryListOutputBuilder readResult = null;
         try {
@@ -859,7 +860,7 @@ public class TestCRUDforDatabase {
             fail("Problem reading inventory list" + e.getMessage());
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.inventory.list.output.Data> data =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data> data =
                 readResult.getData();
         assertEquals(1, data.size());
         assertEquals("Lorem Ipsum", data.get(0).getManufacturerName());
@@ -978,7 +979,7 @@ public class TestCRUDforDatabase {
 
         //== VERIFY DELETE ===========================
         System.out.println("verify entries deleted");
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> data =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> data =
                 dbProvider
                         .readPmdata15mList(
                                 new ReadPmdata15mListInputBuilder().setPagination(getPagination(20, 1)).build())
@@ -1014,7 +1015,7 @@ public class TestCRUDforDatabase {
         System.out.println("read list entries...");
 
         ReadPmdata15mListInput read = new ReadPmdata15mListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadPmdata15mListOutputBuilder readResult = null;
@@ -1025,7 +1026,7 @@ public class TestCRUDforDatabase {
             fail("Problem reading 15m data");
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._15m.list.output.Data> data =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> data =
                 readResult.getData();
 
         assertNotNull(data);
@@ -1034,7 +1035,7 @@ public class TestCRUDforDatabase {
         System.out.println("read ltp entries with node name set...");
 
         ReadPmdata15mLtpListInput readLtp = new ReadPmdata15mLtpListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadPmdata15mLtpListOutputBuilder readltpResult = null;
@@ -1122,7 +1123,7 @@ public class TestCRUDforDatabase {
             fail("Problem reading 24h data");
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.pmdata._24h.list.output.Data> data =
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data> data =
                 readResult.getData();
 
         assertNotNull(data);
@@ -1132,7 +1133,7 @@ public class TestCRUDforDatabase {
         System.out.println("filter list entries...");
 
         read = new ReadPmdata24hListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         readResult = null;
@@ -1151,7 +1152,7 @@ public class TestCRUDforDatabase {
         System.out.println("read ltp entries with node name set...");
 
         ReadPmdata24hLtpListInput readLtp = new ReadPmdata24hLtpListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadPmdata24hLtpListOutputBuilder readltpResult = null;
@@ -1298,7 +1299,7 @@ public class TestCRUDforDatabase {
         System.out.println("Test DoUpdateOrCreate doesn't create new database entry if null is passed");
 
         String dbId = clearAndCreatefaultEntity(null, Entity.Faultlog.getName(),
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultlogInput",
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultlogInput",
                 SeverityType.Critical);
         assertNull(dbId);
     }
@@ -1308,7 +1309,7 @@ public class TestCRUDforDatabase {
         System.out.println("Starting faultCurrent test...");
         String dbId = null;
         dbId = clearAndCreatefaultEntity("1", Entity.Faultcurrent.getName(),
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput",
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
                 SeverityType.Critical);
         assertEquals("1", dbId);
 
@@ -1325,7 +1326,7 @@ public class TestCRUDforDatabase {
 
 
         String expectedDbResult =
-                "{\"severity\":\"Critical\",\"node-id\":\"s1\",\"problem\":\"signalIsLost\",\"counter\":4340,\"object-id\":\"LP-MWPS-RADIO\",\"implemented-interface\":\"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.CreateFaultcurrentInput\",\"type\":\"ProblemNotificationXml\",\"timestamp\":\"2019-10-28T11:55:58.3Z\"}";
+                "{\"severity\":\"Critical\",\"node-id\":\"s1\",\"problem\":\"signalIsLost\",\"counter\":4340,\"object-id\":\"LP-MWPS-RADIO\",\"implemented-interface\":\"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput\",\"type\":\"ProblemNotificationXml\",\"timestamp\":\"2019-10-28T11:55:58.3Z\"}";
 
         System.out.println(readResult);
         assertNotNull(readResult);
@@ -1355,14 +1356,14 @@ public class TestCRUDforDatabase {
     }
 
     @Test
-    public void testOutputCamelCase() {
+    public void testOutputCamelCase() throws ClassNotFoundException {
         try {
             String jsonString = "{\n" + "\"timestamp\": \"2020-02-20T09:31:22.3Z\",\n"
                     + "\"object-id\": \"LP-MWPS-RADIO\",\n" + "\"severity\": \"Critical\",\n" + "\"counter\": 10,\n"
-                    + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultlog\",\n"
+                    + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultlog\",\n"
                     + "\"source-type\": \"Netconf\",\n" + "\"node-id\": \"sim4\",\n" + "\"problem\": \"signalIsLost\"\n"
                     + "}";
-            YangToolsMapper yangtoolsMapper = new YangToolsMapper();
+            YangToolsMapper2<Faultlog> yangtoolsMapper = new YangToolsMapper2<>(Faultlog.class,null);
             FaultlogEntity log = yangtoolsMapper.readValue(jsonString, Faultlog.class);
             System.out.println(log);
             System.out.println(yangtoolsMapper.writeValueAsString(log));

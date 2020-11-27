@@ -24,8 +24,8 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper;
 import java.math.BigInteger;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.PaginationOutputG;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.read.connectionlog.list.output.PaginationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PaginationOutputG;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.PaginationBuilder;
 
 public class QueryResult<T> {
 

@@ -62,9 +62,13 @@
             <artifactId>commons-cli</artifactId>
         </dependency>
         <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-       </dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-common</artifactId>
@@ -81,7 +85,6 @@
             <plugin>
                 <groupId>com.github.alexcojocaru</groupId>
                 <artifactId>elasticsearch-maven-plugin</artifactId>
-                <version>6.16</version>
                 <configuration>
                     <skip>${skipTests}</skip>
                     <clusterName>testCluster</clusterName>

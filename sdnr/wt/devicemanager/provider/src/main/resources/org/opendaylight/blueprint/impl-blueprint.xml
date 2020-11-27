@@ -31,16 +31,13 @@
                odl:type="default"/>
 
     <reference id="notificationPublishService"
-               interface="org.opendaylight.mdsal.binding.api.NotificationPublishService"
-               odl:type="default"/>
+               interface="org.opendaylight.mdsal.binding.api.NotificationPublishService" />
 
     <reference id="mountPointService"
-               interface="org.opendaylight.mdsal.binding.api.MountPointService"
-               odl:type="default"/>
+               interface="org.opendaylight.mdsal.binding.api.MountPointService" />
 
     <reference id="rpcProviderRegistry"
-               interface="org.opendaylight.mdsal.binding.api.RpcProviderService"
-               odl:type="default"/>
+               interface="org.opendaylight.mdsal.binding.api.RpcProviderService" />
 
     <reference id="clusterSingletonService"
                interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>

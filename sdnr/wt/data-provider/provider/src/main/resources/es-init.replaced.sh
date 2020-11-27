@@ -45,6 +45,7 @@ set_definition() {
   def "historicalperformance15min" '{"node-name":{"type": "keyword"},"timestamp":{"type": "date"},"suspect-interval-flag":{"type":"boolean"},"scanner-id":{"type": "keyword"},"uuid-interface":{"type": "keyword"},"layer-protocol-name":{"type": "keyword"},"granularity-period":{"type": "keyword"},"radio-signal-id":{"type": "keyword"}}'
   def "mediator-server" '{"url":{"type": "keyword"},"name":{"type": "keyword"}}'
   def "networkelement-connection" '{"node-id": {"type": "keyword"},"host": {"type": "keyword"},"port": {"type": "long"},"username": {"type": "keyword"},"password": {"type": "keyword"},"core-model-capability": {"type": "keyword"},"device-type": {"type": "keyword"},"is-required": {"type": "boolean"},"status": {"type": "keyword"}},"date_detection":false'
+  def "guicutthrough" '{"name":{"type": "keyword"},"weburi":{"type": "keyword"}}'
 }
 
 # ------------------------------------------------------------

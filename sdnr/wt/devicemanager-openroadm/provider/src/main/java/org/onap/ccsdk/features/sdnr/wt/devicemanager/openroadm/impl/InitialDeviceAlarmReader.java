@@ -21,8 +21,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl;
 
+import java.util.Collection;
 import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
@@ -33,8 +35,8 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.ActiveAla
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.OrgOpenroadmAlarmListener;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.Severity;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.active.alarm.list.ActiveAlarms;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Faultlog;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultlog;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +70,7 @@ public class InitialDeviceAlarmReader {
     protected FaultData writeFaultData() {
         FaultData faultData = new FaultData();
         if (this.getActiveAlarmList(this.netConfAccesor).getActiveAlarms() != null) {
-            List<ActiveAlarms> activeAlarms = this.getActiveAlarmList(this.netConfAccesor).getActiveAlarms();
+            Collection<ActiveAlarms> activeAlarms = YangHelper.getCollection(this.getActiveAlarmList(this.netConfAccesor).getActiveAlarms());
             if (!activeAlarms.isEmpty()) {
                 for (ActiveAlarms activeAlarm : activeAlarms) {
                     faultData.add(this.netConfAccesor.getNodeId(), this.count, activeAlarm.getRaiseTime(),

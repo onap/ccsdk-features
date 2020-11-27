@@ -22,10 +22,12 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
@@ -39,8 +41,8 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.org.open
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.shelf.Slots;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.shelves.Shelves;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.xponder.XpdrPort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.PmdataEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -176,7 +178,7 @@ public class OpenroadmNetworkElement implements NetworkElement {
 
     // private methods
     private void readShelvesData(OrgOpenroadmDevice device) {
-        List<Shelves> shelves = device.getShelves();
+        Collection<Shelves> shelves = YangHelper.getCollection(device.getShelves());
         if (shelves != null) {
             for (Shelves shelf : shelves) {
                 log.info(
@@ -187,7 +189,7 @@ public class OpenroadmNetworkElement implements NetworkElement {
                         shelf.getLifecycleState());
                 databaseService
                         .writeInventory(this.opnRdmInventoryInput.getShelvesInventory(shelf, equipmentLevel + 1));
-                List<Slots> slotList = shelf.getSlots();
+                Collection<Slots> slotList = YangHelper.getCollection(shelf.getSlots());
                 if (slotList != null) {
                     for (Slots slot : slotList) {
                         if (!slot.getProvisionedCircuitPack().isEmpty()) {
@@ -206,14 +208,14 @@ public class OpenroadmNetworkElement implements NetworkElement {
     }
 
     private void readXpndrData(OrgOpenroadmDevice device) {
-        List<Xponder> xponderList = device.getXponder();
+        Collection<Xponder> xponderList = YangHelper.getCollection(device.getXponder());
         if (xponderList != null) {
             for (Xponder xponder : xponderList) {
                 databaseService
                         .writeInventory(this.opnRdmInventoryInput.getXponderInventory(xponder, equipmentLevel + 1));
                 log.info("Xponders: No.: {} , \n Port: {} ,\n Type: {}", xponder.getXpdrNumber(), xponder.getXpdrPort(),
                         xponder.getXpdrType());
-                List<XpdrPort> xpdrportlist = xponder.getXpdrPort();
+                Collection<XpdrPort> xpdrportlist = YangHelper.getCollection(xponder.getXpdrPort());
                 if (xpdrportlist != null) {
                     for (XpdrPort xpdrport : xpdrportlist)
                         if (!xpdrport.getCircuitPackName().isEmpty()) {
@@ -229,7 +231,7 @@ public class OpenroadmNetworkElement implements NetworkElement {
     }
 
     private void readCircuitPacketData(OrgOpenroadmDevice device) {
-        List<CircuitPacks> circuitpacklist = device.getCircuitPacks();
+        Collection<CircuitPacks> circuitpacklist = YangHelper.getCollection(device.getCircuitPacks());
 
         if (circuitpacklist != null) {
             for (CircuitPacks cp : circuitpacklist) {
@@ -275,7 +277,7 @@ public class OpenroadmNetworkElement implements NetworkElement {
     }
 
     private void readInterfaceData(OrgOpenroadmDevice device) {
-        List<Interface> interfaceList = device.getInterface();
+        Collection<Interface> interfaceList = YangHelper.getCollection(device.getInterface());
         if (interfaceList != null) {
             for (Interface deviceInterface : interfaceList) {
 
