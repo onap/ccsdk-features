@@ -16,6 +16,24 @@
       "revId": "fad5440116cf67e94ffea721e355f7d590f02e4f",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb0958df_0cac9758",
+        "filename": "sdnr/wt/readthedocs/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2020-11-30T16:00:57Z",
+      "side": 1,
+      "message": "Thanks - just a change to address this as well as pom.xmls under energysavings",
+      "parentUuid": "e29bd3ae_ee2722a4",
+      "revId": "fad5440116cf67e94ffea721e355f7d590f02e4f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
