@@ -41,7 +41,6 @@ const SiteDetails: React.FunctionComponent<props> = (props) => {
     const [height, setHeight] = React.useState(330);
 
     const handleResize = () =>{
-        //console.log("resize")
         const el = document.getElementById('site-details-panel')?.getBoundingClientRect();
         const el2 = document.getElementById('site-tabs')?.getBoundingClientRect();
 
@@ -81,28 +80,28 @@ const SiteDetails: React.FunctionComponent<props> = (props) => {
         <h2 >{props.site.name}</h2>
         {
             props.site.operator !== '' && props.site.operator !== null ?
-                <TextField aria-label="operator" disabled={true} value={props.site.operator} label="Operator" /> :
-                <TextField aria-label="operator" disabled={true} value="Unkown" label="Operator" style={{ marginTop: "5px" }} />
+                <TextField inputProps={{ 'aria-label': 'operator' }} disabled={true} value={props.site.operator} label="Operator" /> :
+                <TextField inputProps={{ 'aria-label': 'operator' }} disabled={true} value="Unkown" label="Operator" style={{ marginTop: "5px" }} />
         }
         {
             props.site.type !== undefined && props.site.type.length > 0 &&
-            <TextField aria-label="type" disabled={true} value={props.site.type} label="Type" style={{ marginTop: "5px" }} />
+            <TextField inputProps={{ 'aria-label': 'type' }} disabled={true} value={props.site.type} label="Type" style={{ marginTop: "5px" }} />
         }
         {
             props.site.address !== undefined && props.site.address.length > 0 &&
-            <TextField aria-label="adress" disabled={true} value={props.site.address} label="Adress" style={{ marginTop: "5px" }} />
+            <TextField inputProps={{ 'aria-label': 'adress' }} disabled={true} value={props.site.address} label="Adress" style={{ marginTop: "5px" }} />
         }
         {
             props.site.heighAGLInMeters !== undefined && props.site.heighAGLInMeters > 0 &&
-            <TextField aria-label="amsl-in-meters" disabled={true} value={props.site.heighAGLInMeters} label="AMSL in meters" style={{ marginTop: "5px" }} />
+            <TextField inputProps={{ 'aria-label': 'amsl-in-meters' }} disabled={true} value={props.site.heighAGLInMeters} label="AMSL in meters" style={{ marginTop: "5px" }} />
         }
         {
             props.site.antennaHeightAGLInMeters !== undefined && props.site.antennaHeightAGLInMeters > 0 &&
-            <TextField aria-label="antenna-above-ground-in-meters" disabled={true} value={props.site.antennaHeightAGLInMeters} label="Atenna above ground in meters" style={{ marginTop: "5px" }} />
+            <TextField inputProps={{ 'aria-label': 'antenna-above-ground-in-meters' }} disabled={true} value={props.site.antennaHeightAGLInMeters} label="Atenna above ground in meters" style={{ marginTop: "5px" }} />
         }
          
-        <TextField aria-label="latitude" style={{ marginTop: "5px" }} disabled={true} value={LatLonToDMS(props.site.geoLocation.lat)} label="Latitude" />
-        <TextField aria-label="longitude" style={{ marginTop: "5px" }} disabled={true} value={LatLonToDMS(props.site.geoLocation.lon, true)} label="Longitude" />
+        <TextField inputProps={{ 'aria-label': 'latitude' }} style={{ marginTop: "5px" }} disabled={true} value={LatLonToDMS(props.site.geoLocation.lat)} label="Latitude" />
+        <TextField inputProps={{ 'aria-label': 'longitude' }} style={{ marginTop: "5px" }} disabled={true} value={LatLonToDMS(props.site.geoLocation.lon, true)} label="Longitude" />
 
         <AppBar position="static" style={{ marginTop: "5px", background: '#2E3B55' }}>
             <Tabs id="site-tabs" value={value} onChange={onHandleTabChange} aria-label="simple tabs example">

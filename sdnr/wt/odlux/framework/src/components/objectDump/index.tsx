@@ -70,20 +70,50 @@ const useSimpleTableStyles = makeStyles({
     color: "white",
     padding: "5px",
     backgroundColor: "#cccccc",
+
   },
   td: {
     verticalAlign: "top",
     padding: "0.5rem 1rem",
-    borderBottom: "2px solid #DDD"
+    border: "2px solid #DDD"
   },
   object: {
   },
   objectTh: {
-    backgroundColor: "#4444cc",
+    backgroundColor: "#cccccc",
   },
   objectTd: {
     padding: "0.5rem 1rem",
-    borderBottom: "2px solid #DDD"
+    border: "2px solid #DDD"
+  },
+  chevron: {
+    '&:before': {
+      borderStyle: 'solid',
+      borderWidth: '0.25em 0.25em 0 0',
+      content: '\'\'',
+      display: 'inline-block',
+      height: '0.45em',
+      left: '0.15em',
+      position: 'relative',
+      top: '0.15em',
+      transform: 'rotate(-45deg)',
+      transition: 'all 0.3s',
+      verticalAlign: 'top',
+      width: '0.45em',
+    }
+
+  },
+    right: {
+    '&:before': {
+      left: '0',
+      transform: 'rotate(45deg)',
+    }
+  },
+  bottom: {
+    '&:before': {
+      left: '0',
+      transform: 'rotate(135deg)',
+    }
   },
 });
 
@@ -93,6 +123,7 @@ type SimpleTableProps = {
   label?: JSX.Element | string | null;
   cols?: number;
   expand?: boolean;
+  ariaLabel?: string;
 }
 
 const SimpleTable: React.FC<SimpleTableProps> = (props) => {
@@ -110,11 +141,11 @@ const SimpleTable: React.FC<SimpleTableProps> = (props) => {
   };
 
   return (
-    <table className={`${classes.root} ${classes.table}`}>
+    <table className={`${classes.root} ${classes.table}`} aria-label={props.ariaLabel? props.ariaLabel+'-table' : 'table'}>
       {label && (<thead>
-        <tr>
+        <tr aria-label={props.ariaLabel? props.ariaLabel+'-title-row' : 'title row'}>
           <th className={`${classes.th} ${classes.label} ${classNameTh ? classNameTh : ''}`} colSpan={cols} onClick={handleClick}>
-            {label}
+            <span className={`${classes.chevron} ${isExpanded ? classes.bottom : classes.right }`}></span> { label }
           </th>
         </tr>
       </thead>) || null
@@ -130,6 +161,7 @@ type ObjectRendererProps = {
   label?: JSX.Element | string | null;
   expand?: boolean;
   object: { [key: string]: any };
+  ariaLabel?: string;
 };
 
 const ObjectRenderer: React.FC<ObjectRendererProps> = (props) => {
@@ -137,13 +169,13 @@ const ObjectRenderer: React.FC<ObjectRendererProps> = (props) => {
   const classes = useSimpleTableStyles();
 
   return (
-    <SimpleTable classNameTh={classes.objectTh} label={getTypeName(object) || label} expand={expand}>
+    <SimpleTable ariaLabel={props.ariaLabel} classNameTh={classes.objectTh} label={getTypeName(object) || label} expand={expand}>
       {
         Object.keys(object).map(key => {
           return (
-            <tr key={String(key)}>
-              <td className={`${classes.td} ${classes.objectTd}`}>{String(key)} </td>
-              <td className={`${classes.td}`}>{renderObject(object[key])}</td>
+            <tr key={String(key)} aria-label={props.ariaLabel? props.ariaLabel+'-row': 'row'}>
+              <td className={`${classes.td} ${classes.objectTd}`} aria-label="object-title">{String(key)} </td>
+              <td className={`${classes.td}`} aria-label="object-details">{renderObject(object[key], "sub-element")}</td>
             </tr>
           );
         })
@@ -165,9 +197,9 @@ const ArrayRenderer: React.FC<ArrayRendererProps> = (props) => {
   return null;
 };
 
-export const renderObject = (object: any): JSX.Element | string => {
+export const renderObject = (object: any, ariaLabel?: string): JSX.Element | string => {
   if (isString(object) || isNumber(object) || isBoolean(object)) {
     return String(object);
   }
-  return <ObjectRenderer object={object} />;
+  return <ObjectRenderer object={object} ariaLabel={ariaLabel} />;
 };

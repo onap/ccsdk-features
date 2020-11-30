@@ -112,7 +112,7 @@ class DashboardComponent extends React.Component<TreeviewComponentProps, Treevie
           }}
           onItemClick={(elm) => selectTreeNode(elm.value)} />
         <div className={classes.details}>{
-          selectedNode && renderObject(selectedNode) || null
+          selectedNode && renderObject(selectedNode, "tree-view") || null
         }</div>
       </div>
     );

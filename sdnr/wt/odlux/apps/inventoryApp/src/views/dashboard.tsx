@@ -115,9 +115,9 @@ class DashboardSelectorComponent extends React.Component<DashboardComponentProps
     return (
       <>
         <AppBar position="static">
-          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="simple tabs example">
-            <Tab label="Table View" value="InventoryElementsTable" />
-            <Tab label="Tree view" value="TreeviewTable" />
+          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="inventory-app-tabs">
+            <Tab label="Table View" value="InventoryElementsTable" aria-label="table-tab" />
+            <Tab label="Tree view" value="TreeviewTable" aria-label="treeview-tab" />
           </Tabs>
         </AppBar>
 
@@ -125,7 +125,7 @@ class DashboardSelectorComponent extends React.Component<DashboardComponentProps
 
           activePanelId === "InventoryElementsTable" &&
 
-          <InventoryTable stickyHeader title="Inventory" idProperty="_id" columns={[
+          <InventoryTable stickyHeader title="Inventory" idProperty="_id" tableId="inventory-table" columns={[
             { property: "nodeId", title: "Node Name" },
             { property: "manufacturerIdentifier", title: "Manufacturer" },
             { property: "parentUuid", title: "Parent" },
@@ -149,9 +149,9 @@ class DashboardSelectorComponent extends React.Component<DashboardComponentProps
         {
           activePanelId === "TreeviewTable" &&
 
-          <ConnectedElementTable stickyHeader onHandleClick={(e, row) => { this.props.history.push(`${this.props.match.path}/${row.nodeId}`) }} columns={[
-            { property: "nodeId", title: "Name", type: ColumnType.text },
-            { property: "isRequired", title: "Required ?", type: ColumnType.boolean },
+          <ConnectedElementTable stickyHeader tableId="treeview-networkelement-selection-table" onHandleClick={(e, row) => { this.props.history.push(`${this.props.match.path}/${row.nodeId}`) }} columns={[
+            { property: "nodeId", title: "Node Name", type: ColumnType.text },
+            { property: "isRequired", title: "Required", type: ColumnType.boolean },
             { property: "host", title: "Host", type: ColumnType.text },
             { property: "port", title: "Port", type: ColumnType.numeric },
             { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },

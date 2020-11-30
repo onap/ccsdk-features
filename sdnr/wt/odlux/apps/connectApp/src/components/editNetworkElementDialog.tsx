@@ -192,11 +192,11 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
           {setting.enableUsernameEditor && <TextField disabled={!setting.enableUsernameEditor} spellCheck={false} margin="dense" id="password" label="Password" aria-label="password" type="password" fullWidth value={this.state.password} onChange={(event) => { this.setState({ password: event.target.value }); }} /> || null}
           <FormControl fullWidth disabled={!setting.enableUsernameEditor}>
             <InputLabel htmlFor="active">Required</InputLabel>
-            <Select value={this.state.isRequired || false} onChange={(event) => {
+            <Select aria-label="required-selection" value={this.state.isRequired || false} onChange={(event) => {
               this.setState({ isRequired: event.target.value as any as boolean });
             }} inputProps={{ name: 'required', id: 'required' }} fullWidth >
-              <MenuItem value={true as any as string} >True</MenuItem>
-              <MenuItem value={false as any as string} >False</MenuItem>
+              <MenuItem value={true as any as string} aria-label="true">True</MenuItem>
+              <MenuItem value={false as any as string} aria-label="false">False</MenuItem>
             </Select>
           </FormControl>
         </DialogContent>

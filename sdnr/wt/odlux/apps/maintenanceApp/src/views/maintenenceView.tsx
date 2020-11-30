@@ -116,7 +116,7 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     const now = new Date().valueOf();
     return (
       <>
-        <MaintenenceEntriesTable stickyHeader title={"Maintenance"} customActionButtons={[addMaintenenceEntryAction]} columns={
+        <MaintenenceEntriesTable stickyHeader tableId="maintenance-table" title={"Maintenance"} customActionButtons={[addMaintenenceEntryAction]} columns={
           [
             { property: "nodeId", title: "Node Name", type: ColumnType.text },
             {

@@ -35,6 +35,7 @@ export const UiElementBoolean = (props: BooleanInputProps) => {
         ? (<FormControl style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
             <InputLabel htmlFor={`select-${element.id}`} >{element.label}</InputLabel>
             <Select
+                aria-label={element.label+'-selection'}
                 required={!!element.mandatory}
                 error={mandetoryError}
                 onChange={(e) => { props.onChange(e.target.value === 'true') }}
@@ -46,8 +47,8 @@ export const UiElementBoolean = (props: BooleanInputProps) => {
                     id: `select-${element.id}`,
                 }}
             >
-                <MenuItem value={'true'}>{element.trueValue || 'True'}</MenuItem>
-                <MenuItem value={'false'}>{element.falseValue || 'False'}</MenuItem>
+                <MenuItem value={'true'} aria-label="true">{element.trueValue || 'True'}</MenuItem>
+                <MenuItem value={'false'} aria-label="false">{element.falseValue || 'False'}</MenuItem>
 
             </Select>
             <FormHelperText>{mandetoryError ? "Value is mandetory" : ""}</FormHelperText>

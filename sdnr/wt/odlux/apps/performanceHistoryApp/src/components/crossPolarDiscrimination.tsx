@@ -93,7 +93,7 @@ class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscri
       <>
         <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.crossPolarDiscriminationProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <CrossPolarDiscriminationTable stickyHeader idProperty={"_id"} columns={cpdColumns} {...properties} {...actions} />
+          <CrossPolarDiscriminationTable stickyHeader idProperty={"_id"} tableId="cross-polar-discrimination-table" columns={cpdColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

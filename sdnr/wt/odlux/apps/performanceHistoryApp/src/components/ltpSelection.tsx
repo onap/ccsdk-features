@@ -58,15 +58,15 @@ export const LtpSelection = (props: LtpSelectionProps) => {
                 <span>
                     Select LTP
                 </span>
-                <Select className={classes.selectDropdown} value={props.selectedLtp} onChange={props.onChangeLtp}  >
-                    <MenuItem value={"-1"}><em>--Select--</em></MenuItem>
+                <Select className={classes.selectDropdown} value={props.selectedLtp} onChange={props.onChangeLtp} aria-label="ltp-selection" >
+                    <MenuItem value={"-1"} aria-label="none"><em>--Select--</em></MenuItem>
                     {props.availableLtps.map(ltp =>
-                        (<MenuItem value={ltp.key} key={ltp.key}>{ltp.key}</MenuItem>))}
+                        (<MenuItem value={ltp.key} key={ltp.key} aria-label={ltp.key}>{ltp.key}</MenuItem>))}
                 </Select>
                 <span> Time-Period </span>
-                <Select className={classes.selectDropdown} value={props.selectedTimePeriod} onChange={props.onChangeTimePeriod} >
-                    <MenuItem value={"15min"}>15min</MenuItem>
-                    <MenuItem value={"24hours"}>24hours</MenuItem>
+                <Select className={classes.selectDropdown} value={props.selectedTimePeriod} onChange={props.onChangeTimePeriod} aria-label="time-period-selection">
+                    <MenuItem value={"15min"} aria-label="15minutes">15min</MenuItem>
+                    <MenuItem value={"24hours"} aria-label="24hours">24hours</MenuItem>
                 </Select>
             </FormControl>
             {

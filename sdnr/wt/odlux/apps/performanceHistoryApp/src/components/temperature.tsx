@@ -93,7 +93,7 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
 
         <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.temperatureProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <TemperatureTable stickyHeader idProperty={"_id"} columns={temperatureColumns} {...properties} {...actions} />
+          <TemperatureTable stickyHeader idProperty={"_id"} tableId="temperature-table" columns={temperatureColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

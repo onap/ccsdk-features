@@ -82,10 +82,10 @@ const LinkDetails: React.FunctionComponent<props> = (props) => {
 
     return (<div style={{ paddingLeft: "15px", paddingRight: "15px", paddingTop: "0px", display: 'flex', flexDirection: 'column' }}>
         <h2>{props.link.name}</h2>
-        <TextField aria-label="operator" disabled style={{ marginTop: "5px" }} value="Unkown" label="Operator" />
-        <TextField aria-label="type" disabled style={{ marginTop: "5px" }} value={props.link.type} label="Type" />
-        <TextField aria-label="planned-distance-in-km" disabled style={{ marginTop: "5px" }} value={props.link.length.toFixed(2)} label="Distance planned in km" />
-        <TextField aria-label="calculated-distance-in-km" disabled style={{ marginTop: "5px" }} value={props.link.calculatedLength.toFixed(2)} label="Distance calculated in km" />
+        <TextField inputProps={{ 'aria-label': 'operator' }} disabled style={{ marginTop: "5px" }} value="Unkown" label="Operator" />
+        <TextField inputProps={{ 'aria-label': 'type' }} disabled style={{ marginTop: "5px" }} value={props.link.type} label="Type" />
+        <TextField inputProps={{ 'aria-label': 'planned-distance-in-km' }} disabled style={{ marginTop: "5px" }} value={props.link.length.toFixed(2)} label="Distance planned in km" />
+        <TextField inputProps={{ 'aria-label': 'calculated-distance-in-km' }} disabled style={{ marginTop: "5px" }} value={props.link.calculatedLength.toFixed(2)} label="Distance calculated in km" />
 
         <AppBar position="static" id="site-tabs" style={{ marginTop: "20px", background: '#2E3B55' }}>
             <Typography aria-label="details-of-link-sites" style={{ margin:"5px"}}>SITE DETAILS</Typography>

@@ -130,6 +130,7 @@ class TableToolbarComponent extends React.Component<ITableToolbarComponentProps,
             )}
           <Tooltip title="Actions">
             <IconButton color="inherit"
+            aria-label={buttonPrefix +"additional-actions-button"}
               aria-owns={open ? 'menu-appbar' : undefined}
               aria-haspopup="true"
               onClick={this.handleMenu} >
@@ -138,7 +139,7 @@ class TableToolbarComponent extends React.Component<ITableToolbarComponentProps,
           </Tooltip>
           <Menu id="menu-appbar" anchorEl={this.state.anchorEl} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }} open={open} onClose={this.handleClose} >
-            <MenuItem onClick={this.props.onExportToCsv}>Export as CSV</MenuItem>
+            <MenuItem aria-label="export-table-as-csv" onClick={(e) =>{ this.props.onExportToCsv(); this.handleClose()}}>Export as CSV</MenuItem>
           </Menu>
         </div>
       </Toolbar>

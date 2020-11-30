@@ -90,7 +90,7 @@ class AdaptiveModulationComponent extends React.Component<AdaptiveModulationComp
       <>
         <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.adaptiveModulationProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <AdaptiveModulationTable stickyHeader idProperty={"_id"} columns={adaptiveModulationColumns} {...properties} {...actions} />
+          <AdaptiveModulationTable stickyHeader idProperty={"_id"} tableId="adaptive-modulation-table" columns={adaptiveModulationColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

@@ -18,7 +18,7 @@
 import * as React from 'react';
 import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
 
-import { List, ListItem, TextField, ListItemText, ListItemIcon, WithTheme, withTheme, Omit } from '@material-ui/core';
+import { List, ListItem, TextField, ListItemText, ListItemIcon, WithTheme, withTheme, Omit, Typography } from '@material-ui/core';
 
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import FileIcon from '@material-ui/icons/InsertDriveFile';
@@ -62,7 +62,7 @@ type TreeViewComponentState<TData = { }> = {
   expandedItems: ExternalTreeItem<TData>[];
   /** The index of the active iten or undefined if no item is active. */
   activeItem?: ExternalTreeItem<TData>;
-  /** The search term or undefined if search is corrently not active. */
+  /** The search term or undefined if search is currently not active. */
   searchTerm?: string;
   searchTermValue?: string;
 }
@@ -153,7 +153,8 @@ class TreeViewComponent<TData = { }> extends React.Component<TreeViewComponentPr
     return (
       <div className={this.props.className ? `${this.props.classes.root} ${this.props.className}` : this.props.classes.root} style={this.props.style}>
         {children}
-        {enableSearchBar && <TextField label={"Search"} fullWidth={true} className={this.props.classes.search} value={searchTermValue} onKeyDown={this.onSearchKeyDown} onChange={this.onChangeSearchText} /> || null}
+        {enableSearchBar && <TextField label={"Search"} inputProps={{'aria-label': 'treeview-searchfield'}} fullWidth={true} className={this.props.classes.search} value={searchTermValue} onKeyDown={this.onSearchKeyDown} onChange={this.onChangeSearchText} /> || null}
+        {enableSearchBar && (searchTerm === undefined || searchTerm.length===0 )&& <Typography style={{marginTop:'10px'}}>Please search for an inventory identifier or use *.</Typography>}
         <List>
           {this.renderItems(items, searchTerm && searchTerm.toLowerCase())}
         </List>
@@ -216,7 +217,7 @@ class TreeViewComponent<TData = { }> extends React.Component<TreeViewComponentPr
 
     return ((searchTerm && (matchIndex > -1 || expanded || (!isTreeViewComponentWithExternalStateProps(this.props) && item.isMatch || depth === 1)) || !searchTerm || forceRender)
       ? (
-        <ListItem key={`tree-list-${this.itemIndex++}`} style={styles.item} onClick={handleClickCreator(false)} button >
+        <ListItem key={`tree-list-${this.itemIndex++}`} aria-label="tree-view-item" style={styles.item} onClick={handleClickCreator(false)} button >
 
           { // display the left icon
             (this.props.useFolderIcons && <ListItemIcon>{isFolder ? <FolderIcon /> : <FileIcon />}</ListItemIcon>) ||

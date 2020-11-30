@@ -44,22 +44,22 @@ const ChartFilter: React.FunctionComponent<filterProps> = (props) => {
             {
                 props.isVisible &&
                 <div className={classes.filterContainer}>
-                    <TextField className={classes.filterInput} label="Radio Signal" value={props.filters.radioSignalId || ''} onChange={(event) => props.onFilterChanged("radioSignalId", event.target.value)} InputLabelProps={{
+                    <TextField inputProps={{'aria-label': 'radio-signal-filter'}} className={classes.filterInput} label="Radio Signal" value={props.filters.radioSignalId || ''} onChange={(event) => props.onFilterChanged("radioSignalId", event.target.value)} InputLabelProps={{
                         shrink: true,
                     }} />
-                    <TextField className={classes.filterInput} label="Scanner ID" value={props.filters.scannerId || ''} onChange={(event) => props.onFilterChanged("scannerId", event.target.value)} InputLabelProps={{
+                    <TextField inputProps={{'aria-label': 'scanner-id-filter'}} className={classes.filterInput} label="Scanner ID" value={props.filters.scannerId || ''} onChange={(event) => props.onFilterChanged("scannerId", event.target.value)} InputLabelProps={{
                         shrink: true,
                     }} />
-                    <TextField className={classes.filterInput} label="End Time" value={props.filters.timeStamp || ''} onChange={(event) => props.onFilterChanged("timeStamp", event.target.value)} InputLabelProps={{
+                    <TextField inputProps={{'aria-label': 'end-time-filter'}} className={classes.filterInput} label="End Time" value={props.filters.timeStamp || ''} onChange={(event) => props.onFilterChanged("timeStamp", event.target.value)} InputLabelProps={{
                         shrink: true,
                     }} />
                     <FormControl>
                         <InputLabel id="suspect-interval-label" shrink>Suspect Interval</InputLabel>
 
-                        <Select labelId="suspect-interval-label" value={suspectIntervalFlag || ''} onChange={(event) => props.onFilterChanged("suspectIntervalFlag", event.target.value as string)}>
-                            <MenuItem value={undefined}>None</MenuItem>
-                            <MenuItem value={"true"}>true</MenuItem>
-                            <MenuItem value={"false"}>false</MenuItem>
+                        <Select aria-label="suspect-interval-selection" labelId="suspect-interval-label" value={suspectIntervalFlag || ''} onChange={(event) => props.onFilterChanged("suspectIntervalFlag", event.target.value as string)}>
+                            <MenuItem value={undefined} aria-label="none">None</MenuItem>
+                            <MenuItem value={"true"} aria-label="true">true</MenuItem>
+                            <MenuItem value={"false"} aria-label="false">false</MenuItem>
                         </Select>
                     </FormControl>
                 </ div>
