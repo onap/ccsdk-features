@@ -92,7 +92,7 @@ class ReceiveLevelComponent extends React.Component<ReceiveLevelComponentProps>{
       <>
         <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.receiveLevelProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <ReceiveLevelTable stickyHeader idProperty={"_id"} columns={receiveLevelColumns} {...properties} {...actions} />
+          <ReceiveLevelTable stickyHeader idProperty={"_id"} tableId="receive-level-table" columns={receiveLevelColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

@@ -39,7 +39,7 @@ let initalSorted = false;
 
 class EventLogComponent extends React.Component<Connect<typeof mapProps, typeof mapDispatch>> {
   render() {
-    return <EventLogTable stickyHeader title="Event Log" idProperty="_id" columns={[
+    return <EventLogTable stickyHeader title="Event Log" tableId="event-log-table" idProperty="_id" columns={[
       { property: "nodeId", title: "Node Name" },
       { property: "counter", title: "Counter" },
       { property: "timestamp", title: "Timestamp" },

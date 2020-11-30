@@ -118,7 +118,7 @@ type MaterialTableComponentBaseProps<TData> = WithStyles<typeof styles> & {
   disableFilter?: boolean;
   customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, onClick: () => void }[];
   onHandleClick?(event: React.MouseEvent<HTMLTableRowElement>, rowData: TData): void;
-  createContextMenu?: (row: TData) => React.ReactElement<MenuItemProps | DividerTypeMap<{}, "hr">, React.ComponentType<MenuItemProps | DividerTypeMap<{}, "hr" >>>[];
+  createContextMenu?: (row: TData) => React.ReactElement<MenuItemProps | DividerTypeMap<{}, "hr">, React.ComponentType<MenuItemProps | DividerTypeMap<{}, "hr">>>[];
 };
 
 type MaterialTableComponentPropsWithRows<TData = {}> = MaterialTableComponentBaseProps<TData> & { rows: TData[]; asynchronus?: boolean; };
@@ -162,7 +162,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
     const rowsPerPage = isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.rowsPerPage || 10 : 10;
 
     this.state = {
-      contextMenuInfo: {index : -1 },
+      contextMenuInfo: { index: -1 },
       filter: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.filter || {} : {},
       showFilter: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.showFilter : false,
       loading: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.loading : false,
@@ -234,7 +234,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                       }}
                       role="checkbox"
                       aria-checked={isSelected}
-                      aria-label={`${(this.props.tableId ? this.props.tableId : 'table')}-row`}
+                      aria-label="table-row"
                       tabIndex={-1}
                       key={entryId}
                       selected={isSelected}
@@ -250,7 +250,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                           col => {
                             const style = col.width ? { width: col.width } : {};
                             return (
-                              <TableCell key={col.property} align={col.type === ColumnType.numeric && !col.align ? "right" : col.align} style={style}>
+                              <TableCell aria-label={col.title? col.title.toLowerCase().replace(/\s/g, "-") : col.property.toLowerCase().replace(/\s/g, "-")} key={col.property} align={col.type === ColumnType.numeric && !col.align ? "right" : col.align} style={style}>
                                 {col.type === ColumnType.custom && col.customControl
                                   ? <col.customControl className={col.className} style={col.style} rowData={entry} />
                                   : col.type === ColumnType.boolean
@@ -283,6 +283,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
           count={rowCount}
           rowsPerPage={rowsPerPage}
           page={page}
+          aria-label="table-pagination-footer"
           backIconButtonProps={{
             'aria-label': 'previous-page',
           }}

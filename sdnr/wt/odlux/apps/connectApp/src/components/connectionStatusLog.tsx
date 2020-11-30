@@ -42,9 +42,9 @@ class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogCo
   render(): JSX.Element {
     return (
       <ConnectionStatusTable stickyHeader tableId="connection-status-table" columns={[
-        { property: "timestamp", title: "Time", type: ColumnType.text },
+        { property: "timestamp", title: "Timestamp", type: ColumnType.text },
         { property: "nodeId", title: "Node Name", type: ColumnType.text },
-        { property: "status", title: "Connection status", type: ColumnType.text },
+        { property: "status", title: "Connection Status", type: ColumnType.text },
       ]} idProperty="id" {...this.props.connectionStatusLogActions} {...this.props.connectionStatusLogProperties} >
       </ConnectionStatusTable>
     );

@@ -56,7 +56,7 @@ const settings: { [key: string]: DialogSettings } = {
   [InfoNetworkElementDialogMode.InfoNetworkElement]: {
     dialogTitle: "Yang capabilities of the network element",
     dialogDescription: "Available capabilities of the network element",
-    cancelButtonText: "Cancel",
+    cancelButtonText: "OK",
   }
 }
 
@@ -97,6 +97,8 @@ class InfoNetworkElementDialogComponent extends React.Component<InfoNetworkEleme
       }
     });
 
+    yangCapabilities = yangCapabilities.sort((a,b) => a.module === b.module ? 0 : a.module > b.module ? 1 : -1);
+
     return (
       <Dialog open={this.props.mode !== InfoNetworkElementDialogMode.None}>
         <DialogTitle id="form-dialog-title">{setting.dialogTitle}</DialogTitle>
@@ -104,7 +106,7 @@ class InfoNetworkElementDialogComponent extends React.Component<InfoNetworkEleme
           <DialogContentText>
             {setting.dialogDescription + " " + this.state.nodeId}
           </DialogContentText>
-          <Table >
+          <Table aria-label="yang-capabilities-table">
             <TableHead>
               <TableRow>
                 <TableCell align="right">S.No</TableCell>
@@ -114,17 +116,17 @@ class InfoNetworkElementDialogComponent extends React.Component<InfoNetworkEleme
             </TableHead>
             <TableBody>
               {yangCapabilities.map((yang, index) => (
-                <TableRow>
+                <TableRow aria-label="yang-capabilities-row">
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{yang.module}</TableCell>
-                  <TableCell>{yang.revision}</TableCell>
+                  <TableCell aria-label="yang-module"><a href={`/yang-schema/${yang.module}`} target={"_blank"}> {yang.module} </a></TableCell>
+                  <TableCell aria-label="yang-revision">{yang.revision}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </DialogContent>
         <DialogActions>
-          <Button onClick={(event) => {
+          <Button aria-label="ok-button" onClick={(event) => {
             this.onCancel();
             event.preventDefault();
             event.stopPropagation();

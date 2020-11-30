@@ -105,9 +105,9 @@ class ConnectApplicationComponent extends React.Component<ConnectApplicationComp
     return (
       <>
         <AppBar position="static">
-          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="simple tabs example">
-            <Tab aria-lablel="network-elements-list-tab" label="Network Elements" value="NetworkElements" />
-            <Tab aria-lablel="connection-status-log-tab" label="Connection Status Log" value="ConnectionStatusLog" />
+          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="connect-app-tabs">
+            <Tab aria-label="network-elements-list-tab" label="Network Elements" value="NetworkElements" />
+            <Tab aria-label="connection-status-log-tab" label="Connection Status Log" value="ConnectionStatusLog" />
           </Tabs>
         </AppBar>
         {activePanelId === 'NetworkElements'

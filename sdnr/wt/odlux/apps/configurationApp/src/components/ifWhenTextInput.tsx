@@ -75,7 +75,7 @@ export const IfWhenTextInput = (props: IfwhenProps) => {
   return (
     <FormControl error={error} style={style}>
       <InputLabel htmlFor={id} >{label}</InputLabel>
-      <Input id={id} endAdornment={<div>{ifFeature}{whenFeature}</div>} {...otherProps}  />
+      <Input id={id} inputProps={{'aria-label': label+'-input'}} endAdornment={<div>{ifFeature}{whenFeature}</div>} {...otherProps}  />
       <FormHelperText>{errorText}</FormHelperText>
     </FormControl>
   );

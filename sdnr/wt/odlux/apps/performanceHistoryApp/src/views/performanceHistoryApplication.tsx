@@ -223,7 +223,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
     if (nodeId === "") {
       return (
         <>
-          <NetworkElementTable defaultSortColumn={"nodeId"} defaultSortOrder="asc" stickyHeader title={"Please select the network element!"} idProperty={"nodeId"} rows={this.props.networkElements} asynchronus
+          <NetworkElementTable tableId="performance-data-element-selection-table" defaultSortColumn={"nodeId"} defaultSortOrder="asc" stickyHeader title={"Please select the network element!"} idProperty={"nodeId"} rows={this.props.networkElements} asynchronus
             onHandleClick={(event, rowData) => { this.handleNetworkElementSelect(rowData.nodeId) }} columns={
               [{ property: "nodeId", title: "Node Name" }]
             } />
@@ -245,14 +245,14 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
             <>
 
               <AppBar position="static" >
-                <Tabs value={activePanel} onChange={this.onChangeTabs} variant="scrollable" scrollButtons="auto" aria-label="performance data tabs">
-                  <Tab label="Performance Data" value="PerformanceData" />
-                  <Tab label="Receive Level" value="ReceiveLevel" />
-                  <Tab label="Transmission Power" value="TransmissionPower" />
-                  <Tab label="Adaptive Modulation" value="AdaptiveModulation" />
-                  <Tab label="Temperature" value="Temperature" />
-                  <Tab label="Signal-to-interference-plus-noise ratio (SINR)" value="SINR" />
-                  <Tab label="Cross Polar Discrimination" value="CPD" />
+                <Tabs value={activePanel} onChange={this.onChangeTabs} variant="scrollable" scrollButtons="auto" aria-label="performance-data-tabs">
+                  <Tab label="Performance Data" value="PerformanceData" aria-label="performance-data" />
+                  <Tab label="Receive Level" value="ReceiveLevel" aria-label="receive-level" />
+                  <Tab label="Transmission Power" value="TransmissionPower" aria-label="transmission-power" />
+                  <Tab label="Adaptive Modulation" value="AdaptiveModulation" aria-label="adaptive-modulation" />
+                  <Tab label="Temperature" value="Temperature" aria-label="temperature"  />
+                  <Tab label="Signal-to-interference-plus-noise ratio (SINR)" value="SINR" aria-label="snir" />
+                  <Tab label="Cross Polar Discrimination" value="CPD" aria-label="cross-polar-discrimination" />
                 </Tabs>
               </AppBar>
               {

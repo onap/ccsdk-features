@@ -94,7 +94,7 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
       <>
         <ToggleContainer onChange={this.onChange} onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.transmissionPowerProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} >
           {lineChart(chartPagedData)}
-          <TransmissionPowerTable stickyHeader idProperty={"_id"} columns={transmissionColumns} {...properties} {...actions} />
+          <TransmissionPowerTable stickyHeader idProperty={"_id"} tableId="transmission-power-table" columns={transmissionColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

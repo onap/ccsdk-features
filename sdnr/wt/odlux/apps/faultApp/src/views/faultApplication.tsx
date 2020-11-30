@@ -137,16 +137,16 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
     return (
       <>
         <AppBar position="static" >
-          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="fault tabs">
+          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="fault-tabs">
             <Tab aria-label="current-problem-list-tab" label="Current Problem List" value="CurrentProblem" />
             <Tab aria-label="alarm-notifications-list-tab" label={`Alarm Notifications (${this.props.faultNotifications.faults.length})`} value="AlarmNotifications" />
             <Tab aria-label="alarm-log-tab" label="Alarm Log" value="AlarmLog" />
           </Tabs>
         </AppBar>
         {
-          activePanelId === 'CurrentProblem' && <FaultTable stickyHeader idProperty={'id'} customActionButtons={customAction} columns={[
+          activePanelId === 'CurrentProblem' && <FaultTable stickyHeader tableId="current-problems-table" idProperty={'id'} customActionButtons={customAction} columns={[
             { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
-            { property: "timestamp", type: ColumnType.text, title: "Time Stamp" },
+            { property: "timestamp", type: ColumnType.text, title: "Timestamp" },
             { property: "nodeId", title: "Node Name", type: ColumnType.text },
             { property: "counter", title: "Count", type: ColumnType.numeric, width: "100px" },
             { property: "objectId", title: "Object Id", type: ColumnType.text },
@@ -156,9 +156,9 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
         }
         {activePanelId === 'AlarmNotifications' &&
 
-          <FaultAlarmNotificationTable stickyHeader rows={this.props.faultNotifications.faults} asynchronus columns={[
+          <FaultAlarmNotificationTable tableId="alarm-notifications-table" stickyHeader rows={this.props.faultNotifications.faults} asynchronus columns={[
             { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
-            { property: "timeStamp", title: "Time Stamp" },
+            { property: "timeStamp", title: "Timestamp" },
             { property: "nodeName", title: "Node Name" },
             { property: "counter", title: "Count", width: "100px", type: ColumnType.numeric },
             { property: "objectId", title: "Object Id" },
@@ -168,9 +168,11 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
 
         }
 
-        {activePanelId === 'AlarmLog' && <FaultTable stickyHeader idProperty={'id'} columns={[
+        {activePanelId === 'AlarmLog' && 
+        <FaultTable stickyHeader idProperty={'id'} tableId="alarm-log-table"
+          columns={[
           { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
-          { property: "timestamp", title: "Time Stamp" },
+          { property: "timestamp", title: "Timestamp" },
           { property: "nodeId", title: "Node Name" },
           { property: "counter", title: "Count", type: ColumnType.numeric, width: "100px" },
           { property: "objectId", title: "Object Id" },

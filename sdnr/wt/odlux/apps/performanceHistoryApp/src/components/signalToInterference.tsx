@@ -91,7 +91,7 @@ class SignalToInterferenceComponent extends React.Component<SignalToInterference
       <>
         <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.signalToInterferenceProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <SignalToInterferenceTable stickyHeader idProperty={"_id"} columns={sinrColumns} {...properties} {...actions}
+          <SignalToInterferenceTable stickyHeader idProperty={"_id"} tableId="signal-to-interference-table" columns={sinrColumns} {...properties} {...actions}
           />
         </ToggleContainer>
       </>
