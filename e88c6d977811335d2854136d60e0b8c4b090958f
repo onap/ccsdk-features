@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "50d3b1c3_a60783c1",
+        "filename": "sdnr/wt/data-provider/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/impl/DataProviderServiceImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2020-12-01T07:47:33Z",
+      "side": 1,
+      "message": "Debug description does not match to function name.",
+      "range": {
+        "startLine": 379,
+        "startChar": 18,
+        "endLine": 379,
+        "endChar": 71
+      },
+      "revId": "e88c6d977811335d2854136d60e0b8c4b090958f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
