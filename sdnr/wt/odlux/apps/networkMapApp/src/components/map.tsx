@@ -111,6 +111,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
         map.on('load', (ev) => {
 
+            map.setMaxZoom(18);
             addBaseSources(map, this.props.selectedSite, this.props.selectedLink);
                 
             addImages(map, (result: boolean)=>{

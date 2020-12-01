@@ -38,8 +38,8 @@ export const OSM_STYLE = {
             'id': 'simple-tiles',
             'type': 'raster',
             'source': 'raster-tiles',
-            'minzoom': 0,
-            'maxzoom': 18
+            'minZoom': 0,
+            'maxZoom': 18
         }
     ]
 };
