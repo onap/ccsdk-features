@@ -47,6 +47,20 @@ type resultType<TData = dataType> = { page: number, total: number, rows: TData[]
 
 export type DataCallback<TData = dataType> = (page?: number, rowsPerPage?: number, orderBy?: string | null, order?: 'asc' | 'desc' | null, filter?: { [property: string]: string }) => resultType<TData> | Promise<resultType<TData>>;
 
+function regExpEscape(s: string) {
+  return s.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+};
+
+function wildcardCheck(input: string, pattern: string) {
+   if (!pattern) return true; 
+   const regex = new RegExp(
+     (!pattern.startsWith('*') ? '^' : '') + 
+     pattern.split(/\*+/).map(p => p.split(/\?+/).map(regExpEscape).join('.')).join('.*') + 
+     (!pattern.endsWith('*') ? '$' : '')
+   );
+   return input.match(regex) !== null && input.match(regex)!.length >= 1;
+};
+
 function desc(a: dataType, b: dataType, orderBy: string) {
   if ((b[orderBy] || "") < (a[orderBy] || "")) {
     return -1;
@@ -324,64 +338,94 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
 
   private static updateRows(props: MaterialTableComponentPropsWithRows, state: MaterialTableComponentState): { rows: {}[], total: number, page: number } {
 
+    let data = [...props.rows as dataType[] || []];
+    const columns = props.columns;
+
     const { page, rowsPerPage, order, orderBy, filter } = state;
 
     try {
-      let data: dataType[] = props.rows || [];
-      let filtered = false;
       if (state.showFilter) {
         Object.keys(filter).forEach(prop => {
-          const exp = filter[prop];
-          filtered = filtered || exp !== undefined;
-          data = exp !== undefined ? data.filter((val) => {
-            const value = val[prop];
+          const column = columns.find(c => c.property === prop);
+          const filterExpression = filter[prop];
 
-            if (value) {
+          if (!column) throw new Error("Filter for not existing column found.");
 
-              if (typeof exp === 'boolean') {
-                return value == exp;
+          if (filterExpression != null) {
+            data = data.filter((val) => {
+              const dataValue = val[prop];
 
-              } else if (typeof exp === 'string') {
+              if (dataValue != null) {
 
-                const valueAsString = value.toString();
-                if (exp.length === 0) return value;
+                if (column.type === ColumnType.boolean) {
 
-                const regex = new RegExp("\\*", "g");
-                const regex2 = new RegExp("\\?", "g");
+                  const boolDataValue = JSON.parse(String(dataValue).toLowerCase());
+                  const boolFilterExpression = JSON.parse(String(filterExpression).toLowerCase());
+                  return boolDataValue == boolFilterExpression;
 
-                const countStar = (exp.match(regex) || []).length;
-                const countQuestionmarks = (exp.match(regex2) || []).length;
+                } else if (column.type === ColumnType.text) {
 
-                if (countStar > 0 || countQuestionmarks > 0) {
-                  let editableExpression = exp;
+                  const valueAsString = String(dataValue);
+                  const filterExpressionAsString = String(filterExpression).trim();
+                  if (filterExpressionAsString.length === 0) return true;
+                  return wildcardCheck(valueAsString, filterExpressionAsString);
 
-                  if (!exp.startsWith('*')) {
-                    editableExpression = '^' + exp;
+                } else if (column.type === ColumnType.numeric){
+                  
+                  const valueAsNumber = Number(dataValue);
+                  const filterExpressionAsString = String(filterExpression).trim();
+                  if (filterExpressionAsString.length === 0 || isNaN(valueAsNumber)) return true;
+                  
+                  if (filterExpressionAsString.startsWith('>=')) {
+                    return valueAsNumber >= Number(filterExpressionAsString.substr(2).trim());
+                  } else if (filterExpressionAsString.startsWith('<=')) {
+                    return valueAsNumber <= Number(filterExpressionAsString.substr(2).trim());
+                  } else if (filterExpressionAsString.startsWith('>')) {
+                    return valueAsNumber > Number(filterExpressionAsString.substr(1).trim());
+                  } else if (filterExpressionAsString.startsWith('<')) {
+                    return valueAsNumber < Number(filterExpressionAsString.substr(1).trim());
+                  }
+                } else if (column.type === ColumnType.date){
+                   const valueAsString = String(dataValue);
+
+                   const convertToDate = (valueAsString: string) => {
+                    // time value needs to be padded   
+                    const hasTimeValue = /T\d{2,2}/.test(valueAsString);
+                    const indexCollon =  valueAsString.indexOf(':');
+                        if (hasTimeValue && (indexCollon === -1 || indexCollon >= valueAsString.length-2)) {
+                            valueAsString = indexCollon === -1 
+                            ? valueAsString + ":00"
+                            : indexCollon === valueAsString.length-1
+                                ? valueAsString + "00"
+                                : valueAsString += "0"
+                        }
+                     return new Date(Date.parse(valueAsString));   
+                   };
+                   
+                   // @ts-ignore
+                   const valueAsDate = new Date(Date.parse(dataValue));
+                   const filterExpressionAsString = String(filterExpression).trim();             
+
+                   if (filterExpressionAsString.startsWith('>=')) {
+                    return valueAsDate >= convertToDate(filterExpressionAsString.substr(2).trim());
+                  } else if (filterExpressionAsString.startsWith('<=')) {
+                    return valueAsDate <= convertToDate(filterExpressionAsString.substr(2).trim());
+                  } else if (filterExpressionAsString.startsWith('>')) {
+                    return valueAsDate > convertToDate(filterExpressionAsString.substr(1).trim());
+                  } else if (filterExpressionAsString.startsWith('<')) {
+                    return valueAsDate < convertToDate(filterExpressionAsString.substr(1).trim());
                   }
 
-                  if (!exp.endsWith('*')) {
-                    editableExpression = editableExpression + '$';
-                  }
+                  
+                  if (filterExpressionAsString.length === 0) return true;
+                  return wildcardCheck(valueAsString, filterExpressionAsString);
 
-                  const expressionAsRegex = editableExpression.replace(/\*/g, ".*").replace(/\?/g, ".");
-
-                  return valueAsString.match(new RegExp(expressionAsRegex, "g"));
                 }
-                else if (exp.includes('>=')) {
-                  return Number(valueAsString) >= Number(exp.replace('>=', ''));
-                } else if (exp.includes('<=')) {
-                  return Number(valueAsString) <= Number(exp.replace('<=', ''));
-                } else
-                  if (exp.includes('>')) {
-                    return Number(valueAsString) > Number(exp.replace('>', ''));
-                  } else if (exp.includes('<')) {
-                    return Number(valueAsString) < Number(exp.replace('<', ''));
-                  }
               }
-            }
 
-            return (value == exp)
-          }) : data;
+              return (dataValue == filterExpression)
+            });
+          };
         });
       }
 

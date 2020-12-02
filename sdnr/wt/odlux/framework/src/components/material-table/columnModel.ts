@@ -22,6 +22,7 @@ export enum ColumnType {
   text,
   numeric,
   boolean,
+  date,
   custom
 }
 
@@ -34,7 +35,7 @@ type CustomControl<TData> = {
 export type ColumnModel<TData> = {
   title?: string;
   disablePadding?: boolean;
-  width?: string | number;
+  width?: string | number ;
   className?: string;
   style?: React.CSSProperties;
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
@@ -50,5 +51,5 @@ export type ColumnModel<TData> = {
   labels?: { "true": string, "false": string };
 } | {
     property: keyof TData;
-    type?: ColumnType.numeric | ColumnType.text;
+    type?: ColumnType.numeric | ColumnType.text | ColumnType.date;
 });
