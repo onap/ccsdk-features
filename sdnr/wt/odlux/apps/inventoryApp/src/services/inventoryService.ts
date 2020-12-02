@@ -50,7 +50,7 @@ class InventoryService {
       }
     };
     const inventoryTreeElement = await requestRest<{
-      output: {
+      "data-provider:output": {
         "pagination": {
           "size": number,
           "page": number,
@@ -60,8 +60,8 @@ class InventoryService {
       }
     }>(path, { method: "POST", body: JSON.stringify(body) });
 
-    return inventoryTreeElement && inventoryTreeElement.output && inventoryTreeElement.output.pagination && inventoryTreeElement.output.pagination.total >= 1 &&
-      inventoryTreeElement.output.data && convertPropertyNames(inventoryTreeElement.output.data[0], replaceHyphen) || undefined;
+    return inventoryTreeElement && inventoryTreeElement["data-provider:output"] && inventoryTreeElement["data-provider:output"].pagination && inventoryTreeElement["data-provider:output"].pagination.total >= 1 &&
+      inventoryTreeElement["data-provider:output"].data && convertPropertyNames(inventoryTreeElement["data-provider:output"].data[0], replaceHyphen) || undefined;
    // return await getElement(id);
   }
 
