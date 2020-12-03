@@ -60,8 +60,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
+            <groupId>net.bytebuddy</groupId>
             <version>1.9.10</version>
             <scope>test</scope>
         </dependency>
@@ -74,7 +74,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-devicemanager-model</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

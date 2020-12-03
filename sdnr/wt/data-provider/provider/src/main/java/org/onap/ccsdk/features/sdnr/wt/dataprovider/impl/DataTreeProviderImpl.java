@@ -38,7 +38,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeChildObject;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet.FilterMode;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeObject;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 
 /**
  * @author Michael Dürre

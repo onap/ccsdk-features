@@ -17,9 +17,11 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
@@ -27,7 +29,10 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.Hardware;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.hardware.Component;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
+import org.opendaylight.yang.gen.v1.urn.onap.system.rev201026.System1;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GuicutthroughBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -70,7 +75,7 @@ public class ORanNetworkElement implements NetworkElement {
     public void initialReadFromNetworkElement() {
         Hardware hardware = readHardware(netconfAccessor);
         if (hardware != null) {
-            List<Component> componentList = hardware.getComponent();
+            Collection<Component> componentList = YangHelper.getCollection(hardware.getComponent());
             if (componentList != null) {
                 for (Component component : componentList) {
                     databaseService
@@ -78,11 +83,27 @@ public class ORanNetworkElement implements NetworkElement {
                 }
             }
         }
+        System1 sys = getOnapSystemData(netconfAccessor);
+        if (sys != null) {
+            GuicutthroughBuilder gcBuilder = new GuicutthroughBuilder();
+            gcBuilder.setId(sys.getName()).setName(sys.getName()).setWeburi(sys.getWebUi().getValue());
+            databaseService.writeGuiCutThroughData(gcBuilder.build());
+        }
     }
 
     @Override
     public NetworkElementDeviceType getDeviceType() {
         return NetworkElementDeviceType.ORAN;
+    }
+
+    private System1 getOnapSystemData(NetconfAccessor accessData) {
+        InstanceIdentifier<System1> system1IID =
+        InstanceIdentifier.builder(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.system.rev140806.System.class)
+        .augmentation(System1.class).build();
+
+        System1 res = accessData.getTransactionUtils().readData(accessData.getDataBroker(), LogicalDatastoreType.OPERATIONAL, system1IID);
+        log.debug("Result of getOnapSystemData = {}", res);
+        return res;
     }
 
     private Hardware readHardware(NetconfAccessor accessData) {
@@ -107,10 +128,8 @@ public class ORanNetworkElement implements NetworkElement {
         // Register call back class for receiving notifications
         this.oRanListenerRegistrationResult = netconfAccessor.doRegisterNotificationListener(oRanListener);
         this.oRanFaultListenerRegistrationResult = netconfAccessor.doRegisterNotificationListener(oRanFaultListener);
-        // Register netconf stream
+	// Register netconf stream
         netconfAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
-
-
     }
 
     @Override

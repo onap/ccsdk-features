@@ -32,9 +32,8 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.DatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper2;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
@@ -143,7 +142,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
      * @return this for further operations.
      */
     public EsDataObjectReaderWriter2<T> setEsIdAttributeNameCamelized(String esIdAttributeName) {
-        return setEsIdAttributeName(YangToolsMapper.toCamelCaseAttributeName(esIdAttributeName));
+        return setEsIdAttributeName(YangToolsMapper2.toCamelCaseAttributeName(esIdAttributeName));
     }
 
     /**

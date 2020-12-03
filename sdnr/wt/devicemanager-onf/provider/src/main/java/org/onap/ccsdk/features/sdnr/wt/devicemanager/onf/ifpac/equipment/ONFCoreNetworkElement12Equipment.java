@@ -18,10 +18,12 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.equipment;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.NetworkElementCoreData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.OnfInterfacePac;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.EquipmentData;
@@ -162,7 +164,7 @@ public class ONFCoreNetworkElement12Equipment {
         if (optionalNe.isPresent()) {
 
             // extract Inventory
-            extensionList.put(optionalNe.get().getExtension());
+            extensionList.put(YangHelper.getList(optionalNe.get().getExtension()));
 
             if (!extensionList.isEmpty()) {
 
@@ -203,7 +205,7 @@ public class ONFCoreNetworkElement12Equipment {
                 if (equipmentPac != null) {
                     equipmentPac.readTheFaults(uuid, problemList);
 
-                    List<ContainedHolder> containedHolderListe = equipment.getContainedHolder();
+                    Collection<ContainedHolder> containedHolderListe = YangHelper.getCollection(equipment.getContainedHolder());
                     if (containedHolderListe != null) {
                         for (ContainedHolder containedHolder : containedHolderListe) {
                             recurseReadEquipmentProblems(containedHolder.getOccupyingFru(), uuid,

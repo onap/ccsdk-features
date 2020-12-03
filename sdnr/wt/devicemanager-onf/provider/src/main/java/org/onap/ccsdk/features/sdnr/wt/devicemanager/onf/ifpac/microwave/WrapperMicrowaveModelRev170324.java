@@ -21,9 +21,10 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.pm.PerformanceDataAirInterface170324Builder;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.notifications.NotificationWorker;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.util.ONFLayerProtocolName;
@@ -70,8 +71,8 @@ import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.r
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.mw.hybrid.mw.structure.pac.HybridMwStructureCurrentProblems;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.mw.pure.ethernet.structure.pac.PureEthernetStructureCurrentProblems;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.mw.tdm.container.pac.TdmContainerCurrentProblems;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.EventlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -265,7 +266,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
         if (problems == null) {
             LOG.debug("DBRead Id {} no AirInterfaceCurrentProblems", interfacePacUuid);
         } else {
-            for (AirInterfaceCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
+            for (AirInterfaceCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                         interfacePacUuid.getValue(), problem.getProblemName(),
                         mapSeverity(problem.getProblemSeverity()));
@@ -298,7 +299,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
         if (problems == null) {
             LOG.debug("DBRead Id {} no EthernetContainerCurrentProblems", interfacePacUuid);
         } else {
-            for (ContainerCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
+            for (ContainerCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                         interfacePacUuid.getValue(), problem.getProblemName(),
                         mapSeverity(problem.getProblemSeverity()));
@@ -330,7 +331,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
         if (problems == null) {
             LOG.debug("DBRead Id {} no AirInterfaceDiversityCurrentProblems", interfacePacUuid);
         } else {
-            for (AirInterfaceDiversityCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
+            for (AirInterfaceDiversityCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                         interfacePacUuid.getValue(), problem.getProblemName(),
                         mapSeverity(problem.getProblemSeverity()));
@@ -362,7 +363,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
         if (problems == null) {
             LOG.debug("DBRead Id {} no PureEthernetStructureCurrentProblems", interfacePacUuid);
         } else {
-            for (StructureCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
+            for (StructureCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                         interfacePacUuid.getValue(), problem.getProblemName(),
                         mapSeverity(problem.getProblemSeverity()));
@@ -394,7 +395,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
         if (problems == null) {
             LOG.debug("DBRead Id {} no HybridMwStructureCurrentProblems", interfacePacUuid);
         } else {
-            for (StructureCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
+            for (StructureCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                         interfacePacUuid.getValue(), problem.getProblemName(),
                         mapSeverity(problem.getProblemSeverity()));
@@ -439,7 +440,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
                 LOG.debug("DBRead Id {} no TdmContainerCurrentProblems", interfacePacUuid);
             } else {
                 // -- Specific part 3
-                for (ContainerCurrentProblemTypeG problem : problems.nonnullCurrentProblemList()) {
+                for (ContainerCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
                     resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                             interfacePacUuid.getValue(), problem.getProblemName(),
                             mapSeverity(problem.getProblemSeverity()));
@@ -454,7 +455,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
 
     /**
      * Read and add performance data
-     * 
+     *
      * @param lp to read from
      * @param result Object to be filled with data
      * @return result
@@ -489,12 +490,11 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
                         mwAirInterfacePacuuId);
             } else {
                 // org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170320.air._interface.historical.performances.g.HistoricalPerformanceDataList
-                List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.air._interface.historical.performances.g.HistoricalPerformanceDataList> airHistPMList =
-                        airHistoricalPerformanceData.nonnullHistoricalPerformanceDataList();
+                Collection<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.air._interface.historical.performances.g.HistoricalPerformanceDataList> airHistPMList =
+                        YangHelper.getCollection(airHistoricalPerformanceData.nonnullHistoricalPerformanceDataList());
                 LOG.debug("DBRead MWAirInterfacePac Id {} Records intermediate: {}", mwAirInterfacePacuuId,
                         airHistPMList.size());
-                for (AirInterfaceHistoricalPerformanceTypeG pmRecord : airHistoricalPerformanceData
-                        .nonnullHistoricalPerformanceDataList()) {
+                for (AirInterfaceHistoricalPerformanceTypeG pmRecord : airHistPMList) {
                     result.add(new PerformanceDataAirInterface170324Builder(acessor.getNodeId(), lp, pmRecord,
                             airConfiguration));
                 }
@@ -525,8 +525,8 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
         if (ethContainerHistoricalPerformanceData == null) {
             LOG.debug("DBRead {} Id {} no HistoricalPerformances", myName, ethContainerPacuuId);
         } else {
-            List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.ethernet.container.historical.performances.g.HistoricalPerformanceDataList> airHistPMList =
-                    ethContainerHistoricalPerformanceData.nonnullHistoricalPerformanceDataList();
+            Collection<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.ethernet.container.historical.performances.g.HistoricalPerformanceDataList> airHistPMList =
+                    YangHelper.getCollection(ethContainerHistoricalPerformanceData.nonnullHistoricalPerformanceDataList());
             LOG.debug("DBRead {} Id {} Records intermediate: {}", myName, ethContainerPacuuId, airHistPMList.size());
             for (ContainerHistoricalPerformanceTypeG pmRecord : airHistPMList) {
                 result.add(new PerformanceDataAirInterface170324Builder(acessor.getNodeId(), lp, pmRecord));
@@ -536,14 +536,14 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
         return result;
     }
 
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType mapSeverity(
+    private org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType mapSeverity(
             SeverityType severity) {
 
-        Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType> res =
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType
+        Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType> res =
+                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType
                         .forName(severity.name());
         return res.orElse(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev190801.SeverityType.NonAlarmed);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType.NonAlarmed);
     }
 
 }

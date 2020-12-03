@@ -4,7 +4,7 @@ module data-provider-g826-pm-types {
     namespace "urn:opendaylight:params:xml:ns:yang:data-provider-g836-pm-types";
     prefix pmt;
 
-    import data-provider-v2 {
+    import data-provider {
         prefix uxp;
     }
 
