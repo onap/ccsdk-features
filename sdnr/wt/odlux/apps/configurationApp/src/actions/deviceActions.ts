@@ -8,8 +8,7 @@ import { DisplayModeType, DisplaySpecification } from '../handlers/viewDescripti
 import { restService } from "../services/restServices";
 import { YangParser } from "../yang/yangParser";
 import { Module } from "../models/yang";
-import { ViewSpecification, ViewElement, isViewElementReference, isViewElementList, isViewElementObjectOrList, isViewElementRpc, isViewElementChoise, ViewElementChoiseCase } from "../models/uiModels";
-import { element } from 'prop-types';
+import { ViewSpecification, ViewElement, isViewElementReference, isViewElementList, isViewElementObjectOrList, isViewElementRpc, isViewElementChoise, ViewElementChoiseCase, ViewElementString } from "../models/uiModels";
 
 export class EnableValueSelector extends Action {
   constructor(public listSpecification: ViewSpecification, public listData: any[], public keyProperty: string, public onValueSelected : (value: any) => void ) {
@@ -52,28 +51,36 @@ export const updateNodeIdAsyncActionCreator = (nodeId: string) => async (dispatc
   dispatch(new UpdateDeviceDescription("", {}, []));
   dispatch(new SetCollectingSelectionData(true));
   
-  const availableCapabilities = await restService.getCapabilitiesByMoutId(nodeId);
+  const { avaliableCapabilities, unavaliableCapabilities } = await restService.getCapabilitiesByMoutId(nodeId);
 
-  if (!availableCapabilities || availableCapabilities.length <= 0) {
+  if (!avaliableCapabilities || avaliableCapabilities.length <= 0) {
     throw new Error(`NetworkElement : [${nodeId}] has no capabilities.`);
   }
-
-  const parser = new YangParser();
-
+  
   const capParser = /^\(.*\?revision=(\d{4}-\d{2}-\d{2})\)(\S+)$/i;
-  for (let i = 0; i < availableCapabilities.length; ++i){
-    const capRaw = availableCapabilities[i];
+  
+  const parser = new YangParser(unavaliableCapabilities?.map(cap => {
+      const capMatch = cap && capParser.exec(cap.capability);
+      return { capability:capMatch && capMatch[2] || '', failureReason: cap.failureReason };
+  }) || undefined);
+
+  for (let i = 0; i < avaliableCapabilities.length; ++i){
+    const capRaw = avaliableCapabilities[i];
     const capMatch = capRaw && capParser.exec(capRaw.capability);
     try {
       capMatch && await parser.addCapability(capMatch[2], capMatch[1]);
     } catch (err) {
-      console.error(err);
+      console.error(`Error in ${capMatch && capMatch[2]} ${capMatch && capMatch[1]}`, err);
     }
   }
 
   parser.postProcess();
 
   dispatch(new SetCollectingSelectionData(false));
+
+  if (process.env.NODE_ENV === "development" ) {
+      console.log(parser, parser.modules, parser.views);
+  }
 
   return dispatch(new UpdateDeviceDescription(nodeId, parser.modules, parser.views));
 }
@@ -317,8 +324,33 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
               window.setTimeout(() => dispatch(new PushAction(`${vPath}[${refKey.replace(/\//ig, "%2F")}]`)));
             }));
           } else {
+            // Found a list at root level of a module w/o a refenrece key.
+            dataPath += `?content=config&fields=${encodeURIComponent(viewElement.id)}(${encodeURIComponent(viewElement.key || '')})`; 
+            const restResult = (await restService.getConfigData(dataPath));
+            if (restResult && restResult.status === 200 && restResult.data && restResult.data[viewElement.id] ){
+                // spoof the not existing view here
+                const refData = restResult.data[viewElement.id];
+                const refView : ViewSpecification  = {
+                    id: "-1",
+                    canEdit: false,
+                    language: "en-US",
+                    elements: {
+                        [viewElement.key!] : { 
+                           uiType: "string",
+                           config: false,
+                           id: viewElement.key,
+                           label: viewElement.key,
+                           isList: true,
+                        } as ViewElementString
+                    }
+                };
+                dispatch(new EnableValueSelector(refView, refData, viewElement.key!, (refKey) => {
+                 window.setTimeout(() => dispatch(new PushAction(`${vPath}[${refKey.replace(/\//ig, "%2F")}]`))); 
+                }));
+            } else {
+              throw new Error("Found a list at root level of a module and could not determine the keys.");
+            }
             dispatch(new SetCollectingSelectionData(false));
-            throw new Error("Found a list at root level of a module w/o a refenrece key.");
           }
           return;
         }
@@ -392,7 +424,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
 
       // extract the list -> key: list
       data = extractList
-        ? data[viewElement!.label] || [] // if the list is empty, it does not exist
+        ? data[viewElement!.id] || data[viewElement!.label] || [] // if the list is empty, it does not exist
         : data;
 
     } else if (viewElement! && viewElement!.uiType === "rpc") {

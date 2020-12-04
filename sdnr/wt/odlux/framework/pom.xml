@@ -46,7 +46,7 @@
     <properties>
         <buildtime>${maven.build.timestamp}</buildtime>
         <distversion>ONAP Frankfurt (Neon, mdsal ${odl.mdsal.version})</distversion>
-        <buildno>68.d7886ce(20/09/04)</buildno>
+        <buildno>86.51a94bd(20/11/17)</buildno>
         <odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
     </properties>
 

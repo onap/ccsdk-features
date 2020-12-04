@@ -38,7 +38,7 @@ export const UIElementReference: React.FC<UIElementReferenceProps> = (props) => 
   const { element } = props;
   return (
     <FormControl key={element.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
-      <Tooltip title={element.description || ''}>
+      <Tooltip title={element.description || element.path || ''}>
         <Button className={classes.button} aria-label={element.label+'-button'} color="secondary" disabled={props.disabled} onClick={() => {
           props.onOpenReference(element);
         }}>{`${element.label}`}</Button>

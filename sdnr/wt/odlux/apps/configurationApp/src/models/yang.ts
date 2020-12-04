@@ -17,6 +17,13 @@
  */
 
 import { ViewElement, ViewSpecification } from "./uiModels";
+import { StepLabel } from "@material-ui/core";
+
+export enum ModuleState {
+  stable,
+  instable,
+  unabaliabe,
+}
 
 export type Token = {
   name: string;
@@ -50,6 +57,7 @@ export type Module = {
   name: string;
   namespace?: string;
   prefix?: string;
+  state: ModuleState;
   identities: { [name: string]: Identity };
   revisions: { [version: string]: Revision };
   imports: { [prefix: string]: string };
