@@ -15,13 +15,14 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { Token, Statement, Module, Identity } from "../models/yang";
+import { Token, Statement, Module, Identity, ModuleState } from "../models/yang";
 import {
   ViewSpecification, ViewElement, isViewElementObjectOrList, ViewElementBase,
   isViewElementReference, ViewElementChoise, ViewElementBinary, ViewElementString, isViewElementString,
-  isViewElementNumber, ViewElementNumber, Expression, YangRange, ViewElementUnion, ViewElementRpc, isViewElementRpc, ResolveFunction
+  isViewElementNumber, ViewElementNumber, Expression, YangRange, ViewElementUnion, ViewElementRpc, isViewElementRpc, ResolveFunction, ViewElementDate
 } from "../models/uiModels";
 import { yangService } from "../services/yangService";
+
 
 export const splitVPath = (vPath: string, vPathParser: RegExp): RegExpMatchArray[] => {
   const pathParts: RegExpMatchArray[] = [];
@@ -284,8 +285,8 @@ export class YangParser {
 
   public static ResolveStack = Symbol("ResolveStack");
 
-  constructor() {
-
+  constructor(private _unavailableCapabilities: { failureReason: string; capability: string; }[] = []) {
+   
   }
 
   public get modules() {
@@ -299,8 +300,15 @@ export class YangParser {
   public async addCapability(capability: string, version?: string) {
     // do not add twice
     if (this._modules[capability]) {
+      // console.warn(`Skipped capability: ${capability} since allready contained.` );
       return;
     }
+
+    // // do not add unavaliabe capabilities
+    // if (this._unavailableCapabilities.some(c => c.capability === capability)) {
+    //   // console.warn(`Skipped capability: ${capability} since it is marked as unavaliable.` );
+    //   return;
+    // }
 
     const data = await yangService.getCapability(capability, version);
     if (!data) {
@@ -316,6 +324,8 @@ export class YangParser {
       throw new Error(`Root element capability ${rootStatement.arg} does not requested ${capability}.`);
     }
 
+    const isUnavaliabe = this._unavailableCapabilities.some(c => c.capability === capability);
+    
     const module = this._modules[capability] = {
       name: rootStatement.arg,
       revisions: {},
@@ -326,7 +336,10 @@ export class YangParser {
       groupings: {},
       typedefs: {},
       views: {},
-      elements: {}
+      elements: {},
+      state: isUnavaliabe
+           ? ModuleState.unabaliabe 
+           : ModuleState.stable,
     };
 
     await this.handleModule(module, rootStatement, capability);
@@ -389,9 +402,14 @@ export class YangParser {
       }, {})
     };
 
-    // import all required files
+    // import all required files and set module state 
     if (imports) for (let ind = 0; ind < imports.length; ++ind) {
-      await this.addCapability(imports[ind].arg!);
+      const moduleName = imports[ind].arg!; 
+      await this.addCapability(moduleName);
+      const importedModule = this._modules[imports[ind].arg!];
+      if (importedModule && importedModule.state > ModuleState.stable) {
+          module.state = Math.max(module.state, ModuleState.instable);
+      }
     }
 
     this.extractTypeDefinitions(rootStatement, module, "");
@@ -420,7 +438,9 @@ export class YangParser {
           const viewIdIndex = Number(viewElement.viewId);
           module.views[key] = this._views[viewIdIndex];
         }
-        this._views[0].elements[key] = module.elements[key];
+        
+        // add only the UI View if the module is avliable
+        if (module.state !== ModuleState.unabaliabe) this._views[0].elements[key] = module.elements[key];
       });
     });
     return module;
@@ -442,10 +462,30 @@ export class YangParser {
       }
     });
 
-    // process all augmentations
+    // process all augmentations / sort by namespace changes to ensure propper order 
     Object.keys(this.modules).forEach(modKey => {
       const module = this.modules[modKey];
-      Object.keys(module.augments).forEach(augKey => {
+      const augmentKeysWithCounter = Object.keys(module.augments).map((key) => {
+        const pathParts = splitVPath(key, /(?:(?:([^\/\:]+):)?([^\/]+))/g);  // 1 = opt: namespace / 2 = property 
+        let nameSpaceChangeCounter = 0;
+        let currentNS = module.name; // init namespace
+        pathParts.forEach(([ns, _])=> {
+          if (ns === currentNS){
+            currentNS = ns;
+            nameSpaceChangeCounter++;
+          }
+        });
+        return {
+          key,
+          nameSpaceChangeCounter,
+        }
+      });
+      
+      const augmentKeys = augmentKeysWithCounter
+        .sort((a,b) => a.nameSpaceChangeCounter > b.nameSpaceChangeCounter ? 1 : a.nameSpaceChangeCounter === b.nameSpaceChangeCounter ? 0 : -1 )
+        .map((a) => a.key);
+
+      augmentKeys.forEach(augKey => {
         const augments = module.augments[augKey];
         const viewSpec = this.resolveView(augKey);
         if (!viewSpec) console.warn(`Could not find view to augment [${augKey}] in [${module.name}].`);
@@ -454,6 +494,7 @@ export class YangParser {
             const elm = augment.elements[key];
             viewSpec.elements[key] = {
               ...augment.elements[key],
+              
               when: elm.when ? `(${augment.when}) and (${elm.when})` : augment.when,
               ifFeature: elm.ifFeature ? `(${augment.ifFeature}) and (${elm.ifFeature})` : augment.ifFeature,
             };
@@ -546,7 +587,7 @@ export class YangParser {
         const grouping = cur.arg;
 
         // the default for config on module level is config = true;
-        const [currentView, subViews] = this.extractSubViews(cur, parentId, module, currentPath);
+        const [currentView, subViews] = this.extractSubViews(cur, /* parentId */ -1, module, currentPath);
         grouping && (module.groupings[grouping] = currentView);
         acc.push(currentView, ...subViews);
         return acc;
@@ -600,6 +641,7 @@ export class YangParser {
     }, {});
   }
 
+   // Hint: use 0 as parentId for rootElements and -1 for rootGroupings.
   private extractSubViews(statement: Statement, parentId: number, module: Module, currentPath: string): [ViewSpecification, ViewSpecification[]] {
     // used for scoped definitions
     const context: Module = {
@@ -640,6 +682,8 @@ export class YangParser {
         elements.push({
           id: parentId === 0 ? `${context.name}:${cur.arg}` : cur.arg,
           label: cur.arg,
+          path: currentPath,
+          module: context.name || module.name || '',
           uiType: "object",
           viewId: currentView.id,
           config: config
@@ -667,6 +711,8 @@ export class YangParser {
         elements.push({
           id: parentId === 0 ? `${context.name}:${cur.arg}` : cur.arg,
           label: cur.arg,
+          path: currentPath,
+          module: context.name || module.name || '',
           isList: true,
           uiType: "object",
           viewId: currentView.id,
@@ -755,6 +801,8 @@ export class YangParser {
           uiType: "choise",
           id: parentId === 0 ? `${context.name}:${curChoise.arg}` : curChoise.arg,
           label: curChoise.arg,
+          path: currentPath,
+          module: context.name || module.name || '',
           config: config,
           mandatory: mandatory,
           description: description,
@@ -802,6 +850,8 @@ export class YangParser {
           uiType: "rpc",
           id: parentId === 0 ? `${context.name}:${curRpc.arg}` : curRpc.arg,
           label: curRpc.arg,
+          path: currentPath,
+          module: context.name || module.name || '',
           config: config,
           description: description,
           inputViewId: inputViewId,
@@ -869,7 +919,8 @@ export class YangParser {
 
             Object.keys(groupingViewSpec.elements).forEach(key => {
               const elm = groupingViewSpec.elements[key];
-              viewSpec.elements[key] = {
+              // a useRef on root level need a namespace
+              viewSpec.elements[parentId === 0 ? `${module.name}:${key}` : key] = {
                 ...groupingViewSpec.elements[key],
                 when: elm.when ? `(${groupingViewSpec.when}) and (${elm.when})` : groupingViewSpec.when,
                 ifFeature: elm.ifFeature ? `(${groupingViewSpec.ifFeature}) and (${elm.ifFeature})` : groupingViewSpec.ifFeature,
@@ -889,7 +940,9 @@ export class YangParser {
             }
         });
         // console.log("Resolved "+currentElementPath, viewSpec);
-        viewSpec?.uses![ResolveFunction] = undefined;
+        if (viewSpec?.uses) {
+          viewSpec.uses[ResolveFunction] = undefined;
+        }
       }
 
       this._groupingsToResolve.push(viewSpec);
@@ -934,9 +987,19 @@ export class YangParser {
     const extractRange = (min: number, max: number, property: string = "range"): { expression: Expression<YangRange> | undefined, min: number, max: number } => {
       const ranges = this.extractValue(this.extractNodes(cur, "type")[0]!, property) || undefined;
       const range = ranges ?.replace(/min/i, String(min)).replace(/max/i, String(max)).split("|").map(r => {
-        const [minStr, maxStr] = r.split('..');
-        const minValue = Number(minStr);
-        const maxValue = Number(maxStr);
+        let minValue: number;
+        let maxValue: number;
+        
+        if (r.indexOf('..') > -1) {
+            const [minStr, maxStr] = r.split('..');
+            minValue = Number(minStr);
+            maxValue = Number(maxStr);
+        } else if (!isNaN(maxValue = Number(r && r.trim() )) ) {
+            minValue = maxValue;
+        } else {
+            minValue = min,
+            maxValue = max;
+        }
 
         if (minValue > min) min = minValue;
         if (maxValue < max) max = maxValue;
@@ -978,7 +1041,9 @@ export class YangParser {
 
     const element: ViewElementBase = {
       id: parentId === 0 ? `${module.name}:${cur.arg}` : cur.arg,
-      label: cur.arg,
+      label: cur.arg, 
+      path: currentPath,
+      module: module.name || "",
       config: config,
       mandatory: mandatory,
       isList: isList,
@@ -1254,15 +1319,25 @@ export class YangParser {
         length: extractRange(0, +18446744073709551615, "length"),
       };
     } else {
-      // not a build in type, have to resolve type
+      // not a build in type, need to resolve type
       let typeRef = this.resolveType(type, module);
       if (typeRef == null) console.error(new Error(`Could not resolve type ${type} in [${module.name}][${currentPath}].`));
 
+
       if (isViewElementString(typeRef)) {
         typeRef = this.resolveStringType(typeRef, extractPattern(), extractRange(0, +18446744073709551615));
-
       } else if (isViewElementNumber(typeRef)) {
         typeRef = this.resolveNumberType(typeRef, extractRange(typeRef.min, typeRef.max));
+      }
+
+      // spoof date type here from special string type
+      if ((type === 'date-and-time' || type.endsWith(':date-and-time') ) && typeRef.module === "ietf-yang-types") {
+          return {
+             ...typeRef,
+             ...element,
+             description: description,
+             uiType: "date", 
+          };
       }
 
       return ({

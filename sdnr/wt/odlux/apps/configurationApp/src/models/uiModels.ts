@@ -19,6 +19,8 @@
 export type ViewElementBase = {
   "id": string;
   "label": string;
+  "module": string;
+  "path": string;
   "config": boolean;
   "ifFeature"?: string;
   "when"?: string;
@@ -47,6 +49,14 @@ export type ViewElementBits = ViewElementBase & {
 // https://tools.ietf.org/html/rfc7950#section-9
 export type ViewElementString = ViewElementBase & {
   "uiType": "string";
+  "pattern"?: Expression<RegExp>;
+  "length"?: Expression<YangRange>;
+  "invertMatch"?: true;
+}
+
+// special case derived from 
+export type ViewElementDate = ViewElementBase & {
+  "uiType": "date";
   "pattern"?: Expression<RegExp>;
   "length"?: Expression<YangRange>;
   "invertMatch"?: true;
@@ -134,6 +144,7 @@ export type ViewElement =
   | ViewElementBits
   | ViewElementBinary
   | ViewElementString
+  | ViewElementDate
   | ViewElementNumber
   | ViewElementBoolean
   | ViewElementObject
@@ -145,7 +156,11 @@ export type ViewElement =
   | ViewElementRpc;
 
 export const isViewElementString = (viewElement: ViewElement): viewElement is ViewElementString => {
-  return viewElement && viewElement.uiType === "string";
+  return viewElement && (viewElement.uiType === "string" || viewElement.uiType === "date");
+}
+
+export const isViewElementDate = (viewElement: ViewElement): viewElement is ViewElementDate => {
+  return viewElement && (viewElement.uiType === "date");
 }
 
 export const isViewElementNumber = (viewElement: ViewElement): viewElement is ViewElementNumber => {

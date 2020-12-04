@@ -23,7 +23,7 @@ import { BaseProps } from "./baseProps";
 import { IfWhenTextInput } from "./ifWhenTextInput";
 import { checkRange, checkPattern } from "./verifyer";
 
-type stringEntryProps = BaseProps;
+type stringEntryProps = BaseProps ;
 
 export const UiElementString = (props: stringEntryProps) => {
 

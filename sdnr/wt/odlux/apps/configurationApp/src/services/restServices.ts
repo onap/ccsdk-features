@@ -21,12 +21,50 @@ import { convertPropertyNames, replaceHyphen } from "../../../../framework/src/u
 
 import { NetworkElementConnection } from "../models/networkElementConnection";
 
+type CapabilityResponse = {
+    "network-topology:node": {
+        "node-id": string, 
+        "netconf-node-topology:available-capabilities": { 
+            "available-capability": { 
+                "capability-origin": string, 
+                "capability": string,
+            }[] 
+        },
+        "netconf-node-topology:unavailable-capabilities": { 
+            "unavailable-capability": { 
+                "capability": string,
+                "failure-reason": string, 
+            }[] 
+        }
+    }[] 
+}
+
+type CapabilityAnswer = { 
+    avaliableCapabilities: { 
+        capabilityOrigin: string, 
+        capability: string 
+    }[] | null ,
+    unavaliableCapabilities: { 
+        failureReason: string, 
+        capability: string 
+    }[] | null ,
+}
+
 class RestService {
-  public async getCapabilitiesByMoutId(nodeId: string): Promise<{ "capabilityOrigin": string, "capability": string }[] | null> {
+  public async getCapabilitiesByMoutId(nodeId: string): Promise<CapabilityAnswer> {
     const path = `/rests/data/network-topology:network-topology/topology=topology-netconf/node=${nodeId}`;
-    const capabilitiesResult = await requestRest<{"network-topology:node": {"node-id": string, "netconf-node-topology:available-capabilities": { "available-capability": { "capability-origin": string, "capability": string }[] }}[] }>(path, { method: "GET" });
-    return capabilitiesResult && capabilitiesResult["network-topology:node"] && capabilitiesResult["network-topology:node"].length > 0 &&
-      capabilitiesResult["network-topology:node"][0]["netconf-node-topology:available-capabilities"]["available-capability"].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || null;
+    const capabilitiesResult = await requestRest<CapabilityResponse>(path, { method: "GET" });
+    const avaliableCapabilities = capabilitiesResult && capabilitiesResult["network-topology:node"] && capabilitiesResult["network-topology:node"].length > 0 &&
+       capabilitiesResult["network-topology:node"][0]["netconf-node-topology:available-capabilities"] && 
+       capabilitiesResult["network-topology:node"][0]["netconf-node-topology:available-capabilities"]["available-capability"] && 
+       capabilitiesResult["network-topology:node"][0]["netconf-node-topology:available-capabilities"]["available-capability"].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || [];
+   
+    const unavaliableCapabilities = capabilitiesResult && capabilitiesResult["network-topology:node"] && capabilitiesResult["network-topology:node"].length > 0 &&
+      capabilitiesResult["network-topology:node"][0]["netconf-node-topology:unavailable-capabilities"] &&
+      capabilitiesResult["network-topology:node"][0]["netconf-node-topology:unavailable-capabilities"]["unavailable-capability"] && 
+      capabilitiesResult["network-topology:node"][0]["netconf-node-topology:unavailable-capabilities"]["unavailable-capability"].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || []
+   
+    return { avaliableCapabilities, unavaliableCapabilities };
   }
 
   public async getMountedNetworkElementByMountId(nodeId: string): Promise<NetworkElementConnection | null> {
