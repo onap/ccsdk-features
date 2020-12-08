@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.test.mock;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
@@ -29,6 +30,7 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionOutput;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -90,6 +92,20 @@ public class NetconfAccessorMock implements NetconfAccessor {
 
     @Override
     public ListenableFuture<RpcResult<CreateSubscriptionOutput>> registerNotificationsStream(String streamName) {
+        return null;
+    }
+
+    @Override
+    public void registerNotificationsStream(List<Stream> streamList) {
+    }
+
+    @Override
+    public boolean isNCNotificationsSupported() {
+        return false;
+    }
+
+    @Override
+    public List<Stream> getNotificationStreams() {
         return null;
     }
 

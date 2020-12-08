@@ -164,7 +164,7 @@ public class Capabilities {
      * @param revision request or null for any revision
      * @return true if existing
      */
-    private boolean isSupportingNamespaceAndRevision(String namespace, @Nullable String revision) {
+    public boolean isSupportingNamespaceAndRevision(String namespace, @Nullable String revision) {
         LOG.trace("isSupportingNamespaceAndRevision: Model namespace {}?[revision {}]", namespace, revision);
         for (String capability : capabilities) {
             if (capability.contains(namespace) && (revision == null || capability.contains(revision))) {

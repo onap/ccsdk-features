@@ -19,8 +19,10 @@ package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
@@ -29,11 +31,15 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionInput;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionOutput;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.NotificationsService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.StreamNameType;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.Netconf;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.Streams;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
@@ -181,6 +187,37 @@ public class NetconfAccessorImpl implements NetconfAccessor {
         SettableFuture<RpcResult<CreateSubscriptionOutput>> res = SettableFuture.create();
         res.set(result.build());
         return res;
+    }
+
+    @Override
+    public void registerNotificationsStream(List<Stream> streamList) {
+        for (Stream stream : streamList) {
+            log.info("Stream Name = {}, Stream Description = {}", stream.getName().getValue(), stream.getDescription());
+            if (!(stream.getName().getValue().equals(NetconfAccessor.DefaultNotificationsStream))) // Since this stream is already registered
+                registerNotificationsStream(stream.getName().getValue());
+        }
+    }
+
+    /**
+     * check if nc-notifications.yang is supported by the device
+     */
+    @Override
+    public boolean isNCNotificationsSupported() {
+        Capabilities capabilities = getCapabilites();
+        if (capabilities.isSupportingNamespace(Netconf.QNAME)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<Stream> getNotificationStreams() {
+        final Class<Netconf> netconfClazz = Netconf.class;
+        InstanceIdentifier<Netconf> streamsIID = InstanceIdentifier.builder(netconfClazz).build();
+
+        Netconf res = getTransactionUtils().readData(getDataBroker(), LogicalDatastoreType.OPERATIONAL, streamsIID);
+        Streams streams = res.getStreams();
+        return YangHelper.getList(streams.getStream());
     }
 
 

@@ -18,10 +18,12 @@
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionOutput;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -78,11 +80,34 @@ public interface NetconfAccessor {
 
     /**
      * Register notifications stream for the connection.
-     * 
+     *
      * @param streamName that should be "NETCONF" as default.
      * @return progress indication
      */
     ListenableFuture<RpcResult<CreateSubscriptionOutput>> registerNotificationsStream(String streamName);
 
+    /**
+     * Register notifications stream for the connection
+     *
+     * @param streamList that contains a list of streams to be subscribed for notifications
+     * @return progress indication
+     */
+    void registerNotificationsStream(List<Stream> streamList);
 
+    /**
+     * check if the device supports notifications.yang
+     * @return true if notifications.yang is supported
+     */
+//    boolean isNotificationsSupported();
+
+    /**
+     * check if the device supports notifications.yang
+     * @return true if nc-notifications.yang is supported
+     */
+    boolean isNCNotificationsSupported();
+    /**
+     * Get all notification streams
+     * @return stream list
+     */
+    List<Stream> getNotificationStreams();
 }

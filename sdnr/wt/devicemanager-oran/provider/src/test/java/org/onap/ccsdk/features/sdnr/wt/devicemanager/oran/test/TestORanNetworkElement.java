@@ -20,7 +20,6 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Optional;
@@ -30,17 +29,17 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanNetworkElementFactory;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test.mock.NetconfAccessorMock;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test.mock.TransactionUtilsMock;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.yang.gen.v1.urn.o.ran.hardware._1._0.rev190328.ORANHWCOMPONENT;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.common.QName;
 
 public class TestORanNetworkElement {
 
-    static NetconfAccessorMock accessor;
+    static NetconfAccessor accessor;
     static DeviceManagerServiceProvider serviceProvider;
     static Capabilities capabilities;
     QName qCapability;
@@ -48,8 +47,7 @@ public class TestORanNetworkElement {
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
         capabilities = mock(Capabilities.class);
-        //accessor = mock(NetconfAccessorMock.class);
-        accessor = spy(new NetconfAccessorMock(null, null, null, null));
+        accessor = mock(NetconfAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
 
         NodeId nNodeId = new NodeId("nSky");

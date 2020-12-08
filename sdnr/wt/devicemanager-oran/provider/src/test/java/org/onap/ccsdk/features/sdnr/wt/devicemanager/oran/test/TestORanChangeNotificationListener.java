@@ -27,6 +27,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanChangeNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.base._1._0.rev110601.EditOperationType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfConfigChange;
@@ -48,8 +50,13 @@ public class TestORanChangeNotificationListener {
 
         NetconfAccessor netconfAccessor = mock(NetconfAccessor.class);
         DataProvider databaseService = mock(DataProvider.class);
+        VESCollectorService vesCollectorService = mock(VESCollectorService.class);
+        VESCollectorCfgService vesCfgService = mock(VESCollectorCfgService.class);
+
+        when(vesCollectorService.getConfig()).thenReturn(vesCfgService);
+        when(vesCfgService.getReportingEntityName()).thenReturn("SDN-R");
         ORanChangeNotificationListener notifListener =
-                new ORanChangeNotificationListener(netconfAccessor, databaseService);
+                new ORanChangeNotificationListener(netconfAccessor, databaseService, vesCollectorService);
         when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
         Iterable<? extends PathArgument> pathArguments = Arrays.asList(new PathArgument() {
 

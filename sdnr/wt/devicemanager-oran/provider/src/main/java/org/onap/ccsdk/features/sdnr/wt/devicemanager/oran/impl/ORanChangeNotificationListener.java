@@ -17,8 +17,11 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.IetfNetconfNotificationsListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfCapabilityChange;
@@ -42,10 +45,14 @@ public class ORanChangeNotificationListener implements IetfNetconfNotificationsL
 
     private final NetconfAccessor netconfAccessor;
     private final DataProvider databaseService;
+    private final VESCollectorService vesCollectorService;
 
-    public ORanChangeNotificationListener(NetconfAccessor netconfAccessor, DataProvider databaseService) {
+    private static int sequenceNo = 0;
+
+    public ORanChangeNotificationListener(NetconfAccessor netconfAccessor, DataProvider databaseService, VESCollectorService vesCollectorService) {
         this.netconfAccessor = netconfAccessor;
         this.databaseService = databaseService;
+        this.vesCollectorService = vesCollectorService;
     }
 
     @Override
@@ -71,6 +78,7 @@ public class ORanChangeNotificationListener implements IetfNetconfNotificationsL
     @Override
     public void onNetconfConfigChange(NetconfConfigChange notification) {
         log.info("onNetconfConfigChange (1) {}", notification);
+        sequenceNo++;
         StringBuffer sb = new StringBuffer();
         List<Edit> editList = notification.nonnullEdit();
         for (Edit edit : editList) {
@@ -94,6 +102,17 @@ public class ORanChangeNotificationListener implements IetfNetconfNotificationsL
             databaseService.writeEventLog(eventlogBuilder.build());
         }
         log.info("onNetconfConfigChange (2) {}", sb);
+        ORanNotificationMapper mapper = new ORanNotificationMapper();
+        HashMap<String, String> xPathFieldsMap = mapper.performMapping(notification);
+        log.info("MappingInfo after mapping notification - {}", xPathFieldsMap);
+        Instant instant = mapper.getTime(notification);
+
+        ORanNotifToVESEventAssembly oranVESEventAssembly = new ORanNotifToVESEventAssembly(netconfAccessor, vesCollectorService);
+        String data = oranVESEventAssembly.performAssembly(xPathFieldsMap, instant, NetconfConfigChange.class.getSimpleName(),
+                sequenceNo);
+        vesCollectorService.publishVESMessage(data);
+
+
     }
 
 }

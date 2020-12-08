@@ -25,8 +25,13 @@ import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.Netconf;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.Streams;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.Hardware;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.hardware.Component;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -50,6 +55,8 @@ public class ORanNetworkElement implements NetworkElement {
 
     private final DataProvider databaseService;
 
+    private final VESCollectorService vesCollectorService;
+
     private final ORanToInternalDataModel oRanMapper;
 
     private ListenerRegistration<NotificationListener> oRanListenerRegistrationResult;
@@ -57,13 +64,15 @@ public class ORanNetworkElement implements NetworkElement {
     private ListenerRegistration<NotificationListener> oRanFaultListenerRegistrationResult;
     private @NonNull final ORanFaultNotificationListener oRanFaultListener;
 
-    ORanNetworkElement(NetconfAccessor netconfAccess, DataProvider databaseService) {
+    ORanNetworkElement(NetconfAccessor netconfAccess, DataProvider databaseService,
+            VESCollectorService vesCollectorService) {
         log.info("Create {}", ORanNetworkElement.class.getSimpleName());
         this.netconfAccessor = netconfAccess;
         this.databaseService = databaseService;
+        this.vesCollectorService = vesCollectorService;
 
         this.oRanListenerRegistrationResult = null;
-        this.oRanListener = new ORanChangeNotificationListener(netconfAccessor, databaseService);
+        this.oRanListener = new ORanChangeNotificationListener(netconfAccessor, databaseService, vesCollectorService);
 
         this.oRanFaultListenerRegistrationResult = null;
         this.oRanFaultListener = new ORanFaultNotificationListener();
@@ -128,8 +137,14 @@ public class ORanNetworkElement implements NetworkElement {
         // Register call back class for receiving notifications
         this.oRanListenerRegistrationResult = netconfAccessor.doRegisterNotificationListener(oRanListener);
         this.oRanFaultListenerRegistrationResult = netconfAccessor.doRegisterNotificationListener(oRanFaultListener);
-	// Register netconf stream
-        netconfAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
+        // Register notifications stream
+        if (netconfAccessor.isNCNotificationsSupported()) {
+            List<Stream> streamList = netconfAccessor.getNotificationStreams();
+            netconfAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream); // Always register first to default stream
+            netconfAccessor.registerNotificationsStream(streamList);
+        } else {
+            netconfAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
+        }
     }
 
     @Override
