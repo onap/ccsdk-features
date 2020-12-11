@@ -58,7 +58,7 @@
     "jest": "23.6.0",
     "less": "3.8.1",
     "less-loader": "4.1.0",
-    "node-sass": "4.9.3",
+    "node-sass": "4.12.0",
     "postcss-loader": "3.0.0",
     "requirejs": "2.3.6",
     "requirejs-webpack-plugin": "1.0.5",
