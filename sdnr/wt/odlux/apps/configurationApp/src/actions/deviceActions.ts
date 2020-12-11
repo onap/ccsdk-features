@@ -528,7 +528,7 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
 
     // do not extract root member (0)
     if (viewSpecification && viewSpecification.id !== "0") {
-      const updateResult = await restService.setConfigData(dataPath, { [`${defaultNS}:${dataMember!}`]: data }); // addDataMember using defaultNS
+      const updateResult = await restService.setConfigData(dataPath, { [`${currentNS}:${dataMember!}`]: data }); // addDataMember using currentNS
       if (updateResult.status < 200 || updateResult.status > 299) {
         const message = updateResult.data && updateResult.data.errors && updateResult.data.errors.error && updateResult.data.errors.error[0] && updateResult.data.errors.error[0]["error-message"] || "";
         throw new Error(`Server Error. Status: [${updateResult.status}]\n${message || updateResult.message || ''}`);
