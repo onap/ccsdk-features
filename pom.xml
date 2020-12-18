@@ -47,8 +47,8 @@
         <module>sdnr/wt</module>
         <module>sdnr/northbound</module>
         <module>aafshiro</module>
-	<module>lib/rlock</module>
-	<module>lib/doorman</module>
+        <module>lib/rlock</module>
+        <module>lib/doorman</module>
     </modules>
 
     <scm>

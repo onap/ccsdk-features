@@ -155,7 +155,7 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                 </artifactItem>
-                                 <!-- networkMapApp-->
+                                <!-- networkMapApp-->
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>sdnr-wt-odlux-app-networkMapApp</artifactId>
@@ -163,7 +163,7 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                 </artifactItem>
-                                 <!-- linkCalculationApp-->
+                                <!-- linkCalculationApp-->
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>sdnr-wt-odlux-app-linkCalculationApp</artifactId>

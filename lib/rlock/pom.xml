@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.onap.ccsdk.features</groupId>
-		<artifactId>ccsdk-features</artifactId>
-		<version>1.1.1-SNAPSHOT</version>
-		<relativePath>../..</relativePath>
-	</parent>
+    <parent>
+        <groupId>org.onap.ccsdk.features</groupId>
+        <artifactId>ccsdk-features</artifactId>
+        <version>1.1.1-SNAPSHOT</version>
+        <relativePath>../..</relativePath>
+    </parent>
 
-	<groupId>org.onap.ccsdk.features.lib.rlock</groupId>
-	<artifactId>rlock</artifactId>
+    <groupId>org.onap.ccsdk.features.lib.rlock</groupId>
+    <artifactId>rlock</artifactId>
 
-	<name>ccsdk-features :: ${project.artifactId}</name>
-	<description>Resource Lock - Distributed locking feature using database</description>
+    <name>ccsdk-features :: ${project.artifactId}</name>
+    <description>Resource Lock - Distributed locking feature using database</description>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<scope>test</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-	    </dependencies>
+    </dependencies>
 </project>
