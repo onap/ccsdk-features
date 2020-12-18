@@ -123,16 +123,16 @@
             <!-- <version>${sdnctl.sli.version}</version> -->
         </dependency>
         <dependency>
-    			<groupId>org.osgi</groupId>
-    			<artifactId>org.osgi.core</artifactId>
-    			<scope>test</scope>
-  		</dependency>
-      <dependency>
-          <groupId>org.onap.ccsdk.sli.core</groupId>
-          <artifactId>sli-provider-base</artifactId>
-          <version>${ccsdk.sli.core.version}</version>
-          <scope>provided</scope>
-      </dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.onap.ccsdk.sli.core</groupId>
+            <artifactId>sli-provider-base</artifactId>
+            <version>${ccsdk.sli.core.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

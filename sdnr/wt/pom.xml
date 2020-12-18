@@ -56,8 +56,8 @@
         <module>devicemanager-onf14</module>
         <module>devicemanager-openroadm</module>
         <module>devicemanager-adapter-manager</module>
-        <module>mountpoint-registrar</module> 
-        <module>odlux</module> 
-        <module>featureaggregator</module> 
+        <module>mountpoint-registrar</module>
+        <module>odlux</module>
+        <module>featureaggregator</module>
     </modules>
 </project>
