@@ -48,7 +48,6 @@
                   <scope>import</scope>
               </dependency>
             -->
-
             <dependency>
                 <groupId>org.onap.ccsdk.sli.core</groupId>
                 <artifactId>sli-core-artifacts</artifactId>

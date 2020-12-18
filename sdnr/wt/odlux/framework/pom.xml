@@ -183,7 +183,7 @@
                             <token>##odlux.version##</token>
                             <value>${odlux.version}</value>
                         </replacement>
-                         <replacement>
+                        <replacement>
                             <token>##buildno##</token>
                             <value>${buildno}</value>
                         </replacement>

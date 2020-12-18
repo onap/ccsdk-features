@@ -62,9 +62,9 @@
             <artifactId>commons-cli</artifactId>
         </dependency>
         <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-       </dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-common</artifactId>
@@ -76,6 +76,7 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -131,7 +132,7 @@
                 </executions>
                 <configuration>
                     <finalName>sdnr-dmt</finalName>
-                  <appendAssemblyId>false</appendAssemblyId>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
                             <mainClass>org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.Program</mainClass>
@@ -142,7 +143,6 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 </project>
