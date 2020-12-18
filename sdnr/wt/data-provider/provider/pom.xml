@@ -92,11 +92,11 @@
             <artifactId>org.apache.karaf.shell.core</artifactId>
             <scope>provided</scope>
         </dependency>
-<!--          <dependency> -->
-<!--             <groupId>org.apache.karaf.bundle</groupId> -->
-<!--             <artifactId>org.apache.karaf.bundle.core</artifactId> -->
-<!--             <scope>provided</scope> -->
-<!--         </dependency> -->
+        <!--          <dependency> -->
+        <!--             <groupId>org.apache.karaf.bundle</groupId> -->
+        <!--             <artifactId>org.apache.karaf.bundle.core</artifactId> -->
+        <!--             <scope>provided</scope> -->
+        <!--         </dependency> -->
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>sal-netconf-connector</artifactId>

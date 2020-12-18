@@ -132,7 +132,6 @@
             <artifactId>sdnr-wt-odlux-app-linkCalculationApp</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>

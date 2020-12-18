@@ -123,9 +123,9 @@
             <!-- <version>${sdnctl.sli.version}</version> -->
         </dependency>
         <dependency>
-    			<groupId>org.osgi</groupId>
-    			<artifactId>org.osgi.core</artifactId>
-    			<scope>test</scope>
+  <groupId>org.osgi</groupId>
+  <artifactId>org.osgi.core</artifactId>
+  <scope>test</scope>
   		</dependency>
       <dependency>
           <groupId>org.onap.ccsdk.sli.core</groupId>
