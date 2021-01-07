@@ -21,31 +21,12 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder.Value;
-import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev191129.PmDataType;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.Credentials;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.mapperextensions.YangToolsBuilderAnnotationIntrospector;
 import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.TypeObject;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,16 +35,12 @@ import org.slf4j.LoggerFactory;
  * deserialization of DataObject to/from JSON TODO ChoiceIn and Credentials deserialization only for
  * LoginPasswordBuilder
  */
-public class YangToolsMapper2<T extends DataObject> extends ObjectMapper {
+public class YangToolsMapper2<T extends DataObject> extends YangToolsMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(YangToolsMapper2.class);
     private static final long serialVersionUID = 1L;
-    private static String BUILDER = "Builder";
 
-    private @Nullable final Class<T> clazz;
     private @Nullable final Class<? extends Builder<? extends T>> builderClazz;
-
-    private BundleContext context;
 
     /**
      * Generic Object creation of yangtools java class builder pattern.
@@ -77,32 +54,10 @@ public class YangToolsMapper2<T extends DataObject> extends ObjectMapper {
      */
     public <X extends T, B extends Builder<X>> YangToolsMapper2(@NonNull Class<T> clazz,
             @Nullable Class<B> builderClazz) throws ClassNotFoundException {
-        super();
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
-        setSerializationInclusion(Include.NON_NULL);
-        setAnnotationIntrospector(new YangToolsBuilderAnnotationIntrospector());
-        SimpleModule dateAndTimeSerializerModule = new SimpleModule();
-        dateAndTimeSerializerModule.addSerializer(DateAndTime.class, new CustomDateAndTimeSerializer());
-        registerModule(dateAndTimeSerializerModule);
+        super(new YangToolsBuilderAnnotationIntrospector(clazz, builderClazz));
 
-        SimpleModule pmDataTypeSerializerModule = new SimpleModule();
-        pmDataTypeSerializerModule.addSerializer(PmDataType.class, new CustomPMDataTypeSerializer());
-        registerModule(pmDataTypeSerializerModule);
-        Bundle bundle = FrameworkUtil.getBundle(YangToolsMapper2.class);
-
-        this.clazz = clazz;
-        this.builderClazz = builderClazz != null ? builderClazz : getBuilderClass(getBuilderClassName(clazz));
-        context = bundle != null ? bundle.getBundleContext() : null;
-    }
-
-    public <X extends T, B extends Builder<X>> YangToolsMapper2(@NonNull Class<T> clazz) throws ClassNotFoundException {
-        this(clazz, null);
-    }
-
-    @Override
-    public String writeValueAsString(Object value) throws JsonProcessingException {
-        return super.writeValueAsString(value);
+        this.builderClazz =
+                builderClazz != null ? builderClazz : getBuilderClass(YangToolsMapperHelper.getBuilderClassName(clazz));
     }
 
     /**
@@ -115,73 +70,17 @@ public class YangToolsMapper2<T extends DataObject> extends ObjectMapper {
     public @Nullable Builder<? extends T> getBuilder(Class<T> clazz) {
         try {
             if (builderClazz != null)
-                return builderClazz.newInstance();
+                return builderClazz.getDeclaredConstructor().newInstance();
             else
                 return null;
-        } catch (InstantiationException | IllegalAccessException e) {
-            LOG.debug("Problem ", e);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            LOG.warn("Problem intantiating Builder", e);
             return null;
         }
-    }
-
-    /**
-     * Callback for handling mapping failures.
-     *
-     * @return
-     */
-    public int getMappingFailures() {
-        return 0;
-    }
-
-    /**
-     * Provide mapping of string to attribute names, generated by yang-tools. "netconf-id" converted to "_netconfId"
-     *
-     * @param name with attribute name, not null or empty
-     * @return converted string or null if name was empty or null
-     */
-    public @Nullable static String toCamelCaseAttributeName(final String name) {
-        if (name == null || name.isEmpty())
-            return null;
-
-        final StringBuilder ret = new StringBuilder(name.length());
-        if (!name.startsWith("_"))
-            ret.append('_');
-        int start = 0;
-        for (final String word : name.split("-")) {
-            if (!word.isEmpty()) {
-                if (start++ == 0) {
-                    ret.append(Character.toLowerCase(word.charAt(0)));
-                } else {
-                    ret.append(Character.toUpperCase(word.charAt(0)));
-                }
-                ret.append(word.substring(1));
-            }
-        }
-        return ret.toString();
-    }
-
-    /**
-     * Verify if builder is available
-     *
-     * @throws ClassNotFoundException
-     **/
-    public Class<?> assertBuilderClass(Class<?> clazz) throws ClassNotFoundException {
-        return getBuilderClass(getBuilderClassName(clazz));
     }
 
     // --- Private functions
-
-    /**
-     * Create name of builder class
-     *
-     * @param <T>
-     * @param clazz
-     * @return builders class name
-     * @throws ClassNotFoundException
-     */
-    private static String getBuilderClassName(Class<?> clazz) {
-        return clazz.getName() + BUILDER;
-    }
 
     /**
      * Search builder in context
@@ -192,128 +91,7 @@ public class YangToolsMapper2<T extends DataObject> extends ObjectMapper {
      */
     @SuppressWarnings("unchecked")
     private <X extends T, B extends Builder<X>> Class<B> getBuilderClass(String name) throws ClassNotFoundException {
-        // Try to find in other bundles
-        if (context != null) {
-            //OSGi environment
-            for (Bundle b : context.getBundles()) {
-                LOG.info("Search in bundle: {}", b.getSymbolicName());
-                try {
-                    return (Class<B>) b.loadClass(name);
-                } catch (ClassNotFoundException e) {
-                    // No problem, this bundle doesn't have the class
-                }
-            }
-            throw new ClassNotFoundException("Can not find Class in OSGi context.");
-        } else {
-            return (Class<B>) Class.forName(name);
-        }
-        // not found in any bundle
+        return (Class<B>) YangToolsMapperHelper.getBuilderClass(name);
     }
 
-    // --- Classes
-
-    /**
-     * Adapted Builder callbacks
-     */
-    private class YangToolsBuilderAnnotationIntrospector extends JacksonAnnotationIntrospector {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public Class<?> findPOJOBuilder(AnnotatedClass ac) {
-            Class<?> clazz2build = ac.getRawType();
-            if (clazz2build.equals(Credentials.class)) {
-                return org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPasswordBuilder.class;
-
-            } else if (clazz2build.equals(DateAndTime.class)) {
-                return DateAndTimeBuilder.class;
-                //            } else if (ac.getRawType().equals(PmDataType.class)) {
-                //                LOG.info("Builder class");
-                //                return PMDataTypeBuilder.class;
-            } else if (clazz2build.equals(clazz)) {
-                return builderClazz;
-            }
-
-            if (clazz2build.isInterface() || TypeObject.class.isAssignableFrom(clazz2build)) {
-                String builder = getBuilderClassName(clazz2build);
-                LOG.info("Search: {}", builder);
-                Class<?> innerBuilder;
-                try {
-                    innerBuilder = Class.forName(builder);
-                    LOG.info("Found1: {}", innerBuilder);
-                    return innerBuilder;
-                } catch (ClassNotFoundException e) {
-                    LOG.info("Could not find {}", clazz2build);
-                    // No problem .. try next
-                }
-                try {
-                    innerBuilder = getBuilderClass(builder);
-                    LOG.info("Found2: {}", innerBuilder);
-                    return innerBuilder;
-                } catch (ClassNotFoundException e) {
-                    LOG.info("Could not find {}", clazz2build);
-                    // No problem .. try next
-                }
-            }
-            Class<?> clazz = super.findPOJOBuilder(ac);
-            return clazz;
-        }
-
-        @Override
-        public Value findPOJOBuilderConfig(AnnotatedClass ac) {
-            if (ac.hasAnnotation(JsonPOJOBuilder.class)) {
-                return super.findPOJOBuilderConfig(ac);
-            }
-            return new JsonPOJOBuilder.Value("build", "set");
-        }
-    }
-
-    public static class DateAndTimeBuilder {
-
-        private final String _value;
-
-        public DateAndTimeBuilder(String v) {
-            this._value = v;
-        }
-
-        public DateAndTime build() {
-            return new DateAndTime(_value);
-        }
-
-    }
-    public static class CustomDateAndTimeSerializer extends StdSerializer<@NonNull DateAndTime> {
-
-        private static final long serialVersionUID = 1L;
-
-        public CustomDateAndTimeSerializer() {
-            this(null);
-        }
-
-        protected CustomDateAndTimeSerializer(Class<DateAndTime> t) {
-            super(t);
-        }
-
-        @Override
-        public void serialize(DateAndTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeString(value.getValue());
-        }
-
-    }
-    public static class CustomPMDataTypeSerializer extends StdSerializer<@NonNull PmDataType> {
-
-        private static final long serialVersionUID = 1L;
-
-        public CustomPMDataTypeSerializer() {
-            this(null);
-        }
-
-        protected CustomPMDataTypeSerializer(Class<PmDataType> t) {
-            super(t);
-        }
-
-        @Override
-        public void serialize(PmDataType value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeString(value.toString());
-        }
-
-    }
 }
