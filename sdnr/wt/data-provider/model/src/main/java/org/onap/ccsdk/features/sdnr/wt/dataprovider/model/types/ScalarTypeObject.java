@@ -19,35 +19,31 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.common.test;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+public class ScalarTypeObject {
 
-public class ServletOutputStreamToByteArrayOutputStream extends ServletOutputStream {
+    // constants
+    // end of constants
 
     // variables
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-
     // end of variables
 
-    public ByteArrayOutputStream getByteArrayOutputStream() {
-        return out;
-    }
+    // constructors
+    // end of constructors
 
-    @Override
-    public void setWriteListener(WriteListener writeListener) {
-    }
+    // getters and setters
+    // end of getters and setters
 
-    @Override
-    public void write(int b) throws IOException {
-        out.write(b);
-    }
+    // private methods
+    // end of private methods
 
-    @Override
-    public boolean isReady() {
-        return false;
-    }
+    // public methods
+    // end of public methods
+
+    // static methods
+    // end of static methods
+
+    // private classes
+    // end of private classes
 }
