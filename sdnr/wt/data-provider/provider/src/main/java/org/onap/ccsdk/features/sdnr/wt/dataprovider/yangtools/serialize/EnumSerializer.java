@@ -19,35 +19,18 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.common.test;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.serialize;
 
-import java.io.ByteArrayOutputStream;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 
-public class ServletOutputStreamToByteArrayOutputStream extends ServletOutputStream {
-
-    // variables
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-    // end of variables
-
-    public ByteArrayOutputStream getByteArrayOutputStream() {
-        return out;
-    }
+@SuppressWarnings("rawtypes")
+public class EnumSerializer extends JsonSerializer<Enum> {
 
     @Override
-    public void setWriteListener(WriteListener writeListener) {
-    }
-
-    @Override
-    public void write(int b) throws IOException {
-        out.write(b);
-    }
-
-    @Override
-    public boolean isReady() {
-        return false;
+    public void serialize(Enum value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        gen.writeString(value.name());
     }
 }

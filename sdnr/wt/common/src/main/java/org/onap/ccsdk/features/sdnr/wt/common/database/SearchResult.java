@@ -45,10 +45,6 @@ public class SearchResult<T> {
         this.total = total;
     }
 
-    //	public SearchResult(List<T> hits,long total) {
-    //		this.hits = hits;
-    //		this.total = total;
-    //	}
     public SearchResult() {
         this.hits = new ArrayList<>();
         this.total = 0;
@@ -69,4 +65,11 @@ public class SearchResult<T> {
     public void add(T object) {
         this.hits.add(object);
     }
+
+    @Override
+    public String toString() {
+        return "SearchResult [hits=" + hits + ", total=" + total + "]";
+    }
+
+
 }

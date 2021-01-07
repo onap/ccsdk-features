@@ -19,35 +19,33 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.common.test;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.serialize;
 
-import java.io.ByteArrayOutputStream;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import java.io.IOException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+import org.eclipse.jdt.annotation.NonNull;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 
-public class ServletOutputStreamToByteArrayOutputStream extends ServletOutputStream {
+/**
+ * DateAndTime shouldn't be encapsulated into a json object to be able to use elasticsearch date time query functions.
+ */
+public class DateAndTimeSerializer extends StdSerializer<@NonNull DateAndTime> {
 
-    // variables
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private static final long serialVersionUID = 1L;
 
-    // end of variables
+    public DateAndTimeSerializer() {
+        this(null);
+    }
 
-    public ByteArrayOutputStream getByteArrayOutputStream() {
-        return out;
+    protected DateAndTimeSerializer(Class<DateAndTime> t) {
+        super(t);
     }
 
     @Override
-    public void setWriteListener(WriteListener writeListener) {
+    public void serialize(DateAndTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        gen.writeString(value.getValue());
     }
 
-    @Override
-    public void write(int b) throws IOException {
-        out.write(b);
-    }
-
-    @Override
-    public boolean isReady() {
-        return false;
-    }
 }

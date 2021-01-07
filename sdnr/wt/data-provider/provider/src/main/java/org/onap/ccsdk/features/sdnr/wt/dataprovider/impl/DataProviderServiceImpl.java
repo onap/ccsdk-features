@@ -57,6 +57,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListInput;
@@ -85,9 +87,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutputBuilder;
 import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -165,7 +164,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     @Override
     public ListenableFuture<RpcResult<ReadFaultcurrentListOutput>> readFaultcurrentList(
             ReadFaultcurrentListInput input) {
-        LOG.debug("RPC Request: getFaultCurrentEntityList with input {}", input);
+        LOG.debug("RPC Request: readFaultCurrentList with input {}", input);
         RpcResultBuilder<ReadFaultcurrentListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readFaultCurrentList(input));
         return result.buildFuture();
@@ -173,7 +172,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     @Override
     public ListenableFuture<RpcResult<ReadFaultlogListOutput>> readFaultlogList(ReadFaultlogListInput input) {
-        LOG.debug("RPC Request: getFaultCurrentEntityList with input {}", input);
+        LOG.debug("RPC Request: readFaultlogList with input {}", input);
         RpcResultBuilder<ReadFaultlogListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readFaultLogList(input));
         return result.buildFuture();
@@ -181,7 +180,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     @Override
     public ListenableFuture<RpcResult<ReadMaintenanceListOutput>> readMaintenanceList(ReadMaintenanceListInput input) {
-        LOG.debug("RPC Request: getMaintenanceEntityList with input {}", input);
+        LOG.debug("RPC Request: readMaintenanceList with input {}", input);
         RpcResultBuilder<ReadMaintenanceListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readMaintenanceList(input));
         return result.buildFuture();
@@ -190,7 +189,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     @Override
     public ListenableFuture<RpcResult<ReadMediatorServerListOutput>> readMediatorServerList(
             ReadMediatorServerListInput input) {
-        LOG.debug("RPC Request: getMediatorServerEntityList with input {}", input);
+        LOG.debug("RPC Request: readMediatorServerList with input {}", input);
         RpcResultBuilder<ReadMediatorServerListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readMediatorServerList(input));
         return result.buildFuture();
@@ -199,7 +198,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     @Override
     public ListenableFuture<RpcResult<ReadNetworkElementConnectionListOutput>> readNetworkElementConnectionList(
             ReadNetworkElementConnectionListInput input) {
-        LOG.debug("RPC Request: getNetworkElementConnectionEntityList with input {}", input);
+        LOG.debug("RPC Request: readNetworkElementConnectionList with input {}", input);
         RpcResultBuilder<ReadNetworkElementConnectionListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readNetworkElementConnectionList(input));
         return result.buildFuture();
@@ -208,7 +207,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     @Override
     public ListenableFuture<RpcResult<ReadPmdata15mListOutput>> readPmdata15mList(ReadPmdata15mListInput input) {
-        LOG.debug("RPC Request: getNetworkElementConnectionEntityList with input {}", input);
+        LOG.debug("RPC Request: readPmdata15mList with input {}", input);
         RpcResultBuilder<ReadPmdata15mListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata15mList(input));
         return result.buildFuture();
@@ -217,7 +216,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     @Override
     public ListenableFuture<RpcResult<ReadPmdata24hListOutput>> readPmdata24hList(ReadPmdata24hListInput input) {
-        LOG.debug("RPC Request: getNetworkElementConnectionEntityList with input {}", input);
+        LOG.debug("RPC Request: readPmdata24hList with input {}", input);
         RpcResultBuilder<ReadPmdata24hListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata24hList(input));
         return result.buildFuture();
@@ -226,7 +225,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     @Override
     public ListenableFuture<RpcResult<ReadStatusOutput>> readStatus(ReadStatusInput input) {
-        LOG.debug("RPC Request: getStatusEntityList with input {}", input);
+        LOG.debug("RPC Request: readStatusEntityList with input {}", input);
         RpcResultBuilder<ReadStatusOutput> result = read(() -> DataProviderServiceImpl.this.dataProvider.readStatus());
         return result.buildFuture();
 
@@ -234,7 +233,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     @Override
     public ListenableFuture<RpcResult<ReadInventoryListOutput>> readInventoryList(ReadInventoryListInput input) {
-        LOG.debug("RPC Request: getInventoryEntityList with input {}", input);
+        LOG.debug("RPC Request: readInventoryList with input {}", input);
         RpcResultBuilder<ReadInventoryListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readInventoryList(input));
         return result.buildFuture();
@@ -243,7 +242,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     @Override
     public ListenableFuture<RpcResult<ReadPmdata15mLtpListOutput>> readPmdata15mLtpList(
             ReadPmdata15mLtpListInput input) {
-        LOG.debug("RPC Request: readPmdataLtpList with input {}", input);
+        LOG.debug("RPC Request: readPmdata15mLtpList with input {}", input);
         RpcResultBuilder<ReadPmdata15mLtpListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata15mLtpList(input));
         return result.buildFuture();
@@ -252,7 +251,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     @Override
     public ListenableFuture<RpcResult<ReadPmdata15mDeviceListOutput>> readPmdata15mDeviceList(
             ReadPmdata15mDeviceListInput input) {
-        LOG.debug("RPC Request: readPmdataDeviceList with input {}", input);
+        LOG.debug("RPC Request: readPmdata15mDeviceList with input {}", input);
         RpcResultBuilder<ReadPmdata15mDeviceListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata15mDeviceList(input));
         return result.buildFuture();
@@ -261,7 +260,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     @Override
     public ListenableFuture<RpcResult<ReadPmdata24hLtpListOutput>> readPmdata24hLtpList(
             ReadPmdata24hLtpListInput input) {
-        LOG.debug("RPC Request: readPmdataLtpList with input {}", input);
+        LOG.debug("RPC Request: readPmdata24hLtpList with input {}", input);
         RpcResultBuilder<ReadPmdata24hLtpListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata24hLtpList(input));
         return result.buildFuture();
@@ -270,7 +269,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     @Override
     public ListenableFuture<RpcResult<ReadPmdata24hDeviceListOutput>> readPmdata24hDeviceList(
             ReadPmdata24hDeviceListInput input) {
-        LOG.debug("RPC Request: readPmdataDeviceList with input {}", input);
+        LOG.debug("RPC Request: readPmdata24hDeviceList with input {}", input);
         RpcResultBuilder<ReadPmdata24hDeviceListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata24hDeviceList(input));
         return result.buildFuture();
@@ -306,6 +305,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     @Override
     public ListenableFuture<RpcResult<DeleteNetworkElementConnectionOutput>> deleteNetworkElementConnection(
             DeleteNetworkElementConnectionInput input) {
+        LOG.debug("RPC Request: deleteNetworkElementConnection with input {}", input);
         RpcResultBuilder<DeleteNetworkElementConnectionOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.deleteNetworkElementConnection(input));
         return result.buildFuture();
@@ -376,7 +376,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     @Override
     public ListenableFuture<RpcResult<ReadGuiCutThroughEntryOutput>> readGuiCutThroughEntry(
             ReadGuiCutThroughEntryInput input) {
-        LOG.debug("RPC Request: readGuiCutThroughEntry with input {}", input);
+        LOG.debug("RPC Request: getGuiCutThroughEntry with input {}", input);
         RpcResultBuilder<ReadGuiCutThroughEntryOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readGuiCutThroughEntry(input));
         return result.buildFuture();
