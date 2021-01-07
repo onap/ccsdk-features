@@ -19,35 +19,18 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.common.test;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.builder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 
-public class ServletOutputStreamToByteArrayOutputStream extends ServletOutputStream {
+public class DateAndTimeBuilder {
+	 private final String _value;
 
-    // variables
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
+     public DateAndTimeBuilder(String v) {
+         this._value = v;
+     }
 
-    // end of variables
-
-    public ByteArrayOutputStream getByteArrayOutputStream() {
-        return out;
-    }
-
-    @Override
-    public void setWriteListener(WriteListener writeListener) {
-    }
-
-    @Override
-    public void write(int b) throws IOException {
-        out.write(b);
-    }
-
-    @Override
-    public boolean isReady() {
-        return false;
-    }
+     public DateAndTime build() {
+         return new DateAndTime(_value);
+     }
 }
