@@ -18,8 +18,10 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14;
 
 import static org.junit.Assert.assertEquals;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -29,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.Equi
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.UniversalId;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.equipment.ActualEquipment;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.equipment.ContainedHolder;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.equipment.ContainedHolderKey;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.equipment.detail.ManufacturedThing;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.manufactured.thing.EquipmentInstance;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.manufactured.thing.EquipmentType;
@@ -65,8 +68,8 @@ public class TestOnf14ToInternalDataModel2 extends Mockito {
         when(currentEq.getUuid()).thenReturn(new UniversalId("0Aabcdef-0abc-0cfD-0abC-0123456789AB"));
         when(parentEq.getUuid()).thenReturn(new UniversalId("0Aabcdef-0123-0abc-abcd-0123456789AB"));
 
-        List<ContainedHolder> containedHolderList = new ArrayList<ContainedHolder>();
-        containedHolderList.add(holder);
+        @NonNull Map<ContainedHolderKey, ContainedHolder> containedHolderList = new HashMap<>();
+        containedHolderList.put(holder.key(),holder);
         when(currentEq.nonnullContainedHolder()).thenReturn(containedHolderList);
 
     }

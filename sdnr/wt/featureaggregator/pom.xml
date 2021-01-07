@@ -42,7 +42,7 @@
 
     <modules>
         <module>feature</module>
-        <module>feature-devicemanager</module>
+		<!-- <module>feature-devicemanager</module>-->
         <module>feature-devicemanager-base</module>
         <module>installer</module>
     </modules>
