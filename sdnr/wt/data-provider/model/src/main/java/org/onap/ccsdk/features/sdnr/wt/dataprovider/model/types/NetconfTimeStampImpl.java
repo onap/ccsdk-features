@@ -24,6 +24,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.slf4j.Logger;
@@ -66,6 +67,10 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
     private static final Logger LOG = LoggerFactory.getLogger(NetconfTimeStamp.class);
 
     private static final NetconfTimeStamp CONVERTER = new NetconfTimeStampImpl();
+    private static final String TESTPATTERNSTRING = "2017-01-01T00:00:00.0Z";
+    //private static final String INITIALPATTERN = "0000-00-00T00:00:00.0Z";
+
+    private static final DateAndTime TESTPATTERN = new DateAndTime(TESTPATTERNSTRING);
 
     /**
      * Specify the input format expected from netconf, and from specific devices.
@@ -91,7 +96,7 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
 
     /**
      * Use this function to get the converter
-     * 
+     *
      * @return global converter
      */
     public static NetconfTimeStamp getConverter() {
@@ -110,7 +115,7 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
 
     /**
      * Get actual timestamp as NETCONF specific type NETCONF/YANG 1.0 Format
-     * 
+     *
      * @return String with Date in NETCONF/YANG Format Version 1.0.
      */
     @Override
@@ -132,7 +137,7 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
 
     /**
      * Get time from date as NETCONF specific type NETCONF/YANG 1.0 Format in GMT
-     * 
+     *
      * @param date specifying the date and time
      * @return DateAndTime Type 1.0. Date in NETCONF/YANG Format Version 1.0.
      */
@@ -143,7 +148,7 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
 
     /**
      * Get time from date as NETCONF specific type NETCONF/YANG 1.0 Format in GMT
-     * 
+     *
      * @param date specifying the date and time
      * @return DateAndTime Type 1.0. Date in NETCONF/YANG Format Version 1.0.
      */
@@ -187,6 +192,14 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
         }
         LOG.debug("No pattern for NETCONF data string: {}", netconfTime);
         return "Malformed date: " + netconfTime; // Error handling
+    }
+
+    /**
+     * Return testpattern
+     * @return
+     */
+    public static @Nullable DateAndTime getTestpatternDateAndTime() {
+        return TESTPATTERN;
     }
 
     /*----------------------------------------------------
