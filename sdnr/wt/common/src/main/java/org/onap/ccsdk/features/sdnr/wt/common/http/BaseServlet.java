@@ -32,7 +32,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -41,7 +40,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -328,9 +326,9 @@ public abstract class BaseServlet extends HttpServlet {
             response = http.getInputStream();
         } else {
             response = http.getErrorStream();
-            if (response == null) {
-                http.getInputStream();
-            }
+//            if (response == null) {
+//                response = http.getInputStream();
+//            }
         }
 
         LOG.debug("ResponseCode: {}", responseCode);
