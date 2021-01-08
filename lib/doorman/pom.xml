@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.onap.ccsdk.features</groupId>
         <artifactId>ccsdk-features</artifactId>
-        <version>1.0.4-SNAPSHOT</version>
+        <version>1.0.4</version>
         <relativePath>../..</relativePath>
     </parent>
 
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>org.onap.ccsdk.features.lib.rlock</groupId>
             <artifactId>rlock</artifactId>
-            <version>1.0.4-SNAPSHOT</version>
+            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

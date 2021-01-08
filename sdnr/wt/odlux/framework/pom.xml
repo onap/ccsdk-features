@@ -32,7 +32,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-odlux-framework</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>

@@ -32,7 +32,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
     <artifactId>oofpcipoc</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4</version>
     <packaging>pom</packaging>
 
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>

@@ -33,7 +33,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-devicemanager-openroadm-provider</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4</version>
     <packaging>bundle</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
