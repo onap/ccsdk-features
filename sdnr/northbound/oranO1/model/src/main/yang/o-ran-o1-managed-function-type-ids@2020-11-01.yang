@@ -1,0 +1,134 @@
+module o-ran-o1-managed-function-type-ids {
+  yang-version 1.1;
+  namespace "urn:o-ran:managed:function:type:ids:1.0";
+  prefix ori;
+
+  organization
+    "O-RAN Alliance";
+  contact
+    "www.o-ran.org";
+  description
+    "This module defines the base from which all O-RAN managed function
+     identities are derived. The term 'managed function' is defined by 3GPP.
+
+     Copyright 2020 the O-RAN Alliance.
+
+     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
+     AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+     LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+     POSSIBILITY OF SUCH DAMAGE.
+
+     Redistribution and use in source and binary forms, with or without
+     modification, are permitted provided that the following conditions are met:
+
+     * Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the above disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the above disclaimer in the documentation
+     and/or other materials provided with the distribution.
+     * Neither the Members of the O-RAN Alliance nor the names of its
+     contributors may be used to endorse or promote products derived from
+     this software without specific prior written permission.";
+
+  revision 2020-11-01 {
+    description
+      "version 1.0.0
+       Initial version.";
+    reference
+      "O-RAN Operations and Maintenance Architecture
+       O-RAN.WG1.OAM-Architecture-v03.00
+       3GPP TS 28.541
+         Management and orchestration; 5G Network Resource Model (NRM)";
+  }
+
+  identity o-ran-managed-function-type-id {
+    description
+      "Identifies an O-RAN managed function. The description of the O-RAN
+       managed function type identifier MUST indicate whether or not the O-RAN
+       managed function type identifier is abstract.
+       An abstract O-RAN managed function type identifier is used as a base for
+       other O-RAN managed function ids and will not be used as a value.";
+  }
+
+  identity o-ru {
+    base o-ran-managed-function-type-id;
+    description
+      "O-RU: O-RAN Radio Unit:
+       A logical node hosting Low-PHY layer and RF processing based on a lower
+       layer functional split. This is similar to 3GPP’s 'TRP' or 'RRH' but
+       more specific in including the Low-PHY layer
+       (FFT/iFFT, PRACH extraction).";
+  }
+
+  identity o-du {
+    base o-ran-managed-function-type-id;
+    description
+      "O-DU: O-RAN Distributed Unit:
+       A logical node hosting RLC/MAC/High-PHY layers based on a lower layer
+       functional split.";
+  }
+
+  // [sko] an o-cu is the combination of the managed functions o-cu-up and
+  //       o-cu-cp, therefore it is not needed as extra identity.
+  // identity o-cu {
+  //   base o-ran-managed-function-type-id;
+  //   description
+  //     "O-CU: O-RAN Central Unit:
+  //      A logical node hosting RRC, SDAP and PDCP protocols.";
+  // }
+
+  identity o-cu-up {
+    base o-ran-managed-function-type-id;
+    description
+      "O-CU-UP: O-RAN Central Unit - User Plane:
+       A logical node hosting the user plane part of the PDCP protocol and the
+       SDAP protocol.";
+  }
+
+  identity o-cu-cp {
+    base o-ran-managed-function-type-id;
+    description
+      "O-CU-CP: O-RAN Central Unit - Control Plane:
+       A logical node hosting the RRC and the control plane part of the
+       PDCP protocol.";
+  }
+
+  identity near-rt-ric {
+    base o-ran-managed-function-type-id;
+    description
+      "near-RT RIC: O-RAN near-real-time RAN Intelligent Controller:
+       A logical function that enables near-real-time control and optimization
+       of O-RAN elements and resources via fine-grained data collection and
+       actions over E2 interface.";
+  }
+
+  // [sko] non-rt-ric does not provide an Netconf/YANG O1 interface and is not
+  //       an O-RAN managed function.
+  // identity non-rt-ric {
+  //   base o-ran-managed-function-type-id;
+  //   description
+  //     "non-RT RIC: O-RAN non-real-time RAN Intelligent Controller:
+  //      A logical function that enables non-real-time control and optimization of
+  //      RAN elements and resources, AI/ML workflow including model training and
+  //      updates, and policy-based guidance of applications/features in
+  //      near-RT RIC.";
+  // }
+
+  // [sko] o-cloud does not provide an Netconf/YANG O1 interface and is not
+  //       an O-RAN managed function.
+  // identity o-cloud {
+  //   base o-ran-managed-function-type-id;
+  //   description
+  //     "O-Cloud: O-Cloud is a cloud computing platform comprising a collection
+  //      of physical infrastructure nodes that meet O-RAN requirements to host
+  //      the relevant O-RAN functions.";
+  // }
+
+}

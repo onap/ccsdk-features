@@ -1,0 +1,96 @@
+module o-ran-o1-ep-gnbdufunction {
+
+  yang-version 1.1;
+  namespace "urn:o-ran:o1-ep-gnbdufunction:1";
+  prefix "o-ran-o1-ep-cuup";
+
+  import _3gpp-common-managed-element { prefix me3gpp; }
+  import _3gpp-common-top { prefix top3gpp; }
+  import _3gpp-nr-nrm-gnbdufunction { prefix gnbdu3gpp; }
+  import o-ran-o1-ep { prefix o-ran-o1-ep; }
+
+  organization "O-RAN Alliance";
+  contact "www.o-ran.org";
+  description
+    "Augments the 3GPP GNBDUFunction with the endpoint IOCs that are part of the O-RAN O1-Interface Model.
+    
+    Copyright 2020 the O-RAN Alliance.
+    
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+    
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+    
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the above disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the above disclaimer in the documentation
+      and/or other materials provided with the distribution.
+    * Neither the Members of the o-RAN Alliance nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.";
+
+  revision 2020-07-31 {
+    description "version 2.0.0: initial revision";
+    reference "O-RAN-WG1.O1-Interface-v02.00";
+  }
+
+  augment "/me3gpp:ManagedElement/gnbdu3gpp:GNBDUFunction" {
+
+    list ep-o1 {
+      key id;
+      uses top3gpp:Top_Grp;
+      container attributes {
+        uses o-ran-o1-ep:ep-o1-grp;
+        description "Groups attributes for OAM entry point (O1 interface).";
+      }
+      description "Represents the local end point of the O1 interface between SMO and gNB-DU.";
+      reference "O-RAN-WG1.O1-Interface-v02.00";
+    }
+
+    list ep-ofh-m {
+      key id;
+      uses top3gpp:Top_Grp;
+      container attributes {
+        uses o-ran-o1-ep:ep-ofh-m-grp;
+        description "Groups attributes for OpenFronthaul (UP, CP) entry point m.";
+      }
+      description "Represents the local end point of the Open Fronthaul Interface Management Plane between gNB-DU and O-RU.";
+      reference "O-RAN-WG1.O1-Interface-v02.00";
+    }
+
+    list ep-ofh-cus {
+      key id;
+      uses top3gpp:Top_Grp;
+      container attributes {
+        uses o-ran-o1-ep:ep-ofh-cus-grp;
+        description "Groups attributes for OpenFronthaul (UP, CP) entry point-cus.";
+      }
+      description "Represents the local end point of the Open Fronthaul Interface Control, User and Synchronization Plane between gNB-DU and O-RU.";
+      reference "O-RAN-WG1.O1-Interface-v02.00";
+    }
+
+    list ep-e2 {
+      key id;
+      uses top3gpp:Top_Grp;
+      container attributes {
+        uses o-ran-o1-ep:ep-e2-grp;
+        description "Groups attributes for e2 interface entry point.";
+      }
+      description "Represents the local end point of the E2 interface between Near-Real-Time-RIC and gNB-DU.";
+      reference "O-RAN-WG1.O1-Interface-v02.00";
+    }
+    description 
+      "Adds entry point specific object classes to gNB-DU function.";
+  }
+}

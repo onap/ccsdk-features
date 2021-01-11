@@ -1,0 +1,29 @@
+module _3gpp-nr-nrm-common {
+  yang-version 1.1;
+  namespace "urn:3gpp:sa5:3gpp-nr-nrm-common";
+  prefix "nrcommon3gpp";
+
+  import _3gpp-common-yang-types { prefix types3gpp; }
+
+  organization "3GPP SA5";
+  description "Defines the YANG mapping of comon parts for 3GPP TS 28.541.";
+  reference "3GPP TS 28.541 5G Network Resource Model (NRM)";
+
+ revision 2020-02-14 {
+    description "Initial revision";
+  }
+
+
+  grouping PLMNInfo {
+    description "The PLMNInfo data type define a S-NSSAI member in a specific PLMNId, and it have
+      two attributes PLMNId and S-NSSAI (PLMNId, S-NSSAI). The PLMNId represents a data type that 
+      is comprised of mcc (mobile country code) and mnc (mobile network code), (See TS 23.003 
+      subclause 2.2 and 12.1) and S-NSSAI represents an data type, that is comprised of an SST 
+      (Slice/Service type) and an optional SD (Slice Differentiator) field, (See TS 23.003 [13]).";
+    uses types3gpp:PLMNId;
+    leaf sNssai {
+      type types3gpp:SNssai;
+    }
+  }
+
+}

@@ -1,0 +1,116 @@
+module o-ran-o1-managed-function {
+  yang-version 1.1;
+  namespace "urn:o-ran:managed:function:1.0";
+  prefix ormf;
+
+  import o-ran-o1-managed-function-type-ids {
+    prefix ori;
+  }
+  import _3gpp-common-managed-element {
+    prefix me3gpp;
+  }
+  import _3gpp-common-top {
+    prefix top3gpp;
+  }
+
+  organization
+    "O-RAN Alliance";
+  contact
+    "www.o-ran.org";
+  description
+    "This module defines O-RAN specific extensions to 3GPP managed function
+     managed object class.
+
+     Copyright 2020 the O-RAN Alliance.
+
+     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
+     AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+     LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+     POSSIBILITY OF SUCH DAMAGE.
+
+     Redistribution and use in source and binary forms, with or without
+     modification, are permitted provided that the following conditions are met:
+
+     * Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the above disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the above disclaimer in the documentation
+     and/or other materials provided with the distribution.
+     * Neither the Members of the O-RAN Alliance nor the names of its
+     contributors may be used to endorse or promote products derived from
+     this software without specific prior written permission.";
+
+  revision 2020-11-01 {
+    description
+      "version 1.0.0
+       Initial version.";
+    reference
+      "O-RAN Operations and Maintenance Architecture
+       O-RAN.WG1.OAM-Architecture-v03.00";
+  }
+
+  // Typedefs
+
+  typedef o-ran-managed-function-type-id {
+    type identityref {
+      base ori:o-ran-managed-function-type-id;
+    }
+    description
+      "A type referencing an extensible enumeration (identity) for O-RAN
+       managed functions.";
+  }
+
+  // Data
+
+  grouping o-ran-managed-function-grp {
+    leaf o-ran-managed-function-type {
+      type ormf:o-ran-managed-function-type-id;
+      config false;
+      mandatory true;
+      description
+        "Defines the type of the O-RAN managed function.";
+    }
+    description
+      "An abstract object adding O-RAN specific control functions to 3GPP
+       managed element.";
+  }
+
+  container o-ran-managed-function {
+    leaf client-control {
+      type boolean;
+      default true;
+      description
+        "Allows the management system consumer to control backward
+         compatibility issues, by enabling or disabling the O-RAN management
+         functions and O-RAN interfaces (A1, E2, O1, O2). The parameter should
+         be used in yang 'when' statements for augmented 3GPP managed objects.";
+    }
+    description
+      "An object to control O-RAN managed functions.";
+  }
+
+  augment "/me3gpp:ManagedElement" {
+    when "/ormf:o-ran-managed-function/ormf:client-control = 'true'";
+    list o-ran-managed-function {
+      key "id";
+      uses top3gpp:Top_Grp;
+      container attributes {
+        uses o-ran-managed-function-grp;
+        description
+          "An managed object class combining the O-RAN specific control
+           parameters.";
+      }
+      description
+        "A list of logical O-RAN managed functions.";
+    }
+    description
+      "The O-RAN specific extension to 3GPP managed element object class.";
+  }
+}
