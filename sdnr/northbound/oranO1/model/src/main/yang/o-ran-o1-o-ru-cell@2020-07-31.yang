@@ -1,0 +1,111 @@
+module o-ran-o1-o-ru-cell {
+
+  yang-version 1.1;
+  namespace "urn:o-ran:o1-o-ru-cell:1";
+  prefix "o-ran-o1-rucell";
+
+  import _3gpp-common-yang-types { prefix types3gpp; }
+  import _3gpp-common-managed-function { prefix mf3gpp; }
+  import _3gpp-common-managed-element { prefix me3gpp; }
+  import _3gpp-common-top { prefix top3gpp; }
+  import o-ran-o1-common-top { prefix o-ran-o1-top; }
+  import o-ran-o1-o-ru-function { prefix o-ran-o1-rufunc; }
+
+  organization "O-RAN Alliance";
+  contact "www.o-ran.org";
+  description
+    "Defines the YANG mapping of the O-RU-Cell IOC that is part of the O-RAN O1-Interface Model.
+    
+    Copyright 2020 the O-RAN Alliance.
+    
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+    
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+    
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the above disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the above disclaimer in the documentation
+      and/or other materials provided with the distribution.
+    * Neither the Members of the o-RAN Alliance nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.";
+
+  revision 2020-07-31 {
+    description "version 2.0.0: initial revision";
+    reference "O-RAN-WG1.O1-Interface-v02.00";
+  }
+
+  grouping o-ru-cell-grp {
+    description "Represents the O-RU-Cell IOC.";
+    reference "O-RAN-WG1.O1-Interface-v02.00";
+    uses mf3gpp:ManagedFunctionGrp;
+
+    leaf cell-local-id {
+      type int32 { range 0..16383; }
+      mandatory true;
+      description "Identifies a NR cell of a gNB.
+        Together with the corresponding gNB identifier it forms the NR Cell Identity (NCI).";
+      reference "NCI in 3GPP TS 38.300";
+    }
+
+    leaf operational-state {
+      type types3gpp:OperationalState;
+      config false;
+      description "Operational state of the O-RU-Cell instance.
+        Indicates whether the resource is installed and partially or fully operable (ENABLED)
+        or the resource is not installed or not operable (DISABLED).";
+    }
+
+    leaf administrative-state {
+      type types3gpp:AdministrativeState;
+      default LOCKED;
+      description "Administrative state of the O-RU-Cell instance.
+        Indicates the permission to use or prohibition against using the cell,
+        imposed through the OAM services.";
+    }
+
+    leaf cell-state {
+      type types3gpp:CellState;
+      config false;
+      description "Cell state of the O-RU-Cell instance.
+        Indicates whether the cell is not currently in use (IDLE),
+        or currently in use but not configured to carry traffic (INACTIVE),
+        or currently in use and is configured to carry traffic (ACTIVE).";
+    }
+
+    leaf-list sector-carrier-ref {
+      type types3gpp:DistinguishedName;
+      min-elements 1;
+      description "Reference to corresponding o-sector-carrier instances.";
+    }
+  }
+
+  augment "/me3gpp:ManagedElement/o-ran-o1-rufunc:o-ru-function" {
+    list o-ru-cell {
+      uses top3gpp:Top_Grp;
+      uses o-ran-o1-top:o-top;
+      uses mf3gpp:ManagedFunctionContainedClasses;
+      key id;
+      container attributes {
+        uses o-ru-cell-grp;
+        description "Groups attributes for O-RU cell.";
+      }
+      description "Represents the information of a cell known by the O-RU.";
+      reference "O-RAN-WG1.O1-Interface-v02.00";
+    }
+    description "Adds a list of O-RU cells to O-RU function.";
+  }
+
+}

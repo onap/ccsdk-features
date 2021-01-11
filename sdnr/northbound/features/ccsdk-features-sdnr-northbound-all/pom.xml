@@ -79,5 +79,12 @@
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>oranO1-feature</artifactId>
+            <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
     </dependencies>
 </project>

@@ -1,0 +1,145 @@
+module _3gpp-nr-nrm-gnbcuupfunction {
+  yang-version 1.1;
+  namespace "urn:3gpp:sa5:_3gpp-nr-nrm-gnbcuupfunction";
+  prefix "gnbcuup3gpp";
+    
+  import _3gpp-common-yang-types { prefix types3gpp; }
+  import _3gpp-common-managed-function { prefix mf3gpp; }
+  import _3gpp-common-managed-element { prefix me3gpp; }
+  import _3gpp-common-top { prefix top3gpp; }
+  import _3gpp-nr-nrm-rrmpolicy { prefix nrrrmpolicy3gpp; }
+  import _3gpp-nr-nrm-common { prefix nrcommon3gpp; }
+
+  organization "3GPP SA5";
+  description "Defines the YANG mapping of the GNBCUUPFunction Information
+    Object Class (IOC) that is part of the NR Network Resource Model (NRM).";
+  reference "3GPP TS 28.541 5G Network Resource Model (NRM)";
+
+  revision 2020-03-12 { reference "SP-200233 S5-201547"; }
+  revision 2020-02-14 { reference S5-20XXXX ; }
+  revision 2019-10-28 { reference S5-193518 ; }
+  revision 2019-08-21 {
+    description "Initial revision";
+  }
+
+  grouping TAIGrp {
+    description "Tracking Area Identity";
+    
+    list pLMNId {
+      key "mcc mnc";
+      uses types3gpp:PLMNId;
+    }
+    
+    leaf nRTAC {
+      type int64;
+      description "Identity of the common Tracking Area Code for the PLMNs
+        allowedValues:
+        a)	It is the TAC or Extended-TAC. 
+        b)	A cell can only broadcast one TAC or Extended-TAC. 
+          See TS 36.300, subclause 10.1.7 (PLMNID and TAC relation).
+        c) 	TAC is defined in subclause 19.4.2.3 of 3GPP TS 23.003 and 
+          Extended-TAC is defined in subclause 9.3.1.29 of 3GPP TS 38.473.
+        d)	For a 5G SA (Stand Alone), it has a non-null value.";
+    }
+  }
+  
+  grouping BackhaulAddressGrp {
+    description "Indicates the backhauladdress of gNB.";
+
+    leaf gNBId {
+      type uint32 {
+        range "0..4294967295";
+      }
+      description "It identifies a gNB within a PLMN. The gNB ID is part of 
+        the NR Cell Identifier (NCI) of the gNB cells.";
+      reference "gNB Identifier (gNB ID) of subclause 8.2 of TS 38.300. 
+                 Global gNB ID in subclause 9.3.1.6 of TS 38.413";
+    }
+    
+    list tAI {
+      key nRTAC;
+      min-elements 1;
+      max-elements 1;
+      description "Tracking Area Identity";
+      reference "subclause 9.3.3.11 in TS 38.413";
+      uses TAIGrp;
+    }
+  }
+  
+  grouping MappingSetIDBackhaulAddressGrp {
+    description "Mapping relationship between setID and backhaulAddress of gNB";
+    
+    leaf idx { 
+      type uint32 ;
+      description "ID value";
+    }
+    
+    leaf setID {
+      type uint32;
+      mandatory true;
+      description "Indicates the setID of gNB.";
+      reference "Subclause 7.4.1.6 in TS 38.211";
+    }
+
+    list backhaulAddress {
+      key gNBId;
+      min-elements 1;
+      max-elements 1;
+      description "Indicates the backhauladdress of gNB.";
+      uses BackhaulAddressGrp;
+    }
+  }
+  grouping GNBCUUPFunctionGrp {
+    description "Represents the GNBCUUPFunction IOC.";
+    reference "3GPP TS 28.541";
+    uses mf3gpp:ManagedFunctionGrp; 
+    uses nrrrmpolicy3gpp:RRMPolicy_Grp;
+
+    leaf gNBCUUPId {
+      type uint64 {
+        range "0..68719476735" ;
+      }
+      config false;
+      mandatory true;
+      description "Identifies the gNB-CU-UP at least within a gNB-CU-CP";
+      reference "'gNB-CU-UP ID' in subclause 9.3.1.15 of 3GPP TS 38.463";
+    }
+    
+    leaf gNBId {
+      mandatory true;
+      type int32 { range "22..32"; }
+      description "Indicates the number of bits for encoding the gNB Id.";
+      reference "gNB Id in 3GPP TS 38.300, Global gNB ID in 3GPP TS 38.413";
+    }
+            
+    list pLMNInfoList {
+      description "The PLMNInfoList is a list of PLMNInfo data type. It defines which PLMNs that
+        can be served by the GNBCUUPFunction and which S-NSSAIs can be supported by the
+        GNBCUUPFunction for corresponding PLMN in case of network slicing feature is supported";
+      key "mcc mnc";
+      uses nrcommon3gpp:PLMNInfo;
+    }   		
+    
+    list mappingSetIDBackhaulAddressList {
+      key idx;
+      description "Specifies a list of mappingSetIDBackhaulAddress used to 
+        retrieve the backhaul address of the victim set.
+        Must be present if Remote Interference Management function is supported.";
+      uses MappingSetIDBackhaulAddressGrp;
+    }
+  }
+
+  augment "/me3gpp:ManagedElement" {
+
+    list GNBCUUPFunction {
+      key id;
+      description "Represents the logical function CU-UP of gNB or en-gNB.";
+      reference "3GPP TS 28.541";
+      uses top3gpp:Top_Grp;
+      container attributes {    
+        uses GNBCUUPFunctionGrp;
+      }
+      uses mf3gpp:ManagedFunctionContainedClasses;
+    }
+  }
+}
