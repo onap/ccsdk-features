@@ -1,0 +1,391 @@
+module _3gpp-common-fm {
+  yang-version 1.1;
+  namespace "urn:3gpp:sa5:_3gpp-common-fm";
+  prefix "fm3gpp";
+
+  import ietf-yang-types { prefix yang; }
+  import _3gpp-common-top { prefix top3gpp; }
+  import _3gpp-common-yang-types { prefix types3gpp; }
+
+  organization "3GPP SA5";
+
+  description "Defines a Fault Management model";
+
+  reference "3GPP TS 28.623
+      Generic Network Resource Model (NRM)
+      Integration Reference Point (IRP);
+      Solution Set (SS) definitions
+
+      3GPP TS 28.622
+      Generic Network Resource Model (NRM)
+      Integration Reference Point (IRP);
+      Information Service (IS)";
+
+  revision 2020-02-24 {
+    reference "S5-201365";
+  }
+
+	typedef eventType {
+		type enumeration {
+			enum COMMUNICATIONS_ALARM {
+				value 2;
+			}
+
+			enum QUALITY_OF_SERVICE_ALARM {
+				value 3;
+			}
+
+			enum PROCESSING_ERROR_ALARM {
+				value 4;
+			}
+
+			enum EQUIPMENT_ALARM {
+				value 5;
+			}
+
+			enum ENVIRONMENTAL_ALARM {
+				value 6;
+			}
+
+			enum INTEGRITY_VIOLATION {
+				value 7;
+			}
+
+			enum OPERATIONAL_VIOLATION {
+				value 8;
+			}
+
+			enum PHYSICAL_VIOLATIONu {
+				value 9;
+			}
+
+			enum SECURITY_SERVICE_OR_MECHANISM_VIOLATION {
+				value 10;
+			}
+
+			enum TIME_DOMAIN_VIOLATION {
+				value 11;
+			}
+		}
+
+		description "General category for the alarm.";
+	}
+
+	typedef severity-level {
+		type enumeration {
+			enum CRITICAL { value 3; }
+			enum MAJOR { value 4; }
+			enum MINOR { value 5; }
+			enum WARNING { value 6; }
+			enum INDETERMINATE { value 7; }
+			enum CLEARED { value 8; }
+		}
+
+		description "The possible alarm serverities.
+			Aligned with ERICSSON-ALARM-MIB.";
+	}
+
+  grouping AlarmRecordGrp {
+    description "Contains alarm information of an alarmed entity of a
+      name-tree whose top is FMControlAttachment.
+      One MonitoredEntity2 has at most one AlarmList. The producer assigns an
+      identifier, called alarmId, to each AlarmRecord in the AlarmList. An
+      alarmId unambiguously identifies one alarm record in the AlarmList.
+      The producer maintains one AlarmList containing currently active
+      alarms i.e.:
+      a)	Alarm record(s) whose perceivedSeverity is not CLEARED and;
+      b)	Alarm record(s) whose perceivedSeverity is CLEARED and its ackState
+        is not ACKNOWLEDGED.
+
+      The producer may remove alarm records that are not active alarms.
+
+      The availability and accuracy of time carried by the
+      time parameters in individual entries of the list shall be
+      'best effort'.
+      Reason: A Management System is not required to persistently store
+      these times or other alarm information (as in case of synchronization
+      information may be provided by the NE), while also some NE's do not
+      keep these times (and a later attempt to retrieve the alarm data
+      from the NEs will not deliver these time data).";
+
+      leaf alarmType {
+        config false ;
+        type eventType;
+        description "General category for the alarm.";
+      }
+
+      leaf objectClass_objectInstance {
+        type string;
+        config false ;
+        description "";
+      }
+
+      leaf alarmId {
+        type string;
+        description "Identifies the alarmRecord";
+      }
+
+      leaf alarmRaisedTime {
+        type yang:date-and-time ;
+        config false ;
+      }
+
+      leaf alarmChangedTime {
+        type yang:date-and-time ;
+        config false ;
+        description "not applicable if related alarm has not changed";
+      }
+
+      leaf alarmClearedTime {
+        type yang:date-and-time ;
+        config false ;
+        description "not applicable if related alarm was not cleared";
+      }
+
+      leaf probableCause {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+      }
+
+      leaf perceivedSeverity {
+        type severity-level;
+        description "This is Writable only if producer supports consumer
+          to set perceivedSeverity to CLEARED";
+      }
+
+      leaf rootCauseIndicator {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "";
+      }
+
+      leaf specificProblem {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "";
+      }
+
+      leaf backedUpStatus {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm is a security alarm";
+      }
+
+      leaf trendIndication {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm is a security alarm";
+      }
+
+      leaf thresholdInfo {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm is a security alarm";
+      }
+
+      leaf stateChangeDefinition {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm is a security alarm";
+      }
+
+      leaf monitoredAttributes {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm is a security alarm";
+      }
+
+      leaf proposedRepairActions {
+        type string;
+        config false ;
+        description "not applicable if related alarm is a security alarm";
+      }
+
+      leaf additionalText {
+        type string;
+        config false ;
+        description "";
+      }
+
+      leaf additionalInformation {
+        type string;
+        config false ;
+        description "";
+      }
+
+      leaf ackTime  {
+        type yang:date-and-time ;
+        config false ;
+        description "The time the alarm was acknowledged
+          not applicable if related alarm was not acknowledged
+          nor unacknowledged";
+      }
+
+      leaf ackUserId  {
+        type string;
+        config false ;
+        description "not applicable if related alarm was not acknowledged
+          nor unacknowledged";
+      }
+
+      leaf ackSystemId  {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm was not acknowledged
+          nor unacknowledged";
+      }
+
+      leaf ackState  {
+        type string;
+        // the valuespace may be restricted later
+        description "not applicable if related alarm was not acknowledged
+          nor unacknowledged";
+      }
+
+      leaf clearUserId {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm was not cleared";
+      }
+
+      leaf clearSystemId {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm was not cleared";
+      }
+
+      leaf serviceUser {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm is not a security alarm";
+      }
+
+      leaf serviceProvider {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm is not a security alarm";
+      }
+
+      leaf securityAlarmDetector {
+        type string;
+        // the valuespace may be restricted later
+        config false ;
+        description "not applicable if related alarm is not a security alarm";
+      }
+  }
+
+  grouping FMControlGrp {
+    description "Represents a capability to manage alarm records and alarm
+      notifications.";
+
+    leaf administrativeState {
+      type types3gpp:AdministrativeState ;
+      default LOCKED;
+      description "The consumer sets this attribute to UNLOCKED instructing
+        the producer to report and record alarm information.
+        The consumer sets the attribute to LOCKED instructing  detection,
+        reporting and recording of alarm information are no longer needed.";
+    }
+
+    leaf operationalState {
+      type types3gpp:OperationalState ;
+      default DISABLED;
+      config false;
+      description "The producer sets this attribute to ENABLED, indicating
+        that it has the resource and ability to record alarm in AlarmList
+        and sending alarm notification to faultReportTarget (an attribute
+        of NtfSubscriptionControl IOC);
+        else, it sets the attribute to DISABLED.";
+    }
+  }
+
+  grouping AlarmListGrp {
+    description "Represents the list of alarm records.";
+
+    leaf numOfAlarmRecords {
+      type uint32 ;
+      config false;
+      description "The number of alarm records in the AlarmList";
+    }
+
+    leaf lastModification {
+      type yang:date-and-time ;
+      config false;
+      description "The last time when an alarm record is modified";
+    }
+
+
+
+    list alarmRecordList {
+      key alarmId;
+      description "List of alarmRecords";
+      uses AlarmRecordGrp;
+    }
+  }
+
+  grouping FmSubtree {
+    description "Contains FM related classes.
+      Should be used in all classes (or classes inheriting from)
+      - SubNnetwork
+      - ManagedElement
+
+      If some YAM wants to augment these classes/list/groupings they must
+      augment all user classes!";
+
+    list FMControl {
+      key id;
+      max-elements 1;
+      description "Represents a capability to manage alarm records and alarm
+        notifications. The alarm records and notifications managed are related to
+        managed entities of the naming-tree whose top instance is one
+        name-containing this FMControl.
+
+        The FMControl MnS producer, upon detection of an abnormal behaviour of
+        its managed entities, would create or update an alarm record of the
+        AlarmList. Consumer who has a subscription with NtfSubscriptionControl
+        MnS would receive alarm notifications.";
+
+      uses top3gpp:Top_Grp ;
+      container attributes {
+        uses FMControlGrp ;
+      }
+    }
+
+    list AlarmList {
+      key id;
+      max-elements 1;
+      description "Represents the list of alarm records. The alarm records are
+        related to managed entities of the naming-tree whose top instance is one
+        name-containing this AlarmList.
+        The producer would create this AlarmList instance.
+
+        Over time, the producer may produce, say n notifications, for a
+        particular alarmed object instance. The number of records in the
+        AlarmList may not be n.
+        AlarmList shall hold, for the same alarmed object instance, only one
+        record if and only if, the notifications carry identical values for
+        eventType, probableCause and specificProblem. See the
+        Matching-Criteria-Attributes definition
+        in 3GPP TS 28.532.";
+
+      uses top3gpp:Top_Grp ;
+      container attributes {
+        uses AlarmListGrp ;
+      }
+    }
+  }
+
+}
