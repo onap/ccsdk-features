@@ -1,0 +1,104 @@
+module o-ran-o1-o-ru-function {
+
+  yang-version 1.1;
+  namespace "urn:o-ran:o1-o-ru-function:1";
+  prefix "o-ran-o1-rufunc";
+
+  import _3gpp-common-managed-function { prefix mf3gpp; }
+  import _3gpp-common-managed-element { prefix me3gpp; }
+  import _3gpp-common-top { prefix top3gpp; }
+  import o-ran-o1-common-top { prefix o-ran-o1-top; }
+
+  organization "O-RAN Alliance";
+  contact "www.o-ran.org";
+  description
+    "Defines the YANG mapping of the O-RU-Function IOC that is part of the O-RAN O1-Interface Model.
+
+    Copyright 2020 the O-RAN Alliance.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the above disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the above disclaimer in the documentation
+      and/or other materials provided with the distribution.
+    * Neither the Members of the o-RAN Alliance nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.";
+
+  revision 2020-07-31 {
+    description "version 2.0.0: initial revision";
+    reference "O-RAN-WG1.O1-Interface-v02.00";
+  }
+
+  grouping o-ru-function-grp {
+    description "Represents the O-RU-Function IOC.";
+    reference "O-RAN-WG1.O1-Interface-v02.00";
+    uses mf3gpp:ManagedFunctionGrp;
+
+    /* This is a 3GPP parameter. Therefore the identifier isn't compliant with the O-RAN YANG style guide. */
+    leaf gNBId {
+      /* The type could/should be uint32, but 3GPP does it this way. */
+      type int64 { range 0..4294967295; } // 2^32-1
+      config false;
+      mandatory true;
+      description "Identifies a gNB within a PLMN. The gNB Identifier (gNB ID) is part of the NR Cell Identifier (NCI) of the gNB cells.";
+      reference "gNB ID in 3GPP TS 38.300, Global gNB ID in 3GPP TS 38.413";
+    }
+
+    /* This is a 3GPP parameter. Therefore the identifier isn't compliant with the O-RAN YANG style guide. */
+    leaf gNBIdLength {
+      type int32 { range 22..32; }
+      mandatory true;
+      description "Indicates the number of bits for encoding the gNB ID.";
+      reference "gNB ID in 3GPP TS 38.300, Global gNB ID in 3GPP TS 38.413";
+    }
+
+    leaf o-ru-id {
+      type int64 { range 0..68719476735; } // 2^36-1
+      mandatory true;
+      description "Uniquely identifies the O-RU within a gNB.";
+      reference "O-RAN-WG1.O1-Interface-v02.00";
+    }
+
+    leaf o-ru-name {
+      type string { length 1..150; }
+      description "Identifies the Radio Unit of an NR node.";
+      reference "O-RAN-WG1.O1-Interface-v02.00";
+    }
+
+  }
+
+  augment "/me3gpp:ManagedElement" {
+    list o-ru-function {
+      key id;
+      uses o-ran-o1-top:o-top;
+      uses top3gpp:Top_Grp;
+      uses mf3gpp:ManagedFunctionContainedClasses;
+      container attributes {
+        uses o-ru-function-grp;
+        description
+          "Groups tha attributes for the O-RU function.";
+      }
+      description "Represents the logical function O-RU of a gNB.";
+      reference "O-RAN-WG1.O1-Interface-v02.00";
+    }
+    description
+      "Adds O-RU functions to 3GPP:ManagedElement.";
+  }
+
+}

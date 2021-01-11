@@ -3,10 +3,7 @@
   ~ ============LICENSE_START=======================================================
   ~ ONAP : ccsdk features
   ~ ================================================================================
-  ~ Copyright (C) 2018 highstreet technologies GmbH Intellectual Property.
-  ~ All rights reserved.
-  ~ ================================================================================
-  ~ Update Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
+  ~ Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
   ~ ================================================================================
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -28,24 +25,23 @@
 
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
-        <artifactId>odlparent-lite</artifactId>
+        <artifactId>single-feature-parent</artifactId>
         <version>2.1.0</version>
         <relativePath/>
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
-    <artifactId>sdnr-northbound</artifactId>
+    <artifactId>oranO1-feature</artifactId>
     <version>1.1.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>feature</packaging>
 
-    <name>ccsdk-features :: ${project.artifactId}</name>
-    <description>SDN-R RAN, OOF PCI ANR POC, A1 Adapter, CMNotify, RANSlice</description>
+    <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
-    <modules>
-        <module>oofpcipoc</module>
-        <module>CMNotify</module>
-        <module>ranSlice</module>
-        <module>oranO1</module>
-        <module>features</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>oranO1-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
