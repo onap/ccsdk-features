@@ -62,10 +62,19 @@ public class PNFRegistrationConfig implements Configuration {
 
     public static final String PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT = "jersey.config.client.readTimeout";
     private static final String DEFAULT_VALUE_CONSUMER_CLIENT_READTIMEOUT = "25000";
-
+    
     public static final String PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT = "jersey.config.client.connectTimeout";
     private static final String DEFAULT_VALUE_CONSUMER_CLIENT_CONNECTTIMEOUT = "25000";
-
+    
+    public static final String PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_AUTH_USER = "jersey.config.client.proxy.username";
+    private static final String DEFAULT_VALUE_CONSUMER_CLIENT_HTTPPROXY_AUTH_USER = "${HTTP_PROXY_USERNAME}";
+    
+    public static final String PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_AUTH_PASSWORD = "jersey.config.client.proxy.password";
+    private static final String DEFAULT_VALUE_CONSUMER_CLIENT_HTTPPROXY_AUTH_PASSWORD = "${HTTP_PROXY_PASSWORD}";
+    
+    public static final String PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_URI = "jersey.config.client.proxy.uri";
+    private static final String DEFAULT_VALUE_CONSUMER_CLIENT_HTTPPROXY_URI = "${HTTP_PROXY_URI}";
+    
     private final ConfigurationFileRepresentation configuration;
 
     public PNFRegistrationConfig(ConfigurationFileRepresentation configuration) {
@@ -109,6 +118,12 @@ public class PNFRegistrationConfig implements Configuration {
                 DEFAULT_VALUE_CONSUMER_CLIENT_READTIMEOUT);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT,
                 DEFAULT_VALUE_CONSUMER_CLIENT_CONNECTTIMEOUT);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_AUTH_USER,
+        		DEFAULT_VALUE_CONSUMER_CLIENT_HTTPPROXY_AUTH_USER);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_AUTH_PASSWORD,
+        		DEFAULT_VALUE_CONSUMER_CLIENT_HTTPPROXY_AUTH_PASSWORD);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_URI,
+        		DEFAULT_VALUE_CONSUMER_CLIENT_HTTPPROXY_URI);
     }
 
     public String getHostPort() {
@@ -166,4 +181,17 @@ public class PNFRegistrationConfig implements Configuration {
     public String getClientConnectTimeout() {
         return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT);
     }
+    
+    public String getHTTPProxyURI() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_URI);
+    }
+    
+    public String getHTTPProxyUsername() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_AUTH_USER);
+    }
+    
+    public String getHTTPProxyPassword() {
+        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_AUTH_PASSWORD);
+    }
+    
 }

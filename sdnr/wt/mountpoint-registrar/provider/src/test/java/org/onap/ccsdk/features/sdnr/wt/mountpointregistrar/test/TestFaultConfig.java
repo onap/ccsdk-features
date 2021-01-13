@@ -46,6 +46,9 @@ public class TestFaultConfig {
             + "fetchPause=5000\n"
             + "jersey.config.client.readTimeout=25000\n"
             + "jersey.config.client.connectTimeout=25000\n"
+            + "jersey.config.client.proxy.uri=http://http-proxy\n"
+            + "jersey.config.client.proxy.username=proxy-user\n"
+            + "jersey.config.client.proxy.password=proxy-password\n"
             + "\n"
             + "";
     // @formatter:on
@@ -73,6 +76,9 @@ public class TestFaultConfig {
             assertEquals("password", faultCfg.getPassword());
             assertEquals("25000", faultCfg.getClientReadTimeout());
             assertEquals("25000", faultCfg.getClientConnectTimeout());
+            assertEquals("http://http-proxy", faultCfg.getHTTPProxyURI());
+            assertEquals("proxy-user", faultCfg.getHTTPProxyUsername());
+            assertEquals("proxy-password", faultCfg.getHTTPProxyPassword());
 
         } catch (IOException e) {
             e.printStackTrace();

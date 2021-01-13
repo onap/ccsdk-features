@@ -46,6 +46,9 @@ public class PNFRegistrationConfigTest {
             + "fetchPause=5000\n"
             + "jersey.config.client.readTimeout=25000\n"
             + "jersey.config.client.connectTimeout=25000\n"
+            + "jersey.config.client.proxy.uri=http://http-proxy\n"
+            + "jersey.config.client.proxy.username=proxy-user\n"
+            + "jersey.config.client.proxy.password=proxy-password\n"
             + "";
     // @formatter:on
     private ConfigurationFileRepresentation cfg;
@@ -72,6 +75,9 @@ public class PNFRegistrationConfigTest {
             assertEquals("password", pnfCfg.getPassword());
             assertEquals("25000", pnfCfg.getClientReadTimeout());
             assertEquals("25000", pnfCfg.getClientConnectTimeout());
+            assertEquals("http://http-proxy", pnfCfg.getHTTPProxyURI());
+            assertEquals("proxy-user", pnfCfg.getHTTPProxyUsername());
+            assertEquals("proxy-password", pnfCfg.getHTTPProxyPassword());
 
         } catch (IOException e) {
             e.printStackTrace();
