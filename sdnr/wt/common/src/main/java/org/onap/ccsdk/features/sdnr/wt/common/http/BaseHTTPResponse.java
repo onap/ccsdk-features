@@ -21,8 +21,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.http;
 
-import java.util.Map;
-
 public class BaseHTTPResponse {
 
     public static final int CODE404 = 404;
@@ -30,14 +28,10 @@ public class BaseHTTPResponse {
     public static final BaseHTTPResponse UNKNOWN = new BaseHTTPResponse(-1, "");
     public final int code;
     public final String body;
-    public final Map<String,String> headers;
+
     public BaseHTTPResponse(int code, String body) {
-        this(code, body, null);
-    }
-    public BaseHTTPResponse(int code, String body, Map<String,String> rawData) {
         this.code = code;
         this.body = body;
-        this.headers = rawData;
     }
 
     @Override
@@ -46,6 +40,6 @@ public class BaseHTTPResponse {
     }
 
     public boolean isSuccess() {
-        return this.code >= CODE200 && this.code<300;
+        return this.code == CODE200;
     }
 }

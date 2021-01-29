@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import org.apache.sshd.common.util.io.IoUtils;
@@ -42,9 +43,12 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataTreeProviderImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 
+/**
+ * @author Michael Dürre
+ *
+ */
 public class TestTree {
 
-    private static String resourceDirectoryPath="/"+TestTree.class.getSimpleName()+"/";
     private static ElasticSearchDataProvider dbProvider;
     private static HtDatabaseClient dbRawProvider;
 
@@ -61,28 +65,37 @@ public class TestTree {
     }
 
     private static void fillTestData() throws IOException {
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.5.5", getFileContent("1.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.7.0", getFileContent("2.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.55.1.2", getFileContent("3.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.65.1.2", getFileContent("4.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/SHELF-1.1.0.0", getFileContent("5.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.1.5", getFileContent("6.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.1.8", getFileContent("7.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.6.5", getFileContent("8.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/ODU-1.56.0.0", getFileContent("9.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.56.1.2", getFileContent("10.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/IDU-1.65.0.0", getFileContent("11.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.65.1.4", getFileContent("12.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.6.0", getFileContent("13.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.8.0", getFileContent("14.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.9.0", getFileContent("15.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.55.1.4", getFileContent("16.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.1.7", getFileContent("17.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/IDU-1.55.0.0", getFileContent("18.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.1.0", getFileContent("19.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.5.0", getFileContent("20.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.5.6", getFileContent("21.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.5.5", getFileContent("/testequipment/1.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.7.0", getFileContent("/testequipment/2.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.55.1.2", getFileContent("/testequipment/3.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.65.1.2", getFileContent("/testequipment/4.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/SHELF-1.1.0.0", getFileContent("/testequipment/5.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.1.5", getFileContent("/testequipment/6.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.1.8", getFileContent("/testequipment/7.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.6.5", getFileContent("/testequipment/8.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/ODU-1.56.0.0", getFileContent("/testequipment/9.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.56.1.2", getFileContent("/testequipment/10.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/IDU-1.65.0.0", getFileContent("/testequipment/11.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.65.1.4", getFileContent("/testequipment/12.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.6.0", getFileContent("/testequipment/13.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.8.0", getFileContent("/testequipment/14.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.9.0", getFileContent("/testequipment/15.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.55.1.4", getFileContent("/testequipment/16.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.1.7", getFileContent("/testequipment/17.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/IDU-1.55.0.0", getFileContent("/testequipment/18.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.1.0", getFileContent("/testequipment/19.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.5.0", getFileContent("/testequipment/20.json"));
+        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.5.6", getFileContent("/testequipment/21.json"));
 
+    }
+    /**
+     * @param string
+     * @return
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    private static String getFileContent(String filename) throws IOException {
+        return String.join("\n",IoUtils.readAllLines(TestTree.class.getResourceAsStream(filename)));
     }
 
     @Test
@@ -134,9 +147,5 @@ public class TestTree {
         System.out.println(e);
         e = DataTreeHttpServlet.getEntity("/tree/read-inventoryequipment-tree/");
         System.out.println(e);
-    }
-
-    private static String getFileContent(String filename) throws IOException {
-        return String.join("\n",IoUtils.readAllLines(TestTree.class.getResourceAsStream(resourceDirectoryPath+filename)));
     }
 }

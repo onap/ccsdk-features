@@ -24,7 +24,6 @@ package org.onap.ccsdk.features.sdnr.wt.common.test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 
 public class ServletOutputStreamToByteArrayOutputStream extends ServletOutputStream {
 
@@ -33,21 +32,12 @@ public class ServletOutputStreamToByteArrayOutputStream extends ServletOutputStr
 
     // end of variables
 
+    @Override
+    public void write(int arg0) throws IOException {
+        out.write(arg0);
+    }
+
     public ByteArrayOutputStream getByteArrayOutputStream() {
         return out;
-    }
-
-    @Override
-    public void setWriteListener(WriteListener writeListener) {
-    }
-
-    @Override
-    public void write(int b) throws IOException {
-        out.write(b);
-    }
-
-    @Override
-    public boolean isReady() {
-        return false;
     }
 }

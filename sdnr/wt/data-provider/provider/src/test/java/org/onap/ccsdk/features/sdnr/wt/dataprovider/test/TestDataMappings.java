@@ -21,10 +21,9 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
-import static org.junit.Assert.fail;
 import java.io.IOException;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper2;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data;
 
 public class TestDataMappings {
@@ -36,7 +35,7 @@ public class TestDataMappings {
             + "\"layer-protocol-name\": \"MWPS\",\n"
             + "\"radio-signal-id\": \"Test11\",\n"
             + "\"time-stamp\": \"2017-07-04T14:00:00.0Z\",\n"
-            + "\"granularity-period\": \"Period15Min\",\n"
+            + "\"granularity-period\": \"PERIOD_15MIN\",\n"
             + "\"scanner-id\": \"PM_RADIO_15M_9\",\n"
             + "\"performance-data\": {\n"
             + "\"es\": 0,\n"
@@ -85,15 +84,14 @@ public class TestDataMappings {
             + "}";
  // @formatter:on
     @Test
-    public void testPmData15m() throws ClassNotFoundException {
+    public void testPmData15m() {
 
-        YangToolsMapper2<Data> mapper = new YangToolsMapper2<Data>(Data.class, null);
+        YangToolsMapper mapper = new YangToolsMapper();
         try {
             Data data = mapper.readValue(PMDATA15M_SERVERDB_JSON.getBytes(), Data.class);
             System.out.println(data);
         } catch (IOException e) {
             e.printStackTrace();
-            fail("Can not parse data");
         }
     }
 

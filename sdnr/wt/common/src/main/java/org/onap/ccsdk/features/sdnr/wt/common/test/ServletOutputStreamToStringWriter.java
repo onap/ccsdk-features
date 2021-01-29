@@ -24,7 +24,6 @@ package org.onap.ccsdk.features.sdnr.wt.common.test;
 import java.io.IOException;
 import java.io.StringWriter;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 
 public class ServletOutputStreamToStringWriter extends ServletOutputStream {
 
@@ -32,28 +31,13 @@ public class ServletOutputStreamToStringWriter extends ServletOutputStream {
     private StringWriter out = new StringWriter();
     // end of variables
 
-    public StringWriter getStringWriter() {
-        return out;
-    }
-
     @Override
     public void write(int arg0) throws IOException {
         out.write(arg0);
     }
 
-    @Override
-    public String toString() {
-        return out.toString();
+    public StringWriter getStringWriter() {
+        return out;
     }
-
-    @Override
-    public boolean isReady() {
-        return false;
-    }
-
-    @Override
-    public void setWriteListener(WriteListener writeListener) {
-    }
-
 
 }

@@ -28,7 +28,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONObject;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
@@ -38,9 +37,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.CreateIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.EsDataObjectReaderWriter2;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapperHelper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
@@ -287,8 +284,8 @@ public class TestYangGenSalMapping {
 
         ReadPmdata15mListInputBuilder inputBuilder = new ReadPmdata15mListInputBuilder();
         PaginationBuilder paginationBuilder = new PaginationBuilder();
-        paginationBuilder.setPage(YangHelper2.getBigIntegerOrUint64(new BigInteger("1")));
-        paginationBuilder.setSize(YangHelper2.getLongOrUint32(20L));
+        paginationBuilder.setPage(new BigInteger("1"));
+        paginationBuilder.setSize(20L);
         inputBuilder.setPagination(paginationBuilder.build());
 
         ReadPmdata15mListInput input = inputBuilder.build();
@@ -298,8 +295,8 @@ public class TestYangGenSalMapping {
         long page = getPage(input);
         long pageSize = getPageSize(input);
 
-        QueryBuilder query = fromFilter(YangHelper.getList(input.getFilter())).from((page - 1) * pageSize).size(pageSize);
-        setSortOrder(query, YangHelper.getList(input.getSortorder()));
+        QueryBuilder query = fromFilter(input.getFilter()).from((page - 1) * pageSize).size(pageSize);
+        setSortOrder(query, input.getSortorder());
 
         SearchResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> result =
                 pm15mRW.doReadAll(query);
@@ -340,15 +337,15 @@ public class TestYangGenSalMapping {
         out(method());
         String input;
         input = "id-dd-dd";
-        System.out.println("Map " + input + " to " + YangToolsMapperHelper.toCamelCaseAttributeName(input));
+        System.out.println("Map " + input + " to " + YangToolsMapper.toCamelCaseAttributeName(input));
         input = "idDdGg";
-        System.out.println("Map " + input + " to " + YangToolsMapperHelper.toCamelCaseAttributeName(input));
+        System.out.println("Map " + input + " to " + YangToolsMapper.toCamelCaseAttributeName(input));
         input = "_idDdGg";
-        System.out.println("Map " + input + " to " + YangToolsMapperHelper.toCamelCaseAttributeName(input));
+        System.out.println("Map " + input + " to " + YangToolsMapper.toCamelCaseAttributeName(input));
         input = "--ff--gfg";
-        System.out.println("Map " + input + " to " + YangToolsMapperHelper.toCamelCaseAttributeName(input));
+        System.out.println("Map " + input + " to " + YangToolsMapper.toCamelCaseAttributeName(input));
         input = "";
-        System.out.println("Map " + input + " to " + YangToolsMapperHelper.toCamelCaseAttributeName(input));
+        System.out.println("Map " + input + " to " + YangToolsMapper.toCamelCaseAttributeName(input));
     }
 
     /* ---------------------------------
@@ -364,7 +361,7 @@ public class TestYangGenSalMapping {
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.DataBuilder dataBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.DataBuilder();
         dataBuilder.setDescription(description);
-        dataBuilder.setTreeLevel(YangHelper2.getLongOrUint32(treeLevel));
+        dataBuilder.setTreeLevel(treeLevel);
         return dataBuilder;
     }
 
@@ -432,8 +429,8 @@ public class TestYangGenSalMapping {
             long totalSize) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Pagination value =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.PaginationBuilder()
-                .setPage(YangHelper2.getBigIntegerOrUint64(BigInteger.valueOf(page))).setSize(YangHelper2.getLongOrUint32(pageSize))
-                .setTotal(YangHelper2.getBigIntegerOrUint64(BigInteger.valueOf(totalSize))).build();
+                        .setPage(BigInteger.valueOf(page)).setSize(pageSize).setTotal(BigInteger.valueOf(totalSize))
+                        .build();
         outputBuilder.setPagination(value);
     }
 

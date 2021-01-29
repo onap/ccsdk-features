@@ -29,14 +29,14 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>2.1.1-SNAPSHOT</version>
+        <version>2.1.0</version>
         <relativePath/>
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-common</artifactId>
     <version>1.1.1-SNAPSHOT</version>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
     <licenses>
@@ -47,6 +47,7 @@
     </licenses>
 
     <properties>
+        <checkstyle.skip>true</checkstyle.skip> <!-- POM configuration -->
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <buildtime>${maven.build.timestamp} UTC</buildtime>
@@ -62,7 +63,7 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <artifactId>servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -76,6 +77,7 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-client</artifactId>
+            <version>${elasticsearch-rest-client.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -90,8 +92,8 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-              <groupId>com.google.code.findbugs</groupId>
-              <artifactId>annotations</artifactId>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
         </dependency>
     </dependencies>
 
@@ -112,6 +114,7 @@
             <plugin>
                 <groupId>com.github.alexcojocaru</groupId>
                 <artifactId>elasticsearch-maven-plugin</artifactId>
+                <version>6.16</version>
                 <configuration>
                     <skip>${skipTests}</skip>
                     <clusterName>testCluster</clusterName>

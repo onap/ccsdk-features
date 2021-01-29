@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor;
 
 import java.io.IOException;
+
 import org.onap.ccsdk.features.sdnr.wt.common.database.ExtRestClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
@@ -30,7 +31,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.AggregationEntries;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryResult;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.Data;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.DataBuilder;
@@ -55,13 +55,9 @@ public class DataObjectAcessorStatus extends DataObjectAcessor<Data> {
         SearchResponse response = this.dbClient.search(request);
         AggregationEntries aggs = response.getAggregations(ESDATATYPE_FAULTCURRENT_SEVERITY_KEY);
 
-        Data[] data = {new DataBuilder()
-                .setFaults(
-                        new FaultsBuilder().setCriticals(YangHelper2.getLongOrUint32(aggs.getOrDefault("Critical", 0L)))
-                                .setMajors(YangHelper2.getLongOrUint32(aggs.getOrDefault("Major", 0L)))
-                                .setMinors(YangHelper2.getLongOrUint32(aggs.getOrDefault("Minor", 0L)))
-                                .setWarnings(YangHelper2.getLongOrUint32(aggs.getOrDefault("Warning", 0L))).build())
-                .build()};
+        Data[] data = {new DataBuilder().setFaults(new FaultsBuilder().setCriticals(aggs.getOrDefault("Critical", 0L))
+                .setMajors(aggs.getOrDefault("Major", 0L)).setMinors(aggs.getOrDefault("Minor", 0L))
+                .setWarnings(aggs.getOrDefault("Warning", 0L)).build()).build()};
         long toalsize = data.length;
         return new QueryResult<Data>(1L, 1L, new SearchResult<Data>(data, toalsize));
 

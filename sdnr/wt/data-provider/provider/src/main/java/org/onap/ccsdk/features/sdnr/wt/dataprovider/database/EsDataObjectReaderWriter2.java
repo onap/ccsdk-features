@@ -33,7 +33,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper2;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapperHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -143,7 +142,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
      * @return this for further operations.
      */
     public EsDataObjectReaderWriter2<T> setEsIdAttributeNameCamelized(String esIdAttributeName) {
-        return setEsIdAttributeName(YangToolsMapperHelper.toCamelCaseAttributeName(esIdAttributeName));
+        return setEsIdAttributeName(YangToolsMapper2.toCamelCaseAttributeName(esIdAttributeName));
     }
 
     /**
@@ -361,13 +360,14 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
             result = db.doReadAllJsonData(dataTypeName, ignoreException);
         }
         hits = result.getHits();
-        LOG.debug("Read: {} elements: {}", dataTypeName, hits.size());
+        LOG.debug("Read: {} elements: {}  Failures: {}", dataTypeName, hits.size(),
+                yangtoolsMapper.getMappingFailures());
 
         T object;
         for (SearchHit hit : hits) {
             object = getT(hit.getSourceAsString());
-            LOG.debug("Mapp Object: {}\nSource: '{}'\nResult: '{}'\n", hit.getId(),
-                    hit.getSourceAsString(), object);
+            LOG.debug("Mapp Object: {}\nSource: '{}'\nResult: '{}'\n Failures: {}", hit.getId(),
+                    hit.getSourceAsString(), object, yangtoolsMapper.getMappingFailures());
             if (object != null) {
                 setEsId(object, hit.getId());
                 res.add(object);
@@ -397,7 +397,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
         try {
             return yangtoolsMapper.readValue(jsonString, clazz);
         } catch (IOException e) {
-            LOG.info("Mapping problem {}:", clazz.getName(), e);
+            LOG.info("Mapping problem", e);
             return null;
         }
     }

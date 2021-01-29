@@ -48,11 +48,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.annotation.Nonnull;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -60,7 +56,7 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,29 +111,6 @@ public class BaseHTTPClient {
             throws IOException {
         return this.sendRequest(uri, method, body != null ? body.getBytes(CHARSET) : null, headers);
     }
-    public BaseHTTPResponse sendRequest(HttpServletRequest req) throws IOException {
-        final String method = req.getMethod();
-        byte[] buffer=null;
-
-        if(!"GET".equals(method)) {
-            InputStream is = req.getInputStream();
-            buffer=is.readAllBytes();
-            is.close();
-
-        }
-        return this.sendRequest(req.getRequestURI(), method, buffer,mapHeaders(req));
-    }
-
-    private Map<String, String> mapHeaders(HttpServletRequest req) {
-        Map<String,String> headers = new HashMap<>();
-        Enumeration<String> keys = req.getHeaderNames();
-        String key;
-        while(keys.hasMoreElements()) {
-            key=keys.nextElement();
-            headers.put(key,req.getHeader(key));
-        }
-        return headers;
-    }
 
     protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, byte[] body, Map<String, String> headers)
             throws IOException {
@@ -191,16 +164,10 @@ public class BaseHTTPClient {
         // Receive answer
         int responseCode = ((HttpURLConnection) http).getResponseCode();
         String sresponse = "";
-        Map<String,String> responseHeaders = null;
         InputStream response = null;
         try {
             if (responseCode >= 200 && responseCode < 300) {
                 response = http.getInputStream();
-                responseHeaders = new HashMap<>();
-                for(Entry<String,List<String>> entry:http.getHeaderFields().entrySet()) {
-                    responseHeaders.put(entry.getKey(), String.join(";", entry.getValue()));
-                }
-
             } else {
                 response = ((HttpURLConnection) http).getErrorStream();
                 if (response == null) {
@@ -228,7 +195,7 @@ public class BaseHTTPClient {
         }
         LOG.debug("ResponseCode: " + responseCode);
         LOG.trace("Response (len:{}): {}", String.valueOf(lensum), sresponse);
-        return new BaseHTTPResponse(responseCode, sresponse,responseHeaders);
+        return new BaseHTTPResponse(responseCode, sresponse);
     }
 
     public static SSLContext setupSsl(boolean trustall)
@@ -332,7 +299,7 @@ public class BaseHTTPClient {
         String data = new String(pem);
         String[] tokens = data.split(beginDelimiter);
         tokens = tokens[1].split(endDelimiter);
-        return Base64.getDecoder().decode(tokens[0]);
+        return DatatypeConverter.parseBase64Binary(tokens[0]);
     }
 
     protected static RSAPrivateKey generatePrivateKeyFromDER(byte[] keyBytes)
@@ -369,7 +336,5 @@ public class BaseHTTPClient {
     public static int getSslCertPEM() {
         return SSLCERT_PEM;
     }
-
-
 
 }

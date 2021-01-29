@@ -73,7 +73,7 @@ public class AboutHttpServlet extends HttpServlet {
     private static final String README_FILE = "README.md";
     private static final String NO_DEVICEMANAGERS_RUNNING_MESSAGE = null;
 
-    private final String groupId = this.getGroupIdOrDefault("org.onap.ccsdk.features.sdnr.wt");
+    private final String groupId = "org.onap.ccsdk.features.sdnr.wt";
     private final String artifactId = "sdnr-wt-data-provider-provider";
 
     private final Map<Integer,String> BUNDLESTATE_LUT;
@@ -97,18 +97,7 @@ public class AboutHttpServlet extends HttpServlet {
 
     }
 
-    protected String getGroupIdOrDefault(String def) {
-		String symbolicName = this.getManifestValue("Bundle-SymbolicName");
-		if(symbolicName!=null) {
-			int idx =  symbolicName.indexOf(this.artifactId);
-			if(idx>0) {
-				return symbolicName.substring(0, idx-1);
-			}
-		}
-		return def;
-	}
-
-	//	public void setBundleService(BundleService bundleService) {
+    //	public void setBundleService(BundleService bundleService) {
     //		this.bundleService = bundleService;
     //	}
 
@@ -210,7 +199,7 @@ public class AboutHttpServlet extends HttpServlet {
      * @param key
      * @return
      */
-    protected String getManifestValue(String key) {
+    private String getManifestValue(String key) {
         URL url = Resources.getUrlForRessource(AboutHttpServlet.class, "/META-INF/MANIFEST.MF");
         if (url == null) {
             return null;

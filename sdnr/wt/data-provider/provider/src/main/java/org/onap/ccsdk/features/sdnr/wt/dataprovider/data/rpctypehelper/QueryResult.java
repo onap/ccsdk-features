@@ -22,8 +22,8 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper;
 
 import java.math.BigInteger;
+
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PaginationOutputG;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.PaginationBuilder;
 
@@ -36,9 +36,9 @@ public class QueryResult<T> {
         this.result = result;
 
         PaginationBuilder x = new PaginationBuilder();
-        x.setPage(YangHelper2.getBigIntegerOrUint64(BigInteger.valueOf(page)));
-        x.setSize(YangHelper2.getLongOrUint32(pageSize));
-        x.setTotal(YangHelper2.getBigIntegerOrUint64(BigInteger.valueOf(result.getTotal())));
+        x.setPage(BigInteger.valueOf(page));
+        x.setSize(pageSize);
+        x.setTotal(BigInteger.valueOf(result.getTotal()));
         pagination = x.build();
     }
 
@@ -46,9 +46,9 @@ public class QueryResult<T> {
         this.result = result;
 
         PaginationBuilder x = new PaginationBuilder();
-        x.setPage(YangHelper2.getBigIntegerOrUint64(BigInteger.valueOf(queryByFilter.getPage())));
-        x.setSize(YangHelper2.getLongOrUint32(queryByFilter.getPageSize()));
-        x.setTotal(YangHelper2.getBigIntegerOrUint64(BigInteger.valueOf(result.getTotal())));
+        x.setPage(BigInteger.valueOf(queryByFilter.getPage()));
+        x.setSize(queryByFilter.getPageSize());
+        x.setTotal(BigInteger.valueOf(result.getTotal()));
         pagination = x.build();
     }
 
@@ -59,11 +59,6 @@ public class QueryResult<T> {
 
     public PaginationOutputG getPagination() {
         return pagination;
-    }
-
-    @Override
-    public String toString() {
-        return "QueryResult [result=" + result + ", pagination=" + pagination + "]";
     }
 
 
