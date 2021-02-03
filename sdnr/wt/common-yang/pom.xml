@@ -27,12 +27,12 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>odlparent-lite</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>common-yang</artifactId>
+    <artifactId>sdnr-wt-common-yang</artifactId>
     <version>1.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -45,4 +45,5 @@
         <module>rfc7317-ietf-system</module>
         <module>ietf-alarms</module>
     </modules>
+
 </project>

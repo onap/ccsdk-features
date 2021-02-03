@@ -23,7 +23,6 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.housekeeping;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -228,10 +227,10 @@ public class ConnectionStatusHousekeepingService
             this.cfg.unregisterConfigChangedListener(this);
         }
         this.scheduler.shutdown();
-        this.cssRegistration2.close();
+        if (this.cssRegistration2 != null)
+            this.cssRegistration2.close();
     }
 
-    @SuppressWarnings("null")
     @Override
     public @NonNull ServiceGroupIdentifier getIdentifier() {
         return IDENT;

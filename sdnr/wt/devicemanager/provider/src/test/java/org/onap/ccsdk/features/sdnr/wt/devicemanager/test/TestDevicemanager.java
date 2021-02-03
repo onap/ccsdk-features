@@ -21,7 +21,6 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
 import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -31,6 +30,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.DeviceManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalDateAndTime;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
@@ -126,6 +126,11 @@ public class TestDevicemanager extends Mockito {
     }
 
     @Test
+    public void testMapping() {
+
+    }
+
+    @Test
     public void testChangeNotification() {
         NotificationService n = deviceManager.getNotificationService();
 
@@ -147,7 +152,8 @@ public class TestDevicemanager extends Mockito {
 
         FaultService n = deviceManager.getFaultService();
         FaultlogBuilder faultLogEntityBuilder = new FaultlogBuilder();
-        n.faultNotification(faultLogEntityBuilder.setNodeId("node1").build());
+        n.faultNotification(faultLogEntityBuilder.setNodeId("node1")
+                .setTimestamp(NetconfTimeStampImpl.getTestpatternDateAndTime()).build());
 
     }
 
