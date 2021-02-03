@@ -34,6 +34,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
@@ -88,7 +89,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
 
 
     private final NotificationService microwaveModelListener;
-    private final NetconfAccessor acessor;
+    private final NetconfBindingAccessor acessor;
     private final TransactionUtils genericTransactionUtil;
     private final String mountpointId;
     private final @NonNull FaultService faultService;
@@ -102,7 +103,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
      * @param acessor to access device
      * @param serviceProvider for devicemanager services
      */
-    public WrapperMicrowaveModelRev180907(@NonNull NetconfAccessor acessor,
+    public WrapperMicrowaveModelRev180907(@NonNull NetconfBindingAccessor acessor,
             @NonNull DeviceManagerServiceProvider serviceProvider) {
         this.acessor = acessor;
         this.mountpointId = acessor.getNodeId().getValue();

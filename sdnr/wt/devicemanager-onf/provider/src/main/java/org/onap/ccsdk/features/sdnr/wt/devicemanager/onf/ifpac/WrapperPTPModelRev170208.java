@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset.rev170208.InstanceList;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset.rev170208.InstanceListKey;
@@ -47,7 +48,7 @@ public class WrapperPTPModelRev170208 {
      * Query synchronization information out of NE
      */
 
-    public static void initSynchronizationExtension(NetconfAccessor acessor) {
+    public static void initSynchronizationExtension(NetconfBindingAccessor acessor) {
 
         String mountPointNodeName = acessor.getNodeId().getValue();
         Capabilities capabilities = acessor.getCapabilites();
@@ -93,7 +94,7 @@ public class WrapperPTPModelRev170208 {
     }
 
     @Nullable
-    private static InstanceList readPTPClockInstances(NetconfAccessor acessor) {
+    private static InstanceList readPTPClockInstances(NetconfBindingAccessor acessor) {
         return acessor.getTransactionUtils().readData(acessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 PTPINSTANCES_IID);
     }

@@ -34,6 +34,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
@@ -82,7 +83,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
      * @param serviceProvider to get services
      * @param onfMicrowaveModel handling ofmicrosoft model data
      */
-    public ONFCoreNetworkElement12Microwave(@NonNull NetconfAccessor acessor,
+    public ONFCoreNetworkElement12Microwave(@NonNull NetconfBindingAccessor acessor,
             @NonNull DeviceManagerServiceProvider serviceProvider, DeviceManagerOnfConfiguration configuration,
             OnfMicrowaveModel onfMicrowaveModel) {
 

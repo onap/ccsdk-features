@@ -19,9 +19,14 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.test.mock;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPoint;
@@ -35,7 +40,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  */
-public class NetconfAccessorMock implements NetconfAccessor {
+public class NetconfAccessorMock implements NetconfBindingAccessor, NetconfNotifications {
 
     private final NodeId nNodeId;
     private final NetconfNode netconfNode;
@@ -108,5 +113,29 @@ public class NetconfAccessorMock implements NetconfAccessor {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public Optional<NetconfBindingAccessor> getNetconfBindingAccessor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Optional<NetconfDomAccessor> getNetconfDomAccessor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Optional<NetconfNotifications> getNotificationAccessor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isNotificationsSupported() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }

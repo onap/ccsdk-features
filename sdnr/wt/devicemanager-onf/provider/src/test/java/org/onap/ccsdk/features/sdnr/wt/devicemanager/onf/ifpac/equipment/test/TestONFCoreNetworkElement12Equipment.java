@@ -32,7 +32,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.equipment.ONFCore
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.equipment.WrapperEquipmentPacRev170402;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -45,7 +45,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class TestONFCoreNetworkElement12Equipment {
 
-    NetconfAccessor netconfAccessor;
+    NetconfBindingAccessor netconfAccessor;
     Capabilities capabilities;
     NetworkElementCoreData coreData;
     FaultData faultData;
@@ -57,7 +57,7 @@ public class TestONFCoreNetworkElement12Equipment {
 
     @Before
     public void init() throws Exception {
-        netconfAccessor = mock(NetconfAccessor.class);
+        netconfAccessor = mock(NetconfBindingAccessor.class);
         capabilities = mock(Capabilities.class);
         coreData = mock(NetworkElementCoreData.class);
         faultData = mock(FaultData.class);

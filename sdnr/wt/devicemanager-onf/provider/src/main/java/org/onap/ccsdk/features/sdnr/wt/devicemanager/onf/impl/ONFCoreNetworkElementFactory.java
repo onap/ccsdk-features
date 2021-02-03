@@ -29,6 +29,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne.ONFCoreNetworkElemen
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.NetworkElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,28 +52,28 @@ public class ONFCoreNetworkElementFactory implements NetworkElementFactory {
 
     @Override
     public Optional<org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement> create(
-            @NonNull NetconfAccessor acessor, @NonNull DeviceManagerServiceProvider serviceProvider) {
+            @NonNull NetconfAccessor accessor, @NonNull DeviceManagerServiceProvider serviceProvider) {
 
-        log.info("Enter factory {}", ONFCoreNetworkElementFactory.class.getName(), acessor.getNodeId());
+        log.info("Enter factory {}", ONFCoreNetworkElementFactory.class.getName(), accessor.getNodeId());
 
-        Capabilities capabilities = acessor.getCapabilites();
+        Capabilities capabilities = accessor.getCapabilites();
 
         if (capabilities.isSupportingNamespaceAndRevision(NetworkElement.QNAME)) {
             OnfMicrowaveModel onfMicrowaveModel = null;
-
+            Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
             if (capabilities.isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME)) {
-                onfMicrowaveModel = new WrapperMicrowaveModelRev170324(acessor, serviceProvider);
+                onfMicrowaveModel = new WrapperMicrowaveModelRev170324(bindingAccessor.get(), serviceProvider);
             } else if (capabilities.isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME)) {
-                onfMicrowaveModel = new WrapperMicrowaveModelRev180907(acessor, serviceProvider);
+                onfMicrowaveModel = new WrapperMicrowaveModelRev180907(bindingAccessor.get(), serviceProvider);
             } else if (capabilities.isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev181010.QNAME)) {
-                onfMicrowaveModel = new WrapperMicrowaveModelRev181010(acessor, serviceProvider);
+                onfMicrowaveModel = new WrapperMicrowaveModelRev181010(bindingAccessor.get(), serviceProvider);
             }
 
             if (onfMicrowaveModel != null) {
-                return Optional.of(new ONFCoreNetworkElement12Microwave(acessor, serviceProvider, configuration,
+                return Optional.of(new ONFCoreNetworkElement12Microwave(bindingAccessor.get(), serviceProvider, configuration,
                         onfMicrowaveModel));
             } else {
-                return Optional.of(new ONFCoreNetworkElement12Basic(acessor, serviceProvider, configuration));
+                return Optional.of(new ONFCoreNetworkElement12Basic(bindingAccessor.get(), serviceProvider, configuration));
             }
         }
 
