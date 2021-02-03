@@ -47,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MediatorServerEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
@@ -55,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListOutputBuilder;
@@ -72,13 +74,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implements IEntityDataProvider*/ {
+public class ElasticSearchDataProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticSearchDataProvider.class);
 
@@ -165,9 +164,6 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
      * Provide access to model API
      */
 
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.PaginationBuilder
-    //eventRWFaultCurrent
     public ReadFaultcurrentListOutputBuilder readFaultCurrentList(EntityInput input) {
 
         ReadFaultcurrentListOutputBuilder outputBuilder = new ReadFaultcurrentListOutputBuilder();
@@ -181,9 +177,6 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         return outputBuilder;
     }
 
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.PaginationBuilder
-    //eventRWFaultLog
     public ReadFaultlogListOutputBuilder readFaultLogList(EntityInput input) {
         ReadFaultlogListOutputBuilder outputBuilder = new ReadFaultlogListOutputBuilder();
         QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data> result =
@@ -195,9 +188,6 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         return outputBuilder;
     }
 
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.PaginationBuilder
-    //maintenanceRW
     public ReadMaintenanceListOutputBuilder readMaintenanceList(EntityInput input) {
         ReadMaintenanceListOutputBuilder outputBuilder = new ReadMaintenanceListOutputBuilder();
         QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> result =
@@ -209,9 +199,6 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         return outputBuilder;
     }
 
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Pagination
-    //mediatorserverRW
     public ReadMediatorServerListOutputBuilder readMediatorServerList(EntityInput input) {
 
         ReadMediatorServerListOutputBuilder outputBuilder = new ReadMediatorServerListOutputBuilder();
@@ -224,9 +211,6 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         return outputBuilder;
     }
 
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.PaginationBuilder
-    //networkelementConnectionRW
     public ReadNetworkElementConnectionListOutputBuilder readNetworkElementConnectionList(EntityInput input) {
         ReadNetworkElementConnectionListOutputBuilder outputBuilder =
                 new ReadNetworkElementConnectionListOutputBuilder();
@@ -239,9 +223,6 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         return outputBuilder;
     }
 
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.PaginationBuilder
-    //equipmentRW
     public ReadInventoryListOutputBuilder readInventoryList(EntityInput input) {
         ReadInventoryListOutputBuilder outputBuilder = new ReadInventoryListOutputBuilder();
         QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data> result =
@@ -253,9 +234,6 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         return outputBuilder;
     }
 
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.PaginationBuilder
-    //connnectionlogRW
     public ReadConnectionlogListOutputBuilder readConnectionlogList(EntityInput input) {
         ReadConnectionlogListOutputBuilder outputBuilder = new ReadConnectionlogListOutputBuilder();
         QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data> result =
@@ -267,9 +245,6 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         return outputBuilder;
     }
 
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.PaginationBuilder
-    //eventlogRW
     public ReadEventlogListOutputBuilder readEventlogList(ReadEventlogListInput input) throws IOException {
         ReadEventlogListOutputBuilder outputBuilder = new ReadEventlogListOutputBuilder();
         QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data> result =
@@ -281,12 +256,11 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         return outputBuilder;
     }
 
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.PaginationBuilder
     public ReadPmdata15mListOutputBuilder readPmdata15mList(EntityInput input) {
         ReadPmdata15mListOutputBuilder outputBuilder = new ReadPmdata15mListOutputBuilder();
         QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> result =
                 this.pm15mRW.getData(input);
+        LOG.debug("Read data: readPmdata15mList: {}", result);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.PaginationBuilder(
@@ -294,8 +268,6 @@ public class ElasticSearchDataProvider /*extends BaseStatusProvider /* implement
         return outputBuilder;
     }
 
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data
-    //org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Pagination
     public ReadPmdata24hListOutputBuilder readPmdata24hList(EntityInput input) {
         ReadPmdata24hListOutputBuilder outputBuilder = new ReadPmdata24hListOutputBuilder();
         QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data> result =

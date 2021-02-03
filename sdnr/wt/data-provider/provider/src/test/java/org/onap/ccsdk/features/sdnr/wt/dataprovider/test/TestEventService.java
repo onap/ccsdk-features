@@ -40,6 +40,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryReq
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.entity.HtDatabaseEventsService;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
@@ -281,7 +282,7 @@ public class TestEventService {
      * @return
      */
     private static NetworkElementConnectionEntity createNeConnection(String nodeId, NetworkElementDeviceType devType) {
-        return new NetworkElementConnectionBuilder().setNodeId(nodeId).setHost("host").setPort(1234L)
+        return new NetworkElementConnectionBuilder().setNodeId(nodeId).setHost("host").setPort(YangHelper2.getLongOrUint32(1234L))
                 .setCoreModelCapability("123").setStatus(ConnectionLogStatus.Connected).setDeviceType(devType)
                 .setIsRequired(true).build();
     }

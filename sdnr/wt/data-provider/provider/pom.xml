@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
@@ -79,24 +79,31 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.core</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!--          <dependency> -->
-        <!--             <groupId>org.apache.karaf.bundle</groupId> -->
-        <!--             <artifactId>org.apache.karaf.bundle.core</artifactId> -->
-        <!--             <scope>provided</scope> -->
-        <!--         </dependency> -->
+<!--          <dependency> -->
+<!--             <groupId>org.apache.karaf.bundle</groupId> -->
+<!--             <artifactId>org.apache.karaf.bundle.core</artifactId> -->
+<!--             <scope>provided</scope> -->
+<!--         </dependency> -->
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>sal-netconf-connector</artifactId>
@@ -149,7 +156,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>java</executable>
+                            <executable>${basedir}/java.sh</executable>
                             <arguments>
                                 <argument>-jar</argument>
                                 <argument>${basedir}/../../data-provider/setup/target/sdnr-dmt.jar</argument>

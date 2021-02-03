@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.impl;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClientException;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.ReadyHttpServlet;
@@ -74,11 +75,16 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     public void init() throws Exception {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
-
-        // Start RPC Service
-        this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.mediatorServerServlet);
-        this.treeServlet.setDatabaseClient(this.rpcApiService.getRawClient());
-        LOG.info("Session Initiated end. Initialization done");
+        try {
+            // Start RPC Service
+            this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.mediatorServerServlet);
+            this.treeServlet.setDatabaseClient(this.rpcApiService.getRawClient());
+            LOG.info("Session Initiated end. Initialization done");
+        } catch (Exception e) {
+            if (e instanceof HtDatabaseClientException)
+                LOG.error("IOException: Could not connect to the Database. Please check Database connectivity");
+            throw e;
+        }
     }
 
     @Override
