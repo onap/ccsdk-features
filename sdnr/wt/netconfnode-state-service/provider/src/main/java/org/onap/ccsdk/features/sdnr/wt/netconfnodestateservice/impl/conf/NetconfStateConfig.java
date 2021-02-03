@@ -21,28 +21,14 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf;
 
-/**
- * @author Michael Dürre
- *
- */
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
-import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
-import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
-import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo.Protocol;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class NetconfStateConfig implements Configuration {
 
+    @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(NetconfStateConfig.class);
 
     public static final String SECTION_MARKER_NCSTATE = "netconfstate";
@@ -74,7 +60,7 @@ public class NetconfStateConfig implements Configuration {
 
     @Override
     public synchronized void defaults() {
-        // Add default if not available  
+        // Add default if not available
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_NCSTATE, PROPERTY_KEY_HANDLEASYNC,
                 DEFAULT_VALUE_TRUSTALLCERTS);
 

@@ -1,0 +1,20 @@
+{
+  "config:configuration": {
+    "config1": "this is a test",
+    "entry": [
+      {
+        "setting": "setting-3",
+        "value": 255
+      },
+      {
+        "setting": "setting-1",
+        "value": 1
+      },
+      {
+        "setting": "setting-2",
+        "value": 2
+      }
+    ],
+    "config2": true
+  }
+}
