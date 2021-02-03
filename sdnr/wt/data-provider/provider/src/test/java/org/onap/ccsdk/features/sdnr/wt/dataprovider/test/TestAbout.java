@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -31,6 +32,8 @@ import java.nio.file.Files;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.jline.utils.Log;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -103,7 +106,12 @@ public class TestAbout {
         assertTrue(printOut.getByteArrayOutputStream().size() > 0);
     }
 
-
+    @Test
+    public void testGetGroupId() {
+    	AboutHelperServlet sv = new AboutHelperServlet();
+    	assertNotNull(sv.getGroupIdOrDefault(null));
+    }
+    
 
     private class AboutHelperServlet extends AboutHttpServlet {
 
@@ -116,6 +124,16 @@ public class TestAbout {
         public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             super.doGet(req, resp);
         }
-
+        @Override
+        public String getGroupIdOrDefault(String def) {
+    		return super.getGroupIdOrDefault(def);
+    	}
+        @Override
+        protected String getManifestValue(String key) {
+        	if(key == "Bundle-SymbolicName") {
+        		return "org.onap.ccsdk.features.sdnr.wt.sdnr-wt-data-provider-provider";
+        	}
+        	return super.getManifestValue(key);
+        }
     }
 }

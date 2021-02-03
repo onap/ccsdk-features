@@ -60,6 +60,7 @@ public class ODLVersionLUT {
         }
         if(odlMdsalVersionLUT==null) {
             odlMdsalVersionLUT = new HashMap<>();
+            odlMdsalVersionLUT.put("6.0.7","aluminium-SR1 (0.13.1)");
             odlMdsalVersionLUT.put("6.0.4","aluminium-SR0 (0.13.0)");
             odlMdsalVersionLUT.put("5.0.14","magnesium-SR2 (0.12.2)");
             odlMdsalVersionLUT.put("5.0.10","magnesium-SR1 (0.12.1)");

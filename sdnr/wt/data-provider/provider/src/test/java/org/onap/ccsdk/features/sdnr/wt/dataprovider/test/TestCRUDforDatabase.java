@@ -42,7 +42,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper2;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInputBuilder;
@@ -61,7 +61,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultlog;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GranularityPeriodType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListInputBuilder;
@@ -306,7 +306,7 @@ public class TestCRUDforDatabase {
 
         CreateNetworkElementConnectionOutputBuilder create = null;
         CreateNetworkElementConnectionInput input = new CreateNetworkElementConnectionInputBuilder().setNodeId(name)
-                .setIsRequired(true).setHost(url).setPort(port).build();
+                .setIsRequired(true).setHost(url).setPort(YangHelper2.getLongOrUint32(port)).build();
         String dbId = null;
 
         try {
@@ -342,7 +342,7 @@ public class TestCRUDforDatabase {
         final long port2 = 5960;
 
         UpdateNetworkElementConnectionInput updateInput = new UpdateNetworkElementConnectionInputBuilder().setId(dbId)
-                .setHost(url2).setPort(port2).setIsRequired(false).build();
+                .setHost(url2).setPort(YangHelper2.getLongOrUint32(port2)).setIsRequired(false).build();
         UpdateNetworkElementConnectionOutputBuilder updateOutput = null;
         try {
             updateOutput = dbProvider.updateNetworkElementConnection(updateInput);
@@ -1363,18 +1363,20 @@ public class TestCRUDforDatabase {
                     + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultlog\",\n"
                     + "\"source-type\": \"Netconf\",\n" + "\"node-id\": \"sim4\",\n" + "\"problem\": \"signalIsLost\"\n"
                     + "}";
-            YangToolsMapper2<Faultlog> yangtoolsMapper = new YangToolsMapper2<>(Faultlog.class,null);
-            FaultlogEntity log = yangtoolsMapper.readValue(jsonString, Faultlog.class);
-            System.out.println(log);
-            System.out.println(yangtoolsMapper.writeValueAsString(log));
+            YangToolsMapper yangtoolsMapper = new YangToolsMapper();
+            Faultlog log = yangtoolsMapper.readValue(jsonString, Faultlog.class);
+            System.out.println(yangtoolsMapper.writeValueAsString((new FaultlogBuilder(log).build())));
+            System.out.println("Check3");
         } catch (IOException e) {
-            fail(e.getMessage());
+            e.printStackTrace();
+            fail("Fail");
         }
 
     }
 
     private Pagination getPagination(long pageSize, int page) {
-        return new PaginationBuilder().setPage(BigInteger.valueOf(page)).setSize(pageSize).build();
+        return new PaginationBuilder().setPage(YangHelper2.getBigIntegerOrUint64(BigInteger.valueOf(page)))
+                .setSize(YangHelper2.getLongOrUint32(pageSize)).build();
     }
 
 
