@@ -28,6 +28,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +43,20 @@ public class MyProperties {
     private static final String DEFAULT_TRUSTINSECURE = "0";
     private static final String DEFAULT_ESDATABASE = "http://sdnrdb:9200";
     private static final String DEFAULT_AAI = "off";
-
+    private static final String DEFAULT_URL_OFF = "off";
+    private static final String DEFAULT_TILES = "${TILEURL}";
+    private static final String DEFAULT_TOPOLOGY = "${TOPOURL}";
     private static MyProperties mObj;
+    private static final String ENVVARIABLE = "${";
+    private static final String REGEXENVVARIABLE = "(\\$\\{[A-Z0-9_-]+\\})";
+    private static final Pattern ENV_PATTERN = Pattern.compile(REGEXENVVARIABLE);
+
 
     private String aaiBase;
     private Map<String, String> aaiHeaders;
     private String esBase;
+    private String tilesBase;
+    private String topologyBase;
 
     private boolean trustInsecure;
 
@@ -60,12 +70,28 @@ public class MyProperties {
         return this.esBase == null ? true : this.esBase.equals("off");
     }
 
+    public boolean isTilesOff() {
+        return this.tilesBase == null ? true : this.tilesBase.equals("off");
+    }
+
+    public boolean isTopologyOff() {
+        return this.topologyBase == null ? true : this.topologyBase.equals("off");
+    }
+
     public String getAAIBaseUrl() {
         return this.aaiBase;
     }
 
     public String getEsBaseUrl() {
         return this.esBase;
+    }
+
+    public String getTilesBaseUrl() {
+        return this.tilesBase;
+    }
+
+    public String getTopologyBaseUrl() {
+        return this.topologyBase;
     }
 
     public Map<String, String> getAAIHeaders() {
@@ -98,7 +124,7 @@ public class MyProperties {
     }
 
     private MyProperties(File file) throws IOException, NumberFormatException {
-        this.aaiBase = "off";
+        this.aaiBase = DEFAULT_AAI;
         this.trustInsecure = false;
         if (!file.exists()) {
             this.writeDefaults(file);
@@ -112,13 +138,47 @@ public class MyProperties {
         defaultProps.load(in);
         in.close();
 
-        this.aaiBase = defaultProps.getProperty("aai", DEFAULT_AAI);
-        this.aaiHeaders = _parseHeadersMap(defaultProps.getProperty("aaiHeaders", DEFAULT_AAI_HEADERS));
-        this.esBase = defaultProps.getProperty("database", DEFAULT_ESDATABASE);
-        this.trustInsecure = Integer.parseInt(defaultProps.getProperty("insecure", DEFAULT_TRUSTINSECURE)) == 1;
-        this.corsEnabled = Integer.parseInt(defaultProps.getProperty("cors", DEFAULT_CORSENABLED)) == 1;
+        this.aaiBase = getProperty(defaultProps,"aai", DEFAULT_AAI);
+        this.aaiHeaders = _parseHeadersMap(getProperty(defaultProps,"aaiHeaders", DEFAULT_AAI_HEADERS));
+        this.esBase = getProperty(defaultProps,"database", DEFAULT_ESDATABASE);
+        this.tilesBase = getProperty(defaultProps,"tiles", DEFAULT_TILES, DEFAULT_URL_OFF);
+        this.topologyBase = getProperty(defaultProps,"topology", DEFAULT_TOPOLOGY, DEFAULT_URL_OFF);
+        this.trustInsecure = Integer.parseInt(getProperty(defaultProps,"insecure", DEFAULT_TRUSTINSECURE)) == 1;
+        this.corsEnabled = Integer.parseInt(getProperty(defaultProps,"cors", DEFAULT_CORSENABLED)) == 1;
     }
+    private static String getProperty(Properties props,final String key, final String defValue) {
+        return getProperty(props, key, defValue, null);
+    }
+    private static String getProperty(Properties props,final String key, final String defValue, final String valueIfEmpty) {
 
+        LOG.debug("try to get property for {} with def {}", key, defValue);
+        String value = props.getProperty(key,defValue);
+        //try to read env var
+        if (value != null && value.contains(ENVVARIABLE)) {
+
+            LOG.debug("try to find env var(s) for {}", value);
+            final Matcher matcher = ENV_PATTERN.matcher(value);
+            String tmp = new String(value);
+            while (matcher.find() && matcher.groupCount() > 0) {
+                final String mkey = matcher.group(1);
+                if (mkey != null) {
+                    try {
+                        LOG.debug("match found for v={} and env key={}", tmp, mkey);
+                        //String env=System.getenv(mkey.substring(2,mkey.length()-1));
+                        String env = System.getenv(mkey.substring(2, mkey.length() - 1));
+                        tmp = tmp.replace(mkey, env == null ? "" : env);
+                    } catch (SecurityException e) {
+                        LOG.warn("unable to read env {}: {}", value, e);
+                    }
+                }
+            }
+            value = tmp;
+        }
+        if((value==null || value == "") && valueIfEmpty!=null) {
+            value = valueIfEmpty;
+        }
+        return value;
+    }
     private static Map<String, String> _parseHeadersMap(String s) {
         Map<String, String> r = new HashMap<>();
         try {
@@ -145,6 +205,8 @@ public class MyProperties {
         sb.append("aai=" + DEFAULT_AAI + LR);
         sb.append("aaiHeaders=" + DEFAULT_AAI_HEADERS + LR);
         sb.append("database=" + DEFAULT_ESDATABASE + LR);
+        sb.append("tiles=" + DEFAULT_TILES + LR);
+        sb.append("topology=" + DEFAULT_TOPOLOGY + LR);
         sb.append("insecure=" + DEFAULT_TRUSTINSECURE + LR);
         sb.append("cors=" + DEFAULT_CORSENABLED);
         try {
@@ -166,4 +228,5 @@ public class MyProperties {
         return "MyProperties [aaiBase=" + aaiBase + ", aaiHeaders=" + aaiHeaders + ", esBase=" + esBase
                 + ", trustInsecure=" + trustInsecure + ", corsEnabled=" + corsEnabled + "]";
     }
+
 }
