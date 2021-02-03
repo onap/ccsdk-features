@@ -27,17 +27,15 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import org.onap.ccsdk.sli.core.sli.provider.MdsalHelper;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.impl.AbstractForwardedDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.*;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.common.header.CommonHeaderBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.status.StatusBuilder;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -45,8 +43,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import org.onap.ccsdk.features.sdnr.northbound.ranSlice.RANSliceResponseCode.*;
 
 /**
  * Defines a base implementation for your provider. This class extends from a
@@ -97,43 +93,56 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 	protected DataBroker dataBroker;
 	protected DOMDataBroker domDataBroker;
 	protected NotificationPublishService notificationService;
-	protected RpcProviderRegistry rpcRegistry;
-	private final RANSliceClient RANSliceClient;
+	protected RpcProviderService rpcProviderRegistry;
+	private  RANSliceClient RANSliceClient;
 
-	protected BindingAwareBroker.RpcRegistration<RanSliceApiService> rpcRegistration;
+	private ObjectRegistration<RanSliceApiService> rpcRegistration;
 
-	public RANSliceProvider(final DataBroker dataBroker, final NotificationPublishService notificationPublishService,
-			final RpcProviderRegistry rpcProviderRegistry, final RANSliceClient rANSliceClient) {
+	public RANSliceProvider() {
 
 		LOG.info("Creating provider for {}", APPLICATION_NAME);
 		executor = Executors.newFixedThreadPool(1);
-		this.dataBroker = dataBroker;
-		if (dataBroker instanceof AbstractForwardedDataBroker) {
-			domDataBroker = ((AbstractForwardedDataBroker) dataBroker).getDelegate();
-		}
-		notificationService = notificationPublishService;
-		rpcRegistry = rpcProviderRegistry;
-		this.RANSliceClient = rANSliceClient;
-		initialize();
+		this.dataBroker = null;
+		this.domDataBroker = null;
+		this.notificationService = null;
+		this.rpcProviderRegistry = null;
+		this.rpcRegistration = null;
+		this.RANSliceClient = null;
 	}
 
-	public void initialize() {
-		LOG.info("Initializing {} for {}", this.getClass().getName(), APPLICATION_NAME);
+	public void setDataBroker(DataBroker dataBroker) {
+		this.dataBroker = dataBroker;
+	}
 
+	public void setDomDataBroker(DOMDataBroker domDataBroker) {
+		this.domDataBroker = domDataBroker;
+	}
+	
+	public void setRpcProviderRegistry(RpcProviderService rpcProviderRegistry) {
+		this.rpcProviderRegistry = rpcProviderRegistry;
+	}
+
+	public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
+		this.notificationService = notificationPublishService;
+	}
+
+	public void setClient(RANSliceClient client) {
+		this.RANSliceClient = client;
+	}
+	
+	public void init() {
+		LOG.info("Initializing {} for {}", this.getClass().getName(), APPLICATION_NAME);
+		
 		if (rpcRegistration == null) {
-			if (rpcRegistry != null) {
-				rpcRegistration = rpcRegistry.addRpcImplementation(RanSliceApiService.class, this);
+			if (rpcProviderRegistry != null) {
+				rpcRegistration = rpcProviderRegistry.registerRpcImplementation(RanSliceApiService.class, this);
 				LOG.info("Initialization complete for {}", APPLICATION_NAME);
 			} else {
 				LOG.warn("Error initializing {} : rpcRegistry unset", APPLICATION_NAME);
 			}
 		}
 	}
-
-	protected void initializeChild() {
-		// Override if you have custom initialization intelligence
-	}
-
+	
 	@Override
 	public void close() throws Exception {
 		LOG.info("Closing provider for " + APPLICATION_NAME);

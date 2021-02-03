@@ -42,13 +42,17 @@ import org.onap.ccsdk.sli.core.sli.SvcLogicStoreFactory;
 import org.onap.ccsdk.sli.core.sli.provider.SvcLogicClassResolver;
 import org.onap.ccsdk.sli.core.sli.provider.SvcLogicPropertiesProviderImpl;
 import org.onap.ccsdk.sli.core.sli.provider.SvcLogicServiceImpl;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.dom.api.DOMDataBroker;
+/*import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.*;
+*/import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.*;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.common.header.CommonHeaderBuilder;
-
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,10 +67,12 @@ public class RANSliceProviderTest {
       @Before
       public void setUp() throws Exception {
           DataBroker dataBroker = mock(DataBroker.class);
+          DOMDataBroker domDataBroker = mock(DOMDataBroker.class);
           NotificationPublishService notifyService = mock(NotificationPublishService.class);
-          RpcProviderRegistry rpcRegistry = mock(RpcProviderRegistry.class);
-          BindingAwareBroker.RpcRegistration<RanSliceApiService> rpcRegistration = (BindingAwareBroker.RpcRegistration<RanSliceApiService>) mock(BindingAwareBroker.RpcRegistration.class);
-          when(rpcRegistry.addRpcImplementation(any(Class.class), any(RanSliceApiService.class))).thenReturn(rpcRegistration);
+          //RpcProviderRegistry rpcRegistry = mock(RpcProviderRegistry.class);
+          RpcProviderService rpcRegistry = mock(RpcProviderService.class);
+          ObjectRegistration<RanSliceApiService> rpcRegistration = mock(ObjectRegistration.class);
+          when(rpcRegistry.registerRpcImplementation(any(Class.class), any(RanSliceApiService.class))).thenReturn(rpcRegistration);
 
 
           // Load svclogic.properties and get a SvcLogicStore
@@ -95,7 +101,14 @@ public class RANSliceProviderTest {
 
           // Finally ready to create sliapiProvider
           RANSliceClient client = new RANSliceClient(svc);
-          provider = new RANSliceProvider(dataBroker, notifyService, rpcRegistry, client);
+			provider = new RANSliceProvider();
+			provider.setDataBroker(dataBroker);
+			provider.setDomDataBroker(domDataBroker);
+			provider.setNotificationPublishService(notifyService);
+			provider.setClient(client);
+			provider.init();
+			
+
       }
 
       /**
@@ -103,7 +116,7 @@ public class RANSliceProviderTest {
        */
       @After
       public void tearDown() throws Exception {
-          provider.close();
+          //provider.close();
       }
 
 
@@ -124,7 +137,7 @@ public class RANSliceProviderTest {
   		try {
   			ConfigureNearRTRICOutput results = provider.configureNearRTRIC(builder.build()).get().getResult();
   			LOG.info("configureNearRTRIC returned status {} : {}", results.getStatus().getCode(), results.getStatus().getMessage());
-  			assert(results.getStatus().getCode() == 400);
+  			assert(results.getStatus().getCode().intValue() == 400);
   		} catch (InterruptedException | ExecutionException e) {
   			LOG.error("Caught exception", e);
   			fail("configureNearRTRIC threw exception");
@@ -150,7 +163,7 @@ public class RANSliceProviderTest {
   		try {
   			InstantiateRANSliceOutput results = provider.instantiateRANSlice(builder.build()).get().getResult();
   			LOG.info("instantiateRANSlice returned status {} : {}", results.getStatus().getCode(), results.getStatus().getMessage());
-  			assert(results.getStatus().getCode() == 400);
+  			assert(results.getStatus().getCode().intValue() == 400);
   		} catch (InterruptedException | ExecutionException e) {
   			LOG.error("Caught exception", e);
   			fail("instantiateRANSlice threw exception");
@@ -176,7 +189,7 @@ public class RANSliceProviderTest {
   		try {
   			ConfigureRANSliceInstanceOutput results = provider.configureRANSliceInstance(builder.build()).get().getResult();
   			LOG.info("configureRANSliceInstance returned status {} : {}", results.getStatus().getCode(), results.getStatus().getMessage());
-  			assert(results.getStatus().getCode() == 400);
+  			assert(results.getStatus().getCode().intValue() == 400);
   		} catch (InterruptedException | ExecutionException e) {
   			LOG.error("Caught exception", e);
   			fail("configureRANSliceInstance threw exception");
@@ -201,7 +214,7 @@ public class RANSliceProviderTest {
   		try {
   			ConfigureCUOutput results = provider.configureCU(builder.build()).get().getResult();
   			LOG.info("configureCU returned status {} : {}", results.getStatus().getCode(), results.getStatus().getMessage());
-  			assert(results.getStatus().getCode() == 400);
+  			assert(results.getStatus().getCode().intValue() == 400);
   		} catch (InterruptedException | ExecutionException e) {
   			LOG.error("Caught exception", e);
   			fail("configureCU threw exception");
@@ -227,7 +240,7 @@ public class RANSliceProviderTest {
   		try {
   			ConfigureDUOutput results = provider.configureDU(builder.build()).get().getResult();
   			LOG.info("configureDU returned status {} : {}", results.getStatus().getCode(), results.getStatus().getMessage());
-  			assert(results.getStatus().getCode() == 400);
+  			assert(results.getStatus().getCode().intValue() == 400);
   		} catch (InterruptedException | ExecutionException e) {
   			LOG.error("Caught exception", e);
   			fail("configureDU threw exception");
@@ -252,7 +265,7 @@ public class RANSliceProviderTest {
   		try {
   			ActivateRANSliceInstanceOutput results = provider.activateRANSliceInstance(builder.build()).get().getResult();
   			LOG.info("activateRANSliceInstance returned status {} : {}", results.getStatus().getCode(), results.getStatus().getMessage());
-  			assert(results.getStatus().getCode() == 400);
+  			assert(results.getStatus().getCode().intValue() == 400);
   		} catch (InterruptedException | ExecutionException e) {
   			LOG.error("Caught exception", e);
   			fail("activateRANSliceInstance threw exception");
@@ -278,7 +291,7 @@ public class RANSliceProviderTest {
   		try {
   			DeactivateRANSliceInstanceOutput results = provider.deactivateRANSliceInstance(builder.build()).get().getResult();
   			LOG.info("deactivateRANSliceInstance returned status {} : {}", results.getStatus().getCode(), results.getStatus().getMessage());
-  			assert(results.getStatus().getCode() == 400);
+  			assert(results.getStatus().getCode().intValue() == 400);
   		} catch (InterruptedException | ExecutionException e) {
   			LOG.error("Caught exception", e);
   			fail("deactivateRANSliceInstance threw exception");
@@ -303,7 +316,7 @@ public class RANSliceProviderTest {
   		try {
   			TerminateRANSliceInstanceOutput results = provider.terminateRANSliceInstance(builder.build()).get().getResult();
   			LOG.info("terminateRANSliceInstance returned status {} : {}", results.getStatus().getCode(), results.getStatus().getMessage());
-  			assert(results.getStatus().getCode() == 400);
+  			assert(results.getStatus().getCode().intValue() == 400);
   		} catch (InterruptedException | ExecutionException e) {
   			LOG.error("Caught exception", e);
   			fail("terminateRANSliceInstance threw exception");
@@ -328,7 +341,7 @@ public class RANSliceProviderTest {
   		try {
   			DetermineRANSliceResourcesOutput results = provider.determineRANSliceResources(builder.build()).get().getResult();
   			LOG.info("determineRANSliceResources returned status {} : {}", results.getStatus().getCode(), results.getStatus().getMessage());
-  			assert(results.getStatus().getCode() == 400);
+  			assert(results.getStatus().getCode().intValue() == 400);
   		} catch (InterruptedException | ExecutionException e) {
   			LOG.error("Caught exception", e);
   			fail("determineRANSliceResources threw exception");
@@ -354,7 +367,7 @@ public class RANSliceProviderTest {
   		try {
   			ConfigNotificationOutput results = provider.configNotification(builder.build()).get().getResult();
   			LOG.info("configNotification returned status {} : {}", results.getStatus().getCode(), results.getStatus().getMessage());
-  			assert(results.getStatus().getCode() == 400);
+  			assert(results.getStatus().getCode().intValue() == 400);
   		} catch (InterruptedException | ExecutionException e) {
   			LOG.error("Caught exception", e);
   			fail("configNotification threw exception");
