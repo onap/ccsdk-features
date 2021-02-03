@@ -69,10 +69,18 @@ public class YangHelper2 {
     public static @NonNull Integer getInteger(@Nullable Uint16 val) {
         return val.intValue();
     }
+
+    public static @NonNull Long getInteger(@Nullable Long val) {
+        return val;
+    }
+
+    public static @NonNull Long getInteger(@Nullable Uint32 val) {
+        return val.longValue();
+    }
     /**
      * Aluminium version
      */
-    public static <K extends Identifier<T>,T extends Identifiable<K>> Map<K, T> getListOrMapALUMINIUM(Class<K> clazz, List<T> list) {
+    public static <K extends Identifier<T>,T extends Identifiable<K>> Map<K, T> getListOrMap(Class<K> clazz, List<T> list) {
         Map<K,T> map = new HashMap<>();
         for(T listelement:list) {
             Constructor<K> constructor;
@@ -86,17 +94,20 @@ public class YangHelper2 {
         }
         return map;
     }
-    public static <K extends Identifier<T>,T extends Identifiable<K>> Map<K, T> getListOrMapALUMINIUM(Class<K> clazz, T listElement) {
-        return getListOrMapALUMINIUM(clazz, Arrays.asList(listElement) );
+    public static <K extends Identifier<T>,T extends Identifiable<K>> Map<K, T> getListOrMap(Class<K> clazz, T listElement) {
+        return getListOrMap(clazz, Arrays.asList(listElement) );
     }
-    /**
-     * Sodium version
-     */
-    public static <K extends Identifier<T>,T extends Identifiable<K>> List<T> getListOrMap(Class<K> clazz, List<T> list) {
-        return list;
+    public static Uint32 getLongOrUint32(long longVal) {
+        return Uint32.valueOf(longVal);
     }
-    public static <K extends Identifier<T>,T extends Identifiable<K>> List<T> getListOrMap(Class<K> clazz, T listElement) {
-        return Arrays.asList(listElement);
+    public static Uint32 getLongOrUint32(Long longVal) {
+        return Uint32.valueOf(longVal);
+    }
+    public static Uint64 getBigIntegerOrUint64(BigInteger value) {
+        return Uint64.valueOf(value);
+    }
+    public static Class<?> getScalarTypeObjectClass() {
+        return org.opendaylight.yangtools.yang.binding.ScalarTypeObject.class;
     }
 
 }

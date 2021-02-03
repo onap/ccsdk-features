@@ -261,6 +261,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
             total = response.getTotal();
 
         } catch (IOException e) {
+            LOG.warn("Possible Database connection failure. If this error persists, please check Database connectivity");
             LOG.warn("error do search {}: {}", queryBuilder, e);
         }
         return new SearchResult<SearchHit>(response != null ? response.getHits() : new SearchHit[] {}, total);

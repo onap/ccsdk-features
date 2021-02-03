@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 
 public class ServletInputStreamFromByteArrayInputStream extends ServletInputStream {
@@ -40,6 +41,20 @@ public class ServletInputStreamFromByteArrayInputStream extends ServletInputStre
     @Override
     public int read() throws IOException {
         return bis.read();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    @Override
+    public boolean isReady() {
+        return false;
+    }
+
+    @Override
+    public void setReadListener(ReadListener readListener) {
     }
 
 }

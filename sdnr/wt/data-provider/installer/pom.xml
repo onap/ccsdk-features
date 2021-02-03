@@ -29,11 +29,11 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>odlparent-lite</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
-    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+    <groupId>org.onap.ccsdk.features.sdnr.wt.aluminium.sr1</groupId>
     <artifactId>sdnr-wt-data-provider-installer</artifactId>
     <version>1.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -47,7 +47,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>org.onap.ccsdk.features.sdnr.wt.aluminium.sr1</groupId>
             <artifactId>${application.name}-feature</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
@@ -60,12 +60,12 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>org.onap.ccsdk.features.sdnr.wt.aluminium.sr1</groupId>
             <artifactId>${application.name}-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>org.onap.ccsdk.features.sdnr.wt.aluminium.sr1</groupId>
             <artifactId>${application.name}-setup</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -127,7 +127,7 @@
                         </goals>
                         <phase>validate</phase>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/assembly/system/org/onap/ccsdk/features/sdnr/wt/sdnr-wt-data-provider-setup/${project.version}</outputDirectory>
+                            <outputDirectory>${project.build.directory}/assembly/system/org/onap/ccsdk/features/sdnr/wt/aluminium/sr1/sdnr-wt-data-provider-setup/${project.version}</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${basedir}/../setup/target</directory>
