@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.IetfNetconfNotificationsListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfCapabilityChange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfConfigChange;
@@ -43,13 +43,13 @@ public class ORanChangeNotificationListener implements IetfNetconfNotificationsL
 
     private static final Logger log = LoggerFactory.getLogger(ORanChangeNotificationListener.class);
 
-    private final NetconfAccessor netconfAccessor;
+    private final NetconfBindingAccessor netconfAccessor;
     private final DataProvider databaseService;
     private final VESCollectorService vesCollectorService;
 
     private static int sequenceNo = 0;
 
-    public ORanChangeNotificationListener(NetconfAccessor netconfAccessor, DataProvider databaseService, VESCollectorService vesCollectorService) {
+    public ORanChangeNotificationListener(NetconfBindingAccessor netconfAccessor, DataProvider databaseService, VESCollectorService vesCollectorService) {
         this.netconfAccessor = netconfAccessor;
         this.databaseService = databaseService;
         this.vesCollectorService = vesCollectorService;

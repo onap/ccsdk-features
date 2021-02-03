@@ -26,18 +26,16 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.Netconf;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.Streams;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.Hardware;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.hardware.Component;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.onap.system.rev201026.System1;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GuicutthroughBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -51,10 +49,11 @@ public class ORanNetworkElement implements NetworkElement {
 
     private static final Logger log = LoggerFactory.getLogger(ORanNetworkElement.class);
 
-    private final NetconfAccessor netconfAccessor;
+    private final NetconfBindingAccessor netconfAccessor;
 
     private final DataProvider databaseService;
 
+    @SuppressWarnings("unused")
     private final VESCollectorService vesCollectorService;
 
     private final ORanToInternalDataModel oRanMapper;
@@ -64,7 +63,7 @@ public class ORanNetworkElement implements NetworkElement {
     private ListenerRegistration<NotificationListener> oRanFaultListenerRegistrationResult;
     private @NonNull final ORanFaultNotificationListener oRanFaultListener;
 
-    ORanNetworkElement(NetconfAccessor netconfAccess, DataProvider databaseService,
+    ORanNetworkElement(NetconfBindingAccessor netconfAccess, DataProvider databaseService,
             VESCollectorService vesCollectorService) {
         log.info("Create {}", ORanNetworkElement.class.getSimpleName());
         this.netconfAccessor = netconfAccess;
@@ -105,17 +104,18 @@ public class ORanNetworkElement implements NetworkElement {
         return NetworkElementDeviceType.ORAN;
     }
 
-    private System1 getOnapSystemData(NetconfAccessor accessData) {
-        InstanceIdentifier<System1> system1IID =
-        InstanceIdentifier.builder(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.system.rev140806.System.class)
-        .augmentation(System1.class).build();
+    private System1 getOnapSystemData(NetconfBindingAccessor accessData) {
+        InstanceIdentifier<System1> system1IID = InstanceIdentifier
+                .builder(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.system.rev140806.System.class)
+                .augmentation(System1.class).build();
 
-        System1 res = accessData.getTransactionUtils().readData(accessData.getDataBroker(), LogicalDatastoreType.OPERATIONAL, system1IID);
+        System1 res = accessData.getTransactionUtils().readData(accessData.getDataBroker(),
+                LogicalDatastoreType.OPERATIONAL, system1IID);
         log.debug("Result of getOnapSystemData = {}", res);
         return res;
     }
 
-    private Hardware readHardware(NetconfAccessor accessData) {
+    private Hardware readHardware(NetconfBindingAccessor accessData) {
 
         final Class<Hardware> clazzPac = Hardware.class;
 
@@ -135,15 +135,20 @@ public class ORanNetworkElement implements NetworkElement {
 
         initialReadFromNetworkElement();
         // Register call back class for receiving notifications
-        this.oRanListenerRegistrationResult = netconfAccessor.doRegisterNotificationListener(oRanListener);
-        this.oRanFaultListenerRegistrationResult = netconfAccessor.doRegisterNotificationListener(oRanFaultListener);
-        // Register notifications stream
-        if (netconfAccessor.isNCNotificationsSupported()) {
-            List<Stream> streamList = netconfAccessor.getNotificationStreams();
-            netconfAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream); // Always register first to default stream
-            netconfAccessor.registerNotificationsStream(streamList);
-        } else {
-            netconfAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
+        Optional<NetconfNotifications> oNotifications = netconfAccessor.getNotificationAccessor();
+        if (oNotifications.isPresent()) {
+            NetconfNotifications notifications = oNotifications.get();
+            this.oRanListenerRegistrationResult = netconfAccessor.doRegisterNotificationListener(oRanListener);
+            this.oRanFaultListenerRegistrationResult =
+                    netconfAccessor.doRegisterNotificationListener(oRanFaultListener);
+            // Register notifications stream
+            if (notifications.isNCNotificationsSupported()) {
+                List<Stream> streamList = notifications.getNotificationStreams();
+                notifications.registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream); // Always register first to default stream
+                notifications.registerNotificationsStream(streamList);
+            } else {
+                notifications.registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream);
+            }
         }
     }
 

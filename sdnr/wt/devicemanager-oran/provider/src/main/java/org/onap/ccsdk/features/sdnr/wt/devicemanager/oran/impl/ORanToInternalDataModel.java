@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * @author herbert
@@ -39,6 +40,7 @@ public class ORanToInternalDataModel {
         inventoryBuilder.setNodeId(nodeId.getValue());
         inventoryBuilder.setParentUuid(component.getParent());
         inventoryBuilder.setTreeLevel(new Long(component.getParentRelPos()));
+        inventoryBuilder.setTreeLevel(Uint32.valueOf(component.getParentRelPos().intValue()));
 
         inventoryBuilder.setUuid(component.getUuid().getValue());
         // -- String list with ids of holders

@@ -32,23 +32,29 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanNetworkElemen
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test.mock.TransactionUtilsMock;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.yang.gen.v1.urn.o.ran.hardware._1._0.rev190328.ORANHWCOMPONENT;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.yang.common.QName;
 
 public class TestORanNetworkElement {
 
-    static NetconfAccessor accessor;
-    static DeviceManagerServiceProvider serviceProvider;
-    static Capabilities capabilities;
-    QName qCapability;
+    private static String NODEIDSTRING = "nSky";
+
+    private static NetconfBindingAccessor accessor;
+    private static DeviceManagerServiceProvider serviceProvider;
+    private static Capabilities capabilities;
 
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
         capabilities = mock(Capabilities.class);
-        accessor = mock(NetconfAccessor.class);
+        accessor = mock(NetconfBindingAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
+
+        NetconfBindingAccessor bindingCommunicator = mock(NetconfBindingAccessor.class);
+        NodeId nodeId = new NodeId(NODEIDSTRING);
+        when(bindingCommunicator.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
+        when(bindingCommunicator.getNodeId()).thenReturn(nodeId);
 
         NodeId nNodeId = new NodeId("nSky");
         when(accessor.getCapabilites()).thenReturn(capabilities);
@@ -57,10 +63,18 @@ public class TestORanNetworkElement {
 
         DataProvider dataProvider = mock(DataProvider.class);
         when(serviceProvider.getDataProvider()).thenReturn(dataProvider);
+        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingCommunicator));
+
+
     }
 
     @Test
     public void test() {
+        NetconfBindingAccessor bindingCommunicator = mock(NetconfBindingAccessor.class);
+        NodeId nodeId = new NodeId(NODEIDSTRING);
+        when(bindingCommunicator.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
+        when(bindingCommunicator.getNodeId()).thenReturn(nodeId);
+
         Optional<NetworkElement> oRanNe;
         when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(true);
         ORanNetworkElementFactory factory = new ORanNetworkElementFactory();

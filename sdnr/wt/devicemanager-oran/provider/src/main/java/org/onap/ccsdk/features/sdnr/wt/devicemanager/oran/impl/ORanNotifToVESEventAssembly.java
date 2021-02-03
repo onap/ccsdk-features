@@ -32,7 +32,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.VESCommonEventHeaderPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.VESEvent;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.VESNotificationFieldsPOJO;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +43,10 @@ public class ORanNotifToVESEventAssembly {
     private static final String VES_EVENT_DOMAIN = "notification";
     private static final String VES_EVENTTYPE = "ORAN_notification";
     private static final String VES_EVENT_PRIORITY = "Normal";
-    private NetconfAccessor netconfAccessor;
+    private NetconfBindingAccessor netconfAccessor;
     private VESCollectorService vesProvider;
 
-    public ORanNotifToVESEventAssembly(NetconfAccessor netconfAccessor, VESCollectorService vesProvider) {
+    public ORanNotifToVESEventAssembly(NetconfBindingAccessor netconfAccessor, VESCollectorService vesProvider) {
         this.netconfAccessor = netconfAccessor;
         this.vesProvider = vesProvider;
     }

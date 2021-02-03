@@ -20,13 +20,9 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Optional;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import org.eclipse.jdt.annotation.Nullable;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,15 +33,13 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.re
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test.TestHardwareClass;
 
 public class TestORanToInternalDataModel {
 
     NodeId nodeId;
     Component component;
 
-    @SuppressWarnings("unchecked")
-    @Before
+     @Before
     public void init() throws InterruptedException, IOException {
         nodeId = mock(NodeId.class);
         component = mock(Component.class);

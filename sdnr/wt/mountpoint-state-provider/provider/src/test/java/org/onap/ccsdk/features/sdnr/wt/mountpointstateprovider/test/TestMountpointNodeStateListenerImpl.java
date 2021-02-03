@@ -21,28 +21,31 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointNodeStateListenerImpl;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStatePublisher;
-import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.NetconfNodeMock;
-import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test.mock.NetconfNodeStateServiceMock;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
-public class TestMountpointNodeStateListenerImpl {
+public class TestMountpointNodeStateListenerImpl extends Mockito {
 
-    NetconfNodeStateServiceMock netconfNodeStateServiceMock = new NetconfNodeStateServiceMock();
+    NetconfNodeStateService netconfNodeStateServiceMock = mock(NetconfNodeStateService.class);
     MountpointNodeStateListenerImpl nodeStateListener =
             new MountpointNodeStateListenerImpl(netconfNodeStateServiceMock);
     MountpointStatePublisher mountpointStatePublisher;
-    NetconfNodeMock netconfNodeMock = new NetconfNodeMock();
-    NetconfNode netconfNode = netconfNodeMock.getNetconfNode();
+    NetconfNode netconfNode;
     NodeId nNodeId = new NodeId("nSky");
     VESCollectorService vesCollectorService;
 
@@ -55,6 +58,10 @@ public class TestMountpointNodeStateListenerImpl {
         when(serviceProvider.getVESCollectorService()).thenReturn(vesCollectorService);
         mountpointStatePublisher = new MountpointStatePublisher(vesCollectorService);
         nodeStateListener.start(mountpointStatePublisher);
+        netconfNode = mock(NetconfNode.class);
+        when(netconfNode.getHost()).thenReturn(new Host(new IpAddress(new Ipv4Address("1.2.3.4"))));
+        when(netconfNode.getPort()).thenReturn(new PortNumber(Uint16.valueOf(2230)));
+        when(netconfNode.getConnectionStatus()).thenReturn(ConnectionStatus.Connected);
     }
 
     @Test
