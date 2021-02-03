@@ -15,41 +15,26 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.interfaces;
 
-import java.io.IOException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.DeviceManagerOnf14Impl;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.dataprovider.InternalDataModelSeverity;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.ethernet.container._2._0.rev200121.SEVERITYTYPE;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TestDeviceManagerOnf14Impl extends Mockito {
+/**
+ * @author alexs
+ *
+ */
+public class Onf14EthernetContainer {
 
-    DeviceManagerOnf14Impl devMgrOnf14;
-    private static NetconfNetworkElementService netconfElemService;
+    @SuppressWarnings("unused")
+    private static final Logger LOG = LoggerFactory.getLogger(Onf14EthernetContainer.class);
 
-    @Before
-    public void init() throws InterruptedException, IOException {
-        netconfElemService = mock(NetconfNetworkElementService.class);
-    }
-
-    @Test
-    public void test() throws Exception {
-        devMgrOnf14 = new DeviceManagerOnf14Impl();
-
-        try {
-            devMgrOnf14.setNetconfNetworkElementService(netconfElemService);
-            devMgrOnf14.init();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @After
-    public void cleanUp() throws Exception {
-        devMgrOnf14.close();
+    public static SeverityType mapSeverity(
+            Class<? extends SEVERITYTYPE> severity) {
+        return InternalDataModelSeverity.mapSeverity(severity);
     }
 
 }

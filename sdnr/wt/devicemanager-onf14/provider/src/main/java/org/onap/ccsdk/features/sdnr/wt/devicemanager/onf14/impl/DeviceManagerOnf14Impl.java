@@ -51,7 +51,7 @@ public class DeviceManagerOnf14Impl implements AutoCloseable {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
-        resOnf = netconfNetworkElementService.registerNetworkElementFactory(new Onf14NetworkElementFactory());
+        resOnf = netconfNetworkElementService.registerBindingNetworkElementFactory(new Onf14NetworkElementFactory());
 
 
         netconfNetworkElementService.writeToEventLog(APPLICATION_NAME, "startup", "done");

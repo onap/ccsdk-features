@@ -15,30 +15,26 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.test.mock;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.interfaces;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.Nullable;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
-import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.dataprovider.InternalDataModelSeverity;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.SEVERITYTYPE;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TransactionUtilsMock implements TransactionUtils {
+/**
+ * @author alexs
+ *
+ */
+public class Onf14WireInterface {
 
-    @Override
-    public <T extends DataObject> @Nullable T readData(DataBroker dataBroker, LogicalDatastoreType dataStoreType,
-            InstanceIdentifier<T> iid) {
-        return null;
-    }
+    @SuppressWarnings("unused")
+    private static final Logger LOG = LoggerFactory.getLogger(Onf14WireInterface.class);
 
-    @Override
-    public <T extends DataObject> @Nullable T readDataOptionalWithStatus(DataBroker dataBroker,
-            LogicalDatastoreType dataStoreType, InstanceIdentifier<T> iid, AtomicBoolean noErrorIndication,
-            AtomicReference<String> statusIndicator) {
-        return null;
+    public static SeverityType mapSeverity(@Nullable Class<? extends SEVERITYTYPE> severity) {
+        return InternalDataModelSeverity.mapSeverity(severity);
     }
 
 }

@@ -27,6 +27,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFa
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.OrgOpenroadmDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,16 +47,24 @@ public class OpenroadmNetworkElementFactory implements NetworkElementFactory {
 
     // public methods
     @Override
-    public Optional<NetworkElement> create(NetconfAccessor acessor, DeviceManagerServiceProvider serviceProvider) {
+    public Optional<NetworkElement> create(NetconfAccessor accessor, DeviceManagerServiceProvider serviceProvider) {
 
-        if (acessor.getCapabilites().isSupportingNamespace(OrgOpenroadmDevice.QNAME)) {
+        if (accessor.getCapabilites().isSupportingNamespaceAndRevision(OrgOpenroadmDevice.QNAME)) {
             log.info("Create OpenRoadm device {} ", OpenroadmNetworkElement.class.getName());
-            log.info("Node Id read by Acessor {}:", acessor.getNodeId().getValue());
-
-            return Optional.of(new OpenroadmNetworkElement(acessor, serviceProvider));
-        } else {
-            return Optional.empty();
-        }
+            log.info("Node Id read by Acessor {}:", accessor.getNodeId().getValue());
+            Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
+            if (bindingAccessor.isPresent()) {
+                return Optional.of(new OpenroadmNetworkElement(bindingAccessor.get(), serviceProvider));
+            }
+        } else if (accessor.getCapabilites().isSupportingNamespaceAndRevision("http://org/openroadm/device","2018-10-19")) {
+            log.info("Create OpenRoadm base device {} ", OpenroadmNetworkElementBase.class.getName());
+            log.info("Node Id read by Acessor {}:", accessor.getNodeId().getValue());
+            Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
+            if (bindingAccessor.isPresent()) {
+                return Optional.of(new OpenroadmNetworkElementBase(bindingAccessor.get(), serviceProvider));
+            }
+        } 
+        return Optional.empty();
     }
     // end of public methods
 

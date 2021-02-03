@@ -62,7 +62,7 @@ public class DeviceManagerOpenroadmImpl implements AutoCloseable {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
-        resOpenRoadm = netconfNetworkElementService.registerNetworkElementFactory(new OpenroadmNetworkElementFactory());
+        resOpenRoadm = netconfNetworkElementService.registerBindingNetworkElementFactory(new OpenroadmNetworkElementFactory());
 
 
         netconfNetworkElementService.writeToEventLog(APPLICATION_NAME, "startup", "done");

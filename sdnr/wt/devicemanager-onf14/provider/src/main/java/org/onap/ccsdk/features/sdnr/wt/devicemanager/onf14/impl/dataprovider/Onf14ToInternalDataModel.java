@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.dataprovider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.equi
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Onf14ToInternalDataModel {
 
-    private static final Logger log = LoggerFactory.getLogger(Onf14ToInternalDataModel.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Onf14ToInternalDataModel.class);
 
     public Inventory getInternalEquipment(NodeId nodeId, Equipment currentEq, Equipment parentEq, long treeLevel) {
 
@@ -56,7 +57,7 @@ public class Onf14ToInternalDataModel {
             // General
             inventoryBuilder.setNodeId(nodeId.getValue());
 
-            inventoryBuilder.setTreeLevel(treeLevel);
+            inventoryBuilder.setTreeLevel(Uint32.valueOf(treeLevel));
             inventoryBuilder.setUuid(currentEq.getUuid().getValue());
 
             if (parentEq != null) {
@@ -88,7 +89,7 @@ public class Onf14ToInternalDataModel {
                     inventoryBuilder.setManufacturerName(manProp.getManufacturerName());
                     inventoryBuilder.setManufacturerIdentifier(manProp.getManufacturerIdentifier());
                 } else {
-                    log.debug("manufacturer-properties is not present in Equipment with uuid={}",
+                    LOG.debug("manufacturer-properties is not present in Equipment with uuid={}",
                             currentEq.getUuid().getValue());
                 }
 
@@ -99,7 +100,7 @@ public class Onf14ToInternalDataModel {
                     inventoryBuilder.setSerial(eqInstance.getSerialNumber());
                     inventoryBuilder.setDate(eqInstance.getManufactureDate().getValue());
                 } else {
-                    log.debug("equipment-instance is not present in Equipment with uuid={}",
+                    LOG.debug("equipment-instance is not present in Equipment with uuid={}",
                             currentEq.getUuid().getValue());
                 }
 
@@ -113,15 +114,15 @@ public class Onf14ToInternalDataModel {
                     inventoryBuilder.setModelIdentifier(eqType.getModelIdentifier());
                     inventoryBuilder.setTypeName(eqType.getTypeName());
                 } else {
-                    log.debug("equipment-type is not present in Equipment with uuid={}",
+                    LOG.debug("equipment-type is not present in Equipment with uuid={}",
                             currentEq.getUuid().getValue());
                 }
             } else {
-                log.debug("manufactured-thing is not present in Equipment with uuid={}",
+                LOG.debug("manufactured-thing is not present in Equipment with uuid={}",
                         currentEq.getUuid().getValue());
             }
         } else {
-            log.debug("actual-equipment is not present in Equipment with uuid={}", currentEq.getUuid().getValue());
+            LOG.debug("actual-equipment is not present in Equipment with uuid={}", currentEq.getUuid().getValue());
         }
 
         return inventoryBuilder.build();
