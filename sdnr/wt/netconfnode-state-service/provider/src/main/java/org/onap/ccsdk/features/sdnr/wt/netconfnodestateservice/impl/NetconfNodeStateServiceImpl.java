@@ -21,12 +21,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.annotation.Nullable;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
@@ -37,6 +37,9 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeConnec
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.VesNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfAccessorManager;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfCommunicatorManager;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContext;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.NetconfStateConfig;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.odlAkka.AkkaConfig;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.odlAkka.ClusterConfig;
@@ -50,11 +53,12 @@ import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationTyp
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.dom.api.DOMMountPointService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
@@ -69,9 +73,10 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.model.parser.api.YangParserException;
+import org.opendaylight.yangtools.yang.model.parser.api.YangParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,21 +85,18 @@ public class NetconfNodeStateServiceImpl
 
     private static final Logger LOG = LoggerFactory.getLogger(NetconfNodeStateServiceImpl.class);
     private static final String APPLICATION_NAME = "NetconfNodeStateService";
-    @SuppressWarnings("unused")
     private static final String CONFIGURATIONFILE = "etc/netconfnode-status-service.properties";
 
-    @SuppressWarnings("null")
     private static final @NonNull InstanceIdentifier<Topology> NETCONF_TOPO_IID =
             InstanceIdentifier.create(NetworkTopology.class).child(Topology.class,
                     new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
-    @SuppressWarnings("null")
     private static final @NonNull InstanceIdentifier<Node> NETCONF_NODE_TOPO_IID =
             InstanceIdentifier.create(NetworkTopology.class)
                     .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
                     .child(Node.class);
 
-    private static final DataTreeIdentifier<Node> NETCONF_NODE_TOPO_TREE_ID =
+    private static final @NonNull DataTreeIdentifier<Node> NETCONF_NODE_TOPO_TREE_ID =
             DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, NETCONF_NODE_TOPO_IID);
 
     // Name of ODL controller NETCONF instance
@@ -103,12 +105,15 @@ public class NetconfNodeStateServiceImpl
     // -- OSGi services, provided
     private DataBroker dataBroker;
     private MountPointService mountPointService;
+    private DOMMountPointService domMountPointService;
     private RpcProviderService rpcProviderRegistry;
     private IEntityDataProvider iEntityDataProvider;
     @SuppressWarnings("unused")
     private NotificationPublishService notificationPublishService;
     @SuppressWarnings("unused")
     private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    private YangParserFactory yangParserFactory;
+    private BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer;
 
     // -- Parameter
     private ListenerRegistration<L1> listenerL1;
@@ -122,7 +127,7 @@ public class NetconfNodeStateServiceImpl
     private Boolean initializationSuccessful;
 
     /** Manager accessor objects for connection **/
-    private final NetconfAccessorManager accessorManager;
+    private NetconfAccessorManager accessorManager;
 
     /** List of all registered listeners **/
     private final List<NetconfNodeConnectListener> netconfNodeConnectListenerList;
@@ -146,6 +151,8 @@ public class NetconfNodeStateServiceImpl
 
     private ConfigurationFileRepresentation configFileRepresentation;
     private NetconfStateConfig config;
+    private NetconfCommunicatorManager netconfCommunicatorManager;
+    private DomContext domContext;
 
     /** Blueprint **/
     public NetconfNodeStateServiceImpl() {
@@ -153,9 +160,12 @@ public class NetconfNodeStateServiceImpl
 
         this.dataBroker = null;
         this.mountPointService = null;
+        this.domMountPointService = null;
         this.rpcProviderRegistry = null;
         this.notificationPublishService = null;
         this.clusterSingletonServiceProvider = null;
+        this.yangParserFactory = null;
+        this.domContext = null;
 
         this.listenerL1 = null;
         this.listenerL2 = null;
@@ -163,7 +173,7 @@ public class NetconfNodeStateServiceImpl
         this.netconfNodeConnectListenerList = new CopyOnWriteArrayList<>();
         this.netconfNodeStateListenerList = new CopyOnWriteArrayList<>();
         this.vesNotificationListenerList = new CopyOnWriteArrayList<>();
-        this.accessorManager = new NetconfAccessorManager();
+        this.accessorManager = null;
         this.handlingPool = new HashMap<>();
 
     }
@@ -184,6 +194,10 @@ public class NetconfNodeStateServiceImpl
         this.mountPointService = mountPointService;
     }
 
+    public void setDomMountPointService(DOMMountPointService domMountPointService) {
+        this.domMountPointService = domMountPointService;
+    }
+
     public void setClusterSingletonService(ClusterSingletonServiceProvider clusterSingletonService) {
         this.clusterSingletonServiceProvider = clusterSingletonService;
     }
@@ -192,11 +206,22 @@ public class NetconfNodeStateServiceImpl
         this.iEntityDataProvider = iEntityDataProvider;
     }
 
-    /** Blueprint initialization **/
+    public void setYangParserFactory(YangParserFactory yangParserFactory) {
+        this.yangParserFactory = yangParserFactory;
+    }
+
+    public void setBindingNormalizedNodeSerializer(BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer) {
+        this.bindingNormalizedNodeSerializer = bindingNormalizedNodeSerializer;
+    }
+
+    /** Blueprint initialization
+     * @throws YangParserException **/
     public void init() {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
-
+        this.domContext = new DomContext(this.yangParserFactory, this.bindingNormalizedNodeSerializer);
+        this.netconfCommunicatorManager = new NetconfCommunicatorManager(mountPointService, domMountPointService, domContext);
+        this.accessorManager = new NetconfAccessorManager(netconfCommunicatorManager, domContext);
         // Start RPC Service
         this.rpcApiService = new NetconfnodeStateServiceRpcApiImpl(rpcProviderRegistry, vesNotificationListenerList);
         // Get configuration
@@ -237,13 +262,12 @@ public class NetconfNodeStateServiceImpl
         close();
     }
 
-    /**
-     * Getter
-     * 
-     * @return NetconfnodeStateServiceRpcApiImpl
-     */
+    public DomContext getDomContext() {
+        return Objects.requireNonNull(domContext, "Initialization not completed for domContext" );
+    }
+
     public NetconfnodeStateServiceRpcApiImpl getNetconfnodeStateServiceRpcApiImpl() {
-        return rpcApiService;
+        return Objects.requireNonNull(rpcApiService, "Initialization not completed for rpcApiService" );
     }
 
     @Override
@@ -339,7 +363,7 @@ public class NetconfNodeStateServiceImpl
 
     /**
      * Indication if init() of this bundle successfully done.
-     * 
+     *
      * @return true if init() was successful. False if not done or not successful.
      */
     public boolean isInitializationSuccessful() {
@@ -353,7 +377,7 @@ public class NetconfNodeStateServiceImpl
     /**
      * For each mounted device a mountpoint is created and this listener is called. Mountpoint was created or existing.
      * Managed device is now fully connected to node/mountpoint.
-     * 
+     *
      * @param nNodeId id of the mountpoint
      * @param netconfNode mountpoint contents
      */
@@ -378,50 +402,26 @@ public class NetconfNodeStateServiceImpl
         boolean isNetconfNodeMaster = isNetconfNodeMaster(netconfNode);
         LOG.info("isNetconfNodeMaster indication {} for mountpoint {}", isNetconfNodeMaster, mountPointNodeName);
         if (isNetconfNodeMaster) {
+            NetconfAccessor acessor = accessorManager.getAccessor(nNodeId, netconfNode);
+                /*
+                 * --> Call Listers for onConnect() Indication
+                   for (all)
+                 */
+                netconfNodeConnectListenerList.forEach(item -> {
+                    try {
+                        item.onEnterConnected(acessor);
+                    } catch (Exception e) {
+                        LOG.info("Exception during onEnterConnected listener call", e);
+                    }
+                });
 
-            InstanceIdentifier<Node> instanceIdentifier =
-                    NETCONF_TOPO_IID.child(Node.class, new NodeKey(new NodeId(mountPointNodeName)));
-
-            Optional<MountPoint> optionalMountPoint = mountPointService.getMountPoint(instanceIdentifier);
-            if (!optionalMountPoint.isPresent()) {
-                LOG.warn("No mountpoint available for Netconf device :: Name : {} ", mountPointNodeName);
-            } else {
-                // Mountpoint is present for sure
-                MountPoint mountPoint = optionalMountPoint.get();
-                // BindingDOMDataBrokerAdapter.BUILDER_FACTORY;
-                LOG.info("Mountpoint with id: {} class:{}", mountPoint.getIdentifier(),
-                        mountPoint.getClass().getName());
-
-                Optional<DataBroker> optionalNetconfNodeDatabroker = mountPoint.getService(DataBroker.class);
-
-                if (!optionalNetconfNodeDatabroker.isPresent()) {
-                    LOG.info("Slave mountpoint {} without databroker", mountPointNodeName);
-                } else {
-                    LOG.info("Master mountpoint {}", mountPointNodeName);
-                    DataBroker netconfNodeDataBroker = optionalNetconfNodeDatabroker.get();
-                    NetconfAccessor acessor =
-                            accessorManager.getAccessor(nNodeId, netconfNode, netconfNodeDataBroker, mountPoint);
-                    /*
-                     * --> Call Listers for onConnect() Indication
-                       for (all)
-                     */
-                    netconfNodeConnectListenerList.forEach(item -> {
-                        try {
-                            item.onEnterConnected(acessor);
-                        } catch (Exception e) {
-                            LOG.info("Exception during onEnterConnected listener call", e);
-                        }
-                    });
-
-                    LOG.info("Connect indication forwarded for {}", mountPointNodeName);
-                }
-            }
+                LOG.info("Connect indication forwarded for {}", mountPointNodeName);
         }
     }
 
     /**
      * Leave the connected status to a non connected or removed status for master mountpoint
-     * 
+     *
      * @param action that occurred
      * @param nNodeId id of the mountpoint
      * @param netconfNode mountpoint contents or not available on remove
@@ -651,7 +651,6 @@ public class NetconfNodeStateServiceImpl
         if (this.isCluster) {
             LOG.debug("check if me is responsible for node");
             ClusteredConnectionStatus ccs = nNode.getClusteredConnectionStatus();
-            @SuppressWarnings("null")
             @NonNull
             String masterNodeName =
                     ccs == null || ccs.getNetconfMasterNode() == null ? "null" : ccs.getNetconfMasterNode();
@@ -663,6 +662,8 @@ public class NetconfNodeStateServiceImpl
         }
         return true;
     }
+
+
 
     @Override
     public void onConfigChanged() {
