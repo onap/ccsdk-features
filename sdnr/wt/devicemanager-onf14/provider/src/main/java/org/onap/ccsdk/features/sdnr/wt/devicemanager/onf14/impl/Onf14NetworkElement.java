@@ -27,11 +27,20 @@ import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.dataprovider.Onf14ToInternalDataModel;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.interfaces.Onf14AirInterface;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.interfaces.Onf14AirInterfaceNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.interfaces.Onf14EthernetContainer;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.interfaces.Onf14EthernetContainerNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.interfaces.Onf14WireInterface;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.interfaces.Onf14WireInterfaceNotificationListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.LAYERPROTOCOLNAMETYPEAIRLAYER;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.air._interface.lp.spec.AirInterfacePac;
@@ -76,7 +85,7 @@ public class Onf14NetworkElement implements NetworkElement {
 
     private static final int EQUIPMENTROOTLEVEL = 0;
 
-    private final NetconfAccessor netconfAccessor;
+    private final NetconfBindingAccessor netconfAccessor;
     private final DataProvider databaseService;
     private final Onf14ToInternalDataModel onf14Mapper;
     private final @NonNull FaultService faultService;
@@ -86,27 +95,30 @@ public class Onf14NetworkElement implements NetworkElement {
 
     // air interface related members
     private final List<TechnologySpecificPacKeys> airInterfaceList = new ArrayList<TechnologySpecificPacKeys>();
+    @SuppressWarnings("unused")
     private ListenerRegistration<NotificationListener> airInterfaceNotificationListenerHandler;
     private @NonNull final Onf14AirInterfaceNotificationListener airInterfaceNotificationListener;
 
     // ethernet container related members
     private final List<TechnologySpecificPacKeys> ethernetContainerList = new ArrayList<TechnologySpecificPacKeys>();
+    @SuppressWarnings("unused")
     private ListenerRegistration<NotificationListener> etherneContainerNotificationListenerHandler;
     private @NonNull final Onf14EthernetContainerNotificationListener ethernetContainerNotificationListener;
 
     // wire interface related members
     private final List<TechnologySpecificPacKeys> wireInterfaceList = new ArrayList<TechnologySpecificPacKeys>();
+    @SuppressWarnings("unused")
     private ListenerRegistration<NotificationListener> wireInterfaceNotificationListenerHandler;
     private @NonNull final Onf14WireInterfaceNotificationListener wireInterfaceNotificationListener;
 
-    Onf14NetworkElement(NetconfAccessor netconfAccess, DeviceManagerServiceProvider serviceProvider) {
+    Onf14NetworkElement(NetconfBindingAccessor netconfAccess, DeviceManagerServiceProvider serviceProvider) {
         log.info("Create {}", Onf14NetworkElement.class.getSimpleName());
         this.netconfAccessor = netconfAccess;
         this.databaseService = serviceProvider.getDataProvider();
         this.faultService = serviceProvider.getFaultService();
         this.onf14Mapper = new Onf14ToInternalDataModel();
         this.airInterfaceNotificationListenerHandler = null;
-        airInterfaceNotificationListener = new Onf14AirInterfaceNotificationListener(netconfAccess, serviceProvider);
+        this.airInterfaceNotificationListener = new Onf14AirInterfaceNotificationListener(netconfAccess, serviceProvider);
         this.etherneContainerNotificationListenerHandler = null;
         ethernetContainerNotificationListener =
                 new Onf14EthernetContainerNotificationListener(netconfAccess, serviceProvider);
@@ -211,7 +223,10 @@ public class Onf14NetworkElement implements NetworkElement {
                 netconfAccessor.doRegisterNotificationListener(ethernetContainerNotificationListener);
         wireInterfaceNotificationListenerHandler =
                 netconfAccessor.doRegisterNotificationListener(wireInterfaceNotificationListener);
-        netconfAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
+        Optional<NetconfNotifications> notificationsSupport = netconfAccessor.getNotificationAccessor();
+        if (notificationsSupport.isPresent()) {
+            notificationsSupport.get().registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream);
+        }
     }
 
     @Override
@@ -459,12 +474,12 @@ public class Onf14NetworkElement implements NetworkElement {
         }
     }
 
-    private Optional<ControlConstruct> readControlConstruct(NetconfAccessor netconfAccessor) {
+    private Optional<ControlConstruct> readControlConstruct(NetconfBindingAccessor netconfAccessor) {
         return Optional.ofNullable(netconfAccessor.getTransactionUtils().readData(netconfAccessor.getDataBroker(),
                 LogicalDatastoreType.CONFIGURATION, CONTROLCONSTRUCT_IID));
     }
 
-    private @Nullable Equipment readEquipmentInstance(NetconfAccessor accessData, UniversalId equipmentUuid) {
+    private @Nullable Equipment readEquipmentInstance(NetconfBindingAccessor accessData, UniversalId equipmentUuid) {
 
         final Class<?> clazzPac = Equipment.class;
 
@@ -497,10 +512,12 @@ public class Onf14NetworkElement implements NetworkElement {
             return localId;
         }
 
+        @SuppressWarnings("unused")
         public void setLtpUuid(UniversalId uuid) {
             this.ltpUuid = uuid;
         }
 
+        @SuppressWarnings("unused")
         public void setLocalId(String lId) {
             this.localId = lId;
         }

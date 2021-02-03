@@ -23,21 +23,25 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFa
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.ControlConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Onf14NetworkElementFactory implements NetworkElementFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(Onf14NetworkElementFactory.class);
+	private static final Logger log = LoggerFactory.getLogger(Onf14NetworkElementFactory.class);
 
-    @Override
-    public Optional<NetworkElement> create(NetconfAccessor acessor, DeviceManagerServiceProvider serviceProvider) {
-        if (acessor.getCapabilites().isSupportingNamespace(ControlConstruct.QNAME)) {
-            log.info("Create device {} ", Onf14NetworkElement.class.getName());
-            return Optional.of(new Onf14NetworkElement(acessor, serviceProvider));
-        } else {
-            return Optional.empty();
-        }
-    }
+	@Override
+	public Optional<NetworkElement> create(NetconfAccessor accessor, DeviceManagerServiceProvider serviceProvider) {
+		if (accessor.getCapabilites().isSupportingNamespace(ControlConstruct.QNAME)) {
+			log.info("Create device {} ", Onf14NetworkElement.class.getName());
+			Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
+			if (bindingAccessor.isPresent()) {
+				return Optional.of(new Onf14NetworkElement(bindingAccessor.get(), serviceProvider));
+			}
+		}
+		return Optional.empty();
+
+	}
 }

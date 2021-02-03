@@ -28,35 +28,36 @@ import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.Onf14NetworkElementFactory;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.test.mock.NetconfAccessorMock;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
-import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.ControlConstruct;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.UniversalId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 public class TestOnf14NetworkElement extends Mockito {
 
-    static NetconfAccessorMock accessor;
+    private static String NODEIDSTRING = "nSky";
+
+    static NetconfDomAccessor accessor;
     static DeviceManagerServiceProvider serviceProvider;
     static Capabilities capabilities;
-    QName qCapability;
     static DataProvider dataProvider;
     static FaultService faultService;
-    static DataBroker dataBroker;
+    static DOMDataBroker dataBroker;
     static TransactionUtils transactionUtils;
     static ControlConstruct controlConstruct;
 
     @Before
     public void init() {
         capabilities = mock(Capabilities.class);
-        accessor = mock(NetconfAccessorMock.class);
+        accessor = mock(NetconfDomAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
 
         NodeId nNodeId = new NodeId("nSky");
@@ -69,17 +70,16 @@ public class TestOnf14NetworkElement extends Mockito {
         faultService = mock(FaultService.class);
         when(serviceProvider.getFaultService()).thenReturn(faultService);
 
-        dataBroker = mock(DataBroker.class);
+        dataBroker = mock(DOMDataBroker.class);
         when(accessor.getDataBroker()).thenReturn(dataBroker);
 
         controlConstruct = mock(ControlConstruct.class);
-        transactionUtils = mock(TransactionUtils.class);
-        when(accessor.getTransactionUtils()).thenReturn(transactionUtils);
 
-        InstanceIdentifier<ControlConstruct> CONTROLCONSTRUCT_IID =
-                InstanceIdentifier.builder(ControlConstruct.class).build();
-        when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.CONFIGURATION,
-                CONTROLCONSTRUCT_IID)).thenReturn(controlConstruct);
+        YangInstanceIdentifier CONTROLCONSTRUCT_IID =
+                YangInstanceIdentifier.builder().node(ControlConstruct.QNAME).build();
+
+        when(accessor.readData(LogicalDatastoreType.CONFIGURATION, CONTROLCONSTRUCT_IID, ControlConstruct.class))
+                .thenReturn(Optional.of(controlConstruct));
 
         List<UniversalId> topLevelEqList = null;
         UniversalId uuid = new UniversalId("0Aabcdef-0abc-0cfD-0abC-0123456789AB");
@@ -91,10 +91,21 @@ public class TestOnf14NetworkElement extends Mockito {
     @Test
     public void testGeneric() {
         Optional<NetworkElement> onfNe;
+        NodeId nodeId = new NodeId(NODEIDSTRING);
+        NetconfBindingAccessor bindingAccessor = mock(NetconfBindingAccessor.class);
+        when(bindingAccessor.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
+        when(bindingAccessor.getNodeId()).thenReturn(nodeId);
+
+        NetconfDomAccessor domAccessor = mock(NetconfDomAccessor.class);
+        when(domAccessor.getNodeId()).thenReturn(nodeId);
+
         when(accessor.getCapabilites().isSupportingNamespace(ControlConstruct.QNAME)).thenReturn(true);
+        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingAccessor));
+        when(accessor.getNetconfDomAccessor()).thenReturn(Optional.of(domAccessor));
+
         Onf14NetworkElementFactory factory = new Onf14NetworkElementFactory();
         onfNe = factory.create(accessor, serviceProvider);
-        assertTrue(factory.create(accessor, serviceProvider).isPresent());
+        assertTrue(onfNe.isPresent());
 
         onfNe.get().register();
         onfNe.get().deregister();

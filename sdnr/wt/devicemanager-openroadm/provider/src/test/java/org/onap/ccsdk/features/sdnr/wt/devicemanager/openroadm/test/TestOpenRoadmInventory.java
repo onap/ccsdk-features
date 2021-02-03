@@ -44,6 +44,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +61,8 @@ public class TestOpenRoadmInventory {
             .setCurrentIpAddress(ipAddress).setCurrentDefaultGateway(new IpAddress(new Ipv4Address("127.0.0.20")))
             .setCurrentDefaultGateway(new IpAddress(new Ipv4Address("127.0.0.20"))).setNodeType(NodeTypes.Rdm)
             .setCurrentDatetime(new DateAndTime("2017-10-22T15:23:43Z")).setSoftwareVersion("swversion1234")
-            .setPrefixLength((short) 28).setMaxDegrees(2).setMaxSrgs(3).setMaxNumBin15minHistoricalPm(32)
-            .setMaxNumBin24hourHistoricalPm(7).setOpenroadmVersion(OpenroadmVersionType._20).build();
+            .setPrefixLength(Uint8.valueOf(28)).setMaxDegrees(Uint16.valueOf(2)).setMaxSrgs(Uint16.valueOf(3)).setMaxNumBin15minHistoricalPm(Uint16.valueOf(32))
+            .setMaxNumBin24hourHistoricalPm(Uint16.valueOf(7)).setOpenroadmVersion(OpenroadmVersionType._20).build();
 
     private OrgOpenroadmDevice device = mock(OrgOpenroadmDevice.class);;
     private Shelves shelf = mock(Shelves.class);
@@ -73,7 +76,7 @@ public class TestOpenRoadmInventory {
         when(accessor.getNodeId()).thenReturn(nodeId);
         when(device.getInfo()).thenReturn(info);
 
-        roadmInventory.getInventoryData(value1);
+        roadmInventory.getInventoryData(Uint32.valueOf(value1));
         assertEquals(device.getInfo(), info);
 
     }
@@ -92,7 +95,7 @@ public class TestOpenRoadmInventory {
         when(shelf.getModel()).thenReturn("1");
         when(shelf.getHardwareVersion()).thenReturn("0.1");
         when(shelf.getManufactureDate()).thenReturn(new DateAndTime("2017-10-22T15:23:43Z"));
-        roadmInventory.getShelvesInventory(shelf, (value1 + 1));
+        roadmInventory.getShelvesInventory(shelf, Uint32.valueOf(value1 + 1));
         LOG.info("Shelves test completed");
 
     }
@@ -110,7 +113,7 @@ public class TestOpenRoadmInventory {
         when(cp.getProductCode()).thenReturn("oooooo");
         when(cp.getCircuitPackMode()).thenReturn("inServiceMode");
         when(device.getInfo()).thenReturn(info);
-        roadmInventory.getCircuitPackInventory(cp, value1 + 1);
+        roadmInventory.getCircuitPackInventory(cp, Uint32.valueOf(value1 + 1));
 
     }
 
@@ -121,17 +124,17 @@ public class TestOpenRoadmInventory {
         when(interfaces.getDescription()).thenReturn("Ethernet Interface");
         when(interfaces.getSupportingCircuitPackName()).thenReturn("1/0");
         when(device.getInfo()).thenReturn(info);
-        roadmInventory.getInterfacesInventory(interfaces, value1 + 2);
+        roadmInventory.getInterfacesInventory(interfaces, Uint32.valueOf(value1 + 2));
     }
 
     @Test
     public void TestXponder() {
-        when(xpdr.getXpdrNumber()).thenReturn(1);
+        when(xpdr.getXpdrNumber()).thenReturn(Uint16.valueOf(1));
         when(xpdr.getXpdrType()).thenReturn(XpdrNodeTypes.Mpdr);
         when(xpdr.getLifecycleState()).thenReturn(LifecycleState.Deployed);
         when(accessor.getNodeId()).thenReturn(nodeId);
         when(device.getInfo()).thenReturn(info);
-        roadmInventory.getXponderInventory(xpdr, value1 + 1);
+        roadmInventory.getXponderInventory(xpdr, Uint32.valueOf(value1 + 1));
 
     }
 

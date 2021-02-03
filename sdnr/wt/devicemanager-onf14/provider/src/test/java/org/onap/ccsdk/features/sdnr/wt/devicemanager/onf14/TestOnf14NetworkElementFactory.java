@@ -19,20 +19,22 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14;
 
 import static org.junit.Assert.assertTrue;
 import java.io.IOException;
+import java.util.Optional;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.Onf14NetworkElementFactory;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.test.mock.NetconfAccessorMock;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.ControlConstruct;
 import org.opendaylight.yangtools.yang.common.QName;
 
 public class TestOnf14NetworkElementFactory extends Mockito {
 
-    static NetconfAccessor accessor;
+    static NetconfBindingAccessor accessor;
     static DeviceManagerServiceProvider serviceProvider;
     static Capabilities capabilities;
     QName qCapability;
@@ -40,16 +42,18 @@ public class TestOnf14NetworkElementFactory extends Mockito {
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
         capabilities = mock(Capabilities.class);
-        accessor = mock(NetconfAccessorMock.class);
+        accessor = mock(NetconfBindingAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
 
         when(accessor.getCapabilites()).thenReturn(capabilities);
-        when(serviceProvider.getDataProvider()).thenReturn(null);
+        when(serviceProvider.getDataProvider()).thenReturn(mock(DataProvider.class));
     }
 
     @Test
     public void testCreateOnf14Component() throws Exception {
         when(accessor.getCapabilites().isSupportingNamespace(ControlConstruct.QNAME)).thenReturn(true);
+        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(mock(NetconfBindingAccessor.class)));
+        when(accessor.getNetconfDomAccessor()).thenReturn(Optional.of(mock(NetconfDomAccessor.class)));
         Onf14NetworkElementFactory factory = new Onf14NetworkElementFactory();
         assertTrue((factory.create(accessor, serviceProvider)).isPresent());
     }
@@ -58,7 +62,7 @@ public class TestOnf14NetworkElementFactory extends Mockito {
     public void testCreateNone() throws Exception {
         when(accessor.getCapabilites().isSupportingNamespace(ControlConstruct.QNAME)).thenReturn(false);
         Onf14NetworkElementFactory factory = new Onf14NetworkElementFactory();
-        assertTrue(!(factory.create(accessor, serviceProvider).isPresent()));
+        assertTrue(factory.create(accessor, serviceProvider).isEmpty());
     }
 }
 

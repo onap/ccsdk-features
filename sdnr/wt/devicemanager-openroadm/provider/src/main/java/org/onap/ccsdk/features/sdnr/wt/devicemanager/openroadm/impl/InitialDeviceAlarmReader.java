@@ -29,7 +29,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.ActiveAlarmList;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.OrgOpenroadmAlarmListener;
@@ -52,13 +52,13 @@ public class InitialDeviceAlarmReader {
     // variables
     private Integer count = 1;
     private static final Logger log = LoggerFactory.getLogger(OrgOpenroadmAlarmListener.class);
-    private final NetconfAccessor netConfAccesor;
+    private final NetconfBindingAccessor netConfAccesor;
     private final @NonNull FaultService faultEventListener;
     private final DataProvider dataProvider;
     // end of variables
 
     // constructors
-    public InitialDeviceAlarmReader(NetconfAccessor accessor, DeviceManagerServiceProvider serviceProvider) {
+    public InitialDeviceAlarmReader(NetconfBindingAccessor accessor, DeviceManagerServiceProvider serviceProvider) {
         this.netConfAccesor = accessor;
         this.faultEventListener = serviceProvider.getFaultService();
         this.dataProvider = serviceProvider.getDataProvider();
@@ -105,7 +105,7 @@ public class InitialDeviceAlarmReader {
     // private methods
 
     // Read Alarm Data
-    private ActiveAlarmList getActiveAlarmList(NetconfAccessor accessor) {
+    private ActiveAlarmList getActiveAlarmList(NetconfBindingAccessor accessor) {
         final Class<ActiveAlarmList> classAlarm = ActiveAlarmList.class;
         log.info("Get Alarm data for element {}", accessor.getNodeId().getValue());
         InstanceIdentifier<ActiveAlarmList> alarmDataIid = InstanceIdentifier.builder(classAlarm).build();

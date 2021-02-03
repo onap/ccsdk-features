@@ -19,33 +19,36 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.test;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.interfaces;
 
-import static org.mockito.Mockito.mock;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl.DeviceManagerOpenroadmImpl;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.UniversalId;
 
-public class TestDeviceManagerOpenRoadmImpl {
-    DeviceManagerOpenroadmImpl devMgrOpenRdmImpl;
-    NetconfNetworkElementService netcnfNtwrkElmntSrvc;
+/**
+ * Defining a structure that can map the LP local-id and its corresponding LTP uuid
+ */
+class TechnologySpecificPacKeys {
 
-    @Before
-    public void init() {
-        netcnfNtwrkElmntSrvc = mock(NetconfNetworkElementService.class);
-        devMgrOpenRdmImpl = new DeviceManagerOpenroadmImpl();
+    private UniversalId ltpUuid;
+    private String localId;
+
+    public TechnologySpecificPacKeys(UniversalId uuid, String lId) {
+        this.ltpUuid = uuid;
+        this.localId = lId;
     }
 
-    @Test
-    public void test() throws Exception {
-        devMgrOpenRdmImpl.setNetconfNetworkElementService(netcnfNtwrkElmntSrvc);
+    public UniversalId getLtpUuid() {
+        return ltpUuid;
     }
 
-    @After
-    public void cleanUp() throws Exception {
-        devMgrOpenRdmImpl.close();
+    public String getLocalId() {
+        return localId;
     }
 
+    public void setLtpUuid(UniversalId uuid) {
+        this.ltpUuid = uuid;
+    }
+
+    public void setLocalId(String lId) {
+        this.localId = lId;
+    }
 }

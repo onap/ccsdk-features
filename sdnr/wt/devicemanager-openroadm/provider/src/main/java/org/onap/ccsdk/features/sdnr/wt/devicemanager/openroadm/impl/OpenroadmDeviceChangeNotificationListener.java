@@ -24,6 +24,8 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl;
 import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.OrgOpenroadmAlarmListener;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.ChangeNotification;
@@ -31,6 +33,7 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.CreateTe
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.OrgOpenroadmDeviceListener;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.OtdrScanResult;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.change.notification.Edit;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -50,6 +53,7 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
     private Integer counter = 1;
     private final NetconfAccessor netconfAccessor;
     private final DataProvider databaseProvider;
+    private static final NetconfTimeStamp ncTimeConverter = NetconfTimeStampImpl.getConverter();
     // end of variables
 
     // constructors
@@ -106,7 +110,8 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
         EventlogBuilder eventlogBuilder = new EventlogBuilder();
         eventlogBuilder.setId(notification.getShelfId()).setAttributeName(notification.getShelfId())
                 .setObjectId(notification.getShelfId()).setNodeId(this.netconfAccessor.getNodeId().getValue())
-                .setCounter(counter).setNewValue(notification.getStatus().getName()).setSourceType(SourceType.Netconf);
+                .setCounter(counter).setNewValue(notification.getStatus().getName()).setSourceType(SourceType.Netconf)
+                .setTimestamp(new DateAndTime(ncTimeConverter.getTimeStamp()));
         databaseProvider.writeEventLog(eventlogBuilder.build());
         log.info("Create-techInfo Notification written ");
         counter++;
