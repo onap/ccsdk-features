@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl;
+package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.binding;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FluentFuture;
@@ -25,7 +25,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.util.StackTrace;
@@ -80,7 +79,6 @@ public final class GenericTransactionUtils implements TransactionUtils {
      * @return null or object
      */
     @Override
-    @SuppressWarnings("null")
     public @Nullable <T extends DataObject> T readDataOptionalWithStatus(DataBroker dataBroker,
             LogicalDatastoreType dataStoreType, InstanceIdentifier<T> iid, AtomicBoolean noErrorIndication,
             AtomicReference<String> statusIndicator) {

@@ -1,0 +1,16 @@
+{
+  "config:configuration": {
+    "config1": "test",
+    "config2": true,
+    "entry": [
+      {
+        "setting": "set1",
+        "value": 1
+      },
+      {
+        "setting": "set1",
+        "value": 2
+      }
+    ]
+  }
+}
