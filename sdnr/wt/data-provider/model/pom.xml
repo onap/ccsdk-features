@@ -33,7 +33,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>org.onap.ccsdk.features.sdnr.wt.aluminium.sr1</groupId>
+    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-data-provider-model</artifactId>
     <version>1.1.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
