@@ -48,7 +48,7 @@ public class DeviceManagerAdapterManagerImpl implements AutoCloseable {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
-        resAdapterManager = netconfNetworkElementService.registerNetworkElementFactory(new AdapterManagerNetworkElementFactory());
+        resAdapterManager = netconfNetworkElementService.registerBindingNetworkElementFactory(new AdapterManagerNetworkElementFactory());
 
 
         netconfNetworkElementService.writeToEventLog(APPLICATION_NAME, "startup", "done");

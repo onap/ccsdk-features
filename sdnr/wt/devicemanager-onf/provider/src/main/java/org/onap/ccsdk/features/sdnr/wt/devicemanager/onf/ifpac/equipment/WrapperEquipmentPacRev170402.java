@@ -25,6 +25,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.OnfInterfacePac;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.WrapperMicrowaveModelRev181010;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
@@ -42,10 +43,10 @@ public class WrapperEquipmentPacRev170402 implements OnfInterfacePac {
     private static final Logger LOG = LoggerFactory.getLogger(WrapperEquipmentPacRev170402.class);
     public static final QName QNAME = EquipmentPac.QNAME;
 
-    private final NetconfAccessor acessor;
+    private final NetconfBindingAccessor acessor;
 
 
-    public WrapperEquipmentPacRev170402(NetconfAccessor acessor) {
+    public WrapperEquipmentPacRev170402(NetconfBindingAccessor acessor) {
         this.acessor = acessor;
     }
 

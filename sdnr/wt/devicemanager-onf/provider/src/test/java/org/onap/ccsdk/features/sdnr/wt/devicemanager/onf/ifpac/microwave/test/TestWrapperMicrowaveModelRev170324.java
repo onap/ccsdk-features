@@ -32,7 +32,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.Wrapper
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.util.ONFLayerProtocolName;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -82,7 +82,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class TestWrapperMicrowaveModelRev170324 {
 
-    NetconfAccessor accessor;
+    NetconfBindingAccessor accessor;
     DeviceManagerServiceProvider serviceProvider;
     FaultData resultList;
     UniversalId uid;
@@ -99,7 +99,7 @@ public class TestWrapperMicrowaveModelRev170324 {
 
     @Before
     public void init() {
-        accessor = mock(NetconfAccessor.class);
+        accessor = mock(NetconfBindingAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
         resultList = mock(FaultData.class);
         transactionUtils = mock(TransactionUtils.class);

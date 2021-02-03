@@ -30,6 +30,8 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
@@ -66,8 +68,10 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
 
     private final @NonNull String mountPointNodeName;
-    private final @NonNull NetconfAccessor acessor;
+    private final @NonNull NetconfBindingAccessor acessor;
     private final @NonNull DeviceManagerOnfConfiguration pollAlarmConfig;
+    
+    private final NetconfNotifications notificationAccessor;
 
     /*-----------------------------------------------------------------------------
      * Construction
@@ -79,7 +83,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
      * @param acessor to manage device connection
      * @param serviceProvider to get devicemanager services
      */
-    public ONFCoreNetworkElement12Basic(@NonNull NetconfAccessor acessor,
+    public ONFCoreNetworkElement12Basic(@NonNull NetconfBindingAccessor acessor,
             @NonNull DeviceManagerServiceProvider serviceProvider, DeviceManagerOnfConfiguration configuration) {
 
         super(acessor);
@@ -95,6 +99,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         this.eventListenerHandler = serviceProvider.getEventHandlingService();
         this.dataProvider = serviceProvider.getDataProvider();
 
+        this.notificationAccessor = acessor.getNotificationAccessor().get();
 
     }
 
@@ -202,7 +207,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         doRegisterEventListener(acessor.getMountpoint());
 
         // Register netconf stream
-        acessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
+        notificationAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
 
         // Set core-model revision value in "core-model-capability" field
         setCoreModel(acessor.getNetconfNode());
