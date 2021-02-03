@@ -25,8 +25,8 @@ import java.io.Writer;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,32 +41,23 @@ import org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.handlenotif.pojos.Paylo
 import org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.handlenotif.pojos.RAN;
 import org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.handlenotif.pojos.RadioAccess;
 import org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.handlenotif.pojos.X0005b9Lte;
-import org.onap.ccsdk.sli.core.sli.provider.MdsalHelper;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.*;
+
+import org.opendaylight.mdsal.binding.api.DataBroker;
 
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.rev190308.OofpcipocListener;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.rev190308.Payload;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.rev190308.NbrlistChangeNotification;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.rev190308.NetconfConfigChange;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.rev190308.nbrlist.change.notification.*;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.rev190308.nbrlist.change.notification.fap.service.*;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * Defines a base implementation for your listener. This class extends from a
@@ -92,23 +83,26 @@ public class OofpcipocHandleNotif implements AutoCloseable, OofpcipocListener {
 
 	protected DataBroker dataBroker;
 
-	private final OofpcipocClient OofpcipocClient;
+	private OofpcipocClient OofpcipocClient;
 
-	public OofpcipocHandleNotif(final DataBroker dataBroker, final OofpcipocClient OofpcipocClient) {
+	public OofpcipocHandleNotif() {
 
 		this.LOG.info("Creating listener for {}", APPLICATION_NAME);
 		executor = Executors.newFixedThreadPool(1);
+		this.dataBroker = null;
+		this.OofpcipocClient = null;
+	}
+	
+	public void setDataBroker(DataBroker dataBroker) {
 		this.dataBroker = dataBroker;
+	}
+	
+	public void setClient(OofpcipocClient OofpcipocClient) {
 		this.OofpcipocClient = OofpcipocClient;
-		initialize();
 	}
 
-	public void initialize() {
+	public void init() {
 		LOG.info("Placeholder: Initializing listener  for {}", APPLICATION_NAME);
-	}
-
-	protected void initializeChild() {
-		// Override if you have custom initialization intelligence
 	}
 
 	@Override
@@ -134,18 +128,20 @@ public class OofpcipocHandleNotif implements AutoCloseable, OofpcipocListener {
 		List<FAPServiceList> fAPServiceList = new ArrayList<>();
 
 		radioAccess.setFAPServiceNumberOfEntries(notification.getFapServiceNumberOfEntriesChanged().toString());
+		Map<FapServiceKey, FapService> fapSvcs = notification.getFapService();
 
-		for (FapService fapSvc : notification.getFapService()) {
+		for (Map.Entry<FapServiceKey,FapService> entry : fapSvcs.entrySet() ) {
 
+			FapService fapSvc = entry.getValue();
 			FAPServiceList fapServiceElement = new FAPServiceList();
 
 			fapServiceElement.setAlias(fapSvc.getAlias());
 			fapServiceElement.setX0005b9Lte(new X0005b9Lte(fapSvc.getPhyCellIdInUse().toString(), fapSvc.getPnfName()));
 
 			List<LTENeighborListInUseLTECell> lTENeighborListInUseLTECell = new ArrayList<>();
-
-			for (LteRanNeighborListInUseLteCellChanged lteRanElement : fapSvc
-					.getLteRanNeighborListInUseLteCellChanged()) {
+			Map<LteRanNeighborListInUseLteCellChangedKey, LteRanNeighborListInUseLteCellChanged> lteRanElements = fapSvc.getLteRanNeighborListInUseLteCellChanged();
+			for (Map.Entry<LteRanNeighborListInUseLteCellChangedKey, LteRanNeighborListInUseLteCellChanged> lteRanEntry : lteRanElements.entrySet()) {
+				LteRanNeighborListInUseLteCellChanged lteRanElement = lteRanEntry.getValue(); 
 				LTENeighborListInUseLTECell lTENeighborListInUseLTECellElement = new LTENeighborListInUseLTECell();
 				lTENeighborListInUseLTECellElement.setAlias(lteRanElement.getCid());
 				lTENeighborListInUseLTECellElement.setBlacklisted(lteRanElement.isBlacklisted().toString());
