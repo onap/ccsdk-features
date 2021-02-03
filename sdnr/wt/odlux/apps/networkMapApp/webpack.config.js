@@ -160,6 +160,10 @@ module.exports = (env) => {
           target: "http://localhost:3001",
           secure: false
         },
+        "/tiles/": {
+          target: "http://www.openstreetmap.org",
+          secure: false
+        },
         "/help/": {
           target: "http://10.20.6.29:8181",
           secure: false

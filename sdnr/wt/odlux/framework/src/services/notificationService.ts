@@ -19,7 +19,7 @@ import * as X2JS from 'x2js';
 import { ApplicationStore } from '../store/applicationStore';
 import { SetWebsocketAction } from '../actions/websocketAction';
 
-const socketUrl = [location.protocol === 'https:' ? 'wss://' : 'ws://', 'admin', ':', 'admin', '@', location.hostname, ':', location.port, '/websocket'].join('');
+const socketUrl = [location.protocol === 'https:' ? 'wss://' : 'ws://', location.hostname, ':', location.port, '/websocket'].join('');
 const subscriptions: { [scope: string]: SubscriptionCallback[] } = {};
 let socketReady: Promise<WebSocket>;
 let userLoggedOut = false;

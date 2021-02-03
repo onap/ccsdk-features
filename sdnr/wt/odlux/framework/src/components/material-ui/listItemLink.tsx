@@ -36,11 +36,14 @@ export interface IListItemLinkProps extends WithStyles<typeof styles> {
   secondary?: React.ComponentType;
   to: string;
   exact?: boolean;
+  external?: boolean;
 }
 
 export const ListItemLink = withStyles(styles)((props: IListItemLinkProps) => {
-  const { icon, primary: Primary, secondary: Secondary, classes, to, exact = false } = props;
-  const renderLink = (itemProps: any): JSX.Element => (<NavLink exact={ exact } to={ to } activeClassName={ classes.active } { ...itemProps } />);
+  const { icon, primary: Primary, secondary: Secondary, classes, to, exact = false, external=false } = props;
+  const renderLink = (itemProps: any): JSX.Element => (
+    props.external ? <a target="_blank" href={to} { ...itemProps }></a> :
+  <NavLink exact={ exact } to={ to } activeClassName={ classes.active } { ...itemProps } />);
 
   const ariaLabel = typeof Primary === 'string' ? "link-to-"+Primary.toLowerCase().replace(/\s/g, "-") : "link-to-"+Primary.displayName?.toLowerCase();
   return (

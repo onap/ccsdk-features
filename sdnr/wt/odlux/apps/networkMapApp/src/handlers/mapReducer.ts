@@ -39,8 +39,8 @@ const initialState: mapState ={
     selectedSite: null,
     zoomToElement: null,
     alarmlement: null,
-    lat: 52,
-    lon: 13,
+    lat: 52.5095,
+    lon: 13.3290,
     zoom: 10,
     statistics:{links:"Not counted yet.", sites: "Not counted yet."},
     allowIconSwitch: true

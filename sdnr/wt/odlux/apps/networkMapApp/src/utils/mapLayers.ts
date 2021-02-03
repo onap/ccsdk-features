@@ -168,6 +168,57 @@ const createIconLayers =(map: mapboxgl.Map, selectedSiteId?: string) =>{
             }
         });
 
+        //select layers
+
+        map.addLayer({
+            'id': 'select-point-lamps',
+            'type': 'symbol',
+            'source': 'selectedPoints',
+            'layout': {
+                'icon-allow-overlap': true,
+                'icon-image': 'lamp',
+                'icon-size': 0.15
+    
+            },
+            'filter': ['==', 'type', 'street lamp'],
+        });
+    
+        map.addLayer({
+            'id': 'select-point-buildings',
+            'type': 'symbol',
+            'source': 'selectedPoints',
+            'filter': ['==', 'type', 'high rise building'],
+            'layout': {
+                'icon-allow-overlap': true,
+                'icon-image': 'house',
+                'icon-size': 0.15
+            }
+        });
+    
+        map.addLayer({
+            'id': 'select-point-data-center',
+            'type': 'symbol',
+            'source': 'selectedPoints',
+            'filter': ['==', 'type', 'data center'],
+            'layout': {
+                'icon-allow-overlap': true,
+                'icon-image': 'data-center',
+                'icon-size': 0.15
+            }
+        });
+    
+        map.addLayer({
+            'id': 'select-point-factory',
+            'type': 'symbol',
+            'source': 'selectedPoints',
+            'filter': ['==', 'type', 'factory'],
+            'layout': {
+                'icon-allow-overlap': true,
+                'icon-image': 'factory',
+                'icon-size': 0.3
+            }
+        });
+
         //alarm layers
 
         map.addLayer({
@@ -177,7 +228,7 @@ const createIconLayers =(map: mapboxgl.Map, selectedSiteId?: string) =>{
             'layout': {
                 'icon-allow-overlap': true,
                 'icon-image': 'lamp-red',
-                'icon-size': 0.1
+                'icon-size': 0.15
 
             },
             'filter': createFilter("street lamp"),
@@ -191,7 +242,7 @@ const createIconLayers =(map: mapboxgl.Map, selectedSiteId?: string) =>{
             'layout': {
                 'icon-allow-overlap': true,
                 'icon-image': 'house-red',
-                'icon-size': 0.1
+                'icon-size': 0.15
             }
         });
 
@@ -202,8 +253,8 @@ const createIconLayers =(map: mapboxgl.Map, selectedSiteId?: string) =>{
             'filter': createFilter("data center"),
             'layout': {
                 'icon-allow-overlap': true,
-                'icon-image': 'data-center_red',
-                'icon-size': 0.1
+                'icon-image': 'data-center-red',
+                'icon-size': 0.15
             } });
 
             map.addLayer({
@@ -214,11 +265,9 @@ const createIconLayers =(map: mapboxgl.Map, selectedSiteId?: string) =>{
                 'layout': {
                     'icon-allow-overlap': true,
                     'icon-image': 'factory-red',
-                    'icon-size': 0.2
+                    'icon-size': 0.3
                 }
             });
-
-
 
     map.addLayer({
         id: 'point-remaining',
@@ -230,56 +279,6 @@ const createIconLayers =(map: mapboxgl.Map, selectedSiteId?: string) =>{
             'circle-radius': 7,
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
-        }
-    });
-
-    map.addLayer({
-        'id': 'select-point-lamps',
-        'type': 'symbol',
-        'source': 'selectedPoints',
-        'layout': {
-            'icon-allow-overlap': true,
-            'icon-image': 'lamp',
-            'icon-size': 0.15
-
-        },
-        'filter': ['==', 'type', 'street lamp'],
-    });
-
-    map.addLayer({
-        'id': 'select-point-buildings',
-        'type': 'symbol',
-        'source': 'selectedPoints',
-        'filter': ['==', 'type', 'high rise building'],
-        'layout': {
-            'icon-allow-overlap': true,
-            'icon-image': 'house',
-            'icon-size': 0.15
-        }
-    });
-
-    map.addLayer({
-        'id': 'select-point-data-center',
-        'type': 'symbol',
-        'source': 'selectedPoints',
-        'filter': ['==', 'type', 'data center'],
-        'layout': {
-            'icon-allow-overlap': true,
-            'icon-image': 'data-center',
-            'icon-size': 0.15
-        }
-    });
-
-
-    map.addLayer({
-        'id': 'select-point-factory',
-        'type': 'symbol',
-        'source': 'selectedPoints',
-        'filter': ['==', 'type', 'factory'],
-        'layout': {
-            'icon-allow-overlap': true,
-            'icon-image': 'factory',
-            'icon-size': 0.3
         }
     });
 }

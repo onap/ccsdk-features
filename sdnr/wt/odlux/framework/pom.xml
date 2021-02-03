@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>odlparent</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
@@ -46,7 +46,7 @@
     <properties>
         <buildtime>${maven.build.timestamp}</buildtime>
         <distversion>ONAP Frankfurt (Neon, mdsal ${odl.mdsal.version})</distversion>
-        <buildno>86.51a94bd(20/11/17)</buildno>
+        <buildno>88.1c38886(20/12/04)</buildno>
         <odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
     </properties>
 
@@ -183,7 +183,7 @@
                             <token>##odlux.version##</token>
                             <value>${odlux.version}</value>
                         </replacement>
-                        <replacement>
+                         <replacement>
                             <token>##buildno##</token>
                             <value>${buildno}</value>
                         </replacement>

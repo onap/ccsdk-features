@@ -119,7 +119,7 @@ const SiteDetails: React.FunctionComponent<props> = (props) => {
                
                 {
                     props.site.links.length > 0 &&
-                    <DenseTable ariaLabel="available-links-table-entry" height={height} hover={true} headers={["Link Name", "Azimuth in °"]}  data={linkRows} onClick={props.onLinkClick}  ></DenseTable>
+                    <DenseTable ariaLabelRow="available-links-table" ariaLabelColumn={["link-name", "azimuth"]} height={height} hover={true} headers={["Link Name", "Azimuth in °"]}  data={linkRows} onClick={props.onLinkClick}  ></DenseTable>
                /**
                 * 
                 * */
@@ -140,7 +140,7 @@ const SiteDetails: React.FunctionComponent<props> = (props) => {
 
                 {
                     props.site.devices.length>0 && props.updatedDevices !== null &&
-                    <DenseTable ariaLabel="available-nodes-table-entry" navigate={props.navigate} height={height} hover={false} headers={["ID","Name","Type", "Manufacturer","Owner","Status", "Ports", "Actions"]} actions={true} data={props.updatedDevices!} />
+                    <DenseTable ariaLabelRow="available-nodes-table" ariaLabelColumn={["id","name","type", "manufacturer","owner","status", "ports", "actions"]} navigate={props.navigate} height={height} hover={false} headers={["ID","Name","Type", "Manufacturer","Owner","Status", "Ports", "Actions"]} actions={true} data={props.updatedDevices!} />
                 }
             </>
         }

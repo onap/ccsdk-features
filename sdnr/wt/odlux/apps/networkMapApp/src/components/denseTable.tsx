@@ -26,85 +26,101 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Button, Tooltip } from '@material-ui/core';
 
-type props = { headers: string[], height:number,  navigate?(applicationName: string, path?: string):void, onLinkClick?(id: string): void, data: any[], hover: boolean, ariaLabel: string, onClick?(id: string): void, actions?:boolean  };
+type props = { headers: string[], height: number, navigate?(applicationName: string, path?: string): void, onLinkClick?(id: string): void, data: any[], hover: boolean, ariaLabelRow: string, ariaLabelColumn: string[], verticalTable?: boolean, onClick?(id: string): void, actions?: boolean };
 
 
 const styles = makeStyles({
     container: {
-        overflow:"auto"
+        overflow: "auto"
     },
     button: {
         margin: 0,
         padding: "6px 6px",
         minWidth: 'unset'
-      }
-    
-  });
-  
+    }
+
+});
+
 
 const DenseTable: React.FunctionComponent<props> = (props) => {
 
     const classes = styles();
 
-    const handleClick = (event: any, id: string) =>{
+    const handleClick = (event: any, id: string) => {
         event.preventDefault();
         props.onClick !== undefined && props.onClick(id);
 
     }
 
-    const handleHover = (event: any, id: string) =>{
+    const handleHover = (event: any, id: string) => {
         event.preventDefault();
 
     }
 
     return (
-        <Paper style={{borderRadius:"0px"}}>
-       <div style={{ height:props.height, overflow:"auto"}}>
-            <Table stickyHeader size="small" aria-label="a dense table" >
-                <TableHead>
-                    <TableRow>
-                        {
-                            props.headers.map((data) => {
-                                return <TableCell>{data}</TableCell>
-                            })
+        <Paper style={{ borderRadius: "0px" }}>
+            <div style={{ height: props.height, overflow: "auto" }}>
+                <Table stickyHeader size="small" aria-label="a dense table" >
+                    <TableHead>
+                        <TableRow>
+                            {
+                                props.headers.map((data) => {
+                                    return <TableCell>{data}</TableCell>
+                                })
+                            }
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {props.data.map((row, index) => {
+                            var values = Object.keys(row).map(function (e) { return row[e]; });
+                            return (
+                                <TableRow aria-label={props.ariaLabelRow} key={index} hover={props.hover} onMouseOver={e => handleHover(e, row.name)} onClick={e => handleClick(e, row.name)}>
+
+                                    {
+                                        values.map((data: any, i) => {
+                                            if (data !== undefined) {
+
+                                                if (!props.verticalTable) {
+                                                    const ariaLabel = props.ariaLabelColumn[i];
+                                                    if (ariaLabel.length > 0) {
+                                                        return <TableCell aria-label={ariaLabel}>{data}</TableCell>
+                                                    } else {
+                                                        return <TableCell>{data}</TableCell>
+                                                    }
+                                                }
+                                                else {
+                                                    // skip adding aria label to 'header' column
+                                                    if (i === 0) {
+                                                        return <TableCell>{data}</TableCell>
+                                                    } else {
+                                                        const ariaLabel = props.ariaLabelColumn[index];
+                                                        return <TableCell aria-label={ariaLabel}>{data}</TableCell>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                                return null;
+                                        })
+                                    }
+                                    {
+
+                                        props.actions && <TableCell >
+                                            <div style={{ display: "flex" }}>
+                                                <Tooltip title="Configure">
+                                                    <Button className={classes.button} disabled={row.status !== "connected"} onClick={(e: any) => { e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("configuration", row.simulatorId ? row.simulatorId : row.name) }}>C</Button>
+                                                </Tooltip>
+                                                <Tooltip title="Fault">
+                                                    <Button className={classes.button} disabled={row.status !== "connected"} onClick={(e: any) => { e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("fault", row.simulatorId ? row.simulatorId : row.name) }}>F</Button>
+                                                </Tooltip>
+                                            </div>
+                                        </TableCell>
+                                    }
+                                </TableRow>)
+                        })
                         }
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {props.data.map((row, index) => {  
-                        var values = Object.keys(row).map(function(e) { return row[e] });
-                        return (
-                            <TableRow aria-label={props.ariaLabel} key={index} hover={props.hover} onMouseOver={e => handleHover(e,row.name)} onClick={ e =>  handleClick(e, row.name)}>
 
-                                {
-                                    values.map((data:any) => {
-                                       
-                                        if(data!== undefined)
-                                        return <TableCell>  {data} </TableCell>
-                                        else
-                                        return null;
-                                    })
-                                }
-                                {
-
-                                    props.actions && <TableCell >  
-<div style={{display:"flex"}}>
-    <Tooltip title="Configure">
-    <Button className={classes.button} disabled={row.status!=="connected"} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("configuration", row.name)}}>C</Button>
-    </Tooltip>
-    <Tooltip title="Fault">
-    <Button className={classes.button} disabled={row.status!=="connected"} onClick={(e: any) =>{ e.preventDefault(); e.stopPropagation(); props.navigate && props.navigate("fault", row.name)}}>F</Button>
-    </Tooltip>
-    </div> 
-    </TableCell>
-    
-                                }
-                            </TableRow>)
-                    })
-                    }
-
-                </TableBody>
-            </Table>
+                    </TableBody>
+                </Table>
             </div>
         </Paper>
     );

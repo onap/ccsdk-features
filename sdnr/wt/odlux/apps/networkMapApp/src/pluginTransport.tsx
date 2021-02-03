@@ -71,15 +71,14 @@ subscribe<ObjectNotification & IFormatedMessage>(["ObjectCreationNotification", 
  //store && store.dispatch(UpdateDetailsView(msg.nodeName))
 
 }));
-
+*/
 
 subscribe<FaultAlarmNotification & IFormatedMessage>("ProblemNotification", (fault => {
   const store = applicationApi && applicationApi.applicationStore;
   if (fault && store) {
-    // store.dispatch(findSiteToAlarm(fault.nodeName));
+     store.dispatch(findSiteToAlarm(fault.nodeName));
 
   
   }
 }));
 
-*/

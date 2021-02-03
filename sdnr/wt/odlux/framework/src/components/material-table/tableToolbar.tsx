@@ -29,6 +29,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { SvgIconProps } from '@material-ui/core/SvgIcon/SvgIcon';
+import { Button } from '@material-ui/core';
 
 const styles = (theme: Theme) => createStyles({
   root: {
