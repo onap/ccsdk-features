@@ -26,6 +26,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.o.ran.hardware._1._0.rev190328.ORANHWCOMPONENT;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
@@ -39,12 +40,16 @@ public class ORanNetworkElementFactory implements NetworkElementFactory {
             QName.create("urn:onf:otcc:wireless:yang:radio-access:commscope-onecell", "2020-06-22", "onecell").intern();
 
     @Override
-    public Optional<NetworkElement> create(NetconfAccessor acessor, DeviceManagerServiceProvider serviceProvider) {
-        Capabilities capabilites = acessor.getCapabilites();
+    public Optional<NetworkElement> create(NetconfAccessor accessor, DeviceManagerServiceProvider serviceProvider) {
+        Capabilities capabilites = accessor.getCapabilites();
         if (!capabilites.isSupportingNamespace(OneCell)) {
             if (capabilites.isSupportingNamespace(ORANHWCOMPONENT.QNAME)) {
                 log.info("Create device {} ", ORanNetworkElement.class.getName());
-                return Optional.of(new ORanNetworkElement(acessor, serviceProvider.getDataProvider(), serviceProvider.getVESCollectorService()));
+                Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
+                if (bindingAccessor.isPresent()) {
+                    return Optional.of(new ORanNetworkElement(bindingAccessor.get(), serviceProvider.getDataProvider(),
+                            serviceProvider.getVESCollectorService()));
+                }
             }
         }
         return Optional.empty();

@@ -21,30 +21,39 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
+import java.util.Optional;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanNetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.yang.gen.v1.urn.o.ran.hardware._1._0.rev190328.ORANHWCOMPONENT;
-import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 public class TestORanNetworkElementFactory {
 
-    static NetconfAccessor accessor;
-    static DeviceManagerServiceProvider serviceProvider;
-    static Capabilities capabilities;
-    QName qCapability;
+    private static String NODEIDSTRING = "nSky";
+
+    private static NetconfBindingAccessor accessor;
+    private static DeviceManagerServiceProvider serviceProvider;
+    private static Capabilities capabilities;
 
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
+        NetconfBindingAccessor bindingCommunicator = mock(NetconfBindingAccessor.class);
+        NodeId nodeId = new NodeId(NODEIDSTRING);
+        when(bindingCommunicator.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
+        when(bindingCommunicator.getNodeId()).thenReturn(nodeId);
+
         capabilities = mock(Capabilities.class);
-        accessor = mock(NetconfAccessor.class);
+        accessor = mock(NetconfBindingAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
 
         when(accessor.getCapabilites()).thenReturn(capabilities);
+        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingCommunicator));
         when(serviceProvider.getDataProvider()).thenReturn(null);
 
 

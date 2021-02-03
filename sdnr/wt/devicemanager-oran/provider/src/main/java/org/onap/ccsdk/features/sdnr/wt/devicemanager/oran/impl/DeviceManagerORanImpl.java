@@ -51,7 +51,7 @@ public class DeviceManagerORanImpl implements AutoCloseable {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
-        resORan = netconfNetworkElementService.registerNetworkElementFactory(new ORanNetworkElementFactory());
+        resORan = netconfNetworkElementService.registerBindingNetworkElementFactory(new ORanNetworkElementFactory());
 
 
         netconfNetworkElementService.writeToEventLog(APPLICATION_NAME, "startup", "done");

@@ -29,7 +29,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanChangeNotificationListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.base._1._0.rev110601.EditOperationType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfConfigChange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.netconf.config.change.Edit;
@@ -48,7 +48,7 @@ public class TestORanChangeNotificationListener {
     @Test
     public void test() {
 
-        NetconfAccessor netconfAccessor = mock(NetconfAccessor.class);
+        NetconfBindingAccessor netconfAccessor = mock(NetconfBindingAccessor.class);
         DataProvider databaseService = mock(DataProvider.class);
         VESCollectorService vesCollectorService = mock(VESCollectorService.class);
         VESCollectorCfgService vesCfgService = mock(VESCollectorCfgService.class);

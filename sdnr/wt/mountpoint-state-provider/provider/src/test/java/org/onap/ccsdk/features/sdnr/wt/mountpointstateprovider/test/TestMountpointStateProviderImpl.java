@@ -34,11 +34,9 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgServ
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStateProviderImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TestMountpointStateProviderImpl {
-    private static final Logger LOG = LoggerFactory.getLogger(TestMountpointStateProviderImpl.class);
+
     private MountpointStateProviderImpl mountpointStateProvider;
 
 

@@ -81,6 +81,10 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
 
     @Override
     public void onConfigChanged() {
+    	if (generalConfig == null) { // Included as NullPointerException observed once in docker logs
+    		LOG.warn("onConfigChange cannot be handled. Unexpected Null");
+    		return;
+    	}
         LOG.info("Service configuration state changed. Enabled: {}", generalConfig.getEnabled());
         boolean dmaapEnabledNewVal = generalConfig.getEnabled();
         if (!dmaapEnabled && dmaapEnabledNewVal) { // Dmaap disabled earlier (or during bundle startup) but enabled later, start Consumer(s)
