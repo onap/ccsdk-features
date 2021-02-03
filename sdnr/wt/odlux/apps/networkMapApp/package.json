@@ -1,5 +1,5 @@
 {
-  "name": "@odlux/networkmap-app",
+  "name": "@odlux/transport-app",
   "version": "0.1.0",
   "description": "A react based modular UI to display event log from a database.",
   "main": "index.js",

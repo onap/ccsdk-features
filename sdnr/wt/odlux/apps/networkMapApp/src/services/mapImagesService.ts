@@ -21,11 +21,23 @@ import apartment from '../../icons/apartment.png';
 import datacenter from '../../icons/datacenter.png';
 import factory from '../../icons/factory.png';
 import lamp from '../../icons/lamp.png';
+import datacenterred from '../../icons/datacenterred.png';
+import factoryred from '../../icons/factoryred.png';
+import lampred from '../../icons/lampred.png';
+
 
 type ImagesLoaded = (allImagesLoaded: boolean) => void;
 type MapImages = {name: string, url: string}
 
-export const Images : MapImages[]  = [{name: 'data-center', url: datacenter}, {name: 'house', url: apartment}, {name: 'factory', url: factory},{name: 'lamp', url: lamp}] ;
+export const Images : MapImages[]  = [
+    {name: 'data-center', url: datacenter}, 
+    {name: 'house', url: apartment}, 
+    {name: 'factory', url: factory},
+    {name: 'lamp', url: lamp},
+    {name: 'data-center-red', url: datacenterred}, 
+    {name: 'factory-red', url: factoryred},
+    {name: 'lamp-red', url: lampred},
+] ;
 
 export const addImages = (map: mapboxgl.Map, callback?: ImagesLoaded) =>{
 

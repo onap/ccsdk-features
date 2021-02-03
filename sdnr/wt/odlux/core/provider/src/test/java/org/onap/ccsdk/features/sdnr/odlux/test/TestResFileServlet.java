@@ -17,18 +17,17 @@
  */
 package org.onap.ccsdk.features.sdnr.odlux.test;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.common.test.ServletOutputStreamToStringWriter;
 import org.onap.ccsdk.features.sdnr.wt.odlux.OdluxBundleLoaderImpl;
 import org.onap.ccsdk.features.sdnr.wt.odlux.ResFilesServlet;
 import org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles.OdluxBundle;
@@ -60,24 +59,7 @@ public class TestResFileServlet {
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         when(req.getRequestURI()).thenReturn(res);
-        StringWriter out = new StringWriter();
-        ServletOutputStream printOut = new ServletOutputStream() {
-
-            @Override
-            public void write(int arg0) throws IOException {
-                out.write(arg0);
-            }
-
-            @Override
-            public boolean isReady() {
-                return false;
-            }
-
-            @Override
-            public void setWriteListener(WriteListener writeListener) {
-
-            }
-        };
+        ServletOutputStreamToStringWriter printOut = new ServletOutputStreamToStringWriter();
         try {
             when(resp.getOutputStream()).thenReturn(printOut);
             servlet.doGet(req, resp);

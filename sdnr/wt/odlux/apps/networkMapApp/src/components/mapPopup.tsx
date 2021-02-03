@@ -25,7 +25,7 @@ import { URL_API } from '../config';
 import { HighlightLinkAction, HighlightSiteAction } from '../actions/mapActions';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
-import { verifyResponse, setTopologyReachableAction } from '../actions/connectivityAction';
+import { verifyResponse, handleConnectionError } from '../actions/connectivityAction';
 
 
 
@@ -86,7 +86,7 @@ const mapDispatchToProps = (dispatcher: IDispatcher) => ({
     clearDetailsHistory:()=> dispatcher.dispatch(new ClearHistoryAction()),
     highlightLink: (link: link) => dispatcher.dispatch(new HighlightLinkAction(link)),
     highlightSite: (site: site) => dispatcher.dispatch(new HighlightSiteAction(site)),
-    handleConnectionError: (error:Error) => dispatcher.dispatch(setTopologyReachableAction(error)),
+    handleConnectionError: (error:Error) => dispatcher.dispatch(handleConnectionError(error)),
     clearDetails: () => dispatcher.dispatch(new ClearDetailsAction()),
 
 });

@@ -90,7 +90,7 @@ const LinkDetails: React.FunctionComponent<props> = (props) => {
         <AppBar position="static" id="site-tabs" style={{ marginTop: "20px", background: '#2E3B55' }}>
             <Typography aria-label="details-of-link-sites" style={{ margin:"5px"}}>SITE DETAILS</Typography>
         </AppBar>
-        <DenseTable ariaLabel="site-information-table-entry" height={height} hover={false} headers={["", "Site A", "Site B"]} data={data} />
+        <DenseTable ariaLabelRow="site-information-table-entry" ariaLabelColumn={["site-name", "latitude", "longitude", "azimuth"]} verticalTable height={height} hover={false} headers={["", "Site A", "Site B"]} data={data} />
         {
             props.link.type==="microwave" && <Button style={{marginTop:20}} fullWidth variant="contained" color="primary" onClick={onCalculateLinkClick}>Calculate link</Button>
         }

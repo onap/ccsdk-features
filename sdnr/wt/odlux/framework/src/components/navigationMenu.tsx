@@ -26,12 +26,14 @@ import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 
 import ListItemLink from '../components/material-ui/listItemLink';
 
 import connect, { Connect } from '../flux/connect';
 import { MenuAction } from '../actions/menuAction';
 import * as classNames from 'classnames';
+import { transportPCEUrl } from '../app';
 
 
 const drawerWidth = 240;
@@ -125,6 +127,33 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
     window.dispatchEvent(new Event('menu-resized'));
   }, [isOpen])
 
+  let menuItems = state.framework.applicationRegistraion && Object.keys(state.framework.applicationRegistraion).map(key => {
+    const reg = state.framework.applicationRegistraion[key];
+    return reg && (
+      <ListItemLink
+        key={reg.name}
+        to={reg.path || `/${reg.name}`}
+        primary={reg.menuEntry || reg.name}
+        secondary={reg.subMenuEntry}
+        icon={reg.icon && <FontAwesomeIcon icon={reg.icon} /> || null} />
+    ) || null;
+  }) || null;
+
+  const transportPCELink = <ListItemLink
+    key={"transportPCE"}
+    to={window.localStorage.getItem(transportPCEUrl)!}
+    primary={"TransportPCE"}
+    icon={<FontAwesomeIcon icon={faProjectDiagram}/>} 
+    external/>;
+
+  const linkFound = menuItems.find(obj=>obj.key === "linkCalculation");
+  if(linkFound){
+    const index = menuItems.indexOf(linkFound);
+    menuItems.splice(index+1,0,transportPCELink);
+  }else{
+    menuItems.push(transportPCELink);
+  }
+
   return (
     <Drawer
       variant="permanent"
@@ -145,17 +174,7 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
           <ListItemLink exact to="/" primary="Home" icon={<FontAwesomeIcon icon={faHome} />} />
           <Divider />
           {
-            state.framework.applicationRegistraion && Object.keys(state.framework.applicationRegistraion).map(key => {
-              const reg = state.framework.applicationRegistraion[key];
-              return reg && (
-                <ListItemLink
-                  key={reg.name}
-                  to={reg.path || `/${reg.name}`}
-                  primary={reg.menuEntry || reg.name}
-                  secondary={reg.subMenuEntry}
-                  icon={reg.icon && <FontAwesomeIcon icon={reg.icon} /> || null} />
-              ) || null;
-            }) || null
+          menuItems
           }
           <Divider />
           <ListItemLink to="/about" primary="About" icon={<FontAwesomeIcon icon={faAddressBook} />} />

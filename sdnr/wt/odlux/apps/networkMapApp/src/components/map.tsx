@@ -33,9 +33,13 @@ import { addDistance, getUniqueFeatures, increaseBoundingBox } from '../utils/ma
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
 import SearchBar from './searchBar';
-import { verifyResponse, setTopologyReachableAction, setTileServerReachableAction } from '../actions/connectivityAction';
+import { verifyResponse, IsTileServerReachableAction, handleConnectionError, setTileServerReachableAction } from '../actions/connectivityAction';
 import ConnectionInfo from './connectionInfo'
 import { showIconLayers, addBaseLayers, addBaseSources, addIconLayers } from '../utils/mapLayers';
+import lamp from '../../icons/lamp.png';
+import apartment from '../../icons/apartment.png';
+import datacenter from '../../icons/datacenter.png';
+import factory from '../../icons/factory.png';
 import Statistics from './statistics';
 import IconSwitch from './iconSwitch';
 import { addImages } from '../services/mapImagesService';
@@ -112,6 +116,9 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
         map.on('load', (ev) => {
 
             map.setMaxZoom(18);
+            const bbox = map.getBounds();
+            this.props.updateMapPosition(bbox.getCenter().lat, bbox.getCenter().lng, map.getZoom())
+
             addBaseSources(map, this.props.selectedSite, this.props.selectedLink);
                 
             addImages(map, (result: boolean)=>{
@@ -123,10 +130,9 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 }
             });
 
-            const boundingBox = map.getBounds();
+            const boundingBox = increaseBoundingBox(map);
 
-
-            fetch(`${URL_API}/links/geoJson/${boundingBox.getWest()},${boundingBox.getSouth()},${boundingBox.getEast()},${boundingBox.getNorth()}`)
+            fetch(`${URL_API}/links/geoJson/${boundingBox.west},${boundingBox.south},${boundingBox.east},${boundingBox.north}`)
                 .then(result => verifyResponse(result))
                 .then(result => result.json())
                 .then(features => {
@@ -137,7 +143,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 .catch(error => this.props.handleConnectionError(error));
 
 
-                fetch(`${URL_API}/sites/geoJson/${boundingBox.getWest()},${boundingBox.getSouth()},${boundingBox.getEast()},${boundingBox.getNorth()}`)
+            fetch(`${URL_API}/sites/geoJson/${boundingBox.west},${boundingBox.south},${boundingBox.east},${boundingBox.north}`)
                 .then(result => verifyResponse(result))
                 .then(result => result.json())
                 .then(features => {
@@ -380,6 +386,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
     componentWillUnmount(){
         window.removeEventListener("menu-resized", this.handleResize);
+        lastBoundingBox=null;
     }
 
     handleResize = () => {
@@ -582,7 +589,7 @@ const mapDispatchToProps = (dispatcher: IDispatcher) => ({
     updateMapPosition: (lat: number, lon: number, zoom: number) => dispatcher.dispatch(new SetCoordinatesAction(lat, lon, zoom)),
     setStatistics: (linkCount: string, siteCount: string) => dispatcher.dispatch(new SetStatistics(siteCount, linkCount)),
     setTileServerLoaded: (reachable: boolean) => dispatcher.dispatch(setTileServerReachableAction(reachable)),
-    handleConnectionError: (error: Error) => dispatcher.dispatch(setTopologyReachableAction(error))
+    handleConnectionError: (error: Error) => dispatcher.dispatch(handleConnectionError(error))
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Map));

@@ -57,6 +57,8 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   }
 }
 
+export const transportPCEUrl = "transportPCEUrl";
+
 export const runApplication = () => {
   const applicationStore = applicationStoreCreator();
 
@@ -79,6 +81,7 @@ export const runApplication = () => {
   startHistoryListener(applicationStore);
   startForceLogoutService(applicationStore);
   startNotificationService(applicationStore);
+  addTransportPCEUrl();
 
   const App = (): JSX.Element => (
     <ApplicationStoreProvider applicationStore={applicationStore} >
@@ -91,3 +94,11 @@ export const runApplication = () => {
   ReactDOM.render(<App />, document.getElementById('app'));
 
 };
+
+const addTransportPCEUrl = () =>{
+  const url = window.localStorage.getItem(transportPCEUrl);
+  if(url === null){
+      window.localStorage.setItem(transportPCEUrl, "http://10.20.6.32:18082/");
+      console.log("set transport url :D")
+  }
+}

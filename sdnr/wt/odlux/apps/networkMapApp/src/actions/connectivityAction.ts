@@ -42,7 +42,7 @@ export const verifyResponse = (response: Response) =>{
     }
 }
 
-export const setTopologyReachableAction = (error: Error) => (dispatcher: Dispatch, getState: () => IApplicationStoreState)=>{
+export const handleConnectionError = (error: Error) => (dispatcher: Dispatch, getState: () => IApplicationStoreState)=>{
     const {network:{connectivity: {isToplogyServerAvailable}}} = getState();
     if(isToplogyServerAvailable){
        dispatcher(new IsTopologyServerReachableAction(false))
