@@ -44,25 +44,26 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeConnectListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.VesNotificationListener;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.GenericTransactionUtils;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfAccessorImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeStateServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.rpc.NetconfnodeStateServiceRpcApiImpl;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.example.ExampleConfig;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.ClusterSingletonServiceProviderMock;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.MountPointMock;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.MountPointServiceMock;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.NotificationPublishServiceMock;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.RpcProviderRegistryMock;
+import org.opendaylight.binding.runtime.spi.BindingRuntimeHelpers;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.mdsal.binding.dom.codec.impl.BindingCodecContext;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeBuilder;
@@ -86,6 +87,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.model.parser.api.YangParserException;
+import org.opendaylight.yangtools.yang.model.parser.api.YangParserFactory;
+import org.opendaylight.yangtools.yang.parser.impl.YangParserFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,6 +109,7 @@ public class TestNetconfNodeStateService extends Mockito {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestNetconfNodeStateService.class);
 
+    @SuppressWarnings("unchecked")
     @BeforeClass
     public static <T extends DataObject, L extends DataTreeChangeListener<T>> void before() throws InterruptedException, IOException {
 
@@ -120,8 +125,6 @@ public class TestNetconfNodeStateService extends Mockito {
         //dataBrokerNetconf = new DataBrokerNetconfMock();
         //dataBrokerNetconf.newReadWriteTransaction();
         dataBrokerNetconf = mock(DataBroker.class);
-        ArgumentCaptor<DataTreeIdentifier<?>> argument1 = ArgumentCaptor.forClass(DataTreeIdentifier.class);
-        ArgumentCaptor<DataTreeChangeListener<?>> argument2 = ArgumentCaptor.forClass(DataTreeChangeListener.class);
         when(dataBrokerNetconf.registerDataTreeChangeListener(any(), any())).thenAnswer(
                 invocation -> {
                     Object pListener = invocation.getArguments()[1];
@@ -153,7 +156,8 @@ public class TestNetconfNodeStateService extends Mockito {
         NotificationPublishService notificationPublishService = new NotificationPublishServiceMock();
         RpcProviderService rpcProviderRegistry = new RpcProviderRegistryMock();
         IEntityDataProvider entityProviderMock = mock(IEntityDataProvider.class);
-
+        YangParserFactory yangParserFactory = new YangParserFactoryImpl();
+        BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer = new BindingCodecContext(BindingRuntimeHelpers.createRuntimeContext());
         // start using blueprint interface
         netconfStateService = new NetconfNodeStateServiceImpl();
 
@@ -163,6 +167,8 @@ public class TestNetconfNodeStateService extends Mockito {
         netconfStateService.setRpcProviderRegistry(rpcProviderRegistry);
         netconfStateService.setClusterSingletonService(clusterSingletonService);
         netconfStateService.setEntityDataProvider(entityProviderMock);
+        netconfStateService.setYangParserFactory(yangParserFactory);
+        netconfStateService.setBindingNormalizedNodeSerializer(bindingNormalizedNodeSerializer);
         netconfStateService.init();
         System.out.println("Initialization done");
     }
@@ -233,11 +239,10 @@ public class TestNetconfNodeStateService extends Mockito {
         String nodeIdString = "Test";
         NodeId nodeId = new NodeId(nodeIdString);
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.addAugmentation(NetconfNode.class, rootNodeNetconf);
+
+        nodeBuilder.addAugmentation(rootNodeNetconf);
         nodeBuilder.setNodeId(nodeId);
         Node rootNode = nodeBuilder.build();
-        NetconfAccessor acessor = new NetconfAccessorImpl(nodeId, rootNodeNetconf, mountPoint.getDataBroker(),
-                mountPoint, new GenericTransactionUtils());
 
         DataObjectModification<Node> dom = mock(DataObjectModification.class);
         when(dom.getDataAfter()).thenReturn(rootNode);
@@ -271,7 +276,7 @@ public class TestNetconfNodeStateService extends Mockito {
         NetconfNode rootNodeNetconf = netconfNodeBuilder.build();
 
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.addAugmentation(NetconfNode.class, rootNodeNetconf);
+        nodeBuilder.addAugmentation(rootNodeNetconf);
         nodeBuilder.setNodeId(new NodeId("Test"));
         Node rootNodeAfter = nodeBuilder.build();
 
@@ -351,6 +356,10 @@ public class TestNetconfNodeStateService extends Mockito {
         System.out.println("Output " + output);
     }
 
+    @Test
+    public void test10ApiPushNotifiction() throws YangParserException, IOException {
+        ExampleConfig.exampleConfig(netconfStateService.getDomContext());
+    }
 
     // ------- private section
 

@@ -18,33 +18,47 @@
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
 import java.util.Optional;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.eclipse.jdt.annotation.NonNull;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.MountPoint;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.NotificationListener;
 
 /**
  * Interface handling netconf connection.
  */
-public interface NetconfAccessor {
-
-    static String DefaultNotificationsStream = "NETCONF";
+public interface NetconfBindingAccessor extends NetconfAccessor {
 
     /**
-     * @return the nodeId
+     * @return the dataBroker
      */
-    NodeId getNodeId();
+    DataBroker getDataBroker();
 
     /**
-     * @return NetconfNode of this connection
-     */
-    NetconfNode getNetconfNode();
+     * @return the MDSAL Mountpoint service
+     **/
+    MountPoint getMountpoint();
 
     /**
-     * @return Capabilites
+     * Get handler for read/write
+     * @Return Transaction
      */
-    Capabilities getCapabilites();
+    TransactionUtils getTransactionUtils();
 
+    /**
+     * Get notifications handler
+     * @return
+     */
+    Optional<NetconfNotifications> getNotificationAccessor();
 
-    Optional<NetconfBindingAccessor> getNetconfBindingAccessor();
+    /**
+     * Register netconf notification listener for related mountpoint
+     *
+     * @param <T> specific child class of NotificationListener
+     * @param listener listener to be called
+     * @return handler to manager registration
+     */
+    <T extends NotificationListener> ListenerRegistration<NotificationListener> doRegisterNotificationListener(
+            @NonNull T listener);
 
-    Optional<NetconfDomAccessor> getNetconfDomAccessor();
 }
