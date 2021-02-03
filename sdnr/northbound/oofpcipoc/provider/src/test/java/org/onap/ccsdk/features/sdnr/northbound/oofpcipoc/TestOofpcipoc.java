@@ -24,14 +24,6 @@ package org.onap.ccsdk.features.sdnr.northbound.oofpcipoc;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.OofpcipocClient;
-import org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.OofpcipocProvider;
-
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,15 +33,18 @@ import static org.mockito.Mockito.mock;
 
 import java.math.*;
 
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.ConfigurationPhyCellIdInput;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
+
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.ConfigurationPhyCellIdInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.ConfigurationPhyCellIdOutput;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.ConfigurationPhyCellIdOutputBuilder;
+
 import com.google.common.util.concurrent.ListenableFuture;
 
 
 
-public class TestOofpcipoc extends AbstractConcurrentDataBrokerTest {
+public class TestOofpcipoc {
 
     private OofpcipocProvider oofpcipocProvider;
     private static final Logger LOG = LoggerFactory.getLogger(OofpcipocProvider.class);
@@ -57,11 +52,15 @@ public class TestOofpcipoc extends AbstractConcurrentDataBrokerTest {
     @Before
     public void setUp() throws Exception {
         if (null == oofpcipocProvider) {
-            DataBroker dataBroker = getDataBroker();
+            DataBroker dataBroker = mock(DataBroker.class);
             NotificationPublishService mockNotification = mock(NotificationPublishService.class);
-            RpcProviderRegistry mockRpcRegistry = mock(RpcProviderRegistry.class);
+            RpcProviderService mockRpcRegistry = mock(RpcProviderService.class);
             OofpcipocClient mockSliClient = mock(OofpcipocClient.class);
-            oofpcipocProvider = new OofpcipocProvider(dataBroker, mockNotification, mockRpcRegistry, mockSliClient);
+            oofpcipocProvider = new OofpcipocProvider();
+            oofpcipocProvider.setDataBroker(dataBroker);
+            oofpcipocProvider.setNotificationPublishService(mockNotification);
+            oofpcipocProvider.setRpcProviderService(mockRpcRegistry);
+            oofpcipocProvider.setClient(mockSliClient);
         }
     }
 

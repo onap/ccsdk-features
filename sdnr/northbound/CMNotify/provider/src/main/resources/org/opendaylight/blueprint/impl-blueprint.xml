@@ -30,21 +30,22 @@
         <argument ref="svcLogicService"/>
     </bean>
 
-    <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
+    <reference id="dataBroker"
+               interface="org.opendaylight.mdsal.binding.api.DataBroker"
                odl:type="default"/>
+               
+    <reference id="notificationPublishService"
+               interface="org.opendaylight.mdsal.binding.api.NotificationPublishService" />
 
-    <reference id="notificationService"
-               interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"
-               odl:type="default"/>
+    <reference id="rpcProviderRegistry"
+               interface="org.opendaylight.mdsal.binding.api.RpcProviderService" />
 
-    <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"
-               odl:type="default"/>
-
-    <bean id="provider" class="org.onap.ccsdk.features.sdnr.northbound.cmnotify.CMNotifyProvider">
-        <argument ref="dataBroker"/>
-        <argument ref="rpcRegistry"/>
-        <argument ref="notificationService"/>
-        <argument ref="client"/>
+    <bean id="provider" class="org.onap.ccsdk.features.sdnr.northbound.cmnotify.CMNotifyProvider" 
+    		init-method="init" destroy-method="close">
+        <property name="dataBroker"  ref="dataBroker"/>
+        <property name="rpcProviderRegistry" ref="rpcProviderRegistry"/>
+        <property name="notificationPublishService" ref="notificationPublishService"/>
+        <property name="client" ref="client"/>
     </bean>
 
 </blueprint>
