@@ -52,7 +52,7 @@ public class DeviceManagerOnfImpl implements AutoCloseable {
         configuration = new DeviceManagerOnfConfiguration(
                 netconfNetworkElementService.getServiceProvider().getConfigurationFileRepresentation());
         resOnf = netconfNetworkElementService
-                .registerNetworkElementFactory(new ONFCoreNetworkElementFactory(configuration));
+                .registerBindingNetworkElementFactory(new ONFCoreNetworkElementFactory(configuration));
 
 
         netconfNetworkElementService.writeToEventLog(APPLICATIONNAME, "startup", "done");

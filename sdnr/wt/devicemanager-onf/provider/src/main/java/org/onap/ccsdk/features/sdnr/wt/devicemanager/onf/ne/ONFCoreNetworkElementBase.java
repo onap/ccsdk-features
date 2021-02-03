@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne;
 import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ONFCoreNetworkElementRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -42,9 +43,9 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
     private final String mountPointNodeName;
     private final NodeId nodeId;
     private final DataBroker netconfNodeDataBroker;
-    private final NetconfAccessor acessor;
+    private final NetconfBindingAccessor acessor;
 
-    protected ONFCoreNetworkElementBase(NetconfAccessor acessor) {
+    protected ONFCoreNetworkElementBase(NetconfBindingAccessor acessor) {
         LOG.info("Create ONFCoreNetworkElementBase");
         this.mountPointNodeName = acessor.getNodeId().getValue();
         this.nodeId = acessor.getNodeId();

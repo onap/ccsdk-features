@@ -34,6 +34,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
@@ -88,7 +89,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
 
 
     private final NotificationService microwaveModelListener;
-    private final NetconfAccessor acessor;
+    private final NetconfBindingAccessor acessor;
     private final TransactionUtils genericTransactionUtils;
     private final FaultService faultService;
 
@@ -97,7 +98,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
     /**
      * @param acessor to access device
      */
-    public WrapperMicrowaveModelRev170324(@NonNull NetconfAccessor acessor,
+    public WrapperMicrowaveModelRev170324(@NonNull NetconfBindingAccessor acessor,
             @NonNull DeviceManagerServiceProvider serviceProvider) {
         this.acessor = acessor;
         this.genericTransactionUtils = acessor.getTransactionUtils();

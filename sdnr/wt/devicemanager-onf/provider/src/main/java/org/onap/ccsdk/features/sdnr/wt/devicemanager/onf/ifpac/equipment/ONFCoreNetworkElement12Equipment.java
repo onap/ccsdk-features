@@ -30,6 +30,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.EquipmentData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationDcae;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.Equipment;
@@ -56,18 +57,18 @@ public class ONFCoreNetworkElement12Equipment {
 
     private final NetworkElementCoreData coreData;
     private final @Nullable OnfInterfacePac equipmentPac;
-    private final NetconfAccessor acessor;
+    private final NetconfBindingAccessor acessor;
 
     private final ValueNameList extensionList;
     private final @NonNull List<UniversalId> topLevelEqUuidList;
     private final @NonNull FaultData globalProblemList;
     private final @NonNull List<ExtendedEquipment> globalEquipmentList;
 
-    public ONFCoreNetworkElement12Equipment(NetconfAccessor acessor, NetworkElementCoreData coreData) {
+    public ONFCoreNetworkElement12Equipment(NetconfBindingAccessor acessor, NetworkElementCoreData coreData) {
         this(acessor, coreData, false);
     }
 
-    public ONFCoreNetworkElement12Equipment(NetconfAccessor acessor, NetworkElementCoreData coreData,
+    public ONFCoreNetworkElement12Equipment(NetconfBindingAccessor acessor, NetworkElementCoreData coreData,
             Boolean disabled) {
         LOG.debug("Initialize class: {} " + ONFCoreNetworkElement12Equipment.class.getName());
         this.acessor = acessor;

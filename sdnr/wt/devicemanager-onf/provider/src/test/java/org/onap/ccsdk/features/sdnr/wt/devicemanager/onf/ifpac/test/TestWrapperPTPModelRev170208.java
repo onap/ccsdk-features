@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.WrapperPTPModelRev170208;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -48,14 +48,14 @@ import static org.mockito.Mockito.*;
 public class TestWrapperPTPModelRev170208 {
 
     private static final String NODEID = "node1";
-    NetconfAccessor netconfAccessor;
+    NetconfBindingAccessor netconfAccessor;
     Capabilities capabilities;
     TransactionUtils transactionUtils;
     DataBroker dataBroker;
 
     @Before
     public void init() {
-        netconfAccessor = mock(NetconfAccessor.class);
+        netconfAccessor = mock(NetconfBindingAccessor.class);
         capabilities = mock(Capabilities.class);
         dataBroker = mock(DataBroker.class);
         transactionUtils = mock(TransactionUtils.class);

@@ -37,6 +37,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationDcae;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.NetworkElement;
@@ -98,7 +99,7 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
      * Constructor
      */
 
-    protected ONFCoreNetworkElement12Base(@NonNull NetconfAccessor acessor) {
+    protected ONFCoreNetworkElement12Base(@NonNull NetconfBindingAccessor acessor) {
         super(acessor);
         this.optionalNe = Optional.empty();
         this.nodeId = getAcessor().get().getNodeId();

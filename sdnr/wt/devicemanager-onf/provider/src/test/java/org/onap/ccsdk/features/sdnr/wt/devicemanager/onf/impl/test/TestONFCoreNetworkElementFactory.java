@@ -20,9 +20,9 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl.test;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -35,7 +35,8 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl.DeviceManagerOnfCo
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl.ONFCoreNetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.NetworkElement;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -43,7 +44,7 @@ import org.opendaylight.yangtools.yang.common.QName;
 
 public class TestONFCoreNetworkElementFactory {
 
-    static NetconfAccessor accessor;
+    static NetconfBindingAccessor accessor;
     static DeviceManagerServiceProvider serviceProvider;
     static Capabilities capabilities;
     static DataBroker dataBroker;
@@ -57,7 +58,7 @@ public class TestONFCoreNetworkElementFactory {
     public static void init() throws InterruptedException, IOException {
 
         capabilities = mock(Capabilities.class);
-        accessor = mock(NetconfAccessor.class);
+        accessor = mock(NetconfBindingAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
         dataBroker = mock(DataBroker.class);
 
@@ -68,8 +69,14 @@ public class TestONFCoreNetworkElementFactory {
         when(accessor.getCapabilites()).thenReturn(capabilities);
         //when(serviceProvider.getDataProvider()).thenReturn(dataProvider);
         nNodeId = new NodeId("nSky");
-        when(accessor.getNodeId()).thenReturn(nNodeId);
+        NetconfBindingAccessor bindingAccessor = mock(NetconfBindingAccessor.class);
+        when(bindingAccessor.getNodeId()).thenReturn(nNodeId);
+        when(bindingAccessor.getNotificationAccessor()).thenReturn(Optional.of(mock(NetconfNotifications.class)));
+        when(bindingAccessor.getCapabilites()).thenReturn(capabilities);
 
+        when(accessor.getNodeId()).thenReturn(nNodeId);
+        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingAccessor));
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElement.QNAME)).thenReturn(true);
 
     }
 
@@ -80,9 +87,6 @@ public class TestONFCoreNetworkElementFactory {
 
     @Test
     public void testCreateMWModelRev170324() throws Exception {
-
-
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElement.QNAME)).thenReturn(true);
         when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME))
                 .thenReturn(true);
         when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME))
@@ -95,7 +99,6 @@ public class TestONFCoreNetworkElementFactory {
 
     @Test
     public void testCreateMWModelRev180907() throws Exception {
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElement.QNAME)).thenReturn(true);
         when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME))
                 .thenReturn(false);
         when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME))
@@ -108,7 +111,6 @@ public class TestONFCoreNetworkElementFactory {
 
     @Test
     public void testCreateMWModelRev181010() throws Exception {
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElement.QNAME)).thenReturn(true);
         when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME))
                 .thenReturn(false);
         when(accessor.getCapabilites().isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME))
