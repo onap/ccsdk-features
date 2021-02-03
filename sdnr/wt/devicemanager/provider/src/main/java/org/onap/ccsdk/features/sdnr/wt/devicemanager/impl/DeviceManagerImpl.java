@@ -278,7 +278,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     }
 
     @Override
-    public @NonNull <L extends NetworkElementFactory> FactoryRegistration<L> registerNetworkElementFactory(
+    public @NonNull <L extends NetworkElementFactory> FactoryRegistration<L> registerBindingNetworkElementFactory(
             @NonNull L factory) {
         LOG.info("Factory registration {}", factory.getClass().getName());
 
@@ -418,6 +418,5 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     public @NonNull VESCollectorService getVESCollectorService() {
         return this.vesCollectorClient;
     }
-
 
 }

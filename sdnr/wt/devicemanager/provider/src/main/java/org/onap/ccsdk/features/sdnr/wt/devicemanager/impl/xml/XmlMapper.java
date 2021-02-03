@@ -6,9 +6,9 @@
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -25,25 +25,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class XmlMapper {
+    @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(XmlMapper.class);
 
-    public String getXmlString(MwtNotificationBase base) {
+    public String getXmlString(MwtNotificationBase base) throws JAXBException {
         String xml;
         JAXBContext jaxbContext;
-        try {
-            jaxbContext = JAXBContext.newInstance(AttributeValueChangedNotificationXml.class,
-                    ObjectCreationNotificationXml.class, ObjectDeletionNotificationXml.class,
-                    ProblemNotificationXml.class);
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        jaxbContext = JAXBContext.newInstance(AttributeValueChangedNotificationXml.class,
+                ObjectCreationNotificationXml.class, ObjectDeletionNotificationXml.class, ProblemNotificationXml.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-            StringWriter stringWriter = new StringWriter();
-            jaxbMarshaller.marshal(base, stringWriter);
-            xml = stringWriter.toString();
-        } catch (JAXBException e) {
-            LOG.warn("Problem in marshalling xml file {}", e);
-            xml = null;
-        }
+        StringWriter stringWriter = new StringWriter();
+        jaxbMarshaller.marshal(base, stringWriter);
+        xml = stringWriter.toString();
         return xml;
     }
 }
