@@ -42,4 +42,24 @@
         </service-properties>
     </service>
 
+    <bean id="tilesServlet"
+          class="org.onap.ccsdk.features.sdnr.wt.apigateway.TilesServlet">
+    </bean>
+
+    <service interface="javax.servlet.http.HttpServlet" ref="tilesServlet">
+        <service-properties>
+            <entry key="alias" value="/tiles"/>
+        </service-properties>
+    </service>
+
+    <bean id="topologyServlet"
+          class="org.onap.ccsdk.features.sdnr.wt.apigateway.TopologyServlet">
+    </bean>
+
+    <service interface="javax.servlet.http.HttpServlet" ref="topologyServlet">
+        <service-properties>
+            <entry key="alias" value="/topology"/>
+        </service-properties>
+    </service>
+
 </blueprint>
