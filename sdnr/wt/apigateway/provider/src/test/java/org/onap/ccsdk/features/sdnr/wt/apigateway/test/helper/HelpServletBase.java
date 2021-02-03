@@ -26,28 +26,23 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayInputStream;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.net.InetSocketAddress;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.junit.After;
 import org.junit.Before;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import org.onap.ccsdk.features.sdnr.wt.common.test.ServletInputStreamFromByteArrayInputStream;
+import org.onap.ccsdk.features.sdnr.wt.common.test.ServletOutputStreamToStringWriter;
 
 @SuppressWarnings("restriction")
 public class HelpServletBase {
@@ -89,21 +84,8 @@ public class HelpServletBase {
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         HttpServletResponse mockResponse = mock(HttpServletResponse.class);
 
-        StringWriter out = new StringWriter();
-        ServletOutputStream printOut = new ServletOutputStream() {
-
-            @Override
-            public void write(int arg0) throws IOException {
-                out.write(arg0);
-            }
-        };
-        ByteArrayInputStream bis = new ByteArrayInputStream(data.getBytes());
-        ServletInputStream inputStream = new ServletInputStream() {
-            @Override
-            public int read() throws IOException {
-                return bis.read();
-            }
-        };
+        ServletOutputStreamToStringWriter printOut = new ServletOutputStreamToStringWriter();
+        ServletInputStreamFromByteArrayInputStream inputStream = new ServletInputStreamFromByteArrayInputStream(data.getBytes());
         Vector<String> headers = new Vector<String>();
         headers.addElement("Accept");
         headers.add("User-Agent");
@@ -134,9 +116,9 @@ public class HelpServletBase {
 
         verify(mockResponse).setStatus(200);
         if (exact)
-            assertEquals(expectedResponse, out.toString());
+            assertEquals(expectedResponse, printOut.getStringWriter().toString());
         else
-            assertTrue("response not for method " + method + "correct", out.toString().contains(expectedResponse));
+            assertTrue("response not for method " + method + "correct", printOut.getStringWriter().toString().contains(expectedResponse));
         // currently unable to check extra headers
         if (headersToCheck != null) {
 

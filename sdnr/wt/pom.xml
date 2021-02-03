@@ -43,21 +43,21 @@
 
     <modules>
         <module>common</module>
-	<!--<module>common-yang</module> 
-	<module>apigateway</module>
+        <module>common-yang</module>
+        <module>apigateway</module>
         <module>websocketmanager2</module>
-	<module>helpserver</module>-->
+        <module>helpserver</module>
         <module>data-provider</module>
-	<!-- <module>netconfnode-state-service</module>
+        <module>netconfnode-state-service</module>
         <module>mountpoint-state-provider</module>
-	<module>devicemanager</module> 
-	<module>devicemanager-oran</module>
+        <module>devicemanager</module>
+        <module>devicemanager-oran</module>
         <module>devicemanager-onf</module>
         <module>devicemanager-onf14</module>
         <module>devicemanager-openroadm</module>
-	<module>devicemanager-adapter-manager</module>
+        <module>devicemanager-adapter-manager</module>
         <module>mountpoint-registrar</module>
-	<module>odlux</module>-->
+        <module>odlux</module>
         <module>featureaggregator</module>
     </modules>
 </project>
