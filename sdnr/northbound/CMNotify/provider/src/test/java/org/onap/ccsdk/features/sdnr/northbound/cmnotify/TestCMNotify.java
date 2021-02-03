@@ -24,14 +24,9 @@ package org.onap.ccsdk.features.sdnr.northbound.cmnotify;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.onap.ccsdk.features.sdnr.northbound.cmnotify.CMNotifyClient;
-import org.onap.ccsdk.features.sdnr.northbound.cmnotify.CMNotifyProvider;
-
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +36,14 @@ import static org.mockito.Mockito.mock;
 
 import java.math.*;
 
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationInput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationOutput;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationOutputBuilder;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
 
 
-public class TestCMNotify extends AbstractConcurrentDataBrokerTest {
+public class TestCMNotify {
 
     private CMNotifyProvider cMNotifyProvider;
     private static final Logger LOG = LoggerFactory.getLogger(CMNotifyProvider.class);
@@ -58,11 +51,15 @@ public class TestCMNotify extends AbstractConcurrentDataBrokerTest {
     @Before
     public void setUp() throws Exception {
         if (null == cMNotifyProvider) {
-            DataBroker dataBroker = getDataBroker();
+            DataBroker dataBroker = mock(DataBroker.class);
             NotificationPublishService mockNotification = mock(NotificationPublishService.class);
-            RpcProviderRegistry mockRpcRegistry = mock(RpcProviderRegistry.class);
+            RpcProviderService mockRpcRegistry = mock(RpcProviderService.class);
             CMNotifyClient mockSliClient = mock(CMNotifyClient.class);
-            cMNotifyProvider = new CMNotifyProvider(dataBroker, mockNotification, mockRpcRegistry, mockSliClient);
+            cMNotifyProvider = new CMNotifyProvider();
+            cMNotifyProvider.setDataBroker(dataBroker);
+            cMNotifyProvider.setNotificationPublishService(mockNotification);
+            cMNotifyProvider.setRpcProviderRegistry(mockRpcRegistry);
+            cMNotifyProvider.setClient(mockSliClient);
         }
     }
 

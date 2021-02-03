@@ -28,149 +28,162 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.onap.ccsdk.sli.core.sli.provider.MdsalHelper;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.CMNOTIFYAPIService;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationInput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationOutput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationOutputBuilder;
-
 import org.opendaylight.yangtools.concepts.Builder;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Defines a base implementation for your provider. This class extends from a helper class which
- * provides storage for the most commonly used components of the MD-SAL. Additionally the base class
- * provides some basic logging and initialization / clean up methods.
+ * Defines a base implementation for your provider. This class extends from a
+ * helper class which provides storage for the most commonly used components of
+ * the MD-SAL. Additionally the base class provides some basic logging and
+ * initialization / clean up methods.
  *
  */
 public class CMNotifyProvider implements AutoCloseable, CMNOTIFYAPIService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CMNotifyProvider.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CMNotifyProvider.class);
 
-    private static final String APPLICATION_NAME = "CMNotify-api";
-    private static final String NBRLIST_CHANGE_NOTIFICATION = "nbrlist-change-notification";
+	private static final String APPLICATION_NAME = "CMNotify-api";
+	private static final String NBRLIST_CHANGE_NOTIFICATION = "nbrlist-change-notification";
 
+	private final ExecutorService executor;
+	protected DataBroker dataBroker;
+	protected RpcProviderService rpcProviderRegistry;
+	protected NotificationPublishService notificationService;
+	private ObjectRegistration<CMNotifyProvider> rpcReg;
+	private CMNotifyClient CMNotifyClient;
 
-    private final ExecutorService executor;
-    protected DataBroker dataBroker;
-    protected NotificationPublishService notificationService;
-    protected RpcProviderRegistry rpcRegistry;
-    protected BindingAwareBroker.RpcRegistration<CMNOTIFYAPIService> rpcRegistration;
-    private final CMNotifyClient CMNotifyClient;
+	public CMNotifyProvider() {
 
-    public CMNotifyProvider(final DataBroker dataBroker, final NotificationPublishService notificationPublishService,
-            final RpcProviderRegistry rpcProviderRegistry, final CMNotifyClient CMNotifyClient) {
+		LOG.info("Creating provider for {}", APPLICATION_NAME);
+		executor = Executors.newFixedThreadPool(1);
+		
+		this.dataBroker = null; 
+		this.notificationService = null; 
+		this.rpcProviderRegistry = null;
+		this.CMNotifyClient = null;
+		 
+	}
 
-        LOG.info("Creating provider for {}", APPLICATION_NAME);
-        executor = Executors.newFixedThreadPool(1);
-        this.dataBroker = dataBroker;
-        this.notificationService = notificationPublishService;
-        this.rpcRegistry = rpcProviderRegistry;
-        this.CMNotifyClient = CMNotifyClient;
-        initialize();
-    }
+	public void setDataBroker(DataBroker dataBroker) {
+		this.dataBroker = dataBroker;
+	}
 
-    public void initialize() {
-        LOG.info("Initializing provider for {}", APPLICATION_NAME);
-        rpcRegistration = rpcRegistry.addRpcImplementation(CMNOTIFYAPIService.class, this);
-        LOG.info("Initialization complete for {}", APPLICATION_NAME);
-    }
+	public void setRpcProviderRegistry(RpcProviderService rpcProviderRegistry) {
+		this.rpcProviderRegistry = rpcProviderRegistry;
+	}
 
-    protected void initializeChild() {
-        // Override if you have custom initialization intelligence
-    }
+	public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
+		this.notificationService = notificationPublishService;
+	}
 
-    @Override
-    public void close() throws Exception {
-        LOG.info("Closing provider for {}", APPLICATION_NAME);
-        executor.shutdown();
-        rpcRegistration.close();
-        LOG.info("Successfully closed provider for {}", APPLICATION_NAME);
-    }
+	public void setClient(CMNotifyClient client) {
+		this.CMNotifyClient = client;
+	}
 
-      // RPC nbrlist-change-notification
+	public void init() {
+		LOG.info("Initializing provider for {}", APPLICATION_NAME);
+		rpcReg = rpcProviderRegistry.registerRpcImplementation(CMNOTIFYAPIService.class, this);
+		LOG.info("Initialization complete for {}", APPLICATION_NAME);
+	}
 
-    @Override
-    public ListenableFuture<RpcResult<NbrlistChangeNotificationOutput>> nbrlistChangeNotification(NbrlistChangeNotificationInput input) {
-        final String svcOperation = "nbrlist-change-notification";
+	@Override
+	public void close() throws Exception {
+		LOG.info("Closing provider for {}", APPLICATION_NAME);
+		executor.shutdown();
+		if (rpcReg != null)
+			rpcReg.close();
+		LOG.info("Successfully closed provider for {}", APPLICATION_NAME);
+	}
 
-        Properties parms = new Properties();
-        NbrlistChangeNotificationOutputBuilder serviceDataBuilder = (NbrlistChangeNotificationOutputBuilder) getServiceData(NBRLIST_CHANGE_NOTIFICATION);
+	// RPC nbrlist-change-notification
 
-        LOG.info("Reached RPC nbrlist-change-notification");
+	@Override
+	public ListenableFuture<RpcResult<NbrlistChangeNotificationOutput>> nbrlistChangeNotification(
+			NbrlistChangeNotificationInput input) {
+		final String svcOperation = "nbrlist-change-notification";
 
-        LOG.info(svcOperation + " called.");
+		Properties parms = new Properties();
+		NbrlistChangeNotificationOutputBuilder serviceDataBuilder = (NbrlistChangeNotificationOutputBuilder) getServiceData(
+				NBRLIST_CHANGE_NOTIFICATION);
 
-        if (input == null) {
-            LOG.debug("exiting " + svcOperation + " because of invalid input");
-            serviceDataBuilder.setResponseCode("Input is null");
-            RpcResult<NbrlistChangeNotificationOutput> rpcResult =
-                    RpcResultBuilder.<NbrlistChangeNotificationOutput>status(true).withResult(serviceDataBuilder.build()).build();
-            return Futures.immediateFuture(rpcResult);
-        }
+		LOG.info("Reached RPC nbrlist-change-notification");
 
-        // add input to parms
-        LOG.info("Adding INPUT data for " + svcOperation + " input: " + input);
-        NbrlistChangeNotificationInputBuilder inputBuilder = new NbrlistChangeNotificationInputBuilder(input);
-        MdsalHelper.toProperties(parms, inputBuilder.build());
+		LOG.info(svcOperation + " called.");
 
-        LOG.info("Printing SLI parameters to be passed");
+		if (input == null) {
+			LOG.debug("exiting " + svcOperation + " because of invalid input");
+			serviceDataBuilder.setResponseCode("Input is null");
+			RpcResult<NbrlistChangeNotificationOutput> rpcResult = RpcResultBuilder
+					.<NbrlistChangeNotificationOutput>status(true).withResult(serviceDataBuilder.build()).build();
+			return Futures.immediateFuture(rpcResult);
+		}
 
-        // iterate properties file to get key-value pairs
-        for (String key : parms.stringPropertyNames()) {
-            String value = parms.getProperty(key);
-            LOG.info("The SLI parameter in " + key + " is: " + value);
-        }
+		// add input to parms
+		LOG.info("Adding INPUT data for " + svcOperation + " input: " + input);
+		NbrlistChangeNotificationInputBuilder inputBuilder = new NbrlistChangeNotificationInputBuilder(input);
+		MdsalHelper.toProperties(parms, inputBuilder.build());
 
-        // Call SLI sync method
-        try {
-            if (CMNotifyClient.hasGraph("CM-NOTIFY-API", svcOperation, null, "sync")) {
-                LOG.info("CMNotifyClient has a Directed Graph for '" + svcOperation + "'");
-                try {
-                    CMNotifyClient.execute("CM-NOTIFY-API", svcOperation, null, "sync", serviceDataBuilder, parms);
-                } catch (Exception e) {
-                    LOG.error("Caught exception executing service logic for " + svcOperation, e);
-                    serviceDataBuilder.setResponseCode("500");
-                }
-            } else {
-                LOG.error("No service logic active for CMNotify: '" + svcOperation + "'");
-                serviceDataBuilder.setResponseCode("503");
-            }
-        } catch (Exception e) {
-            LOG.error("Caught exception looking for service logic", e);
-            serviceDataBuilder.setResponseCode("500");
-        }
+		LOG.info("Printing SLI parameters to be passed");
 
-        String errorCode = serviceDataBuilder.getResponseCode();
+		// iterate properties file to get key-value pairs
+		for (String key : parms.stringPropertyNames()) {
+			String value = parms.getProperty(key);
+			LOG.info("The SLI parameter in " + key + " is: " + value);
+		}
 
-        if (!("0".equals(errorCode) || "200".equals(errorCode))) {
-            LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
-        } else {
-            LOG.info("Returned SUCCESS for " + svcOperation + " ");
-            serviceDataBuilder.setResponseMessage("CM Notification Executed and RuntimeDB Updated. ");
-        }
+		// Call SLI sync method
+		try {
+			if (CMNotifyClient.hasGraph("CM-NOTIFY-API", svcOperation, null, "sync")) {
+				LOG.info("CMNotifyClient has a Directed Graph for '" + svcOperation + "'");
+				try {
+					CMNotifyClient.execute("CM-NOTIFY-API", svcOperation, null, "sync", serviceDataBuilder, parms);
+				} catch (Exception e) {
+					LOG.error("Caught exception executing service logic for " + svcOperation, e);
+					serviceDataBuilder.setResponseCode("500");
+				}
+			} else {
+				LOG.error("No service logic active for CMNotify: '" + svcOperation + "'");
+				serviceDataBuilder.setResponseCode("503");
+			}
+		} catch (Exception e) {
+			LOG.error("Caught exception looking for service logic", e);
+			serviceDataBuilder.setResponseCode("500");
+		}
 
-        RpcResult<NbrlistChangeNotificationOutput> rpcResult =
-                RpcResultBuilder.<NbrlistChangeNotificationOutput>status(true).withResult(serviceDataBuilder.build()).build();
+		String errorCode = serviceDataBuilder.getResponseCode();
 
-        LOG.info("Successful exit from nbrlist-change-notification ");
+		if (!("0".equals(errorCode) || "200".equals(errorCode))) {
+			LOG.error("Returned FAILED for " + svcOperation + " error code: '" + errorCode + "'");
+		} else {
+			LOG.info("Returned SUCCESS for " + svcOperation + " ");
+			serviceDataBuilder.setResponseMessage("CM Notification Executed and RuntimeDB Updated. ");
+		}
 
-        return Futures.immediateFuture(rpcResult);
-    }
+		RpcResult<NbrlistChangeNotificationOutput> rpcResult = RpcResultBuilder
+				.<NbrlistChangeNotificationOutput>status(true).withResult(serviceDataBuilder.build()).build();
 
+		LOG.info("Successful exit from nbrlist-change-notification ");
 
-    protected Builder<?> getServiceData(String svcOperation) {
-        switch (svcOperation) {
-            case NBRLIST_CHANGE_NOTIFICATION:
-                return new NbrlistChangeNotificationOutputBuilder();
-        }
-        return null;
-    }
+		return Futures.immediateFuture(rpcResult);
+	}
+
+	protected Builder<?> getServiceData(String svcOperation) {
+		switch (svcOperation) {
+		case NBRLIST_CHANGE_NOTIFICATION:
+			return new NbrlistChangeNotificationOutputBuilder();
+		}
+		return null;
+	}
 }
