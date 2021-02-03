@@ -25,17 +25,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.onap.ccsdk.features.sdnr.wt.common.test.ServletOutputStreamToStringWriter;
 import org.onap.ccsdk.features.sdnr.wt.helpserver.HelpServlet;
 import org.onap.ccsdk.features.sdnr.wt.helpserver.data.ExtactBundleResource;
 import org.onap.ccsdk.features.sdnr.wt.helpserver.data.HelpInfrastructureObject;
@@ -87,14 +86,7 @@ public class TestMyServlet extends Mockito {
         when(request.getRequestURI()).thenReturn("help/");
         when(request.getQueryString()).thenReturn("?meta");
 
-        StringWriter stringWriter = new StringWriter();
-        ServletOutputStream out = new ServletOutputStream() {
-
-            @Override
-            public void write(int arg0) throws IOException {
-                stringWriter.write(arg0);
-            }
-        };
+        ServletOutputStreamToStringWriter out = new ServletOutputStreamToStringWriter();
         when(response.getOutputStream()).thenReturn(out);
 
         HelpServlet helpServlet = null;
@@ -114,7 +106,7 @@ public class TestMyServlet extends Mockito {
             helpServlet.close();
         }
 
-        String result = stringWriter.toString().trim();
+        String result = out.getStringWriter().toString().trim();
         System.out.println("Result: '" + result + "'");
         assertEquals(CONTENT, result);
     }
@@ -134,14 +126,7 @@ public class TestMyServlet extends Mockito {
         HttpServletResponse response = mock(HttpServletResponse.class);
 
         when(request.getRequestURI()).thenReturn("help/" + fn);
-        StringWriter sw = new StringWriter();
-        ServletOutputStream out = new ServletOutputStream() {
-
-            @Override
-            public void write(int arg0) throws IOException {
-                sw.write(arg0);
-            }
-        };
+        ServletOutputStreamToStringWriter out = new ServletOutputStreamToStringWriter();
         try {
             when(response.getOutputStream()).thenReturn(out);
             helpServlet.doGet(request, response);
@@ -157,6 +142,6 @@ public class TestMyServlet extends Mockito {
         } catch (Exception e) {
         }
 
-        assertEquals("compare content for " + fn, CONTENT, sw.toString().trim());
+        assertEquals("compare content for " + fn, CONTENT, out.getStringWriter().toString().trim());
     }
 }
