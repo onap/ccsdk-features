@@ -19,35 +19,27 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.common.test;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.serialize;
 
-import java.io.ByteArrayOutputStream;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
 import java.io.IOException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapperHelper;
 
-public class ServletOutputStreamToByteArrayOutputStream extends ServletOutputStream {
+public class ClassDeserializer extends FromStringDeserializer<Class<?>> {
 
-    // variables
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private static final long serialVersionUID = 1L;
 
-    // end of variables
-
-    public ByteArrayOutputStream getByteArrayOutputStream() {
-        return out;
+    public ClassDeserializer(Class<?> vc) {
+        super(vc);
     }
 
     @Override
-    public void setWriteListener(WriteListener writeListener) {
-    }
-
-    @Override
-    public void write(int b) throws IOException {
-        out.write(b);
-    }
-
-    @Override
-    public boolean isReady() {
-        return false;
+    protected Class<?> _deserialize(String value, DeserializationContext ctxt) throws IOException {
+        try {
+            return YangToolsMapperHelper.findClass(value);
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Can not find class "+value,e);
+        }
     }
 }
