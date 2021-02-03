@@ -17,12 +17,13 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.archiveservice;
 
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.ArchiveCleanProvider;
@@ -33,9 +34,6 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegist
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 
 public class ArchiveCleanService implements AutoCloseable, IConfigChangedListener, Runnable, ClusterSingletonService {
 
@@ -132,7 +130,8 @@ public class ArchiveCleanService implements AutoCloseable, IConfigChangedListene
     public void close() throws Exception {
         this.esConfig.unregisterConfigChangedListener(this);
         this.scheduler.shutdown();
-        this.cssRegistration.close();
+        if (this.cssRegistration != null)
+            this.cssRegistration.close();
     }
 
     @Override
@@ -141,7 +140,6 @@ public class ArchiveCleanService implements AutoCloseable, IConfigChangedListene
                 + "ArchiveLifetimeSeconds=" + esConfig.getArchiveLifetimeSeconds() + "]";
     }
 
-    @SuppressWarnings("null")
     @Override
     public @NonNull ServiceGroupIdentifier getIdentifier() {
         return IDENT;

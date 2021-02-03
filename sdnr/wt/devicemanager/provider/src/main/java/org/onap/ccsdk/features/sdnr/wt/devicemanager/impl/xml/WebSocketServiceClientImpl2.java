@@ -17,8 +17,9 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
+import javax.xml.bind.JAXBException;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.ODLEventListenerHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketEventInputBuilder;
@@ -40,7 +41,7 @@ public class WebSocketServiceClientImpl2 implements WebSocketServiceClientIntern
 
     /**
      * New: Implementation of Websocket notification processor.
-     * 
+     *
      * @param websocketmanagerService2 to be used
      */
     public WebSocketServiceClientImpl2(WebsocketmanagerService websocketmanagerService2) {
@@ -52,18 +53,18 @@ public class WebSocketServiceClientImpl2 implements WebSocketServiceClientIntern
     @Override
     public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(@NonNull String nodeName,
             @NonNull T notificationXml) {
-        LOG.info("Send websocket event {} for mountpoint {}", notificationXml.getClass().getSimpleName(), nodeName);
+        LOG.debug("Send websocket event {} for mountpoint {}", notificationXml.getClass().getSimpleName(), nodeName);
 
+        WebsocketEventInputBuilder wsBuilder = new WebsocketEventInputBuilder();
+        wsBuilder.setNodeName(nodeName);
+        wsBuilder.setEventType(notificationXml.getEventType());
         try {
-            WebsocketEventInputBuilder wsBuilder = new WebsocketEventInputBuilder();
-            wsBuilder.setNodeName(nodeName);
-            wsBuilder.setEventType(notificationXml.getEventType());
             wsBuilder.setXmlEvent(xmlMapper.getXmlString(notificationXml));
             Future<RpcResult<WebsocketEventOutput>> result = websocketmanagerService.websocketEvent(wsBuilder.build());
-            LOG.info("Send websocket result: {}", result.get().getResult().getResponse());
-        } catch (Exception e) {
-            LOG.warn("Can not send websocket event {} for mountpoint {} {}", notificationXml.getClass().getSimpleName(),
-                    nodeName, e.toString());
+            if (result != null)
+                LOG.trace("Send websocket result: {}", result == null ? "null" : result.get().getResult().getResponse());
+        } catch (JAXBException | InterruptedException | ExecutionException e) {
+            LOG.warn("Can not send websocket event {} for mountpoint {} {}", notificationXml, nodeName, e.toString());
         }
     }
 
