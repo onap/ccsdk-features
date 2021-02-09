@@ -23,28 +23,28 @@
   ~
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<blueprint xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" odl:use-default-for-reference-types="true">
 
-    <parent>
-        <groupId>org.onap.ccsdk.parent</groupId>
-        <artifactId>odlparent-lite</artifactId>
-        <version>2.1.1-SNAPSHOT</version>
-        <relativePath/>
-    </parent>
+    <reference id="odlAuthenticator" interface="org.jolokia.osgi.security.Authenticator" />
 
-    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>sdnr-wt-feature-aggregator-top</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <reference id="odlIdentityService" interface="org.opendaylight.aaa.api.IdMService" />
 
-    <name>ccsdk-features :: ${project.artifactId}</name>
+    <odl:clustered-app-config
+          binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.ShiroConfiguration"
+          id="shiroConfiguration" default-config-file-name="aaa-app-config.xml" />
+          
+    <bean id="authServlet"
+          class="org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet">
+          <property ref="odlAuthenticator" name="odlAuthenticator" />
+          <property ref="odlIdentityService" name="odlIdentityService" />
+          <property ref="shiroConfiguration" name="shiroConfiguration" />
+    </bean>
 
-    <modules>
-        <module>feature</module>
-        <module>feature-devicemanager</module>
-        <module>feature-devicemanager-base</module>
-        <module>feature-oauth</module>
-        <module>installer</module>
-    </modules>
-</project>
+    <service interface="javax.servlet.http.HttpServlet" ref="authServlet">
+        <service-properties>
+            <entry key="alias" value="/oauth"/>
+        </service-properties>
+    </service>
+
+</blueprint>
