@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk features
  * ================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,33 +19,34 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.common.util;
+package org.onap.ccsdk.features.sdnr.wt.oauthprovider.data;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
-import java.util.Map;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import org.opendaylight.aaa.shiro.filters.backport.BearerToken;
 
-public class Environment {
+public class OAuthToken {
+    private final String access_token;
+    private final String token_type;
+    private final long expires_at;
 
-    public static String getVar(String v) {
-        return getVar(v, null);
+    public OAuthToken(BearerToken btoken) {
+        this.access_token = btoken.getToken();
+        this.token_type = "Bearer";
+        DecodedJWT token = JWT.decode(this.access_token);
+        this.expires_at = token.getExpiresAt().getTime() / 1000L;
     }
-    public static String getVar(String v, String defaultValue) {
-        if (v.equals("$HOSTNAME")) {
-            String s = null;
-            try {
-                s = Inet4Address.getLocalHost().getHostName();
-            } catch (UnknownHostException e) {
 
-            }
-            if (s != null && s.length() > 0)
-                return s;
-        }
-        Map<String, String> env = System.getenv();
-        for (String envName : env.keySet()) {
-            if (envName != null && envName.equals(v))
-                return env.get(envName);
-        }
-        return defaultValue;
+    public String getAccess_token() {
+        return access_token;
     }
+
+    public String getToken_type() {
+        return token_type;
+    }
+
+    public long getExpires_at() {
+        return expires_at;
+    }
+
 }

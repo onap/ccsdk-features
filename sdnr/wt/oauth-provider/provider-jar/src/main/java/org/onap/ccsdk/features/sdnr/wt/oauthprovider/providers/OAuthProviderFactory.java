@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk features
  * ================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2021 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,33 +19,26 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.common.util;
+package org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
-import java.util.Map;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
 
-public class Environment {
+public class OAuthProviderFactory {
 
-    public static String getVar(String v) {
-        return getVar(v, null);
-    }
-    public static String getVar(String v, String defaultValue) {
-        if (v.equals("$HOSTNAME")) {
-            String s = null;
-            try {
-                s = Inet4Address.getLocalHost().getHostName();
-            } catch (UnknownHostException e) {
 
-            }
-            if (s != null && s.length() > 0)
-                return s;
+    public static AuthService create(OAuthProvider key, OAuthProviderConfig config, String redirectUri,
+            TokenCreator tokenCreator) {
+        switch (key) {
+            case KEYCLOAK:
+                return new KeycloakProviderService(config, redirectUri, tokenCreator);
+            case NEXTCLOUD:
+                return new NextcloudProviderService(config, redirectUri, tokenCreator);
         }
-        Map<String, String> env = System.getenv();
-        for (String envName : env.keySet()) {
-            if (envName != null && envName.equals(v))
-                return env.get(envName);
-        }
-        return defaultValue;
+        return null;
     }
+
+    public static enum OAuthProvider {
+        KEYCLOAK, NEXTCLOUD
+    }
+
 }

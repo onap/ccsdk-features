@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : ccsdk features
  * ================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2021 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,33 +19,18 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.common.util;
+package org.onap.ccsdk.features.sdnr.wt.oauthprovider.test;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
-import java.util.Map;
+import java.io.IOException;
+import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 
-public class Environment {
+public class TestConfig {
 
-    public static String getVar(String v) {
-        return getVar(v, null);
-    }
-    public static String getVar(String v, String defaultValue) {
-        if (v.equals("$HOSTNAME")) {
-            String s = null;
-            try {
-                s = Inet4Address.getLocalHost().getHostName();
-            } catch (UnknownHostException e) {
+    @Test
+    public void test() throws IOException {
 
-            }
-            if (s != null && s.length() > 0)
-                return s;
-        }
-        Map<String, String> env = System.getenv();
-        for (String envName : env.keySet()) {
-            if (envName != null && envName.equals(v))
-                return env.get(envName);
-        }
-        return defaultValue;
+        Config config = Config.load("src/test/resources/test.config.json");
+        System.out.println("config="+config);
     }
 }

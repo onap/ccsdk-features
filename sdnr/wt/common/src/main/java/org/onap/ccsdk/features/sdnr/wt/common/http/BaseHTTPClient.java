@@ -71,7 +71,7 @@ public class BaseHTTPClient {
     private static final int SSLCERT_PCKS = 0;
     private static final int SSLCERT_PEM = 1;
     private static final int BUFSIZE = 1024;
-    private static final Charset CHARSET = StandardCharsets.UTF_8;
+    public static final Charset CHARSET = StandardCharsets.UTF_8;
     private static final String SSLCONTEXT = "TLSv1.2";
     private static final int DEFAULT_HTTP_TIMEOUT_MS = 30000; // in ms
 
