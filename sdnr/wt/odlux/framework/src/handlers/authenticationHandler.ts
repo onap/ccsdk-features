@@ -16,31 +16,26 @@
  * ============LICENSE_END==========================================================================
  */
 import { IActionHandler } from '../flux/action';
-import { UpdateAuthentication } from '../actions/authentication';
+import { UpdatePolicies, UpdateUser } from '../actions/authentication';
 
-import { User } from '../models/authentication';
+import { AuthPolicy, User } from '../models/authentication';
 
 import { onLogin, onLogout } from '../services/applicationApi';
 import { startWebsocketSession, endWebsocketSession } from '../services/notificationService';
 
 export interface IAuthenticationState {
   user?: User;
-}
-
-const initialToken = localStorage.getItem("userToken");
-
-if (initialToken !== null) {
-  startWebsocketSession();
+  policies?: AuthPolicy[];
 }
 
 const authenticationStateInit: IAuthenticationState = {
-  user: initialToken && User.fromString(initialToken) || undefined
+  user: undefined
 };
 
 export const authenticationStateHandler: IActionHandler<IAuthenticationState> = (state = authenticationStateInit, action) => {
-  if (action instanceof UpdateAuthentication) {
-
-    const user = action.bearerToken && new User(action.bearerToken) || undefined;
+  if (action instanceof UpdateUser) {
+    const {user} = action;
+    
     if (user) {
       localStorage.setItem("userToken", user.toString());
       startWebsocketSession();
@@ -53,9 +48,14 @@ export const authenticationStateHandler: IActionHandler<IAuthenticationState> = 
 
     state = {
       ...state,
-      user
+      user,
     };
+  } else if (action instanceof UpdatePolicies) {
+     state = {
+       ...state,
+       policies: action.authPolicies,
+     };
   }
-
   return state;
 };
+

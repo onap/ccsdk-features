@@ -23,7 +23,10 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 
 import { Frame } from './views/frame';
 
+import { User } from './models/authentication';
+
 import { AddErrorInfoAction } from './actions/errorActions';
+import { UpdateUser } from './actions/authentication';
 
 import { applicationStoreCreator } from './store/applicationStore';
 import { ApplicationStoreProvider } from './flux/connect';
@@ -31,12 +34,11 @@ import { ApplicationStoreProvider } from './flux/connect';
 import { startHistoryListener } from './middleware/navigation';
 import { startRestService } from './services/restService';
 
+import { startForceLogoutService } from './services/forceLogoutService';
+import { startNotificationService } from './services/notificationService';
 
 import theme from './design/default';
 import '!style-loader!css-loader!./app.css';
-import { ReplaceAction } from './actions/navigationActions';
-import { startForceLogoutService } from './services/forceLogoutService';
-import { startNotificationService } from './services/notificationService';
 
 declare module '@material-ui/core/styles/createMuiTheme' {
 
@@ -57,9 +59,13 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   }
 }
 
+export { configureApplication } from "./handlers/applicationStateHandler";
+
 export const transportPCEUrl = "transportPCEUrl";
 
 export const runApplication = () => {
+
+  const initialToken = localStorage.getItem("userToken");
   const applicationStore = applicationStoreCreator();
 
   window.onerror = function (msg: string, url: string, line: number, col: number, error: Error) {
@@ -81,7 +87,6 @@ export const runApplication = () => {
   startHistoryListener(applicationStore);
   startForceLogoutService(applicationStore);
   startNotificationService(applicationStore);
-  addTransportPCEUrl();
 
   const App = (): JSX.Element => (
     <ApplicationStoreProvider applicationStore={applicationStore} >
@@ -93,12 +98,19 @@ export const runApplication = () => {
 
   ReactDOM.render(<App />, document.getElementById('app'));
 
+  if (initialToken) {
+    applicationStore.dispatch(new UpdateUser(User.fromString(initialToken) || undefined));
+  }
+
 };
 
-const addTransportPCEUrl = () =>{
-  const url = window.localStorage.getItem(transportPCEUrl);
-  if(url === null){
-      window.localStorage.setItem(transportPCEUrl, "http://10.20.6.32:18082/");
-      console.log("set transport url :D")
+if (process.env.NODE_ENV === "development") {
+  const addTransportPCEUrl = () =>{
+    const url = window.localStorage.getItem(transportPCEUrl);
+    if(url === null){
+        window.localStorage.setItem(transportPCEUrl, "http://10.20.6.32:18082/");
+        console.log("set transport url :D")
+    }
   }
+  addTransportPCEUrl();
 }

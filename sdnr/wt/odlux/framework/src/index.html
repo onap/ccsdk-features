@@ -16,6 +16,7 @@
 <script>
     // run the application
     require(["run"], function (run) {
+      run.configureApplication({ authentication:"oauth",  enablePolicy:  true,});
       run.runApplication();
     });
 

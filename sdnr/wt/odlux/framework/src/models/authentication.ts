@@ -23,6 +23,16 @@ export type AuthToken = {
   expires: number;
 }
 
+export type AuthPolicy = {
+  path: string;
+  methods: {
+    get?: boolean;
+    post?: boolean;
+    put?: boolean;
+    patch?: boolean;
+    delete?: boolean;
+  }
+}
 
 export class User {
 

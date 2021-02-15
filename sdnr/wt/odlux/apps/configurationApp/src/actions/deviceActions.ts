@@ -35,7 +35,7 @@ export class UpdateDeviceDescription extends Action {
 }
 
 export class UpdatViewDescription extends Action {
-  constructor (public vPath: string, public viewData: any, public displaySpecification: DisplaySpecification = { displayMode: DisplayModeType.doNotDisplay } ) {
+  constructor (public vPath: string, public viewData: any, public displaySpecification: DisplaySpecification = { displayMode: DisplayModeType.doNotDisplay }) {
     super();
   }
 }
@@ -437,7 +437,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
         }
       });
     }
-
+    
     // create display specification
     const ds: DisplaySpecification = viewElement! && viewElement!.uiType === "rpc"
       ? {
@@ -449,6 +449,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
         displayMode: extractList ? DisplayModeType.displayAsList : DisplayModeType.displayAsObject,
         viewSpecification: resolveViewDescription(defaultNS, vPath, viewSpecification),
         keyProperty: isViewElementList(viewElement!) && viewElement.key || undefined,
+        apidocPath:  isViewElementList(viewElement!) &&  `/apidoc/explorer/index.html?urls.primaryName=$$$standard$$$#/mounted%20${nodeId}%20${viewElement!.module || 'MODULE_NOT_DEFINED'}/$$$action$$$_${dataPath.replace(/^\//,'').replace(/[\/=\-\:]/g,'_')}_${viewElement! != null ? `${viewElement.id.replace(/[\/=\-\:]/g,'_')}_` : '' }` || undefined,
       };
 
     // update display specification

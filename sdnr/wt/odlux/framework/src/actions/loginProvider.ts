@@ -15,5 +15,22 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-export { configureApplication } from './handlers/applicationStateHandler';
-export { runApplication } from './app'; 
+
+import { Action } from '../flux/action';
+import { Dispatch } from '../flux/store';
+
+import { IApplicationStoreState } from '../store/applicationStore';
+import { ExternalLoginProvider } from '../models/externalLoginProvider';
+
+import authenticationService from '../services/authenticationService';
+
+export class SetExternalLoginProviderAction extends Action {
+    constructor(public externalLoginProvders: ExternalLoginProvider[] | null) {
+        super();
+    }
+}
+
+export const updateExternalLoginProviderAsyncActionCreator = () => async (dispatch: Dispatch, getState: () => IApplicationStoreState ) => {
+    const providers = await authenticationService.getAvaliableExteralProvider();
+    dispatch(new SetExternalLoginProviderAction(providers || null));
+}

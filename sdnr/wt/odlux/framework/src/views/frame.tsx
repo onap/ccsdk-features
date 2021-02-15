@@ -80,32 +80,32 @@ class FrameComponent extends React.Component<FrameProps>{
                 }
                 <Switch>
                     <Route exact path="/" component={() => (
-                    <AppFrame title={"Home"} icon={faHome} >
-                        <Home />
-                    </AppFrame>
+                      <AppFrame title={"Home"} icon={faHome} >
+                          <Home />
+                      </AppFrame>
                     )} />
                     <Route path="/about" component={() => (
-                    <AppFrame title={"About"} icon={faAddressBook} >
-                        <About />
-                    </AppFrame>
+                      <AppFrame title={"About"} icon={faAddressBook} >
+                          <About />
+                      </AppFrame>
                     )} />
                     {process.env.NODE_ENV === "development" ? <Route path="/test" component={() => (
-                    <AppFrame title={"Test"} icon={faAddressBook} >
-                        <Test />
-                    </AppFrame>
+                      <AppFrame title={"Test"} icon={faAddressBook} >
+                          <Test />
+                      </AppFrame>
                     )} /> : null}
                     <Route path="/login" component={() => (
-                    <AppFrame title={"Login"} icon={faSignInAlt} >
-                        <Login />
-                    </AppFrame>
-                    )} />
-                    {Object.keys(registrations).map(p => {
-                    const application = registrations[p];
-                    return (<Route key={application.name} path={application.path || `/${application.name}`} component={() => (
-                        <AppFrame title={application.title || (typeof application.menuEntry === 'string' && application.menuEntry) || application.name} icon={application.icon} appId={application.name} >
-                        <application.rootComponent />
-                        </AppFrame>
-                    )} />)
+                      <AppFrame title={"Login"} icon={faSignInAlt} >
+                          <Login />
+                      </AppFrame>
+                      )} />
+                    { Object.keys(registrations).map(p => {
+                      const application = registrations[p];
+                      return (<Route key={application.name} path={application.path || `/${application.name}`} component={() => (
+                          <AppFrame title={application.title || (typeof application.menuEntry === 'string' && application.menuEntry) || application.name} icon={application.icon} appId={application.name} >
+                          <application.rootComponent />
+                          </AppFrame>
+                      )} />)
                     })}
                     <Redirect to="/" />
                 </Switch>

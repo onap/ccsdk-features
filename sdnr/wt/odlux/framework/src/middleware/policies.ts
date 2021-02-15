@@ -15,5 +15,27 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-export { configureApplication } from './handlers/applicationStateHandler';
-export { runApplication } from './app'; 
+
+import authenticationService from '../services/authenticationService';
+
+import { UpdateUser, UpdatePolicies } from '../actions/authentication';
+import { Dispatch } from '../flux/store';
+import { MiddlewareApi } from '../store/applicationStore';
+
+function updatePoliciesMiddleware() {
+  return ({ dispatch, getState }: MiddlewareApi) =>
+    (next : Dispatch) : Dispatch =>
+      action => {
+        const { framework: { applicationState: { enablePolicy } } } = getState() || { framework: { applicationState: { } } };
+        if (enablePolicy && action instanceof UpdateUser) {
+          next(action);
+          authenticationService.getAccessPolicies().then((policies) => dispatch(new UpdatePolicies(policies||undefined)));
+          return action;
+        }
+        if (enablePolicy === false) next(new UpdatePolicies());
+        return next(action);
+      };
+}
+
+export const updatePolicies = updatePoliciesMiddleware();
+export default updatePolicies;

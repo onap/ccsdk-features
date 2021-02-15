@@ -33,6 +33,7 @@ import { ViewSpecification, isViewElementString, isViewElementNumber, isViewElem
 
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import PostAdd from '@material-ui/icons/PostAdd';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
 import SaveIcon from '@material-ui/icons/Save';
@@ -545,8 +546,11 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
            );
     };
 
-    private renderUIViewList(listSpecification: ViewSpecification, listKeyProperty: string, listData: { [key: string]: any }[]) {
+    private renderUIViewList(listSpecification: ViewSpecification, listKeyProperty: string, apiDocPath: string, listData: { [key: string]: any }[]) {
         const listElements = listSpecification.elements;
+        const apiDocPathCreate = apiDocPath ? `${location.origin}${apiDocPath
+          .replace("$$$standard$$$","topology-netconfnode%20resources%20-%20RestConf%20RFC%208040")
+          .replace("$$$action$$$","put")}_${listKeyProperty.replace(/[\/=\-\:]/g,'_')}_` : undefined;
 
         const navigate = (path: string) => {
             this.props.history.push(`${this.props.match.url}${path}`);
@@ -555,6 +559,12 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         const addNewElementAction = {
             icon: AddIcon, tooltip: 'Add', onClick: () => {
                 navigate("[]"); // empty key means new element
+            }
+        };
+
+        const addWithApiDocElementAction = {
+            icon: PostAdd, tooltip: 'Add', onClick: () => {
+                window.open(apiDocPathCreate, '_blank');
             }
         };
 
@@ -580,7 +590,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         }
 
         return (
-            <SelectElementTable stickyHeader idProperty={listKeyProperty} rows={listData} customActionButtons={[addNewElementAction]} columns={
+            <SelectElementTable stickyHeader idProperty={listKeyProperty} rows={listData} customActionButtons={apiDocPathCreate ? [addNewElementAction, addWithApiDocElementAction] : [addNewElementAction]} columns={
                 Object.keys(listElements).reduce<ColumnModel<{ [key: string]: any }>[]>((acc, cur) => {
                     const elm = listElements[cur];
                     if (elm.uiType !== "object" && listData.every(entry => entry[elm.label] != null)) {
@@ -790,7 +800,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
                 {ds.displayMode === DisplayModeType.doNotDisplay
                     ? null
                     : ds.displayMode === DisplayModeType.displayAsList && viewData instanceof Array
-                        ? this.renderUIViewList(ds.viewSpecification, ds.keyProperty!, viewData)
+                        ? this.renderUIViewList(ds.viewSpecification, ds.keyProperty!, ds.apidocPath!, viewData)
                         : ds.displayMode === DisplayModeType.displayAsRPC
                             ? this.renderUIViewRPC(ds.inputViewSpecification, viewData!, outputData, undefined, true, false)
                             : this.renderUIViewSelector(ds.viewSpecification, viewData!, ds.keyProperty, editMode, isNew)

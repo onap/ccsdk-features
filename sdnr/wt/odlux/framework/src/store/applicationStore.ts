@@ -32,6 +32,7 @@ import apiMiddleware from '../middleware/api';
 import thunkMiddleware from '../middleware/thunk';
 import loggerMiddleware from '../middleware/logger';
 import routerMiddleware from '../middleware/navigation';
+import { updatePolicies } from '../middleware/policies';
 
 export type MiddlewareApi = MiddlewareArg<IApplicationStoreState>;
 
@@ -65,7 +66,7 @@ export const applicationStoreCreator = (): ApplicationStore => {
     return acc;
   }, { framework: frameworkHandlers } as any);
 
-  const applicationStore = new ApplicationStore(combineActionHandler(actionHandlers), chainMiddleware(loggerMiddleware, thunkMiddleware, routerMiddleware, apiMiddleware, ...middlewares));
+  const applicationStore = new ApplicationStore(combineActionHandler(actionHandlers), chainMiddleware(loggerMiddleware, thunkMiddleware, routerMiddleware, apiMiddleware, updatePolicies, ...middlewares));
   setApplicationStore(applicationStore);
   return applicationStore;
 }

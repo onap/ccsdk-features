@@ -19,6 +19,7 @@
         connectApp.register();
         configurationApp.register();
         maintenanceApp.register();
+        app("./app.tsx").configureApplication({ authentication:"oauth",  enablePolicy:  true,});
         app("./app.tsx").runApplication();
       });
   </script>

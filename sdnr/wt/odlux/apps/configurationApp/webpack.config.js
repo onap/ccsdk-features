@@ -11,6 +11,8 @@ const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 
+const policies = require('./policies.json');
+
 // const __dirname = (path => path.replace(/^([a-z]\:)/, c => c.toUpperCase()))(process.__dirname());
 
 module.exports = (env) => {
@@ -128,47 +130,54 @@ module.exports = (env) => {
       stats: {
         colors: true
       },
+      before: function(app, server, compiler) {
+        app.get('/oauth/policies',(_, res) => res.json(policies));
+      },
        proxy: {
         "/about": {
-          // target: "http://10.20.6.29:48181",
-          target: "http://localhost:8181",
+          target: "http://localhost:18181",
           secure: false
         }, 
         "/yang-schema/": {
-          target: "http://localhost:8181",
+          target: "http://localhost:18181",
           secure: false
         },   
-        "/oauth2/": {
-          // target: "https://10.20.35.188:30205",
-          target: "http://localhost:8181",
+        "/oauth/": {
+          target: "http://localhost:18181",
           secure: false
         },
         "/database/": {
-          target: "http://localhost:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/restconf/": {
-          target: "http://localhost:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/rests/": {
-          target: "http://localhost:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/help/": {
-          target: "http://localhost:8181",
+          target: "http://localhost:18181",
           secure: false
         },
          "/about/": {
-          target: "http://localhost:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/tree/": {
-          target: "http://localhost:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/websocket": {
-          target: "http://localhost:8181",
+          target: "http://localhost:18181",
+          ws: true,
+          changeOrigin: true,
+          secure: false
+        },
+        "/apidoc": {
+          target: "http://localhost:18181",
           ws: true,
           changeOrigin: true,
           secure: false

@@ -15,15 +15,19 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
+import * as jwt from 'jsonwebtoken';
 import { Location, History, createHashHistory } from "history";
 
-import { ApplicationStore } from "../store/applicationStore";
-import { Dispatch } from '../flux/store';
+import { User } from "../models/authentication";
 
 import { LocationChanged, NavigateToApplication } from "../actions/navigationActions";
 import { PushAction, ReplaceAction, GoAction, GoBackAction, GoForwardeAction } from '../actions/navigationActions';
 
 import { applicationManager } from "../services/applicationManager";
+import { UpdateUser } from "../actions/authentication";
+
+import { ApplicationStore } from "../store/applicationStore";
+import { Dispatch } from '../flux/store';
 
 const routerMiddlewareCreator = (history: History) => () => (next: Dispatch): Dispatch => (action) => {
 
@@ -49,7 +53,16 @@ const routerMiddlewareCreator = (history: History) => () => (next: Dispatch): Di
     history.goForward();
   } else if (action instanceof LocationChanged) {
     // ensure user is logged in and token is valid
-    if (!action.pathname.startsWith("/login") && applicationStore && (!applicationStore.state.framework.authenticationState.user || !applicationStore.state.framework.authenticationState.user.isValid)) {
+    if (action.pathname.startsWith("/oauth") && (action.search.startsWith("?token="))){
+      const ind =  action.search.lastIndexOf("token=");
+      const tokenStr = ind > -1 ? action.search.substr(ind+6) : null;
+      const token = tokenStr && jwt.decode(tokenStr);
+      if (tokenStr && token) {
+        // @ts-ignore
+        const user = new User({ username: token["name"], access_token: tokenStr, token_type: "Bearer", expires: (new Date().valueOf()) + ( (+token['exp']) * 1000) }) || undefined;
+        return next(new UpdateUser(user)) as any;
+      }
+    } if (!action.pathname.startsWith("/login") && applicationStore && (!applicationStore.state.framework.authenticationState.user || !applicationStore.state.framework.authenticationState.user.isValid)) {
       history.replace(`/login?returnTo=${action.pathname}`);
     } else {
       return next(action);

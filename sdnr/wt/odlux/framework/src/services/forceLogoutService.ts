@@ -17,7 +17,7 @@
  */
 
 import { ApplicationStore } from "../store/applicationStore";
-import { UpdateAuthentication } from "../actions/authentication";
+import { UpdateUser } from "../actions/authentication";
 import { ReplaceAction } from "../actions/navigationActions";
 
 const maxMinutesTillLogout = 15;
@@ -45,7 +45,7 @@ const createForceLogoutInterval = () => {
             if (tickTimer === 0) {
                 console.log("got logged out by timer")
                 if (applicationStore) {
-                    applicationStore.dispatch(new UpdateAuthentication(null));
+                    applicationStore.dispatch(new UpdateUser(undefined));
                     applicationStore.dispatch(new ReplaceAction("/login"));
                 }
             }

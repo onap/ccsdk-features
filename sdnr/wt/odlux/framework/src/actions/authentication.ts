@@ -16,11 +16,18 @@
  * ============LICENSE_END==========================================================================
  */
 import { Action } from '../flux/action';
-import { AuthToken } from '../models/authentication';
+import { AuthPolicy, User } from '../models/authentication';
 
-export class UpdateAuthentication extends Action {
+export class UpdateUser extends Action {
 
-  constructor (public bearerToken: AuthToken | null) {
+  constructor (public user?: User) {
+    super();
+  }
+}
+
+export class UpdatePolicies extends Action {
+
+  constructor (public authPolicies?: AuthPolicy[]) {
     super();
   }
 }

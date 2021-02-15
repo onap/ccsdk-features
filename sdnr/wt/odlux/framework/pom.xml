@@ -46,7 +46,7 @@
     <properties>
         <buildtime>${maven.build.timestamp}</buildtime>
         <distversion>ONAP Frankfurt (Neon, mdsal ${odl.mdsal.version})</distversion>
-        <buildno>88.1c38886(20/12/04)</buildno>
+        <buildno>89.977e4de(21/02/10)</buildno>
         <odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
     </properties>
 
@@ -159,6 +159,24 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
             </plugin>
+             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${basedir}/../odlux.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
                 <artifactId>replacer</artifactId>
@@ -183,13 +201,61 @@
                             <token>##odlux.version##</token>
                             <value>${odlux.version}</value>
                         </replacement>
-                         <replacement>
+                        <replacement>
                             <token>##buildno##</token>
                             <value>${buildno}</value>
                         </replacement>
                         <replacement>
                             <token>##build-timestamp##</token>
                             <value>${buildtime}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.framework.buildno##</token>
+                            <value>${odlux.framework.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.configurationApp.buildno##</token>
+                            <value>${odlux.apps.configurationApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.connectApp.buildno##</token>
+                            <value>${odlux.apps.connectApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.eventLogApp.buildno##</token>
+                            <value>${odlux.apps.eventLogApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.faultApp.buildno##</token>
+                            <value>${odlux.apps.faultApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.helpApp.buildno##</token>
+                            <value>${odlux.apps.helpApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.inventoryApp.buildno##</token>
+                            <value>${odlux.apps.inventoryApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.linkCalculationApp.buildno##</token>
+                            <value>${odlux.apps.linkCalculationApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.maintenanceApp.buildno##</token>
+                            <value>${odlux.apps.maintenanceApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.mediatorApp.buildno##</token>
+                            <value>${odlux.apps.mediatorApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.networkMapApp.buildno##</token>
+                            <value>${odlux.apps.networkMapApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.permanceHistoryApp.buildno##</token>
+                            <value>${odlux.apps.permanceHistoryApp.buildno}</value>
                         </replacement>
                     </replacements>
                 </configuration>

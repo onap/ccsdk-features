@@ -15,5 +15,9 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-export { configureApplication } from './handlers/applicationStateHandler';
-export { runApplication } from './app'; 
+
+export type ExternalLoginProvider = {
+    id: string;
+    title: string;
+    loginUrl: string;
+  }

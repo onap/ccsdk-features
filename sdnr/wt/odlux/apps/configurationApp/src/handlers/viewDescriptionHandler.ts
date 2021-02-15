@@ -33,7 +33,8 @@ export type DisplaySpecification =  {
 } | {
   displayMode: DisplayModeType.displayAsObject | DisplayModeType.displayAsList ;
   viewSpecification: ViewSpecification;
-  keyProperty: string | undefined;
+  keyProperty?: string;
+  apidocPath?: string;
 } | {
   displayMode: DisplayModeType.displayAsRPC;
   inputViewSpecification?: ViewSpecification;

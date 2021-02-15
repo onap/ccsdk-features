@@ -15,19 +15,30 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
+import { AuthPolicy, AuthToken } from "../models/authentication";
+import { ExternalLoginProvider } from "../models/externalLoginProvider";
+
 import { requestRest, formEncode } from "./restService";
-import { AuthToken } from "../models/authentication";
 
 type AuthTokenResponse = {
   access_token: string;
   token_type: string;
-  expires_in: number;
+  expires_at: number;
 }
 
-
 class AuthenticationService {
+  public async getAvaliableExteralProvider() {
+    const result = await requestRest<ExternalLoginProvider[]>(`oauth/providers`, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+    }, false);
+    return result;
+  }
+
   public async authenticateUserOAuth(email: string, password: string, scope: string): Promise<AuthToken | null> {
-    const result = await requestRest<string>(`oauth2/token`, {
+    const result = await requestRest<AuthTokenResponse>(`oauth/login`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -39,12 +50,11 @@ class AuthenticationService {
         scope: scope
       })
     }, false);
-    const resultObj: AuthTokenResponse| null = result && JSON.parse(result);
-    return resultObj && {
+    return result && {
       username: email,
-      access_token: resultObj.access_token,
-      token_type: resultObj.token_type,
-      expires: (new Date().valueOf()) + (resultObj.expires_in * 1000)
+      access_token: result.access_token,
+      token_type: result.token_type,
+      expires: (result.expires_at * 1000)
     } || null;
   }
 
@@ -64,6 +74,10 @@ class AuthenticationService {
       }
     }
     return null;
+  }
+
+  public async getAccessPolicies(){
+    return await requestRest<AuthPolicy[]>(`oauth/policies`, { method: "GET" }, true);
   }
 }
 

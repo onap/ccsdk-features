@@ -16,16 +16,19 @@
  * ============LICENSE_END==========================================================================
  */
 import { IActionHandler } from '../flux/action';
-import { SetTitleAction } from '../actions/titleActions';
 
+import { SetTitleAction } from '../actions/titleActions';
+import { SetExternalLoginProviderAction } from '../actions/loginProvider';
 import { AddSnackbarNotification, RemoveSnackbarNotification } from '../actions/snackbarActions';
 import { AddErrorInfoAction, RemoveErrorInfoAction, ClearErrorInfoAction } from '../actions/errorActions';
 import { MenuAction, MenuClosedByUser } from '../actions/menuAction'
-import { IconType } from '../models/iconDefinition';
+import { SetWebsocketAction } from '../actions/websocketAction';
 
+import { IconType } from '../models/iconDefinition';
 import { ErrorInfo } from '../models/errorInfo';
 import { SnackbarItem } from '../models/snackbarItem';
-import { SetWebsocketAction } from '../actions/websocketAction';
+import { ExternalLoginProvider } from '../models/externalLoginProvider';
+import { ApplicationConfig } from '../models/applicationConfig';
 
 export interface IApplicationState {
   title: string;
@@ -36,9 +39,27 @@ export interface IApplicationState {
   errors: ErrorInfo[];
   snackBars: SnackbarItem[];
   isWebsocketAvailable: boolean | undefined;
+  externalLoginProviders: ExternalLoginProvider[] | null;
+  authentication: "basic"|"oauth",  // basic 
+  enablePolicy: boolean             // false 
 }
 
-const applicationStateInit: IApplicationState = { title: "Loading ...", errors: [], snackBars: [], isMenuOpen: true, isMenuClosedByUser: false, isWebsocketAvailable: undefined };
+const applicationStateInit: IApplicationState = { 
+  title: "Loading ...", 
+  errors: [], 
+  snackBars: [], 
+  isMenuOpen: true, 
+  isMenuClosedByUser: false, 
+  isWebsocketAvailable: undefined,
+  externalLoginProviders: null,
+  authentication: "basic",
+  enablePolicy: false,
+};
+
+export const configureApplication = (config: ApplicationConfig) => {
+  applicationStateInit.authentication = config.authentication === "oauth" ? "oauth" : "basic";
+  applicationStateInit.enablePolicy = config.authentication ? true : false;
+}
 
 export const applicationStateHandler: IActionHandler<IApplicationState> = (state = applicationStateInit, action) => {
   if (action instanceof SetTitleAction) {
@@ -46,14 +67,14 @@ export const applicationStateHandler: IActionHandler<IApplicationState> = (state
       ...state,
       title: action.title,
       icon: action.icon,
-      appId: action.appId
+      appId: action.appId,
     };
   } else if (action instanceof AddErrorInfoAction) {
     state = {
       ...state,
       errors: [
         ...state.errors,
-        action.errorInfo
+        action.errorInfo,
       ]
     };
   } else if (action instanceof RemoveErrorInfoAction) {
@@ -63,7 +84,7 @@ export const applicationStateHandler: IActionHandler<IApplicationState> = (state
         ...state,
         errors: [
           ...state.errors.slice(0, index),
-          ...state.errors.slice(index + 1)
+          ...state.errors.slice(index + 1),
         ]
       };
     }
@@ -71,7 +92,7 @@ export const applicationStateHandler: IActionHandler<IApplicationState> = (state
     if (state.errors && state.errors.length) {
       state = {
         ...state,
-        errors: []
+        errors: [],
       };
     }
   } else if (action instanceof AddSnackbarNotification) {
@@ -79,29 +100,34 @@ export const applicationStateHandler: IActionHandler<IApplicationState> = (state
       ...state,
       snackBars: [
         ...state.snackBars,
-        action.notification
+        action.notification,
       ]
     };
   } else if (action instanceof RemoveSnackbarNotification) {
     state = {
       ...state,
-      snackBars: state.snackBars.filter(s => s.key !== action.key)
+      snackBars: state.snackBars.filter(s => s.key !== action.key),
     };
   } else if (action instanceof MenuAction) {
     state = {
       ...state,
-      isMenuOpen: action.isOpen
+      isMenuOpen: action.isOpen,
     }
   } else if (action instanceof MenuClosedByUser) {
     state = {
       ...state,
-      isMenuClosedByUser: action.isClosed
+      isMenuClosedByUser: action.isClosed,
     }
   }
   else if (action instanceof SetWebsocketAction) {
     state = {
       ...state,
-      isWebsocketAvailable: action.isConnected
+      isWebsocketAvailable: action.isConnected,
+    }
+  } else if (action instanceof SetExternalLoginProviderAction){
+    state = {
+      ...state,
+      externalLoginProviders: action.externalLoginProvders,
     }
   }
   return state;

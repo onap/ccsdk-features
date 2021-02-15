@@ -32,10 +32,16 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
 
-import connect, { Connect } from '../flux/connect';
+import connect, { Connect, IDispatcher } from '../flux/connect';
 import authenticationService from '../services/authenticationService';
 
-import { UpdateAuthentication } from '../actions/authentication';
+import { updateExternalLoginProviderAsyncActionCreator } from '../actions/loginProvider';
+import { UpdatePolicies, UpdateUser } from '../actions/authentication';
+
+import { IApplicationStoreState } from '../store/applicationStore';
+import { AuthPolicy, AuthToken, User } from '../models/authentication';
+import Menu from '@material-ui/core/Menu';
+import { MenuItem } from '@material-ui/core';
 
 const styles = (theme: Theme) => createStyles({
   layout: {
@@ -69,14 +75,37 @@ const styles = (theme: Theme) => createStyles({
   },
 });
 
-type LoginProps = RouteComponentProps<{}> & WithStyles<typeof styles> & Connect;
+const mapProps = (state: IApplicationStoreState) => ({
+  search: state.framework.navigationState.search,
+  authentication: state.framework.applicationState.authentication,
+  externalLoginProviders: state.framework.applicationState.externalLoginProviders ,
+});
+
+const mapDispatch = (dispatcher: IDispatcher) => ({
+  updateExternalProviders: () => dispatcher.dispatch(updateExternalLoginProviderAsyncActionCreator()),
+  updateAuthentication: (token: AuthToken | null) => {
+    const user = token && new User(token) || undefined;
+    dispatcher.dispatch(new UpdateUser(user));
+  },
+  updatePolicies: (policies?: AuthPolicy[]) => {
+    return dispatcher.dispatch(new UpdatePolicies(policies));
+  },
+});
+
+type LoginProps = RouteComponentProps<{}> & WithStyles<typeof styles> & Connect<typeof mapProps, typeof mapDispatch>;
 
 interface ILoginState {
+  externalProviderAnchor: HTMLElement | null;
   busy: boolean;
   username: string;
   password: string;
   scope: string;
   message: string;
+  providers: {
+    id: string;
+    title: string;
+    loginUrl: string;
+  }[] | null;
 }
 
 
@@ -87,12 +116,24 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
     super(props);
 
     this.state = {
+      externalProviderAnchor: null,
       busy: false,
       username: '',
       password: '',
       scope: 'sdn',
-      message: ''
+      message: '',
+      providers: null,
     };
+  }
+
+  async componentDidMount(){
+     if (this.props.authentication === "oauth" && (this.props.externalLoginProviders == null || this.props.externalLoginProviders.length === 0)){
+       this.props.updateExternalProviders();
+     }
+  }
+
+  private setExternalProviderAnchor = (el: HTMLElement | null) => {
+    this.setState({externalProviderAnchor: el })
   }
 
   render(): JSX.Element {
@@ -153,6 +194,33 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
               >
                 Sign in
             </Button>
+            { this.props.externalLoginProviders && this.props.externalLoginProviders.length > 0
+            ?
+              [
+                <Button 
+                  aria-controls="externalLogin" 
+                  aria-haspopup="true"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit} onClick={(ev) => { this.setExternalProviderAnchor(ev.currentTarget); }}>
+                  Use external Login
+                </Button>,
+                <Menu
+                  anchorEl={this.state.externalProviderAnchor}
+                  keepMounted
+                  open={Boolean(this.state.externalProviderAnchor)}
+                  onClose={() => { this.setExternalProviderAnchor(null); }}
+                >
+                  { 
+                    this.props.externalLoginProviders.map((provider) => (
+                      <MenuItem key={provider.id} onClick={() => { window.location = provider.loginUrl as any; } }>{ provider.title} </MenuItem>
+                    ))
+                  }
+                </Menu>
+              ]
+              : null
+            }
             </form>
             {this.state.message && <Alert severity="error">{this.state.message}</Alert>}
           </Paper>
@@ -165,16 +233,16 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
     event.preventDefault();
 
     this.setState({ busy: true });
-    // const token = await authenticationService.authenticateUserOAuth(this.state.username, this.state.password, this.state.scope);
-    const token = await authenticationService.authenticateUserBasicAuth(this.state.username, this.state.password, this.state.scope); 
-    this.props.dispatch(new UpdateAuthentication(token));
+
+    const token = this.props.authentication === "oauth" 
+      ? await authenticationService.authenticateUserOAuth(this.state.username, this.state.password, this.state.scope)
+      : await authenticationService.authenticateUserBasicAuth(this.state.username, this.state.password, this.state.scope); 
+
+    this.props.updateAuthentication(token);
     this.setState({ busy: false });
 
     if (token) {
-      const query =
-        this.props.state.framework.navigationState.search &&
-        this.props.state.framework.navigationState.search.replace(/^\?/, "")
-          .split('&').map(e => e.split("="));
+      const query = this.props.search && this.props.search.replace(/^\?/, "").split('&').map(e => e.split("="));
       const returnTo = query && query.find(e => e[0] === "returnTo");
       this.props.history.replace(returnTo && returnTo[1] || "/");
     }
@@ -187,5 +255,5 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
   }
 }
 
-export const Login = withStyles(styles)(withRouter(connect()(LoginComponent)));
+export const Login = withStyles(styles)(withRouter(connect(mapProps, mapDispatch)(LoginComponent)));
 export default Login;
