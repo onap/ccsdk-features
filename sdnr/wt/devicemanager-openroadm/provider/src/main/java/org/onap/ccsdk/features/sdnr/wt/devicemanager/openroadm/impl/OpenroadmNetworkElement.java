@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
@@ -77,7 +76,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     private OpenroadmInventoryInput opnRdmInventoryInput;
     private PmDataBuilderOpenRoadm openRoadmPmData;
     private InitialDeviceAlarmReader initialAlarmReader;
-    private List<PmdataEntity> pmDataEntity = new ArrayList<PmdataEntity>();
+
     private Optional<NetconfNotifications> notifications;
     private static final NetconfTimeStamp ncTimeConverter = NetconfTimeStampImpl.getConverter();
     private int counter = 1;
@@ -87,18 +86,18 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     public OpenroadmNetworkElement(NetconfBindingAccessor netconfAccess, DeviceManagerServiceProvider serviceProvider) {
 
         super(netconfAccess, serviceProvider);
-        
+
         this.notifications = netconfAccess.getNotificationAccessor();
 
         log.info("Create {}", OpenroadmNetworkElement.class.getSimpleName());
         this.openRdmListenerRegistrationResult = null;
         this.openRdmListener = new OpenroadmChangeNotificationListener(netconfAccessor, databaseService);
         this.opnRdmFaultListenerRegistrationResult = null;
-        this.opnRdmFaultListener = new OpenroadmFaultNotificationListener(netconfAccessor, serviceProvider);
+        this.opnRdmFaultListener = new OpenroadmFaultNotificationListener(serviceProvider);
         this.opnRdmDeviceListenerRegistrationResult = null;
         this.opnRdmDeviceListener = new OpenroadmDeviceChangeNotificationListener(netconfAccessor, databaseService);
-        this.circuitPacksRecord = new Hashtable<String, Long>();
-        this.shelfProvisionedcircuitPacks = new Hashtable<String, Long>();
+        this.circuitPacksRecord = new Hashtable<>();
+        this.shelfProvisionedcircuitPacks = new Hashtable<>();
         this.openRoadmPmData = new PmDataBuilderOpenRoadm(this.netconfAccessor);
         this.initialAlarmReader = new InitialDeviceAlarmReader(this.netconfAccessor, serviceProvider);
         log.info("NodeId {}", this.netconfAccessor.getNodeId().getValue());
@@ -112,7 +111,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
 
         OrgOpenroadmDevice device = readDevice(this.netconfAccessor);
         this.opnRdmInventoryInput = new OpenroadmInventoryInput(this.netconfAccessor, device);
-        log.info("oScaMapper details{}", this.opnRdmInventoryInput.getClass().getName());
+        log.info("openroadmMapper details{}", this.opnRdmInventoryInput.getClass().getName());
         databaseService.writeInventory(this.opnRdmInventoryInput.getInventoryData(Uint32.valueOf(equipmentLevel)));
 
         readShelvesData(device);
@@ -121,6 +120,8 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
         readInterfaceData(device);
         // Writing initial alarms at the time of device registration
         initialAlarmReader.faultService();
+//        Writing historical PM data at the time of device registration
+        List<PmdataEntity> pmDataEntity = new ArrayList<>();
         pmDataEntity = this.openRoadmPmData.buildPmDataEntity(this.openRoadmPmData.getPmData(this.netconfAccessor));
         if (!pmDataEntity.isEmpty()) {
             this.databaseService.doWritePerformanceData(pmDataEntity);
@@ -216,13 +217,16 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     }
 
     private void readCircuitPacketData(OrgOpenroadmDevice device) {
-        Collection<CircuitPacks> circuitpacklist = YangHelper.getCollection(device.getCircuitPacks());
-        List<String> cpNames = new ArrayList<String>();
+        Collection<CircuitPacks> circuitpackCollection = YangHelper.getCollection(device.getCircuitPacks());
+        List<String> cpNameList = new ArrayList<>();
 
-        if (circuitpacklist != null) {
-            for (CircuitPacks cp : circuitpacklist) {
-                cpNames.add(cp.getCircuitPackName());
+        if (circuitpackCollection != null) {
+//            collect all circuit pack names. Required to check for invalid parents later on
+            for (CircuitPacks cp : circuitpackCollection) {
+                cpNameList.add(cp.getCircuitPackName());
+            }
 
+            for (CircuitPacks cp : circuitpackCollection) {
                 log.info("CP Name:{}", cp.getCircuitPackName());
 
                 if (cp.getParentCircuitPack() == null
@@ -253,13 +257,14 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
                         databaseService.writeInventory(this.opnRdmInventoryInput.getCircuitPackInventory(cp,
                                 Uint32.valueOf(equipmentLevel + 3)));
                     } else {
-                        //                check for incorrect hierarchy
+//                      check for incorrect hierarchy
                         if (cp.getParentCircuitPack().getCircuitPackName() != null
-                                && !cpNames.contains(cp.getParentCircuitPack().getCircuitPackName())) {
+                                && !cpNameList.contains(cp.getParentCircuitPack().getCircuitPackName())) {
                             databaseService.writeEventLog(writeIncorrectParentLog(cp.getCircuitPackName(), counter)
                                     .setObjectId(device.getInfo().getNodeId().getValue())
                                     .setId(cp.getParentCircuitPack().getCpSlotName()).build());
                         }
+
                         log.info("Cp has parent circuit pack but no shelf or a shelf but no parent circuit pack");
                         this.circuitPacksRecord.put(cp.getCircuitPackName(), (equipmentLevel + 2));
                         databaseService.writeInventory(this.opnRdmInventoryInput.getCircuitPackInventory(cp,
@@ -269,16 +274,6 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
                 }
             }
 
-
-            //            for (String s : cpParentNames) {
-            //                log.info("Parent cps {}:", s);
-            //
-            //                if (!cpNames.contains(s)) {
-            //                    log.info("Invalid Hierarchy detected for {}", s);
-            //                    databaseService.writeEventLog(writeIncorrectParentLog(s, counter)
-            //                            .setObjectId(device.getInfo().getNodeId().getValue()).setId(s).build());
-            //                }
-            //            }
         }
     }
 
@@ -311,9 +306,8 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     private OrgOpenroadmDevice readDevice(NetconfBindingAccessor accessor) {
         final Class<OrgOpenroadmDevice> openRoadmDev = OrgOpenroadmDevice.class;
         InstanceIdentifier<OrgOpenroadmDevice> deviceId = InstanceIdentifier.builder(openRoadmDev).build();
-        OrgOpenroadmDevice device = accessor.getTransactionUtils().readData(accessor.getDataBroker(),
+        return accessor.getTransactionUtils().readData(accessor.getDataBroker(),
                 LogicalDatastoreType.OPERATIONAL, deviceId);
-        return device;
     }
 
     private EventlogBuilder writeIncorrectParentLog(String attributeName, Integer counter) {

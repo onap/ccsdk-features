@@ -32,7 +32,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.ActiveAlarmList;
-import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.OrgOpenroadmAlarmListener;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.Severity;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.active.alarm.list.ActiveAlarms;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultlog;
@@ -51,7 +50,7 @@ import org.slf4j.LoggerFactory;
 public class InitialDeviceAlarmReader {
     // variables
     private Integer count = 1;
-    private static final Logger log = LoggerFactory.getLogger(OrgOpenroadmAlarmListener.class);
+    private static final Logger log = LoggerFactory.getLogger(InitialDeviceAlarmReader.class);
     private final NetconfBindingAccessor netConfAccesor;
     private final @NonNull FaultService faultEventListener;
     private final DataProvider dataProvider;
@@ -100,25 +99,8 @@ public class InitialDeviceAlarmReader {
         this.faultEventListener.initCurrentProblemStatus(this.netConfAccesor.getNodeId(), writeFaultData());
         writeAlarmLog(writeFaultData());
     }
-    // end of protected methods
-
-    // private methods
-
-    // Read Alarm Data
-    private ActiveAlarmList getActiveAlarmList(NetconfBindingAccessor accessor) {
-        final Class<ActiveAlarmList> classAlarm = ActiveAlarmList.class;
-        log.info("Get Alarm data for element {}", accessor.getNodeId().getValue());
-        InstanceIdentifier<ActiveAlarmList> alarmDataIid = InstanceIdentifier.builder(classAlarm).build();
-
-        ActiveAlarmList alarmData = accessor.getTransactionUtils().readData(accessor.getDataBroker(),
-                LogicalDatastoreType.OPERATIONAL, alarmDataIid);
-
-        log.info("AlarmData {}", alarmData.toString());
-        return alarmData;
-    }
-
     // Mapping Severity of AlarmNotification to SeverityType of FaultLog
-    private SeverityType checkSeverityValue(Severity severity) {
+    protected static SeverityType checkSeverityValue(Severity severity) {
         SeverityType severityType = null;
         log.info("Device Severity: {}", severity.getName());
 
@@ -149,6 +131,24 @@ public class InitialDeviceAlarmReader {
         return severityType;
 
     }
+    // end of protected methods
+
+    // private methods
+
+    // Read Alarm Data
+    private ActiveAlarmList getActiveAlarmList(NetconfBindingAccessor accessor) {
+        final Class<ActiveAlarmList> classAlarm = ActiveAlarmList.class;
+        log.info("Get Alarm data for element {}", accessor.getNodeId().getValue());
+        InstanceIdentifier<ActiveAlarmList> alarmDataIid = InstanceIdentifier.builder(classAlarm).build();
+
+        ActiveAlarmList alarmData = accessor.getTransactionUtils().readData(accessor.getDataBroker(),
+                LogicalDatastoreType.OPERATIONAL, alarmDataIid);
+
+        log.info("AlarmData {}", alarmData);
+        return alarmData;
+    }
+
+
     // end of private methods
 
 

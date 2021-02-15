@@ -45,6 +45,7 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.resource.rev191129.resour
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 
 public class TestOpenRoadmAlarmNotification {
+    //    variables
     private static final String myCircuitId = "Test_Id";
     private static final String myId = "Alarm_Id";
     DateAndTime myRaiseTime = new DateAndTime("2020-02-25T10:08:06.7Z");
@@ -58,6 +59,8 @@ public class TestOpenRoadmAlarmNotification {
     Severity severity;
     static NetconfAccessor accessor;
 
+    //    end of variables
+    //    public methods
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
 
@@ -68,16 +71,10 @@ public class TestOpenRoadmAlarmNotification {
     }
 
     @Test
-    public void test() {
-        System.out.println("Shabnam");
-    }
-
-    @Test
     public void testNotification() {
         severity = Severity.Critical;
         when(serviceProvider.getFaultService()).thenReturn(faultService);
-        OpenroadmFaultNotificationListener alarmListener =
-                new OpenroadmFaultNotificationListener(accessor, serviceProvider);
+        OpenroadmFaultNotificationListener alarmListener = new OpenroadmFaultNotificationListener(serviceProvider);
         notification = mock(AlarmNotification.class);
 
         when(notification.getId()).thenReturn(myId);
@@ -88,14 +85,14 @@ public class TestOpenRoadmAlarmNotification {
         when(notification.getSeverity()).thenReturn(severity);
         alarmListener.onAlarmNotification(notification);
         System.out.println(notification.getId());
-        assertEquals(notification.getId(), myId);
-        assertEquals(notification.getCircuitId(), myCircuitId);
-        assertEquals(notification.getRaiseTime(), myRaiseTime);
-        assertEquals(notification.getProbableCause(), myProbableCause);
-        assertEquals(notification.getResource(), myResource);
-        assertEquals(notification.getSeverity(), severity);
-
+        assertEquals(myId, notification.getId());
+        assertEquals(myCircuitId, notification.getCircuitId());
+        assertEquals(myRaiseTime, notification.getRaiseTime());
+        assertEquals(myProbableCause, notification.getProbableCause());
+        assertEquals(myResource, notification.getResource());
+        assertEquals(severity, notification.getSeverity());
 
     }
+    // end of public methods
 
 }

@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.test;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import org.junit.After;
 import org.junit.Before;
@@ -29,9 +30,12 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl.DeviceManage
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 
 public class TestDeviceManagerOpenRoadmImpl {
+    //    variables
     DeviceManagerOpenroadmImpl devMgrOpenRdmImpl;
     NetconfNetworkElementService netcnfNtwrkElmntSrvc;
 
+    //  end of variables
+    //    public methods
     @Before
     public void init() {
         netcnfNtwrkElmntSrvc = mock(NetconfNetworkElementService.class);
@@ -41,11 +45,13 @@ public class TestDeviceManagerOpenRoadmImpl {
     @Test
     public void test() throws Exception {
         devMgrOpenRdmImpl.setNetconfNetworkElementService(netcnfNtwrkElmntSrvc);
+        assertNotNull(devMgrOpenRdmImpl);
+
     }
 
     @After
     public void cleanUp() throws Exception {
         devMgrOpenRdmImpl.close();
     }
-
+    // end of public methods
 }

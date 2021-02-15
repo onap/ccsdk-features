@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.junit.Test;
@@ -61,8 +62,9 @@ public class TestOpenRoadmInventory {
             .setCurrentIpAddress(ipAddress).setCurrentDefaultGateway(new IpAddress(new Ipv4Address("127.0.0.20")))
             .setCurrentDefaultGateway(new IpAddress(new Ipv4Address("127.0.0.20"))).setNodeType(NodeTypes.Rdm)
             .setCurrentDatetime(new DateAndTime("2017-10-22T15:23:43Z")).setSoftwareVersion("swversion1234")
-            .setPrefixLength(Uint8.valueOf(28)).setMaxDegrees(Uint16.valueOf(2)).setMaxSrgs(Uint16.valueOf(3)).setMaxNumBin15minHistoricalPm(Uint16.valueOf(32))
-            .setMaxNumBin24hourHistoricalPm(Uint16.valueOf(7)).setOpenroadmVersion(OpenroadmVersionType._20).build();
+            .setPrefixLength(Uint8.valueOf(28)).setMaxDegrees(Uint16.valueOf(2)).setMaxSrgs(Uint16.valueOf(3))
+            .setMaxNumBin15minHistoricalPm(Uint16.valueOf(32)).setMaxNumBin24hourHistoricalPm(Uint16.valueOf(7))
+            .setOpenroadmVersion(OpenroadmVersionType._20).build();
 
     private OrgOpenroadmDevice device = mock(OrgOpenroadmDevice.class);;
     private Shelves shelf = mock(Shelves.class);
@@ -77,7 +79,7 @@ public class TestOpenRoadmInventory {
         when(device.getInfo()).thenReturn(info);
 
         roadmInventory.getInventoryData(Uint32.valueOf(value1));
-        assertEquals(device.getInfo(), info);
+        assertEquals(info, device.getInfo());
 
     }
 
@@ -95,7 +97,8 @@ public class TestOpenRoadmInventory {
         when(shelf.getModel()).thenReturn("1");
         when(shelf.getHardwareVersion()).thenReturn("0.1");
         when(shelf.getManufactureDate()).thenReturn(new DateAndTime("2017-10-22T15:23:43Z"));
-        roadmInventory.getShelvesInventory(shelf, Uint32.valueOf(value1 + 1));
+        assertNotNull(roadmInventory.getShelvesInventory(shelf, Uint32.valueOf(value1 + 1)));
+
         LOG.info("Shelves test completed");
 
     }
@@ -113,7 +116,7 @@ public class TestOpenRoadmInventory {
         when(cp.getProductCode()).thenReturn("oooooo");
         when(cp.getCircuitPackMode()).thenReturn("inServiceMode");
         when(device.getInfo()).thenReturn(info);
-        roadmInventory.getCircuitPackInventory(cp, Uint32.valueOf(value1 + 1));
+        assertNotNull(roadmInventory.getCircuitPackInventory(cp, Uint32.valueOf(value1 + 1)));
 
     }
 
@@ -124,7 +127,7 @@ public class TestOpenRoadmInventory {
         when(interfaces.getDescription()).thenReturn("Ethernet Interface");
         when(interfaces.getSupportingCircuitPackName()).thenReturn("1/0");
         when(device.getInfo()).thenReturn(info);
-        roadmInventory.getInterfacesInventory(interfaces, Uint32.valueOf(value1 + 2));
+        assertNotNull(roadmInventory.getInterfacesInventory(interfaces, Uint32.valueOf(value1 + 2)));
     }
 
     @Test
@@ -134,7 +137,7 @@ public class TestOpenRoadmInventory {
         when(xpdr.getLifecycleState()).thenReturn(LifecycleState.Deployed);
         when(accessor.getNodeId()).thenReturn(nodeId);
         when(device.getInfo()).thenReturn(info);
-        roadmInventory.getXponderInventory(xpdr, Uint32.valueOf(value1 + 1));
+        assertNotNull(roadmInventory.getXponderInventory(xpdr, Uint32.valueOf(value1 + 1)));
 
     }
 

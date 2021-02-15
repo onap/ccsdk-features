@@ -42,13 +42,15 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class TestOpenRoadmNetworkElementFactory {
-
+//    variables
     private static NetconfBindingAccessor accessor;
     private static DeviceManagerServiceProvider serviceProvider;
     private static Capabilities capabilities;
     private static TransactionUtils transactionUtils;
     private static DataBroker dataBroker;
+    // end of variables
 
+    // public methods
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
         accessor = mock(NetconfBindingAccessor.class);
@@ -97,5 +99,5 @@ public class TestOpenRoadmNetworkElementFactory {
     public void cleanUp() throws Exception {
 
     }
-
+    // end of public methods
 }

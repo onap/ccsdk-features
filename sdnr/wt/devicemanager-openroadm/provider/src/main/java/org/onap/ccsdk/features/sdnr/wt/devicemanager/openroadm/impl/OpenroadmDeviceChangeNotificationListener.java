@@ -27,7 +27,6 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
-import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.OrgOpenroadmAlarmListener;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.ChangeNotification;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.CreateTechInfoNotification;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.OrgOpenroadmDeviceListener;
@@ -49,7 +48,7 @@ import org.slf4j.LoggerFactory;
 
 public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDeviceListener {
     // variables
-    private static final Logger log = LoggerFactory.getLogger(OrgOpenroadmAlarmListener.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenroadmDeviceChangeNotificationListener.class);
     private Integer counter = 1;
     private final NetconfAccessor netconfAccessor;
     private final DataProvider databaseProvider;
@@ -105,7 +104,7 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
 
     @Override
     public void onCreateTechInfoNotification(CreateTechInfoNotification notification) {
-        // TODO Auto-generated method stub
+
         log.info("onCreateTechInfoNotification(1){}", notification);
         EventlogBuilder eventlogBuilder = new EventlogBuilder();
         eventlogBuilder.setId(notification.getShelfId()).setAttributeName(notification.getShelfId())

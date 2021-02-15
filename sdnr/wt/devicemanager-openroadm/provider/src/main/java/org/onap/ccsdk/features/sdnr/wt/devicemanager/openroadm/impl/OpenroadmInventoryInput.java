@@ -47,8 +47,8 @@ public class OpenroadmInventoryInput {
     // end of variables
 
     // constructors
-    public OpenroadmInventoryInput(NetconfAccessor netconfAccessor, OrgOpenroadmDevice readDevice) {
-        this.openRoadmDevice = readDevice;
+    public OpenroadmInventoryInput(NetconfAccessor netconfAccessor, OrgOpenroadmDevice roadmDevice) {
+        this.openRoadmDevice = roadmDevice;
         this.accessor = netconfAccessor;
     }
     // end of constructors
@@ -56,6 +56,7 @@ public class OpenroadmInventoryInput {
     // public methods
     public Inventory getInventoryData(Uint32 treeLevel) {
         InventoryBuilder inventoryBuilder = new InventoryBuilder();
+        log.info("Info for device {}", this.openRoadmDevice.getInfo().getNodeId().getValue());
         inventoryBuilder.setNodeId(this.accessor.getNodeId().getValue())
                 .setUuid(this.openRoadmDevice.getInfo().getNodeId() == null ? "N/A"
                         : this.openRoadmDevice.getInfo().getNodeId().getValue())

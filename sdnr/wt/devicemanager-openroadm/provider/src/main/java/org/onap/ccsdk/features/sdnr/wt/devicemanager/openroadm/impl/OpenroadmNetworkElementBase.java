@@ -32,17 +32,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 public class OpenroadmNetworkElementBase implements NetworkElement {
-
+    // variables
     protected final NetconfBindingAccessor netconfAccessor;
     protected final DataProvider databaseService;
-
+    // end of variables
+    // constructors
     public OpenroadmNetworkElementBase(NetconfBindingAccessor netconfAccess,
             DeviceManagerServiceProvider serviceProvider) {
 
         this.netconfAccessor = netconfAccess;
         this.databaseService = serviceProvider.getDataProvider();
     }
-
+    // end of constructors
+    //public methods
     @Override
     public void register() {}
 
@@ -71,4 +73,5 @@ public class OpenroadmNetworkElementBase implements NetworkElement {
     public Optional<NetconfAccessor> getAcessor() {
         return Optional.of(netconfAccessor);
     }
+    // end of public methods
 }

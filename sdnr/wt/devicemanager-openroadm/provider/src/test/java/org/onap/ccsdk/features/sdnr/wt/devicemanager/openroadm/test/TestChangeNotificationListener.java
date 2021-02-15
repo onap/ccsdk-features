@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
+import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl.OpenroadmChangeNotificationListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
@@ -42,10 +43,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 
 public class TestChangeNotificationListener {
-
+    // variables
     private static final String NODEID = "node1";
 
-    //@Test
+    //    end of variables
+    //    public methods
+    @Test
     public void test() {
 
         NetconfAccessor netconfAccessor = mock(NetconfAccessor.class);
@@ -74,6 +77,8 @@ public class TestChangeNotificationListener {
 
     }
 
+    //  end of public methods
+    // private methods
     /**
      * @param type
      * @return
@@ -86,4 +91,5 @@ public class TestChangeNotificationListener {
         when(change.nonnullEdit()).thenReturn(edits);
         return change;
     }
+    // end of private methods
 }
