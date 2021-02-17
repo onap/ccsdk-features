@@ -47,11 +47,7 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.VesNotificationLi
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeStateServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.rpc.NetconfnodeStateServiceRpcApiImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.example.ExampleConfig;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.ClusterSingletonServiceProviderMock;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.MountPointMock;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.MountPointServiceMock;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.NotificationPublishServiceMock;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.mock.RpcProviderRegistryMock;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.example.TestNetconfHelper;
 import org.opendaylight.binding.runtime.spi.BindingRuntimeHelpers;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -68,8 +64,6 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.AvailableCapabilitiesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapabilityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.AttributeChangeNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.AttributeChangeNotificationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.FaultNotification;
@@ -98,20 +92,18 @@ public class TestNetconfNodeStateService extends Mockito {
 
     private static Path KARAF_ETC = Paths.get("etc");
     private static NetconfNodeStateServiceImpl netconfStateService;
-    private static MountPointMock mountPoint;
     //private static DataBrokerNetconfMock dataBrokerNetconf;
     private static DataBroker dataBrokerNetconf;
-    private @NonNull
-    static DataTreeChangeListener<Node> listener;
-    private @NonNull
-    static ClusteredDataTreeChangeListener<Node> listenerClustered;
+    private @NonNull static DataTreeChangeListener<Node> listener;
+    private @NonNull static ClusteredDataTreeChangeListener<Node> listenerClustered;
 
 
     private static final Logger LOG = LoggerFactory.getLogger(TestNetconfNodeStateService.class);
 
     @SuppressWarnings("unchecked")
     @BeforeClass
-    public static <T extends DataObject, L extends DataTreeChangeListener<T>> void before() throws InterruptedException, IOException {
+    public static <T extends DataObject, L extends DataTreeChangeListener<T>> void before()
+            throws InterruptedException, IOException {
 
         System.out.println("Logger: " + LOG.getClass().getName() + " " + LOG.getName());
         // Call System property to get the classpath value
@@ -125,39 +117,35 @@ public class TestNetconfNodeStateService extends Mockito {
         //dataBrokerNetconf = new DataBrokerNetconfMock();
         //dataBrokerNetconf.newReadWriteTransaction();
         dataBrokerNetconf = mock(DataBroker.class);
-        when(dataBrokerNetconf.registerDataTreeChangeListener(any(), any())).thenAnswer(
-                invocation -> {
-                    Object pListener = invocation.getArguments()[1];
-                    System.out.println("Register " + pListener.getClass().getName());
-                    if (pListener instanceof ClusteredDataTreeChangeListener) {
-                        System.out.println("Clustered listener");
-                        listenerClustered = (ClusteredDataTreeChangeListener<Node>) pListener;
-                    } else if (pListener instanceof DataTreeChangeListener) {
-                        System.out.println("Listener");
-                        listener = (DataTreeChangeListener<Node>) pListener;
-                    }
-                    return new ListenerRegistration<L>() {
-                        @Override
-                        public L getInstance() {
-                            return (L) pListener;
-                        }
-
-                        @Override
-                        public void close() {
-                        }
-                    };
-
+        when(dataBrokerNetconf.registerDataTreeChangeListener(any(), any())).thenAnswer(invocation -> {
+            Object pListener = invocation.getArguments()[1];
+            System.out.println("Register " + pListener.getClass().getName());
+            if (pListener instanceof ClusteredDataTreeChangeListener) {
+                System.out.println("Clustered listener");
+                listenerClustered = (ClusteredDataTreeChangeListener<Node>) pListener;
+            } else if (pListener instanceof DataTreeChangeListener) {
+                System.out.println("Listener");
+                listener = (DataTreeChangeListener<Node>) pListener;
+            }
+            return new ListenerRegistration<L>() {
+                @Override
+                public L getInstance() {
+                    return (L) pListener;
                 }
-);
 
-        mountPoint = new MountPointMock();
-        ClusterSingletonServiceProvider clusterSingletonService = new ClusterSingletonServiceProviderMock();
-        MountPointService mountPointService = new MountPointServiceMock(mountPoint);
-        NotificationPublishService notificationPublishService = new NotificationPublishServiceMock();
-        RpcProviderService rpcProviderRegistry = new RpcProviderRegistryMock();
+                @Override
+                public void close() {}
+            };
+
+        });
+        ClusterSingletonServiceProvider clusterSingletonService = mock(ClusterSingletonServiceProvider.class);
+        MountPointService mountPointService = mock(MountPointService.class);
+        NotificationPublishService notificationPublishService = mock(NotificationPublishService.class);
+        RpcProviderService rpcProviderRegistry = mock(RpcProviderService.class);
         IEntityDataProvider entityProviderMock = mock(IEntityDataProvider.class);
         YangParserFactory yangParserFactory = new YangParserFactoryImpl();
-        BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer = new BindingCodecContext(BindingRuntimeHelpers.createRuntimeContext());
+        BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer =
+                new BindingCodecContext(BindingRuntimeHelpers.createRuntimeContext());
         // start using blueprint interface
         netconfStateService = new NetconfNodeStateServiceImpl();
 
@@ -227,22 +215,10 @@ public class TestNetconfNodeStateService extends Mockito {
     @Test
     public void test5OnConnect() throws InterruptedException {
         System.out.println("Test5: On Connect");
-        NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();
-        netconfNodeBuilder.setConnectionStatus(ConnectionStatus.Connected);
-        AvailableCapabilityBuilder availableCapabilityBuilder = new AvailableCapabilityBuilder();
-        availableCapabilityBuilder.setCapability("network-element");
-        AvailableCapabilitiesBuilder availableCapabilitesBuilder = new AvailableCapabilitiesBuilder();
-        availableCapabilitesBuilder.setAvailableCapability(Arrays.asList(availableCapabilityBuilder.build()));
-        netconfNodeBuilder.setAvailableCapabilities(availableCapabilitesBuilder.build());
-        NetconfNode rootNodeNetconf = netconfNodeBuilder.build();
-
         String nodeIdString = "Test";
+        String capabilityStringForNetworkElement = "network-element";
         NodeId nodeId = new NodeId(nodeIdString);
-        NodeBuilder nodeBuilder = new NodeBuilder();
-
-        nodeBuilder.addAugmentation(rootNodeNetconf);
-        nodeBuilder.setNodeId(nodeId);
-        Node rootNode = nodeBuilder.build();
+        Node rootNode = TestNetconfHelper.getTestNode(nodeId, capabilityStringForNetworkElement);
 
         DataObjectModification<Node> dom = mock(DataObjectModification.class);
         when(dom.getDataAfter()).thenReturn(rootNode);
@@ -253,7 +229,6 @@ public class TestNetconfNodeStateService extends Mockito {
 
         NetconfNodeConnectListener nCL = mock(NetconfNodeConnectListener.class);
         netconfStateService.registerNetconfNodeConnectListener(nCL);
-        mountPoint.setDatabrokerAbsent(false);
 
         Collection<DataTreeModification<Node>> changes = Arrays.asList(ntn);
         sendClusteredChanges(changes);
@@ -262,9 +237,9 @@ public class TestNetconfNodeStateService extends Mockito {
         //verify that it was called one time and nodeId is the expected
         ArgumentCaptor<NetconfAccessor> varArgs = ArgumentCaptor.forClass(NetconfAccessor.class);
         verify(nCL).onEnterConnected(varArgs.capture());
-        System.out.println("Accessor " + varArgs.getValue().getNodeId());
-        assertEquals(nodeIdString, varArgs.getValue().getNodeId().getValue());
-
+        NetconfAccessor accessor = varArgs.getValue();
+        System.out.println("Accessor " + accessor.getNodeId());
+        assertEquals(nodeIdString, accessor.getNodeId().getValue());
     }
 
     @SuppressWarnings("unchecked")
@@ -359,6 +334,11 @@ public class TestNetconfNodeStateService extends Mockito {
     @Test
     public void test10ApiPushNotifiction() throws YangParserException, IOException {
         ExampleConfig.exampleConfig(netconfStateService.getDomContext());
+    }
+
+    @Test
+    public void test10NetconfAccessorClone() {
+
     }
 
     // ------- private section
