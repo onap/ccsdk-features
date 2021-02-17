@@ -23,9 +23,11 @@ package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.bind
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfAccessorImpl;
@@ -57,12 +59,14 @@ public class NetconfBindingNotificationsImpl extends NetconfBindingAccessorImpl 
     }
 
     @Override
-    public ListenableFuture<RpcResult<CreateSubscriptionOutput>> registerNotificationsStream(@NonNull String streamName) {
+    public ListenableFuture<RpcResult<CreateSubscriptionOutput>> registerNotificationsStream(
+            @NonNull String streamName) {
         String failMessage = "";
         final Optional<RpcConsumerRegistry> optionalRpcConsumerService =
                 getMountpoint().getService(RpcConsumerRegistry.class);
         if (optionalRpcConsumerService.isPresent()) {
-            final NotificationsService rpcService = optionalRpcConsumerService.get().getRpcService(NotificationsService.class);
+            final NotificationsService rpcService =
+                    optionalRpcConsumerService.get().getRpcService(NotificationsService.class);
 
             final CreateSubscriptionInputBuilder createSubscriptionInputBuilder = new CreateSubscriptionInputBuilder();
             createSubscriptionInputBuilder.setStream(new StreamNameType(streamName));
@@ -72,6 +76,7 @@ public class NetconfBindingNotificationsImpl extends NetconfBindingAccessorImpl 
                 if (createSubscriptionInput == null) {
                     failMessage = "createSubscriptionInput is null for mountpoint " + getNodeId();
                 } else {
+                    // Regular case, return value
                     return rpcService.createSubscription(createSubscriptionInput);
                 }
             } catch (NullPointerException e) {
@@ -80,6 +85,7 @@ public class NetconfBindingNotificationsImpl extends NetconfBindingAccessorImpl 
         } else {
             failMessage = "No RpcConsumerRegistry avaialble.";
         }
+        //Be here only in case of problem and return failed indication
         log.warn(failMessage);
         RpcResultBuilder<CreateSubscriptionOutput> result = RpcResultBuilder.failed();
         result.withError(ErrorType.APPLICATION, failMessage);
@@ -91,9 +97,17 @@ public class NetconfBindingNotificationsImpl extends NetconfBindingAccessorImpl 
     @Override
     public void registerNotificationsStream(List<Stream> streamList) {
         for (Stream stream : streamList) {
-            log.info("Stream Name = {}, Stream Description = {}", stream.getName().getValue(), stream.getDescription());
-            if (!(stream.getName().getValue().equals(NetconfNotifications.DefaultNotificationsStream))) // Since this stream is already registered
-                registerNotificationsStream(stream.getName().getValue());
+            @Nullable
+            StreamNameType streamName = stream.getName();
+            if (streamName != null) {
+                String streamNameValue = stream.getName().getValue();
+                log.info("Stream Name = {}, Stream Description = {}", streamNameValue, stream.getDescription());
+                if (!(streamNameValue.equals(NetconfNotifications.DefaultNotificationsStream)))
+                    // Register any not default stream. Default stream is already registered
+                    registerNotificationsStream(streamNameValue);
+            } else {
+                log.warn("Ignore a stream without name");
+            }
         }
     }
 
@@ -116,10 +130,14 @@ public class NetconfBindingNotificationsImpl extends NetconfBindingAccessorImpl 
         final Class<Netconf> netconfClazz = Netconf.class;
         InstanceIdentifier<Netconf> streamsIID = InstanceIdentifier.builder(netconfClazz).build();
 
-        Netconf res = getTransactionUtils().readData(getDataBroker(),
-                LogicalDatastoreType.OPERATIONAL, streamsIID);
-        Streams streams = res.getStreams();
-        return YangHelper.getList(streams.getStream());
+        Netconf res = getTransactionUtils().readData(getDataBroker(), LogicalDatastoreType.OPERATIONAL, streamsIID);
+        if (res != null) {
+            Streams streams = res.getStreams();
+            if (streams != null) {
+                return YangHelper.getList(streams.nonnullStream());
+            }
+        }
+        return Collections.emptyList();
     }
 
     @Override

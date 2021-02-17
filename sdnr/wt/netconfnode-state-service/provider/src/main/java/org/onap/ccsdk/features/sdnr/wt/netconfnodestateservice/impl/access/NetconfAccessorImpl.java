@@ -80,10 +80,10 @@ public class NetconfAccessorImpl implements NetconfAccessor {
         this(new NodeId(nodeId), netconfNode, netconfCommunicatorManager, domContext);
     }
 
-    protected NetconfAccessorImpl(NetconfAccessorImpl accessor) {
-        this.nodeId = accessor.nodeId;
-        this.netconfNode = accessor.netconfNode;
-        this.capabilities = accessor.capabilities;
+    public NetconfAccessorImpl(NetconfAccessorImpl accessor) {
+        this.nodeId = accessor.getNodeId();
+        this.netconfNode = accessor.getNetconfNode();
+        this.capabilities = accessor.getCapabilites();
         this.netconfCommunicatorManager = accessor.netconfCommunicatorManager;
         this.domContext = accessor.domContext;
     }
