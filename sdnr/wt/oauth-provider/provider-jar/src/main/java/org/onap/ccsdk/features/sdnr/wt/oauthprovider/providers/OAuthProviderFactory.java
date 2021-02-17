@@ -33,12 +33,14 @@ public class OAuthProviderFactory {
                 return new KeycloakProviderService(config, redirectUri, tokenCreator);
             case NEXTCLOUD:
                 return new NextcloudProviderService(config, redirectUri, tokenCreator);
+            case GITLAB:
+                return new GitlabProviderService(config, redirectUri, tokenCreator);
         }
         return null;
     }
 
     public static enum OAuthProvider {
-        KEYCLOAK, NEXTCLOUD
+        KEYCLOAK, NEXTCLOUD, GITLAB
     }
 
 }

@@ -48,11 +48,12 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.AuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.AuthService.PublicOAuthProviderConfig;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.MdSalAuthorizationStore;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.OAuthProviderFactory;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
-import org.opendaylight.aaa.api.IDMStoreException;
 import org.opendaylight.aaa.api.IdMService;
 import org.opendaylight.aaa.shiro.filters.backport.BearerToken;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.ShiroConfiguration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.shiro.configuration.Main;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.shiro.configuration.Urls;
@@ -68,11 +69,14 @@ public class AuthHttpServlet extends HttpServlet {
     //private static final String LOGOUTURI = BASEURI + "/logout";
     private static final String PROVIDERSURI = BASEURI + "/providers";
     public static final String REDIRECTURI = BASEURI + "/redirect";
+    private static final String REDIRECTURI_FORMAT = REDIRECTURI + "/%s";
     private static final String POLICIESURI = BASEURI + "/policies";
     //private static final String PROVIDERID_REGEX = "^\\" + BASEURI + "\\/providers\\/([^\\/]+)$";
     private static final String REDIRECTID_REGEX = "^\\" + BASEURI + "\\/redirect\\/([^\\/]+)$";
+    private static final String LOGIN_REDIRECT_REGEX = "^\\" + LOGINURI + "\\/([^\\/]+)$";
     //private static final Pattern PROVIDERID_PATTERN = Pattern.compile(PROVIDERID_REGEX);
     private static final Pattern REDIRECTID_PATTERN = Pattern.compile(REDIRECTID_REGEX);
+    private static final Pattern LOGIN_REDIRECT_PATTERN = Pattern.compile(LOGIN_REDIRECT_REGEX);
 
     private static final String DEFAULT_DOMAIN = "sdn";
     private static final String HEAEDER_AUTHORIZATION = "Authorization";
@@ -83,6 +87,7 @@ public class AuthHttpServlet extends HttpServlet {
             "org.opendaylight.aaa.shiro.filters.ODLHttpAuthenticationFilter2";
     private static final String CLASSNAME_ODLMDSALAUTH =
             "org.opendaylight.aaa.shiro.realm.MDSALDynamicAuthorizationFilter";
+    public static final String LOGIN_REDIRECT_FORMAT = LOGINURI + "/%s";
 
     private final ObjectMapper mapper;
     /* state <=> AuthProviderService> */
@@ -92,15 +97,17 @@ public class AuthHttpServlet extends HttpServlet {
     private final TokenCreator tokenCreator;
     private final Config config;
     private ShiroConfiguration shiroConfiguration;
+    private DataBroker dataBroker;
+    private MdSalAuthorizationStore mdsalAuthStore;
 
     public AuthHttpServlet() throws IOException {
-        this.tokenCreator = TokenCreator.getInstance();
         this.config = Config.getInstance();
+        this.tokenCreator = TokenCreator.getInstance(this.config);
         this.mapper = new ObjectMapper();
         this.providerStore = new HashMap<>();
         for (OAuthProviderConfig pc : config.getProviders()) {
             this.providerStore.put(pc.getId(), OAuthProviderFactory.create(pc.getType(), pc,
-                    this.config.getRedirectUri(), TokenCreator.getInstance()));
+                    this.config.getRedirectUri(), TokenCreator.getInstance(this.config)));
         }
 
     }
@@ -117,12 +124,19 @@ public class AuthHttpServlet extends HttpServlet {
         this.shiroConfiguration = shiroConfiguration;
     }
 
+    public void setDataBroker(DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
+        this.mdsalAuthStore = new MdSalAuthorizationStore(this.dataBroker);
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         LOG.debug("GET request for {}", req.getRequestURI());
-        fillHost(req);
+        getHost(req);
         if (PROVIDERSURI.equals(req.getRequestURI())) {
             this.sendResponse(resp, HttpServletResponse.SC_OK, getConfigs(this.providerStore.values()));
+        } else if (req.getRequestURI().startsWith(LOGINURI)) {
+            this.handleLoginRedirect(req, resp);
         } else if (POLICIESURI.equals(req.getRequestURI())) {
             this.sendResponse(resp, HttpServletResponse.SC_OK, this.getPoliciesForUser(req));
         } else if (req.getRequestURI().startsWith(REDIRECTURI)) {
@@ -131,6 +145,22 @@ public class AuthHttpServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
 
+    }
+
+    private void handleLoginRedirect(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        final String uri = req.getRequestURI();
+        final Matcher matcher = LOGIN_REDIRECT_PATTERN.matcher(uri);
+        if (matcher.find()) {
+            final String id = matcher.group(1);
+            AuthService provider = this.providerStore.getOrDefault(id, null);
+            if (provider != null) {
+                //provider.setLocalHostUrl(getHost(req));
+                String redirectUrl = getHost(req) + String.format(REDIRECTURI_FORMAT, id);
+                provider.sendLoginRedirectResponse(resp, redirectUrl);
+                return;
+            }
+        }
+        this.sendResponse(resp, HttpServletResponse.SC_NOT_FOUND, "");
     }
 
     /**
@@ -161,8 +191,13 @@ public class AuthHttpServlet extends HttpServlet {
                     try {
                         final String authClass = getAuthClass(matcher.group(1));
                         Optional<OdlPolicy> policy = Optional.empty();
-                        if (authClass.equals(CLASSNAME_ODLBASICAUTH)
-                                || authClass.equals(CLASSNAME_ODLBEARERANDBASICAUTH)) {
+                        //anon access allowed
+                        if (authClass == null) {
+                            policy = Optional.of(OdlPolicy.allowAll(urlRule.getPairKey()));
+                        } else if (authClass.equals(CLASSNAME_ODLBASICAUTH)) {
+                            policy = isBasic(req) ? this.getTokenBasedPolicy(urlRule, matcher, data)
+                                    : Optional.of(OdlPolicy.denyAll(urlRule.getPairKey()));
+                        } else if (authClass.equals(CLASSNAME_ODLBEARERANDBASICAUTH)) {
                             policy = this.getTokenBasedPolicy(urlRule, matcher, data);
                         } else if (authClass.equals(CLASSNAME_ODLMDSALAUTH)) {
                             policy = this.getMdSalBasedPolicy(urlRule, matcher, data);
@@ -172,6 +207,7 @@ public class AuthHttpServlet extends HttpServlet {
                         } else {
                             LOG.warn("unable to get policy for authClass {} for entry {}", authClass,
                                     urlRule.getPairValue());
+                            policies.add(OdlPolicy.denyAll(urlRule.getPairKey()));
                         }
                     } catch (NoDefinitionFoundException e) {
                         LOG.warn("unknown authClass: ", e);
@@ -188,20 +224,24 @@ public class AuthHttpServlet extends HttpServlet {
     }
 
     /**
-     * extract policy rule for user from MD-SAL
-     * not yet supported
+     * extract policy rule for user from MD-SAL not yet supported
+     *
      * @param urlRule
      * @param matcher
      * @param data
      * @return
      */
     private Optional<OdlPolicy> getMdSalBasedPolicy(Urls urlRule, Matcher matcher, UserTokenPayload data) {
-
+        if (this.mdsalAuthStore != null) {
+            return data != null ? this.mdsalAuthStore.getPolicy(urlRule.getPairKey(), data.getRoles())
+                    : Optional.of(OdlPolicy.denyAll(urlRule.getPairKey()));
+        }
         return Optional.empty();
     }
 
     /**
      * extract policy rule for user from url rules of config
+     *
      * @param urlRule
      * @param matcher
      * @param data
@@ -209,25 +249,27 @@ public class AuthHttpServlet extends HttpServlet {
      */
     private Optional<OdlPolicy> getTokenBasedPolicy(Urls urlRule, Matcher matcher, UserTokenPayload data) {
         final String url = urlRule.getPairKey();
-        if (!urlRule.getPairValue().contains(",")) {
+        final String rule = urlRule.getPairValue();
+        if (!rule.contains(",")) {
             LOG.debug("found rule without roles for '{}'", matcher.group(1));
             //not important if anon or authcXXX
             if (data != null || "anon".equals(matcher.group(1))) {
                 return Optional.of(OdlPolicy.allowAll(url));
             }
-        } else if (data != null) {
+        }
+        if (data != null) {
             LOG.debug("found rule with roles '{}'", matcher.group(4));
             if ("roles".equals(matcher.group(2))) {
                 if (this.rolesMatch(data.getRoles(), Arrays.asList(matcher.group(4).split(",")), false)) {
-                    Optional.of(OdlPolicy.allowAll(url));
+                    return Optional.of(OdlPolicy.allowAll(url));
                 } else {
-                    Optional.of(OdlPolicy.denyAll(url));
+                    return Optional.of(OdlPolicy.denyAll(url));
                 }
             } else if ("anyroles".equals(matcher.group(2))) {
                 if (this.rolesMatch(data.getRoles(), Arrays.asList(matcher.group(4).split(",")), true)) {
-                    Optional.of(OdlPolicy.allowAll(url));
+                    return Optional.of(OdlPolicy.allowAll(url));
                 } else {
-                    Optional.of(OdlPolicy.denyAll(url));
+                    return Optional.of(OdlPolicy.denyAll(url));
                 }
             } else {
                 LOG.warn("unable to detect url role value: {}", urlRule.getPairValue());
@@ -252,7 +294,7 @@ public class AuthHttpServlet extends HttpServlet {
 
     private UserTokenPayload getUserInfo(HttpServletRequest req) {
         if (isBearer(req)) {
-            UserTokenPayload data = TokenCreator.getInstance().decode(req);
+            UserTokenPayload data = TokenCreator.getInstance(this.config).decode(req);
             if (data != null) {
                 return data;
             }
@@ -317,8 +359,8 @@ public class AuthHttpServlet extends HttpServlet {
 
     }
 
-    private void fillHost(HttpServletRequest req) {
-        String hostUrl = this.config.getHost();
+    public String getHost(HttpServletRequest req) {
+        String hostUrl = this.config.getPublicUrl();
         if (hostUrl == null) {
             final String tmp = req.getRequestURL().toString();
             final String regex = "^(http[s]{0,1}:\\/\\/[^\\/]+)";
@@ -326,16 +368,17 @@ public class AuthHttpServlet extends HttpServlet {
             final Matcher matcher = pattern.matcher(tmp);
             if (matcher.find()) {
                 hostUrl = matcher.group(1);
-                this.config.setHost(hostUrl);
             }
         }
+        LOG.info("host={}", hostUrl);
+        return hostUrl;
 
     }
 
     private List<PublicOAuthProviderConfig> getConfigs(Collection<AuthService> values) {
         List<PublicOAuthProviderConfig> configs = new ArrayList<>();
         for (AuthService svc : values) {
-            configs.add(svc.getConfig(this.config.getHost()));
+            configs.add(svc.getConfig());
         }
         return configs;
     }
@@ -353,8 +396,8 @@ public class AuthHttpServlet extends HttpServlet {
         if (matcher.find()) {
             AuthService provider = this.providerStore.getOrDefault(matcher.group(1), null);
             if (provider != null) {
-                provider.setLocalHostUrl(this.config.getHost());
-                provider.handleRedirect(req, resp);
+                //provider.setLocalHostUrl(getHost(req));
+                provider.handleRedirect(req, resp, getHost(req));
                 return;
             }
         }
@@ -382,33 +425,6 @@ public class AuthHttpServlet extends HttpServlet {
         resp.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //        final String uri = req.getRequestURI();
-        //        final Matcher matcher = PROVIDERID_PATTERN.matcher(uri);
-        //        if (matcher.find()) {
-        //            final String id = matcher.group(1);
-        //            final OAuthProviderConfig config = this.mapper.readValue(req.getInputStream(), OAuthProviderConfig.class);
-        //            //this.providerStore.put(id, config);
-        //            sendResponse(resp, HttpServletResponse.SC_OK, "");
-        //            return;
-        //        }
-        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-    }
-
-    @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //        final String uri = req.getRequestURI();
-        //        final Matcher matcher = PROVIDERID_PATTERN.matcher(uri);
-        //        if (matcher.find()) {
-        //            final String id = matcher.group(1);
-        //            this.providerStore.remove(id);
-        //            sendResponse(resp, HttpServletResponse.SC_OK, "");
-        //            return;
-        //        }
-        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-    }
-
     private BearerToken doLogin(String username, String password, String domain) {
         if (!username.contains("@")) {
             username = String.format("%s@%s", username, domain);
@@ -416,12 +432,6 @@ public class AuthHttpServlet extends HttpServlet {
         HttpServletRequest req = new HeadersOnlyHttpServletRequest(
                 Map.of("Authorization", BaseHTTPClient.getAuthorizationHeaderValue(username, password)));
         if (this.odlAuthenticator.authenticate(req)) {
-            try {
-                LOG.info("userids={}", this.odlIdentityService.listUserIDs());
-                LOG.info("domains={}", this.odlIdentityService.listDomains(username));
-            } catch (IDMStoreException e) {
-
-            }
             List<String> roles = this.odlIdentityService.listRoles(username, domain);
             UserTokenPayload data = new UserTokenPayload();
             data.setPreferredUsername(username);

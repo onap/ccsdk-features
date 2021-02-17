@@ -33,9 +33,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,16 +54,13 @@ import org.slf4j.LoggerFactory;
 public abstract class AuthService {
 
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthService.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(AuthService.class);
     private final MappingBaseHttpClient httpClient;
     protected final ObjectMapper mapper;
     protected final OAuthProviderConfig config;
     protected final TokenCreator tokenCreator;
     private final String redirectUri;
-    private String localHostUrl;
-    public void setLocalHostUrl(String url) {
-        this.localHostUrl = url;
-    }
+
     protected abstract String getTokenVerifierUri();
 
     protected abstract Map<String, String> getAdditionalTokenVerifierParams();
@@ -75,23 +74,31 @@ public abstract class AuthService {
 
     protected abstract String getLoginUrl(String callbackUrl);
 
+    protected abstract UserTokenPayload requestUserRoles(String access_token, long expires_at);
+
+    protected abstract boolean verifyState(String state);
+
     public AuthService(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) {
         this.config = config;
         this.tokenCreator = tokenCreator;
         this.redirectUri = redirectUri;
         this.mapper = new ObjectMapper();
         this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        this.httpClient = new MappingBaseHttpClient(this.config.getHost());
+        this.httpClient = new MappingBaseHttpClient(this.config.getUrl());
     }
 
-    public PublicOAuthProviderConfig getConfig(String host) {
-        return new PublicOAuthProviderConfig(this, host);
+    public PublicOAuthProviderConfig getConfig() {
+        return new PublicOAuthProviderConfig(this);
     }
 
-    public void handleRedirect(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected MappingBaseHttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public void handleRedirect(HttpServletRequest req, HttpServletResponse resp, String host) throws IOException {
         switch (this.getResponseType()) {
             case CODE:
-                this.handleRedirectCode(req, resp);
+                this.handleRedirectCode(req, resp, host);
                 break;
             case TOKEN:
                 sendErrorResponse(resp, "not yet implemented");
@@ -99,39 +106,56 @@ public abstract class AuthService {
             case SESSION_STATE:
                 break;
         }
+    }
 
+    public void sendLoginRedirectResponse(HttpServletResponse resp, String callbackUrl) {
+        resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        resp.setHeader("Location", this.getLoginUrl(callbackUrl));
     }
 
     private static void sendErrorResponse(HttpServletResponse resp, String message) throws IOException {
         resp.sendError(HttpServletResponse.SC_NOT_FOUND, message);
-
     }
 
-    private void handleRedirectCode(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void handleRedirectCode(HttpServletRequest req, HttpServletResponse resp, String host) throws IOException {
         final String code = req.getParameter("code");
-        OAuthResponseData response = this.getTokenForUser(code);
+        final String state = req.getParameter("state");
+        OAuthResponseData response = null;
+        if(this.verifyState(state)) {
+            response = this.getTokenForUser(code, host);
+        }
         if (response != null) {
             if (this.doSeperateRolesRequest()) {
-
+                //long expiresAt = this.tokenCreator.getDefaultExp(Math.round(response.getExpires_in()));
+                long expiresAt = this.tokenCreator.getDefaultExp();
+                UserTokenPayload data = this.requestUserRoles(response.getAccess_token(), expiresAt);
+                if (data != null) {
+                    this.handleUserInfoToken(data, resp, host);
+                } else {
+                    sendErrorResponse(resp, "unable to verify user");
+                }
             } else {
-                this.handleUserInfoToken(response.getAccess_token(), resp);
+                this.handleUserInfoToken(response.getAccess_token(), resp, host);
             }
         } else {
             sendErrorResponse(resp, "unable to verify code");
         }
-
     }
 
-    private void handleUserInfoToken(String accessToken, HttpServletResponse resp) throws IOException {
+    private void handleUserInfoToken(UserTokenPayload data, HttpServletResponse resp, String localHostUrl)
+            throws IOException {
+        BearerToken onapToken = this.tokenCreator.createNewJWT(data);
+        sendTokenResponse(resp, onapToken, localHostUrl);
+    }
+
+    private void handleUserInfoToken(String accessToken, HttpServletResponse resp, String localHostUrl)
+            throws IOException {
         try {
             DecodedJWT jwt = JWT.decode(accessToken);
-
             String spayload = base64Decode(jwt.getPayload());
-            LOG.debug("payload in jwt from keycload='{}'", spayload);
-
+            LOG.debug("payload in jwt='{}'", spayload);
             UserTokenPayload data = this.mapAccessToken(spayload);
-            BearerToken onapToken = this.tokenCreator.createNewJWT(data);
-            sendTokenResponse(resp, onapToken);
+            this.handleUserInfoToken(data, resp, localHostUrl);
         } catch (JWTDecodeException | JsonProcessingException e) {
             LOG.warn("unable to decode jwt token {}: ", accessToken, e);
             sendErrorResponse(resp, e.getMessage());
@@ -139,7 +163,12 @@ public abstract class AuthService {
     }
 
 
-    private void sendTokenResponse(HttpServletResponse resp, BearerToken data) throws IOException {
+    protected List<String> mapRoles(List<String> roles) {
+        final Map<String, String> map = this.config.getRoleMapping();
+        return roles.stream().map(r -> map.getOrDefault(r, r)).collect(Collectors.toList());
+    }
+
+    private void sendTokenResponse(HttpServletResponse resp, BearerToken data, String localHostUrl) throws IOException {
         if (this.redirectUri == null) {
             byte[] output = data != null ? mapper.writeValueAsString(data).getBytes() : new byte[0];
             resp.setStatus(200);
@@ -150,7 +179,7 @@ public abstract class AuthService {
             os.write(output);
         } else {
             resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-            resp.setHeader("Location", assembleUrl(this.localHostUrl, this.redirectUri, data.getToken()));
+            resp.setHeader("Location", assembleUrl(localHostUrl, this.redirectUri, data.getToken()));
         }
     }
 
@@ -160,7 +189,7 @@ public abstract class AuthService {
         return new String(Base64.getDecoder().decode(data), StandardCharsets.UTF_8);
     }
 
-    private OAuthResponseData getTokenForUser(String code) {
+    private OAuthResponseData getTokenForUser(String code, String localHostUrl) {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/x-www-form-urlencoded");
@@ -168,15 +197,15 @@ public abstract class AuthService {
         params.put("code", code);
         params.put("client_id", this.config.getClientId());
         params.put("client_secret", this.config.getSecret());
-        params.put("redirect_uri",
-                assembleRedirectUrl(localHostUrl, AuthHttpServlet.REDIRECTURI, this.config.getId()));
+        params.put("redirect_uri", assembleRedirectUrl(localHostUrl, AuthHttpServlet.REDIRECTURI, this.config.getId()));
         StringBuilder body = new StringBuilder();
         for (Entry<String, String> p : params.entrySet()) {
             body.append(String.format("%s=%s&", p.getKey(), urlEncode(p.getValue())));
         }
 
-        Optional<MappedBaseHttpResponse<OAuthResponseData>> response = this.httpClient.sendMappedRequest(this.getTokenVerifierUri(),
-                "POST", body.substring(0, body.length() - 1), headers, OAuthResponseData.class);
+        Optional<MappedBaseHttpResponse<OAuthResponseData>> response =
+                this.httpClient.sendMappedRequest(this.getTokenVerifierUri(), "POST",
+                        body.substring(0, body.length() - 1), headers, OAuthResponseData.class);
         if (response.isPresent() && response.get().isSuccess()) {
             return response.get().body;
         }
@@ -184,8 +213,6 @@ public abstract class AuthService {
 
         return null;
     }
-
-
 
     /**
      * Assemble callback url for service provider {host}{baseUri}/{serviceId} e.g.
@@ -243,11 +270,10 @@ public abstract class AuthService {
             this.loginUrl = loginUrl;
         }
 
-        public PublicOAuthProviderConfig(AuthService authService, String host) {
+        public PublicOAuthProviderConfig(AuthService authService) {
             this.id = authService.config.getId();
             this.title = authService.config.getTitle();
-            this.loginUrl = authService.getLoginUrl(
-                    assembleRedirectUrl(host, AuthHttpServlet.REDIRECTURI, this.id));
+            this.loginUrl = String.format(AuthHttpServlet.LOGIN_REDIRECT_FORMAT, authService.config.getId());
         }
 
     }

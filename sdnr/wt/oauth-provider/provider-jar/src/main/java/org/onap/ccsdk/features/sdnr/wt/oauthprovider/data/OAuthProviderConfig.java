@@ -22,35 +22,39 @@
 package org.onap.ccsdk.features.sdnr.wt.oauthprovider.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.HashMap;
+import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.OAuthProviderFactory.OAuthProvider;
 
 public class OAuthProviderConfig {
 
-    private String host;
+    private String url;
     private String clientId;
     private String secret;
     private String id;
     private String title;
     private String scope;
     private OAuthProvider type;
+    private Map<String,String> roleMapping;
 
     public OAuthProvider getType() {
         return type;
     }
 
-    public OAuthProviderConfig(String id, String host, String clientId, String secret, String scope,
+    public OAuthProviderConfig(String id, String url, String clientId, String secret, String scope,
             String title) {
         this.id = id;
-        this.host = host;
+        this.url = url;
         this.clientId = clientId;
         this.secret = secret;
         this.scope = scope;
         this.title = title;
+        this.roleMapping = new HashMap<>();
     }
 
     @Override
     public String toString() {
-        return "OAuthProviderConfig [host=" + host + ", clientId=" + clientId + ", secret=" + secret + ", id=" + id
+        return "OAuthProviderConfig [host=" + url + ", clientId=" + clientId + ", secret=" + secret + ", id=" + id
                 + ", title=" + title + ", scope=" + scope + ", type=" + type + "]";
     }
 
@@ -62,8 +66,8 @@ public class OAuthProviderConfig {
         this(null, null, null, null, null, null);
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public void setClientId(String clientId) {
@@ -90,8 +94,8 @@ public class OAuthProviderConfig {
         return this.id;
     }
 
-    public String getHost() {
-        return this.host;
+    public String getUrl() {
+        return this.url;
     }
 
     public String getClientId() {
@@ -110,13 +114,21 @@ public class OAuthProviderConfig {
         return this.scope;
     }
 
+    public Map<String, String> getRoleMapping() {
+        return roleMapping;
+    }
+
+    public void setRoleMapping(Map<String, String> roleMapping) {
+        this.roleMapping = roleMapping;
+    }
+
     @JsonIgnore
     public void handleEnvironmentVars() {
         if (Config.isEnvExpression(id)) {
             this.id = Config.getProperty(id, null);
         }
-        if (Config.isEnvExpression(host)) {
-            this.host = Config.getProperty(host, null);
+        if (Config.isEnvExpression(url)) {
+            this.url = Config.getProperty(url, null);
         }
         if (Config.isEnvExpression(clientId)) {
             this.clientId = Config.getProperty(clientId, null);

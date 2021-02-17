@@ -1,14 +1,14 @@
 {
-    "tokenSecret": "${OAUTH_TOKEN_SECRET}",
-    "tokenIssuer": "${OAUTH_TOKEN_ISSUER}",
-    "host": "",
-    "redirectUri": "${OAUTH_ODLUX_REDIRECT_URI}",
-    "supportOdlUsers": "${OAUTH_SUPPORT_ODLUSERS}",
+    "tokenSecret": "secret2134",
+    "tokenIssuer": "ONAP SDNC",
+    "publicUrl": "http://nasp.diasf.de",
+    "redirectUri": "/index.html#redirect=",
+    "supportOdlUsers": "true",
     "providers": [
         {
             "id": "keycloak",
             "type": "KEYCLOAK",
-            "host": "http://10.20.11.160:8080",
+            "url": "http://10.20.11.160:8080",
             "clientId": "odlux.app",
             "secret": "5da4ea3d-8cc9-4669-bd7e-3ecb91d120cd",
             "scope": "openid",

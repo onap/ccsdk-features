@@ -50,9 +50,8 @@ public class OAuth2Realm extends TokenAuthRealm {
         super();
         super.setName(REALM_NAME);
         this.config = Config.getInstance();
-        this.tokenCreator = TokenCreator.getInstance();
+        this.tokenCreator = TokenCreator.getInstance(this.config);
         LOG.info("instantiated");
-
     }
 
     @Override

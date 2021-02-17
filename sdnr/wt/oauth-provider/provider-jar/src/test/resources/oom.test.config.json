@@ -1,0 +1,21 @@
+{
+    "tokenSecret": "secret",
+    "tokenIssuer": "ONAP SDNC",
+    "publicUrl": "https://sdnc.onap:30205",
+    "redirectUri": "null",
+    "supportOdlUsers": "true",
+    "providers": [
+        {
+            "id": "htgit",
+            "type": "GITLAB",
+            "url": "https://git-.com",
+            "clientId": "f52440b7dcd4bb75",
+            "secret": "9bd45916f52440b7dcd4bb75",
+            "scope": "api+openid+read_user+profile",
+            "title": " Gitlab",
+            "roleMapping": {
+                "mygitlabgroup": "admin"
+            }
+        }
+    ]
+}

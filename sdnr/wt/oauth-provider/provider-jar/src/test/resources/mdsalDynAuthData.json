@@ -1,0 +1,694 @@
+{
+        "policies": [
+            {
+                "resource": "/restconf/**",
+                "index": 0,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/auth/v1/**",
+                "index": 1,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/config/aaa*/**",
+                "index": 2,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/jolokia/**",
+                "index": 3,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "raftstate",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250004/**",
+                "index": 4,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "huawei",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250005/**",
+                "index": 5,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "huawei",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250006/**",
+                "index": 6,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "siae",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250007/**",
+                "index": 7,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "siae",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250008/**",
+                "index": 8,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "siae",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250009/**",
+                "index": 9,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "siae",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250010/**",
+                "index": 10,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "ericsson",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250011/**",
+                "index": 11,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "ericsson",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513559991A/**",
+                "index": 14,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "ericsson",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513559991B/**",
+                "index": 15,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "ericsson",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250012/**",
+                "index": 12,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "zte",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250013/**",
+                "index": 13,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "zte",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource": "/rests/data/network-topology:network-topology/topology=topology-netconf/**",
+                "index": 16,
+                "permissions": [
+                    {
+                        "role": "admin",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "provisioner",
+                        "actions": [
+                            "put",
+                            "get",
+                            "patch",
+                            "delete",
+                            "post"
+                        ]
+                    },
+                    {
+                        "role": "planner",
+                        "actions": [
+                            "get"
+                        ]
+                    },
+                    {
+                        "role": "monitor",
+                        "actions": [
+                            "get"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }

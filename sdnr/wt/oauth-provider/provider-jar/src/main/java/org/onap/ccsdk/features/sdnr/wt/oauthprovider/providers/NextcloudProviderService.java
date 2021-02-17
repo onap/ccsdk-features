@@ -70,4 +70,16 @@ public class NextcloudProviderService extends AuthService {
         return null;
     }
 
+    @Override
+    protected UserTokenPayload requestUserRoles(String access_token, long expires_at) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected boolean verifyState(String state) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

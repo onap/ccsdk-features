@@ -32,8 +32,6 @@ import java.nio.file.Files;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.jline.utils.Log;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -111,7 +109,7 @@ public class TestAbout {
     	AboutHelperServlet sv = new AboutHelperServlet();
     	assertNotNull(sv.getGroupIdOrDefault(null));
     }
-    
+
 
     private class AboutHelperServlet extends AboutHttpServlet {
 

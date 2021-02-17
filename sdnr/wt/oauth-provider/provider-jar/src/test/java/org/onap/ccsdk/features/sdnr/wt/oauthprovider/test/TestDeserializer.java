@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPResponse;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.KeycloakUserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthResponseData;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.client.MappedBaseHttpResponse;
@@ -50,7 +51,8 @@ public class TestDeserializer {
                         + "U5IiwiaXNzIjoiaHR0cDovLzEwLjIwLjExLjE2MDo4MDgwL2F1dGgvcmVhbG1zL21hc3RlciIsImF1ZCI6Imh0dHA6Ly8xMC4yMC4xMS4xNjA6ODA4MC9hdXRoL3JlYWxtcy9tYXN0ZXIiLCJzdWIiOiIxODM4YzRmMi01ZmUzLTRmMGMtYjJkMi1kMzY0YjI3YTQ5OTciLCJ0eXAiOiJSZWZyZXNoIiwiYXpwIjoiYWRtaW4tY2xpIiwic2Vzc2lvbl9zdGF0ZSI6I"
                         + "mNjNzFmYzFmLWFkZDQtNGE4Ni1hZTVlLWMzNGRmNDAzYzc3MiIsInNjb3BlIjoiZW1haWwgcHJvZmlsZSJ9.qutqcFuQW-GzaCVNMfiYrbmHYD34GYwBqIbaQbJSY-g\",\"token_type\":\"bearer\",\"not-before-policy\":0,\"session_state\":\"cc71fc1f-add4-4a86-ae5e-c34df403c772\",\"scope\":\"email profile\"} ";
 
-        OAuthResponseData data = new MappedBaseHttpResponse<>(200,response,OAuthResponseData.class).body;
+        BaseHTTPResponse res = new BaseHTTPResponse(200, response);
+        OAuthResponseData data = new MappedBaseHttpResponse<>(res,OAuthResponseData.class).body;
         assertEquals(token,data.getAccess_token());
 
     }

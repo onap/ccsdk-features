@@ -127,4 +127,8 @@ public class YangToolsBuilderAnnotationIntrospector extends JacksonAnnotationInt
 
     }
 
+    public void addDeserializer(Class<?> clazz, String builder) {
+        this.customDeserializer.put(clazz, builder);
+    }
+
 }

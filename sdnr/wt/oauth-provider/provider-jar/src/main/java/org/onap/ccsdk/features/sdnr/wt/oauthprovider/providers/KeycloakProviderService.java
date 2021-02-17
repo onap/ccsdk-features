@@ -51,17 +51,16 @@ public class KeycloakProviderService extends AuthService {
     protected String getLoginUrl(String callbackUrl) {
         return String.format(
                 "%s/auth/realms/onap/protocol/openid-connect/auth?client_id=%s&response_type=code&scope=%s&redirect_uri=%s",
-                this.config.getHost(), urlEncode(this.config.getClientId()), this.config.getScope(),
+                this.config.getUrl(), urlEncode(this.config.getClientId()), this.config.getScope(),
                 urlEncode(callbackUrl));
     }
 
-
-
-    private List<String> mapRoles(List<String> data) {
-
+    @Override
+    protected List<String> mapRoles(List<String> data) {
+        final Map<String,String> map = this.config.getRoleMapping();
         List<String> filteredRoles =
                 data.stream().filter(role -> !role.equals("uma_authorization") && !role.equals("offline_access"))
-                        .map(r -> r).collect(Collectors.toList());
+                        .map(r -> map.getOrDefault(r, r)).collect(Collectors.toList());
         return filteredRoles;
     }
 
@@ -91,6 +90,16 @@ public class KeycloakProviderService extends AuthService {
         data.setPreferredUsername(payload.getPreferredUsername());
         data.setRoles(this.mapRoles(payload.getRealmAccess().getRoles()));
         return data;
+    }
+
+    @Override
+    protected UserTokenPayload requestUserRoles(String access_token, long expires_at) {
+        return null;
+    }
+
+    @Override
+    protected boolean verifyState(String state) {
+        return true;
     }
 
 

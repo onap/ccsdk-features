@@ -21,25 +21,36 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.oauthprovider.test;
 
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy;
 
-public class TestConfig {
+public class TestPolicy {
 
-    public static String TEST_CONFIG_FILENAME = "src/test/resources/test.config.json";
-    public static String TEST_OOMCONFIG_FILENAME = "src/test/resources/oom.test.config.json";
+    private static final String PATH_1 = "/p1/**";
+
     @Test
-    public void test() throws IOException {
-
-        Config config = Config.load(TEST_CONFIG_FILENAME);
-        System.out.println("config="+config);
+    public void testPolicyAllowAll() {
+        OdlPolicy p = OdlPolicy.allowAll(PATH_1);
+        assertTrue(p.getMethods().isGet());
+        assertTrue(p.getMethods().isPost());
+        assertTrue(p.getMethods().isPut());
+        assertTrue(p.getMethods().isDelete());
+        assertTrue(p.getMethods().isPatch());
+        assertEquals(PATH_1,p.getPath());
     }
+
     @Test
-    public void testOom() throws IOException {
-
-        Config config = Config.load(TEST_OOMCONFIG_FILENAME);
-        System.out.println("config="+config);
-
+    public void testPolicyDenyAll() {
+        OdlPolicy p = OdlPolicy.denyAll(PATH_1);
+        assertFalse(p.getMethods().isGet());
+        assertFalse(p.getMethods().isPost());
+        assertFalse(p.getMethods().isPut());
+        assertFalse(p.getMethods().isDelete());
+        assertFalse(p.getMethods().isPatch());
+        assertEquals(PATH_1,p.getPath());
     }
+
 }

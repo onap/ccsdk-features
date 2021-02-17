@@ -48,16 +48,16 @@ public class Config {
 
 
     private List<OAuthProviderConfig> providers;
-    private String host;
     private String redirectUri;
     private String supportOdlUsers;
     private String tokenSecret;
     private String tokenIssuer;
+    private String publicUrl;
 
 
     @Override
     public String toString() {
-        return "Config [providers=" + providers + ", host=" + host + ", redirectUri=" + redirectUri
+        return "Config [providers=" + providers + ", redirectUri=" + redirectUri
                 + ", supportOdlUsers=" + supportOdlUsers + ", tokenSecret=" + tokenSecret + ", tokenIssuer="
                 + tokenIssuer + "]";
     }
@@ -70,14 +70,6 @@ public class Config {
 
     public void setProviders(List<OAuthProviderConfig> providers) {
         this.providers = providers;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
     }
 
     public String getRedirectUri() {
@@ -112,6 +104,15 @@ public class Config {
         this.tokenIssuer = tokenIssuer;
     }
 
+
+    public String getPublicUrl() {
+        return publicUrl;
+    }
+
+    public void setPublicUrl(String publicUrl) {
+        this.publicUrl = publicUrl;
+    }
+
     @JsonIgnore
     private void handleEnvironmentVars() {
         if (isEnvExpression(tokenIssuer)) {
@@ -120,8 +121,8 @@ public class Config {
         if (isEnvExpression(tokenSecret)) {
             this.tokenSecret = getProperty(tokenSecret, null);
         }
-        if (isEnvExpression(host)) {
-            this.host = getProperty(host, null);
+        if (isEnvExpression(publicUrl)) {
+            this.publicUrl = getProperty(publicUrl, null);
         }
         if (isEnvExpression(redirectUri)) {
             this.redirectUri = getProperty(redirectUri, null);
@@ -139,8 +140,11 @@ public class Config {
         if (tokenSecret == null || tokenSecret.isEmpty()) {
             this.tokenSecret = DEFAULT_TOKENSECRET;
         }
-        if (redirectUri == null || redirectUri.isEmpty()) {
+        if (redirectUri == null || redirectUri.isEmpty() || "null".equals(redirectUri)) {
             this.redirectUri = DEFAULT_REDIRECTURI;
+        }
+        if (publicUrl != null && (publicUrl.isEmpty() || "null".equals(publicUrl))) {
+            this.publicUrl = null;
         }
         if (supportOdlUsers == null || supportOdlUsers.isEmpty()) {
             this.supportOdlUsers = DEFAULT_SUPPORTODLUSERS;
@@ -150,11 +154,12 @@ public class Config {
     static boolean isEnvExpression(String key) {
         return key != null && key.contains(ENVVARIABLE);
     }
-
-    private static String generateSecret() {
+    public static String generateSecret() {
+        return generateSecret(30);
+    }
+    public static String generateSecret(int targetStringLength) {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
-        int targetStringLength = 30;
         Random random = new Random();
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -226,10 +231,12 @@ public class Config {
     }
 
 
-
     public static Config getInstance() throws IOException {
+        return getInstance(DEFAULT_CONFIGFILENAME);
+    }
+    public static Config getInstance(String filename) throws IOException {
         if(_instance==null) {
-            _instance = load(DEFAULT_CONFIGFILENAME);
+            _instance = load(filename);
         }
         return _instance;
     }

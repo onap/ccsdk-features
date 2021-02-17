@@ -68,7 +68,7 @@ public class OdlPolicy {
         private boolean patch;
 
         public PolicyMethods() {
-
+            this(false, false, false, false, false);
         }
 
         public PolicyMethods(boolean get, boolean post, boolean put, boolean del, boolean patch) {

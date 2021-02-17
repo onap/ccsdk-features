@@ -41,28 +41,38 @@ public class TokenCreator {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthHttpServlet.class.getName());
     private static final long DEFAULT_TOKEN_LIFETIME_MS = 30 * 60 * 1000;
-    private static final String TOKEN_ISSUER = Config.getProperty("${TOKEN_ISSUER}", "ONAP SDNC");
+    private final String issuer;
     private static TokenCreator _instance;
-    private static final String SECRET = Config.getProperty("${TOKEN_SECRET}", "secret");
+    private final String secret;
 
     private static final String ROLES_CLAIM = "roles";
     private static final String FAMILYNAME_CLAIM = "family_name";
     private static final String NAME_CLAIM = "name";
 
-    public static TokenCreator getInstance() {
+    public static TokenCreator getInstance(Config config) {
         if (_instance == null) {
-            _instance = new TokenCreator();
+            _instance = new TokenCreator(config);
+        }
+        return _instance;
+    }
+    public static TokenCreator getInstance(String secret, String issuer) {
+        if (_instance == null) {
+            _instance = new TokenCreator(secret, issuer);
         }
         return _instance;
     }
 
-    private TokenCreator() {
-
+    private TokenCreator(Config config) {
+        this(config.getTokenSecret(),config.getTokenIssuer());
+    }
+    private TokenCreator(String secret, String issuer) {
+        this.secret = secret;
+        this.issuer = issuer;
     }
 
     public BearerToken createNewJWT(UserTokenPayload data) {
-        Algorithm algorithm = Algorithm.HMAC256(SECRET);
-        final String token = JWT.create().withIssuer(TOKEN_ISSUER).withExpiresAt(new Date(data.getExp()))
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        final String token = JWT.create().withIssuer(issuer).withExpiresAt(new Date(data.getExp()))
                 .withSubject(data.getPreferredUsername()).withClaim(NAME_CLAIM, data.getGivenName())
                 .withClaim(FAMILYNAME_CLAIM, data.getFamilyName())
                 .withArrayClaim(ROLES_CLAIM, data.getRoles().toArray(new String[data.getRoles().size()]))
@@ -74,8 +84,8 @@ public class TokenCreator {
         DecodedJWT jwt = null;
         LOG.debug("try to verify token {}", token);
         try {
-            Algorithm algorithm = Algorithm.HMAC256(SECRET);
-            JWTVerifier verifier = JWT.require(algorithm).withIssuer(TOKEN_ISSUER).build();
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build();
             jwt = verifier.verify(token);
 
         } catch (JWTVerificationException e) {
@@ -86,6 +96,10 @@ public class TokenCreator {
 
     public long getDefaultExp() {
         return new Date().getTime() + DEFAULT_TOKEN_LIFETIME_MS;
+    }
+
+    public long getDefaultExp(long exp_in) {
+        return new Date().getTime() + exp_in;
     }
 
     public UserTokenPayload decode(HttpServletRequest req) throws JWTDecodeException {
