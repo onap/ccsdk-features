@@ -19,7 +19,7 @@
 import * as React from 'react';
 import { Typography, Select, MenuItem, ClickAwayListener, Popper, Paper, FormGroup, Portal, Popover } from '@material-ui/core';
 import { SelectSiteAction, ClearHistoryAction, ClearDetailsAction } from '../actions/detailsAction';
-import { site } from '../model/site';
+import { Site } from '../model/site';
 import { link } from '../model/link';
 import { URL_API } from '../config';
 import { HighlightLinkAction, HighlightSiteAction } from '../actions/mapActions';
@@ -40,7 +40,7 @@ const MapPopup: React.FunctionComponent<props> = (props) => {
         const id = event.target.value;
 
        
-        fetch(`${URL_API}/${props.type}/${id}`)
+        fetch(`${URL_API}/${props.type.toLocaleLowerCase()}s/${id}`)
         .then(result => verifyResponse(result))
         .then(res => res.json())
         .then(result => {
@@ -64,7 +64,7 @@ const MapPopup: React.FunctionComponent<props> = (props) => {
                 <Select style={{ width: 300 }} onChange={handleChange} value={value} native>
                     <option value={""} disabled>{props.type} ids</option>
                     {
-                        props.ids.map(id => <option key={id} value={id}>{id}</option>)
+                        props.elements.map(el => <option key={el.id} value={el.id}>{el.name}</option>)
                     }
                 </Select>
             </Paper>
@@ -75,17 +75,17 @@ const MapPopup: React.FunctionComponent<props> = (props) => {
 type props = Connect<typeof mapStateToProps, typeof mapDispatchToProps>& { onClose(): void }
 
 const mapStateToProps = (state: IApplicationStoreState) => ({
-    ids: state.network.popup.selectionPendingForIds,
+    elements: state.network.popup.selectionPendingForElements,
     type: state.network.popup.pendingDataType,
     position: state.network.popup.position
 
 });
 
 const mapDispatchToProps = (dispatcher: IDispatcher) => ({ 
-    selectElement: (site: site) => dispatcher.dispatch(new SelectSiteAction(site)),
+    selectElement: (site: Site) => dispatcher.dispatch(new SelectSiteAction(site)),
     clearDetailsHistory:()=> dispatcher.dispatch(new ClearHistoryAction()),
     highlightLink: (link: link) => dispatcher.dispatch(new HighlightLinkAction(link)),
-    highlightSite: (site: site) => dispatcher.dispatch(new HighlightSiteAction(site)),
+    highlightSite: (site: Site) => dispatcher.dispatch(new HighlightSiteAction(site)),
     handleConnectionError: (error:Error) => dispatcher.dispatch(handleConnectionError(error)),
     clearDetails: () => dispatcher.dispatch(new ClearDetailsAction()),
 

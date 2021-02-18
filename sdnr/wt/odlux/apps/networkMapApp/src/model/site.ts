@@ -18,26 +18,32 @@
 
 import { link } from "./link";
 
-export type site = {
+export type Site = {
     id: string,
     name: string,
-    address?: string,
-    heighAGLInMeters?: number, //AboveGroundLevel
-    antennaHeightAGLInMeters?: number,
+    address: Address,
+    heightAmslInMeters?: number, //AboveGroundLevel
+    antennaHeightAmslInMeters?: number,
     type?: string,
     operator: string,
-    geoLocation:{lon: number, lat: number},
+    location:{lon: number, lat: number},
     devices: Device[],
     links: link[]
 }
 
-export type Device = {
-    id: string,
-    type: string,
-    name: string,
-    manufacture: string,
-    owner: string,
-    status?: string,
-    port: number[],
-    simulatorId?: string,
+export type Address={
+    streetAndNr: string,
+    city: string,
+    zipCode: string | null,
+    country: string
+}
+
+export class Device {
+    id: string;
+    type: string;
+    name: string;
+    manufacturer: string;
+    owner: string;
+    status?: string;
+    port: number[];
 }

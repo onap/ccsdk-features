@@ -21,7 +21,7 @@ import { Dispatch } from '../../../../framework/src/flux/store';
 
 
 import { link } from "../model/link";
-import { site } from "../model/site";
+import { Site } from "../model/site";
 import { Feature } from '../model/Feature';
 import { URL_API } from '../config';
 
@@ -33,7 +33,7 @@ export class HighlightLinkAction extends Action{
 }
 
 export class HighlightSiteAction extends Action{
-    constructor(public site: site){
+    constructor(public site: Site){
         super();
     }
 }
@@ -51,7 +51,7 @@ export class ZoomToSearchResultAction extends Action{
 }
 
 export class AddAlarmAction extends Action{
-    constructor(public element: Feature){
+    constructor(public site: Site){
         super();
     }
 }
@@ -75,7 +75,8 @@ export class SetIconSwitchAction extends Action{
 }
 
 export const findSiteToAlarm = (alarmedNodeId: string) => (dispatcher: Dispatch) =>{
-    fetch(URL_API+"/site/geojson/device/"+alarmedNodeId)
+    //TODO: fix!
+    fetch(URL_API+"/sites/devices/"+alarmedNodeId)
     .then(res => res.json())
     .then(result=>{
         dispatcher(new AddAlarmAction(result));

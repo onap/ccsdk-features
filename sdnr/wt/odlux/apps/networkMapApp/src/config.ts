@@ -16,8 +16,8 @@
  * ============LICENSE_END==========================================================================
  */
 
-export const URL_API="/topology"
-export const URL_TILE_API = '/tiles';
+export const URL_API="/topology/network"
+export const URL_TILE_API = '/tiles'; // http://tile.openstreetmap.org can be used for local testing, never commit with tile url changed! /tiles
 
 
 export const OSM_STYLE = {

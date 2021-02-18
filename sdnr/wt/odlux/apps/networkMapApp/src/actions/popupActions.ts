@@ -16,6 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 
+import { PopupElement } from '../model/popupElements';
 import { Action } from '../../../../framework/src/flux/action';
 
 export class SetPopupPositionAction extends Action {
@@ -25,7 +26,7 @@ export class SetPopupPositionAction extends Action {
 }
 
 export class SelectMultipleLinksAction extends Action {
-    constructor(public ids: string[]) {
+    constructor(public elements: PopupElement[]) {
         super();
     }
 }
@@ -33,7 +34,7 @@ export class SelectMultipleLinksAction extends Action {
 
 
 export class SelectMultipleSitesAction extends Action {
-    constructor(public ids: string[]) {
+    constructor(public elements: PopupElement[]) {
        super();
     }
 }

@@ -22,7 +22,7 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import { URL_API } from '../config';
 import { isSite } from '../utils/utils';
-import { site } from '../model/site';
+import { Site } from '../model/site';
 import { link } from '../model/link';
 import { SelectSiteAction, SelectLinkAction } from '../actions/detailsAction';
 import { HighlightLinkAction, HighlightSiteAction, ZoomToSearchResultAction } from '../actions/mapActions';
@@ -74,9 +74,9 @@ const SearchBar: React.FunctionComponent<searchBarProps> = (props) =>{
       setAnchorEl(null);
       if(props.searchterm.length>0){
 
-        const siteResult = fetch(`${URL_API}/site/${props.searchterm}`)
+        const siteResult = fetch(`${URL_API}/sites/name/${props.searchterm}`)
 
-        const linkResult = fetch(`${URL_API}/link/${props.searchterm}`);
+        const linkResult = fetch(`${URL_API}/links/${props.searchterm}`);
   
            Promise.all([ siteResult, linkResult]).then((result)=>{
               const suceededResults = result.filter(el=> el.ok);
@@ -92,7 +92,7 @@ const SearchBar: React.FunctionComponent<searchBarProps> = (props) =>{
                 if(isSite(result)){
                   props.selectSite(result);
                   props.highlightSite(result);
-                  props.zoomToSearchResult(result.geoLocation.lat, result.geoLocation.lon);
+                  props.zoomToSearchResult(result.location.lat, result.location.lon);
                 }else{
                   props.selectLink(result);
                   props.highlightLink(result);
@@ -149,10 +149,10 @@ type searchBarProps = Connect<typeof mapStateToProps, typeof mapDispatchToProps>
 
 
 const mapDispatchToProps = (dispatcher: IDispatcher) => ({ 
-  selectSite:(site: site)=> dispatcher.dispatch(new SelectSiteAction(site)), 
+  selectSite:(site: Site)=> dispatcher.dispatch(new SelectSiteAction(site)), 
   selectLink:(link: link) => dispatcher.dispatch(new SelectLinkAction(link)), 
   highlightLink:(link: link)=> dispatcher.dispatch(new HighlightLinkAction(link)),
-  highlightSite: (site: site) => dispatcher.dispatch(new HighlightSiteAction(site)),
+  highlightSite: (site: Site) => dispatcher.dispatch(new HighlightSiteAction(site)),
   setSearchTerm: (value: string) => dispatcher.dispatch(new SetSearchValueAction(value)),
   zoomToSearchResult: (lat: number, lon: number) => dispatcher.dispatch(new ZoomToSearchResultAction(lat, lon)),
 });;

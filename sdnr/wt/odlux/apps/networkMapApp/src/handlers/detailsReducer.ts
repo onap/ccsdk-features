@@ -18,15 +18,15 @@
 
 import { IActionHandler } from '../../../../framework/src/flux/action';
 import { link } from "../model/link";
-import { site, Device } from "../model/site";
+import { Site, Device } from "../model/site";
 import { HistoryEntry } from "../model/historyEntry";
-import { SelectSiteAction, SelectLinkAction, AddToHistoryAction, ClearHistoryAction, IsBusyCheckingDeviceListAction, FinishedLoadingDeviceListAction, ClearLoadedDevicesAction, ClearDetailsAction } from '../actions/detailsAction';
+import { SelectSiteAction, SelectLinkAction, AddToHistoryAction, ClearHistoryAction, IsBusyCheckingDeviceListAction, FinishedLoadingDeviceListAction, ClearLoadedDevicesAction, ClearDetailsAction, InitializeLoadedDevicesAction } from '../actions/detailsAction';
 
 export type DetailsStoreState={
-    data: site | link | null,
+    data: Site | link | null,
     history: HistoryEntry[],
     isBusyCheckingDeviceList: boolean,
-    checkedDevices: Device[] | null
+    checkedDevices: Device[] 
 
 }
 
@@ -34,7 +34,7 @@ const initialState: DetailsStoreState = {
     data: null,
     history:[],
     isBusyCheckingDeviceList: false,
-    checkedDevices: null
+    checkedDevices: []
 }
 
 export const DetailsReducer:IActionHandler<DetailsStoreState>=(state = initialState, action)=>{
@@ -59,8 +59,10 @@ export const DetailsReducer:IActionHandler<DetailsStoreState>=(state = initialSt
         state = Object.assign({}, state, {checkedDevices: action.devices});
         
     }else if(action instanceof ClearLoadedDevicesAction){
-        state = Object.assign({}, state, {checkedDevices: null});
+        state = Object.assign({}, state, {checkedDevices: []});
 
+    }else if(action instanceof InitializeLoadedDevicesAction){
+        state = Object.assign({}, state, {checkedDevices: action.devices});
     }
 
 

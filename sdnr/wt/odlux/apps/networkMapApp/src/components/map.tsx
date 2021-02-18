@@ -21,7 +21,7 @@ import * as mapboxgl from 'mapbox-gl';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 
-import { site } from '../model/site';
+import { Site } from '../model/site';
 import { SelectSiteAction, ClearHistoryAction, SelectLinkAction } from '../actions/detailsAction';
 import { OSM_STYLE, URL_API, URL_BASEPATH, URL_TILE_API } from '../config';
 import { link } from '../model/link';
@@ -36,13 +36,10 @@ import SearchBar from './searchBar';
 import { verifyResponse, IsTileServerReachableAction, handleConnectionError, setTileServerReachableAction } from '../actions/connectivityAction';
 import ConnectionInfo from './connectionInfo'
 import { showIconLayers, addBaseLayers, addBaseSources, addIconLayers } from '../utils/mapLayers';
-import lamp from '../../icons/lamp.png';
-import apartment from '../../icons/apartment.png';
-import datacenter from '../../icons/datacenter.png';
-import factory from '../../icons/factory.png';
 import Statistics from './statistics';
 import IconSwitch from './iconSwitch';
 import { addImages } from '../services/mapImagesService';
+import { PopupElement } from '../model/popupElements';
 
 type coordinates = { lat: number, lon: number, zoom: number }
 
@@ -86,7 +83,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 console.error("tileserver " + URL_TILE_API + " can't be reached.");
             });
 
-        fetch(URL_API + "/info")
+        fetch(URL_API + "/info/count/all")
             .then(result => verifyResponse(result))
             .catch(error => this.props.handleConnectionError(error));
     }
@@ -132,7 +129,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
             const boundingBox = increaseBoundingBox(map);
 
-            fetch(`${URL_API}/links/geoJson/${boundingBox.west},${boundingBox.south},${boundingBox.east},${boundingBox.north}`)
+            fetch(`${URL_API}/links/geojson/${boundingBox.west},${boundingBox.south},${boundingBox.east},${boundingBox.north}`)
                 .then(result => verifyResponse(result))
                 .then(result => result.json())
                 .then(features => {
@@ -143,7 +140,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 .catch(error => this.props.handleConnectionError(error));
 
 
-            fetch(`${URL_API}/sites/geoJson/${boundingBox.west},${boundingBox.south},${boundingBox.east},${boundingBox.north}`)
+            fetch(`${URL_API}/sites/geojson/${boundingBox.west},${boundingBox.south},${boundingBox.east},${boundingBox.north}`)
                 .then(result => verifyResponse(result))
                 .then(result => result.json())
                 .then(features => {
@@ -439,8 +436,8 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
             if (lastBoundingBox == null) {
                 lastBoundingBox = bbox;
-                await this.draw('lines', `${URL_API}/links/geoJson/${lastBoundingBox.getWest()},${lastBoundingBox.getSouth()},${lastBoundingBox.getEast()},${lastBoundingBox.getNorth()}`);
-                await this.draw('points', `${URL_API}/sites/geoJson/${lastBoundingBox.getWest()},${lastBoundingBox.getSouth()},${lastBoundingBox.getEast()},${lastBoundingBox.getNorth()}`);
+                await this.draw('lines', `${URL_API}/links/geojson/${lastBoundingBox.getWest()},${lastBoundingBox.getSouth()},${lastBoundingBox.getEast()},${lastBoundingBox.getNorth()}`);
+                await this.draw('points', `${URL_API}/sites/geojson/${lastBoundingBox.getWest()},${lastBoundingBox.getSouth()},${lastBoundingBox.getEast()},${lastBoundingBox.getNorth()}`);
             } else {
 
                 // new bbox is bigger than old one
@@ -451,8 +448,8 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                     //calculate new boundingBox
                     const increasedBoundingBox = increaseBoundingBox(map);
 
-                    await this.draw('lines', `${URL_API}/links/geoJson/${increasedBoundingBox.west},${increasedBoundingBox.south},${increasedBoundingBox.east},${increasedBoundingBox.north}`);
-                    await this.draw('points', `${URL_API}/sites/geoJson/${increasedBoundingBox.west},${increasedBoundingBox.south},${increasedBoundingBox.east},${increasedBoundingBox.north}`);
+                    await this.draw('lines', `${URL_API}/links/geojson/${increasedBoundingBox.west},${increasedBoundingBox.south},${increasedBoundingBox.east},${increasedBoundingBox.north}`);
+                    await this.draw('points', `${URL_API}/sites/geojson/${increasedBoundingBox.west},${increasedBoundingBox.south},${increasedBoundingBox.east},${increasedBoundingBox.north}`);
 
                 } else if (lastBoundingBox.contains(bbox.getNorthEast()) && lastBoundingBox.contains(bbox.getSouthWest())) { // last one contains new one
                     // bbox is contained in last one, do nothing
@@ -462,8 +459,8 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
                     lastBoundingBox.extend(bbox);
 
-                    await this.draw('lines', `${URL_API}/links/geoJson/${lastBoundingBox.getWest()},${lastBoundingBox.getSouth()},${lastBoundingBox.getEast()},${lastBoundingBox.getNorth()}`);
-                    await this.draw('points', `${URL_API}/sites/geoJson/${lastBoundingBox.getWest()},${lastBoundingBox.getSouth()},${lastBoundingBox.getEast()},${lastBoundingBox.getNorth()}`);
+                    await this.draw('lines', `${URL_API}/links/geojson/${lastBoundingBox.getWest()},${lastBoundingBox.getSouth()},${lastBoundingBox.getEast()},${lastBoundingBox.getNorth()}`);
+                    await this.draw('points', `${URL_API}/sites/geojson/${lastBoundingBox.getWest()},${lastBoundingBox.getSouth()},${lastBoundingBox.getEast()},${lastBoundingBox.getNorth()}`);
                 }
 
             }
@@ -481,18 +478,18 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
     showSitePopup = (sites: mapboxgl.MapboxGeoJSONFeature[], top: number, left: number) => {
         if (sites.length > 1) {
-            const ids = sites.map(feature => feature.properties!.id);
+            const elements: PopupElement[] = sites.map(feature =>  {return {name: feature.properties!.name, id: feature.properties!.id}});
 
             this.props.setPopupPosition(top, left);
-            this.props.selectMultipleSites(ids);
+            this.props.selectMultipleSites(elements); //name, id object container
             this.setState({ isPopupOpen: true });
 
         } else {
             const id = sites[0].properties!.id;
 
-            fetch(`${URL_API}/site/${id}`)
+            fetch(`${URL_API}/sites/${id}`)
                 .then(result => verifyResponse(result))
-                .then(res => res.json() as Promise<site>)
+                .then(res => res.json() as Promise<Site>)
                 .then(result => {
                     this.props.selectSite(result);
                     this.props.highlightSite(result);
@@ -506,15 +503,16 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
         if (links.length > 1) {
 
-            const ids = links.map(feature => feature.properties!.id as string);
+            const elements: PopupElement[] = links.map(feature =>  {return {name: feature.properties!.name, id: feature.properties!.id}});
+
             this.props.setPopupPosition(top, left);
-            this.props.selectMultipleLinks(ids);
+            this.props.selectMultipleLinks(elements);
             this.setState({ isPopupOpen: true });
 
         } else {
             var id = links[0].properties!.id;
 
-            fetch(`${URL_API}/link/${id}`)
+            fetch(`${URL_API}/links/${id}`)
                 .then(result => verifyResponse(result))
                 .then(res => res.json() as Promise<link>)
                 .then(result => {
@@ -578,14 +576,14 @@ const mapStateToProps = (state: IApplicationStoreState) => ({
 });
 
 const mapDispatchToProps = (dispatcher: IDispatcher) => ({
-    selectSite: (site: site) => dispatcher.dispatch(new SelectSiteAction(site)),
+    selectSite: (site: Site) => dispatcher.dispatch(new SelectSiteAction(site)),
     selectLink: (link: link) => dispatcher.dispatch(new SelectLinkAction(link)),
     clearDetailsHistory: () => dispatcher.dispatch(new ClearHistoryAction()),
-    selectMultipleLinks: (ids: string[]) => dispatcher.dispatch(new SelectMultipleLinksAction(ids)),
-    selectMultipleSites: (ids: string[]) => dispatcher.dispatch(new SelectMultipleSitesAction(ids)),
+    selectMultipleLinks: (ids: PopupElement[]) => dispatcher.dispatch(new SelectMultipleLinksAction(ids)),
+    selectMultipleSites: (ids: PopupElement[]) => dispatcher.dispatch(new SelectMultipleSitesAction(ids)),
     setPopupPosition: (x: number, y: number) => dispatcher.dispatch(new SetPopupPositionAction(x, y)),
     highlightLink: (link: link) => dispatcher.dispatch(new HighlightLinkAction(link)),
-    highlightSite: (site: site) => dispatcher.dispatch(new HighlightSiteAction(site)),
+    highlightSite: (site: Site) => dispatcher.dispatch(new HighlightSiteAction(site)),
     updateMapPosition: (lat: number, lon: number, zoom: number) => dispatcher.dispatch(new SetCoordinatesAction(lat, lon, zoom)),
     setStatistics: (linkCount: string, siteCount: string) => dispatcher.dispatch(new SetStatistics(siteCount, linkCount)),
     setTileServerLoaded: (reachable: boolean) => dispatcher.dispatch(setTileServerReachableAction(reachable)),

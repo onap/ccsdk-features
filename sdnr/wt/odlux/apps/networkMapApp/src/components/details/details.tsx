@@ -20,7 +20,7 @@ import * as React from 'react'
 
 import connect, { IDispatcher, Connect } from '../../../../../framework/src/flux/connect';
 
-import { site, Device } from '../../model/site';
+import { Site, Device } from '../../model/site';
 import Typography from '@material-ui/core/Typography';
 import { link } from '../../model/link';
 import { Breadcrumbs, Link, Paper } from '@material-ui/core';
@@ -76,7 +76,7 @@ const Details: React.FunctionComponent<porps> = (props) => {
     }, [props.data])
 
     const onLinkClick = async (id: string) => {
-        const result = await fetch(`${URL_API}/link/${id}`);
+        const result = await fetch(`${URL_API}/links/${id}`);
         if(result.ok){
             const resultAsJson = await result.json();
             const link = resultAsJson as link;
@@ -102,10 +102,9 @@ const Details: React.FunctionComponent<porps> = (props) => {
         e.preventDefault();
     }
 
-    const createDetailPanel = (data: site | link) => {
-
+    const createDetailPanel = (data: Site | link) => {
         if (isSite(data)) {
-            return <SiteDetails navigate={props.navigateToApplication} updatedDevices={props.updatedDevices} loadDevices={props.loadDevices} site={data} onLinkClick={onLinkClick} />
+            return <SiteDetails  site={data} onLinkClick={onLinkClick} />
         } else {
             return <LinkDetails link={data} />
         }
@@ -120,7 +119,7 @@ const Details: React.FunctionComponent<porps> = (props) => {
 
     const loadDetailsData = (id: string) =>{
 
-        fetch(`${URL_API}/link/${id}`)
+        fetch(`${URL_API}/links/${id}`)
                 .then(res => {
                     if (res.ok)
                         return res.json()
@@ -135,7 +134,7 @@ const Details: React.FunctionComponent<porps> = (props) => {
                 })
                 .catch(error => {
 
-                    fetch(`${URL_API}/site/${id}`)
+                    fetch(`${URL_API}/sites/name/${id}`)
                         .then(res => {
                             if (res.ok)
                                 return res.json()
@@ -188,13 +187,13 @@ const mapStateToProps = (state: IApplicationStoreState) => ({
 });
 
 const mapDispatchToProps = (dispatcher: IDispatcher) => ({
-    selectSite: (site: site) => dispatcher.dispatch(new SelectSiteAction(site)),
+    selectSite: (site: Site) => dispatcher.dispatch(new SelectSiteAction(site)),
     selectLink: (link: link) => dispatcher.dispatch(new SelectLinkAction(link)),
     clearDetails: () => dispatcher.dispatch(new ClearDetailsAction()),
     addHistory: (newEntry: HistoryEntry) => dispatcher.dispatch(new AddToHistoryAction(newEntry)),
     clearHistory: () => dispatcher.dispatch(new ClearHistoryAction()),
     highlightLink: (link: link) => dispatcher.dispatch(new HighlightLinkAction(link)),
-    highlightSite: (site: site) => dispatcher.dispatch(new HighlightSiteAction(site)),
+    highlightSite: (site: Site) => dispatcher.dispatch(new HighlightSiteAction(site)),
     loadDevices: async (networkElements: Device[]) => { await dispatcher.dispatch(CheckDeviceList(networkElements)) },
     navigateToApplication: (applicationName: string, path?: string) => dispatcher.dispatch(new NavigateToApplication(applicationName, path, "test3")),
     undoMapSelection: () => dispatcher.dispatch(new RemoveHighlightingAction())

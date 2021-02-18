@@ -16,17 +16,18 @@
  * ============LICENSE_END==========================================================================
  */
 
+import { PopupElement } from 'model/popupElements';
 import { IActionHandler } from '../../../../framework/src/flux/action';
 import { SelectMultipleLinksAction, SelectMultipleSitesAction, SetPopupPositionAction } from "../actions/popupActions";
 
 export type popupStoreState = {
-    selectionPendingForIds: string[],
+    selectionPendingForElements: PopupElement[],
     pendingDataType: "link"|"site"| "",
     position: { top: number, left: number }
 };
 
 const initialState: popupStoreState = {
-    selectionPendingForIds: [],
+    selectionPendingForElements: [],
     pendingDataType: "",
     position: { top: 0, left: 0 }
 };
@@ -34,10 +35,10 @@ const initialState: popupStoreState = {
 export const PopupsReducer: IActionHandler<popupStoreState> = (state = initialState, action) => {
    
     if(action instanceof SelectMultipleLinksAction){
-        state = Object.assign({}, state, { selectionPendingForIds: action.ids, pendingDataType: "link", isSelectionNeeded: true });
+        state = Object.assign({}, state, { selectionPendingForElements: action.elements, pendingDataType: "link", isSelectionNeeded: true });
 
     }else if(action instanceof SelectMultipleSitesAction){
-        state = Object.assign({}, state, { selectionPendingForIds: action.ids, pendingDataType: "site", isSelectionNeeded: true });
+        state = Object.assign({}, state, { selectionPendingForElements: action.elements, pendingDataType: "site", isSelectionNeeded: true });
 
     }else if(action instanceof SetPopupPositionAction){
         state= Object.assign({}, state, {position:{top:action.top, left: action.left}})

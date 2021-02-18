@@ -77,7 +77,7 @@ const LinkDetails: React.FunctionComponent<props> = (props) => {
    {name:"Site Name", val1: props.link.siteA, val2: props.link.siteB},
     {name:"Latitude", val1: LatLonToDMS(props.link.locationA.lat), val2: LatLonToDMS(props.link.locationB.lat)},
     {name:"Longitude", val1: LatLonToDMS(props.link.locationA.lon, true), val2: LatLonToDMS(props.link.locationB.lon, true)},
-    {name:"Azimuth in °", val1: props.link.azimuthA.toFixed(2), val2: props.link.azimuthB.toFixed(2)}
+    props.link.azimuthA!= null && props.link.azimuthB != null && {name:"Azimuth in °", val1: props.link.azimuthA.toFixed(2), val2: props.link.azimuthB.toFixed(2)}
 ];
 
     return (<div style={{ paddingLeft: "15px", paddingRight: "15px", paddingTop: "0px", display: 'flex', flexDirection: 'column' }}>

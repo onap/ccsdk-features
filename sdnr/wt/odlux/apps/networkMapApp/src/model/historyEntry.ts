@@ -16,7 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { site } from "./site";
+import { Site } from "./site";
 import { link } from "./link";
 
-export type HistoryEntry={id: string, data: site|link};
+export type HistoryEntry={id: string, data: Site|link};

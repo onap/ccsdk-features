@@ -16,10 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { link } from "../model/link";
-import { Site } from "../model/site";
-
-
-export function isSite(data: link | Site): data is Site {
-    return (data as Site).location !== undefined;
+export type PopupElement = {
+    name: string,
+    id: string
 }

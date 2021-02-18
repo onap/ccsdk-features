@@ -56,7 +56,7 @@ const mapProps = (state: IApplicationStoreState) => ({
   month : state.linkCalculation.calculations.month
 });
 
-const BASE_URL="/topology/services"
+const BASE_URL="/topology/linkcalculator"
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
 
@@ -107,17 +107,14 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   UpdateWorstMonthRain : (month:string) => {
       dispatcher.dispatch (new UpdateWorstMonthRainAction(month))
     }
-
-  
 });
-
-
 
 
 type linkCalculationProps = Connect<typeof mapProps, typeof mapDispatch>;
 
 interface initialState {
   rainMethodDisplay: boolean, 
+  absorptionMethod : string;
   horizontalBoxChecked: boolean,
     latitude1Error: string,
       longitude1Error:string
@@ -125,6 +122,7 @@ interface initialState {
      longitude2Error:string,
      frequencyError: string,
      rainMethodError: string,
+     attenuationMethodError : string,
      worstmonth : boolean,
      showWM : string
      
@@ -137,19 +135,21 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
     this.state = {
       rainMethodDisplay: false,
       horizontalBoxChecked: true,
+      absorptionMethod : '0',
       latitude1Error: '',
       longitude1Error:'',
       latitude2Error: '',
       longitude2Error:'',
       frequencyError: '',
       rainMethodError: '',
+      attenuationMethodError : '',
       worstmonth : false,
       showWM: ''
         };
   } 
   
   updateAutoDistance = async (lat1: number, lon1: number, lat2: number, lon2: number)=>{
-     const result = await fetch(BASE_URL+'/calculations/distance/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2)
+     const result = await fetch(BASE_URL+'/distance/' + lat1 + ',' + lon1 + ',' + lat2 + ',' + lon2)
       const json = await result.json()
       return json.distanceInKm
       }
@@ -176,7 +176,7 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
     const d = Math.floor(absoluteValue);
     const m = Math.floor((absoluteValue - d) * 60);
     const s = (absoluteValue - d - m / 60) * 3600;
-    const dms = `${d}° ${m}' ${s.toFixed(2)}"`
+    const dms = `${d}° ${m}' ${s.toFixed(2)}"`;
 
     const sign = Math.sign(value);
 
@@ -187,44 +187,44 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
     }
   }
 
-  rainAttCal = (lat1: any, lon1: any, lat2: any, lon2: any, frequency: any, distance: number, polarization : any, worstmonth:boolean) => {
+  rainAttCal = (lat1: any, lon1: any, lat2: any, lon2: any, frequency: any, distance: number, polarization : string, worstmonth:boolean) => {
     if(!worstmonth){
-      fetch(BASE_URL+'/calculations/rain/Annual/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' + frequency+ '/'+ distance + '/' + polarization)
+      fetch(BASE_URL+'/rain/annual/' + lat1 + ',' + lon1 + ',' + lat2 + ',' + lon2 + '/' + frequency+ '/'+ distance + '/' + polarization.toUpperCase())
       .then(res => res.json())
-      .then(result => { this.props.UpdateRainAtt(result.RainAtt) ; this.props.updateRainValue(result.rainfall) })
+      .then(result => { this.props.UpdateRainAtt(result.rainAttenuation) ; this.props.updateRainValue(result.rainFall.rainrate)})
     }
     else {
-      fetch(BASE_URL+'/calculations/rain/WM/' + lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' + frequency+ '/'+ distance + '/' + polarization)
+      fetch(BASE_URL+'/rain/worstmonth/' + lat1 + ',' + lon1 + ',' + lat2 + ',' + lon2 + '/' + frequency+ '/'+ distance + '/' + polarization.toUpperCase())
       .then(res => res.json())
-      .then(result => { this.props.UpdateRainAtt(result.RainAtt) ; this.props.updateRainValue(result.rainfallWM); this.props.UpdateWorstMonthRain (result.month);  this.setState({showWM: '- Wm is : '})})
+      .then(result => { this.props.UpdateRainAtt(result.rainAttenuation) ; this.props.updateRainValue(result.rainFall.rainrate); this.props.UpdateWorstMonthRain (result.rainFall.period);  this.setState({showWM: '- Wm is : '})})
     }
   }
 
 
-  manualRain = (rainfall: number, frequency: number, distance:number, polarization : any) => {
-    fetch(BASE_URL+'/calculations/rain/' + rainfall + '/' + frequency + '/' + distance+ '/' + polarization)
+  manualRain = (rainfall: number, frequency: number, distance:number, polarization : string) => {
+    fetch(BASE_URL+'/rain/' + rainfall + '/' + frequency + '/' + distance+ '/' + polarization.toUpperCase())
       .then(res => res.json())
-      .then(result => { this.props.specificRain(result.RainAtt) })
+      .then(result => { this.props.specificRain(result.rainAttenuation) })
     }
 
 
     FSL = (distance:number, frequency:number) => {
-      fetch(BASE_URL+'/calculations/FSL/' + distance + '/' + frequency)
+      fetch(BASE_URL+'/fsl/' + distance + '/' + frequency)
       .then(res=>res.json())
-      .then (result => {this.props.FSL(result.free)})
+      .then (result => {this.props.FSL(result.fspl)})
     }
   
-    AbsorptionAtt =(lat1: number, lon1: number, lat2: number, lon2: number, distance:number, frequency:number, worstmonth:boolean) => {
+    AbsorptionAtt =(lat1: number, lon1: number, lat2: number, lon2: number, distance:number, frequency:number, worstmonth:boolean, absorptionMethod : string) => {
       if(!worstmonth)
       {
-      fetch(BASE_URL+'/calculations/absorption/Annual/' +lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' +  distance + '/' + frequency)
+      fetch(BASE_URL+'/absorption/annual/' +lat1 + ',' + lon1 + ',' + lat2 + ',' + lon2 + '/' +  distance + '/' + frequency + '/' +absorptionMethod)
       .then(res=>res.json())
-      .then (result => {this.props.UpdateAbsorption(result.OxLoss, result.WaterLoss)})
+      .then (result => {this.props.UpdateAbsorption(result.oxygenLoss, result.waterLoss)})
       }
       else {
-       fetch(BASE_URL+'/calculations/absorption/WM/' +lat1 + '/' + lon1 + '/' + lat2 + '/' + lon2 + '/' +  distance + '/' + frequency)
+       fetch(BASE_URL+'/absorption/annual/' +lat1 + ',' + lon1 + ',' + lat2 + ',' + lon2 + '/' +  distance + '/' + frequency + '/' +absorptionMethod)
       .then(res=>res.json())
-      .then (result => {this.props.UpdateAbsorption(result.OxLoss, result.WaterLoss)})
+      .then (result => {this.props.UpdateAbsorption(result.oxygenLoss, result.waterLoss)})
       }
     }
 
@@ -236,11 +236,12 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
       this.props.lon2 === 0 ? this.setState({longitude2Error: 'Enter a number between -180 to 180' }) : null
       this.props.frequency === 0 ? this.setState({frequencyError: 'Select a frequency' }) : this.setState({frequencyError: ''})
       
-      this.state.rainMethodError === null  && this.props.rainVal === 0 ? this.setState({rainMethodError: 'Select the rain method'}) : this.setState({rainMethodError: ''})
-      
-      console.log(this.props.lat1 !== 0 && this.props.lat2 !== 0 && this.props.lon1 !== 0 && this.props.lon2 !==0 && this.props.frequency!==0);
+      this.state.rainMethodDisplay === null  && this.props.rainVal === 0 ? this.setState({rainMethodError: 'Select the rain method'}) : this.setState({rainMethodError: ''})
+      this.state.absorptionMethod === '0' ? this.setState({attenuationMethodError: 'Select the attenuation method'}) : this.setState({attenuationMethodError: ''})
+      console.log(this.state);
+      console.log(this.props.lat1 !== 0 && this.props.lat2 !== 0 && this.props.lon1 !== 0 && this.props.lon2 !==0 && this.props.frequency!==0 && this.state.rainMethodError==='' && this.state.attenuationMethodError=== '');
 
-      return this.props.lat1 !== 0 && this.props.lat2 !== 0 && this.props.lon1 !== 0 && this.props.lon2 !==0 && this.props.frequency!==0 
+      return this.props.lat1 !== 0 && this.props.lat2 !== 0 && this.props.lon1 !== 0 && this.props.lon2 !==0 && this.props.frequency!==0 && this.state.rainMethodError==='' && this.state.attenuationMethodError=== '';
 
      }
   
@@ -256,33 +257,33 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
       if (this.state.worstmonth===false) {
         this.setState({showWM : ' '})
         this.props.UpdateWorstMonthRain('')
-        this.AbsorptionAtt (this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.distance, this.props.frequency, this.state.worstmonth)
+        this.AbsorptionAtt (this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.distance, this.props.frequency, this.state.worstmonth, this.state.absorptionMethod)
 
         if (this.state.rainMethodDisplay === true){
 
-          this.manualRain(this.props.rainVal, this.props.frequency, this.props.distance, this.props.polarization); 
+          this.manualRain(this.props.rainVal, this.props.frequency, this.props.distance, this.props.polarization!); 
         }
         else {
           // this.updateRainValue(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.state.worstmonth)
-          this.rainAttCal(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency, this.props.distance, this.props.polarization, this.state.worstmonth);
+          this.rainAttCal(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency, this.props.distance, this.props.polarization!, this.state.worstmonth);
         }
       } 
       else { 
-        this.AbsorptionAtt (this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.distance, this.props.frequency, this.state.worstmonth)
+        this.AbsorptionAtt (this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.distance, this.props.frequency, this.state.worstmonth, this.state.absorptionMethod)
 
           // this.updateRainValue(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.state.worstmonth)
 
-          this.rainAttCal(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency, this.props.distance, this.props.polarization, this.state.worstmonth);
+          this.rainAttCal(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency, this.props.distance, this.props.polarization!, this.state.worstmonth);
       }
     }
-      else null
+      else console.log('form is not valid')
 
   }
 
   componentDidMount = () => {
-    fetch (BASE_URL+'/calculations/fsl/0/0')
-    .then(res => {if (res.ok) {this.props.reachable===false && this.props.UpdateConectivity(true)}else {this.props.reachable===true && this.props.UpdateConectivity(false)} })
-    .catch (res => {this.props.reachable===true && this.props.UpdateConectivity(false)} )
+    fetch (BASE_URL+'/fsl/1/1')
+    .then(res => {if (res.ok) { this.props.UpdateConectivity(true)}else {this.props.UpdateConectivity(false)} })
+    .catch (res => {this.props.UpdateConectivity(false)} )
   }
 
   handleChange =(e:any) => {
@@ -346,7 +347,7 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
 
           <div className='column1'>
             <div>&nbsp;</div>
-          <div >Site Name</div>
+          {(this.props.siteA.length>0 || this.props.siteB.length>0)  && <div >Site Name</div>}
           <div>Latitude</div>
           <div>Longitude</div>
           <div>Azimuth</div>
@@ -359,6 +360,7 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
           <div style={{marginTop:10}}>Rain Model</div>
           <div style={{marginTop:20}}>Rainfall Rate</div>
           <div>Rain Loss</div>
+          <div style={{marginTop:18}}>Absorption Model</div>
           <div>Oxygen Specific Attenuation</div>
           <div>Water Vapor Specific Attenuation</div>
           </div>
@@ -366,7 +368,7 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
 
           <div className='middlecolumn'>
           <div  >Site A</div>
-          <div> {this.props.siteA }</div>
+          {this.props.siteA.length>0 &&<div> {this.props.siteA }</div>}
           <div> {this.props.lat1 && this.LatLonToDMS(this.props.lat1)}</div>
           <div>{this.props.lon1 && this.LatLonToDMS(this.props.lon1)}</div>
           <div>0</div>
@@ -375,11 +377,11 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
         
 
           <div className='column2'>
-          <div>{this.props.distance.toFixed(3)} km</div>
+          <div>{this.props.distance?.toFixed(3)} km</div>
           <div>{<form><input type='checkbox' id='Horizontal' value ="Horizontal" checked= {this.props.polarization==='Horizontal'} onClick= {(e: any) => this.props.updatePolarization(e.target.value)}></input>Horizontal
                       <input style={{marginLeft:10}} type='checkbox' id='Vertical' value ="Vertical" checked= {this.props.polarization==='Vertical'} onClick= {(e:any)=>{this.props.updatePolarization(e.target.value)}}></input>Vertical</form>}</div>
           
-              <div> {<select className={this.state.frequencyError.length>0 ? 'error' : 'input'}  onChange={(e) => {this.props.updateFrequency(Number(e.target.value)); e.target.value==='0'? this.setState({frequencyError: 'select a frequency'}): this.setState({frequencyError:''})}}> 
+              <div> {<select className={this.state.frequencyError.length>0 ? 'error' : 'input'}  onChange={(e) => { this.props.updateFrequency(Number(e.target.value)); e.target.value==='0'? this.setState({frequencyError: 'select a frequency'}): this.setState({frequencyError:''})}}> 
                       
                       <option value='0' >Select Freq</option>
                       <option value='7' >7 GHz</option>
@@ -391,20 +393,28 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
                       <option value='38' >38 GHz</option>
                       <option value='42' >42 GHz</option>
                       <option value='80' >80 GHz</option>
-                      </select>} <div style={{fontSize:12, color:'red'}}>  {this.state.frequencyError} </div> </div>
+                      </select>} <div style={{fontSize:12, color:'red'}}>  {this.state.frequencyError} </div> </div> 
 
           <div>{this.props.fsl.toFixed(3)} dB</div>
 
-          <div> {<select className={this.state.rainMethodError.length>0 ? 'error' : 'input'} onChange = {(e) => {e.target.value === 'itu' ? this.setState({ rainMethodDisplay: false}):this.setState({ rainMethodDisplay: true}); e.target.value===''? this.setState({rainMethodError: 'select a Rain model'}): this.setState({rainMethodError:''}) }}>
-                        <option value='' >Select Rain Method</option>
+          <div> {<select className={this.state.rainMethodError.length>0 ? 'error' : 'input'} onChange = {(e) => {e.target.value === 'itu' ? this.setState({ rainMethodDisplay: false}):this.setState({ rainMethodDisplay: true}); e.target.value==='0'? this.setState({rainMethodError: 'select a Rain model'}): this.setState({rainMethodError:''}) }}>
+                        <option value='0' >Select Rain Method</option>
                         <option value='itu' >ITU-R P.837-7</option>
-                        <option value='manual'  >Specific Rain</option>
+                        <option value='manual' >Specific Rain</option>
                         </select>} <div style={{fontSize:12,color:'red'}}>{this.state.rainMethodError}</div>
             </div> 
             <div> {<form><input type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => { this.props.updateRainValue(Number(e.target.value)) }}
                     value={this.props.rainVal} disabled={this.state.rainMethodDisplay === false ? true : false}>
                     </input>  mm/hr  {this.state.showWM} {this.props.month}</form> } </div>
           <div>{this.props.rainAtt.toFixed(3)} dB</div>
+
+          <div> {<select className={this.state.attenuationMethodError.length>0 ? 'error' : 'input'} onChange = {(e) => { if (e.target.value!== ''){ this.setState({absorptionMethod : e.target.value}); this.setState({attenuationMethodError:''})  }}}>
+                        <option value='0' >Select Absorption Method</option>
+                        <option value='ITURP67612' >ITU-R P.676-12</option>
+                        <option value='ITURP67611'  >ITU-R P.676-11</option>
+                        <option value='ITURP67610'  >ITU-R P.676-10</option>
+                        </select>} <div style={{fontSize:12,color:'red'}}>{this.state.attenuationMethodError}</div>
+            </div> 
           <div>{this.props.absorptionOxygen.toFixed(3)} dB</div>
           <div>{this.props.absorptionWater.toFixed(3)} dB</div>
           <div>{<button style={{color: '#222', fontFamily:'Arial', boxAlign: 'center', display:'inline-block', insetInlineStart: '20' , alignSelf:'center' }}
@@ -415,7 +425,7 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
           </div>
           <div className= 'middlecolumn'>
           <div  >Site B</div>
-          <div> {this.props.siteB}</div>
+          {this.props.siteB.length>0 &&<div> {this.props.siteB}</div>}
           <div> {this.props.lat2 && this.LatLonToDMS(this.props.lat2)}</div>
           <div>{this.props.lon2 && this.LatLonToDMS(this.props.lon2)}</div>
           <div>0</div>

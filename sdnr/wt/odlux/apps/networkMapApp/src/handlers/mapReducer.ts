@@ -56,12 +56,12 @@ export const MapReducer: IActionHandler<mapState> = (state=initialState, action:
     }
     else if(action instanceof HighlightSiteAction){
        
-    state = Object.assign({}, state, {selectedLink: null, selectedSite:{type: "Feature", properties: {id: action.site.name, type:action.site.type}, geometry:{type:"Point", coordinates:[action.site.geoLocation.lon,action.site.geoLocation.lat ]}}})
+    state = Object.assign({}, state, {selectedLink: null, selectedSite:{type: "Feature", properties: {id: action.site.name, type:action.site.type}, geometry:{type:"Point", coordinates:[action.site.location.lon,action.site.location.lat ]}}})
 
     }else if (action instanceof ZoomToSearchResultAction){
         state = Object.assign({}, state, {zoomToElement:{lat: action.lat, lon: action.lon}});
     }else if (action instanceof AddAlarmAction){
-        state = Object.assign({}, state, {alarmlement:action.element});
+        state = Object.assign({}, state, {alarmlement:{type: "Feature", properties: {id: action.site.name, type:action.site.type}, geometry:{type:"Point", coordinates:[action.site.location.lon,action.site.location.lat ]}}});
 
     }else if(action instanceof SetCoordinatesAction){
         state = Object.assign({}, state, {lat:action.lat, lon: action.lon, zoom:action.zoom});

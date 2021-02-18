@@ -20,14 +20,14 @@ import { Action } from '../../../../framework/src/flux/action';
 import { requestRest } from '../../../../framework/src/services/restService';
 
 
-import { site, Device } from "../model/site";
+import { Site, Device } from "../model/site";
 import { link } from '../model/link';
 import { HistoryEntry } from "../model/historyEntry";
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { Dispatch } from '../../../../framework/src/flux/store';
 
 export class SelectSiteAction extends Action {
-  constructor(public site: site){
+  constructor(public site: Site){
     super()
   }
 }
@@ -74,6 +74,12 @@ export class ClearLoadedDevicesAction extends Action{
   }
 }
 
+export class InitializeLoadedDevicesAction extends Action{
+  constructor(public devices: Device[]){
+    super();
+  }
+}
+
 let running=false;
 
 export const UpdateDetailsView = (nodeId: string) =>(dispatcher: Dispatch, getState: () => IApplicationStoreState) =>{
@@ -92,7 +98,6 @@ export const UpdateDetailsView = (nodeId: string) =>(dispatcher: Dispatch, getSt
       dispatcher(new FinishedLoadingDeviceListAction(checkedDevices));
 
      });
-
   }
 }
 

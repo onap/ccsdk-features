@@ -137,27 +137,27 @@ module.exports = (env) => {
       },
       proxy: {
         "/yang-schema/": {
-          target: "http://10.20.6.29:8181",
+          target: "http://sdnr:8181",
           secure: false
         },   
         "/oauth2/": {
-          target: "http://10.20.6.29:8181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/database/": {
-          target: "http://10.20.6.29:8181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/restconf/": {
-          target: "http://10.20.6.29:8181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/rests/": {
-          target: "http://10.20.6.29:8181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/topology/": {
-          target: "http://localhost:3001",
+          target: "http://localhost:3002",
           secure: false
         },
         "/tiles/": {
@@ -165,11 +165,11 @@ module.exports = (env) => {
           secure: false
         },
         "/help/": {
-          target: "http://10.20.6.29:8181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/websocket": {
-          target: "http://10.20.6.29:8181",
+          target: "http://sdnr:8181",
           ws: true,
           changeOrigin: true,
           secure: false
