@@ -85,18 +85,45 @@ public class ORanNetworkElement implements NetworkElement {
         if (hardware != null) {
             Collection<Component> componentList = YangHelper.getCollection(hardware.getComponent());
             if (componentList != null) {
+                int componentListSize = componentList.size();
+                int writeCount = 0;
+
                 for (Component component : componentList) {
-                    databaseService
-                            .writeInventory(oRanMapper.getInternalEquipment(netconfAccessor.getNodeId(), component));
+                    if (component.getParent() == null) {
+                        writeCount += writeInventory(component, componentList, 0);
+                    }
+                }
+                if (componentListSize != writeCount) {
+                    log.warn("Not all data were written to the Inventory. Potential entries with missing "
+                            + "contained-child. Node Id = {}, Components Found = {}, Entries written to Database = {}",
+                            netconfAccessor.getNodeId().getValue(), componentListSize, writeCount);
                 }
             }
         }
+
         System1 sys = getOnapSystemData(netconfAccessor);
         if (sys != null) {
             GuicutthroughBuilder gcBuilder = new GuicutthroughBuilder();
             gcBuilder.setId(sys.getName()).setName(sys.getName()).setWeburi(sys.getWebUi().getValue());
             databaseService.writeGuiCutThroughData(gcBuilder.build());
         }
+    }
+
+    private int writeInventory(Component component, Collection<Component> componentList, int treeLevel) {
+        databaseService
+                .writeInventory(oRanMapper.getInternalEquipment(netconfAccessor.getNodeId(), component, treeLevel));
+        int count = 1;
+        if (component.getContainsChild() != null) {
+            List<String> containerHolderList = component.getContainsChild();
+            for (String containerHolder : containerHolderList) {
+                for (Component c : componentList) {
+                    if (containerHolder.equals(c.getName())) {
+                        count += writeInventory(c, componentList, treeLevel + 1);
+                    }
+                }
+            }
+        }
+        return count;
     }
 
     @Override
