@@ -39,13 +39,14 @@ public class TestORanToInternalDataModel {
     NodeId nodeId;
     Component component;
 
-     @Before
+    @Before
     public void init() throws InterruptedException, IOException {
         nodeId = mock(NodeId.class);
         component = mock(Component.class);
 
         when(nodeId.getValue()).thenReturn("ORan-1000");
         when(component.getParent()).thenReturn("Shelf");
+        when(component.getName()).thenReturn("Slot-0");
         when(component.getParentRelPos()).thenReturn(0);
         when(component.getUuid()).thenReturn(new Uuid("0Aabcdef-0abc-0cfD-0abC-0123456789AB"));
 
@@ -67,7 +68,7 @@ public class TestORanToInternalDataModel {
     @Test
     public void test() throws Exception {
         ORanToInternalDataModel model = new ORanToInternalDataModel();
-        model.getInternalEquipment(nodeId, component);
+        model.getInternalEquipment(nodeId, component,0);
         assertEquals(component.getUuid().getValue(), "0Aabcdef-0abc-0cfD-0abC-0123456789AB");
         assertEquals(component.getMfgDate().getValue(), "2020-02-05T12:30:45.283Z");
 

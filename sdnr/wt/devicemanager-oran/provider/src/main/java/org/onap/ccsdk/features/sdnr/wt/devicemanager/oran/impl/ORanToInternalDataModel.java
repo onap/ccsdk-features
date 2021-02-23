@@ -31,18 +31,16 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  */
 public class ORanToInternalDataModel {
 
-
-    public Inventory getInternalEquipment(NodeId nodeId, Component component) {
+    public Inventory getInternalEquipment(NodeId nodeId, Component component, int treeLevel) {
 
         InventoryBuilder inventoryBuilder = new InventoryBuilder();
 
         // General
         inventoryBuilder.setNodeId(nodeId.getValue());
-        inventoryBuilder.setParentUuid(component.getParent());
-        inventoryBuilder.setTreeLevel(new Long(component.getParentRelPos()));
-        inventoryBuilder.setTreeLevel(Uint32.valueOf(component.getParentRelPos().intValue()));
+        inventoryBuilder.setParentUuid(component.getParent()!=null?component.getParent():component.getName());
+        inventoryBuilder.setTreeLevel(Uint32.valueOf(treeLevel));
 
-        inventoryBuilder.setUuid(component.getUuid().getValue());
+        inventoryBuilder.setUuid(component.getName());
         // -- String list with ids of holders
         List<String> containerHolderKeyList = new ArrayList<>();
         List<String> containerHolderList = component.getContainsChild();
@@ -53,19 +51,25 @@ public class ORanToInternalDataModel {
         }
         inventoryBuilder.setContainedHolder(containerHolderKeyList);
         // -- Manufacturer related things
-        inventoryBuilder.setManufacturerName(component.getName());
+        inventoryBuilder.setManufacturerName(component.getMfgName());
+        inventoryBuilder.setManufacturerIdentifier(component.getMfgName());
+
 
         // Equipment type
         inventoryBuilder.setDescription(component.getDescription());
         inventoryBuilder.setModelIdentifier(component.getModelName());
-        inventoryBuilder.setPartTypeId(component.getXmlClass().getName());
+        if (component.getXmlClass() != null) {
+            inventoryBuilder.setPartTypeId(component.getXmlClass().getName());
+        }
         inventoryBuilder.setTypeName(component.getName());
         inventoryBuilder.setVersion(component.getHardwareRev());
 
-        // Equipment instance
-        inventoryBuilder.setDate(component.getMfgDate().getValue());
-        inventoryBuilder.setSerial(component.getSerialNum());
 
+        // Equipment instance
+        if (component.getMfgDate() != null) {
+            inventoryBuilder.setDate(component.getMfgDate().getValue());
+        }
+        inventoryBuilder.setSerial(component.getSerialNum());
         return inventoryBuilder.build();
     }
 
