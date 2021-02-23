@@ -35,3 +35,4 @@
 **/*.iml
 
 direct-dependencies.txt
+.factorypath
