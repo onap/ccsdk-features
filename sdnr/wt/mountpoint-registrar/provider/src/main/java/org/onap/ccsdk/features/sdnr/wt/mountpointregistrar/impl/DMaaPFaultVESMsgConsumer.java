@@ -21,6 +21,8 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +61,8 @@ public class DMaaPFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
                 return;
             }
             faultNodeId = dmaapMessageRootNode.at("/event/commonEventHeader/sourceName").textValue();
-            faultOccurrenceTime =
-                    dmaapMessageRootNode.at("/event/faultFields/alarmAdditionalInformation/eventTime").textValue();
+            faultOccurrenceTime = Instant.ofEpochMilli(dmaapMessageRootNode.at("/event/commonEventHeader/startEpochMicrosec").longValue()/1000)
+                    .atZone(ZoneId.of("Z")).toString();
             faultObjectId = dmaapMessageRootNode.at("/event/faultFields/alarmInterfaceA").textValue();
             faultReason = dmaapMessageRootNode.at("/event/faultFields/specificProblem").textValue();
             faultSeverity = dmaapMessageRootNode.at("/event/faultFields/eventSeverity").textValue();
