@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles.OdluxBundle;
@@ -38,12 +39,24 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
     private static final String regexRequire = "require\\(\\[(\"" + BUNDLENAME_APP + "\")\\]";
     private static final String regexFunction = "function[\\ ]*\\((" + BUNDLENAME_APP + ")\\)[\\ ]*\\{";
     private static final String regexFunctionBody = "(" + BUNDLENAME_APP + "\\.runApplication\\(\\);)";
+    private static final String regexConfigure = BUNDLENAME_APP+"\\.configureApplication\\(([^\\)]+)\\)";
     private static final Pattern patternRequire = Pattern.compile(regexRequire);
     private static final Pattern patternFunction = Pattern.compile(regexFunction);
     private static final Pattern patternFunctionBody = Pattern.compile(regexFunctionBody);
+    private static final Pattern patternConfigure = Pattern.compile(regexConfigure);
+    private static final String ENV_ENABLE_OAUTH = "ENABLE_OAUTH";
+    private static final String ENABLE_OAUTH_DEFAULT = "false";
+    private static final String ENV_ENABLE_ODLUX_RBAC = "ENABLE_ODLUX_RBAC";
+    private static final String ENABLE_ODLUX_RBAC_DEFAULT = "false";
+
+    private final boolean oauthEnabled;
+    private final boolean policyEnabled;
 
     public IndexOdluxBundle() {
         super(null, BUNDLENAME_APP);
+        this.oauthEnabled = "true".equals(getEnvVar(ENV_ENABLE_OAUTH, ENABLE_OAUTH_DEFAULT));
+        this.policyEnabled = "true".equals(getEnvVar(ENV_ENABLE_ODLUX_RBAC, ENABLE_ODLUX_RBAC_DEFAULT));
+        LOG.info("instantiating index with oauthEnabled={} and policyEnabled={}",this.oauthEnabled, this.policyEnabled);
 
     }
 
@@ -57,7 +70,7 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
         return loadFileContent(this.getResource(fn), bundleNames);
     }
 
-    private static String loadFileContent(URL url, List<String> bundlesNamesList) {
+    private String loadFileContent(URL url, List<String> bundlesNamesList) {
         if (url == null) {
             return null;
         }
@@ -92,8 +105,16 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
                         inputLine =
                                 inputLine.substring(0, matcher.start(1)) + hlp + inputLine.substring(matcher.start(1));
                     }
+
                 }
                 sb.append(inputLine + LR);
+            }
+
+            if (url.getFile().endsWith("index.html")) {
+                matcher = patternConfigure.matcher(sb);
+                if(matcher.find() && matcher.groupCount()>0) {
+                    sb.replace(matcher.start(1),matcher.end(1), this.generateConfigureJson());
+                }
             }
 
         } catch (IOException e) {
@@ -112,4 +133,17 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
         return sb.toString();
     }
 
+    private String generateConfigureJson() {
+        return String.format("{\"authentication\":\"%s\",\"enablePolicy\":%s}", this.oauthEnabled ? "oauth" : "basic",
+                String.valueOf(this.policyEnabled));
+    }
+
+    private static String getEnvVar(String v, String defaultValue) {
+        Map<String, String> env = System.getenv();
+        for (String envName : env.keySet()) {
+            if (envName != null && envName.equals(v))
+                return env.get(envName);
+        }
+        return defaultValue;
+    }
 }
