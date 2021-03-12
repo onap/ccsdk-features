@@ -4,10 +4,10 @@ import java.util.Date;
 
 public class ResourceLock {
 
-	public long id;
-	public String resourceName;
-	public String lockHolder;
-	public int lockCount;
-	public Date lockTime;
-	public Date expirationTime;
+    public long id;
+    public String resourceName;
+    public String lockHolder;
+    public int lockCount;
+    public Date lockTime;
+    public Date expirationTime;
 }
