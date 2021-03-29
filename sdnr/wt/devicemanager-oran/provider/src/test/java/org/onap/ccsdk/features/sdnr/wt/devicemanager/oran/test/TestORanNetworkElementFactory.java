@@ -22,11 +22,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Optional;
+
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanNetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
@@ -40,13 +42,17 @@ public class TestORanNetworkElementFactory {
     private static NetconfBindingAccessor accessor;
     private static DeviceManagerServiceProvider serviceProvider;
     private static Capabilities capabilities;
+    private static VESCollectorService vesCollectorService;
+    private static NetconfBindingAccessor bindingCommunicator;
 
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
-        NetconfBindingAccessor bindingCommunicator = mock(NetconfBindingAccessor.class);
+        bindingCommunicator = mock(NetconfBindingAccessor.class);
+        vesCollectorService = mock(VESCollectorService.class);
         NodeId nodeId = new NodeId(NODEIDSTRING);
         when(bindingCommunicator.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
         when(bindingCommunicator.getNodeId()).thenReturn(nodeId);
+        
 
         capabilities = mock(Capabilities.class);
         accessor = mock(NetconfBindingAccessor.class);
@@ -55,6 +61,7 @@ public class TestORanNetworkElementFactory {
         when(accessor.getCapabilites()).thenReturn(capabilities);
         when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingCommunicator));
         when(serviceProvider.getDataProvider()).thenReturn(null);
+        when(serviceProvider.getVESCollectorService()).thenReturn(vesCollectorService);
 
 
     }

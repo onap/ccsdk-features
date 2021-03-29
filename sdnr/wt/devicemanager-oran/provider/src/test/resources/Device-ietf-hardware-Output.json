@@ -1,0 +1,442 @@
+{
+	"hardware": {
+		"component": [
+			{
+				"name": "chassis-temperature-exhaust",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "chassis-temperature-exhaust",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 30,
+					"value-type": "celsius",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "chassis",
+				"parent-rel-pos": 0
+			},
+			{
+				"name": "slot0-logical0-rrh",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "unlocked"
+				},
+				"model-name": "FTLX1475D3BTL-E7",
+				"mfg-name": "FINISAR CORP.",
+				"alias": "Slot0-A-rrh",
+				"class": "iana-hardware:port",
+				"contains-child": [
+					"slot0-logical0-rrh-temperature"
+				],
+				"parent": "slot0-logical0",
+				"o-ran-hardware:o-ran-name": "slot0-logical0-rrh",
+				"serial-num": "AYR3GA9",
+				"parent-rel-pos": 1
+			},
+			{
+				"name": "slot2-logical2",
+				"state": {
+					"oper-state": "disabled",
+					"admin-state": "unlocked"
+				},
+				"alias": "Slot3-B",
+				"class": "iana-hardware:module",
+				"parent": "slot2",
+				"description": "SLOT3-B",
+				"parent-rel-pos": 3
+			},
+			{
+				"name": "chassis-temperature-inlet",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "chassis-temperature-inlet",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 29,
+					"value-type": "celsius",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "chassis",
+				"parent-rel-pos": 1
+			},
+			{
+				"name": "chassis-fan2",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "chassis-fan2",
+				"class": "iana-hardware:fan",
+				"contains-child": [
+					"chassis-fan2-speed"
+				],
+				"parent": "chassis",
+				"parent-rel-pos": 4
+			},
+			{
+				"name": "slot0-logical0-bbu-temperature",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "Slot0-A-bbu-temperature",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 37,
+					"value-type": "celsius",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "slot0-logical0-bbu",
+				"parent-rel-pos": 0
+			},
+			{
+				"name": "chassis-fan3",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "chassis-fan3",
+				"class": "iana-hardware:fan",
+				"contains-child": [
+					"chassis-fan3-speed"
+				],
+				"parent": "chassis",
+				"parent-rel-pos": 5
+			},
+			{
+				"name": "chassis-fan0",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "chassis-fan0",
+				"class": "iana-hardware:fan",
+				"contains-child": [
+					"chassis-fan0-speed"
+				],
+				"parent": "chassis",
+				"parent-rel-pos": 2
+			},
+			{
+				"name": "slot0-logical1",
+				"state": {
+					"oper-state": "disabled",
+					"admin-state": "unlocked"
+				},
+				"alias": "Slot0-B",
+				"class": "iana-hardware:module",
+				"parent": "slot0",
+				"description": "SLOT0-B",
+				"parent-rel-pos": 2
+			},
+			{
+				"name": "chassis-fan1",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "chassis-fan1",
+				"class": "iana-hardware:fan",
+				"contains-child": [
+					"chassis-fan1-speed"
+				],
+				"parent": "chassis",
+				"parent-rel-pos": 3
+			},
+			{
+				"name": "slot0-logical0",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "unlocked"
+				},
+				"alias": "Slot0-A",
+				"class": "iana-hardware:module",
+				"contains-child": [
+					"slot0-logical0-rrh",
+					"slot0-logical0-bbu"
+				],
+				"parent": "slot0",
+				"description": "SLOT0-AZ",
+				"parent-rel-pos": 1
+			},
+			{
+				"name": "slot0-logical2",
+				"state": {
+					"oper-state": "disabled",
+					"admin-state": "unlocked"
+				},
+				"alias": "Slot0-C",
+				"class": "iana-hardware:module",
+				"parent": "slot0",
+				"description": "SLOT0-C",
+				"parent-rel-pos": 3
+			},
+			{
+				"name": "chassis-fan1-speed",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "chassis-fan1-speed",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 4100,
+					"value-type": "rpm",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "chassis-fan1",
+				"parent-rel-pos": 0
+			},
+			{
+				"name": "slot2-logical1",
+				"state": {
+					"oper-state": "disabled",
+					"admin-state": "unlocked"
+				},
+				"alias": "Slot3-A",
+				"class": "iana-hardware:module",
+				"parent": "slot2",
+				"description": "SLOT3-A",
+				"parent-rel-pos": 2
+			},
+			{
+				"name": "slot2-logical0",
+				"state": {
+					"oper-state": "disabled",
+					"admin-state": "unlocked"
+				},
+				"alias": "Slot2-C",
+				"class": "iana-hardware:module",
+				"parent": "slot2",
+				"description": "SLOT2-C",
+				"parent-rel-pos": 1
+			},
+			{
+				"name": "cpu-temperature",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "cpu-temperature",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 30,
+					"value-type": "celsius",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "cpu",
+				"parent-rel-pos": 0
+			},
+			{
+				"name": "chassis",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "unlocked"
+				},
+				"model-name": "ProteusCPRI Compact",
+				"mfg-name": "ISCO",
+				"alias": "chassis",
+				"class": "iana-hardware:chassis",
+				"contains-child": [
+					"chassis-temperature-inlet",
+					"cpu",
+					"chassis-fan0",
+					"chassis-temperature-exhaust",
+					"slot0",
+					"slot2",
+					"chassis-fan3",
+					"chassis-fan2",
+					"chassis-fan1"
+				],
+				"serial-num": "10283",
+				"description": "HighStreet-ONAP40",
+				"software-rev": "3.8.1 (2020-10-30 11:47:59)"
+			},
+			{
+				"name": "slot0-logical0-bbu",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "unlocked"
+				},
+				"model-name": "FTLX1475D3BTL-E7",
+				"mfg-name": "FINISAR CORP.",
+				"alias": "Slot0-A-bbu",
+				"class": "iana-hardware:port",
+				"contains-child": [
+					"slot0-logical0-bbu-temperature"
+				],
+				"parent": "slot0-logical0",
+				"o-ran-hardware:o-ran-name": "slot0-logical0-bbu",
+				"serial-num": "AYR3GA2",
+				"parent-rel-pos": 0
+			},
+			{
+				"name": "slot2",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "unlocked"
+				},
+				"model-name": "385A-SFP-2P-40-FHL-JC3",
+				"alias": "slot2",
+				"class": "iana-hardware:module",
+				"contains-child": [
+					"slot2-temperature",
+					"slot2-logical0",
+					"slot2-logical1",
+					"slot2-logical2"
+				],
+				"parent": "chassis",
+				"firmware-rev": "12.00.42-S (0F7F1001)",
+				"serial-num": "7220718",
+				"parent-rel-pos": 9,
+				"software-rev": "0"
+			},
+			{
+				"name": "chassis-fan0-speed",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "chassis-fan0-speed",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 4100,
+					"value-type": "rpm",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "chassis-fan0",
+				"parent-rel-pos": 0
+			},
+			{
+				"name": "slot0",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "unlocked"
+				},
+				"model-name": "385A-SFP-2P-40-FHL-JC3",
+				"alias": "slot0",
+				"class": "iana-hardware:module",
+				"contains-child": [
+					"slot0-logical0",
+					"slot0-logical2",
+					"slot0-temperature",
+					"slot0-logical1"
+				],
+				"parent": "chassis",
+				"firmware-rev": "12.00.42-S (0F7F1001)",
+				"serial-num": "7220530",
+				"parent-rel-pos": 7,
+				"software-rev": "0"
+			},
+			{
+				"name": "slot0-temperature",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "slot0-temperature",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 51,
+					"value-type": "celsius",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "slot0",
+				"parent-rel-pos": 0
+			},
+			{
+				"name": "cpu",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "cpu",
+				"class": "iana-hardware:cpu",
+				"contains-child": [
+					"cpu-temperature"
+				],
+				"parent": "chassis",
+				"parent-rel-pos": 6
+			},
+			{
+				"name": "slot0-logical0-rrh-temperature",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "Slot0-A-rrh-temperature",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 35,
+					"value-type": "celsius",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "slot0-logical0-rrh",
+				"parent-rel-pos": 0
+			},
+			{
+				"name": "chassis-fan3-speed",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "chassis-fan3-speed",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 1000,
+					"value-type": "rpm",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "chassis-fan3",
+				"parent-rel-pos": 0
+			},
+			{
+				"name": "chassis-fan2-speed",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "chassis-fan2-speed",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 4100,
+					"value-type": "rpm",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "chassis-fan2",
+				"parent-rel-pos": 0
+			},
+			{
+				"name": "slot2-temperature",
+				"state": {
+					"oper-state": "enabled",
+					"admin-state": "locked"
+				},
+				"alias": "slot2-temperature",
+				"sensor-data": {
+					"value-timestamp": "2021-02-18T12:11:03.5Z",
+					"value": 49,
+					"value-type": "celsius",
+					"oper-status": "ok"
+				},
+				"class": "iana-hardware:sensor",
+				"parent": "slot2",
+				"parent-rel-pos": 0
+			}
+		]
+	}
+}

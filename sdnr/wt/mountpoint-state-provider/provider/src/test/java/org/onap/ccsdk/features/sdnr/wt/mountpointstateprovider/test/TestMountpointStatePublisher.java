@@ -34,6 +34,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServic
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESMessage;
 import org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl.MountpointStatePublisher;
 
 public class TestMountpointStatePublisher {
@@ -41,7 +42,7 @@ public class TestMountpointStatePublisher {
     MountpointStatePublisher mountpointStatePublisher;
     VESCollectorService vesCollectorService;
     VESCollectorCfgService vesCfg;
-    String vesMsg = "{}";
+    VESMessage vesMsg;
     JSONObject testJsonData;
 
     @Before
@@ -64,7 +65,7 @@ public class TestMountpointStatePublisher {
 
         mountpointStatePublisher = new MountpointStatePublisher(vesCollectorService);
         mountpointStatePublisher.addToPublish(testJsonData);
-        //mountpointStatePublisher.getStateObjects().add(testJsonData);
+        mountpointStatePublisher.getStateObjects().add(testJsonData);
     }
 
     @Test

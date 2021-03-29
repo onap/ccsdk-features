@@ -17,11 +17,13 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
-import java.time.Instant;
-import java.util.HashMap;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationProxyParser;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESNotificationFieldsPOJO;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.IetfNetconfNotificationsListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfCapabilityChange;
@@ -46,13 +48,17 @@ public class ORanChangeNotificationListener implements IetfNetconfNotificationsL
     private final NetconfBindingAccessor netconfAccessor;
     private final DataProvider databaseService;
     private final VESCollectorService vesCollectorService;
+    private final NotificationProxyParser notificationProxyParser;
+    private ORanNotifToVESEventAssembly mapper = null;
 
     private static int sequenceNo = 0;
 
-    public ORanChangeNotificationListener(NetconfBindingAccessor netconfAccessor, DataProvider databaseService, VESCollectorService vesCollectorService) {
+    public ORanChangeNotificationListener(NetconfBindingAccessor netconfAccessor, DataProvider databaseService,
+            VESCollectorService vesCollectorService, NotificationProxyParser notificationProxyParser) {
         this.netconfAccessor = netconfAccessor;
         this.databaseService = databaseService;
         this.vesCollectorService = vesCollectorService;
+        this.notificationProxyParser = notificationProxyParser;
     }
 
     @Override
@@ -102,17 +108,23 @@ public class ORanChangeNotificationListener implements IetfNetconfNotificationsL
             databaseService.writeEventLog(eventlogBuilder.build());
         }
         log.info("onNetconfConfigChange (2) {}", sb);
-        ORanNotificationMapper mapper = new ORanNotificationMapper();
-        HashMap<String, String> xPathFieldsMap = mapper.performMapping(notification);
-        log.info("MappingInfo after mapping notification - {}", xPathFieldsMap);
-        Instant instant = mapper.getTime(notification);
 
-        ORanNotifToVESEventAssembly oranVESEventAssembly = new ORanNotifToVESEventAssembly(netconfAccessor, vesCollectorService);
-        String data = oranVESEventAssembly.performAssembly(xPathFieldsMap, instant, NetconfConfigChange.class.getSimpleName(),
-                sequenceNo);
-        vesCollectorService.publishVESMessage(data);
+        if (vesCollectorService.getConfig().isVESCollectorEnabled()) {
+            if (mapper == null) {
+                this.mapper = new ORanNotifToVESEventAssembly(netconfAccessor, vesCollectorService);
+            }
+            VESCommonEventHeaderPOJO header = mapper.createVESCommonEventHeader(notificationProxyParser.getTime(notification),
+                    NetconfConfigChange.class.getSimpleName(), sequenceNo);
+            VESNotificationFieldsPOJO body =
+                    mapper.createVESNotificationFields(notificationProxyParser.parseNotificationProxy(notification),
+                            NetconfConfigChange.class.getSimpleName());
+            try {
+                vesCollectorService.publishVESMessage(vesCollectorService.generateVESEvent(header, body));
+            } catch (JsonProcessingException e) {
+                log.warn("Exception while generating JSON object ", e);
 
+            }
+        }
 
     }
-
 }

@@ -530,8 +530,8 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     }
 
     @Override
-    public void writeGuiCutThroughData(Guicutthrough gcData) {
-        guiCutThroughDB.write(gcData, null);
+    public void writeGuiCutThroughData(Guicutthrough gcData, String nodeId) {
+        guiCutThroughDB.write(gcData, nodeId);
     }
 
 }

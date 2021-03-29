@@ -18,15 +18,19 @@
 
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
 
-import static org.mockito.Mockito.*;
-
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanChangeNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationProxyParser;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
@@ -41,23 +45,34 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TestORanChangeNotificationListener {
 
     private static final String NODEID = "node1";
 
+    @Mock
+    NetconfBindingAccessor netconfAccessor;
+    @Mock
+    DataProvider databaseService;
+    @Mock
+    VESCollectorService vesCollectorService;
+    @Mock
+    VESCollectorCfgService vesCfgService;
+    @Mock
+    NotificationProxyParser notifProxyParser;
+    @Mock
+    static NetconfConfigChange change;
+
     @Test
     public void test() {
 
-        NetconfBindingAccessor netconfAccessor = mock(NetconfBindingAccessor.class);
-        DataProvider databaseService = mock(DataProvider.class);
-        VESCollectorService vesCollectorService = mock(VESCollectorService.class);
-        VESCollectorCfgService vesCfgService = mock(VESCollectorCfgService.class);
-
         when(vesCollectorService.getConfig()).thenReturn(vesCfgService);
-        when(vesCfgService.getReportingEntityName()).thenReturn("SDN-R");
-        ORanChangeNotificationListener notifListener =
-                new ORanChangeNotificationListener(netconfAccessor, databaseService, vesCollectorService);
         when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
+        when(vesCfgService.isVESCollectorEnabled()).thenReturn(true);
+
+        ORanChangeNotificationListener notifListener =
+                new ORanChangeNotificationListener(netconfAccessor, databaseService, vesCollectorService, notifProxyParser);
+
         Iterable<? extends PathArgument> pathArguments = Arrays.asList(new PathArgument() {
 
             @Override
@@ -71,8 +86,9 @@ public class TestORanChangeNotificationListener {
             }
         });
         InstanceIdentifier<?> target = InstanceIdentifier.create(pathArguments);
-
-        notifListener.onNetconfConfigChange(createNotification(EditOperationType.Create, target));
+        NetconfConfigChange confChangeNotification = createNotification(EditOperationType.Create, target);
+        when(notifProxyParser.getTime(confChangeNotification)).thenReturn(Instant.now());
+        notifListener.onNetconfConfigChange(confChangeNotification);
         EventlogEntity event = new EventlogBuilder().setNodeId(NODEID)
                 .setNewValue(String.valueOf(EditOperationType.Create)).setObjectId(target.toString()).build();
         verify(databaseService).writeEventLog(event);
@@ -84,8 +100,6 @@ public class TestORanChangeNotificationListener {
      * @return
      */
     private static NetconfConfigChange createNotification(EditOperationType type, InstanceIdentifier<?> target) {
-        NetconfConfigChange change = mock(NetconfConfigChange.class);
-
         @SuppressWarnings("null")
         final @NonNull List<Edit> edits = Arrays.asList(new EditBuilder().setOperation(type).setTarget(target).build());
         when(change.nonnullEdit()).thenReturn(edits);

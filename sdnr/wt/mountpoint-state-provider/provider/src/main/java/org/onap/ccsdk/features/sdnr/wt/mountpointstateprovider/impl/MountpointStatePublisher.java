@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +67,8 @@ public class MountpointStatePublisher implements Runnable {
     }
 
 
-    public String createVESMessage(JSONObject msg, VESCollectorCfgService vesCfg) {
-        MountpointStateVESMessageFormatter vesFormatter = new MountpointStateVESMessageFormatter(vesCfg);
+    public VESMessage createVESMessage(JSONObject msg, VESCollectorCfgService vesCfg) {
+        MountpointStateVESMessageFormatter vesFormatter = new MountpointStateVESMessageFormatter(vesCfg, vesCollectorService);
         return vesFormatter.createVESMessage(msg);
     }
 
@@ -77,7 +78,7 @@ public class MountpointStatePublisher implements Runnable {
             try {
                 if (!getStateObjects().isEmpty()) {
                     JSONObject obj = ((LinkedList<JSONObject>) getStateObjects()).removeFirst();
-                    String vesMsg = createVESMessage(obj, vesCollectorService.getConfig());
+                    VESMessage vesMsg = createVESMessage(obj, vesCollectorService.getConfig());
                     this.vesCollectorService.publishVESMessage(vesMsg);
                 } else {
                     pauseThread();

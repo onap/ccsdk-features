@@ -29,7 +29,8 @@ import java.nio.charset.StandardCharsets;
 import org.junit.After;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.VESCollectorClient;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESMessage;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.VESCollectorServiceImpl;
 
 public class TestVESCollectorClient {
 
@@ -41,17 +42,17 @@ public class TestVESCollectorClient {
             + "VES_COLLECTOR_PORT=8080\n" + "VES_COLLECTOR_TLS_ENABLED=true\n" + "VES_COLLECTOR_USERNAME=sample1\n"
             + "VES_COLLECTOR_PASSWORD=sample1\n" + "VES_COLLECTOR_VERSION=v7\n" + "REPORTING_ENTITY_NAME=ONAP SDN-R\n" + "";
 
-    private static final String message = "Test Message";
+    private static final VESMessage message = new VESMessage("Test Message");
     private static final String CONFIG_FILE = "test.properties";
 
     @Test
     public void testNoAuth() throws Exception {
         ConfigurationFileRepresentation vesCfg;
-        VESCollectorClient vesClient;
+        VESCollectorServiceImpl vesClient;
 
         Files.asCharSink(new File(CONFIG_FILE), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT_NO_AUTH);
         vesCfg = new ConfigurationFileRepresentation(CONFIG_FILE);
-        vesClient = new VESCollectorClient(vesCfg);
+        vesClient = new VESCollectorServiceImpl(vesCfg);
 
         vesClient.publishVESMessage(message);
         vesClient.close();
@@ -61,12 +62,12 @@ public class TestVESCollectorClient {
     @Test
     public void testAuth() throws Exception {
         ConfigurationFileRepresentation vesCfg;
-        VESCollectorClient vesClient;
+        VESCollectorServiceImpl vesClient;
 
         Files.asCharSink(new File("test.properties"), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT_AUTH);
         vesCfg = new ConfigurationFileRepresentation("test.properties");
 
-        vesClient = new VESCollectorClient(vesCfg);
+        vesClient = new VESCollectorServiceImpl(vesCfg);
         vesClient.publishVESMessage(message);
         vesClient.close();
     }

@@ -77,7 +77,7 @@ public interface DataProvider extends ArchiveCleanProvider {
     *
     * @param gcData
     */
-    void writeGuiCutThroughData(Guicutthrough gcData);
+    void writeGuiCutThroughData(Guicutthrough gcData, String nodeId);
 
     /**
      *

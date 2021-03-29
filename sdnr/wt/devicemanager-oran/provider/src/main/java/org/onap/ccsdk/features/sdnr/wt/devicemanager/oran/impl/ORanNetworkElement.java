@@ -17,6 +17,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,10 @@ import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationProxyParser;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESPNFRegistrationFieldsPOJO;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
@@ -34,7 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.r
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.Hardware;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.hardware.Component;
 import org.opendaylight.yang.gen.v1.urn.onap.system.rev201026.System1;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GuicutthroughBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -43,8 +48,6 @@ import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- */
 public class ORanNetworkElement implements NetworkElement {
 
     private static final Logger log = LoggerFactory.getLogger(ORanNetworkElement.class);
@@ -56,12 +59,12 @@ public class ORanNetworkElement implements NetworkElement {
     @SuppressWarnings("unused")
     private final VESCollectorService vesCollectorService;
 
-    private final ORanToInternalDataModel oRanMapper;
-
     private ListenerRegistration<NotificationListener> oRanListenerRegistrationResult;
     private @NonNull final ORanChangeNotificationListener oRanListener;
     private ListenerRegistration<NotificationListener> oRanFaultListenerRegistrationResult;
     private @NonNull final ORanFaultNotificationListener oRanFaultListener;
+    private final NotificationProxyParser notificationProxyParser;
+    private Collection<Component> componentList;
 
     ORanNetworkElement(NetconfBindingAccessor netconfAccess, DataProvider databaseService,
             VESCollectorService vesCollectorService) {
@@ -69,61 +72,30 @@ public class ORanNetworkElement implements NetworkElement {
         this.netconfAccessor = netconfAccess;
         this.databaseService = databaseService;
         this.vesCollectorService = vesCollectorService;
+        this.notificationProxyParser = vesCollectorService.getNotificationProxyParser();
 
         this.oRanListenerRegistrationResult = null;
-        this.oRanListener = new ORanChangeNotificationListener(netconfAccessor, databaseService, vesCollectorService);
+        this.oRanListener = new ORanChangeNotificationListener(netconfAccessor, databaseService, vesCollectorService,
+                notificationProxyParser);
 
         this.oRanFaultListenerRegistrationResult = null;
-        this.oRanFaultListener = new ORanFaultNotificationListener();
-
-        this.oRanMapper = new ORanToInternalDataModel();
-
+        this.oRanFaultListener =
+                new ORanFaultNotificationListener(netconfAccessor, databaseService, vesCollectorService);
     }
 
-    public void initialReadFromNetworkElement() {
-        Hardware hardware = readHardware(netconfAccessor);
+    private void initialReadFromNetworkElement() {
+        Hardware hardware = readHardware();
         if (hardware != null) {
-            Collection<Component> componentList = YangHelper.getCollection(hardware.getComponent());
-            if (componentList != null) {
-                int componentListSize = componentList.size();
-                int writeCount = 0;
-
-                for (Component component : componentList) {
-                    if (component.getParent() == null) {
-                        writeCount += writeInventory(component, componentList, 0);
-                    }
-                }
-                if (componentListSize != writeCount) {
-                    log.warn("Not all data were written to the Inventory. Potential entries with missing "
-                            + "contained-child. Node Id = {}, Components Found = {}, Entries written to Database = {}",
-                            netconfAccessor.getNodeId().getValue(), componentListSize, writeCount);
-                }
-            }
+            componentList = YangHelper.getCollection(hardware.nonnullComponent());
+            List<Inventory> inventoryList =
+                    ORanToInternalDataModel.getInventoryList(netconfAccessor.getNodeId(), componentList);
+            inventoryList.forEach(databaseService::writeInventory);
         }
 
-        System1 sys = getOnapSystemData(netconfAccessor);
-        if (sys != null) {
-            GuicutthroughBuilder gcBuilder = new GuicutthroughBuilder();
-            gcBuilder.setId(sys.getName()).setName(sys.getName()).setWeburi(sys.getWebUi().getValue());
-            databaseService.writeGuiCutThroughData(gcBuilder.build());
+        Optional<Guicutthrough> oGuicutthrough = ORanToInternalDataModel.getGuicutthrough(getOnapSystemData());
+        if (oGuicutthrough.isPresent()) {
+            databaseService.writeGuiCutThroughData(oGuicutthrough.get(), netconfAccessor.getNodeId().getValue());
         }
-    }
-
-    private int writeInventory(Component component, Collection<Component> componentList, int treeLevel) {
-        databaseService
-                .writeInventory(oRanMapper.getInternalEquipment(netconfAccessor.getNodeId(), component, treeLevel));
-        int count = 1;
-        if (component.getContainsChild() != null) {
-            List<String> containerHolderList = component.getContainsChild();
-            for (String containerHolder : containerHolderList) {
-                for (Component c : componentList) {
-                    if (containerHolder.equals(c.getName())) {
-                        count += writeInventory(c, componentList, treeLevel + 1);
-                    }
-                }
-            }
-        }
-        return count;
     }
 
     @Override
@@ -131,35 +103,8 @@ public class ORanNetworkElement implements NetworkElement {
         return NetworkElementDeviceType.ORAN;
     }
 
-    private System1 getOnapSystemData(NetconfBindingAccessor accessData) {
-        InstanceIdentifier<System1> system1IID = InstanceIdentifier
-                .builder(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.system.rev140806.System.class)
-                .augmentation(System1.class).build();
-
-        System1 res = accessData.getTransactionUtils().readData(accessData.getDataBroker(),
-                LogicalDatastoreType.OPERATIONAL, system1IID);
-        log.debug("Result of getOnapSystemData = {}", res);
-        return res;
-    }
-
-    private Hardware readHardware(NetconfBindingAccessor accessData) {
-
-        final Class<Hardware> clazzPac = Hardware.class;
-
-        log.info("DBRead Get equipment for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
-                accessData.getNodeId().getValue());
-
-        InstanceIdentifier<Hardware> hardwareIID = InstanceIdentifier.builder(clazzPac).build();
-
-        Hardware res = accessData.getTransactionUtils().readData(accessData.getDataBroker(),
-                LogicalDatastoreType.OPERATIONAL, hardwareIID);
-
-        return res;
-    }
-
     @Override
     public void register() {
-
         initialReadFromNetworkElement();
         // Register call back class for receiving notifications
         Optional<NetconfNotifications> oNotifications = netconfAccessor.getNotificationAccessor();
@@ -208,4 +153,28 @@ public class ORanNetworkElement implements NetworkElement {
         return Optional.of(netconfAccessor);
     }
 
+    // Read from device
+    private System1 getOnapSystemData() {
+        log.info("Get System1 for class {} from mountpoint {}", netconfAccessor.getNodeId().getValue());
+
+        InstanceIdentifier<System1> system1IID = InstanceIdentifier
+                .builder(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.system.rev140806.System.class)
+                .augmentation(System1.class).build();
+        System1 res = netconfAccessor.getTransactionUtils().readData(netconfAccessor.getDataBroker(),
+                LogicalDatastoreType.OPERATIONAL, system1IID);
+        log.debug("Result of System1 = {}", res);
+        return res;
+    }
+
+    private Hardware readHardware() {
+        final Class<Hardware> clazzPac = Hardware.class;
+        log.info("DBRead Get hardware for class {} from mountpoint {}", clazzPac.getSimpleName(),
+                netconfAccessor.getNodeId().getValue());
+        InstanceIdentifier<Hardware> hardwareIID = InstanceIdentifier.builder(clazzPac).build();
+        Hardware res = netconfAccessor.getTransactionUtils().readData(netconfAccessor.getDataBroker(),
+                LogicalDatastoreType.OPERATIONAL, hardwareIID);
+        log.debug("Result of Hardware = {}", res);
+        return res;
+    }
+ 
 }

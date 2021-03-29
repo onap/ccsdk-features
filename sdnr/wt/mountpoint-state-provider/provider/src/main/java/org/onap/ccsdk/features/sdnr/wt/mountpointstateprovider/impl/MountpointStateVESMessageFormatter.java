@@ -22,21 +22,27 @@
 package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
+import org.eclipse.jdt.annotation.NonNull;
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESMessage;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESNotificationFieldsPOJO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MountpointStateVESMessageFormatter {
     private static final Logger LOG = LoggerFactory.getLogger(MountpointStateVESMessageFormatter.class);
 
-    private VESCollectorCfgService vesCfg;
+    private final @NonNull VESCollectorCfgService vesCfg;
+    private final @NonNull VESCollectorService vesCollectorService;
     static long sequenceNo = 0;
 
-    public MountpointStateVESMessageFormatter(VESCollectorCfgService vesCfg) {
+    public MountpointStateVESMessageFormatter(VESCollectorCfgService vesCfg, VESCollectorService vesCollectorService) {
         this.vesCfg = vesCfg;
+        this.vesCollectorService = vesCollectorService;
     }
 
     private static void incrSequenceNo() {
@@ -47,26 +53,22 @@ public class MountpointStateVESMessageFormatter {
         return sequenceNo;
     }
 
-    public String createVESMessage(JSONObject obj) {
+    public VESMessage createVESMessage(JSONObject obj) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("JSON Object to format to VES is - {0}", obj);
         }
-        String vesMsg = "{}";
+
         MountpointStateVESMessageFormatter.incrSequenceNo();
 
         VESCommonEventHeaderPOJO vesCommonEventHeader = createVESCommonEventHeader(obj);
         VESNotificationFieldsPOJO vesNotificationFields = createVESNotificationFields(obj);
 
-        VESEvent vesEvent = new VESEvent();
-        vesEvent.addEventObjects(vesCommonEventHeader);
-        vesEvent.addEventObjects(vesNotificationFields);
-
+        VESMessage vesMsg = null;
         try {
-            ObjectMapper objMapper = new ObjectMapper();
-            vesMsg = objMapper.writeValueAsString(vesEvent);
-            LOG.debug("VES message to be published - {}", vesMsg);
+            vesMsg = vesCollectorService.generateVESEvent(vesCommonEventHeader, vesNotificationFields);
+            LOG.info("VES Message is - {}", vesMsg.getMessage());
         } catch (JsonProcessingException e) {
-            LOG.warn("Exception {} while processing JSON Message - {}", e, obj);
+            LOG.error("Exception while generating VES Event - ", e);
         }
 
         return vesMsg;

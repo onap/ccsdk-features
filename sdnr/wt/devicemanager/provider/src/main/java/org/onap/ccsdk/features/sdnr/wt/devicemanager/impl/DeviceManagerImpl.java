@@ -75,14 +75,14 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.DevicemanagerNotificationDelayService;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.VESCollectorClient;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.VESCollectorServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketmanagerService;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketmanagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,7 +125,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     private ConnectionStatusHousekeepingService housekeepingService;
     private NetconfNodeStateService netconfNodeStateService;
     private DataProvider dataProvider;
-    private VESCollectorClient vesCollectorClient;
+    private VESCollectorServiceImpl vesCollectorServiceImpl;
 
     // Handler
     private DeviceManagerNetconfConnectHandler deviceManagerNetconfConnectHandler;
@@ -209,7 +209,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
         this.aaiProviderClient = new AaiProviderClient(config, this);
 
-        this.vesCollectorClient = new VESCollectorClient(config);
+        this.vesCollectorServiceImpl = new VESCollectorServiceImpl(config);
         // EM
         String myDbKeyNameExtended = MYDBKEYNAMEBASE + "-" + esConfig.getCluster();
 
@@ -273,13 +273,13 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         close(archiveCleanService);
         close(housekeepingService);
         close(deviceManagerNetconfConnectHandler);
-        close(vesCollectorClient);
+        close(vesCollectorServiceImpl);
         LOG.info("DeviceManagerImpl closing done");
     }
 
     @Override
     public @NonNull <L extends NetworkElementFactory> FactoryRegistration<L> registerBindingNetworkElementFactory(
-            @NonNull L factory) {
+            @NonNull final L factory) {
         LOG.info("Factory registration {}", factory.getClass().getName());
 
         factoryList.add(factory);
@@ -416,7 +416,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
     @Override
     public @NonNull VESCollectorService getVESCollectorService() {
-        return this.vesCollectorClient;
+        return this.vesCollectorServiceImpl;
     }
 
 }

@@ -23,60 +23,76 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Optional;
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanNetworkElementFactory;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test.mock.TransactionUtilsMock;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationProxyParser;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.yang.gen.v1.urn.o.ran.hardware._1._0.rev190328.ORANHWCOMPONENT;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.yang.common.QName;
 
 public class TestORanNetworkElement {
 
+    private static final QName OneCell =
+            QName.create("urn:onf:otcc:wireless:yang:radio-access:commscope-onecell", "2020-06-22", "onecell").intern();
     private static String NODEIDSTRING = "nSky";
+    private static NodeId nodeId = new NodeId(NODEIDSTRING);
+    private static NodeId nNodeId = new NodeId("nSky");
 
-    private static NetconfBindingAccessor accessor;
+    private static NetconfAccessor accessor;
     private static DeviceManagerServiceProvider serviceProvider;
     private static Capabilities capabilities;
+    private static TransactionUtils transactionUtils;
+    private static NetconfBindingAccessor bindingCommunicator;
+    private static VESCollectorService vesCollectorService;
+    private static NotificationProxyParser notificationProxyParser;
+    private static VESCollectorCfgService vesCfgService;
 
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
         capabilities = mock(Capabilities.class);
-        accessor = mock(NetconfBindingAccessor.class);
+        accessor = mock(NetconfAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
+        transactionUtils = mock(TransactionUtils.class);
+        bindingCommunicator = mock(NetconfBindingAccessor.class);
+        vesCollectorService = mock(VESCollectorService.class);
+        notificationProxyParser = mock(NotificationProxyParser.class);
+        vesCfgService = mock(VESCollectorCfgService.class);
 
-        NetconfBindingAccessor bindingCommunicator = mock(NetconfBindingAccessor.class);
-        NodeId nodeId = new NodeId(NODEIDSTRING);
-        when(bindingCommunicator.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
-        when(bindingCommunicator.getNodeId()).thenReturn(nodeId);
-
-        NodeId nNodeId = new NodeId("nSky");
         when(accessor.getCapabilites()).thenReturn(capabilities);
         when(accessor.getNodeId()).thenReturn(nNodeId);
-        when(accessor.getTransactionUtils()).thenReturn(new TransactionUtilsMock());
+        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingCommunicator));
+        when(bindingCommunicator.getTransactionUtils()).thenReturn(transactionUtils);
+        when(bindingCommunicator.getNodeId()).thenReturn(nodeId);
+        when(vesCollectorService.getNotificationProxyParser()).thenReturn(notificationProxyParser);
 
         DataProvider dataProvider = mock(DataProvider.class);
         when(serviceProvider.getDataProvider()).thenReturn(dataProvider);
-        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingCommunicator));
-
+        when(serviceProvider.getVESCollectorService()).thenReturn(vesCollectorService);
+        when(vesCollectorService.getConfig()).thenReturn(vesCfgService);
+        when(vesCfgService.isVESCollectorEnabled()).thenReturn(true);
 
     }
 
     @Test
     public void test() {
-        NetconfBindingAccessor bindingCommunicator = mock(NetconfBindingAccessor.class);
+
         NodeId nodeId = new NodeId(NODEIDSTRING);
         when(bindingCommunicator.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
         when(bindingCommunicator.getNodeId()).thenReturn(nodeId);
 
         Optional<NetworkElement> oRanNe;
-        when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(true);
+        when(capabilities.isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(true);
+        when(capabilities.isSupportingNamespace(OneCell)).thenReturn(false);
         ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
         oRanNe = factory.create(accessor, serviceProvider);
         assertTrue(factory.create(accessor, serviceProvider).isPresent());
@@ -87,8 +103,4 @@ public class TestORanNetworkElement {
         assertEquals(oRanNe.get().getNodeId().getValue(), "nSky");
     }
 
-    @After
-    public void cleanUp() throws Exception {
-
-    }
-}
+ }

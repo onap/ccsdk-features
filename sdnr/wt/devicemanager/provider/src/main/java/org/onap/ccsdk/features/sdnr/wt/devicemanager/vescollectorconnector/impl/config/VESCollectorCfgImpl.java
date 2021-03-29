@@ -40,6 +40,7 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
     private static final String DEFAULT_VALUE_VES_COLLECTOR_PORT = "8080";
 
     private static final String PROPERTY_KEY_VES_COLLECTOR_TLS_ENABLED = "VES_COLLECTOR_TLS_ENABLED";
+    private static final String PROPERTY_KEY_VES_COLLECTOR_TRUST_ALL_CERTS = "VES_COLLECTOR_TRUST_ALL_CERTS";
 
     private static final String PROPERTY_KEY_VES_COLLECTOR_USERNAME = "VES_COLLECTOR_USERNAME";
     private static final String DEFAULT_VALUE_VES_COLLECTOR_USERNAME = "sample1";
@@ -109,10 +110,15 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
         return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_VERSION);
     }
 
+    public boolean isTrustAllCerts() {
+        return configuration.getPropertyBoolean(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_TRUST_ALL_CERTS);
+    }
+
     @Override
     public synchronized void defaults() {
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_ENABLED, DEFAULT_VALUE_VES_COLLECTOR_ENABLED);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_TLS_ENABLED, Boolean.FALSE);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_TRUST_ALL_CERTS, Boolean.FALSE);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_USERNAME,
                 DEFAULT_VALUE_VES_COLLECTOR_USERNAME);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_PASSWORD,

@@ -21,19 +21,15 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.VESCommonEventHeaderPOJO;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.VESEvent;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.VESNotificationFieldsPOJO;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESNotificationFieldsPOJO;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,38 +47,8 @@ public class ORanNotifToVESEventAssembly {
         this.vesProvider = vesProvider;
     }
 
-    public String performAssembly(HashMap<String, String> xPathFieldsMap, Instant instant, String notificationTypeName,
-            long sequenceNo) {
-        VESEvent data = assembleVESEventMsg(xPathFieldsMap, instant, notificationTypeName, sequenceNo);
-        return createVESEventJSON(data);
-    }
-
-    public VESEvent assembleVESEventMsg(HashMap<String, String> xPathFieldsMap, Instant instant,
-            String notificationTypeName, long sequenceNo) {
-        VESCommonEventHeaderPOJO vesCEH = createVESCommonEventHeader(instant, notificationTypeName, sequenceNo);
-        VESNotificationFieldsPOJO vesNotifFields = createVESNotificationFields(xPathFieldsMap, notificationTypeName);
-
-        VESEvent vesEvent = new VESEvent();
-        vesEvent.addEventObjects(vesCEH);
-        vesEvent.addEventObjects(vesNotifFields);
-
-        return vesEvent;
-    }
-
-    public String createVESEventJSON(VESEvent vesEvent) {
-        String oranVESMsg = "";
-        try {
-            ObjectMapper objMapper = new ObjectMapper();
-            oranVESMsg = objMapper.writeValueAsString(vesEvent);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        log.debug("VES Message generated from ORAN Netconf Notification is - {}", oranVESMsg);
-        return oranVESMsg;
-    }
-
     // VES CommonEventHeader fields
-    private VESCommonEventHeaderPOJO createVESCommonEventHeader(Instant time, String notificationTypeName,
+    public VESCommonEventHeaderPOJO createVESCommonEventHeader(Instant time, String notificationTypeName,
             long sequenceNo) {
         VESCommonEventHeaderPOJO vesCEH = new VESCommonEventHeaderPOJO();
         vesCEH.setDomain(VES_EVENT_DOMAIN);
@@ -95,8 +61,8 @@ public class ORanNotifToVESEventAssembly {
         eventId = notificationTypeName + "-" + Long.toUnsignedString(sequenceNo);
 
         vesCEH.setEventId(eventId);
-        vesCEH.setStartEpochMicrosec(time.toEpochMilli() * 100);
-        vesCEH.setLastEpochMicrosec(time.toEpochMilli() * 100);
+        vesCEH.setStartEpochMicrosec(time.toEpochMilli() * 1000);
+        vesCEH.setLastEpochMicrosec(time.toEpochMilli() * 1000);
         vesCEH.setNfVendorName("ORAN");
         vesCEH.setReportingEntityName(vesProvider.getConfig().getReportingEntityName());
         vesCEH.setSequence(sequenceNo);
@@ -106,7 +72,7 @@ public class ORanNotifToVESEventAssembly {
     }
 
     // Notification fields
-    private VESNotificationFieldsPOJO createVESNotificationFields(HashMap<String, String> xPathFields,
+    public VESNotificationFieldsPOJO createVESNotificationFields(HashMap<String, String> xPathFields,
             String notificationTypeName) {
         VESNotificationFieldsPOJO vesNotifFields = new VESNotificationFieldsPOJO();
 

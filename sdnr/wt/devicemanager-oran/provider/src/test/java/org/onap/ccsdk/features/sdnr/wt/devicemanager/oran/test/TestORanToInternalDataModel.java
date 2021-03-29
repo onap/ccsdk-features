@@ -18,64 +18,80 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertTrue;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
+import java.util.Optional;
+import java.util.function.IntConsumer;
+import java.util.stream.IntStream;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanToInternalDataModel;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.iana.hardware.rev180313.HardwareClass;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.hardware.Component;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestORanToInternalDataModel {
 
-    NodeId nodeId;
-    Component component;
+    private static final Logger LOG = LoggerFactory.getLogger(TestORanToInternalDataModel.class);
 
-    @Before
-    public void init() throws InterruptedException, IOException {
-        nodeId = mock(NodeId.class);
-        component = mock(Component.class);
+    NodeId nodeId = new NodeId("ORan-1000");
 
-        when(nodeId.getValue()).thenReturn("ORan-1000");
-        when(component.getParent()).thenReturn("Shelf");
-        when(component.getName()).thenReturn("Slot-0");
-        when(component.getParentRelPos()).thenReturn(0);
-        when(component.getUuid()).thenReturn(new Uuid("0Aabcdef-0abc-0cfD-0abC-0123456789AB"));
+    @Test
+    public void testInventory() {
+        String dateTimeString = "2020-02-05T12:30:45.283Z";
+        String name = "Slot-0";
 
-        List<String> list = new ArrayList<String>();
-        list.add("Card-01A");
-        list.add("Card-01B");
+        Component testComponent = ComponentHelper.get(name, dateTimeString);
+        Optional<Inventory> oInventory = ORanToInternalDataModel.getInternalEquipment(nodeId, testComponent, 0);
 
-        when(component.getContainsChild()).thenReturn(list);
-        when(component.getName()).thenReturn("Nokia");
-        when(component.getDescription()).thenReturn("ORAN Network Element NO-456");
-        Class<? extends HardwareClass> hwClass = TestHardwareClass.class;
-        Mockito.<Class<? extends HardwareClass>>when(component.getXmlClass()).thenReturn(hwClass);
-
-        DateAndTime dt = new DateAndTime("2020-02-05T12:30:45.283Z");
-        when(component.getMfgDate()).thenReturn(dt);
-
+        assertTrue(oInventory.isPresent());
+        Inventory inventory = oInventory.get();
+        assertEquals(name, inventory.getUuid());
+        assertEquals(dateTimeString, inventory.getDate());
+        assertEquals(nodeId.getValue(), inventory.getNodeId());
     }
 
     @Test
-    public void test() throws Exception {
-        ORanToInternalDataModel model = new ORanToInternalDataModel();
-        model.getInternalEquipment(nodeId, component,0);
-        assertEquals(component.getUuid().getValue(), "0Aabcdef-0abc-0cfD-0abC-0123456789AB");
-        assertEquals(component.getMfgDate().getValue(), "2020-02-05T12:30:45.283Z");
-
+    public void testInventoryList() throws IOException, ClassNotFoundException {
+        List<Component> componentList = ComponentHelper.getComponentList("/Device-ietf-hardware-Output.json");
+        List<Inventory> inventoryList = ORanToInternalDataModel.getInventoryList(nodeId, componentList);
+        //componentList.forEach(System.out::println);
+        assertEquals("All elements", 27, inventoryList.size());
+        assertEquals("Fully parseable", componentList.size(), inventoryList.size());
+        assertEquals("Treelevel always there", 0,
+                inventoryList.stream().filter(inventory -> inventory.getTreeLevel() == null).count());
+        listAsTree(inventoryList);
     }
 
-    @After
-    public void cleanUp() throws Exception {
+    private void listAsTree(List<Inventory> inventoryList) {
+        //Walk through complete list and print parameters
+        IntConsumer action = level -> IntStream.range(0, inventoryList.size())
+                .filter(idx -> inventoryList.get(idx).getTreeLevel().intValue() == level)
+                .forEach(idx2 -> printElements(idx2, level, inventoryList.get(idx2)));
+        //Walk trough 10 levels
+        IntStream.range(0, 10)
+                .forEach(action);
+    }
 
+    private void printElements(int idx2, int level, Inventory inventory) {
+        System.out.println(level + ": " + inventory.getParentUuid() + " "
+                + inventory.getUuid());
+    }
+
+    @SuppressWarnings("unused")
+    private boolean compareLevel(int idx, List<Component> componentList, List<Inventory> inventoryList) {
+        @Nullable
+        Integer relPos = componentList.get(idx).getParentRelPos();
+        @Nullable
+        Uint32 treeLevel = inventoryList.get(idx).getTreeLevel();
+        LOG.warn("Treelevel relPos: {} treeLevel: {}", relPos, treeLevel);
+        if (relPos != null && treeLevel != null) {
+            return relPos == treeLevel.intValue();
+        }
+        return false;
     }
 }

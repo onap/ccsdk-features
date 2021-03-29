@@ -19,7 +19,8 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util;
+
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -29,6 +30,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationProxyParser;
 import org.opendaylight.yangtools.concepts.Identifier;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.EventInstantAware;
@@ -38,7 +40,8 @@ import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ORanNotificationMapper {
+public class NotificationProxyParserImpl implements NotificationProxyParser {
+
 
     /*
      *  Converter of TR069 notifications to VES key, value hashmap.
@@ -111,10 +114,11 @@ public class ORanNotificationMapper {
      *    }
      *
      */
-        private static final Logger log = LoggerFactory.getLogger(ORanNotificationMapper.class);
+        private static final Logger log = LoggerFactory.getLogger(NotificationProxyParserImpl.class);
         private Notification notification;
 
-        public HashMap<String, String> performMapping(Notification notification)
+        @Override
+        public HashMap<String, String> parseNotificationProxy(Notification notification)
         /*throws ORanNotificationMapperException*/ {
 
             try {
@@ -271,7 +275,7 @@ public class ORanNotificationMapper {
          * Inspiration from KebabCaseStrategy class of com.fasterxml.jackson.databind with an additional condition to handle numbers as well
          * Using QNAME would have been a more fool proof solution, however it can lead to performance problems due to usage of Java reflection
          */
-        public String convertCamelToKebabCase(String input)
+        private String convertCamelToKebabCase(String input)
         {
             if (input == null) return input; // garbage in, garbage out
             int length = input.length();
@@ -324,7 +328,7 @@ public class ORanNotificationMapper {
                 throw new IllegalArgumentException("indentifiable object without key");
         }
 
-        public Instant getTime(Notification notification2) {
+        public Instant getTime(Notification notification) {
             @NonNull
             Instant time;
             if (notification instanceof EventInstantAware) { // If notification class extends/implements the EventInstantAware

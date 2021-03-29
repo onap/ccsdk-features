@@ -21,18 +21,29 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
-/*
- * Interface that exposes a subset of the VES Collector configuration properties to clients that require them
- */
+import java.time.Instant;
+import java.util.HashMap;
+import org.opendaylight.yangtools.yang.binding.Notification;
 
-public interface VESCollectorCfgService {
+public interface NotificationProxyParser {
 
-    /* gets the reportingEntityName (REPORTING_ENTITY_NAME) configured in the etc/devicemanager.properties configuration file */
-    String getReportingEntityName();
+    /**
+     * parses the Notification proxy object created by ODL
+     * Returns a Map with class members as keys and the member values as values.
+     * The keys are in xpath notation.
+     * Ex: key = /notification/VALUECHANGE[@xmlns=\"urn:org:onap:ccsdk:features:sdnr:northbound:onecell-notification\"]/device/device-info/serial-number"
+     *     value = "0005B94238A0"
+     * References: https://stackoverflow.com/questions/19633534/what-is-com-sun-proxy-proxy
+     */
+    public HashMap<String, String> parseNotificationProxy(Notification notification);
 
-    /* gets the log detail configuration (EVENTLOG_MSG_DETAIL) property value configured in the etc/devicemanager.properties configuration file */
-    String getEventLogMsgDetail();
+    /**
+     * Gets the time at which the Event occurred if the notification is an instance of EventInstantAware. If not, then returns the current time
+     * Read notification time via {@link #EventInstantAware } interface.
+     *
+     * @param notification
+     * @return
+     */
+    public Instant getTime(Notification notification);
 
-    /* gets the VES Collector enabled property (VES_COLLECTOR_ENABLED) value configured in the etc/devicemanager.properties configuration file */
-    boolean isVESCollectorEnabled();
 }

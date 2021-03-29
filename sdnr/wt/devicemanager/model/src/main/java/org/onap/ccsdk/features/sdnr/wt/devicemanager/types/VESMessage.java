@@ -19,26 +19,17 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.types;
 
-import java.util.HashMap;
-import java.util.Map;
+public class VESMessage {
 
-public class VESEvent {
+    private String message;
 
-    public Map<String, Object> event = new HashMap<String, Object>();
-
-    public void addEventObjects(Object eventObject) {
-        if (eventObject instanceof VESCommonEventHeaderPOJO)
-            event.put("commonEventHeader", eventObject);
-        else if (eventObject instanceof VESNotificationFieldsPOJO)
-            event.put("notificationFields", eventObject);
-
+    public VESMessage(String vesMessage) {
+        this.message = vesMessage;
     }
 
-    public Map<String, Object> getEvent() {
-        return event;
+    public String getMessage() {
+        return message;
     }
 }
-
-
