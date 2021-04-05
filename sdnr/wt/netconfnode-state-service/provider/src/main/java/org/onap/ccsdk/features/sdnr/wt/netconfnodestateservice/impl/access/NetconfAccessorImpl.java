@@ -23,7 +23,9 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeStateServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContext;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -40,7 +42,7 @@ public class NetconfAccessorImpl implements NetconfAccessor {
     private final Capabilities capabilities;
     private final NetconfCommunicatorManager netconfCommunicatorManager;
     private final DomContext domContext;
-
+    private final NetconfNodeStateServiceImpl netconfNodeStateService;
     /**
      * Contains all data to access and manage netconf device
      *
@@ -52,13 +54,14 @@ public class NetconfAccessorImpl implements NetconfAccessor {
      * @param dataBroker to access node
      * @param mountpoint of netconfNode
      */
-    public NetconfAccessorImpl(NodeId nodeId, NetconfNode netconfNode,
-            NetconfCommunicatorManager netconfCommunicatorManager, DomContext domContext) {
+     public NetconfAccessorImpl(NodeId nodeId, NetconfNode netconfNode,
+            NetconfCommunicatorManager netconfCommunicatorManager, DomContext domContext, NetconfNodeStateServiceImpl netconfNodeStateService) {
         super();
         this.nodeId = Objects.requireNonNull(nodeId);
         this.netconfNode = Objects.requireNonNull(netconfNode);
         this.netconfCommunicatorManager = Objects.requireNonNull(netconfCommunicatorManager);
         this.domContext = Objects.requireNonNull(domContext);
+        this.netconfNodeStateService = Objects.requireNonNull(netconfNodeStateService);
 
         ConnectionStatus csts = netconfNode != null ? netconfNode.getConnectionStatus() : null;
         if (csts == null) {
@@ -71,21 +74,13 @@ public class NetconfAccessorImpl implements NetconfAccessor {
         this.capabilities = tmp;
     }
 
-    /**
-     * @param nodeId with uuid of managed netconf node
-     * @param dataBroker to access node
-     */
-    public NetconfAccessorImpl(String nodeId, NetconfNode netconfNode,
-            NetconfCommunicatorManager netconfCommunicatorManager, DomContext domContext) {
-        this(new NodeId(nodeId), netconfNode, netconfCommunicatorManager, domContext);
-    }
-
     public NetconfAccessorImpl(NetconfAccessorImpl accessor) {
         this.nodeId = accessor.getNodeId();
         this.netconfNode = accessor.getNetconfNode();
         this.capabilities = accessor.getCapabilites();
         this.netconfCommunicatorManager = accessor.netconfCommunicatorManager;
         this.domContext = accessor.domContext;
+        this.netconfNodeStateService = accessor.netconfNodeStateService;
     }
 
     @Override
@@ -111,6 +106,11 @@ public class NetconfAccessorImpl implements NetconfAccessor {
     @Override
     public Optional<NetconfDomAccessor> getNetconfDomAccessor() {
         return netconfCommunicatorManager.getNetconfDomAccessor(this);
+    }
+
+    @Override
+    public DataBroker getControllerBindingDataBroker() {
+        return netconfNodeStateService.getDataBroker();
     }
 
 }

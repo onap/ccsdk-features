@@ -221,7 +221,7 @@ public class NetconfNodeStateServiceImpl
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
         this.domContext = new DomContext(this.yangParserFactory, this.bindingNormalizedNodeSerializer);
         this.netconfCommunicatorManager = new NetconfCommunicatorManager(mountPointService, domMountPointService, domContext);
-        this.accessorManager = new NetconfAccessorManager(netconfCommunicatorManager, domContext);
+        this.accessorManager = new NetconfAccessorManager(netconfCommunicatorManager, domContext, this);
         // Start RPC Service
         this.rpcApiService = new NetconfnodeStateServiceRpcApiImpl(rpcProviderRegistry, vesNotificationListenerList);
         // Get configuration
@@ -264,6 +264,10 @@ public class NetconfNodeStateServiceImpl
 
     public DomContext getDomContext() {
         return Objects.requireNonNull(domContext, "Initialization not completed for domContext" );
+    }
+
+    public DataBroker getDataBroker() {
+        return dataBroker;
     }
 
     public NetconfnodeStateServiceRpcApiImpl getNetconfnodeStateServiceRpcApiImpl() {

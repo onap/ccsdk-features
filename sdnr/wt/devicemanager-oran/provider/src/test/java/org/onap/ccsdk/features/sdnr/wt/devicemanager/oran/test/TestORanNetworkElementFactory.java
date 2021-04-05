@@ -22,7 +22,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Optional;
-
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,27 +42,23 @@ public class TestORanNetworkElementFactory {
     private static DeviceManagerServiceProvider serviceProvider;
     private static Capabilities capabilities;
     private static VESCollectorService vesCollectorService;
-    private static NetconfBindingAccessor bindingCommunicator;
 
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
-        bindingCommunicator = mock(NetconfBindingAccessor.class);
-        vesCollectorService = mock(VESCollectorService.class);
+        NetconfBindingAccessor bindingCommunicator = mock(NetconfBindingAccessor.class);
         NodeId nodeId = new NodeId(NODEIDSTRING);
         when(bindingCommunicator.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
         when(bindingCommunicator.getNodeId()).thenReturn(nodeId);
-        
 
         capabilities = mock(Capabilities.class);
         accessor = mock(NetconfBindingAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
+        vesCollectorService = mock(VESCollectorService.class);
 
         when(accessor.getCapabilites()).thenReturn(capabilities);
         when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingCommunicator));
         when(serviceProvider.getDataProvider()).thenReturn(null);
         when(serviceProvider.getVESCollectorService()).thenReturn(vesCollectorService);
-
-
     }
 
     @Test

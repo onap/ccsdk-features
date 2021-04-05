@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.example;
 
 import java.util.Arrays;
 import org.mockito.Mockito;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeStateServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfAccessorImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfCommunicatorManager;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContext;
@@ -71,8 +72,9 @@ public class TestNetconfHelper extends Mockito {
         NetconfNode testNode = TestNetconfHelper.getTestNode(nodeId, capabilityStringForNetworkElement)
                 .augmentation(NetconfNode.class);
 
+        NetconfNodeStateServiceImpl netconfNodeStateService = mock(NetconfNodeStateServiceImpl.class);
         NetconfAccessorImpl netconfAccessor =
-                new NetconfAccessorImpl(nodeId, testNode, netconfCommunicatorManager, domContext);
+                new NetconfAccessorImpl(nodeId, testNode, netconfCommunicatorManager, domContext, netconfNodeStateService);
         return netconfAccessor;
     }
 }
