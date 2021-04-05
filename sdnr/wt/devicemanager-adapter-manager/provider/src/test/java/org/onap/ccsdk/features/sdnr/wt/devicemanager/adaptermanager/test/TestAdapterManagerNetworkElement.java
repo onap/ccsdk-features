@@ -20,7 +20,6 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Optional;
@@ -29,18 +28,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.impl.AdapterManagerNetworkElementFactory;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.test.mock.NetconfAccessorMock;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.test.mock.TransactionUtilsMock;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.network.topology.simulator.rev191025.SimulatorStatus;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.common.QName;
 
 public class TestAdapterManagerNetworkElement {
 
-    static NetconfAccessorMock accessor;
+    static NetconfBindingAccessor accessor;
     static DeviceManagerServiceProvider serviceProvider;
     static Capabilities capabilities;
     QName qCapability;
@@ -49,13 +48,13 @@ public class TestAdapterManagerNetworkElement {
     public static void init() throws InterruptedException, IOException {
         capabilities = mock(Capabilities.class);
         //accessor = mock(NetconfAccessorMock.class);
-        accessor = spy(new NetconfAccessorMock(null, null, null, null));
+        accessor = mock(NetconfBindingAccessor.class); //accessor = spy(new NetconfAccessorMock(null, null, null, null));
         serviceProvider = mock(DeviceManagerServiceProvider.class);
 
         NodeId nNodeId = new NodeId("nSky");
         when(accessor.getCapabilites()).thenReturn(capabilities);
         when(accessor.getNodeId()).thenReturn(nNodeId);
-        when(accessor.getTransactionUtils()).thenReturn(new TransactionUtilsMock());
+        when(accessor.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
 
         DataProvider dataProvider = mock(DataProvider.class);
         when(serviceProvider.getDataProvider()).thenReturn(dataProvider);

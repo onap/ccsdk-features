@@ -41,6 +41,9 @@ import org.opendaylight.yang.gen.v1.urn.onap.system.rev201026.System1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconf.callhome.server.rev161109.NetconfCallhomeServer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconf.callhome.server.rev161109.netconf.callhome.server.AllowedDevices;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconf.callhome.server.rev161109.netconf.callhome.server.allowed.devices.Device;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -64,7 +67,9 @@ public class ORanNetworkElement implements NetworkElement {
     private ListenerRegistration<NotificationListener> oRanFaultListenerRegistrationResult;
     private @NonNull final ORanFaultNotificationListener oRanFaultListener;
     private final NotificationProxyParser notificationProxyParser;
+    private @NonNull ORanRegistrationToVESpnfRegistrationMapper mapper;
     private Collection<Component> componentList;
+    private static int sequenceNo = 0;
 
     ORanNetworkElement(NetconfBindingAccessor netconfAccess, DataProvider databaseService,
             VESCollectorService vesCollectorService) {
@@ -89,7 +94,7 @@ public class ORanNetworkElement implements NetworkElement {
             componentList = YangHelper.getCollection(hardware.nonnullComponent());
             List<Inventory> inventoryList =
                     ORanToInternalDataModel.getInventoryList(netconfAccessor.getNodeId(), componentList);
-            inventoryList.forEach(databaseService::writeInventory);
+	    inventoryList.forEach(databaseService::writeInventory);
         }
 
         Optional<Guicutthrough> oGuicutthrough = ORanToInternalDataModel.getGuicutthrough(getOnapSystemData());
@@ -106,6 +111,8 @@ public class ORanNetworkElement implements NetworkElement {
     @Override
     public void register() {
         initialReadFromNetworkElement();
+        // Publish the mountpoint to VES if enabled
+        publishMountpointToVES();
         // Register call back class for receiving notifications
         Optional<NetconfNotifications> oNotifications = netconfAccessor.getNotificationAccessor();
         if (oNotifications.isPresent()) {
@@ -176,5 +183,60 @@ public class ORanNetworkElement implements NetworkElement {
         log.debug("Result of Hardware = {}", res);
         return res;
     }
- 
+
+    private void publishMountpointToVES() {
+        log.debug("In publishMountpointToVES()");
+
+        /**
+         * 1. Check if this device is in the list of allowed-devices.
+         * 2. If device exists in allowed-devices, then create VES pnfRegistration event and publish to VES
+         */
+        if (inAllowedDevices(netconfAccessor.getNodeId().getValue())) {
+            if (vesCollectorService.getConfig().isVESCollectorEnabled()) {
+
+                for (Component component : ORanToInternalDataModel.getRootComponents(componentList)) {
+                    //Just get one component. At the moment we don't care which one. Also since there is only one management address, we assume there will be only one chassis.
+                    //If the device supports subtended configuration then it is assumed that the Chassis containing the management interface will be the root component and there will be only one root.
+                    this.mapper = new ORanRegistrationToVESpnfRegistrationMapper(netconfAccessor,
+                            vesCollectorService, component);
+                    VESCommonEventHeaderPOJO header =
+                            mapper.mapCommonEventHeader(sequenceNo++);
+                    VESPNFRegistrationFieldsPOJO body = mapper.mapPNFRegistrationFields();
+                    try {
+                        vesCollectorService.publishVESMessage(vesCollectorService.generateVESEvent(header, body));
+                    } catch (JsonProcessingException e) {
+                        log.warn("Error while serializing VES Event to String ", e);
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+        }
+
+    }
+
+    private boolean inAllowedDevices(String mountpointName) {
+        final InstanceIdentifier<AllowedDevices> ALL_DEVICES =
+                InstanceIdentifier.create(NetconfCallhomeServer.class).child(AllowedDevices.class);
+
+        AllowedDevices allowedDevices;
+        allowedDevices = netconfAccessor.getTransactionUtils().readData(
+                netconfAccessor.getControllerBindingDataBroker(), LogicalDatastoreType.CONFIGURATION, ALL_DEVICES);
+
+        if (allowedDevices != null) {
+            Collection<Device> deviceList = YangHelper.getCollection(allowedDevices.nonnullDevice());
+            for (Device device : deviceList) {
+                log.info("Device in allowed-devices is - {}", device.getUniqueId());
+                if (device.getUniqueId().equals(netconfAccessor.getNodeId().getValue())) {
+                    log.info("Mountpoint is part of allowed-devices list");
+                    return true;
+                }
+            }
+        }
+
+        log.info("Mountpoint {} is not part of allowed-devices list", mountpointName);
+        return false;
+    }
+
 }

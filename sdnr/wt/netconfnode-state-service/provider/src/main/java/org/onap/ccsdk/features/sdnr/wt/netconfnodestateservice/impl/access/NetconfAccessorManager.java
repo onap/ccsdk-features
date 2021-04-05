@@ -45,15 +45,17 @@ public class NetconfAccessorManager {
     private final ConcurrentHashMap<NodeId, NetconfAccessor> accessorList;
     private final NetconfCommunicatorManager netconfCommunicatorManager;
     private final DomContext domContext;
+    private final NetconfNodeStateServiceImpl netconfNodeStateService;
 
-    public NetconfAccessorManager(NetconfCommunicatorManager netconfCommunicatorManager, DomContext domContext) {
+    public NetconfAccessorManager(NetconfCommunicatorManager netconfCommunicatorManager, DomContext domContext, NetconfNodeStateServiceImpl netconfNodeStateService) {
         this.netconfCommunicatorManager = Objects.requireNonNull(netconfCommunicatorManager);
         this.domContext = Objects.requireNonNull(domContext);
         this.accessorList = new ConcurrentHashMap<>();
+        this.netconfNodeStateService = Objects.requireNonNull(netconfNodeStateService);
     }
 
     public NetconfAccessor getAccessor(NodeId nNodeId, NetconfNode netconfNode) {
-        NetconfAccessor res = new NetconfAccessorImpl(nNodeId, netconfNode, netconfCommunicatorManager, domContext);
+        NetconfAccessor res = new NetconfAccessorImpl(nNodeId, netconfNode, netconfCommunicatorManager, domContext, netconfNodeStateService);
         NetconfAccessor previouse = accessorList.put(nNodeId, res);
         if (Objects.nonNull(previouse)) {
             LOG.warn("Accessor with name already available. Replaced with new one.");

@@ -25,7 +25,6 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.impl.AdapterManagerNetworkElementFactory;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.test.mock.NetconfAccessorMock;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
@@ -42,7 +41,7 @@ public class TestAdapterManagerNetworkElementFactory {
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
         capabilities = mock(Capabilities.class);
-        accessor = mock(NetconfAccessorMock.class);
+        accessor = mock(NetconfAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
 
         when(accessor.getCapabilites()).thenReturn(capabilities);
