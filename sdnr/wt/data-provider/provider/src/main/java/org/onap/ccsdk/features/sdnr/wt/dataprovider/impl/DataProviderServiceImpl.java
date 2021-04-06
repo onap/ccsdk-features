@@ -30,10 +30,12 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.HtUserdataManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.MediatorServerDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
@@ -107,6 +109,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     private final ConfigurationFileRepresentation configuration;
     private final EsConfig esConfig;
     private final MediatorServerDataProvider mediatorServerDataProvider;
+    private final HtUserdataManager dbUserManager;
 
     DataProviderServiceImpl(final RpcProviderService rpcProviderService, MsServlet mediatorServerServlet)
             throws Exception {
@@ -118,6 +121,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         this.mediatorServerDataProvider = new MediatorServerDataProvider(esConfig.getHosts(),
                 esConfig.getBasicAuthUsername(), esConfig.getBasicAuthPassword(),esConfig.trustAllCerts());
         mediatorServerServlet.setDataProvider(this.mediatorServerDataProvider);
+        this.dbUserManager = new HtUserdataManagerImpl(this.dataProvider.getRawClient());
         // Register ourselves as the REST API RPC implementation
         LOG.info("Register RPC Service " + DataProviderServiceImpl.class.getSimpleName());
         this.rpcReg = rpcProviderService.registerRpcImplementation(DataProviderService.class, this);
@@ -410,6 +414,10 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
             result.withError(ErrorType.APPLICATION, assembleExceptionMessage(e));
         }
         return result;
+    }
+
+    public HtUserdataManager getHtDatabaseUserManager() {
+        return this.dbUserManager;
     }
 
 }

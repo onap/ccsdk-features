@@ -37,9 +37,28 @@ public class DbFilter {
         return restFilterValue == null ? false : restFilterValue.contains("*") || restFilterValue.contains("?");
     }
 
+    public static boolean hasSearchParams(List<String> restFilterValues) {
+        for (String restFilterValue : restFilterValues) {
+            if (!hasSearchParams(restFilterValue)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static boolean isComparisonValid(String restFilterValue) {
         return restFilterValue == null ? false : restFilterValue.contains(">") || restFilterValue.contains("<");
     }
+
+    public static boolean isComparisonValid(List<String> restFilterValues) {
+        for (String restFilterValue : restFilterValues) {
+            if (!isComparisonValid(restFilterValue)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static boolean isDatetimeKeyValue(String key, String value) {
         return timestampValueNames.contains(key.toLowerCase());
     }

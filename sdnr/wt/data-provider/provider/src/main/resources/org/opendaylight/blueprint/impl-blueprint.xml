@@ -70,6 +70,15 @@
         </service-properties>
     </service>
 
+    <bean id="userdataServlet"
+          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet">
+    </bean>
+    <service interface="javax.servlet.http.HttpServlet" ref="userdataServlet">
+        <service-properties>
+            <entry key="alias" value="/userdata"/>
+        </service-properties>
+    </service>
+
     <bean id="provider"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataProviderImpl"
           init-method="init" destroy-method="close">
@@ -77,6 +86,7 @@
         <property name="aboutServlet" ref="aboutServlet"/>
         <property name="treeServlet" ref="treeServlet"/>
         <property name="mediatorServerServlet" ref="msServlet"/>
+        <property name="userdataServlet" ref="userdataServlet"/>
     </bean>
 
     <bean id="yangServlet"

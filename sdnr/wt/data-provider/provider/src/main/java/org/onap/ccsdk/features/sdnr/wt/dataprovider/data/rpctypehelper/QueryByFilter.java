@@ -33,7 +33,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.data.DbFilter;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.BoolQueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
-import org.onap.ccsdk.features.sdnr.wt.common.database.queries.RangeQueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.acessor.DataObjectAcessorPm;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
@@ -76,11 +75,13 @@ public class QueryByFilter {
             @Nullable
             Pagination pagination = input.getPagination();
             if (pagination != null) {
-                @Nullable Uint64 pageOrNull = YangHelper2.getUint64(pagination.getPage());
+                @Nullable
+                Uint64 pageOrNull = YangHelper2.getUint64(pagination.getPage());
                 if (pageOrNull != null) {
                     page = pageOrNull.longValue();
                 }
-                @Nullable Uint32 pageSizeOrNull = YangHelper2.getUint32(pagination.getSize());
+                @Nullable
+                Uint32 pageSizeOrNull = YangHelper2.getUint32(pagination.getSize());
                 if (pageSizeOrNull != null) {
                     pageSize = pageSizeOrNull.longValue();
                 }
@@ -239,7 +240,7 @@ public class QueryByFilter {
         if (dt == null) {
             return null;
         }
-        //        property.substring(0,idx)+REPLACE.substring(idx+1);
+        // property.substring(0,idx)+REPLACE.substring(idx+1);
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         c.setTime(dt);
         int tmpvalue;
@@ -348,75 +349,81 @@ public class QueryByFilter {
 
     }
 
+    private static List<String> collectValues(Filter filter) {
+        List<String> values = new ArrayList<String>();
+        if (filter.getFiltervalue() != null) {
+            values.add(filter.getFiltervalue());
+        }
+        if (filter.getFiltervalues() != null) {
+            values.addAll(filter.getFiltervalues());
+        }
+        return values;
+    }
+
     private static QueryBuilder fromFilter(@Nullable List<Filter> filters, String prefix) {
         if (filters == null || filters.size() == 0) {
             return QueryBuilders.matchAllQuery();
 
         } else if (filters.size() == 1) {
-            QueryBuilder query;
-            String p = filters.get(0).getProperty();
-            String v = filters.get(0).getFiltervalue();
-            if ("id".equals(p)) {
-                p = "_id";
-            } else {
-                //    v=v.toLowerCase();
+            String property = filters.get(0).getProperty();
+            List<String> values = collectValues(filters.get(0));
+            if ("id".equals(property)) {
+                property = "_id";
             }
-            if (DbFilter.hasSearchParams(v)) {
-                if (p != null && timestampValueNames.contains(p.toLowerCase())) {
-                    query = fromTimestampSearchFilter(p, v);
-                    if (query != null) {
-                        return query;
-                    }
-                }
-                return QueryBuilders.regex(p, DbFilter.createDatabaseRegex(v));
-
-
-            } else if (DbFilter.isComparisonValid(v)) {
-                RangeQueryBuilder q = DbFilter.getRangeQuery(handlePrefix(prefix, p), v);
-                if (q != null) {
-                    return q;
-                } else {
-                    return QueryBuilders.matchQuery(handlePrefix(prefix, p), v);
-                }
+            if (values.size() == 1) {
+                return getSinglePropertyQuery(property, values.get(0), prefix);
             } else {
-                return QueryBuilders.matchQuery(handlePrefix(prefix, p), v);
+                BoolQueryBuilder bquery = new BoolQueryBuilder();
+                for (String v : values) {
+                    bquery.should(getSinglePropertyQuery(property, v, prefix));
+                }
+                return bquery;
+
             }
         } else {
             BoolQueryBuilder query = new BoolQueryBuilder();
-            QueryBuilder tmpQuery;
             for (Filter fi : filters) {
                 String p = fi.getProperty();
-                String v = fi.getFiltervalue();
+                List<String> values = collectValues(fi);
                 if ("id".equals(p)) {
                     p = "_id";
-                } else {
-                    //    v=v.toLowerCase();
                 }
-                if (DbFilter.hasSearchParams(v)) {
-                    if (p != null && timestampValueNames.contains(p.toLowerCase())) {
-                        tmpQuery = fromTimestampSearchFilter(p, v);
-                        if (tmpQuery != null) {
-                            query.must(tmpQuery);
-                        } else {
-                            query.must(QueryBuilders.regex(handlePrefix(prefix, p), DbFilter.createDatabaseRegex(v)));
-                        }
-                    } else {
-                        query.must(QueryBuilders.regex(handlePrefix(prefix, p), DbFilter.createDatabaseRegex(v)));
-                    }
-                } else if (DbFilter.isComparisonValid(v)) {
-                    RangeQueryBuilder q = DbFilter.getRangeQuery(handlePrefix(prefix, p), v);
-                    if (q != null) {
-                        query.must(q);
-                    } else {
-                        query.must(QueryBuilders.matchQuery(handlePrefix(prefix, p), v));
-                    }
+                if (values.size() == 1) {
+                    query.must(getSinglePropertyQuery(p, values.get(0), prefix));
                 } else {
-                    query.must(QueryBuilders.matchQuery(handlePrefix(prefix, p), v));
+                    BoolQueryBuilder tmpQuery = QueryBuilders.boolQuery();
+                    for (String v : values) {
+                        tmpQuery.should(getSinglePropertyQuery(p, v, prefix));
+                    }
+                    query.must(tmpQuery);
+                    tmpQuery = QueryBuilders.boolQuery();
                 }
             }
             LOG.trace("Query result. {}", query.toJSON());
             return query;
         }
+    }
+
+    private static QueryBuilder getSinglePropertyQuery(String p, String v, String prefix) {
+        QueryBuilder query = null;
+        if (DbFilter.hasSearchParams(v)) {
+            if (p != null && timestampValueNames.contains(p.toLowerCase())) {
+                query = fromTimestampSearchFilter(p, v);
+                if (query == null) {
+                    query = QueryBuilders.regex(handlePrefix(prefix, p), DbFilter.createDatabaseRegex(v));
+                }
+            } else {
+                query = QueryBuilders.regex(handlePrefix(prefix, p), DbFilter.createDatabaseRegex(v));
+            }
+        } else if (DbFilter.isComparisonValid(v)) {
+            query = DbFilter.getRangeQuery(handlePrefix(prefix, p), v);
+            if (query == null) {
+                query = QueryBuilders.matchQuery(handlePrefix(prefix, p), v);
+            }
+        } else {
+            query = QueryBuilders.matchQuery(handlePrefix(prefix, p), v);
+        }
+        return query;
     }
 
     private static String handlePrefix(String prefix, String p) {

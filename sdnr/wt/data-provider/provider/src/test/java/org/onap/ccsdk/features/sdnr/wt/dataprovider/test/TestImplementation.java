@@ -22,14 +22,13 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
 import static org.junit.Assert.fail;
-
 import java.util.Set;
-
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section.EnvGetter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataProviderImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.StatusChangedHandler.StatusKey;
@@ -73,6 +72,7 @@ public class TestImplementation {
         impl.setMediatorServerServlet(new MsServlet());
         impl.setAboutServlet(new AboutHttpServlet());
         impl.setTreeServlet(new DataTreeHttpServlet());
+        impl.setUserdataServlet(new UserdataHttpServlet());
         try {
             impl.init();
         } catch (Exception e) {

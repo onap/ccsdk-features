@@ -40,9 +40,11 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.HtUserdataManagerImpl;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInputBuilder;
@@ -227,7 +229,8 @@ public class TestCRUDforDatabase {
         // ==READ===========================
         System.out.println("try to read entry");
         ReadMediatorServerListInput readinput = new ReadMediatorServerListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class,new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         ReadMediatorServerListOutputBuilder readoutput = dbProvider.readMediatorServerList(readinput);
         List<Data> data = readoutput.getData();
@@ -254,7 +257,8 @@ public class TestCRUDforDatabase {
         // ==READ============================
         System.out.println("try to read entry");
         readinput = new ReadMediatorServerListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("name").setFiltervalue(NAME2).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("name").setFiltervalue(NAME2).build()))
                 .setPagination(getPagination(20, 1)).build();
         readoutput = dbProvider.readMediatorServerList(readinput);
         data = readoutput.getData();
@@ -277,7 +281,8 @@ public class TestCRUDforDatabase {
         // ==READ/VERIFY DELETE============================
         System.out.println("try to read entry");
         readinput = new ReadMediatorServerListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("name").setFiltervalue(NAME2).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("name").setFiltervalue(NAME2).build()))
                 .setPagination(getPagination(20, 1)).build();
         readoutput = dbProvider.readMediatorServerList(readinput);
         data = readoutput.getData();
@@ -322,7 +327,8 @@ public class TestCRUDforDatabase {
         // ==READ===========================
 
         ReadNetworkElementConnectionListInput readInput = new ReadNetworkElementConnectionListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadNetworkElementConnectionListOutputBuilder readOperation =
@@ -393,7 +399,8 @@ public class TestCRUDforDatabase {
         }
 
         readInput = new ReadNetworkElementConnectionListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         readOperation = dbProvider.readNetworkElementConnectionList(readInput);
         data = readOperation.getData();
@@ -437,7 +444,8 @@ public class TestCRUDforDatabase {
         System.out.println("Try read...");
 
         ReadMaintenanceListInput readinput = new ReadMaintenanceListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         ReadMaintenanceListOutputBuilder readResult = dbProvider.readMaintenanceList(readinput);
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> data =
@@ -502,7 +510,8 @@ public class TestCRUDforDatabase {
         System.out.println("try to read entry");
 
         ReadFaultlogListInput readinput = new ReadFaultlogListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadFaultlogListOutputBuilder readResult = null;
@@ -530,7 +539,8 @@ public class TestCRUDforDatabase {
 
         System.out.println("try to search entry 1");
         readinput = new ReadFaultlogListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-id").setFiltervalue("test").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("node-id").setFiltervalue("test").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         //== VERIFY UPDATE ================================
@@ -545,7 +555,8 @@ public class TestCRUDforDatabase {
         System.out.println("try to search entry 2");
 
         readinput = new ReadFaultlogListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-id").setFiltervalue("test*").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("node-id").setFiltervalue("test*").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         readResult = dbProvider.readFaultLogList(readinput);
@@ -589,7 +600,8 @@ public class TestCRUDforDatabase {
 
 
         ReadFaultcurrentListInput readinput = new ReadFaultcurrentListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadFaultcurrentListOutputBuilder readResult = null;
@@ -693,7 +705,8 @@ public class TestCRUDforDatabase {
         System.out.println("Try read entry");
 
         ReadConnectionlogListInput readinput = new ReadConnectionlogListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadConnectionlogListOutputBuilder readResult = null;
@@ -722,7 +735,8 @@ public class TestCRUDforDatabase {
         System.out.println("Try read updated entry");
 
         readinput = new ReadConnectionlogListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("status").setFiltervalue("Connected").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("status").setFiltervalue("Connected").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         try {
@@ -782,7 +796,8 @@ public class TestCRUDforDatabase {
         // ==READ===========================
 
         ReadEventlogListInput readinput = new ReadEventlogListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         ReadEventlogListOutputBuilder readResult = null;
         try {
@@ -850,7 +865,8 @@ public class TestCRUDforDatabase {
 
         // ==READ===========================
         ReadInventoryListInput readinput = new ReadInventoryListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
                 .setPagination(getPagination(20, 1)).build();
         ReadInventoryListOutputBuilder readResult = null;
         try {
@@ -1015,7 +1031,8 @@ public class TestCRUDforDatabase {
         System.out.println("read list entries...");
 
         ReadPmdata15mListInput read = new ReadPmdata15mListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadPmdata15mListOutputBuilder readResult = null;
@@ -1035,7 +1052,8 @@ public class TestCRUDforDatabase {
         System.out.println("read ltp entries with node name set...");
 
         ReadPmdata15mLtpListInput readLtp = new ReadPmdata15mLtpListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadPmdata15mLtpListOutputBuilder readltpResult = null;
@@ -1133,7 +1151,8 @@ public class TestCRUDforDatabase {
         System.out.println("filter list entries...");
 
         read = new ReadPmdata24hListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         readResult = null;
@@ -1152,7 +1171,8 @@ public class TestCRUDforDatabase {
         System.out.println("read ltp entries with node name set...");
 
         ReadPmdata24hLtpListInput readLtp = new ReadPmdata24hLtpListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("node-name").setFiltervalue("a2").build()))
                 .setPagination(getPagination(20, 1)).build();
 
         ReadPmdata24hLtpListOutputBuilder readltpResult = null;
@@ -1363,7 +1383,7 @@ public class TestCRUDforDatabase {
                     + "\"implemented-interface\": \"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultlog\",\n"
                     + "\"source-type\": \"Netconf\",\n" + "\"node-id\": \"sim4\",\n" + "\"problem\": \"signalIsLost\"\n"
                     + "}";
-            YangToolsMapper yangtoolsMapper = new YangToolsMapper();
+            DataProviderYangToolsMapper yangtoolsMapper = new DataProviderYangToolsMapper();
             Faultlog log = yangtoolsMapper.readValue(jsonString, Faultlog.class);
             System.out.println(yangtoolsMapper.writeValueAsString((new FaultlogBuilder(log).build())));
             System.out.println("Check3");
@@ -1372,6 +1392,27 @@ public class TestCRUDforDatabase {
             fail("Fail");
         }
 
+    }
+
+    @Test
+    public void testUserdata() {
+        final String USERNAME = "admin";
+        final String DATA1 = "{\n" + "    \"networkMap\":{\n"
+                + "        \"startupPosition\": {\"lat\": 52.5095, \"lon\":13.329, \"zoom\": 10},\n"
+                + "        \"tileOpacity\": 90,\n" + "        \"styling\":{\n" + "            \"theme\": \"light\"\n"
+                + "        }\n" + "    },\n" + "    \"dashboard\":{\n" + "        \"color\":\"#F00\"\n" + "    }\n"
+                + "}";
+        HtUserdataManagerImpl client = new HtUserdataManagerImpl(dbRawProvider);
+        boolean success = client.setUserdata(USERNAME, DATA1);
+        assertTrue(success);
+        String data = client.getUserdata(USERNAME);
+        //JSONAssert.assertEquals(DATA1,data,false);
+
+        assertEquals("admin", UserdataHttpServlet.decodeJWTPayloadUsername(String.format("Bearer %s",
+                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBzZG4iLCJyb2xlcyI6WyJ1c2VyIiwiYWRtaW4iXSwiaXN"
+                + "zIjoiT3BlbmRheWxpZ2h0IiwibmFtZSI6ImFkbWluQHNkbiIsImV4cCI6MTYxNTc5NTg1NywiZmFtaWx5X25hbWUiOiIifQ.wB"
+                + "PdB45_bryU6_kSCu3be3dq3yth24niSXi6b2_1ufc"),
+                "sub"));
     }
 
     private Pagination getPagination(long pageSize, int page) {

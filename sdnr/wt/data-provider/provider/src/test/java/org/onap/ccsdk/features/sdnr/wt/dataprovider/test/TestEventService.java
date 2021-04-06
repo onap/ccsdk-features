@@ -63,6 +63,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * @author Michael Dürre
@@ -205,6 +206,7 @@ public class TestEventService {
         List<NetworkElementConnectionEntity> nes = service.getNetworkElementConnections();
         assertEquals(0, nes.size());
         service.updateNetworkConnection22(createNeConnection(NODEID, NetworkElementDeviceType.Unknown), NODEID);
+        service.updateNetworkConnection22(createNeConnection(NODEID, NetworkElementDeviceType.Unknown), NODEID);
         service.updateNetworkConnection22(createNeConnection(NODEID2, NetworkElementDeviceType.ORAN), NODEID2);
         nes = service.getNetworkElementConnections();
         assertEquals(2, nes.size());
@@ -243,11 +245,9 @@ public class TestEventService {
     @Test
     public void testInventory() {
         clearDbEntity(Entity.Inventoryequipment);
-        service.writeInventory(createEquipment(NODEID, "uuid1"));
-        service.writeInventory(createEquipment(NODEID, "uuid2"));
-        service.writeInventory(createEquipment(NODEID2, "uuid3"));
-        service.writeInventory(createEquipment(NODEID2, "uuid4"));
-        service.writeInventory(createEquipment(NODEID2, "uuid5"));
+        service.writeInventory(NODEID,Arrays.asList(createEquipment(NODEID, "uuid1"), createEquipment(NODEID, "uuid2"),
+                createEquipment(NODEID, "uuid3"), createEquipment(NODEID, "uuid4"),
+                createEquipment(NODEID, "uuid5")));
         assertEquals(5, getDbEntityEntries(Entity.Inventoryequipment).getTotal());
     }
 
@@ -272,19 +272,21 @@ public class TestEventService {
      * @return
      */
     private Inventory createEquipment(String nodeId, String uuid) {
-        return new InventoryBuilder().setNodeId(nodeId).setParentUuid("").setDescription("desc")
-                .setManufacturerName("manu").setDate(NetconfTimeStampImpl.getConverter().getTimeStampAsNetconfString()).setUuid(uuid).build();
+        return new InventoryBuilder().setNodeId(nodeId).setParentUuid(null).setDescription("desc")
+                .setTreeLevel(Uint32.valueOf(0)).setManufacturerName("manu")
+                .setDate(NetconfTimeStampImpl.getConverter().getTimeStampAsNetconfString()).setUuid(uuid).build();
     }
 
     /**
      * @param devType
+     * @param mountMethod
      * @param nodename3
      * @return
      */
     private static NetworkElementConnectionEntity createNeConnection(String nodeId, NetworkElementDeviceType devType) {
-        return new NetworkElementConnectionBuilder().setNodeId(nodeId).setHost("host").setPort(YangHelper2.getLongOrUint32(1234L))
-                .setCoreModelCapability("123").setStatus(ConnectionLogStatus.Connected).setDeviceType(devType)
-                .setIsRequired(true).build();
+        return new NetworkElementConnectionBuilder().setNodeId(nodeId).setHost("host")
+                .setPort(YangHelper2.getLongOrUint32(1234L)).setCoreModelCapability("123")
+                .setStatus(ConnectionLogStatus.Connected).setDeviceType(devType).setIsRequired(true).build();
     }
 
     /**

@@ -1,0 +1,13 @@
+{
+    "networkMap": {
+        "styling": {
+            "theme": "dark"
+        },
+        "startupPosition": {
+            "latitude": "52.5",
+            "zoom": "10",
+            "longitude": "13.35"
+        },
+        "tileOpacity": "26"
+    }
+}

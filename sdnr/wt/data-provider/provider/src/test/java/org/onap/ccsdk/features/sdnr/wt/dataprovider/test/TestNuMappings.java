@@ -24,7 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultcurrent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
@@ -33,7 +33,7 @@ public class TestNuMappings {
 
     @Test
     public void testMapObjectToJson() throws IOException {
-        YangToolsMapper mapper = new YangToolsMapper();
+        DataProviderYangToolsMapper mapper = new DataProviderYangToolsMapper();
 
         Faultcurrent c = new FaultcurrentBuilder().setSeverity(SeverityType.Critical).build();
         String json = mapper.writeValueAsString(c);
@@ -42,7 +42,7 @@ public class TestNuMappings {
 
     @Test
     public void testMapJsonToObject() throws IOException {
-        YangToolsMapper mapper = new YangToolsMapper();
+        DataProviderYangToolsMapper mapper = new DataProviderYangToolsMapper();
 
         Faultcurrent f = mapper.readValue("{\"severity\":\"Critical\"}", Faultcurrent.class);
         assertTrue("Critical expected", f.getSeverity().equals(SeverityType.Critical));

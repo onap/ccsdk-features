@@ -26,9 +26,11 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClientException
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.ReadyHttpServlet;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
@@ -48,6 +50,7 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     private DataProviderServiceImpl rpcApiService;
     private AboutHttpServlet aboutServlet;
     private DataTreeHttpServlet treeServlet;
+    private UserdataHttpServlet userdataServlet;
     private HtDatabaseClient dbClient;
 
     // Blueprint 1
@@ -71,7 +74,9 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     public void setTreeServlet(DataTreeHttpServlet treeServlet) {
         this.treeServlet = treeServlet;
     }
-
+    public void setUserdataServlet(UserdataHttpServlet userdataServlet) {
+        this.userdataServlet = userdataServlet;
+    }
     public void init() throws Exception {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
@@ -79,6 +84,7 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
             // Start RPC Service
             this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.mediatorServerServlet);
             this.treeServlet.setDatabaseClient(this.rpcApiService.getRawClient());
+            this.userdataServlet.setDatabaseClient(this.rpcApiService.getHtDatabaseUserManager());
             LOG.info("Session Initiated end. Initialization done");
         } catch (Exception e) {
             if (e instanceof HtDatabaseClientException)
@@ -142,6 +148,11 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
                 this.aboutServlet.setClusterSize(value);
             }
         }
+    }
+
+    @Override
+    public HtUserdataManager getHtDatabaseUserManager() {
+        return this.rpcApiService.getHtDatabaseUserManager();
     }
 
 }

@@ -29,10 +29,8 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
-
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -140,57 +138,6 @@ public class ExtRestClient {
         }
 
     }
-    //    private class SSLCercAuthHttpClientConfigCallback implements HttpClientConfigCallback {
-    //
-    //        private final String certFilename;
-    //
-    //        SSLCercAuthHttpClientConfigCallback(String certfile) {
-    //            this.certFilename = certfile;
-    //        }
-    //
-    //        @Override
-    //        public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-    //            if (this.certFilename == null) {
-    //                return httpClientBuilder;
-    //            }
-    //
-    //            char[] keystorePass = "MY PASSWORD".toCharArray();
-    //
-    //            FileInputStream fis = null;
-    //
-    //            // Loading KEYSTORE in JKS format
-    //            KeyStore keyStorePci = null;
-    //            try {
-    //                keyStorePci = KeyStore.getInstance(KeyStore.getDefaultType());
-    //            } catch (KeyStoreException e1) {
-    //                LOG.warn("unable to load keystore: {}",e1);
-    //            }
-    //            if (keyStorePci != null) {
-    //                try {
-    //                    fis = new FileInputStream(this.certFilename);
-    //                    keyStorePci.load(fis, keystorePass);
-    //                } catch (Exception e) {
-    //                    LOG.error("Error loading keystore: " + this.certFilename);
-    //                } finally {
-    //                    if (fis != null) {
-    //                        try {
-    //                            fis.close();
-    //                        } catch (IOException e) {
-    //
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //            SSLContext sslcontext=null;
-    //            try {
-    //                sslcontext = SSLContexts.custom().loadKeyMaterial(keyStorePci, keystorePass).build();
-    //            } catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException
-    //                    | KeyStoreException e) {
-    //                LOG.warn("unable to load sslcontext: {}",e);
-    //            }
-    //            return httpClientBuilder.setSSLContext(sslcontext);
-    //        }
-    //    }
 
     private final RestClient client;
     private final boolean isES7;
@@ -298,7 +245,7 @@ public class ExtRestClient {
 
     /**
      * Search for database entries
-     * 
+     *
      * @param request inputRequest
      * @param ignoreParseException especially for usercreated filters which may cause ES server response exceptions
      * @return Response with related entries

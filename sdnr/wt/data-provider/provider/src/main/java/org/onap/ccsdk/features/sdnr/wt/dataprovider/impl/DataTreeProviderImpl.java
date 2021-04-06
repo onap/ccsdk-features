@@ -36,7 +36,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.AggregationEntries;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeChildObject;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet.FilterMode;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeObject;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 
@@ -48,12 +47,12 @@ public class DataTreeProviderImpl {
 
     private static final long MAXSIZE_PERSEARCH = 10;
     private HtDatabaseClient dbClient;
-    final String INVENTORY_PROPERTY_TREELEVEL = "tree-level";
-    final String INVENTORY_PROPERTY_NODEID = "node-id";
-    final String INVENTORY_PROPERTY_UUID = "uuid";
-    final String INVENTORY_PROPERTY_PARENTUUID = "parent-uuid";
-    final String INVENTORY_PROPERTY_FOR_LABEL_CHILD = "uuid";
-    final String INVENTORY_PROPERTY_FOR_LABEL = "uuid";
+    private static final String INVENTORY_PROPERTY_TREELEVEL = "tree-level";
+    private static final String INVENTORY_PROPERTY_NODEID = "node-id";
+    private static final String INVENTORY_PROPERTY_UUID = "uuid";
+    private static final String INVENTORY_PROPERTY_PARENTUUID = "parent-uuid";
+    private static final String INVENTORY_PROPERTY_FOR_LABEL_CHILD = "uuid";
+    private static final String INVENTORY_PROPERTY_FOR_LABEL = "uuid";
 
     private List<SearchHit> search(Entity e, String filter, String propTreeLevel) throws IOException {
         return this.search(e, filter, null, null, null, null, null, null, propTreeLevel);
@@ -132,15 +131,15 @@ public class DataTreeProviderImpl {
      * @return
      * @throws IOException
      */
-    public DataTreeObject readInventoryTree(List<String> tree, String filter, FilterMode mode) throws IOException {
+    public DataTreeObject readInventoryTree(List<String> tree, String filter) throws IOException {
 
         //root nodes will be node-information -> below inventory
         if (tree == null || tree.size() <= 0) {
-            return this.readInventoryTreeWithNode(filter, mode);
+            return this.readInventoryTreeWithNode(filter);
         }
         //root node will be inventory on tree-level if sliced treePath
         else {
-            return this.readInventoryTreeForNode(tree.get(0), tree.subList(0, tree.size() - 1), filter, mode);
+            return this.readInventoryTreeForNode(tree.get(0), tree.subList(0, tree.size() - 1), filter);
         }
 
     }
@@ -152,7 +151,7 @@ public class DataTreeProviderImpl {
      * @param mode
      * @return
      */
-    private DataTreeObject readInventoryTreeForNode(String nodeId, List<String> list, String filter, FilterMode mode)
+    private DataTreeObject readInventoryTreeForNode(String nodeId, List<String> list, String filter)
             throws IOException {
         DataTreeObject tree = new DataTreeObject(INVENTORY_PROPERTY_PARENTUUID, INVENTORY_PROPERTY_UUID);
         final String parentUuid = list.size() > 1 ? list.get(list.size() - 2) : null;
@@ -161,7 +160,8 @@ public class DataTreeProviderImpl {
                 INVENTORY_PROPERTY_PARENTUUID, parentUuid, INVENTORY_PROPERTY_UUID, uuid, INVENTORY_PROPERTY_TREELEVEL);
 
         //tree.a(subtreePath);
-        List<SearchHit> others = this.search(Entity.Inventoryequipment, (String) null, INVENTORY_PROPERTY_TREELEVEL);
+        List<SearchHit> others = this.search(Entity.Inventoryequipment, (String) null, INVENTORY_PROPERTY_NODEID, nodeId,
+                null, null, null, null, INVENTORY_PROPERTY_TREELEVEL);
         if (matches.size() > 0) {
             int treeLevelToStart = (list == null || list.size() <= 0) ? 0 : list.size() - 1;
             //build tree
@@ -208,6 +208,7 @@ public class DataTreeProviderImpl {
                                             hitData.getString(INVENTORY_PROPERTY_PARENTUUID)));
                 }
             }
+            tree.removeUnmatchedPaths();
         }
         return tree;
     }
@@ -216,11 +217,10 @@ public class DataTreeProviderImpl {
      * node will be root elements inventory information below from level-1
      *
      * @param filter
-     * @param mode
      * @return
      * @throws IOException
      */
-    private DataTreeObject readInventoryTreeWithNode(String filter, FilterMode mode) throws IOException {
+    private DataTreeObject readInventoryTreeWithNode(String filter) throws IOException {
         DataTreeObject tree = new DataTreeObject(INVENTORY_PROPERTY_PARENTUUID, INVENTORY_PROPERTY_UUID);
 
         List<SearchHit> matches = this.search(Entity.Inventoryequipment, filter, INVENTORY_PROPERTY_TREELEVEL);
@@ -302,9 +302,8 @@ public class DataTreeProviderImpl {
                     }
                 }
             }
-            if (mode == FilterMode.Strict) {
-                tree.removeUnmatchedPaths();
-            }
+            tree.removeUnmatchedPaths();
+
         }
         return tree;
     }

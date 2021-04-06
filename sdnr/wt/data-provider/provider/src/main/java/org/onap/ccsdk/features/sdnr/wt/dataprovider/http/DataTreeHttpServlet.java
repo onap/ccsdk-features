@@ -48,14 +48,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DataTreeHttpServlet extends HttpServlet {
 
-    public enum FilterMode {
-        Strict, //show only filtered items and their parents
-        Lazy //show root items (and all their children) which have matches inside
-    }
-
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
     private final DataTreeProviderImpl dataTreeProvider;
     private static final Logger LOG = LoggerFactory.getLogger(DataTreeHttpServlet.class);
@@ -116,7 +108,7 @@ public class DataTreeHttpServlet extends HttpServlet {
             LOG.info("GET request for {} to e={} with tree={}", uri, e.entity, e.tree);
             switch (e.entity) {
                 case Inventoryequipment:
-                    DataTreeObject o = this.dataTreeProvider.readInventoryTree(e.tree, null, FilterMode.Lazy);
+                    DataTreeObject o = this.dataTreeProvider.readInventoryTree(e.tree, null);
                     this.doJsonResponse(resp, o);
                     break;
                 default:
@@ -132,17 +124,12 @@ public class DataTreeHttpServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         final String uri = req.getRequestURI();
         String filter = null;
-        FilterMode mode = FilterMode.Lazy;
         try {
             final String body = readPayload(req);
             JSONObject data = new JSONObject(body);
             if (data.has("query")) {
                 filter = data.getString("query");
             }
-            if (data.has("mode")) {
-                mode = data.getString("mode").equals("lazy") ? FilterMode.Lazy : FilterMode.Strict;
-            }
-
 
         } catch (Exception e) {
             LOG.warn("problem reading payload: {}", e);
@@ -152,7 +139,7 @@ public class DataTreeHttpServlet extends HttpServlet {
         if (e != null) {
             switch (e.entity) {
                 case Inventoryequipment:
-                    DataTreeObject o = this.dataTreeProvider.readInventoryTree(e.tree, filter, mode);
+                    DataTreeObject o = this.dataTreeProvider.readInventoryTree(e.tree, filter);
                     this.doJsonResponse(resp, o);
                     break;
                 default:
@@ -208,6 +195,15 @@ public class DataTreeHttpServlet extends HttpServlet {
             return "EntityWithTree [entity=" + entity + ", tree=" + tree + "]";
         }
 
+        /**
+         *
+         * @param e database enttity to access
+         * @param tree tree description
+         *   e.g. nodeA           => tree entry for node-id=nodeA
+         *        nodeA/key0      => tree entry for node-id=nodeA and uuid=key0 and tree-level=0
+         *        nodeA/key0/key1 => tree entry for node-id=nodeA and uuid=key1 and tree-level=1
+         *
+         */
         public EntityWithTree(Entity e, String tree) {
             this.entity = e;
             if (tree != null) {
