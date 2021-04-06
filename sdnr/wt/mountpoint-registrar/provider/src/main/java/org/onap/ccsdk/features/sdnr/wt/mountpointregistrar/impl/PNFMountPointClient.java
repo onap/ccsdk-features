@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPResponse;
 import org.slf4j.Logger;
@@ -128,7 +129,7 @@ public class PNFMountPointClient extends BaseHTTPClient {
         LOG.info("In pnfRequest - {} : {} : {}", pnfName, method, message);
         BaseHTTPResponse response;
         try {
-            String uri = MOUNTPOINT_URI + pnfName;
+            String uri = MOUNTPOINT_URI + BaseRequest.urlEncodeValue(pnfName);
             response = this.sendRequest(uri, method, message, headerMap);
             LOG.debug("finished with responsecode {}", response.code);
             return response.code;
