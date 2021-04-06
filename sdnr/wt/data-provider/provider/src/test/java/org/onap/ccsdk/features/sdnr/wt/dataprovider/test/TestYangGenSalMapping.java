@@ -40,8 +40,8 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteIndexReque
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.EsDataObjectReaderWriter2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapperHelper;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
@@ -65,7 +65,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 public class TestYangGenSalMapping {
 
     // Create mapper for serialization and deserialization
-    YangToolsMapper mapper = new YangToolsMapper();
+    DataProviderYangToolsMapper mapper = new DataProviderYangToolsMapper();
 
     @Test
     public void test1() throws IOException {

@@ -21,8 +21,9 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.http;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
 import org.json.JSONObject;
 
 public class DataTreeObject extends HashMap<String, DataTreeChildObject> {
@@ -95,8 +96,15 @@ public class DataTreeObject extends HashMap<String, DataTreeChildObject> {
      *
      */
     public void removeUnmatchedPaths() {
-        for (DataTreeChildObject entry : this.values()) {
-            entry.removeUnmatchedPaths();
+        List<String> toRemove = new ArrayList<>();
+         for (Entry<String,DataTreeChildObject> entry : this.entrySet()) {
+            entry.getValue().removeUnmatchedPaths();
+            if(!entry.getValue().isMatch() && !entry.getValue().hasChildren()) {
+                toRemove.add(entry.getKey());
+            }
+        }
+        for(String toRemoveKey:toRemove) {
+            this.remove(toRemoveKey);
         }
 
     }

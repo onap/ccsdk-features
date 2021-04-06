@@ -49,6 +49,7 @@
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <databaseport>49402</databaseport>
+        <initdb>${basedir}/../setup/target/sdnr-wt-data-provider-setup-${project.version}.jar</initdb>
     </properties>
 
     <dependencies>
@@ -70,6 +71,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-yang-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -159,7 +165,7 @@
                             <executable>${basedir}/java.sh</executable>
                             <arguments>
                                 <argument>-jar</argument>
-                                <argument>${basedir}/../../data-provider/setup/target/sdnr-dmt.jar</argument>
+                                <argument>${initdb}</argument>
                                 <argument>-c</argument>
                                 <argument>pluginfile</argument>
                                 <argument>-of</argument>

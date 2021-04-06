@@ -186,7 +186,7 @@
         </dependency>
          <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-data-provider-provider</artifactId>
+            <artifactId>sdnr-wt-yang-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

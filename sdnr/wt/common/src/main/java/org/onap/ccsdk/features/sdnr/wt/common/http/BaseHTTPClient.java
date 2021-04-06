@@ -370,6 +370,15 @@ public class BaseHTTPClient {
         return SSLCERT_PEM;
     }
 
+    public static String decodeBasicAuthHeaderUsername(String authHeader) {
+        if(authHeader.startsWith("Basic")) {
+            authHeader = authHeader.substring(6);
+        }
+        final String decoded = new String(Base64.getDecoder().decode(authHeader));
+        String[] tmp = decoded.split(":");
+        return tmp.length > 0 ? tmp[0] : null;
+    }
+
 
 
 }

@@ -24,7 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 import static org.junit.Assert.fail;
 import java.io.IOException;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper2;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data;
 
 public class TestDataMappings {
