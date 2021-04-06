@@ -26,8 +26,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.mapperextensions.YangToolsBuilderAnnotationIntrospector;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.mapperextensions.YangToolsModule;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsBuilderAnnotationIntrospector;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsModule;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.permission.Permissions;
 import org.opendaylight.yangtools.concepts.Builder;
 

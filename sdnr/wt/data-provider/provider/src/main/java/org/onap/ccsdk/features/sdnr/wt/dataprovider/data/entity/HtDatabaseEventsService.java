@@ -24,7 +24,10 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.data.entity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,6 +39,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.RangeQueryBuilder
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.EsDataObjectReaderWriter2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.ArchiveCleanProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataInconsistencyException;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
@@ -62,6 +66,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,8 +125,8 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
                     NetworkElementConnectionEntity.class, NetworkElementConnectionBuilder.class, true)
                             .setEsIdAttributeName("_id");
 
-            guiCutThroughDB = new EsDataObjectReaderWriter2<>(client, Entity.Guicutthrough,
-                    GuicutthroughEntity.class, GuicutthroughBuilder.class);
+            guiCutThroughDB = new EsDataObjectReaderWriter2<>(client, Entity.Guicutthrough, GuicutthroughEntity.class,
+                    GuicutthroughBuilder.class);
 
             pmData15mDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance15min, PmdataEntity.class,
                     PmdataEntityBuilder.class);
@@ -259,22 +264,109 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
      *
      * @param internalEquipment with mandatory fields.
      */
+
     @Override
     public void writeInventory(Inventory internalEquipment) {
 
-        if (assertIfClientNullForNodeName(internalEquipment.getNodeId())) {
-            return;
-        }
         if (internalEquipment.getManufacturerIdentifier() == null) {
             internalEquipment = new InventoryBuilder(internalEquipment).setManufacturerIdentifier("").build();
         }
         if (internalEquipment.getDate() == null) {
             internalEquipment = new InventoryBuilder(internalEquipment).setDate("").build();
         }
-
         eventRWEquipment.write(internalEquipment, internalEquipment.getNodeId() + "/" + internalEquipment.getUuid());
     }
 
+    /**
+     * write internal equipment to database
+     *
+     * @param nodeId
+     * @param list
+     */
+    @Override
+    public void writeInventory(String nodeId, List<Inventory> list) {
+
+        try {
+            checkConsistency(nodeId, list);
+        } catch (DataInconsistencyException e) {
+            LOG.warn("inventory list for node {} is not consistent", nodeId, e);
+            list = e.getRepairedList();
+        }
+
+        for (Inventory internalEquipment : list) {
+            this.writeInventory(internalEquipment);
+        }
+    }
+
+    private static void checkConsistency(String nodeId, List<Inventory> list) throws DataInconsistencyException {
+        final String UNBOUND_INVENTORY_UUID = "unbound";
+        List<String> failures = new ArrayList<>();
+        long treeLevel;
+        int failCounter = 0;
+        Map<String, Inventory> repairList = new HashMap<>();
+        InventoryBuilder repairedItem;
+        InventoryBuilder unboundItem = new InventoryBuilder().setNodeId(nodeId).setUuid(UNBOUND_INVENTORY_UUID)
+                .setTreeLevel(Uint32.valueOf(0));;
+        for (Inventory item : list) {
+            repairedItem = new InventoryBuilder(item);
+            //check missing tree-level
+            if (!nodeId.equals(item.getNodeId())) {
+                failures.add(String.format("missing node-id for equipment(uuid=%s)", item.getUuid()));
+                repairedItem.setNodeId(nodeId);
+                failCounter++;
+            }
+            if (item.getTreeLevel() == null) {
+                failures.add(String.format("missing tree-level for equipment(uuid=%s)", item.getUuid()));
+                repairedItem.setTreeLevel(Uint32.valueOf(1));
+                failCounter++;
+
+            } else {
+                treeLevel = item.getTreeLevel().longValue();
+                if (treeLevel > 0) {
+                    //check non root elem and missing parent
+                    if (item.getParentUuid() == null) {
+                        failures.add(String.format("Non root level element (uuid=%s) has to have a parent element",
+                                item.getUuid()));
+                        failCounter++;
+                        repairedItem.setParentUuid(UNBOUND_INVENTORY_UUID);
+                        repairList.put(unboundItem.getUuid(), unboundItem.build());
+                    }
+                    //check that parent exists in list and is tree-level -1
+                    else {
+                        Optional<Inventory> parent =
+                                list.stream().filter(e -> item.getParentUuid().equals(e.getUuid())).findFirst();
+                        if (parent.isEmpty()) {
+                            failures.add(String.format("no parent found for uuid=%s with parent-uuid=%s",
+                                    item.getUuid(), item.getParentUuid()));
+                            repairedItem.setParentUuid(UNBOUND_INVENTORY_UUID);
+                            failCounter++;
+                        }
+                    }
+                }
+                //check for duplicated uui
+                Optional<Inventory> duplicate = list
+                        .stream().filter(e -> !item.equals(e) && item.getUuid() != null
+                                && item.getUuid().equals(e.getUuid()) && repairList.containsKey(e.getUuid()))
+                        .findFirst();
+                if (duplicate.isPresent()) {
+                    failures.add(String.format("found duplicate uuid=%s", item.getUuid()));
+                    failCounter++;
+                    continue;
+
+                }
+                if (failCounter > 0) {
+                    repairList.put(repairedItem.getUuid(), repairedItem.build());
+                } else {
+                    repairList.put(item.getUuid(), item);
+                }
+            }
+        }
+
+        if (failures.size() > 0) {
+            throw new DataInconsistencyException(new ArrayList<>(repairList.values()),
+                    "inventory list is not consistent;\n" + String.join("\n", failures));
+        }
+    }
 
     // -- Networkelement
 

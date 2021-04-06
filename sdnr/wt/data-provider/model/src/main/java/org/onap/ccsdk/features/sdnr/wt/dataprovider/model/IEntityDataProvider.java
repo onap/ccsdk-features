@@ -27,6 +27,8 @@ public interface IEntityDataProvider {
     /** Get provider to access read/write operations for maintenance **/
     public HtDatabaseMaintenance getHtDatabaseMaintenance();
 
+    public HtUserdataManager getHtDatabaseUserManager();
+
     /** Set overall ready status from outside of this data-provider **/
     public void setReadyStatus(boolean status);
 

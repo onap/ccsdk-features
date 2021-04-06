@@ -32,8 +32,8 @@ import org.jline.utils.Log;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.YangToolsMapper2;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper2;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev191129.PmDataType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.BIPErrorCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.OpticalPowerInputOSCMin;
@@ -74,7 +74,7 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
 
         PmdataEntity pmDataType = pmDataEntitybuilder.build();
 
-        YangToolsMapper mapper2 = new YangToolsMapper();
+        DataProviderYangToolsMapper mapper2 = new DataProviderYangToolsMapper();
         String jsonString = mapper2.writeValueAsString(pmDataType);
         out("Result json after mapping: " + jsonString);
 
@@ -88,7 +88,7 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
     public void testOpenroadmPMString1() throws IOException, ClassNotFoundException {
         out("Test: " + method());
         String jsonString2 = getFileContent("pmdata1.json");
-        YangToolsMapper mapper2 = new YangToolsMapper();
+        DataProviderYangToolsMapper mapper2 = new DataProviderYangToolsMapper();
         PmdataEntity generatepmdNode = mapper2.readValue(jsonString2.getBytes(), PmdataEntity.class);
         out("String1:"+generatepmdNode.toString()); // Print it with specified indentation
         assertTrue("GranularityPeriod", generatepmdNode.getGranularityPeriod().equals(GranularityPeriodType.Period15Min));
@@ -105,7 +105,7 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
     public void testOpenroadmPMString2() throws IOException, ClassNotFoundException {
         out("Test: " + method());
         String jsonString2 = getFileContent("pmdata2.json");
-        YangToolsMapper mapper2 = new YangToolsMapper();
+        DataProviderYangToolsMapper mapper2 = new DataProviderYangToolsMapper();
         PmdataEntity generatepmdNode = mapper2.readValue(jsonString2.getBytes(), PmdataEntity.class);
         out(generatepmdNode.toString()); // Print it with specified indentation
     }

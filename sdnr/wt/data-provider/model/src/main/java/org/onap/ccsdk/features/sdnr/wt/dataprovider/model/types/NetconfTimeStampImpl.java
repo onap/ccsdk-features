@@ -75,14 +75,14 @@ public class NetconfTimeStampImpl implements NetconfTimeStamp {
     /**
      * Specify the input format expected from netconf, and from specific devices.
      */
-    private static DateTimeFormatter formatterInput =
+    private static final DateTimeFormatter formatterInput =
             DateTimeFormatter.ofPattern("" + "[yyyy-MM-dd'T'HH:mm[:ss][.SSS][.SS][.S][xxx][xx][X][Z]]"
                     + "[yyyyMMddHHmmss[.SSS][.SS][.S][xxx][xx][X][Z]]").withZone(ZoneOffset.UTC);
 
     /**
      * Specify output format that is used internally
      */
-    private static DateTimeFormatter formatterOutput =
+    private static final DateTimeFormatter formatterOutput =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S'Z'").withZone(ZoneOffset.UTC);
 
     /**

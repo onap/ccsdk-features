@@ -36,7 +36,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.test.JSONAssert;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet.EntityWithTree;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet.FilterMode;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeObject;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataTreeProviderImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
@@ -91,14 +90,14 @@ public class TestTree {
         provider.setDatabaseClient(dbRawProvider);
 
 
-        DataTreeObject tree = provider.readInventoryTree(null, null, FilterMode.Lazy);
+        DataTreeObject tree = provider.readInventoryTree(null, null);
         System.out.println(tree.toJSON());
         JSONObject o = new JSONObject(tree.toJSON());
         JSONAssert.assertContainsOnlyKey(o, "sim1");
         JSONObject children = o.getJSONObject("sim1").getJSONObject("children");
         this.assertSim1(children);
 
-        tree = provider.readInventoryTree(Arrays.asList("sim1"), "*", FilterMode.Lazy);
+        tree = provider.readInventoryTree(Arrays.asList("sim1"), "*");
         this.assertSim1(new JSONObject(tree.toJSON()));
         System.out.println(tree.toJSON());
 

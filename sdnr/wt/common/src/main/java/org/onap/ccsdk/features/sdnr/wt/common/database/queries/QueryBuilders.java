@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.queries;
 
+import java.util.List;
 import org.json.JSONObject;
 
 public class QueryBuilders {
@@ -34,11 +35,24 @@ public class QueryBuilders {
         o.put(key, value);
         return new QueryBuilder().setQuery("term", o);
     }
+    public static QueryBuilder multiTermQuery(String key, List<String> value) {
+        JSONObject o = new JSONObject();
+        o.put(key, value);
+        return new QueryBuilder().setQuery("terms", o);
+    }
 
     public static QueryBuilder matchQuery(String key, Object value) {
         JSONObject o = new JSONObject();
         o.put(key, value);
         return new QueryBuilder().setQuery("match", o);
+    }
+
+    public static QueryBuilder matchQuery(String key, List<?> values) {
+        BoolQueryBuilder query = boolQuery();
+        for (Object value : values) {
+            query.should(matchQuery(key, value));
+        }
+        return query;
     }
 
     public static BoolQueryBuilder boolQuery() {

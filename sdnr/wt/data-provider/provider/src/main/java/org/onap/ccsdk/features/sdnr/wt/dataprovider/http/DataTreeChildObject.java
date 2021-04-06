@@ -26,14 +26,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.json.JSONObject;
 
 public class DataTreeChildObject {
 
     private final String label;
-    private final String ownSeverity;
-    private final String childrenSeveritySummary;
+//    private final String ownSeverity;
+//    private final String childrenSeveritySummary;
     private final boolean isMatch;
     private final Map<String, DataTreeChildObject> children;
     private final Map<String, Object> properties;
@@ -47,8 +46,8 @@ public class DataTreeChildObject {
         this.label = label;
         this.isMatch = isMatch;
         this.children = children;
-        this.ownSeverity = ownSeverity;
-        this.childrenSeveritySummary = childrenSeveritySummary;
+//        this.ownSeverity = ownSeverity;
+//        this.childrenSeveritySummary = childrenSeveritySummary;
         this.properties = new HashMap<>();
     }
 
@@ -104,6 +103,7 @@ public class DataTreeChildObject {
             itemValue = this.getProperty(childKey, null);
             if (itemValue != null && itemValue.equals(itemValueToMatch)) {
                 this.children.put(id, data);
+                return true;
             }
         }
         return false;
@@ -188,5 +188,9 @@ public class DataTreeChildObject {
         for (String key : toRemove) {
             this.children.remove(key);
         }
+    }
+
+    public boolean hasChildren() {
+        return this.children!=null && !this.children.isEmpty();
     }
 }

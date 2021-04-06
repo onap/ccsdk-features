@@ -67,10 +67,15 @@ public interface DataProvider extends ArchiveCleanProvider {
 
     /**
      * write internal equipment to database
-     *
      * @param internalEquipment with mandatory fields.
      */
     void writeInventory(Inventory internalEquipment);
+    /**
+     * write internal equipment to database
+     * @param nodeId
+     * @param list with mandatory fields.
+     */
+    void writeInventory(String nodeId, List<Inventory> list);
 
     /**
     * write GUI Cut through data to database

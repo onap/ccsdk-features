@@ -104,6 +104,10 @@ module data-provider {
         description
            "list of GUI Cut through entries";
       }
+      enum userdata {
+        description
+           "user specific data. id=username";
+      }
     }
     description
       "Data type and alias for elasticsearch or table name for SQL database.";
@@ -556,7 +560,11 @@ module data-provider {
     description
       "An object class describing a mediator server entity.";
   }
-
+  container mediator-server {
+    description
+      "builder";
+    uses mediator-server-entity;
+  }
   grouping pmdata-base {
     description
       "Performance data base information";
@@ -1260,6 +1268,11 @@ module data-provider {
       description
         "current connection status. default Disconnected";
     }
+    leaf tls-key {
+      type string;
+      description
+        "TLS key-id in MD-SAL";
+    }
     description
       "An object class defining the NetConf connection towards a
        NetConf server. ";
@@ -1320,6 +1333,11 @@ module data-provider {
           "The property (parameter, column, field) identifier.";
       }
       leaf filtervalue {
+        type string;
+        description
+          "The filter information for the corresponding property.";
+      }
+      leaf-list filtervalues {
         type string;
         description
           "The filter information for the corresponding property.";
@@ -1406,12 +1424,12 @@ module data-provider {
           type string;
           mandatory true;
           description
-            "Unique database id, node-id/uuid";
+            "Unique database id, node-id";
       }
       leaf name {
         type string;
         description
-          "Mountpoint Name";
+          "Name of the system to which a GUI Cutthrough session will be established";
       }
       leaf weburi {
         type string;

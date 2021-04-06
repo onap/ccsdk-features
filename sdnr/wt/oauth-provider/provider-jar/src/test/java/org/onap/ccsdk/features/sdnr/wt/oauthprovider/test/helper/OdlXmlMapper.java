@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.mapperextensions.YangToolsBuilderAnnotationIntrospector;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsBuilderAnnotationIntrospector;
 
 public class OdlXmlMapper extends XmlMapper{
 
