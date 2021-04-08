@@ -324,16 +324,16 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
 
           <div >Site A
           <form >
-          <label>Latitude:  <input className={this.state.latitude1Error.length>0 ? 'error' : 'input'} id='Lat1' type='number' onChange={(e: any) => {this.handleChange(e)} }/></label>
+          <label>Latitude:  <input aria-label="site-a-latitude-input" className={this.state.latitude1Error.length>0 ? 'error' : 'input'} id='Lat1' type='number' onChange={(e: any) => {this.handleChange(e)} }/></label>
           <div style={{fontSize:12, color:'red'}}> {this.state.latitude1Error}  </div></form> 
-          <form><label>Longitude: <input className={this.state.longitude1Error.length>0 ? 'error' : 'input'} id='Lon1' type='number' onChange={(e: any) => this.handleChange(e) } /></label><div style={{fontSize:12, color:'red'}}> {this.state.longitude1Error} </div>
+          <form><label>Longitude: <input aria-label="site-a-longitude-input" className={this.state.longitude1Error.length>0 ? 'error' : 'input'} id='Lon1' type='number' onChange={(e: any) => this.handleChange(e) } /></label><div style={{fontSize:12, color:'red'}}> {this.state.longitude1Error} </div>
           </form> 
           </div>
           
           <div>Site B
           <form>
-          <label>Latitude: <input className={this.state.latitude2Error.length>0 ? 'error' : 'input'} id='Lat2' type='number' onChange={(e: any) => {this.handleChange(e) }} /></label><div style={{fontSize:12, color:'red'}}> {this.state.latitude2Error} </div></form>
-          <form><label>Longitude: <input className={this.state.longitude2Error.length>0 ? 'error' : 'input'}  id='Lon2' type='number' onChange={(e: any) => {this.handleChange(e) } }/></label><div style={{fontSize:12, color:'red'}}> {this.state.longitude2Error} </div></form>
+          <label>Latitude: <input aria-label="site-b-latitude-input" className={this.state.latitude2Error.length>0 ? 'error' : 'input'} id='Lat2' type='number' onChange={(e: any) => {this.handleChange(e) }} /></label><div style={{fontSize:12, color:'red'}}> {this.state.latitude2Error} </div></form>
+          <form><label>Longitude: <input aria-label="site-b-longitude-input" className={this.state.longitude2Error.length>0 ? 'error' : 'input'}  id='Lon2' type='number' onChange={(e: any) => {this.handleChange(e) } }/></label><div style={{fontSize:12, color:'red'}}> {this.state.longitude2Error} </div></form>
           </div>
           
           </div>
@@ -341,8 +341,8 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
 
 
         <div className='container-1'>
-          <div>{<form><input type='checkbox' id='Annual' value ="Annual" checked= {this.state.worstmonth===false} onClick= {(e: any) => this.setState ({worstmonth: false})}></input>Annual
-                      <input style={{marginLeft:10}} type='checkbox' id='Worst Month' value ="Worst" checked= {this.state.worstmonth===true} onClick= {(e:any)=>this.setState ({worstmonth: true})}></input>WM</form>}</div>
+          <div>{<form><input aria-label="annual" type='checkbox' id='Annual' value ="Annual" checked= {this.state.worstmonth===false} onClick= {(e: any) => this.setState ({worstmonth: false})}></input>Annual
+                      <input aria-label="worst-month" style={{marginLeft:10}} type='checkbox' id='Worst Month' value ="Worst" checked= {this.state.worstmonth===true} onClick= {(e:any)=>this.setState ({worstmonth: true})}></input>WM</form>}</div>
 
 
           <div className='column1'>
@@ -369,55 +369,55 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
           <div className='middlecolumn'>
           <div  >Site A</div>
           {this.props.siteA.length>0 &&<div> {this.props.siteA }</div>}
-          <div> {this.props.lat1 && this.LatLonToDMS(this.props.lat1)}</div>
-          <div>{this.props.lon1 && this.LatLonToDMS(this.props.lon1)}</div>
+          <div aria-label="site-a-latitude-dms"> {this.props.lat1 && this.LatLonToDMS(this.props.lat1)}</div>
+          <div aria-label="site-a-longitude-dms">{this.props.lon1 && this.LatLonToDMS(this.props.lon1)}</div>
           <div>0</div>
-          <div>{this.props.amslA.toFixed(2)} m</div>
-          <div>{this.props.aglA.toFixed(2)} m</div>
+          <div aria-label="site-a-amsl">{this.props.amslA.toFixed(2)} m</div>
+          <div aria-label="site-a-antenna-amsl">{this.props.aglA.toFixed(2)} m</div>
         
 
           <div className='column2'>
-          <div>{this.props.distance?.toFixed(3)} km</div>
-          <div>{<form><input type='checkbox' id='Horizontal' value ="Horizontal" checked= {this.props.polarization==='Horizontal'} onClick= {(e: any) => this.props.updatePolarization(e.target.value)}></input>Horizontal
-                      <input style={{marginLeft:10}} type='checkbox' id='Vertical' value ="Vertical" checked= {this.props.polarization==='Vertical'} onClick= {(e:any)=>{this.props.updatePolarization(e.target.value)}}></input>Vertical</form>}</div>
+          <div aria-label="distance-between-sites">{this.props.distance?.toFixed(3)} km</div>
+          <div>{<form><input aria-label="polarization-horizontal" type='checkbox' id='Horizontal' value ="Horizontal" checked= {this.props.polarization==='Horizontal'} onClick= {(e: any) => this.props.updatePolarization(e.target.value)}></input>Horizontal
+                      <input aria-label="polarization-vertical" style={{marginLeft:10}} type='checkbox' id='Vertical' value ="Vertical" checked= {this.props.polarization==='Vertical'} onClick= {(e:any)=>{this.props.updatePolarization(e.target.value)}}></input>Vertical</form>}</div>
           
-              <div> {<select className={this.state.frequencyError.length>0 ? 'error' : 'input'}  onChange={(e) => { this.props.updateFrequency(Number(e.target.value)); e.target.value==='0'? this.setState({frequencyError: 'select a frequency'}): this.setState({frequencyError:''})}}> 
+              <div> {<select aria-label="select-frequency-in-ghz" className={this.state.frequencyError.length>0 ? 'error' : 'input'}  onChange={(e) => { this.props.updateFrequency(Number(e.target.value)); e.target.value==='0'? this.setState({frequencyError: 'select a frequency'}): this.setState({frequencyError:''})}}> 
                       
-                      <option value='0' >Select Freq</option>
-                      <option value='7' >7 GHz</option>
-                      <option value='11' >11 GHz</option>
-                      <option value='15' >15 GHz</option>
-                      <option value='23' >23 GHz</option>
-                      <option value='26' >26 GHz</option>
-                      <option value='28' >28 GHz</option>
-                      <option value='38' >38 GHz</option>
-                      <option value='42' >42 GHz</option>
-                      <option value='80' >80 GHz</option>
+                      <option value='0' aria-label="none-value" >Select Freq</option>
+                      <option value='7' aria-label="7" >7 GHz</option>
+                      <option value='11' aria-label="11" >11 GHz</option>
+                      <option value='15' aria-label="15" >15 GHz</option>
+                      <option value='23' aria-label="23">23 GHz</option>
+                      <option value='26' aria-label="26">26 GHz</option>
+                      <option value='28' aria-label="28">28 GHz</option>
+                      <option value='38' aria-label="38">38 GHz</option>
+                      <option value='42' aria-label="42">42 GHz</option>
+                      <option value='80' aria-label="80">80 GHz</option>
                       </select>} <div style={{fontSize:12, color:'red'}}>  {this.state.frequencyError} </div> </div> 
 
-          <div>{this.props.fsl.toFixed(3)} dB</div>
+          <div aria-label="fspl-value">{this.props.fsl.toFixed(3)} dB</div>
 
-          <div> {<select className={this.state.rainMethodError.length>0 ? 'error' : 'input'} onChange = {(e) => {e.target.value === 'itu' ? this.setState({ rainMethodDisplay: false}):this.setState({ rainMethodDisplay: true}); e.target.value==='0'? this.setState({rainMethodError: 'select a Rain model'}): this.setState({rainMethodError:''}) }}>
-                        <option value='0' >Select Rain Method</option>
-                        <option value='itu' >ITU-R P.837-7</option>
-                        <option value='manual' >Specific Rain</option>
+          <div> {<select aria-label="select-rain-method" className={this.state.rainMethodError.length>0 ? 'error' : 'input'} onChange = {(e) => {e.target.value === 'itu' ? this.setState({ rainMethodDisplay: false}):this.setState({ rainMethodDisplay: true}); e.target.value==='0'? this.setState({rainMethodError: 'select a Rain model'}): this.setState({rainMethodError:''}) }}>
+                        <option value='0' aria-label="none-value" >Select Rain Method</option>
+                        <option value='itu' aria-label="itur8377">ITU-R P.837-7</option>
+                        <option value='manual' aria-label="manual-entry">Specific Rain</option>
                         </select>} <div style={{fontSize:12,color:'red'}}>{this.state.rainMethodError}</div>
             </div> 
-            <div> {<form><input type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => { this.props.updateRainValue(Number(e.target.value)) }}
+            <div> {<form><input aria-label="rain-value" type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => { this.props.updateRainValue(Number(e.target.value)) }}
                     value={this.props.rainVal} disabled={this.state.rainMethodDisplay === false ? true : false}>
                     </input>  mm/hr  {this.state.showWM} {this.props.month}</form> } </div>
-          <div>{this.props.rainAtt.toFixed(3)} dB</div>
+          <div aria-label="rain-attenuation-value">{this.props.rainAtt.toFixed(3)} dB</div>
 
-          <div> {<select className={this.state.attenuationMethodError.length>0 ? 'error' : 'input'} onChange = {(e) => { if (e.target.value!== ''){ this.setState({absorptionMethod : e.target.value}); this.setState({attenuationMethodError:''})  }}}>
-                        <option value='0' >Select Absorption Method</option>
-                        <option value='ITURP67612' >ITU-R P.676-12</option>
-                        <option value='ITURP67611'  >ITU-R P.676-11</option>
-                        <option value='ITURP67610'  >ITU-R P.676-10</option>
+          <div> {<select aria-label="select-absorption-method" className={this.state.attenuationMethodError.length>0 ? 'error' : 'input'} onChange = {(e) => { if (e.target.value!== ''){ this.setState({absorptionMethod : e.target.value}); this.setState({attenuationMethodError:''})  }}}>
+                        <option value='0' aria-label="none-value" >Select Absorption Method</option>
+                        <option value='ITURP67612' aria-label="iturp67612" >ITU-R P.676-12</option>
+                        <option value='ITURP67611' aria-label="iturp67611"  >ITU-R P.676-11</option>
+                        <option value='ITURP67610' aria-label="iturp67610" >ITU-R P.676-10</option>
                         </select>} <div style={{fontSize:12,color:'red'}}>{this.state.attenuationMethodError}</div>
             </div> 
-          <div>{this.props.absorptionOxygen.toFixed(3)} dB</div>
-          <div>{this.props.absorptionWater.toFixed(3)} dB</div>
-          <div>{<button style={{color: '#222', fontFamily:'Arial', boxAlign: 'center', display:'inline-block', insetInlineStart: '20' , alignSelf:'center' }}
+          <div aria-label="absorption-oxygen-value">{this.props.absorptionOxygen.toFixed(3)} dB</div>
+          <div aria-label="absorption-water-value">{this.props.absorptionWater.toFixed(3)} dB</div>
+          <div>{<button aria-label="calculate-button" style={{color: '#222', fontFamily:'Arial', boxAlign: 'center', display:'inline-block', insetInlineStart: '20' , alignSelf:'center' }}
                     onClick = {(e) => this.buttonHandler()} >Calculate</button>} </div>
 
 
@@ -426,11 +426,11 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
           <div className= 'middlecolumn'>
           <div  >Site B</div>
           {this.props.siteB.length>0 &&<div> {this.props.siteB}</div>}
-          <div> {this.props.lat2 && this.LatLonToDMS(this.props.lat2)}</div>
-          <div>{this.props.lon2 && this.LatLonToDMS(this.props.lon2)}</div>
+          <div aria-label="site-b-latitude-dms"> {this.props.lat2 && this.LatLonToDMS(this.props.lat2)}</div>
+          <div aria-label="site-b-longitude-dms">{this.props.lon2 && this.LatLonToDMS(this.props.lon2)}</div>
           <div>0</div>
-          <div>{this.props.amslB.toFixed(2)} m</div>
-          <div>{this.props.aglB.toFixed(2)} m</div>
+          <div aria-label="site-b-asml">{this.props.amslB.toFixed(2)} m</div>
+          <div aria-label="site-b-antenna-asml">{this.props.aglB.toFixed(2)} m</div>
 
           
           </div>

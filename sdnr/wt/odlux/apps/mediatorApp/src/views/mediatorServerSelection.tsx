@@ -22,6 +22,7 @@ import AddIcon from '@material-ui/icons/Add';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Refresh from '@material-ui/icons/Refresh';
 
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
@@ -31,6 +32,7 @@ import { createAvaliableMediatorServersProperties, createAvaliableMediatorServer
 
 import { MediatorServer } from '../models/mediatorServer';
 import EditMediatorServerDialog, { EditMediatorServerDialogMode } from '../components/editMediatorServerDialog';
+import RefreshMediatorDialog, { RefreshMediatorDialogMode } from '../components/refreshMediatorDialog';
 import { NavigateToApplication } from '../../../../framework/src/actions/navigationActions';
 
 const MediatorServersTable = MaterialTable as MaterialTableCtorType<MediatorServer>;
@@ -67,7 +69,8 @@ type MediatorServerSelectionComponentProps = Connect<typeof mapProps, typeof map
 
 type MediatorServerSelectionComponentState = {
   mediatorServerToEdit: MediatorServer,
-  mediatorServerEditorMode: EditMediatorServerDialogMode
+  mediatorServerEditorMode: EditMediatorServerDialogMode,
+  refreshMediatorEditorMode: RefreshMediatorDialogMode
 }
 
 let initialSorted = false;
@@ -80,11 +83,19 @@ class MediatorServerSelectionComponent extends React.Component<MediatorServerSel
     this.state = {
       mediatorServerEditorMode: EditMediatorServerDialogMode.None,
       mediatorServerToEdit: emptyMediatorServer,
+      refreshMediatorEditorMode: RefreshMediatorDialogMode.None
     }
   }
 
   render() {
     const { classes } = this.props;
+    const refreshMediatorAction = {
+      icon: Refresh, tooltip: 'Refresh Mediator Server Table', onClick: () => {
+        this.setState({
+          refreshMediatorEditorMode: RefreshMediatorDialogMode.RefreshMediatorTable
+        });
+      }
+    };
 
     const addMediatorServerActionButton = {
       icon: AddIcon, tooltip: 'Add', onClick: () => {
@@ -96,7 +107,7 @@ class MediatorServerSelectionComponent extends React.Component<MediatorServerSel
     };
     return (
       <>
-        <MediatorServersTable stickyHeader title={"Mediator"} customActionButtons={[addMediatorServerActionButton]} idProperty={"id"}
+        <MediatorServersTable stickyHeader title={"Mediator"} customActionButtons={[refreshMediatorAction, addMediatorServerActionButton]} idProperty={"id"}
           {...this.props.mediatorServersActions} {...this.props.mediatorServersProperties} columns={[
             { property: "name", title: "Name", type: ColumnType.text },
             { property: "url", title: "Url", type: ColumnType.text },
@@ -113,6 +124,10 @@ class MediatorServerSelectionComponent extends React.Component<MediatorServerSel
           mediatorServer={this.state.mediatorServerToEdit}
           mode={this.state.mediatorServerEditorMode}
           onClose={this.onCloseEditMediatorServerDialog} />
+        <RefreshMediatorDialog
+          mode={this.state.refreshMediatorEditorMode}
+          onClose={this.onCloseRefreshMediatorDialog}
+        />
       </>
     );
   }
@@ -156,6 +171,11 @@ class MediatorServerSelectionComponent extends React.Component<MediatorServerSel
     this.setState({
       mediatorServerEditorMode: EditMediatorServerDialogMode.None,
       mediatorServerToEdit: emptyMediatorServer,
+    });
+  }
+  private onCloseRefreshMediatorDialog = () => {
+    this.setState({
+      refreshMediatorEditorMode: RefreshMediatorDialogMode.None
     });
   }
 }

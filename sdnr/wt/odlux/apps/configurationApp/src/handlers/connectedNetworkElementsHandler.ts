@@ -18,8 +18,10 @@
 
 import { createExternal, IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
 import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
+import { getAccessPolicyByUrl } from '../../../../framework/src/services/restService';
 
 import { NetworkElementConnection } from '../models/networkElementConnection';
+import { restService } from '../services/restServices';
 
 export interface IConnectedNetworkElementsState extends IExternalTableState<NetworkElementConnection> { }
 
@@ -33,4 +35,11 @@ export const {
   reloadAction: connectedNetworkElementsReloadAction,
 
   // set value action, to change a value
-} = createExternal<NetworkElementConnection>(connectedNetworkElementsSearchHandler, appState => appState.configuration.connectedNetworkElements);
+} = createExternal<NetworkElementConnection>(connectedNetworkElementsSearchHandler, appState => appState.configuration.connectedNetworkElements, 
+  (ne) => {
+    if (!ne || !ne.id) return true;
+    const neUrl = restService.getNetworkElementUri(ne.id);
+    const policy = getAccessPolicyByUrl(neUrl);
+    return !(policy.GET && policy.POST);
+  }
+);

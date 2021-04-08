@@ -20,6 +20,7 @@ import * as marked from 'marked';
 import * as hljs from 'highlight.js';
 import { requestRestExt } from '../services/restService';
 import { Button, Typography } from '@material-ui/core';
+import createBreakpoints from '@material-ui/core/styles/createBreakpoints';
 const defaultRenderer = new marked.Renderer();
 defaultRenderer.link = (href, title, text) => (
   `<a target="_blank" rel="noopener noreferrer" href="${href}" title="${title}">${text}</a>`
@@ -29,6 +30,23 @@ interface AboutState {
   isCopiedSuccessfully: boolean;
   isContentLoadedSucessfully: boolean;
 }
+
+type odluxVersion= {version:string,build:string, framework: string, 
+  applications:{
+    configurationApp: string,
+    connectApp: string,
+    eventLogApp: string,
+    faultApp: string,
+    helpApp: string,
+    inventoryApp: string,
+    linkCalculationApp: string,
+    maintenanceApp: string,
+    mediatorApp: string,
+    networkMapApp: string,
+    permanceHistoryApp: string
+  }};
+
+type topologyVersion = {version: string};
 
 class AboutComponent extends React.Component<any, AboutState> {
   textarea: React.RefObject<HTMLTextAreaElement>;
@@ -40,23 +58,58 @@ class AboutComponent extends React.Component<any, AboutState> {
     this.textarea = React.createRef();
     this.loadAboutContent();
   }
-  private getMarkOdluxVersionMarkdownTable(data:{version:string,build:string}|null|undefined):string{
+
+  private getMarkOdluxVersionMarkdownTable(data:odluxVersion|null|undefined):string{
     if(!data) {
       return "";
+    }else{
+      let applicationVersions= '';
+      if(data.applications){
+
+        applicationVersions = `| Framework | ${data.framework}|\n `+
+        `| ConnectApp | ${data.applications.connectApp}|\n `+
+        `| FaultApp | ${data.applications.faultApp}|\n `+
+        `| MaintenanceApp | ${data.applications.maintenanceApp}|\n `+
+        `| ConfigurationApp | ${data.applications.configurationApp}|\n `+
+        `| PerformanceHistoryApp | ${data.applications.permanceHistoryApp}|\n `+
+        `| InventoryApp | ${data.applications.inventoryApp}|\n `+
+        `| EventLogApp | ${data.applications.eventLogApp}|\n `+
+        `| MediatorApp | ${data.applications.mediatorApp}|\n `+
+        `| NetworkMapApp | ${data.applications.networkMapApp}|\n `+
+        `| LinkCalculatorApp | ${data.applications.linkCalculationApp}|\n `+
+        `| HelpApp | ${data.applications.helpApp}|\n `;
+      }
+    
+    return `| | |\n| --- | --- |\n| Version | ${data.version} |\n| Build timestamp | ${data.build}|\n`+
+    applicationVersions;
     }
-    return `| | |\n| --- | --- |\n| Version | ${data.version} |\n| Build timestamp | ${data.build}|`
   }
+
+  private getTopologyVersionMarkdownTable(data: topologyVersion|null|undefined){ 
+    if(!data){
+      return "No version";
+    }
+    else
+    {
+      return `| | |\n| --- | --- |\n| Version | ${data.version} |\n`
+    }
+  }
+
   private loadAboutContent(): void {
     const baseUri = window.location.pathname.substring(0,window.location.pathname.lastIndexOf("/")+1);
     const p1 = requestRestExt<string>('/about');
-    const p2 = requestRestExt<{version:string,build:string}>(`${baseUri}version.json`);
-    Promise.all([p1,p2]).then((responses) => {
+    const p2 = requestRestExt<odluxVersion>(`${baseUri}version.json`);
+    const p3 = requestRestExt<any>(`/topology/info/version`);
+
+    Promise.all([p1,p2, p3]).then((responses) => {
       const response = responses[0];
-      const response2 = responses[1];    
+      const response2 = responses[1]; 
+      const response3 = responses[2];   
       const content = response.status == 200 ? response.data : `${response.status} ${response.message}` || "Server error";
-      const content2 = `\n## ODLUX Version Info\n`+(response2.status == 200 ? this.getMarkOdluxVersionMarkdownTable(response2.data) : `${response2.status} ${response2.message}` || "ODLUX Server error");
+      const content2 = `\n## ODLUX Version Info\n`+(response2.status == 200 ? this.getMarkOdluxVersionMarkdownTable(response2.data) : `${response2.message}` || "ODLUX Server error");
+      const content3 =  `\n## Topology API Version Info\n`+(response3.status == 200 ? this.getTopologyVersionMarkdownTable(response3.data): `Topology API not available`);
       const loadedSucessfully = response.status == 200 ? true : false;
-      this.setState({ content: (content + content2) || null, isContentLoadedSucessfully: loadedSucessfully });
+      this.setState({ content: (content + content2 + content3 ) || null, isContentLoadedSucessfully: loadedSucessfully });
     }).catch((error) => {
       this.setState({ content: error })
     })

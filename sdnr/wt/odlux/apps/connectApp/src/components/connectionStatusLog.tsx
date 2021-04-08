@@ -19,9 +19,11 @@ import * as React from 'react';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { MaterialTable, ColumnType, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import  Refresh  from '@material-ui/icons/Refresh';
 
 import { createConnectionStatusLogActions, createConnectionStatusLogProperties } from '../handlers/connectionStatusLogHandler';
 import { NetworkElementConnectionLog } from '../models/networkElementConnectionLog';
+import RefreshConnectionStatusLogDialog, { RefreshConnectionStatusLogDialogMode } from './refreshConnectionStatusLogDialog';
 
 const mapProps = (state: IApplicationStoreState) => ({
   connectionStatusLogProperties: createConnectionStatusLogProperties(state),
@@ -34,22 +36,52 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
 const ConnectionStatusTable = MaterialTable as MaterialTableCtorType<NetworkElementConnectionLog>;
 
 type ConnectionStatusLogComponentProps = Connect<typeof mapProps, typeof mapDispatch>;
+type ConnectionStatusLogComponentState = {
+  refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode
+}
 
 let initialSorted = false;
 
 
-class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogComponentProps> {
+class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogComponentProps,ConnectionStatusLogComponentState > {
+  constructor(props: ConnectionStatusLogComponentProps) {
+    super(props);
+
+    this.state = {
+      refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode.None
+    };
+  }
+
   render(): JSX.Element {
+    const refreshConnectionStatusLogAction = {
+      icon: Refresh, tooltip: 'Refresh Connection Status Log Table', onClick: () => {
+        this.setState({
+          refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode.RefreshConnectionStatusLogTable
+        });
+      }
+    };
+
     return (
-      <ConnectionStatusTable stickyHeader tableId="connection-status-table" columns={[
+    <>
+      <ConnectionStatusTable stickyHeader tableId="connection-status-table" customActionButtons={[refreshConnectionStatusLogAction]}  columns={[
         { property: "timestamp", title: "Timestamp", type: ColumnType.text },
         { property: "nodeId", title: "Node Name", type: ColumnType.text },
         { property: "status", title: "Connection Status", type: ColumnType.text },
       ]} idProperty="id" {...this.props.connectionStatusLogActions} {...this.props.connectionStatusLogProperties} >
       </ConnectionStatusTable>
+       <RefreshConnectionStatusLogDialog
+        mode={ this.state.refreshConnectionStatusLogEditorMode }
+        onClose={ this.onCloseRefreshConnectionStatusLogDialog }
+      />
+    </>
     );
   };
 
+  private onCloseRefreshConnectionStatusLogDialog = () => {
+    this.setState({
+      refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode.None
+    });
+  }
   componentDidMount() {
     if (!initialSorted) {
       initialSorted = true;

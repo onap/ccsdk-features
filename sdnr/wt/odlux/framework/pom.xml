@@ -46,7 +46,7 @@
     <properties>
         <buildtime>${maven.build.timestamp}</buildtime>
         <distversion>ONAP Frankfurt (Neon, mdsal ${odl.mdsal.version})</distversion>
-        <buildno>90.49cc396(21/02/17)</buildno>
+        <buildno>96.078ad12(21/03/25)</buildno>
         <odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
     </properties>
 
@@ -126,7 +126,7 @@
                         </goals>
                         <phase>initialize</phase>
                         <configuration>
-                            <arguments>add lerna@3.13.1 -W --exact</arguments>
+                            <arguments>add lerna@3.22.1 -W --exact</arguments>
                             <installDirectory>${project.basedir}</installDirectory>
                             <workingDirectory>${project.basedir}/../</workingDirectory>
                         </configuration>

@@ -51,8 +51,10 @@ type CapabilityAnswer = {
 }
 
 class RestService {
+  public getNetworkElementUri = (nodeId: string) => '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
+
   public async getCapabilitiesByMoutId(nodeId: string): Promise<CapabilityAnswer> {
-    const path = `/rests/data/network-topology:network-topology/topology=topology-netconf/node=${nodeId}`;
+    const path = this.getNetworkElementUri(nodeId);
     const capabilitiesResult = await requestRest<CapabilityResponse>(path, { method: "GET" });
     const avaliableCapabilities = capabilitiesResult && capabilitiesResult["network-topology:node"] && capabilitiesResult["network-topology:node"].length > 0 &&
        capabilitiesResult["network-topology:node"][0]["netconf-node-topology:available-capabilities"] && 

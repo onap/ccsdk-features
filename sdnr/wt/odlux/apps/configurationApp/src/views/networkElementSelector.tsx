@@ -25,7 +25,7 @@ import { MaterialTable, MaterialTableCtorType, ColumnType } from "../../../../fr
 import { createConnectedNetworkElementsProperties, createConnectedNetworkElementsActions } from "../../../configurationApp/src/handlers/connectedNetworkElementsHandler";
 
 import { NetworkElementConnection } from "../models/networkElementConnection";
-import { Tooltip, Button, IconButton } from "@material-ui/core";
+
 
 const mapProps = (state: IApplicationStoreState) => ({
   connectedNetworkElementsProperties: createConnectedNetworkElementsProperties(state),

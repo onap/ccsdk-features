@@ -15,9 +15,10 @@
   <script type="text/javascript" src="./config.js"></script>
   <script>
     // run the application
-    require(["app", "inventoryApp", "connectApp"], function (app, inventoryApp, connectApp) {
+    require(["app", "inventoryApp", "connectApp", "configurationApp"], function (app, inventoryApp, connectApp, configurationApp) {
       inventoryApp.register();
       connectApp.register();
+      configurationApp.register();
       app("./app.tsx").runApplication();
     });
   </script>

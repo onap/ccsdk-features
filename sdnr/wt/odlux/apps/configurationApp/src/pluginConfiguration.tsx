@@ -29,21 +29,19 @@ import { NetworkElementSelector } from "./views/networkElementSelector";
 
 import ConfigurationApplication from "./views/configurationApplication";
 import { updateNodeIdAsyncActionCreator, updateViewActionAsyncCreator } from "./actions/deviceActions";
+import { DisplayModeType } from "./handlers/viewDescriptionHandler";
+import { ViewSpecification } from "./models/uiModels";
 
 let currentNodeId: string | null | undefined = undefined;
 let currentVirtualPath: string | null | undefined = undefined;
 let lastUrl: string | undefined = undefined;
-
-const mapProps = (state: IApplicationStoreState) => ({
-  // currentProblemsProperties: createCurrentProblemsProperties(state),
-});
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   updateNodeId: (nodeId: string) => dispatcher.dispatch(updateNodeIdAsyncActionCreator(nodeId)),
   updateView: (vPath: string) => dispatcher.dispatch(updateViewActionAsyncCreator(vPath)),
 });
 
-const ConfigurationApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ nodeId?: string, 0: string }> & Connect<typeof mapProps, typeof mapDisp>) => {
+const ConfigurationApplicationRouteAdapter = connect(undefined, mapDisp)((props: RouteComponentProps<{ nodeId?: string, 0: string }> & Connect<undefined, typeof mapDisp>) => {
   React.useEffect(() => {
     return () => {
       lastUrl = undefined;
@@ -57,15 +55,64 @@ const ConfigurationApplicationRouteAdapter = connect(mapProps, mapDisp)((props: 
     window.setTimeout(async () => {
 
       // check if the nodeId has changed
+      let dump = false;
       if (currentNodeId !== props.match.params.nodeId) {
         currentNodeId = props.match.params.nodeId || undefined;
+        if (currentNodeId && currentNodeId.endsWith("|dump")) {
+          dump = true;
+          currentNodeId = currentNodeId.replace(/\|dump$/i, '');
+        }
         currentVirtualPath = null;
         currentNodeId && await props.updateNodeId(currentNodeId);
       }
 
       if (currentVirtualPath !== props.match.params[0]) {
         currentVirtualPath = props.match.params[0];
+        if (currentVirtualPath && currentVirtualPath.endsWith("|dump")) {
+          dump = true;
+          currentVirtualPath = currentVirtualPath.replace(/\|dump$/i, '');
+        }
         await props.updateView(currentVirtualPath);
+      }
+
+      if (dump) {
+        const device = props.state.configuration.deviceDescription;
+        const ds = props.state.configuration.viewDescription.displaySpecification;
+
+        const createDump = (view: ViewSpecification | null, level: number = 0) => {
+          if (view === null) return "Empty";
+          const indention = Array(level * 4).fill(' ').join('');
+          let result = '';
+
+          if (!view) debugger;
+          // result += `${indention}  [${view.canEdit ? 'rw' : 'ro'}] ${view.ns}:${view.name} ${ds.displayMode === DisplayModeType.displayAsList ? '[LIST]' : ''}\r\n`;
+          result += Object.keys(view.elements).reduce((acc, cur) => {
+            const elm = view.elements[cur];
+            acc += `${indention}  [${elm.config ? 'rw' : 'ro'}:${elm.id}] (${elm.module}:${elm.label}) {${elm.uiType}} ${elm.uiType === "object" && elm.isList ? `as LIST with KEY [${elm.key}]` : ""}\r\n`;
+            // acc += `${indention}    +${elm.mandatory ? "mandetory" : "none"} - ${elm.path} \r\n`;
+            
+            switch (elm.uiType) {
+              case "object":
+                acc += createDump(device.views[(elm as any).viewId], level + 1);
+                break;
+              default:
+            }
+            return acc;
+          }, "");
+          return `${result}`;
+        }
+
+        const dump = createDump(ds.displayMode === DisplayModeType.displayAsObject || ds.displayMode === DisplayModeType.displayAsList ? ds.viewSpecification : null, 0);
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(dump));
+        element.setAttribute('download', currentNodeId + ".txt");
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
       }
 
     });

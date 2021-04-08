@@ -16,7 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Tooltip, Button, FormControl, Theme, createStyles, makeStyles } from '@material-ui/core';
 
 import { ViewElement } from '../models/uiModels';
@@ -35,13 +35,14 @@ type UIElementReferenceProps = {
 
 export const UIElementReference: React.FC<UIElementReferenceProps> = (props) => {
   const classes = useStyles();
+  const [disabled, setDisabled] = useState(true);
   const { element } = props;
   return (
-    <FormControl key={element.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
+    <FormControl key={element.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }} onMouseDown={(ev) => { ev.preventDefault(); ev.stopPropagation(); ev.button === 1 && setDisabled(!disabled) }}>
       <Tooltip title={element.description || element.path || ''}>
-        <Button className={classes.button} aria-label={element.label+'-button'} color="secondary" disabled={props.disabled} onClick={() => {
+        <Button className={classes.button} aria-label={element.label+'-button'} color="secondary" disabled={props.disabled && disabled} onClick={() => {
           props.onOpenReference(element);
-        }}>{`${element.label}`}</Button>
+        }}  >{`${element.label}`}</Button>
       </Tooltip>
     </FormControl>
   );

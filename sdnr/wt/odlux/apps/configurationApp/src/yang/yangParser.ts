@@ -278,6 +278,7 @@ export class YangParser {
     name: "root",
     language: "en-US",
     canEdit: false,
+    config: true,
     parentView: "0",
     title: "root",
     elements: {},
@@ -544,6 +545,28 @@ export class YangParser {
         console.warn(error.message);
       }
     });
+
+    // resolve readOnly
+    const resolveReadOnly = (view: ViewSpecification, parentConfig: boolean) => {
+      
+      // update view config
+      view.config = view.config && parentConfig;
+      
+      Object.keys(view.elements).forEach((key) => {
+        const elm = view.elements[key];
+
+        // update element config
+        elm.config = elm.config && view.config;
+        
+        // update all sub-elements of objects
+        if (elm.uiType === "object") {
+          resolveReadOnly(this.views[+elm.viewId], elm.config);
+        }
+
+      })
+    }
+
+    const dump = resolveReadOnly(this.views[0], true); 
   };
 
   private _nextId = 1;
@@ -686,7 +709,7 @@ export class YangParser {
           module: context.name || module.name || '',
           uiType: "object",
           viewId: currentView.id,
-          config: config
+          config: currentView.config,
         });
         acc.push(currentView, ...subViews);
         return acc;
@@ -717,7 +740,7 @@ export class YangParser {
           uiType: "object",
           viewId: currentView.id,
           key: key,
-          config: elmConfig
+          config: elmConfig && currentView.config,
         });
         acc.push(currentView, ...subViews);
         return acc;
@@ -876,6 +899,7 @@ export class YangParser {
       title: statement.arg != null ? statement.arg : undefined,
       language: "en-us",
       canEdit: false,
+      config: config,
       ifFeature: ifFeature,
       when: whenCondition,
       elements: elements.reduce<{ [name: string]: ViewElement }>((acc, cur) => {
@@ -921,7 +945,7 @@ export class YangParser {
               const elm = groupingViewSpec.elements[key];
               // a useRef on root level need a namespace
               viewSpec.elements[parentId === 0 ? `${module.name}:${key}` : key] = {
-                ...groupingViewSpec.elements[key],
+                ...elm,
                 when: elm.when ? `(${groupingViewSpec.when}) and (${elm.when})` : groupingViewSpec.when,
                 ifFeature: elm.ifFeature ? `(${groupingViewSpec.ifFeature}) and (${elm.ifFeature})` : groupingViewSpec.ifFeature,
               };

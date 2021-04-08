@@ -16,4 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 
-export type guiCutThrough = { webUri?: string, nodeId: string }
+export type guiCutThrough = {
+    id: string,
+    weburi?: string
+}

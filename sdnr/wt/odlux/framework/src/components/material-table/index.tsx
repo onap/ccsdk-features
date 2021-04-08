@@ -32,13 +32,14 @@ import { EnhancedTableHead } from './tableHead';
 import { EnhancedTableFilter } from './tableFilter';
 
 import { ColumnModel, ColumnType } from './columnModel';
-import { Omit, Menu } from '@material-ui/core';
+import { Omit, Menu, makeStyles } from '@material-ui/core';
 
 import { SvgIconProps } from '@material-ui/core/SvgIcon/SvgIcon';
 
 import { DividerTypeMap } from '@material-ui/core/Divider';
 import { MenuItemProps } from '@material-ui/core/MenuItem';
 import { flexbox } from '@material-ui/system';
+import { RowDisabled } from './utilities';
 export { ColumnModel, ColumnType } from './columnModel';
 
 type propType = string | number | null | undefined | (string | number)[];
@@ -103,6 +104,34 @@ const styles = (theme: Theme) => createStyles({
   }
 });
 
+const useTableRowExtStyles = makeStyles((theme: Theme) => createStyles({
+  disabled: {
+    color: "rgba(180, 180, 180, 0.7)",
+  },
+}));
+
+type GetStatelessComponentProps<T> = T extends (props: infer P & { children?: React.ReactNode }) => any ? P : any;
+type TableRowExtProps = GetStatelessComponentProps<typeof TableRow> & { disabled: boolean };
+const TableRowExt : React.FC<TableRowExtProps> = (props) => {
+  const [disabled, setDisabled] = React.useState(true);
+  const classes = useTableRowExtStyles();
+  
+  const onMouseDown = (ev: React.MouseEvent<HTMLElement>) => {
+      if (ev.button ===1){
+        setDisabled(!disabled);  
+        ev.preventDefault();
+        ev.stopPropagation();
+      } else if (props.disabled && disabled) {
+        ev.preventDefault();
+        ev.stopPropagation();
+      }
+  }; 
+
+  return (   
+    <TableRow {...{...props,  color: props.disabled && disabled ? '#a0a0a0' : undefined , className: props.disabled && disabled ? classes.disabled : '', onMouseDown, onContextMenu: props.disabled && disabled ? onMouseDown : props.onContextMenu } }  /> 
+  );
+};
+
 export type MaterialTableComponentState<TData = {}> = {
   order: 'asc' | 'desc';
   orderBy: string | null;
@@ -130,7 +159,7 @@ type MaterialTableComponentBaseProps<TData> = WithStyles<typeof styles> & {
   enableSelection?: boolean;
   disableSorting?: boolean;
   disableFilter?: boolean;
-  customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, onClick: () => void }[];
+  customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, onClick: () => void, disabled?: boolean }[];
   onHandleClick?(event: React.MouseEvent<HTMLTableRowElement>, rowData: TData): void;
   createContextMenu?: (row: TData) => React.ReactElement<MenuItemProps | DividerTypeMap<{}, "hr">, React.ComponentType<MenuItemProps | DividerTypeMap<{}, "hr">>>[];
 };
@@ -222,12 +251,12 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
             <TableBody>
               {showFilter && <EnhancedTableFilter columns={columns} filter={filter} onFilterChanged={this.onFilterChanged} enableSelection={this.props.enableSelection} /> || null}
               {rows // may need ordering here
-                .map((entry: TData & { [key: string]: any }, index) => {
+                .map((entry: TData & { [RowDisabled]?: boolean, [kex: string]: any }, index) => {
                   const entryId = getId(entry);
                   const isSelected = this.isSelected(entryId);
                   const contextMenu = (this.props.createContextMenu && this.state.contextMenuInfo.index === index && this.props.createContextMenu(entry)) || null;
                   return (
-                    <TableRow
+                    <TableRowExt
                       hover
                       onClick={event => {
                         if (this.props.createContextMenu) {
@@ -252,9 +281,10 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                       tabIndex={-1}
                       key={entryId}
                       selected={isSelected}
+                      disabled={entry[RowDisabled] || false}
                     >
                       {this.props.enableSelection
-                        ? <TableCell padding="checkbox" style={{ width: "50px" }}>
+                        ? <TableCell padding="checkbox" style={{ width: "50px", color:  entry[RowDisabled] || false ? "inherit" : undefined } }>
                           <Checkbox checked={isSelected} />
                         </TableCell>
                         : null
@@ -264,7 +294,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                           col => {
                             const style = col.width ? { width: col.width } : {};
                             return (
-                              <TableCell aria-label={col.title? col.title.toLowerCase().replace(/\s/g, "-") : col.property.toLowerCase().replace(/\s/g, "-")} key={col.property} align={col.type === ColumnType.numeric && !col.align ? "right" : col.align} style={style}>
+                              <TableCell style={ entry[RowDisabled] || false ? { ...style, color: "inherit"  } : style } aria-label={col.title? col.title.toLowerCase().replace(/\s/g, "-") : col.property.toLowerCase().replace(/\s/g, "-")} key={col.property} align={col.type === ColumnType.numeric && !col.align ? "right" : col.align} >
                                 {col.type === ColumnType.custom && col.customControl
                                   ? <col.customControl className={col.className} style={col.style} rowData={entry} />
                                   : col.type === ColumnType.boolean
@@ -280,7 +310,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                         anchorPosition={this.state.contextMenuInfo.mouseY != null && this.state.contextMenuInfo.mouseX != null ? { top: this.state.contextMenuInfo.mouseY, left: this.state.contextMenuInfo.mouseX } : undefined}>
                         {contextMenu}
                       </Menu> || null}
-                    </TableRow>
+                    </TableRowExt>
                   );
                 })}
               {emptyRows > 0 && (

@@ -17,6 +17,7 @@
     // run the application
     require(["app","demoApp"], function (app, demoApp) {
       demoApp.register();
+      app("./app.tsx").configureApplication({ authentication:"oauth",  enablePolicy:  true,});
       app("./app.tsx");
     });
   </script>

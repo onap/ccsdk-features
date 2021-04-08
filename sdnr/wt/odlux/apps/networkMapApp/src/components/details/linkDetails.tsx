@@ -68,7 +68,9 @@ const LinkDetails: React.FunctionComponent<props> = (props) => {
        const distance = props.link.length > 0 ? props.link.length : props.link.calculatedLength;
        const azimuthA = props.link.azimuthA;
        const azimuthB = props.link.azimuthB;
-       window.open(`/#/linkCalculation?lat1=${siteA.lat}&lon1=${siteA.lon}&lat2=${siteB.lat}&lon2=${siteB.lon}&siteA=${nameA}&siteB=${nameB}&azimuthA=${azimuthA}&azimuthB=${azimuthB}&distance=${distance}&amslSiteA=${siteA.amsl}&AGLsiteA=${siteA.antennaHeight}&amslSiteB=${siteB.amsl}&AGLsiteB=${siteB.antennaHeight}`)
+       
+       const baseUrl = window.location.pathname.split('#')[0];
+       window.open(`${baseUrl}#/linkCalculation?lat1=${siteA.lat}&lon1=${siteA.lon}&lat2=${siteB.lat}&lon2=${siteB.lon}&siteA=${nameA}&siteB=${nameB}&azimuthA=${azimuthA}&azimuthB=${azimuthB}&distance=${distance}&amslSiteA=${siteA.amsl}&AGLsiteA=${siteA.antennaHeight}&amslSiteB=${siteB.amsl}&AGLsiteB=${siteB.antennaHeight}`)
 
     }
 

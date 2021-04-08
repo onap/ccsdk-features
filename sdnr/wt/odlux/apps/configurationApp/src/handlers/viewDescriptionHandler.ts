@@ -35,10 +35,12 @@ export type DisplaySpecification =  {
   viewSpecification: ViewSpecification;
   keyProperty?: string;
   apidocPath?: string;
+  dataPath?: string;
 } | {
   displayMode: DisplayModeType.displayAsRPC;
   inputViewSpecification?: ViewSpecification;
   outputViewSpecification?: ViewSpecification;
+  dataPath?: string;
 }
 
 export interface IViewDescriptionState {

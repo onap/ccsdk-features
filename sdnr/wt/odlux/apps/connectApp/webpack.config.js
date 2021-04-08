@@ -11,6 +11,8 @@ const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 
+const policies = require('./policies.json');
+
 // const __dirname = (path => path.replace(/^([a-z]\:)/, c => c.toUpperCase()))(process.__dirname());
 
 module.exports = (env) => {
@@ -124,34 +126,54 @@ module.exports = (env) => {
       stats: {
         colors: true
       },
-      proxy: {
-        "/oauth2/": {
-          target: "http://sdnr:8181",
+      before: function(app, server, compiler) {
+        app.get('/oauth/policies',(_, res) => res.json(policies));
+      },
+       proxy: {
+        "/about": {
+          target: "http://localhost:18181",
+          secure: false
+        }, 
+        "/yang-schema/": {
+          target: "http://localhost:18181",
+          secure: false
+        },   
+        "/oauth/": {
+          target: "http://localhost:18181",
           secure: false
         },
-        
-          "/oauth/": {
-            target: "http://sdnr:8181",
-            secure: false
-          },
         "/database/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/restconf/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/rests/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/help/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
+          secure: false
+        },
+         "/about/": {
+          target: "http://localhost:18181",
+          secure: false
+        },
+        "/tree/": {
+          target: "http://localhost:18181",
           secure: false
         },
         "/websocket": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
+          ws: true,
+          changeOrigin: true,
+          secure: false
+        },
+        "/apidoc": {
+          target: "http://localhost:18181",
           ws: true,
           changeOrigin: true,
           secure: false

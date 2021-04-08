@@ -35,8 +35,12 @@ import { createCurrentProblemsProperties, createCurrentProblemsActions, currentP
 import { createAlarmLogEntriesProperties, createAlarmLogEntriesActions, alarmLogEntriesReloadAction } from '../handlers/alarmLogEntriesHandler';
 import { setPanelAction } from '../actions/panelChangeActions';
 import { Tooltip, IconButton, AppBar, Tabs, Tab } from '@material-ui/core';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import Sync from '@material-ui/icons/Sync';
+import Refresh from '@material-ui/icons/Refresh';
+
 import ClearStuckAlarmsDialog, { ClearStuckAlarmsDialogMode } from '../components/clearStuckAlarmsDialog';
+import RefreshAlarmLogDialog, { RefreshAlarmLogDialogMode } from '../components/refreshAlarmLogDialog';
+import RefreshCurrentProblemsDialog, { RefreshCurrentProblemsDialogMode } from '../components/refreshCurrentProblemsDialog';
 import { SetPartialUpdatesAction } from '../actions/partialUpdatesAction';
 
 const mapProps = (state: IApplicationStoreState) => ({
@@ -61,7 +65,9 @@ type FaultApplicationComponentProps = RouteComponentProps & Connect<typeof mapPr
 
 type FaultApplicationState = {
   clearAlarmDialogMode: ClearStuckAlarmsDialogMode,
-  stuckAlarms: string[]
+  stuckAlarms: string[],
+  refreshAlarmLogEditorMode: RefreshAlarmLogDialogMode,
+  refreshCurrentProblemsEditorMode: RefreshCurrentProblemsDialogMode
 }
 
 
@@ -78,7 +84,12 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
    */
   constructor(props: FaultApplicationComponentProps) {
     super(props);
-    this.state = { clearAlarmDialogMode: ClearStuckAlarmsDialogMode.None, stuckAlarms: [] }
+    this.state = {
+      clearAlarmDialogMode: ClearStuckAlarmsDialogMode.None,
+      stuckAlarms: [],
+      refreshAlarmLogEditorMode: RefreshAlarmLogDialogMode.None,
+      refreshCurrentProblemsEditorMode: RefreshCurrentProblemsDialogMode.None
+    }
   }
 
   onDialogClose = () => {
@@ -127,10 +138,27 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
   render(): JSX.Element {
 
     const refreshButton = {
-      icon: RefreshIcon, tooltip: 'Clear stuck alarms', onClick: this.onDialogOpen
+      icon: Sync, tooltip: 'Clear stuck alarms', onClick: this.onDialogOpen
     };
+
+    const refreshCurrentProblemsAction = {
+      icon: Refresh, tooltip: 'Refresh Current Problems List', onClick: () => {
+        this.setState({
+          refreshCurrentProblemsEditorMode: RefreshCurrentProblemsDialogMode.RefreshCurrentProblemsTable
+        });
+      }
+    };
+
+    const refreshAlarmLogAction = {
+      icon: Refresh, tooltip: 'Refresh Alarm log table', onClick: () => {
+        this.setState({
+          refreshAlarmLogEditorMode: RefreshAlarmLogDialogMode.RefreshAlarmLogTable
+        });
+      }
+    };
+
     const areFaultsAvailable = this.props.currentProblemsProperties.rows && this.props.currentProblemsProperties.rows.length > 0
-    const customAction = areFaultsAvailable ? [refreshButton] : [];
+    const customActions = areFaultsAvailable ? [refreshButton, refreshCurrentProblemsAction] : [refreshCurrentProblemsAction];
 
     const { panelId: activePanelId } = this.props;
 
@@ -144,15 +172,22 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
           </Tabs>
         </AppBar>
         {
-          activePanelId === 'CurrentProblem' && <FaultTable stickyHeader tableId="current-problems-table" idProperty={'id'} customActionButtons={customAction} columns={[
-            { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
-            { property: "timestamp", type: ColumnType.text, title: "Timestamp" },
-            { property: "nodeId", title: "Node Name", type: ColumnType.text },
-            { property: "counter", title: "Count", type: ColumnType.numeric, width: "100px" },
-            { property: "objectId", title: "Object Id", type: ColumnType.text },
-            { property: "problem", title: "Alarm Type", type: ColumnType.text },
-            { property: "severity", title: "Severity", type: ColumnType.text, width: "140px" },
-          ]} {...this.props.currentProblemsProperties} {...this.props.currentProblemsActions} />
+          activePanelId === 'CurrentProblem' &&
+          <>
+            <FaultTable stickyHeader tableId="current-problems-table" idProperty={'id'} customActionButtons={customActions} columns={[
+              { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
+              { property: "timestamp", type: ColumnType.text, title: "Timestamp" },
+              { property: "nodeId", title: "Node Name", type: ColumnType.text },
+              { property: "counter", title: "Count", type: ColumnType.numeric, width: "100px" },
+              { property: "objectId", title: "Object Id", type: ColumnType.text },
+              { property: "problem", title: "Alarm Type", type: ColumnType.text },
+              { property: "severity", title: "Severity", type: ColumnType.text, width: "140px" },
+            ]} {...this.props.currentProblemsProperties} {...this.props.currentProblemsActions} />
+            <RefreshCurrentProblemsDialog
+              mode={this.state.refreshCurrentProblemsEditorMode}
+              onClose={this.onCloseRefreshCurrentProblemsDialog}
+            />
+          </>
         }
         {activePanelId === 'AlarmNotifications' &&
 
@@ -168,18 +203,24 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
 
         }
 
-        {activePanelId === 'AlarmLog' && 
-        <FaultTable stickyHeader idProperty={'id'} tableId="alarm-log-table"
-          columns={[
-          { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
-          { property: "timestamp", title: "Timestamp" },
-          { property: "nodeId", title: "Node Name" },
-          { property: "counter", title: "Count", type: ColumnType.numeric, width: "100px" },
-          { property: "objectId", title: "Object Id" },
-          { property: "problem", title: "Alarm Type" },
-          { property: "severity", title: "Severity", width: "140px" },
-          { property: "sourceType", title: "Source", width: "140px" },
-        ]} {...this.props.alarmLogEntriesProperties} {...this.props.alarmLogEntriesActions} />
+        {activePanelId === 'AlarmLog' &&
+          <>
+            <FaultTable stickyHeader idProperty={'id'} tableId="alarm-log-table" customActionButtons={[refreshAlarmLogAction]}
+              columns={[
+                { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
+                { property: "timestamp", title: "Timestamp" },
+                { property: "nodeId", title: "Node Name" },
+                { property: "counter", title: "Count", type: ColumnType.numeric, width: "100px" },
+                { property: "objectId", title: "Object Id" },
+                { property: "problem", title: "Alarm Type" },
+                { property: "severity", title: "Severity", width: "140px" },
+                { property: "sourceType", title: "Source", width: "140px" },
+              ]} {...this.props.alarmLogEntriesProperties} {...this.props.alarmLogEntriesActions} />
+            <RefreshAlarmLogDialog
+              mode={this.state.refreshAlarmLogEditorMode}
+              onClose={this.onCloseRefreshAlarmLogDialog}
+            />
+          </>
 
         }
         {
@@ -207,6 +248,16 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
     );
   };
 
+  private onCloseRefreshAlarmLogDialog = () => {
+    this.setState({
+      refreshAlarmLogEditorMode: RefreshAlarmLogDialogMode.None
+    });
+  }
+  private onCloseRefreshCurrentProblemsDialog = () => {
+    this.setState({
+      refreshCurrentProblemsEditorMode: RefreshCurrentProblemsDialogMode.None
+    });
+  }
 }
 
 export const FaultApplication = withRouter(connect(mapProps, mapDisp)(FaultApplicationComponent));
