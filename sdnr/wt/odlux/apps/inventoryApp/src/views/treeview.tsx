@@ -24,7 +24,7 @@ import { TreeView, TreeViewCtorType, SearchMode } from '../../../../framework/sr
 
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 
-import { updateInventoryTreeAsyncAction, selectInventoryNodeAsyncAction, UpdateSelectedNodeAction, UpdateExpandedNodesAction, setSearchTermAction} from "../actions/inventoryTreeActions";
+import { updateInventoryTreeAsyncAction, selectInventoryNodeAsyncAction, UpdateSelectedNodeAction, UpdateExpandedNodesAction, setSearchTermAction } from "../actions/inventoryTreeActions";
 import { TreeDemoItem } from "../models/inventory";
 
 import { RouteComponentProps } from "react-router-dom";
@@ -66,7 +66,7 @@ const InventoryTree = TreeView as any as TreeViewCtorType<string>;
 
 
 
-type TreeviewComponentProps = RouteComponentProps<{ mountId: string}> & WithStyles<typeof styles> & Connect<typeof mapProps, typeof mapDispatch>
+type TreeviewComponentProps = RouteComponentProps<{ mountId: string }> & WithStyles<typeof styles> & Connect<typeof mapProps, typeof mapDispatch>
 
 type TreeviewComponentState = {
   [propsChache]: {
@@ -78,7 +78,7 @@ type TreeviewComponentState = {
 
 class DashboardComponent extends React.Component<TreeviewComponentProps, TreeviewComponentState> {
 
-  constructor (props: TreeviewComponentProps) {
+  constructor(props: TreeviewComponentProps) {
     super(props);
 
     this.state = {
@@ -89,15 +89,16 @@ class DashboardComponent extends React.Component<TreeviewComponentProps, Treevie
 
   static getDerivedStateFromProps(props: TreeviewComponentProps, state: TreeviewComponentState) {
     if (state[propsChache].rootNodes != props.rootNodes) {
-      state = { ...state, rootNodes: props.rootNodes}
+      state = { ...state, rootNodes: props.rootNodes }
     }
     return state;
   }
 
   render() {
-    const { classes, updateInventoryTree, updateExpendedNodes, expendedItems, selectedNode, selectTreeNode, searchTerm, match: { params: { mountId }} } = this.props;
+    const { classes, updateInventoryTree, updateExpendedNodes, expendedItems, selectedNode, selectTreeNode, searchTerm, match: { params: { mountId } } } = this.props;
+    const scrollbar = { overflow: "auto", paddingRight: "20px" }
     return (
-      <div className={classes.root}>
+      <div style={scrollbar} className={classes.root}>
         <InventoryTree className={classes.tree} items={this.state.rootNodes} enableSearchBar initialSearchTerm={searchTerm} searchMode={SearchMode.OnEnter} searchTerm={searchTerm}
           onSearch={(searchTerm) => updateInventoryTree(mountId, searchTerm)} expandedItems={expendedItems} onFolderClick={(item) => {
             const indexOfItemToToggle = expendedItems.indexOf(item);
@@ -119,11 +120,11 @@ class DashboardComponent extends React.Component<TreeviewComponentProps, Treevie
   }
 
   componentDidMount() {
-    const { updateInventoryTree, searchTerm, match: { params: { mountId } }} = this.props;
+    const { updateInventoryTree, searchTerm, match: { params: { mountId } } } = this.props;
     updateInventoryTree(mountId, searchTerm);
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.props.setSearchTerm("");
   }
 }

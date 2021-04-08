@@ -23,6 +23,7 @@ import connect, { IDispatcher, Connect } from "../../../../framework/src/flux/co
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 import { MaterialTable, MaterialTableCtorType, ColumnType } from "../../../../framework/src/components/material-table";
 import { AppBar, Tabs, Tab, MenuItem, Typography } from "@material-ui/core";
+import Refresh from '@material-ui/icons/Refresh';
 import { PanelId } from "../models/panelId";
 import { setPanelAction } from "../actions/panelActions";
 
@@ -36,6 +37,7 @@ import { InventoryType } from '../models/inventory';
 import { createInventoryElementsProperties, createInventoryElementsActions } from "../handlers/inventoryElementsHandler";
 import { NavigateToApplication } from '../../../../framework/src/actions/navigationActions';
 import { updateInventoryTreeAsyncAction } from '../actions/inventoryTreeActions';
+import RefreshInventoryDialog, { RefreshInventoryDialogMode } from '../components/refreshInventoryDialog';
 
 const InventoryTable = MaterialTable as MaterialTableCtorType<InventoryType & { _id: string }>;
 
@@ -49,7 +51,7 @@ const mapProps = (state: IApplicationStoreState) => ({
 const mapDispatch = (dispatcher: IDispatcher) => ({
   connectedNetworkElementsActions: createConnectedNetworkElementsActions(dispatcher.dispatch),
   switchActivePanel: (panelId: PanelId) => {
-    dispatcher.dispatch(setPanelAction(panelId)); 
+    dispatcher.dispatch(setPanelAction(panelId));
   },
   inventoryElementsActions: createInventoryElementsActions(dispatcher.dispatch),
   navigateToApplication: (applicationName: string, path?: string) => dispatcher.dispatch(new NavigateToApplication(applicationName, path)),
@@ -62,8 +64,18 @@ let inventoryInitialSorted = false;
 const ConnectedElementTable = MaterialTable as MaterialTableCtorType<NetworkElementConnection>;
 
 type DashboardComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDispatch>;
+type DashboardComponentState = {
+  refreshInventoryEditorMode: RefreshInventoryDialogMode
+}
 
-class DashboardSelectorComponent extends React.Component<DashboardComponentProps> {
+class DashboardSelectorComponent extends React.Component<DashboardComponentProps, DashboardComponentState> {
+  constructor(props: DashboardComponentProps) {
+    super(props);
+
+    this.state = {
+      refreshInventoryEditorMode: RefreshInventoryDialogMode.None
+    };
+  }
 
   private onHandleTabChange = (event: React.ChangeEvent<{}>, newValue: PanelId) => {
     this.onTogglePanel(newValue);
@@ -111,6 +123,13 @@ class DashboardSelectorComponent extends React.Component<DashboardComponentProps
 
   render() {
 
+    const refreshInventoryAction = {
+      icon: Refresh, tooltip: 'Refresh Inventory', onClick: () => {
+        this.setState({
+          refreshInventoryEditorMode: RefreshInventoryDialogMode.RefreshInventoryTable
+        });
+      }
+    };
     const { panelId: activePanelId } = this.props;
     return (
       <>
@@ -124,32 +143,42 @@ class DashboardSelectorComponent extends React.Component<DashboardComponentProps
         {
 
           activePanelId === "InventoryElementsTable" &&
+          <>
+            <InventoryTable stickyHeader title="Inventory" idProperty="_id" tableId="inventory-table" customActionButtons={[refreshInventoryAction]} columns={[
+              { property: "nodeId", title: "Node Name" },
+              { property: "manufacturerIdentifier", title: "Manufacturer" },
+              { property: "parentUuid", title: "Parent" },
+              { property: "uuid", title: "Name" },
+              { property: "serial", title: "Serial" },
+              { property: "version", title: "Version" },
+              { property: "date", title: "Date" },
+              { property: "description", title: "Description" },
+              { property: "partTypeId", title: "Part Type Id" },
+              { property: "modelIdentifier", title: "Model Identifier" },
+              { property: "typeName", title: "Type" },
+              { property: "treeLevel", title: "Containment Level" },
+            ]}  {...this.props.inventoryElementsActions} {...this.props.inventoryElementsProperties}
+              createContextMenu={rowData => {
 
-          <InventoryTable stickyHeader title="Inventory" idProperty="_id" tableId="inventory-table" columns={[
-            { property: "nodeId", title: "Node Name" },
-            { property: "manufacturerIdentifier", title: "Manufacturer" },
-            { property: "parentUuid", title: "Parent" },
-            { property: "uuid", title: "Name" },
-            { property: "serial", title: "Serial" },
-            { property: "version", title: "Version" },
-            { property: "date", title: "Date" },
-            { property: "description", title: "Description" },
-            { property: "partTypeId", title: "Part Type Id" },
-            { property: "modelIdentifier", title: "Model Identifier" },
-            { property: "typeName", title: "Type" },
-            { property: "treeLevel", title: "Containment Level" },
-          ]}  {...this.props.inventoryElementsActions} {...this.props.inventoryElementsProperties}
-            createContextMenu={rowData => {
-
-              return this.getContextMenu(rowData);
-            }} >
-          </InventoryTable>
+                return this.getContextMenu(rowData);
+              }} >
+            </InventoryTable>
+            <RefreshInventoryDialog
+              mode={this.state.refreshInventoryEditorMode}
+              onClose={this.onCloseRefreshInventoryDialog}
+            />
+          </>
 
         }
         {
           activePanelId === "TreeviewTable" &&
 
-          <ConnectedElementTable stickyHeader tableId="treeview-networkelement-selection-table" onHandleClick={(e, row) => { this.props.history.push(`${this.props.match.path}/${row.nodeId}`) }} columns={[
+          <ConnectedElementTable stickyHeader tableId="treeview-networkelement-selection-table"  
+          onHandleClick={(e, row) => { 
+            this.props.history.push(`${this.props.match.path}/${row.nodeId}`);
+            this.props.updateInventoryTree(row.nodeId, '*');
+         }} 
+          columns={[
             { property: "nodeId", title: "Node Name", type: ColumnType.text },
             { property: "isRequired", title: "Required", type: ColumnType.boolean },
             { property: "host", title: "Host", type: ColumnType.text },
@@ -163,6 +192,11 @@ class DashboardSelectorComponent extends React.Component<DashboardComponentProps
     );
   }
 
+  private onCloseRefreshInventoryDialog = () => {
+    this.setState({
+      refreshInventoryEditorMode: RefreshInventoryDialogMode.None
+    });
+  }
   componentDidMount() {
 
     if (this.props.panelId === null) { //set default tab if none is set

@@ -220,6 +220,7 @@ export type ViewSpecification = {
   "when"?: string;
   "uses"?: (string[]) & { [ResolveFunction]?: (parent: string) => void };
   "elements": { [name: string]: ViewElement };
+  "config": boolean;
   readonly "canEdit": boolean;
 }
 

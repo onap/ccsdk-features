@@ -19,12 +19,14 @@ import * as React from 'react';
 import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
 import AddIcon from '@material-ui/icons/Add';
+import  Refresh  from '@material-ui/icons/Refresh';
 import LinkIcon from '@material-ui/icons/Link';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
 import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import Info from '@material-ui/icons/Info';
 import ComputerIcon from '@material-ui/icons/Computer';
+import { MenuItem, Divider, Typography } from '@material-ui/core';
 
 import { MaterialTable, ColumnType, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
@@ -34,12 +36,14 @@ import { NavigateToApplication } from '../../../../framework/src/actions/navigat
 import { createNetworkElementsActions, createNetworkElementsProperties } from '../handlers/networkElementsHandler';
 
 import { NetworkElementConnection } from '../models/networkElementConnection';
+import { TopologyNode } from '../models/topologyNetconf';
 import EditNetworkElementDialog, { EditNetworkElementDialogMode } from './editNetworkElementDialog';
+import RefreshNetworkElementsDialog, { RefreshNetworkElementsDialogMode } from './refreshNetworkElementsDialog';
 
 import InfoNetworkElementDialog, { InfoNetworkElementDialogMode } from './infoNetworkElementDialog';
 import { loadAllInfoElementAsync } from '../actions/infoNetworkElementActions';
-import { TopologyNode } from '../models/topologyNetconf';
-import { MenuItem, Divider, Typography } from '@material-ui/core';
+import { connectService } from '../services/connectService';
+import { getAccessPolicyByUrl } from '../../../../framework/src/services/restService';
 
 const styles = (theme: Theme) => createStyles({
   connectionStatusConnected: {
@@ -63,6 +67,22 @@ const styles = (theme: Theme) => createStyles({
   }
 });
 
+type GetStatelessComponentProps<T> = T extends (props: infer P & { children?: React.ReactNode }) => any ? P : any
+const MenuItemExt : React.FC<GetStatelessComponentProps<typeof MenuItem>> = (props) => {
+  const [disabled, setDisabled] = React.useState(true);
+  const onMouseDown = (ev: React.MouseEvent<HTMLElement>) => {
+      if (ev.button ===1){
+        setDisabled(!disabled);  
+        ev.preventDefault();
+      }
+  };
+  return (
+    <div onMouseDown={onMouseDown} >
+      <MenuItem {...{...props, disabled: props.disabled && disabled }}  />
+    </div>  
+  );
+};
+
 const mapProps = (state: IApplicationStoreState) => ({
   networkElementsProperties: createNetworkElementsProperties(state),
   applicationState: state,
@@ -78,6 +98,7 @@ type NetworkElementsListComponentProps = WithStyles<typeof styles> & Connect<typ
 type NetworkElementsListComponentState = {
   networkElementToEdit: NetworkElementConnection,
   networkElementEditorMode: EditNetworkElementDialogMode,
+  refreshNetworkElementsEditorMode: RefreshNetworkElementsDialogMode,
   infoNetworkElementEditorMode: InfoNetworkElementDialogMode,
   elementInfo: TopologyNode | null
 }
@@ -94,19 +115,21 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
     this.state = {
       networkElementToEdit: emptyRequireNetworkElement,
       networkElementEditorMode: EditNetworkElementDialogMode.None,
+      refreshNetworkElementsEditorMode: RefreshNetworkElementsDialogMode.None,
       elementInfo: null,
       infoNetworkElementEditorMode: InfoNetworkElementDialogMode.None
     };
   }
-
+  
   getContextMenu(rowData: NetworkElementConnection): JSX.Element[] {
-
-
-
-    const { configuration, fault, inventory } = this.props.applicationState as any;
-    let buttonArray = [
-      <MenuItem aria-label={"mount-button"} onClick={event => this.onOpenMountdNetworkElementsDialog(event, rowData)} ><LinkIcon /><Typography>Mount</Typography></MenuItem>,
-      <MenuItem aria-label={"unmount-button"} onClick={event => this.onOpenUnmountdNetworkElementsDialog(event, rowData)}><LinkOffIcon /><Typography>Unmount</Typography></MenuItem>,
+    const mountUri = rowData.id && connectService.getNetworkElementUri(rowData.id);
+    const mountPolicy = mountUri && getAccessPolicyByUrl(mountUri);
+    const canMount =  mountPolicy && mountPolicy.POST || false;
+    
+    const { configuration} = this.props.applicationState as any;
+    const buttonArray = [
+      <MenuItemExt aria-label={"mount-button"} onClick={event => this.onOpenMountdNetworkElementsDialog(event, rowData)} disabled={!canMount} ><LinkIcon /><Typography>Mount</Typography></MenuItemExt>,
+      <MenuItemExt aria-label={"unmount-button"} onClick={event => this.onOpenUnmountdNetworkElementsDialog(event, rowData)} disabled={!canMount} ><LinkOffIcon /><Typography>Unmount</Typography></MenuItemExt>,
       <Divider />,
       <MenuItem aria-label={"info-button"} onClick={event => this.onOpenInfoNetworkElementDialog(event, rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected"} ><Info /><Typography>Info</Typography></MenuItem>,
       <MenuItem aria-label={"edit-button"} onClick={event => this.onOpenEditNetworkElementDialog(event, rowData)}><EditIcon /><Typography>Edit</Typography></MenuItem>,
@@ -121,9 +144,9 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       <MenuItem onClick={event => this.props.navigateToApplication("security", rowData.nodeId)} disabled={true} ><Typography>Security</Typography></MenuItem>,
     ];
 
-    if (rowData.webUri) {
+    if (rowData.weburi) {
       // add an icon for gui cuttrough, if weburi is available
-      return [<MenuItem aria-label={"web-client-button"} onClick={event => window.open(rowData.webUri, "_blank")} ><ComputerIcon /><Typography>Web Client</Typography></MenuItem>].concat(buttonArray)
+      return [<MenuItem aria-label={"web-client-button"} onClick={event => window.open(rowData.weburi, "_blank")} ><ComputerIcon /><Typography>Web Client</Typography></MenuItem>].concat(buttonArray)
     } else {
       return buttonArray;
     }
@@ -134,6 +157,12 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
   render(): JSX.Element {
     const { classes } = this.props;
     const { networkElementToEdit } = this.state;
+
+    // const mountUri = rowData.id && connectService.getNetworkElementUri(rowData.id);
+    // const mountPolicy = mountUri && getAccessPolicyByUrl(mountUri);
+    // const canAdd =  mountPolicy && mountPolicy.POST || false;
+    const canAdd = true;
+
     const addRequireNetworkElementAction = {
       icon: AddIcon, tooltip: 'Add', onClick: () => {
         this.setState({
@@ -143,9 +172,17 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       }
     };
 
+    const refreshNetworkElementsAction = {
+      icon: Refresh, tooltip: 'Refresh Network Elements table', onClick: () => {
+        this.setState({
+          refreshNetworkElementsEditorMode: RefreshNetworkElementsDialogMode.RefreshNetworkElementsTable
+        });
+      }
+    };
+    
     return (
       <>
-        <NetworkElementTable stickyHeader tableId="network-element-table" customActionButtons={[addRequireNetworkElementAction]} columns={[
+        <NetworkElementTable stickyHeader tableId="network-element-table" customActionButtons={[refreshNetworkElementsAction, ...canAdd ? [addRequireNetworkElementAction]: []]} columns={[
           { property: "nodeId", title: "Node Name", type: ColumnType.text },
           { property: "isRequired", title: "Required", type: ColumnType.boolean },
           { property: "status", title: "Connection Status", type: ColumnType.text },
@@ -162,6 +199,10 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
           initialNetworkElement={networkElementToEdit}
           mode={this.state.networkElementEditorMode}
           onClose={this.onCloseEditNetworkElementDialog}
+        />
+        <RefreshNetworkElementsDialog
+          mode={this.state.refreshNetworkElementsEditorMode}
+          onClose={this.onCloseRefreshNetworkElementsDialog}
         />
         <InfoNetworkElementDialog
           initialNetworkElement={networkElementToEdit}
@@ -243,7 +284,11 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       networkElementToEdit: emptyRequireNetworkElement,
     });
   }
+  private onCloseRefreshNetworkElementsDialog = () => {
+    this.setState({
+      refreshNetworkElementsEditorMode: RefreshNetworkElementsDialogMode.None
+    });
+  }
 }
 
 export const NetworkElementsList = withStyles(styles)(connect(mapProps, mapDispatch)(NetworkElementsListComponent));
-export default NetworkElementsList;

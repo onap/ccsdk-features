@@ -20,19 +20,12 @@ import { faPlug } from '@fortawesome/free-solid-svg-icons';
 
 import applicationManager from '../../../framework/src/services/applicationManager';
 import { subscribe, IFormatedMessage } from '../../../framework/src/services/notificationService';
+import { AddSnackbarNotification } from '../../../framework/src/actions/snackbarActions';
 
 import connectAppRootHandler from './handlers/connectAppRootHandler';
 import ConnectApplication from './views/connectView';
 
-import { AddSnackbarNotification } from '../../../framework/src/actions/snackbarActions';
-import { updateCurrentViewAsyncAction } from './actions/commonNetworkElementsActions';
-
-type ObjectNotification = {
-  counter: string;
-  nodeName: string;
-  objectId: string;
-  timeStamp: string;
-}
+import { findWebUrisForGuiCutThroughAsyncAction, updateCurrentViewAsyncAction } from './actions/commonNetworkElementsActions';
 
 export function register() {
   const applicationApi = applicationManager.registerApplication({
@@ -44,13 +37,19 @@ export function register() {
   });
 
   // subscribe to the websocket notifications
-  subscribe<ObjectNotification & IFormatedMessage>(["ObjectCreationNotification", "ObjectDeletionNotification", "AttributeValueChangedNotification"], (msg => {
+  subscribe<IFormatedMessage>(["object-creation-notification", "object-deletion-notification", "attribute-value-changed-notification"], (msg => {
     const store = applicationApi.applicationStore;
-    if (msg && msg.notifType === "ObjectCreationNotification" && store) {
-      store.dispatch(new AddSnackbarNotification({ message: `Adding network element [${msg.objectId}]`, options: { variant: 'info' } }));
-    } else if (msg && (msg.notifType === "ObjectDeletionNotification" || msg.notifType === "AttributeValueChangedNotification") && store) {
-      store.dispatch(new AddSnackbarNotification({ message: `Updating network element [${msg.objectId}]`, options: { variant: 'info' } }));
+    if (msg && msg.type.type === "object-creation-notification" && store) {
+      store.dispatch(new AddSnackbarNotification({ message: `Adding network element [${msg['node-id']}]`, options: { variant: 'info' } }));
+    } else if (msg && (msg.type.type === "object-deletion-notification" || msg.type.type === "attribute-value-changed-notification") && store) {
+      store.dispatch(new AddSnackbarNotification({ message: `Updating network element [${msg['node-id']}]`, options: { variant: 'info' } }));
     }
-    store && store.dispatch(updateCurrentViewAsyncAction());
+    if (store) {
+      store.dispatch(updateCurrentViewAsyncAction() as any).then(() => {
+        if (msg['node-id']) {
+          store.dispatch(findWebUrisForGuiCutThroughAsyncAction([msg['node-id']]));
+        }
+      });
+    }
   }));
 }

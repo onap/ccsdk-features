@@ -19,6 +19,7 @@
       connectApp.register();
       faultApp.register();
       inventoryApp.register();
+      app("./app.tsx").configureApplication({ authentication:"basic",  enablePolicy:  false,});
       app("./app.tsx").runApplication();
     });
   </script>

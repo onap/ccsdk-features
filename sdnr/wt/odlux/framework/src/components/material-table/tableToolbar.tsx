@@ -67,7 +67,7 @@ interface ITableToolbarComponentProps extends WithStyles<typeof styles> {
   numSelected: number | null;
   title?: string;
   tableId?: string;
-  customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, onClick: () => void }[];
+  customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, onClick: () => void, disabled?: boolean }[];
   onToggleFilter: () => void;
   onExportToCsv: () => void;
 }
@@ -110,7 +110,7 @@ class TableToolbarComponent extends React.Component<ITableToolbarComponentProps,
           {this.props.customActionButtons
             ? this.props.customActionButtons.map((action, ind) => (
               <Tooltip key={`custom-action-${ind}`} title={action.tooltip || ''}>
-                <IconButton aria-label={buttonPrefix + `custom-action-${ind}`} onClick={() => action.onClick()}>
+                <IconButton disabled={action.disabled} aria-label={buttonPrefix + `custom-action-${ind}`} onClick={() => action.onClick()}>
                   <action.icon />
                 </IconButton>
               </Tooltip>

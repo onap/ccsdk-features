@@ -68,6 +68,10 @@ export const runApplication = () => {
   const initialToken = localStorage.getItem("userToken");
   const applicationStore = applicationStoreCreator();
 
+  if (initialToken) {
+    applicationStore.dispatch(new UpdateUser(User.fromString(initialToken) || undefined));
+  }
+
   window.onerror = function (msg: string, url: string, line: number, col: number, error: Error) {
     // Note that col & error are new to the HTML 5 spec and may not be
     // supported in every browser.  It worked for me in Chrome.
@@ -98,9 +102,7 @@ export const runApplication = () => {
 
   ReactDOM.render(<App />, document.getElementById('app'));
 
-  if (initialToken) {
-    applicationStore.dispatch(new UpdateUser(User.fromString(initialToken) || undefined));
-  }
+  
 
 };
 

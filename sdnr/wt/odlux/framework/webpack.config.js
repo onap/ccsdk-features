@@ -201,55 +201,55 @@ module.exports = (env) => {
       proxy: {
         "/about": {
           // target: "http://10.20.6.29:48181",
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         }, 
         "/yang-schema/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },   
         "/oauth/": {
           // target: "https://10.20.35.188:30205",
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/oauth2/": {
           // target: "https://10.20.35.188:30205",
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/database/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/restconf/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/rests/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/help/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
          "/about/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/tree/": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           secure: false
         },
         "/websocket": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           ws: true,
           changeOrigin: true,
           secure: false
         },
         "/apidoc": {
-          target: "http://sdnr:8181",
+          target: "http://localhost:18181",
           ws: true,
           changeOrigin: true,
           secure: false

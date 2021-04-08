@@ -24,7 +24,7 @@ export type NetworkElementConnection = {
   port: number;
   username?: string;
   password?: string;
-  webUri?: string;
+  weburi?: string;
   isWebUriUnreachable?: boolean;
   status?: "Connected" | "mounted" | "unmounted" | "Connecting" | "Disconnected" | "idle";
   coreModelCapability?: string;

@@ -40,10 +40,9 @@ const mapProps = (state: IApplicationStoreState) => ({
 const mapDispatcher = (dispatcher: IDispatcher) => ({
   networkElementsActions: createNetworkElementsActions(dispatcher.dispatch),
   connectionStatusLogActions: createConnectionStatusLogActions(dispatcher.dispatch),
-  onLoadNetworkElements: () => {
-    dispatcher.dispatch(networkElementsReloadAction);
-  },
-  loadWebUris: async (networkElements: NetworkElementConnection[]) => { await dispatcher.dispatch(findWebUrisForGuiCutThroughAsyncAction(networkElements)) },
+  onLoadNetworkElements: () => dispatcher.dispatch(networkElementsReloadAction),
+  loadWebUris: (networkElements: NetworkElementConnection[]) => 
+    dispatcher.dispatch(findWebUrisForGuiCutThroughAsyncAction(networkElements.map((ne) => ne.id!))),
   isBusy: (busy: boolean) => dispatcher.dispatch(new SetWeburiSearchBusy(busy)),
   onLoadConnectionStatusLog: () => {
     dispatcher.dispatch(connectionStatusLogReloadAction);
@@ -65,12 +64,14 @@ class ConnectApplicationComponent extends React.Component<ConnectApplicationComp
     //this.props.connectionStatusLogActions.onToggleFilter();
   }
 
-  public componentDidUpdate = async () => {
-    // search for guicutthroughs after networkelements were found
+  public componentDidUpdate = () => {
+    
     const networkElements = this.props.netWorkElements;
 
     if (networkElements.rows.length > 0) {
-      await this.props.loadWebUris(networkElements.rows);
+      // Update all netWorkElements for propper WebUriClient settings in case of table data changes.
+      // e.G: Pagination of the table data (there is no event)
+      this.props.loadWebUris(networkElements.rows);
     }
   }
 

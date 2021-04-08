@@ -28,12 +28,15 @@ import { guiCutThrough } from '../models/guiCutTrough';
 * Represents a web api accessor service for all Network Elements actions.
 */
 class ConnectService {
+  public getNetworkElementUri = (nodeId: string) => '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
+  public getNetworkElementConnectDataProviderUri = (operation: "create" | "update" | "delete" ) => `/rests/operations/data-provider:${operation}-network-element-connection`;
+  public getAllWebUriExtensionsForNetworkElementListUri = (nodeId: string) => this.getNetworkElementUri(nodeId) + '/yang-ext:mount/core-model:network-element';
 
   /**
    * Inserts a network elements.
    */
   public async createNetworkElement(element: NetworkElementConnection): Promise<NetworkElementConnection | null> {
-    const path = `/rests/operations/data-provider:create-network-element-connection`;
+    const path = this.getNetworkElementConnectDataProviderUri("create") ;
     const result = await requestRest<NetworkElementConnection>(path, {
       method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": element }, replaceUpperCase))
     });
@@ -44,7 +47,7 @@ class ConnectService {
   * Updates a network element.
   */
   public async updateNetworkElement(element: UpdateNetworkElement): Promise<NetworkElementConnection | null> {
-    const path = `/rests/operations/data-provider:update-network-element-connection`;
+    const path = this.getNetworkElementConnectDataProviderUri("update");
     const result = await requestRest<NetworkElementConnection>(path, {
       method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": element }, replaceUpperCase))
     });
@@ -58,7 +61,7 @@ class ConnectService {
     const query = {
       "id": element.id
     };
-    const path = `/rests/operations/data-provider:delete-network-element-connection`;
+    const path = this.getNetworkElementConnectDataProviderUri("delete");
     const result = await requestRest<NetworkElementConnection>(path, {
       method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": query }, replaceUpperCase))
     });
@@ -67,7 +70,7 @@ class ConnectService {
 
   /** Mounts network element. */
   public async mountNetworkElement(networkElement: NetworkElementConnection): Promise<boolean> {
-    const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + networkElement.nodeId;
+    const path = this.getNetworkElementUri(networkElement.nodeId);
     const mountXml = [
       '<node xmlns="urn:TBD:params:xml:ns:yang:network-topology">',
       `<node-id>${networkElement.nodeId}</node-id>`,
@@ -106,7 +109,7 @@ class ConnectService {
 
   /** Unmounts a network element by its id. */
   public async unmountNetworkElement(nodeId: string): Promise<boolean> {
-    const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
+    const path = this.getNetworkElementUri(nodeId);
 
     try {
       const result = await requestRest<string>(path, {
@@ -126,7 +129,7 @@ class ConnectService {
 
   /** Yang capabilities of the selected network elements. */
   public async infoNetworkElement(nodeId: string): Promise<TopologyNode | null> {
-    const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
+    const path = this.getNetworkElementUri(nodeId);
     const topologyRequestPomise = requestRest<Topology>(path, { method: "GET" });
 
     return topologyRequestPomise && topologyRequestPomise.then(result => {
@@ -157,38 +160,80 @@ class ConnectService {
     })) || null;
   }
 
-  public getAllWebUriExtensionsForNetworkElementListAsync(ne: string[]) {
+  public async getAllWebUriExtensionsForNetworkElementListAsync(neList: string[]): Promise<(guiCutThrough)[]> {
+    const path = `/rests/operations/data-provider:read-gui-cut-through-entry`;
+    let webUriList: guiCutThrough[] = []
+    const query = {
+      "data-provider:input": {
+        "filter": [{
+          "property": "id",
+          "filtervalues": neList
+        }],
+        "pagination": {
+          "size": 20,
+          "page": 1
+        }
+      }
+    }
 
-    let promises: any[] = [];
-    let webUris: guiCutThrough[] = []
-
-    ne.forEach(nodeId => {
-      const path = '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId + '/yang-ext:mount/core-model:network-element';
-
-      // add search request to array
-      promises.push(requestRest<any>(path, { method: "GET" })
-        .then(result => {
-          if (result != null && result['core-model:network-element'] && result['core-model:network-element'].extension) {
-            const webUri = result['core-model:network-element'].extension.find((item: any) => item['value-name'] === "webUri")
-            if (webUri) {
-              webUris.push({ webUri: webUri.value, nodeId: nodeId });
-            } else {
-              webUris.push({ webUri: undefined, nodeId: nodeId });
+    const result = await requestRest<Result<guiCutThrough>>(path, { method: "POST", body: JSON.stringify(query) });
+    const resultData = result && result["data-provider:output"] && result["data-provider:output"].data;
+    neList.forEach(nodeId => {
+      let entryNotFound = true;
+      if (resultData) {
+        const BreakException = {};
+        try {
+          resultData.forEach(entry => {
+            if (entry.id == nodeId) {
+              entryNotFound = false;
+              if (entry.weburi) {
+                webUriList.push({ id: nodeId, weburi: entry.weburi });
+              } else {
+                webUriList.push({ id: nodeId, weburi: undefined });
+              }
+              throw BreakException;
             }
-          } else {
-            webUris.push({ webUri: undefined, nodeId: nodeId });
-          }
-        })
-        .catch(error => {
-          webUris.push({ webUri: undefined, nodeId: nodeId });
-        }))
-
-    })
-
-    // wait until all promises are done and return weburis
-    return Promise.all(promises).then(result => { return webUris });
+          });
+        } catch (e) {}
+      }
+      if (entryNotFound)
+        webUriList.push({ id: nodeId, weburi: undefined });
+    });
+    return webUriList;
   }
 
+  //  public async getAllWebUriExtensionsForNetworkElementListAsync(ne: string[]): Promise<(guiCutThrough)[] | null> {
+
+  //   let promises: any[] = [];
+  //   let webUris: guiCutThrough[] = []
+
+  //   ne.forEach(nodeId => {
+  //     const path = this.getAllWebUriExtensionsForNetworkElementListUri(nodeId);
+
+  // // add search request to array
+  //     promises.push(requestRest<any>(path, { method: "GET" })
+  //       .then(result => {
+  //         if (result != null && result['core-model:network-element'] && result['core-model:network-element'].extension) {
+  //           const webUri = result['core-model:network-element'].extension.find((item: any) => item['value-name'] === "webUri")
+  //           if (webUri) {
+  //             webUris.push({ weburi: webUri.value, id: nodeId });
+  //           } else {
+  //             webUris.push({ weburi: undefined, id: nodeId });
+  //           }
+  //         } else {
+  //           webUris.push({ weburi: undefined, id: nodeId });
+  //         }
+  //       })
+  //       .catch(error => {
+  //         webUris.push({ weburi: undefined, id: nodeId });
+  //       }))
+  //   })
+  //   // wait until all promises are done and return weburis
+  //   return Promise.all(promises).then(result => { return webUris });
+  // }
+
 }
+
+
+
 export const connectService = new ConnectService();
-export default connectService;

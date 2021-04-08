@@ -15,6 +15,8 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
+
+
 import { ApplicationStore } from "../store/applicationStore";
 import { ReplaceAction } from "../actions/navigationActions";
 
@@ -29,6 +31,46 @@ export const startRestService = (store: ApplicationStore) => {
 export const formEncode = (params: { [key: string]: string | number }) => Object.keys(params).map((key) => {
   return encodeURIComponent(key) + '=' + encodeURIComponent(params[key].toString());
 }).join('&');
+
+const wildcardToRegexp = (pattern: string) =>  {
+  return new RegExp('^' + pattern.split(/\*\*/).map((p) => p.split(/\*+/).map((i) => i.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')).join('^[/]')).join('.*') + '$');
+};
+
+export const getAccessPolicyByUrl = (url: string) => {
+  const result = {
+    GET : false,
+    POST: false,
+    PUT: false,
+    PATCH: false,
+    DELETE: false,
+  };
+  
+  if (!applicationStore) return result;
+
+  const { state: { framework: { applicationState: { enablePolicy }, authenticationState: { policies }}} } = applicationStore!;
+  
+  result.GET = true;
+  result.POST = true;
+  result.PUT = true;
+  result.PATCH = true;
+  result.DELETE = true; 
+
+  if (!enablePolicy || !policies || policies.length === 0) return result;
+
+  policies.forEach(p => {
+    const re = wildcardToRegexp(p.path);
+    if (re.test(url)) {
+      result.GET = p.methods.get != null ? p.methods.get : result.GET ;
+      result.POST = p.methods.post != null ? p.methods.post : result.POST ;
+      result.PUT = p.methods.put != null ? p.methods.put : result.PUT ;
+      result.PATCH = p.methods.patch != null ? p.methods.patch : result.PATCH ;
+      result.DELETE = p.methods.delete != null ? p.methods.delete : result.DELETE ;
+    }
+  }); 
+
+  return result;
+
+}
 
 /** Sends a rest request to the given path. 
  * @returns The data, or null it there was any error

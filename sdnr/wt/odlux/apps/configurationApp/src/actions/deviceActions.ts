@@ -9,6 +9,7 @@ import { restService } from "../services/restServices";
 import { YangParser } from "../yang/yangParser";
 import { Module } from "../models/yang";
 import { ViewSpecification, ViewElement, isViewElementReference, isViewElementList, isViewElementObjectOrList, isViewElementRpc, isViewElementChoise, ViewElementChoiseCase, ViewElementString } from "../models/uiModels";
+import { exception } from 'console';
 
 export class EnableValueSelector extends Action {
   constructor(public listSpecification: ViewSpecification, public listData: any[], public keyProperty: string, public onValueSelected : (value: any) => void ) {
@@ -333,6 +334,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
                 const refView : ViewSpecification  = {
                     id: "-1",
                     canEdit: false,
+                    config: false,
                     language: "en-US",
                     elements: {
                         [viewElement.key!] : { 
@@ -441,11 +443,13 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
     // create display specification
     const ds: DisplaySpecification = viewElement! && viewElement!.uiType === "rpc"
       ? {
+        dataPath,
         displayMode: DisplayModeType.displayAsRPC,
         inputViewSpecification: inputViewSpecification && resolveViewDescription(defaultNS, vPath, inputViewSpecification),
         outputViewSpecification: outputViewSpecification && resolveViewDescription(defaultNS, vPath, outputViewSpecification),
       }
       : {
+        dataPath,
         displayMode: extractList ? DisplayModeType.displayAsList : DisplayModeType.displayAsObject,
         viewSpecification: resolveViewDescription(defaultNS, vPath, viewSpecification),
         keyProperty: isViewElementList(viewElement!) && viewElement.key || undefined,
@@ -516,6 +520,35 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
         viewSpecification = views[+viewElement.viewId];
       }
     }
+
+    // remove read-only elements
+    const removeReadOnlyElements = (viewSpecification: ViewSpecification, isList: boolean, data: any) => {
+      if (isList) {
+        return data.map((elm : any) => removeReadOnlyElements(viewSpecification, false, elm));
+      } else {
+        return Object.keys(data).reduce<{[key: string]: any}>((acc, cur)=>{
+          const [nsOrName, name] = cur.split(':',1);
+          const element = viewSpecification.elements[cur] || viewSpecification.elements[nsOrName] || viewSpecification.elements[name];
+          if (!element && process.env.NODE_ENV === "development" ) {
+            throw new Error("removeReadOnlyElements: Could not determine elment for data.");
+          }
+          if (element && element.config) {
+            if (element.uiType==="object") {
+              const view = views[+element.viewId];
+              if (!view) {
+                throw new Error("removeReadOnlyElements: Internal Error could not determine viewId: "+element.viewId);
+              }
+              acc[cur] = removeReadOnlyElements(view, element.isList != null && element.isList, data[cur]);
+            } else {
+              acc[cur] = data[cur];
+            }
+          }
+          return acc;
+        }, {});
+      }
+    };
+    data = removeReadOnlyElements(viewSpecification, embedList, data);
+
 
     // embed the list -> key: list
     data = embedList

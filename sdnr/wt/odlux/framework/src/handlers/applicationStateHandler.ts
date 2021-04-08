@@ -58,7 +58,7 @@ const applicationStateInit: IApplicationState = {
 
 export const configureApplication = (config: ApplicationConfig) => {
   applicationStateInit.authentication = config.authentication === "oauth" ? "oauth" : "basic";
-  applicationStateInit.enablePolicy = config.authentication ? true : false;
+  applicationStateInit.enablePolicy = config.enablePolicy ? true : false;
 }
 
 export const applicationStateHandler: IActionHandler<IApplicationState> = (state = applicationStateInit, action) => {

@@ -25,9 +25,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
-
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
+import Refresh from '@material-ui/icons/Refresh';
+import { MenuItem, Divider, Typography } from '@material-ui/core';
 
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
 import MaterialTable, { MaterialTableCtorType, ColumnType } from '../../../../framework/src/components/material-table';
@@ -36,6 +35,7 @@ import { IApplicationStoreState } from '../../../../framework/src/store/applicat
 import { MaintenenceEntry, spoofSymbol } from '../models/maintenenceEntryType';
 
 import EditMaintenenceEntryDialog, { EditMaintenenceEntryDialogMode } from '../components/editMaintenenceEntryDialog';
+import RefreshMaintenanceEntriesDialog, { RefreshMaintenanceEntriesDialogMode } from '../components/refreshMaintenanceEntries';
 import { convertToLocaleString } from '../utils/timeUtils';
 import { createmaintenanceEntriesActions, createmaintenanceEntriesProperties, maintenanceEntriesReloadAction } from '../handlers/maintenenceEntriesHandler';
 
@@ -81,6 +81,7 @@ type MaintenenceViewComponentProps = Connect<typeof mapProps, typeof mapDispatch
 type MaintenenceViewComponentState = {
   maintenenceEntryToEdit: MaintenenceEntry;
   maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode;
+  refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode;
 };
 
 let initialSorted = false;
@@ -93,8 +94,20 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     this.state = {
       maintenenceEntryToEdit: emptyMaintenenceEntry,
       maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.None,
+      refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode.None
     };
 
+  }
+
+  getContextMenu(rowData: MaintenenceEntry): JSX.Element[] {
+    let buttonArray = [
+      <MenuItem aria-label={"1hr-from-now"} onClick={event => this.onOpenPlus1hEditMaintenenceEntryDialog(event, rowData)}><Typography>+1h</Typography></MenuItem>,
+      <MenuItem aria-label={"8hr-from-now"} onClick={event => this.onOpenPlus8hEditMaintenenceEntryDialog(event, rowData)}><Typography>+8h</Typography></MenuItem>,
+      <Divider />,
+      <MenuItem aria-label={"edit"} onClick={event => this.onOpenEditMaintenenceEntryDialog(event, rowData)}><EditIcon /><Typography>Edit</Typography></MenuItem>,
+      <MenuItem aria-label={"remove"} onClick={event => this.onOpenRemoveMaintenenceEntryDialog(event, rowData)}><RemoveIcon /><Typography>Remove</Typography></MenuItem>
+    ];
+    return buttonArray;
   }
 
   render() {
@@ -113,10 +126,19 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
         });
       }
     };
+
+    const refreshMaintenanceEntriesAction = {
+      icon: Refresh, tooltip: 'Refresh Maintenance Entries', onClick: () => {
+        this.setState({
+          refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode.RefreshMaintenanceEntriesTable
+        });
+      }
+    };
+
     const now = new Date().valueOf();
     return (
       <>
-        <MaintenenceEntriesTable stickyHeader tableId="maintenance-table" title={"Maintenance"} customActionButtons={[addMaintenenceEntryAction]} columns={
+        <MaintenenceEntriesTable stickyHeader tableId="maintenance-table" title={"Maintenance"} customActionButtons={[refreshMaintenanceEntriesAction, addMaintenenceEntryAction]} columns={
           [
             { property: "nodeId", title: "Node Name", type: ColumnType.text },
             {
@@ -126,25 +148,16 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
             },
             { property: "active", title: "Activation State", type: ColumnType.boolean, labels: { "true": "active", "false": "not active" }, },
             { property: "start", title: "Start Date (UTC)", type: ColumnType.text },
-            { property: "end", title: "End Date (UTC)", type: ColumnType.text },
-            {
-              property: "actions", title: "Actions", type: ColumnType.custom, customControl: ({ rowData }) => (
-                <>
-                  <div className={classes.spacer}>
-                    <Tooltip title={"1h from now"} ><Button className={classes.button} onClick={(event) => this.onOpenPlus1hEditMaintenenceEntryDialog(event, rowData)} >+1h</Button></Tooltip>
-                    <Tooltip title={"8h from now"} ><Button className={classes.button} onClick={(event) => this.onOpenPlus8hEditMaintenenceEntryDialog(event, rowData)} >+8h</Button></Tooltip>
-                  </div>
-                  <div className={classes.spacer}>
-                    <Tooltip title={"Edit"} ><IconButton className={classes.button} onClick={(event) => this.onOpenEditMaintenenceEntryDialog(event, rowData)} ><EditIcon /></IconButton></Tooltip>
-                    <Tooltip title={"Remove"} ><IconButton disabled={!!rowData[spoofSymbol]} className={classes.button} onClick={(event) => this.onOpenRemoveMaintenenceEntryDialog(event, rowData)} ><RemoveIcon /></IconButton></Tooltip>
-                  </div>
-                </>
-              )
-            },
+            { property: "end", title: "End Date (UTC)", type: ColumnType.text }
           ]
-        } idProperty={'_id'}{...this.props.maintenanceEntriesActions} {...this.props.maintenanceEntriesProperties} asynchronus > </MaintenenceEntriesTable>
+        } idProperty={'_id'}{...this.props.maintenanceEntriesActions} {...this.props.maintenanceEntriesProperties} asynchronus createContextMenu={rowData => {
+          return this.getContextMenu(rowData);
+        }} >
+        </MaintenenceEntriesTable>
         <EditMaintenenceEntryDialog initialMaintenenceEntry={this.state.maintenenceEntryToEdit} mode={this.state.maintenenceEntryEditorMode}
           onClose={this.onCloseEditMaintenenceEntryDialog} />
+        <RefreshMaintenanceEntriesDialog mode={this.state.refreshMaintenenceEntriesEditorMode}
+          onClose={this.onCloseRefreshMaintenenceEntryDialog} />
       </>
     );
   }
@@ -162,8 +175,8 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
   }
 
   private onOpenPlus1hEditMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenenceEntry) => {
-    event.preventDefault();
-    event.stopPropagation();
+    // event.preventDefault();
+    // event.stopPropagation();
     const startTime = (new Date().valueOf());
     const endTime = startTime + (1 * 60 * 60 * 1000);
     this.setState({
@@ -177,8 +190,8 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
   }
 
   private onOpenPlus8hEditMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenenceEntry) => {
-    event.preventDefault();
-    event.stopPropagation();
+    // event.preventDefault();
+    // event.stopPropagation();
     const startTime = (new Date().valueOf());
     const endTime = startTime + (8 * 60 * 60 * 1000);
     this.setState({
@@ -192,8 +205,8 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
   }
 
   private onOpenEditMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenenceEntry) => {
-    event.preventDefault();
-    event.stopPropagation();
+    // event.preventDefault();
+    // event.stopPropagation();
     const startTime = (new Date().valueOf());
     const endTime = startTime;
     this.setState({
@@ -208,8 +221,8 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
   }
 
   private onOpenRemoveMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenenceEntry) => {
-    event.preventDefault();
-    event.stopPropagation();
+    // event.preventDefault();
+    // event.stopPropagation();
     const startTime = (new Date().valueOf());
     const endTime = startTime;
     this.setState({
@@ -227,6 +240,12 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     this.setState({
       maintenenceEntryToEdit: emptyMaintenenceEntry,
       maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.None,
+    });
+  }
+
+  private onCloseRefreshMaintenenceEntryDialog = () => {
+    this.setState({
+      refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode.None,
     });
   }
 }
