@@ -23,6 +23,7 @@ import java.util.Optional;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.Onf14NetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
@@ -30,23 +31,25 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.ControlConstruct;
-import org.opendaylight.yangtools.yang.common.QName;
 
 public class TestOnf14NetworkElementFactory extends Mockito {
 
-    static NetconfBindingAccessor accessor;
-    static DeviceManagerServiceProvider serviceProvider;
-    static Capabilities capabilities;
-    QName qCapability;
+    private static NetconfBindingAccessor accessor;
+    private static Capabilities capabilities;
+    private static DeviceManagerServiceProvider serviceProvider;
+    private static ConfigurationFileRepresentation configurationRepresentation;
+
 
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
         capabilities = mock(Capabilities.class);
         accessor = mock(NetconfBindingAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
+        configurationRepresentation = mock(ConfigurationFileRepresentation.class);
 
         when(accessor.getCapabilites()).thenReturn(capabilities);
         when(serviceProvider.getDataProvider()).thenReturn(mock(DataProvider.class));
+        when(serviceProvider.getConfigurationFileRepresentation()).thenReturn(configurationRepresentation);
     }
 
     @Test

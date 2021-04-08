@@ -20,6 +20,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.dataprovider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
@@ -48,27 +49,25 @@ public class Onf14ToInternalDataModel {
 
     public Inventory getInternalEquipment(NodeId nodeId, Equipment currentEq, Equipment parentEq, long treeLevel) {
 
+        Objects.requireNonNull(nodeId);
+        Objects.requireNonNull(currentEq);
+
         InventoryBuilder inventoryBuilder = new InventoryBuilder();
+        String parentUuid = parentEq != null ? parentEq.getUuid().getValue() : "None";
 
         @Nullable
         ActualEquipment component = currentEq.getActualEquipment();
         if (component != null) {
-
             // General
             inventoryBuilder.setNodeId(nodeId.getValue());
-
             inventoryBuilder.setTreeLevel(Uint32.valueOf(treeLevel));
             inventoryBuilder.setUuid(currentEq.getUuid().getValue());
-
-            if (parentEq != null) {
-                inventoryBuilder.setParentUuid(parentEq.getUuid().getValue());
-            } else {
-                inventoryBuilder.setParentUuid("None");
-            }
+            inventoryBuilder.setParentUuid(parentUuid);
 
             List<String> containedHolderKeyList = new ArrayList<String>();
             @NonNull
-            Collection<ContainedHolder> containedHolderList = YangHelper.getCollection(currentEq.nonnullContainedHolder());
+            Collection<ContainedHolder> containedHolderList =
+                    YangHelper.getCollection(currentEq.nonnullContainedHolder());
             for (ContainedHolder holder : containedHolderList) {
                 @Nullable
                 UniversalId occupyingFru = holder.getOccupyingFru();

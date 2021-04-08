@@ -21,15 +21,17 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yangtools.yang.binding.Notification;
+import org.opendaylight.yangtools.yang.common.QName;
 
 /**
  * Wrapper for forwarding websocket notifications to the websocket service, that is running as container.
- * 
+ *
  * @author herbert
  */
 public interface WebSocketServiceClientInternal extends AutoCloseable {
 
-    public <T extends MwtNotificationBase & GetEventType> void sendViaWebsockets(@NonNull String nodeName,
-            @NonNull T notificationXml);
+    public void sendViaWebsockets(@NonNull String nodeName,Notification notification, QName qname, DateAndTime timestamp);
 
 }

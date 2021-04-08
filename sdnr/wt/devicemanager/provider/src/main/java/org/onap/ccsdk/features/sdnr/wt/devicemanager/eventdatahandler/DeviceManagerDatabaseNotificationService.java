@@ -24,9 +24,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.HtAssert;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeForwarderInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalSeverity;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.AttributeValueChangedNotificationXml;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ObjectCreationNotificationXml;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ObjectDeletionNotificationXml;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.maintenance.impl.MaintenanceServiceImpl;
@@ -39,15 +36,20 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.Notificat
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.EquipmentData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.EventlogNotificationBuilder;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultNotificationBuilder2;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultcurrent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.AttributeValueChangedNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.AttributeValueChangedNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ObjectCreationNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ObjectCreationNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ObjectDeletionNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ObjectDeletionNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotificationBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +95,12 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
             nodeId = "EmptyNodeId";
         }
         databaseService.writeEventLog(eventNotification);
-        webSocketService.sendViaWebsockets(nodeId, new AttributeValueChangedNotificationXml(eventNotification));
+        AttributeValueChangedNotification notification = new AttributeValueChangedNotificationBuilder()
+                .setAttributeName(eventNotification.getAttributeName()).setCounter(eventNotification.getCounter())
+                .setNewValue(eventNotification.getNewValue()).setObjectIdRef(eventNotification.getObjectId())
+                .setTimeStamp(eventNotification.getTimestamp()).build();
+        this.webSocketService.sendViaWebsockets(nodeId, notification, AttributeValueChangedNotification.QNAME,
+                eventNotification.getTimestamp());
     }
 
     @Override
@@ -101,8 +108,7 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
             @Nullable String objectId, @Nullable String attributeName, @Nullable String newValue) {
         EventlogEntity eventlogEntity =
                 new EventlogNotificationBuilder(nodeId, counter, timeStamp, objectId, attributeName, newValue).build();
-        databaseService.writeEventLog(eventlogEntity);
-        webSocketService.sendViaWebsockets(nodeId.getValue(), new AttributeValueChangedNotificationXml(eventlogEntity));
+        this.eventNotification(eventlogEntity);
     }
 
     @Override
@@ -111,7 +117,10 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
         EventlogEntity eventlogEntity =
                 new EventlogNotificationBuilder(nodeId, counter, timeStamp, objectId, "creation", null).build();
         databaseService.writeEventLog(eventlogEntity);
-        webSocketService.sendViaWebsockets(nodeId.getValue(), new ObjectCreationNotificationXml(eventlogEntity));
+        ObjectCreationNotification notification = new ObjectCreationNotificationBuilder().setCounter(counter)
+                .setObjectIdRef(objectId).setTimeStamp(eventlogEntity.getTimestamp()).build();
+        this.webSocketService.sendViaWebsockets(nodeId.getValue(), notification, ObjectCreationNotification.QNAME,
+                eventlogEntity.getTimestamp());
     }
 
 
@@ -121,18 +130,19 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
         EventlogEntity eventlogEntity =
                 new EventlogNotificationBuilder(nodeId, counter, timeStamp, objectId, "deletion", null).build();
         databaseService.writeEventLog(eventlogEntity);
-        webSocketService.sendViaWebsockets(nodeId.getValue(), new ObjectDeletionNotificationXml(eventlogEntity));
+        ObjectDeletionNotification notification = new ObjectDeletionNotificationBuilder().setCounter(counter)
+                .setObjectIdRef(objectId).setTimeStamp(eventlogEntity.getTimestamp()).build();
+        this.webSocketService.sendViaWebsockets(nodeId.getValue(), notification, ObjectDeletionNotification.QNAME,
+                eventlogEntity.getTimestamp());
     }
 
     @Override
-    public void writeEquipment(@NonNull EquipmentData equipment) {
-        //equipment.getList().forEach(card -> databaseService.writeInventory(card));
+    public void writeEquipment(NodeId nodeId, @NonNull EquipmentData equipment) {
         HtAssert.nonnull(equipment);
         List<Inventory> list = equipment.getList();
         HtAssert.nonnull(list);
-        for (Inventory card : list) {
-            databaseService.writeInventory(card);
-        }
+        databaseService.writeInventory(nodeId.getValue(), list);
+
     }
 
     @Override
@@ -151,16 +161,12 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
         } else {
             this.pushAlarmIfNotInMaintenance(nodeName, notificationXml);
         }
-        // ToggleAlarmFilter functionality
-        //        if (notificationDelayService.processNotification(notificationXml.getSeverity() == InternalSeverity.NonAlarmed,
-        //                notificationXml.getProblem(), notificationXml)) {
-        //	        if (notificationDelayService.processNotification(notificationXml)) {
-        //	            aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(nodeName, notificationXml);
-        //	        }
-        //        }
-        // end of ToggleAlarmFilter
-
-        this.webSocketService.sendViaWebsockets(nodeName, notificationXml);
+        ProblemNotification notification = new ProblemNotificationBuilder().setCounter(faultNotification.getCounter())
+                .setObjectIdRef(faultNotification.getObjectId()).setTimeStamp(faultNotification.getTimestamp())
+                .setProblem(faultNotification.getProblem())
+                .setSeverity(InternalSeverity.toYang(faultNotification.getSeverity())).build();
+        this.webSocketService.sendViaWebsockets(faultNotification.getNodeId(), notification,
+                ObjectDeletionNotification.QNAME, faultNotification.getTimestamp());
     }
 
     private void pushAlarmIfNotInMaintenance(String nodeName, ProblemNotificationXml notificationXml) {
@@ -171,15 +177,6 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
             LOG.debug("Notification will not be sent to external services. Device " + nodeName
                     + " is in maintenance mode");
         }
-    }
-
-    @Override
-    public void faultNotification(@NonNull NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
-            @Nullable String objectId, @Nullable String problem, @Nullable SeverityType severity) {
-        FaultNotificationBuilder2 bFaultlog = new FaultNotificationBuilder2(nodeId, counter, timeStamp, objectId,
-                problem, severity, SourceType.Netconf);
-        faultNotification(bFaultlog.build());
-
     }
 
     @Override
@@ -215,4 +212,5 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
         LOG.debug("Got delayed event of type :: {}", ProblemNotificationXml.class.getSimpleName());
         this.pushAlarmIfNotInMaintenance(nodeName, notification);
     }
+
 }

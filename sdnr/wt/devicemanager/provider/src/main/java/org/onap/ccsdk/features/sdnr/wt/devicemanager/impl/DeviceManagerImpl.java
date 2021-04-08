@@ -57,7 +57,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.ODLEventLi
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler.RpcPushNotificationsHandler;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.housekeeping.ConnectionStatusHousekeepingService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.housekeeping.ResyncNetworkElementHouskeepingService;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientImpl2;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.maintenance.impl.MaintenanceServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
@@ -77,7 +77,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.DevicemanagerNotificationDelayService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.VESCollectorServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketmanagerService;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -106,7 +106,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     private MountPointService mountPointService;
     private RpcProviderService rpcProviderRegistry;
     private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
-    private WebsocketmanagerService websocketmanagerService;
+    private WebsocketManagerService websocketmanagerService;
     private IEntityDataProvider iEntityDataProvider;
 
     // Devicemanager common services for network element handler
@@ -176,7 +176,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         this.netconfNodeStateService = netconfNodeStateService;
     }
 
-    public void setWebsocketmanagerService(WebsocketmanagerService websocketmanagerService) {
+    public void setWebsocketmanagerService(WebsocketManagerService websocketmanagerService) {
         this.websocketmanagerService = websocketmanagerService;
     }
 
@@ -201,7 +201,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         this.maintenanceService = new MaintenanceServiceImpl(iEntityDataProvider.getHtDatabaseMaintenance());
 
         // Websockets
-        this.webSocketService = new WebSocketServiceClientImpl2(websocketmanagerService);
+        this.webSocketService = new WebSocketServiceClientImpl(websocketmanagerService);
 
         IEsConfig esConfig = iEntityDataProvider.getEsConfig();
         // DCAE
@@ -283,6 +283,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         LOG.info("Factory registration {}", factory.getClass().getName());
 
         factoryList.add(factory);
+        factory.init(getServiceProvider());
         return new FactoryRegistration<L>() {
 
             @Override
@@ -418,5 +419,11 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     public @NonNull VESCollectorService getVESCollectorService() {
         return this.vesCollectorServiceImpl;
     }
+
+    @Override
+    public WebsocketManagerService getWebsocketService() {
+        return this.websocketmanagerService;
+    }
+
 
 }

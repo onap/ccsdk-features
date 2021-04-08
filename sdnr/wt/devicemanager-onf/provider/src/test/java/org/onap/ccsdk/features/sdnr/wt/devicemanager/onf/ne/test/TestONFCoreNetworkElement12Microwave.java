@@ -19,7 +19,6 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne.test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.OnfMicrowaveModel;
@@ -30,7 +29,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EquipmentService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.NetworkElement;
@@ -73,8 +71,6 @@ public class TestONFCoreNetworkElement12Microwave {
         when(accessor.getNodeId()).thenReturn(nNodeId);
         when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElementPac.QNAME)).thenReturn(true);
         when(accessor.getTransactionUtils()).thenReturn(transactionUtils);
-        when(accessor.getNotificationAccessor()).thenReturn(Optional.of(mock(NetconfNotifications.class)));
-
     }
 
     @Test

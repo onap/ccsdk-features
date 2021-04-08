@@ -17,12 +17,16 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
-import java.util.Optional;
+import com.google.common.util.concurrent.ListenableFuture;
+import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPoint;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionOutput;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * Interface handling netconf connection.
@@ -46,10 +50,26 @@ public interface NetconfBindingAccessor extends NetconfAccessor {
     TransactionUtils getTransactionUtils();
 
     /**
-     * Get notifications handler
-     * @return
+     * Get all notification streams
+     * @return stream list
      */
-    Optional<NetconfNotifications> getNotificationAccessor();
+    List<Stream> getNotificationStreams();
+
+    /**
+     * Register notifications stream for the connection
+     *
+     * @param streamList that contains a list of streams to be subscribed for notifications
+     * @return progress indication
+     */
+    void registerNotificationsStream(List<Stream> streamList);
+
+    /**
+     * Register notifications stream for the connection.
+     *
+     * @param streamName that should be "NETCONF" as default.
+     * @return progress indication
+     */
+    ListenableFuture<RpcResult<CreateSubscriptionOutput>> registerNotificationsStream(String streamName);
 
     /**
      * Register netconf notification listener for related mountpoint

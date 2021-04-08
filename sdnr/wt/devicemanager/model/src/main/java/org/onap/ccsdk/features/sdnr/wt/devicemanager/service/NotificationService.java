@@ -32,17 +32,26 @@ public interface NotificationService extends DeviceManagerService {
     /** Event notification to devicemanager. Can be change, create or remove indication **/
     void eventNotification(@NonNull EventlogEntity eventNotification);
 
+//    void eventNotification(NodeId nodeId, Notification notification, @NonNull QName qname,
+//            @Nullable DateAndTime timeStamp);
+
     /** create notification for an object **/
     void creationNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId);
 
-    /** create notification of object **/
+//    void creationNotification(NodeId nodeId, Notification notification, @NonNull QName qname,
+//            @Nullable DateAndTime timeStamp);
+
+    /** delete notification of object **/
     void deletionNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId);
 
+//    void deletionNotification(NodeId nodeId, Notification notification, @NonNull QName qname,
+//            @Nullable DateAndTime timeStamp);
+
     /**
      * change notification of attribute of object
-     * 
+     *
      * @param nodeId of device
      * @param counter provided
      * @param timeStamp provided
@@ -52,5 +61,10 @@ public interface NotificationService extends DeviceManagerService {
      */
     void changeNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId, @Nullable String attributeName, @Nullable String newValue);
+
+//    void changeNotification(NodeId nodeId, Notification notification, @NonNull QName qname,
+//            @Nullable DateAndTime timeStamp);
+
+
 
 }

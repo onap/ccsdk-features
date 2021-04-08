@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter;
 
 import java.util.HashMap;
-
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerService;
@@ -53,8 +52,12 @@ public class NotificationDelayService<T extends ToggleAlarmFilterable>
 
     @Override
     public void onConfigChanged() {
-        NotificationDelayFilter.setDelay(config.getDelay());
-        NotificationDelayFilter.setEnabled(config.isEnabled());
+        if (config != null) {
+            NotificationDelayFilter.setDelay(config.getDelay());
+            NotificationDelayFilter.setEnabled(config.isEnabled());
+        } else {
+            LOG.error("Can not process configuration change");
+        }
     }
 
     @Override

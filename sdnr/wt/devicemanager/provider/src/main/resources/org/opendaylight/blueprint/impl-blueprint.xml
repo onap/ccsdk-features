@@ -48,7 +48,7 @@
 
     <reference id="websocketmanagerService"
                availability="mandatory" activation="eager"
-               interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketmanagerService"/>
+               interface="org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService"/>
 
     <reference id="iEntityDataProvider"
                availability="mandatory" activation="eager"

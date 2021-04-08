@@ -34,8 +34,15 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.util.Debug;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
+import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.mdsal.dom.api.DOMNotification;
+import org.opendaylight.mdsal.dom.api.DOMNotificationListener;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.AttributeValueChangedNotification;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.LAYERPROTOCOLNAMETYPEAIRLAYER;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.LayerProtocol1;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.ObjectCreationNotification;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.ObjectDeletionNotification;
+import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.ProblemNotification;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.air._interface.lp.spec.AirInterfacePac;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.air._interface.pac.AirInterfaceCurrentProblems;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.ControlConstruct;
@@ -47,12 +54,38 @@ import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.logi
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.logical.termination.point.LayerProtocolKey;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.ethernet.container._2._0.rev200121.LAYERPROTOCOLNAMETYPEETHERNETCONTAINERLAYER;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.LAYERPROTOCOLNAMETYPEWIRELAYER;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
+import org.opendaylight.yangtools.yang.binding.Notification;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Onf14DomInterfacePacManager {
+/*
+* Notifications streams provided by device NTSSim ONF14
+* Stream{getName=StreamNameType{_value=nc-notifications}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=hybrid-mw-structure-2-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=vlan-interface-1-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=tdm-container-2-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=ethernet-container-2-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=ietf-yang-library}, isReplaySupport=false, augmentation=[]},
+* Stream{getDescription=Default NETCONF stream containing all the Event Notifications., getName=StreamNameType{_value=NETCONF}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=vlan-fd-1-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=wire-interface-2-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=mac-fd-1-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=co-channel-profile-1-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=mac-interface-1-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=ietf-keystore}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=pure-ethernet-structure-2-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=ietf-netconf-notifications}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=mac-fc-1-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=wred-profile-1-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=air-interface-2-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=ip-interface-1-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=qos-profile-1-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=vlan-fc-1-0}, isReplaySupport=true, augmentation=[]},
+* Stream{getName=StreamNameType{_value=l-3vpn-profile-1-0}, isReplaySupport=true, augmentation=[]}]
+*/
+
+public class Onf14DomInterfacePacManager implements DOMNotificationListener {
 
     // constants
     private static final Logger log = LoggerFactory.getLogger(Onf14DomEquipmentManager.class);
@@ -64,22 +97,18 @@ public class Onf14DomInterfacePacManager {
 
     // air interface related members
     private final List<TechnologySpecificPacKeys> airInterfaceList = new ArrayList<TechnologySpecificPacKeys>();
-    @SuppressWarnings("unused")
-    private ListenerRegistration<NotificationListener> airInterfaceNotificationListenerHandler;
     private @NonNull final Onf14AirInterfaceNotificationListener airInterfaceNotificationListener;
 
     // ethernet container related members
     private final List<TechnologySpecificPacKeys> ethernetContainerList = new ArrayList<TechnologySpecificPacKeys>();
-    @SuppressWarnings("unused")
-    private ListenerRegistration<NotificationListener> etherneContainerNotificationListenerHandler;
     private @NonNull final Onf14EthernetContainerNotificationListener ethernetContainerNotificationListener;
 
     // wire interface related members
     private final List<TechnologySpecificPacKeys> wireInterfaceList = new ArrayList<TechnologySpecificPacKeys>();
-    @SuppressWarnings("unused")
-    private ListenerRegistration<NotificationListener> wireInterfaceNotificationListenerHandler;
     private @NonNull final Onf14WireInterfaceNotificationListener wireInterfaceNotificationListener;
+    private @NonNull final BindingNormalizedNodeSerializer serializer;
     // end of variables
+
 
     // constructors
     public Onf14DomInterfacePacManager(@NonNull NetconfDomAccessor netconfDomAccessor,
@@ -87,15 +116,13 @@ public class Onf14DomInterfacePacManager {
 
         this.netconfDomAccessor = Objects.requireNonNull(netconfDomAccessor);
         this.serviceProvider = Objects.requireNonNull(serviceProvider);
+        this.serializer = Objects.requireNonNull(netconfDomAccessor.getBindingNormalizedNodeSerializer());
 
-        this.airInterfaceNotificationListenerHandler = null;
         this.airInterfaceNotificationListener =
                 new Onf14AirInterfaceNotificationListener(netconfDomAccessor, serviceProvider);
-        this.etherneContainerNotificationListenerHandler = null;
-        ethernetContainerNotificationListener =
+        this.ethernetContainerNotificationListener =
                 new Onf14EthernetContainerNotificationListener(netconfDomAccessor, serviceProvider);
-        this.wireInterfaceNotificationListenerHandler = null;
-        wireInterfaceNotificationListener =
+        this.wireInterfaceNotificationListener =
                 new Onf14WireInterfaceNotificationListener(netconfDomAccessor, serviceProvider);
     }
     // end of constructors
@@ -256,6 +283,42 @@ public class Onf14DomInterfacePacManager {
                 }
             }
         }
+    }
+
+    @Override
+    public void onNotification(@NonNull DOMNotification domNotification) {
+        @Nullable
+        Notification notification =
+                serializer.fromNormalizedNodeNotification(domNotification.getType(), domNotification.getBody());
+        if (notification instanceof ProblemNotification) {
+            ProblemNotification problemNotification = (ProblemNotification) notification;
+            log.debug("DOM ProblemNotification: {}", problemNotification);
+            airInterfaceNotificationListener.onProblemNotification(problemNotification);
+        } else if (notification instanceof AttributeValueChangedNotification) {
+            AttributeValueChangedNotification attributeValueChangeNotification =
+                    (AttributeValueChangedNotification) notification;
+            log.debug("DOM AttributeValueChangedNotification: {}", attributeValueChangeNotification);
+            airInterfaceNotificationListener.onAttributeValueChangedNotification(attributeValueChangeNotification);
+        } else if (notification instanceof ObjectDeletionNotification) {
+            ObjectDeletionNotification objectDeletionNotification = (ObjectDeletionNotification) notification;
+            log.debug("DOM ObjectDeletionNotification: {}", objectDeletionNotification);
+            airInterfaceNotificationListener.onObjectDeletionNotification(objectDeletionNotification);
+        } else if (notification instanceof ObjectCreationNotification) {
+            ObjectCreationNotification objectCreationNotification = (ObjectCreationNotification) notification;
+            log.debug("DOM ObjectDeletionNotification: {}", objectCreationNotification);
+            airInterfaceNotificationListener.onObjectCreationNotification(objectCreationNotification);
+        } else {
+            log.warn("DOM Notification ignored: {}", domNotification);
+        }
+    }
+
+    /**
+     * Register notifications to handle
+     */
+    public void subscribeNotifications() {
+        QName[] notifications = { ObjectCreationNotification.QNAME, ObjectDeletionNotification.QNAME,
+                AttributeValueChangedNotification.QNAME, ProblemNotification.QNAME };
+        netconfDomAccessor.doRegisterNotificationListener(this, notifications);
     }
 
     /*

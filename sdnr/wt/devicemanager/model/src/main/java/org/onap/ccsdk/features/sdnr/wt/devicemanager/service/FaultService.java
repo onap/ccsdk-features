@@ -18,11 +18,8 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 /**
@@ -32,27 +29,15 @@ public interface FaultService extends DeviceManagerService {
 
     /**
      * Notify fault information to devicemanager
-     * 
+     *
      * @param faultNotification to send
      */
     void faultNotification(@NonNull FaultlogEntity faultNotification);
 
-    /**
-     * Fault notification
-     * 
-     * @param nodeId of node
-     * @param counter provided
-     * @param timeStamp provided
-     * @param objectId provided
-     * @param problem provided
-     * @param severity provided
-     */
-    void faultNotification(@NonNull NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
-            @Nullable String objectId, @Nullable String problem, @Nullable SeverityType severity);
-
+    //void faultNotification(@NonNull NodeId nodeId,Notification notification, QName type, DateAndTime timeStamp);
     /**
      * Remove current problems of node
-     * 
+     *
      * @param nodeId of node
      * @return number of removed entries
      */
@@ -60,7 +45,7 @@ public interface FaultService extends DeviceManagerService {
 
     /**
      * Write initial list of problems of node
-     * 
+     *
      * @param nodeId of node
      * @param resultList
      */

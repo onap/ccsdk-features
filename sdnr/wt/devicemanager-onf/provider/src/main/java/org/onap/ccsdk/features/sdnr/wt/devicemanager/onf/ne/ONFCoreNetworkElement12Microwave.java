@@ -33,7 +33,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EquipmentService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.binding.api.NotificationService;
@@ -216,7 +215,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
 
         microwaveEventListener.initCurrentProblemStatus(nodeId, resultList);
         LOG.debug("DB write current problems completed");
-        equipmentService.writeEquipment(equipment.getEquipmentData());
+        equipmentService.writeEquipment(nodeId, equipment.getEquipmentData());
 
         LOG.info("Found info at {} for device {} number of problems: {}", getMountpoint(), getUuId(),
                 resultList.size());

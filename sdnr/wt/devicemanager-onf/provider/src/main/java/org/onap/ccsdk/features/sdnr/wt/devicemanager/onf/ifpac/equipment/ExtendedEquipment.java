@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.manufactured.thing.g.ManufacturerProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +86,7 @@ public class ExtendedEquipment {
         // General
         inventoryBuilder.setNodeId(getNodeId());
         inventoryBuilder.setParentUuid(getParentUuid());
-        inventoryBuilder.setTreeLevel(Long.valueOf(getTreeLevel()));
+        inventoryBuilder.setTreeLevel(Uint32.valueOf(getTreeLevel()));
 
         if (getEquipment() != null) {
             inventoryBuilder.setUuid(getEquipment().getUuid().getValue());

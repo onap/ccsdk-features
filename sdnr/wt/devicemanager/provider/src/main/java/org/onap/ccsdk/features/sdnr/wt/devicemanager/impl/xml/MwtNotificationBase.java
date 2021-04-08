@@ -21,12 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.annotation.Nonnull;
 import javax.xml.bind.annotation.XmlElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalDateAndTime;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 
+@Deprecated
 public class MwtNotificationBase {
 
     private static String EMPTY = "empty";
@@ -72,47 +68,8 @@ public class MwtNotificationBase {
     }
 
     /**
-     * Provide ConnectionlogEntity type
-     * 
-     * @return ConnectionlogEntity
-     */
-    public ConnectionlogEntity getConnectionlogEntity() {
-        return new ConnectionlogBuilder().setNodeId(objectId).setStatus(getStatus())
-                .setTimestamp(new DateAndTime(timeStamp)).build();
-    }
-
-    /**
-     * Provide connection status for mountpoint log. TODO Add status disconnected if mountpoint is required, but does
-     * not exists.
-     * 
-     * @return
-     */
-    private ConnectionLogStatus getStatus() {
-
-        if (this instanceof ObjectCreationNotificationXml) {
-            return ConnectionLogStatus.Mounted;
-
-        } else if (this instanceof ObjectDeletionNotificationXml) {
-            return ConnectionLogStatus.Unmounted;
-
-        } else if (this instanceof AttributeValueChangedNotificationXml) {
-            String pnx = ((AttributeValueChangedNotificationXml) this).getNewValue();
-            if (pnx.equals(ConnectionStatus.Connected.getName())) {
-                return ConnectionLogStatus.Connected;
-
-            } else if (pnx.equals(ConnectionStatus.Connecting.getName())) {
-                return ConnectionLogStatus.Connecting;
-
-            } else if (pnx.equals(ConnectionStatus.UnableToConnect.getName())) {
-                return ConnectionLogStatus.UnableToConnect;
-            }
-        }
-        return ConnectionLogStatus.Undefined;
-    }
-
-    /**
      * Type for the Database to document the the same name that is used in the websockets.
-     * 
+     *
      * @return String with type name of child class
      */
     @JsonProperty("type")

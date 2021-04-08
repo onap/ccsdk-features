@@ -33,9 +33,9 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.logical.termination.point.g.Lp;
@@ -74,6 +74,9 @@ import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.r
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.mw.tdm.container.pac.TdmContainerCurrentProblems;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -93,6 +96,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     private final TransactionUtils genericTransactionUtils;
     private final String mountpointId;
     private final @NonNull FaultService faultService;
+    private final WebsocketManagerService notificationService;
 
     private Optional<NotificationWorker<EventlogEntity>> notificationQueue;
 
@@ -109,6 +113,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         this.mountpointId = acessor.getNodeId().getValue();
         this.microwaveModelListener = serviceProvider.getNotificationService();
         this.faultService = serviceProvider.getFaultService();
+        this.notificationService = serviceProvider.getWebsocketService();
         this.notificationQueue = Optional.empty();
     }
 
@@ -249,10 +254,15 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     public void onProblemNotification(ProblemNotification notification) {
 
         LOG.debug("Got event of type :: {}", ProblemNotification.class.getSimpleName());
-
-        faultService.faultNotification(acessor.getNodeId(), notification.getCounter(), notification.getTimeStamp(),
-                Helper.nnGetUniversalId(notification.getObjectIdRef()).getValue(), notification.getProblem(),
-                mapSeverity(notification.getSeverity()));
+        FaultlogEntity faultAlarm = new FaultlogBuilder().setObjectId(notification.getObjectIdRef().getValue())
+                .setProblem(notification.getProblem()).setSourceType(SourceType.Netconf)
+                .setTimestamp(notification.getTimeStamp())
+                .setNodeId(this.acessor.getNodeId().getValue())
+                .setSeverity(mapSeverity(notification.getSeverity())).setCounter(notification.getCounter())
+                .build();
+        faultService.faultNotification(faultAlarm);
+        notificationService.sendNotification(notification, acessor.getNodeId().getValue(), ProblemNotification.QNAME,
+                notification.getTimeStamp());
     }
 
     /*-----------------------------------------------------------------------------
@@ -286,7 +296,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         } else if (problems.getCurrentProblemList() == null) {
             LOG.debug("DBRead Id {} empty CurrentProblemList", interfacePacUuid);
         } else {
-            for (AirInterfaceCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
+            for (AirInterfaceCurrentProblemTypeG problem : YangHelper
+                    .getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                         interfacePacUuid.getValue(), problem.getProblemName(),
                         mapSeverity(problem.getProblemSeverity()));
@@ -319,7 +330,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         } else if (problems.getCurrentProblemList() == null) {
             LOG.debug("DBRead Id {} empty CurrentProblemsList", interfacePacUuid);
         } else {
-            for (ContainerCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
+            for (ContainerCurrentProblemTypeG problem : YangHelper
+                    .getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                         interfacePacUuid.getValue(), problem.getProblemName(),
                         mapSeverity(problem.getProblemSeverity()));
@@ -352,7 +364,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         } else if (problems.getCurrentProblemList() == null) {
             LOG.debug("DBRead Id {} empty CurrentProblemList", interfacePacUuid);
         } else {
-            for (AirInterfaceDiversityCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
+            for (AirInterfaceDiversityCurrentProblemTypeG problem : YangHelper
+                    .getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                         interfacePacUuid.getValue(), problem.getProblemName(),
                         mapSeverity(problem.getProblemSeverity()));
@@ -385,7 +398,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         } else if (problems.getCurrentProblemList() == null) {
             LOG.debug("DBRead Id {} empty CurrentProblemsList", interfacePacUuid);
         } else {
-            for (StructureCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
+            for (StructureCurrentProblemTypeG problem : YangHelper
+                    .getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                         interfacePacUuid.getValue(), problem.getProblemName(),
                         mapSeverity(problem.getProblemSeverity()));
@@ -418,7 +432,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         } else if (problems.getCurrentProblemList() == null) {
             LOG.debug("DBRead Id {} empty CurrentProblemsList", interfacePacUuid);
         } else {
-            for (StructureCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
+            for (StructureCurrentProblemTypeG problem : YangHelper
+                    .getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                         interfacePacUuid.getValue(), problem.getProblemName(),
                         mapSeverity(problem.getProblemSeverity()));
@@ -462,7 +477,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
                 LOG.debug("DBRead Id {} no TdmContainerCurrentProblems", interfacePacUuid);
             } else {
                 // -- Specific part 3
-                for (ContainerCurrentProblemTypeG problem : YangHelper.getCollection(problems.nonnullCurrentProblemList())) {
+                for (ContainerCurrentProblemTypeG problem : YangHelper
+                        .getCollection(problems.nonnullCurrentProblemList())) {
                     resultList.add(acessor.getNodeId(), problem.getSequenceNumber(), problem.getTimeStamp(),
                             interfacePacUuid.getValue(), problem.getProblemName(),
                             mapSeverity(problem.getProblemSeverity()));
@@ -549,7 +565,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
             LOG.debug("DBRead {} Id {} no HistoricalPerformances", myName, ethContainerPacuuId);
         } else {
             Collection<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.ethernet.container.historical.performances.g.HistoricalPerformanceDataList> airHistPMList =
-                    YangHelper.getCollection(ethContainerHistoricalPerformanceData.nonnullHistoricalPerformanceDataList());
+                    YangHelper.getCollection(
+                            ethContainerHistoricalPerformanceData.nonnullHistoricalPerformanceDataList());
             LOG.debug("DBRead {} Id {} Records intermediate: {}", myName, ethContainerPacuuId, airHistPMList.size());
             for (ContainerHistoricalPerformanceTypeG pmRecord : airHistPMList) {
                 result.add(new PerformanceDataAirInterface181010Builder(acessor.getNodeId(), lp, pmRecord));

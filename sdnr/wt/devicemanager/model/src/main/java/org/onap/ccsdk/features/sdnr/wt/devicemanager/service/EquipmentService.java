@@ -19,8 +19,8 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.EquipmentData;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 /**
  * @author herbert
@@ -30,9 +30,10 @@ public interface EquipmentService extends DeviceManagerService {
 
     /**
      * Write equipment to database
-     * 
+     *
+     * @param nodeId
      * @param equipment with all equipment entities (card, subrack) of device
      */
-    void writeEquipment(@NonNull EquipmentData equipment);
+    void writeEquipment(NodeId nodeId, @NonNull EquipmentData equipment);
 
 }

@@ -79,21 +79,56 @@ public enum InternalSeverity {
     //     * @param severity as input
     //     * @return String with related output
     //     */
-    //    public static InternalSeverity valueOf(org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.SeverityType severity ) {
-    //        switch( severity ) {
-    //            case NonAlarmed:
-    //                return InternalSeverity.NonAlarmed;
-    //            case Warning:
-    //                return InternalSeverity.Warning;
-    //            case Minor:
-    //                return InternalSeverity.Minor;
-    //            case Major:
-    //                return InternalSeverity.Major;
-    //            case Critical:
-    //                return InternalSeverity.Critical;
-    //        }
-    //        return null;
-    //    }
+    public static InternalSeverity valueOf(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType severity) {
+        switch (severity) {
+            case NonAlarmed:
+                return InternalSeverity.NonAlarmed;
+            case Warning:
+                return InternalSeverity.Warning;
+            case Minor:
+                return InternalSeverity.Minor;
+            case Major:
+                return InternalSeverity.Major;
+            case Critical:
+                return InternalSeverity.Critical;
+        }
+        return null;
+    }
+
+
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType toYang(
+            InternalSeverity severity) {
+        switch (severity) {
+            case NonAlarmed:
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.NonAlarmed;
+            case Warning:
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.Warning;
+            case Minor:
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.Minor;
+            case Major:
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.Major;
+            case Critical:
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.Critical;
+        }
+        return null;
+    }
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType toYang(
+            @Nullable SeverityType severity) {
+        switch (severity) {
+            case NonAlarmed:
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.NonAlarmed;
+            case Warning:
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.Warning;
+            case Minor:
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.Minor;
+            case Major:
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.Major;
+            case Critical:
+                return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.Critical;
+        }
+        return null;
+    }
     //
     //    /**
     //     * convert ONF 1.2.1.1 Severity
@@ -141,7 +176,7 @@ public enum InternalSeverity {
 
     /**
      * convert a text string into Severity
-     * 
+     *
      * @param severityString with textes: warning minor major critical non[-]alarmed. (Capital or lowercase)
      * @return related enum. Unknown oe illegal are converted to NonAlarm
      */
@@ -163,7 +198,7 @@ public enum InternalSeverity {
 
     /**
      * Convert to InternalSeverity
-     * 
+     *
      * @param severity to be converted
      * @return InternalSeverity, null converted to NonAlarmed
      */
@@ -184,6 +219,9 @@ public enum InternalSeverity {
         }
         return InternalSeverity.NonAlarmed;
     }
+
+
+
 
 
 }

@@ -113,4 +113,12 @@ public class NetconfAccessorImpl implements NetconfAccessor {
         return netconfNodeStateService.getDataBroker();
     }
 
+    /**
+     * check if nc-notifications.yang is supported by the device
+     */
+    @Override
+    public boolean isNotificationsRFC5277Supported() {
+        return getCapabilites().isSupportingNamespace("urn:ietf:params:netconf:capability:notification:1.0");
+    }
+
 }

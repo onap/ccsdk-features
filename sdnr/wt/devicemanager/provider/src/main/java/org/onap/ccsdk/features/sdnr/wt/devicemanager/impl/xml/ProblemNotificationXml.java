@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.slf4j.Logger;
 
+@Deprecated
 @XmlRootElement(name = "ProblemNotification")
 public class ProblemNotificationXml extends MwtNotificationBase implements GetEventType, ToggleAlarmFilterable {
 
@@ -99,7 +100,7 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
 
     /**
      * Create a specific ES id for the current log.
-     * 
+     *
      * @return a string with the generated ES Id
      */
     @JsonIgnore
@@ -137,7 +138,7 @@ public class ProblemNotificationXml extends MwtNotificationBase implements GetEv
 
     /**
      * LOG the newly added problems of the interface pac
-     * 
+     *
      * @param log of logger
      * @param uuid as log info
      * @param resultList with all problems

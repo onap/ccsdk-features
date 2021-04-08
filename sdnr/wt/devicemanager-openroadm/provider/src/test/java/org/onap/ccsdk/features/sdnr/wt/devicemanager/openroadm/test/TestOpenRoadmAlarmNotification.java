@@ -32,6 +32,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl.OpenroadmFau
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.AlarmNotification;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.Severity;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.alarm.ProbableCause;
@@ -45,7 +46,6 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.resource.rev191129.resour
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 
 public class TestOpenRoadmAlarmNotification {
-    //    variables
     private static final String myCircuitId = "Test_Id";
     private static final String myId = "Alarm_Id";
     DateAndTime myRaiseTime = new DateAndTime("2020-02-25T10:08:06.7Z");
@@ -58,23 +58,26 @@ public class TestOpenRoadmAlarmNotification {
     static AlarmNotification notification;
     Severity severity;
     static NetconfAccessor accessor;
+    static WebsocketManagerService notificationService;
 
-    //    end of variables
-    //    public methods
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
 
         accessor = mock(NetconfAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
         faultService = mock(FaultService.class);
-
+        notificationService = mock(WebsocketManagerService.class);
     }
+
+
 
     @Test
     public void testNotification() {
         severity = Severity.Critical;
         when(serviceProvider.getFaultService()).thenReturn(faultService);
-        OpenroadmFaultNotificationListener alarmListener = new OpenroadmFaultNotificationListener(serviceProvider);
+        when(serviceProvider.getWebsocketService()).thenReturn(notificationService);
+        OpenroadmFaultNotificationListener alarmListener =
+                new OpenroadmFaultNotificationListener(serviceProvider);
         notification = mock(AlarmNotification.class);
 
         when(notification.getId()).thenReturn(myId);
@@ -92,7 +95,7 @@ public class TestOpenRoadmAlarmNotification {
         assertEquals(myResource, notification.getResource());
         assertEquals(severity, notification.getSeverity());
 
+
     }
-    // end of public methods
 
 }

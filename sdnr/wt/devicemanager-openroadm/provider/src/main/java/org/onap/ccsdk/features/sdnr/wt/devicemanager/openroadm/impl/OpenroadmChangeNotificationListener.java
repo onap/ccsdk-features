@@ -23,7 +23,9 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl;
 
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.IetfNetconfNotificationsListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfCapabilityChange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfConfigChange;
@@ -50,12 +52,15 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
     private static final Logger log = LoggerFactory.getLogger(OpenroadmChangeNotificationListener.class);
     private final NetconfAccessor netconfAccessor;
     private final DataProvider databaseService;
+    private final WebsocketManagerService notificationServiceService;
     // end of variables
 
     // constructors
-    public OpenroadmChangeNotificationListener(NetconfAccessor netconfAccessor, DataProvider databaseService) {
+    public OpenroadmChangeNotificationListener(NetconfAccessor netconfAccessor, DataProvider databaseService,
+            WebsocketManagerService notificationService) {
         this.netconfAccessor = netconfAccessor;
         this.databaseService = databaseService;
+        this.notificationServiceService = notificationService;
     }
     // end of constructors
 
@@ -63,21 +68,30 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
     @Override
     public void onNetconfConfirmedCommit(NetconfConfirmedCommit notification) {
         log.info("onNetconfConfirmedCommit {} ", notification);
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+                NetconfConfirmedCommit.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
     @Override
     public void onNetconfSessionStart(NetconfSessionStart notification) {
         log.info("onNetconfSessionStart {} ", notification);
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+                NetconfSessionStart.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
+
     }
 
     @Override
     public void onNetconfSessionEnd(NetconfSessionEnd notification) {
         log.info("onNetconfSessionEnd {}", notification);
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+                NetconfSessionEnd.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
     @Override
     public void onNetconfCapabilityChange(NetconfCapabilityChange notification) {
         log.info("onNetconfCapabilityChange {}", notification);
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+                NetconfCapabilityChange.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
     @Override
@@ -106,6 +120,9 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
             databaseService.writeEventLog(eventlogBuilder.build());
         }
         log.info("onNetconfConfigChange (2) {}", sb);
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+                NetconfConfigChange.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
+
     }
 
     // end of public methods

@@ -48,7 +48,7 @@ public class TestAdapterManagerNetworkElement {
     public static void init() throws InterruptedException, IOException {
         capabilities = mock(Capabilities.class);
         //accessor = mock(NetconfAccessorMock.class);
-        accessor = mock(NetconfBindingAccessor.class); //accessor = spy(new NetconfAccessorMock(null, null, null, null));
+        accessor = mock(NetconfBindingAccessor.class); //spy(new NetconfAccessorMock(null, null, null, null));
         serviceProvider = mock(DeviceManagerServiceProvider.class);
 
         NodeId nNodeId = new NodeId("nSky");

@@ -58,5 +58,5 @@ public class TestOpenroadmNetworkElementBase {
     public void testGetDeviceType() {
         assertNotNull(openRoadmNetElementBase.getDeviceType());
     }
-    // end of public methods
+
 }

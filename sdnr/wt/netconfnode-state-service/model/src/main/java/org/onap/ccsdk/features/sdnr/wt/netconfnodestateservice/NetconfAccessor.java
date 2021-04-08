@@ -49,8 +49,23 @@ public interface NetconfAccessor {
      */
     Capabilities getCapabilites();
 
+    /**
+     * check if the device supports RFC5277  {@code urn:ietf:params:netconf:capability:notification:1.0}
+     * @see <a href="https://tools.ietf.org/html/rfc5277">https://tools.ietf.org/html/rfc5277#page-5</a>
+     * @return true notifications is supported in the capabilities
+     */
+    boolean isNotificationsRFC5277Supported();
 
+    /**
+     * Get extended accessor using MDSAL Binding API
+     * @return binding Accessor
+     */
     Optional<NetconfBindingAccessor> getNetconfBindingAccessor();
 
+    /**
+     * Get extended accessor using MDSAL DOM API
+     *
+     * @return DOM Accessor
+     */
     Optional<NetconfDomAccessor> getNetconfDomAccessor();
 }

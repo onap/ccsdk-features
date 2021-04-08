@@ -36,7 +36,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl.ONFCoreNetworkElem
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.NetworkElement;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -71,7 +70,6 @@ public class TestONFCoreNetworkElementFactory {
         nNodeId = new NodeId("nSky");
         NetconfBindingAccessor bindingAccessor = mock(NetconfBindingAccessor.class);
         when(bindingAccessor.getNodeId()).thenReturn(nNodeId);
-        when(bindingAccessor.getNotificationAccessor()).thenReturn(Optional.of(mock(NetconfNotifications.class)));
         when(bindingAccessor.getCapabilites()).thenReturn(capabilities);
 
         when(accessor.getNodeId()).thenReturn(nNodeId);

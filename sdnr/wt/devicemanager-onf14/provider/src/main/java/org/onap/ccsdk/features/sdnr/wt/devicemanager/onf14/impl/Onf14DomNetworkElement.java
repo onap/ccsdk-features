@@ -17,6 +17,8 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
@@ -29,26 +31,26 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServic
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.StreamKey;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.ControlConstruct;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.UniversalId;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.control.construct.Equipment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Representation of ONF Core model 1.4 device Top level element is "ControlConstruct" (replaces "NetworkElement" of
- * older ONF Version)
- * NOTE: This class is still under development due to unmet dependencies (especially the ones related to DOM notifications) in ODL. Once the dependencies are complete, this class will replace the ONF14NetworkElement   
+ * older ONF Version) NOTE: This class is still under development due to unmet dependencies (especially the ones related
+ * to DOM notifications) in ODL. Once the dependencies are complete, this class will replace the ONF14NetworkElement
  */
 public class Onf14DomNetworkElement implements NetworkElement {
 
@@ -68,17 +70,24 @@ public class Onf14DomNetworkElement implements NetworkElement {
 
     private final @NonNull Onf14DomEquipmentManager equipmentManager;
     private final @NonNull Onf14DomInterfacePacManager interfacePacManager;
+    private final @NonNull String namespaceRevision;
+
+    private boolean experimental;
 
 
-    public Onf14DomNetworkElement(NetconfDomAccessor netconfDomAccessor, DeviceManagerServiceProvider serviceProvider) {
+    public Onf14DomNetworkElement(NetconfDomAccessor netconfDomAccessor, DeviceManagerServiceProvider serviceProvider,
+            String namespaceRevision) {
         log.info("Create {}", Onf14DomNetworkElement.class.getSimpleName());
         this.netconfDomAccessor = netconfDomAccessor;
         this.databaseService = serviceProvider.getDataProvider();
         this.notificationService = serviceProvider.getNotificationService();
         this.faultService = serviceProvider.getFaultService();
+        this.namespaceRevision = namespaceRevision;
         this.onf14Mapper = new Onf14ToInternalDataModel();
         this.equipmentManager = new Onf14DomEquipmentManager(netconfDomAccessor, databaseService, onf14Mapper);
+
         this.interfacePacManager = new Onf14DomInterfacePacManager(netconfDomAccessor, serviceProvider);
+        this.experimental = false;
     }
 
     /**
@@ -94,20 +103,31 @@ public class Onf14DomNetworkElement implements NetworkElement {
 
             equipmentManager.setEquipmentData(controlConstruct);
 
-            //-- Start For test purpose
-            for (UniversalId uuid : equipmentManager.getEquipmentUuidList()) {
-                log.info("Read data with id {}", uuid);
-                Optional<Equipment> res1 = equipmentManager.readEquipmentInstance(netconfDomAccessor, uuid);
-                log.info("Res1: {}", res1.isPresent() ? res1.get() : "No data1");
+            //-- Start for experimental purpose
+            if (experimental) {
+                log.warn("Experimental code activated");
+                for (UniversalId uuid : equipmentManager.getEquipmentUuidList()) {
+                    log.info("Read data with id {}", uuid);
+                    Optional<Equipment> res1 = equipmentManager.readEquipmentInstance(netconfDomAccessor, uuid);
+                    log.info("Res1: {}", res1.isPresent() ? res1.get() : "No data1");
 
-                Optional<ControlConstruct> res2 = equipmentManager.readEquipmentList(netconfDomAccessor, uuid);
-                log.info("Res2: {}", res2.isPresent() ? res2.get() : "No data2");
+                    /*List<DataObject> res2 = equipmentManager.readEquipmentList(netconfDomAccessor);
+                    log.info("Res2: {}", res2.isPresent() ? res2.get() : "No data2");*/
+
+                    equipmentManager.readTopLevelEquipment(netconfDomAccessor);
+                    //Do it only once for test purpose and break
+                    break;
+                }
+                List<DataObject> res2 = equipmentManager.readEquipmentList(netconfDomAccessor);
+                //log.info("Res2: {}", res2.isPresent() ? res2.get() : "No data2");
+                for (DataObject dobj : res2) {
+                    Equipment eqpt = (Equipment) dobj;
+                    log.info("Equipment local ID is : {}", eqpt.getLocalId());
+                }
 
                 equipmentManager.readTopLevelEquipment(netconfDomAccessor);
-                //Do it only once for test purpose
-                break;
             }
-            //-- End For test purpose
+            //-- End for experimental purpose
 
             // storing all the LTP UUIDs internally, for later usage, for air-interface and ethernet-container
             interfacePacManager.readKeys(controlConstruct);
@@ -138,39 +158,27 @@ public class Onf14DomNetworkElement implements NetworkElement {
     /**
      * @param nNode set core-model-capability
      */
-    public void setCoreModel(@NonNull NetconfNode nNode) {
+    public void setCoreModel() {
         NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
-        String namespaceRevision;
-        QName QNAME_COREMODEL14 = QName.create("urn:onf:yang:core-model-1-4", "2019-11-27", "core-model-1-4").intern();
-
-        Capabilities availableCapabilities = Capabilities.getAvailableCapabilities(nNode);
-        namespaceRevision = availableCapabilities.getRevisionForNamespace(QNAME_COREMODEL14);
-
-        if (Capabilities.isNamespaceSupported(namespaceRevision)) {
-            eb.setCoreModelCapability(namespaceRevision);
-        } else {
-            eb.setCoreModelCapability("Unsupported");
-        }
+        eb.setCoreModelCapability(namespaceRevision);
         databaseService.updateNetworkConnection22(eb.build(), netconfDomAccessor.getNodeId().getValue());
     }
 
     @Override
     public void register() {
         // Set core-model revision value in "core-model-capability" field
-        setCoreModel(netconfDomAccessor.getNetconfNode());
+        setCoreModel();
         initialReadFromNetworkElement();
 
-        // Register netconf stream
-        //        airInterfaceNotificationListenerHandler =
-        //                netconfDomAccessor.doRegisterNotificationListener(airInterfaceNotificationListener);
-        //        etherneContainerNotificationListenerHandler =
-        //                netconfDomAccessor.doRegisterNotificationListener(ethernetContainerNotificationListener);
-        //        wireInterfaceNotificationListenerHandler =
-        //                netconfDomAccessor.doRegisterNotificationListener(wireInterfaceNotificationListener);
-        //        Optional<NetconfNotifications> notificationsSupport = netconfDomAccessor.getNotificationAccessor();
-        //        if (notificationsSupport.isPresent()) {
-        //            notificationsSupport.get().registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream);
-        //        }
+        if (netconfDomAccessor.isNotificationsRFC5277Supported()) {
+            // register listener
+            interfacePacManager.subscribeNotifications();
+            // Output notification streams to LOG
+            Map<StreamKey, Stream> streams = netconfDomAccessor.getNotificationStreamsAsMap();
+            log.info("Available notifications streams: {}", streams);
+            // Register to default stream
+            netconfDomAccessor.invokeCreateSubscription();
+        }
     }
 
     @Override
@@ -201,7 +209,8 @@ public class Onf14DomNetworkElement implements NetworkElement {
     }
 
     private static Optional<ControlConstruct> readControlConstruct(NetconfDomAccessor netconfDomAccessor) {
-        return netconfDomAccessor.readData(LogicalDatastoreType.CONFIGURATION, CONTROLCONSTRUCT_IID, ControlConstruct.class);
+        return netconfDomAccessor.readData(LogicalDatastoreType.CONFIGURATION, CONTROLCONSTRUCT_IID,
+                ControlConstruct.class);
     }
 
 

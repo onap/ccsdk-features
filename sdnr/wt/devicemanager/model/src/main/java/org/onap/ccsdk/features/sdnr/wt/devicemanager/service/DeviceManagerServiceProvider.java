@@ -20,6 +20,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 
 public interface DeviceManagerServiceProvider {
 
@@ -30,6 +31,10 @@ public interface DeviceManagerServiceProvider {
     /** @return Get notification service **/
     @NonNull
     NotificationService getNotificationService();
+
+    /** @return Get ws notification service **/
+    @NonNull
+    WebsocketManagerService getWebsocketService();
 
     /** @return Get service for handling fault **/
     @NonNull

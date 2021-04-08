@@ -30,12 +30,9 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl.DeviceManage
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 
 public class TestDeviceManagerOpenRoadmImpl {
-    //    variables
     DeviceManagerOpenroadmImpl devMgrOpenRdmImpl;
     NetconfNetworkElementService netcnfNtwrkElmntSrvc;
 
-    //  end of variables
-    //    public methods
     @Before
     public void init() {
         netcnfNtwrkElmntSrvc = mock(NetconfNetworkElementService.class);
@@ -53,5 +50,5 @@ public class TestDeviceManagerOpenRoadmImpl {
     public void cleanUp() throws Exception {
         devMgrOpenRdmImpl.close();
     }
-    // end of public methods
+
 }

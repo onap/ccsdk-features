@@ -25,10 +25,12 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.AlarmNotification;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.OrgOpenroadmAlarmListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,36 +41,38 @@ import org.slf4j.LoggerFactory;
  **/
 public class OpenroadmFaultNotificationListener implements OrgOpenroadmAlarmListener {
     private static final Logger log = LoggerFactory.getLogger(OpenroadmFaultNotificationListener.class);
-    // variables
+
     private final @NonNull FaultService faultEventListener;
+    private @NonNull WebsocketManagerService notificationService;
     private Integer count = 1;
-    // end of variables
-    // constructors
+
+
     public OpenroadmFaultNotificationListener(DeviceManagerServiceProvider serviceProvider) {
         this.faultEventListener = serviceProvider.getFaultService();
+        this.notificationService = serviceProvider.getWebsocketService();
 
     }
-    // end of constructors
-    // public methods
+
     @Override
     public void onAlarmNotification(AlarmNotification notification) {
 
 
         log.info("AlarmNotification {} \t {}", notification.getId(), notification.getAdditionalDetail());
-
+        final String nodeId = notification.getResource().getDevice().getNodeId().getValue();
         FaultlogEntity faultAlarm = new FaultlogBuilder().setObjectId(notification.getCircuitId())
-                .setProblem(notification.getProbableCause().getCause().getName())
-                .setTimestamp(notification.getRaiseTime()).setId(notification.getId())
-                .setNodeId(notification.getResource().getDevice().getNodeId().getValue())
+                .setProblem(notification.getProbableCause().getCause().getName()).setSourceType(SourceType.Netconf)
+                .setTimestamp(notification.getRaiseTime()).setId(notification.getId()).setNodeId(nodeId)
                 .setSeverity(InitialDeviceAlarmReader.checkSeverityValue(notification.getSeverity())).setCounter(count)
                 .build();
 
         this.faultEventListener.faultNotification(faultAlarm);
+        this.notificationService.sendNotification(notification, nodeId, AlarmNotification.QNAME,
+                notification.getRaiseTime());
         count++;
         log.info("Notification is written into the database {}", faultAlarm.getObjectId());
 
     }
 
-    // end of public methods
+
 
 }

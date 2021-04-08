@@ -27,6 +27,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.ChangeNotification;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.CreateTechInfoNotification;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.OrgOpenroadmDeviceListener;
@@ -52,13 +53,16 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
     private Integer counter = 1;
     private final NetconfAccessor netconfAccessor;
     private final DataProvider databaseProvider;
+    private final WebsocketManagerService notificationServiceService;
     private static final NetconfTimeStamp ncTimeConverter = NetconfTimeStampImpl.getConverter();
     // end of variables
 
     // constructors
-    public OpenroadmDeviceChangeNotificationListener(NetconfAccessor netconfAccessor, DataProvider databaseService) {
+    public OpenroadmDeviceChangeNotificationListener(NetconfAccessor netconfAccessor, DataProvider databaseService,
+            WebsocketManagerService faultService) {
         this.netconfAccessor = netconfAccessor;
         this.databaseProvider = databaseService;
+        this.notificationServiceService = faultService;
     }
     // end of constructors
 
@@ -100,18 +104,23 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
             log.info("onDeviceConfigChange (2) {}", sb);
             counter++;
         }
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+                ChangeNotification.QNAME, notification.getChangeTime());
     }
 
     @Override
     public void onCreateTechInfoNotification(CreateTechInfoNotification notification) {
 
+        DateAndTime now = NetconfTimeStampImpl.getConverter().getTimeStamp();
         log.info("onCreateTechInfoNotification(1){}", notification);
         EventlogBuilder eventlogBuilder = new EventlogBuilder();
         eventlogBuilder.setId(notification.getShelfId()).setAttributeName(notification.getShelfId())
                 .setObjectId(notification.getShelfId()).setNodeId(this.netconfAccessor.getNodeId().getValue())
                 .setCounter(counter).setNewValue(notification.getStatus().getName()).setSourceType(SourceType.Netconf)
-                .setTimestamp(new DateAndTime(ncTimeConverter.getTimeStamp()));
+                .setTimestamp(now);
         databaseProvider.writeEventLog(eventlogBuilder.build());
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+                CreateTechInfoNotification.QNAME, now);
         log.info("Create-techInfo Notification written ");
         counter++;
     }

@@ -8,7 +8,9 @@ module devicemanager {
     prefix data-provider;
     revision-date 2020-11-10;
   }
-
+  import ietf-yang-types {
+    prefix yang;
+  }
   organization
     "highstreet technologies GmbH";
   contact
@@ -38,6 +40,136 @@ module devicemanager {
       "Initial revision";
     reference
       "https://jira.onap.org/browse/SDNC-877";
+  }
+
+  notification object-creation-notification {
+      uses object-creation-notification-g;
+      description "none";
+  }
+  grouping object-creation-notification-g {
+      leaf counter {
+          type int32;
+          default -1;
+          description "Counts object creation notifications.";
+      }
+      leaf time-stamp {
+          type yang:date-and-time;
+          default "2017-01-01T00:00:00.0Z";
+          description "none";
+      }
+      leaf object-id-ref {
+          type string;
+          description "ID of the affected MW_AirInterface_Pac, MW_AirInterfaceDiversity_Pac, MW_Structure_Pac, MW_PureEthernetStructure_Pac, MW_HybridMwStructure_Pac, MW_Container_Pac, MW_EthernetContainer_Pac or MW_TdmContainer_Pac.";
+      }
+      leaf object-type {
+          type string;
+          default "Type of created object not specified.";
+          description "Type of Object to be chosen from the following list of values: 'MW_AirInterface_Pac', 'MW_AirInterfaceDiversity_Pac', 'MW_Structure_Pac', 'MW_PureEthernetStructure_Pac', 'MW_HybridMwStructure_Pac', 'MW_Container_Pac', 'MW_EthernetContainer_Pac' or 'MW_TdmContainer_Pac'.";
+      }
+      description "To be sent when a new MW_AirInterface_Pac, MW_AirInterfaceDiversity_Pac, MW_Structure_Pac, MW_PureEthernetStructure_Pac, MW_HybridMwStructure_Pac, MW_Container_Pac, MW_EthernetContainer_Pac or MW_TdmContainer_Pac has to be instancieted in the controller.";
+  }
+  notification object-deletion-notification {
+      uses object-deletion-notification-g;
+      description "none";
+  }
+  grouping object-deletion-notification-g {
+      leaf counter {
+          type int32;
+          default -1;
+          description "Counts object deletion notifications.";
+      }
+      leaf time-stamp {
+          type yang:date-and-time;
+          default "2017-01-01T00:00:00.0Z";
+          description "none";
+      }
+      leaf object-id-ref {
+          type string;
+          description "ID of the affected MW_AirInterface_Pac, MW_AirInterfaceDiversity_Pac, MW_Structure_Pac, MW_PureEthernetStructure_Pac, MW_HybridMwStructure_Pac, MW_Container_Pac, MW_EthernetContainer_Pac or MW_TdmContainer_Pac.";
+      }
+      description "To be sent when a new MW_AirInterface_Pac, MW_AirInterfaceDiversity_Pac, MW_Structure_Pac, MW_PureEthernetStructure_Pac, MW_HybridMwStructure_Pac, MW_Container_Pac, MW_EthernetContainer_Pac or MW_TdmContainer_Pac instance has to be deleted in the controller.";
+  }
+  notification attribute-value-changed-notification {
+      uses attribute-value-changed-notification-g;
+      description "none";
+  }
+  grouping attribute-value-changed-notification-g {
+      leaf counter {
+          type int32;
+          default -1;
+          description "Counts attribute value changed notifications.";
+      }
+      leaf time-stamp {
+          type yang:date-and-time;
+          default "2017-01-01T00:00:00.0Z";
+          description "none";
+      }
+      leaf object-id-ref {
+          type string;
+          description "ID of the affected MW_AirInterface_Pac, MW_AirInterfaceDiversity_Pac, MW_Structure_Pac, MW_PureEthernetStructure_Pac, MW_HybridMwStructure_Pac, MW_Container_Pac, MW_EthernetContainer_Pac or MW_TdmContainer_Pac.";
+      }
+      leaf attribute-name {
+          type string;
+          default "Attribute name not specified.";
+          description "Name of the attribute that has been changed.";
+      }
+      leaf new-value {
+          type string;
+          default "New value not specified.";
+          description "Attribute value converted to a string (xml, json, ...)";
+      }
+      description "To be sent when an attribute has changed and one or more controllers have to update their data.";
+  }
+  notification problem-notification {
+      uses problem-notification-g;
+      description "none";
+  }
+  grouping problem-notification-g {
+      leaf counter {
+          type int32;
+          default -1;
+          description "Counts problem notifications";
+      }
+      leaf time-stamp {
+          type yang:date-and-time;
+          default "2017-01-01T00:00:00.0Z";
+          description "none";
+      }
+      leaf object-id-ref {
+          type string;
+          description "ID of the affected MW_AirInterface_Pac, MW_AirInterfaceDiversity_Pac, MW_Structure_Pac, MW_PureEthernetStructure_Pac, MW_HybridMwStructure_Pac, MW_Container_Pac, MW_EthernetContainer_Pac or MW_TdmContainer_Pac.";
+      }
+      leaf problem {
+          type string;
+          default "Problem name not specified.";
+          description "Name of the problem according to AirInterface::AirInterfaceCapability::supportedAlarms or AirInterfaceDiversity::AirInterfaceDiversityCapability::supportedAlarms or Structure::StructureCapability::supportedAlarms or PureEthernetStructure::PureEthernetStructureCapability::supportedAlarms or HybridMwStructure::HybridMwStructureCapability::supportedAlarms or Container::ContainerCapability::supportedAlarms or EthernetContainer::EthernetContainerCapability::supportedAlarms or TdmContainer::TdmContainerCapability::supportedAlarms.";
+      }
+      leaf severity {
+          type severity-type;
+          default warning;
+          description "Severity of the problem according to AirInterface::AirInterfaceConfiguration::problemSeverityList, AirInterfaceDiversity::AirInterfaceDiversityConfiguration::problemSeverityList, Structure::StructureConfiguration::problemSeverityList, PureEthernetStructure::PureEthernetStructureConfiguration::problemSeverityList, HybridMwStructure::HybridMwStructureConfiguration::problemSeverityList, Container::ContainerConfiguration::problemSeverityList, EthernetContainer::EthernetContainerConfiguration::problemSeverityList or TdmContainer::TdmContainerConfiguration::problemSeverityList";
+      }
+      description "To be sent when a problem occurs at a MW_AirInterface_Pac, MW_AirInterfaceDiversity_Pac, MW_Structure_Pac, MW_PureEthernetStructure_Pac, MW_HybridMwStructure_Pac, MW_Container_Pac, MW_EthernetContainer_Pac or MW_TdmContainer_Pac.";
+  }
+  typedef severity-type {
+      type enumeration {
+          enum non-alarmed {
+              description "none";
+          }
+          enum warning {
+              description "none";
+          }
+          enum minor {
+              description "none";
+          }
+          enum major {
+              description "none";
+          }
+          enum critical {
+              description "none";
+          }
+      }
+      description "According to ITU-T M.3160";
   }
 
   rpc set-maintenance-mode {

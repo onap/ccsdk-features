@@ -27,13 +27,13 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.impl.AdapterManagerNetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.network.topology.simulator.rev191025.SimulatorStatus;
 import org.opendaylight.yangtools.yang.common.QName;
 
 public class TestAdapterManagerNetworkElementFactory {
 
-    static NetconfAccessor accessor;
+    static NetconfBindingAccessor accessor;
     static DeviceManagerServiceProvider serviceProvider;
     static Capabilities capabilities;
     QName qCapability;
@@ -41,7 +41,7 @@ public class TestAdapterManagerNetworkElementFactory {
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
         capabilities = mock(Capabilities.class);
-        accessor = mock(NetconfAccessor.class);
+        accessor = mock(NetconfBindingAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
 
         when(accessor.getCapabilites()).thenReturn(capabilities);

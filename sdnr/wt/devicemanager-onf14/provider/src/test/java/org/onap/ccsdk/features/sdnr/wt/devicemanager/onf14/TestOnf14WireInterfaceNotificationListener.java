@@ -17,6 +17,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,6 +29,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServic
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.core.model._1._4.rev191127.UniversalId;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.AttributeValueChangedNotification;
@@ -54,6 +56,7 @@ public class TestOnf14WireInterfaceNotificationListener extends Mockito {
     private ObjectCreationNotification creationNotif;
     private ProblemNotification problemNotif;
     private AttributeValueChangedNotification attrValChangedNotif;
+    private @NonNull WebsocketManagerService websocketService;
 
     @Before
     public void init() {
@@ -63,6 +66,7 @@ public class TestOnf14WireInterfaceNotificationListener extends Mockito {
         faultService = mock(FaultService.class);
         databaseService = mock(DataProvider.class);
         notificationService = mock(NotificationService.class);
+        websocketService = mock(WebsocketManagerService.class);
 
         problemNotif = mock(ProblemNotification.class);
         deletionNotif = mock(ObjectDeletionNotification.class);
@@ -93,6 +97,7 @@ public class TestOnf14WireInterfaceNotificationListener extends Mockito {
         when(serviceProvider.getFaultService()).thenReturn(faultService);
         when(serviceProvider.getDataProvider()).thenReturn(databaseService);
         when(serviceProvider.getNotificationService()).thenReturn(notificationService);
+        when(serviceProvider.getWebsocketService()).thenReturn(websocketService);
     }
 
     @Test

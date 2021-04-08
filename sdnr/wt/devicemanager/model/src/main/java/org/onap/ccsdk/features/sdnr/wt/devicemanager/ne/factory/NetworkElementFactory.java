@@ -26,7 +26,21 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 
 public interface NetworkElementFactory {
 
-    Optional<NetworkElement> create(@NonNull NetconfAccessor acessor,
+    /**
+     * Called after connect of device. Decide if devicemanger should be started to manage device.
+     * @param accessor function to access device and get information from mountpoint
+     * @param serviceProvider provides base device manager services.
+     * @return Empty or NetworkElement object
+     */
+    Optional<NetworkElement> create(@NonNull NetconfAccessor accessor,
             @NonNull DeviceManagerServiceProvider serviceProvider);
+
+    /**
+     * Called directly after factory registration to allow initialization
+     * @param serviceProvider provides base device manager services.
+     */
+    default void init(DeviceManagerServiceProvider serviceProvider) {
+    }
+
 
 }

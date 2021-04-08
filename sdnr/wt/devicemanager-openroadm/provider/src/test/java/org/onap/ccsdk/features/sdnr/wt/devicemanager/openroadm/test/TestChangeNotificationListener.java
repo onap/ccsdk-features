@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl.OpenroadmChangeNotificationListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.base._1._0.rev110601.EditOperationType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfConfigChange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.netconf.config.change.Edit;
@@ -43,18 +44,17 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 
 public class TestChangeNotificationListener {
-    // variables
+
     private static final String NODEID = "node1";
 
-    //    end of variables
-    //    public methods
     @Test
     public void test() {
 
         NetconfAccessor netconfAccessor = mock(NetconfAccessor.class);
         DataProvider databaseService = mock(DataProvider.class);
+        WebsocketManagerService notificationService = mock(WebsocketManagerService.class);
         OpenroadmChangeNotificationListener notifListener =
-                new OpenroadmChangeNotificationListener(netconfAccessor, databaseService);
+                new OpenroadmChangeNotificationListener(netconfAccessor, databaseService, notificationService);
         when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
         Iterable<? extends PathArgument> pathArguments = Arrays.asList(new PathArgument() {
 
@@ -77,8 +77,6 @@ public class TestChangeNotificationListener {
 
     }
 
-    //  end of public methods
-    // private methods
     /**
      * @param type
      * @return
@@ -91,5 +89,4 @@ public class TestChangeNotificationListener {
         when(change.nonnullEdit()).thenReturn(edits);
         return change;
     }
-    // end of private methods
 }

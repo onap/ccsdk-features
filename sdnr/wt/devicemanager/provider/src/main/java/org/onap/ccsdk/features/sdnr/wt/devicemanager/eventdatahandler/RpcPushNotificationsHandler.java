@@ -26,7 +26,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeForwarderInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.PushNotifications;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.AttributeValueChangedNotificationXml;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientInternal;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
@@ -36,6 +36,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.AttributeValueChangedNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.AttributeValueChangedNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotificationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushAttributeChangeNotificationInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationInput;
 import org.slf4j.Logger;
@@ -68,7 +72,12 @@ public class RpcPushNotificationsHandler implements PushNotifications {
         enventlogBuilder.fieldsFrom(input);
         EventlogEntity eventlogEntity = enventlogBuilder.build();
         databaseService.writeEventLog(eventlogEntity);
-        webSocketService.sendViaWebsockets(OWNKEYNAME, new AttributeValueChangedNotificationXml(eventlogEntity));
+        AttributeValueChangedNotification notification =
+                new AttributeValueChangedNotificationBuilder().setAttributeName(input.getAttributeName())
+                        .setCounter(input.getCounter()).setNewValue(input.getNewValue())
+                        .setObjectIdRef(input.getObjectId()).setTimeStamp(input.getTimestamp()).build();
+        webSocketService.sendViaWebsockets(OWNKEYNAME, notification, AttributeValueChangedNotification.QNAME,
+                input.getTimestamp());
 
     }
 
@@ -89,8 +98,11 @@ public class RpcPushNotificationsHandler implements PushNotifications {
         databaseService.updateFaultCurrent(faultcurrentEntity);
 
         ProblemNotificationXml notificationXml = new ProblemNotificationXml(faultlogEntity);
+        ProblemNotification notification = new ProblemNotificationBuilder().setProblem(input.getProblem())
+                .setCounter(input.getCounter()).setObjectIdRef(input.getObjectId())
+                .setSeverity(InternalSeverity.toYang(input.getSeverity())).setTimeStamp(input.getTimestamp()).build();
         aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(OWNKEYNAME, notificationXml);
-        webSocketService.sendViaWebsockets(OWNKEYNAME, notificationXml);
+        webSocketService.sendViaWebsockets(OWNKEYNAME, notification, ProblemNotification.QNAME, input.getTimestamp());
     }
 
 }

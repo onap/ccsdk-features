@@ -123,7 +123,7 @@ public class Capabilities {
 
     /**
      * Get Capabilites
-     * 
+     *
      * @return List<String> with capabilites
      */
     public List<String> getCapabilities() {
@@ -132,21 +132,25 @@ public class Capabilities {
 
     /**
      * Verify if the namespace is supported
-     * 
      * @param qCapability from model
      * @return true if namespace is supported
      */
     public boolean isSupportingNamespace(QName qCapability) {
-
         String namespace = qCapability.getNamespace().toString();
-
         return isSupportingNamespaceAndRevision(namespace, null);
+    }
 
+    /**
+     * Verify if the namespace is supported
+     * @param namespace
+     * @return
+     */
+    public boolean isSupportingNamespace(String namespace) {
+        return isSupportingNamespaceAndRevision(namespace, null);
     }
 
     /**
      * check if the namespace and its revision are supported by the given capabilities
-     *
      * @param qCapability capability from the model
      * @return true if supporting the model AND revision<br>
      *         false if revision not available or both not found.
@@ -179,7 +183,7 @@ public class Capabilities {
 
     /**
      * Provide revision as String from QName, considering older formats.
-     * 
+     *
      * @param qCapability that specifies the revision
      * @return String with revisiondate or null
      */
@@ -208,7 +212,7 @@ public class Capabilities {
 
     /**
      * Get revision of first entry of related capability
-     * 
+     *
      * @param qCapability that specifies the namespace
      * @return String with date or
      */

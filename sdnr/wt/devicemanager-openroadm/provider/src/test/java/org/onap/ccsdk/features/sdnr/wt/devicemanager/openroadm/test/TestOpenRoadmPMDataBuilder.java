@@ -63,10 +63,11 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class TestOpenRoadmPMDataBuilder {
     // variables
-
+    // end of variables
     private NetconfBindingAccessor acessor = mock(NetconfBindingAccessor.class);
     private DataBroker dataBroker = mock(DataBroker.class);
     private TransactionUtils transactionUtils = mock(TransactionUtils.class);
+    //    String nodeId = "RdmA";
     private PmDataBuilderOpenRoadm pmDataBuilderORoadm;
     private NodeId nodeId = new NodeId("RoadmA");
     private HistoricalPmList historicalPmDatalist = mock(HistoricalPmList.class);
@@ -82,7 +83,7 @@ public class TestOpenRoadmPMDataBuilder {
     private Map<HistoricalPmEntryKey, HistoricalPmEntry> historicalPmEntryCollection =
             new HashMap<HistoricalPmEntryKey, HistoricalPmEntry>();
 
-    // end of variables
+
 
     // public methods
     @Before
@@ -158,4 +159,28 @@ public class TestOpenRoadmPMDataBuilder {
     }
     // end of public methods
 
+
+    // constants
+    // end of constants
+
+    // variables
+    // end of variables
+
+    // constructors
+    // end of constructors
+
+    // getters and setters
+    // end of getters and setters
+
+    // private methods
+    // end of private methods
+
+
+    // end of public methods
+
+    // static methods
+    // end of static methods
+
+    // private classes
+    // end of private classes
 }

@@ -20,7 +20,6 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
@@ -28,19 +27,27 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeForw
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalDateAndTime;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.NetworkElementConnectionEntitiyUtil;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.AttributeValueChangedNotificationXml;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ObjectCreationNotificationXml;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ObjectDeletionNotificationXml;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EventHandlingService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Connectionlog;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.AttributeValueChangedNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.AttributeValueChangedNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ObjectCreationNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ObjectCreationNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ObjectDeletionNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ObjectDeletionNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotificationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,28 +112,32 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
 
     /**
      * (NonConnected) A registration after creation of a mountpoint occured
-     * 
+     *
      * @param registrationName of device (mountpoint name)
      * @param nNode with mountpoint data
      */
     @Override
     public void registration(String registrationName, NetconfNode nNode) {
 
-        ObjectCreationNotificationXml cNotificationXml = new ObjectCreationNotificationXml(ownKeyName, popEvntNumber(),
-                InternalDateAndTime.valueOf(NETCONFTIME_CONVERTER.getTimeStamp()), registrationName);
+        DateAndTime ts = NETCONFTIME_CONVERTER.getTimeStamp();
+        ObjectCreationNotification notification = new ObjectCreationNotificationBuilder()
+                .setObjectIdRef(registrationName).setCounter(popEvntNumber()).setTimeStamp(ts).build();
+        Connectionlog log = new ConnectionlogBuilder().setNodeId(registrationName)
+                .setStatus(ConnectionLogStatus.Mounted).setTimestamp(ts).build();
         NetworkElementConnectionEntity e =
                 NetworkElementConnectionEntitiyUtil.getNetworkConnection(registrationName, nNode);
         LOG.debug("registration networkelement-connection for {} with status {}", registrationName, e.getStatus());
 
         // Write first to prevent missing entries
         databaseService.updateNetworkConnection22(e, registrationName);
-        databaseService.writeConnectionLog(cNotificationXml.getConnectionlogEntity());
-        webSocketService.sendViaWebsockets(registrationName, cNotificationXml);
+        databaseService.writeConnectionLog(log);
+        webSocketService.sendViaWebsockets(ownKeyName, notification, ObjectCreationNotification.QNAME,
+                NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
     /**
      * (Connected) mountpoint state moves to connected
-     * 
+     *
      * @param mountpointNodeName uuid that is nodeId or mountpointId
      * @param deviceType according to assessement
      */
@@ -141,16 +152,16 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
         if (!databaseService.updateNetworkConnectionDeviceType(e, mountpointNodeName)) {
             this.updateNeConnectionRetryWithDelay(e, mountpointNodeName);
         }
-
-        AttributeValueChangedNotificationXml notificationXml = new AttributeValueChangedNotificationXml(ownKeyName,
-                popEvntNumber(), InternalDateAndTime.valueOf(NETCONFTIME_CONVERTER.getTimeStamp()), mountpointNodeName,
-                "deviceType", deviceType.name());
-        webSocketService.sendViaWebsockets(mountpointNodeName, notificationXml);
+        DateAndTime ts = NETCONFTIME_CONVERTER.getTimeStamp();
+        AttributeValueChangedNotification notification = new AttributeValueChangedNotificationBuilder()
+                .setCounter(popEvntNumber()).setTimeStamp(ts).setObjectIdRef(mountpointNodeName)
+                .setAttributeName("deviceType").setNewValue(deviceType.name()).build();
+        webSocketService.sendViaWebsockets(ownKeyName, notification, AttributeValueChangedNotification.QNAME, ts);
     }
 
     /**
      * (NonConnected) mountpoint state changed.
-     * 
+     *
      * @param mountpointNodeName nodeid
      * @param netconfNode node
      */
@@ -164,34 +175,39 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
 
     /**
      * (NonConnected) A deregistration after removal of a mountpoint occured.
-     * 
+     *
      * @param registrationName Name of the event that is used as key in the database.
      */
     @SuppressWarnings("null")
     @Override
     public void deRegistration(String registrationName) {
 
-        ObjectDeletionNotificationXml dNotificationXml = new ObjectDeletionNotificationXml(ownKeyName, popEvntNumber(),
-                InternalDateAndTime.valueOf(NETCONFTIME_CONVERTER.getTimeStamp()), registrationName);
-
+        DateAndTime ts = NETCONFTIME_CONVERTER.getTimeStamp();
+        ObjectDeletionNotification notification = new ObjectDeletionNotificationBuilder().setCounter(popEvntNumber())
+                .setTimeStamp(ts).setObjectIdRef(registrationName).build();
+        Connectionlog log = new ConnectionlogBuilder().setNodeId(registrationName)
+                .setStatus(ConnectionLogStatus.Unmounted).setTimestamp(ts).build();
         // Write first to prevent missing entries
         databaseService.removeNetworkConnection(registrationName);
-        databaseService.writeConnectionLog(dNotificationXml.getConnectionlogEntity());
-        webSocketService.sendViaWebsockets(registrationName, dNotificationXml);
+        databaseService.writeConnectionLog(log);
+        webSocketService.sendViaWebsockets(registrationName, notification, ObjectDeletionNotification.QNAME, ts);
 
     }
 
     /**
      * Mountpoint state changed .. from connected -> connecting or unable-to-connect or vis-e-versa.
-     * 
+     *
      * @param registrationName Name of the event that is used as key in the database.
      */
     @Override
     public void updateRegistration(String registrationName, String attribute, String attributeNewValue,
             NetconfNode nNode) {
-        AttributeValueChangedNotificationXml notificationXml = new AttributeValueChangedNotificationXml(ownKeyName,
-                popEvntNumber(), InternalDateAndTime.valueOf(NETCONFTIME_CONVERTER.getTimeStamp()), registrationName,
-                attribute, attributeNewValue);
+        DateAndTime ts = NETCONFTIME_CONVERTER.getTimeStamp();
+        AttributeValueChangedNotification notification = new AttributeValueChangedNotificationBuilder()
+                .setCounter(popEvntNumber()).setTimeStamp(ts).setObjectIdRef(registrationName)
+                .setAttributeName(attribute).setNewValue(attributeNewValue).build();
+        Connectionlog log = new ConnectionlogBuilder().setNodeId(registrationName).setStatus(getStatus(attributeNewValue))
+                .setTimestamp(ts).build();
         NetworkElementConnectionEntity e =
                 NetworkElementConnectionEntitiyUtil.getNetworkConnection(registrationName, nNode);
         LOG.debug("updating networkelement-connection for {} with status {}", registrationName, e.getStatus());
@@ -200,9 +216,10 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
         if (!databaseService.updateNetworkConnection22(e, registrationName)) {
             this.updateNeConnectionRetryWithDelay(nNode, registrationName);
         }
-        databaseService.writeConnectionLog(notificationXml.getConnectionlogEntity());
-        webSocketService.sendViaWebsockets(registrationName, notificationXml);
+        databaseService.writeConnectionLog(log);
+        webSocketService.sendViaWebsockets(ownKeyName, notification, AttributeValueChangedNotification.QNAME, ts);
     }
+
 
     private void updateNeConnectionRetryWithDelay(NetconfNode nNode, String registrationName) {
         LOG.debug("try to rewrite networkelement-connection in {} for node {}", DBWRITE_RETRY_DELAY_MS,
@@ -246,13 +263,16 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
                 new ProblemNotificationXml(ownKeyName, registrationName, problemName, problemSeverity,
                         // popEvntNumberAsString(), InternalDateAndTime.TESTPATTERN );
                         popEvntNumber(), InternalDateAndTime.valueOf(NETCONFTIME_CONVERTER.getTimeStamp()));
-
+        DateAndTime ts = NETCONFTIME_CONVERTER.getTimeStamp();
+        ProblemNotification notification =
+                new ProblemNotificationBuilder().setObjectIdRef(registrationName).setCounter(popEvntNumber())
+                        .setProblem(problemName).setSeverity(InternalSeverity.toYang(problemSeverity)).build();
         databaseService.writeFaultLog(notificationXml.getFaultlog(SourceType.Controller));
         databaseService.updateFaultCurrent(notificationXml.getFaultcurrent());
 
         aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(ownKeyName, notificationXml);
 
-        webSocketService.sendViaWebsockets(registrationName, notificationXml);
+        webSocketService.sendViaWebsockets(ownKeyName, notification, ProblemNotification.QNAME, ts);
     }
 
     @Override
@@ -303,6 +323,21 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
      */
     private Integer popEvntNumber() {
         return eventNumber++;
+    }
+
+    private static ConnectionLogStatus getStatus(String newValue) {
+
+        if (newValue.equals(ConnectionStatus.Connected.getName())) {
+            return ConnectionLogStatus.Connected;
+
+        } else if (newValue.equals(ConnectionStatus.Connecting.getName())) {
+            return ConnectionLogStatus.Connecting;
+
+        } else if (newValue.equals(ConnectionStatus.UnableToConnect.getName())) {
+            return ConnectionLogStatus.UnableToConnect;
+
+        }
+        return ConnectionLogStatus.Undefined;
     }
 
     private class DelayedThread extends Thread {

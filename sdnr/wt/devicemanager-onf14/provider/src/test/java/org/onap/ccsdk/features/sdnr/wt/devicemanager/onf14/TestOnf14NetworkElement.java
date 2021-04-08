@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.Onf14NetworkElementFactory;
@@ -102,6 +103,9 @@ public class TestOnf14NetworkElement extends Mockito {
         when(accessor.getCapabilites().isSupportingNamespace(ControlConstruct.QNAME)).thenReturn(true);
         when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingAccessor));
         when(accessor.getNetconfDomAccessor()).thenReturn(Optional.of(domAccessor));
+
+        ConfigurationFileRepresentation configurationRepresentation = mock(ConfigurationFileRepresentation.class);
+        when(serviceProvider.getConfigurationFileRepresentation()).thenReturn(configurationRepresentation);
 
         Onf14NetworkElementFactory factory = new Onf14NetworkElementFactory();
         onfNe = factory.create(accessor, serviceProvider);

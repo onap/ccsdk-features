@@ -31,7 +31,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
@@ -70,8 +69,6 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
     private final @NonNull String mountPointNodeName;
     private final @NonNull NetconfBindingAccessor acessor;
     private final @NonNull DeviceManagerOnfConfiguration pollAlarmConfig;
-    
-    private final NetconfNotifications notificationAccessor;
 
     /*-----------------------------------------------------------------------------
      * Construction
@@ -98,9 +95,6 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         this.performanceManager = serviceProvider.getPerformanceManagerService();
         this.eventListenerHandler = serviceProvider.getEventHandlingService();
         this.dataProvider = serviceProvider.getDataProvider();
-
-        this.notificationAccessor = acessor.getNotificationAccessor().get();
-
     }
 
     /*-----------------------------------------------------------------------------
@@ -167,7 +161,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         faultService.initCurrentProblemStatus(nodeId, resultList);
         LOG.debug("DB write current problems completed");
 
-        equipmentService.writeEquipment(equipment.getEquipmentData());
+        equipmentService.writeEquipment(nodeId, equipment.getEquipmentData());
 
         LOG.info("Found info at {} for device {} number of problems: {}", getMountpoint(), getUuId(),
                 resultList.size());
@@ -207,7 +201,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         doRegisterEventListener(acessor.getMountpoint());
 
         // Register netconf stream
-        notificationAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
+        acessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
 
         // Set core-model revision value in "core-model-capability" field
         setCoreModel(acessor.getNetconfNode());

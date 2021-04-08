@@ -39,6 +39,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.test.mock.RpcProviderServic
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeConnectListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -46,13 +47,13 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ClearCurrentFaultByNodenameInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.DevicemanagerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.GetRequiredNetworkElementKeysInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushAttributeChangeNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ShowRequiredNetworkElementInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.websocketmanager.rev150105.WebsocketmanagerService;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ public class TestDevicemanager extends Mockito {
         when(netconfNodeStateService.registerNetconfNodeStateListener(mock(NetconfNodeStateListener.class)))
                 .thenReturn(lr2);
 
-        WebsocketmanagerService websocketmanagerService = mock(WebsocketmanagerService.class);
+        WebsocketManagerService websocketmanagerService = mock(WebsocketManagerService.class);
 
         IEntityDataProvider iEntityDataProvider = mock(IEntityDataProvider.class);
         doNothing().when(iEntityDataProvider).setReadyStatus(isA(Boolean.class));
@@ -152,7 +153,7 @@ public class TestDevicemanager extends Mockito {
 
         FaultService n = deviceManager.getFaultService();
         FaultlogBuilder faultLogEntityBuilder = new FaultlogBuilder();
-        n.faultNotification(faultLogEntityBuilder.setNodeId("node1")
+        n.faultNotification(faultLogEntityBuilder.setNodeId("node1").setSeverity(SeverityType.Critical)
                 .setTimestamp(NetconfTimeStampImpl.getTestpatternDateAndTime()).build());
 
     }

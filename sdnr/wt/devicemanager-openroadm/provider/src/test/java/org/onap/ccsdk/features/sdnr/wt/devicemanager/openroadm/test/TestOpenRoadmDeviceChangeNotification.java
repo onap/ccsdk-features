@@ -33,6 +33,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl.OpenroadmDeviceChangeNotificationListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.common.types.rev191129.RpcStatus;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.ChangeNotification;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.CreateTechInfoNotification;
@@ -40,7 +41,6 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.CreateTe
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.change.notification.Edit;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.change.notification.EditBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.base._1._0.rev110601.EditOperationType;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
@@ -49,17 +49,17 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 
+
+
 public class TestOpenRoadmDeviceChangeNotification {
-    //    variables
     private static final String NODEID = "Roadm1";
     private NetconfAccessor netconfAccessor = mock(NetconfAccessor.class);
     private DataProvider databaseService = mock(DataProvider.class);
+    WebsocketManagerService notificationService = mock(WebsocketManagerService.class);
     private OpenroadmDeviceChangeNotificationListener deviceChangeListener =
-            new OpenroadmDeviceChangeNotificationListener(netconfAccessor, databaseService);
+            new OpenroadmDeviceChangeNotificationListener(netconfAccessor, databaseService, notificationService);
     private static final NetconfTimeStamp ncTimeConverter = NetconfTimeStampImpl.getConverter();
 
-    //  end of variables
-    //  public methods
     @Test
     public void testOnChangeNotification() {
 
@@ -96,11 +96,9 @@ public class TestOpenRoadmDeviceChangeNotification {
                 .setAttributeName(createTechInfoNotification().getShelfId())
                 .setObjectId(createTechInfoNotification().getShelfId())
                 .setNewValue(createTechInfoNotification().getStatus().getName()).setSourceType(SourceType.Netconf)
-                .setTimestamp(new DateAndTime(ncTimeConverter.getTimeStamp())).build();
+                .setTimestamp(ncTimeConverter.getTimeStamp()).build();
         verify(databaseService).writeEventLog(event);
     }
-    //  end of public methods
-    //  private methods
 
     /**
      * @param type
@@ -122,7 +120,6 @@ public class TestOpenRoadmDeviceChangeNotification {
         return techInfoNotificationBuilder.build();
 
     }
-    //  end of private methods
 
 
 }

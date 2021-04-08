@@ -32,7 +32,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderP
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESPNFRegistrationFieldsPOJO;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.Hardware;
@@ -94,7 +93,7 @@ public class ORanNetworkElement implements NetworkElement {
             componentList = YangHelper.getCollection(hardware.nonnullComponent());
             List<Inventory> inventoryList =
                     ORanToInternalDataModel.getInventoryList(netconfAccessor.getNodeId(), componentList);
-	    inventoryList.forEach(databaseService::writeInventory);
+            databaseService.writeInventory(netconfAccessor.getNodeId().getValue(), inventoryList);
         }
 
         Optional<Guicutthrough> oGuicutthrough = ORanToInternalDataModel.getGuicutthrough(getOnapSystemData());
@@ -114,21 +113,17 @@ public class ORanNetworkElement implements NetworkElement {
         // Publish the mountpoint to VES if enabled
         publishMountpointToVES();
         // Register call back class for receiving notifications
-        Optional<NetconfNotifications> oNotifications = netconfAccessor.getNotificationAccessor();
-        if (oNotifications.isPresent()) {
-            NetconfNotifications notifications = oNotifications.get();
             this.oRanListenerRegistrationResult = netconfAccessor.doRegisterNotificationListener(oRanListener);
             this.oRanFaultListenerRegistrationResult =
                     netconfAccessor.doRegisterNotificationListener(oRanFaultListener);
             // Register notifications stream
-            if (notifications.isNCNotificationsSupported()) {
-                List<Stream> streamList = notifications.getNotificationStreams();
-                notifications.registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream); // Always register first to default stream
-                notifications.registerNotificationsStream(streamList);
+            if (netconfAccessor.isNotificationsRFC5277Supported()) {
+                List<Stream> streamList = netconfAccessor.getNotificationStreams();
+                netconfAccessor.registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream); // Always register first to default stream
+                netconfAccessor.registerNotificationsStream(streamList);
             } else {
-                notifications.registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream);
+                netconfAccessor.registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream);
             }
-        }
     }
 
     @Override

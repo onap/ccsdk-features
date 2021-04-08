@@ -73,7 +73,7 @@
         </dependency>
         <dependency>
             <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-            <artifactId>sdnr-wt-websocketmanager2-model</artifactId>
+            <artifactId>sdnr-wt-websocketmanager-model</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

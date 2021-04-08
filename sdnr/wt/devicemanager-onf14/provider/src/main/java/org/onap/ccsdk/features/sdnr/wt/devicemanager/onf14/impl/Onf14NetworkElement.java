@@ -40,7 +40,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNotifications;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.LAYERPROTOCOLNAMETYPEAIRLAYER;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.air._interface.lp.spec.AirInterfacePac;
@@ -62,6 +61,7 @@ import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123
 import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.wire._interface.lp.spec.WireInterfacePac;
 import org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.wire._interface.pac.WireInterfaceCurrentProblems;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -118,7 +118,8 @@ public class Onf14NetworkElement implements NetworkElement {
         this.faultService = serviceProvider.getFaultService();
         this.onf14Mapper = new Onf14ToInternalDataModel();
         this.airInterfaceNotificationListenerHandler = null;
-        this.airInterfaceNotificationListener = new Onf14AirInterfaceNotificationListener(netconfAccess, serviceProvider);
+        this.airInterfaceNotificationListener =
+                new Onf14AirInterfaceNotificationListener(netconfAccess, serviceProvider);
         this.etherneContainerNotificationListenerHandler = null;
         ethernetContainerNotificationListener =
                 new Onf14EthernetContainerNotificationListener(netconfAccess, serviceProvider);
@@ -190,8 +191,7 @@ public class Onf14NetworkElement implements NetworkElement {
     }
 
     /**
-     * @param nNode
-     * set core-model-capability
+     * @param nNode set core-model-capability
      */
     public void setCoreModel(@NonNull NetconfNode nNode) {
         NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
@@ -201,7 +201,7 @@ public class Onf14NetworkElement implements NetworkElement {
 
         Capabilities availableCapabilities = Capabilities.getAvailableCapabilities(nNode);
         namespaceRevision = availableCapabilities.getRevisionForNamespace(QNAME_COREMODEL14);
-        log.info("In setCoreModel for Onf14NetworkElement- namespaceRevision = "+namespaceRevision);
+        log.info("In setCoreModel for Onf14NetworkElement- namespaceRevision = " + namespaceRevision);
         if (Capabilities.isNamespaceSupported(namespaceRevision)) {
             eb.setCoreModelCapability(namespaceRevision);
         } else {
@@ -223,10 +223,7 @@ public class Onf14NetworkElement implements NetworkElement {
                 netconfAccessor.doRegisterNotificationListener(ethernetContainerNotificationListener);
         wireInterfaceNotificationListenerHandler =
                 netconfAccessor.doRegisterNotificationListener(wireInterfaceNotificationListener);
-        Optional<NetconfNotifications> notificationsSupport = netconfAccessor.getNotificationAccessor();
-        if (notificationsSupport.isPresent()) {
-            notificationsSupport.get().registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream);
-        }
+        netconfAccessor.registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream);
     }
 
     @Override
@@ -267,6 +264,7 @@ public class Onf14NetworkElement implements NetworkElement {
             List<UniversalId> topLevelEquipment = controlConstruct.get().getTopLevelEquipment();
 
             if (topLevelEquipment != null) {
+                List<Inventory> inventoryList = new ArrayList<>();
                 for (UniversalId uuid : topLevelEquipment) {
                     log.debug("Got back topLevelEquipment with uuid {}", uuid.getValue());
 
@@ -275,9 +273,11 @@ public class Onf14NetworkElement implements NetworkElement {
                     Equipment equipmentInstance = readEquipmentInstance(netconfAccessor, uuid);
                     if (equipmentInstance != null) {
                         // recursively adding the root equipment and all its children into the DB
-                        addEquipmentToDb(equipmentInstance, null, EQUIPMENTROOTLEVEL);
+                        collectEquipment(inventoryList, equipmentInstance, null, EQUIPMENTROOTLEVEL);
                     }
                 }
+                this.databaseService.writeInventory(this.netconfAccessor.getNodeId().getValue(), inventoryList);
+
             }
         }
 
@@ -285,14 +285,15 @@ public class Onf14NetworkElement implements NetworkElement {
         readKeys(controlConstruct);
     }
 
-    private void addEquipmentToDb(Equipment currentEq, Equipment parentEq, long treeLevel) {
+    private List<Inventory> collectEquipment(List<Inventory> list, Equipment currentEq, Equipment parentEq,
+            long treeLevel) {
 
         // if the Equipment UUID is already in the list, it was already processed
         // needed for solving possible circular dependencies
         if (equipmentUuidList.contains(currentEq.getUuid().getValue())) {
             log.debug("Not adding equipment with uuid {} because it was aleady added...",
                     currentEq.getUuid().getValue());
-            return;
+            return list;
         }
 
         // we add this to our internal list, such that we avoid circular dependencies
@@ -300,8 +301,7 @@ public class Onf14NetworkElement implements NetworkElement {
         log.debug("Adding equipment with uuid {} to the database...", currentEq.getUuid().getValue());
 
         // we add our current equipment to the database
-        databaseService.writeInventory(
-                onf14Mapper.getInternalEquipment(netconfAccessor.getNodeId(), currentEq, parentEq, treeLevel));
+        list.add(onf14Mapper.getInternalEquipment(netconfAccessor.getNodeId(), currentEq, parentEq, treeLevel));
 
         // we iterate the kids of our current equipment and add them to the database recursively
         // the actual reference is here: /core-model:control-construct/equipment/contained-holder/occupying-fru
@@ -317,17 +317,19 @@ public class Onf14NetworkElement implements NetworkElement {
 
                 if (childEq != null) {
                     // current becomes parent and tree level increases by 1
-                    addEquipmentToDb(childEq, currentEq, treeLevel + 1);
+                    collectEquipment(list, childEq, currentEq, treeLevel + 1);
                 }
             }
         }
+        return list;
     }
 
     private void readKeys(Optional<ControlConstruct> controlConstruct) {
 
         if (controlConstruct.isPresent()) {
             @NonNull
-            Collection<LogicalTerminationPoint> ltpList = YangHelper.getCollection(controlConstruct.get().nonnullLogicalTerminationPoint());
+            Collection<LogicalTerminationPoint> ltpList =
+                    YangHelper.getCollection(controlConstruct.get().nonnullLogicalTerminationPoint());
             log.debug("Iterating the LTP list for node {}", netconfAccessor.getNodeId().getValue());
 
             // iterating all the Logical Termination Point list
@@ -397,8 +399,8 @@ public class Onf14NetworkElement implements NetworkElement {
         } else if (problems.getCurrentProblemList() == null) {
             log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
         } else {
-            for (org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.air._interface.current.problems.CurrentProblemList problem : YangHelper.getCollection(problems
-                    .nonnullCurrentProblemList())) {
+            for (org.opendaylight.yang.gen.v1.urn.onf.yang.air._interface._2._0.rev200121.air._interface.current.problems.CurrentProblemList problem : YangHelper
+                    .getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(netconfAccessor.getNodeId(), (int) problem.getSequenceNumber(), problem.getTimestamp(),
                         ltpUuid.getValue(), problem.getProblemName(),
                         Onf14AirInterface.mapSeverity(problem.getProblemSeverity()));
@@ -431,8 +433,8 @@ public class Onf14NetworkElement implements NetworkElement {
         } else if (problems.getCurrentProblemList() == null) {
             log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
         } else {
-            for (org.opendaylight.yang.gen.v1.urn.onf.yang.ethernet.container._2._0.rev200121.ethernet.container.current.problems.CurrentProblemList problem : YangHelper.getCollection(problems
-                    .nonnullCurrentProblemList())) {
+            for (org.opendaylight.yang.gen.v1.urn.onf.yang.ethernet.container._2._0.rev200121.ethernet.container.current.problems.CurrentProblemList problem : YangHelper
+                    .getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(netconfAccessor.getNodeId(), (int) problem.getSequenceNumber(), problem.getTimestamp(),
                         ltpUuid.getValue(), problem.getProblemName(),
                         Onf14EthernetContainer.mapSeverity(problem.getProblemSeverity()));
@@ -465,8 +467,8 @@ public class Onf14NetworkElement implements NetworkElement {
         } else if (problems.getCurrentProblemList() == null) {
             log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
         } else {
-            for (org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.wire._interface.current.problems.CurrentProblemList problem : YangHelper.getCollection(problems
-                    .nonnullCurrentProblemList())) {
+            for (org.opendaylight.yang.gen.v1.urn.onf.yang.wire._interface._2._0.rev200123.wire._interface.current.problems.CurrentProblemList problem : YangHelper
+                    .getCollection(problems.nonnullCurrentProblemList())) {
                 resultList.add(netconfAccessor.getNodeId(), (int) problem.getSequenceNumber(), problem.getTimestamp(),
                         ltpUuid.getValue(), problem.getProblemName(),
                         Onf14WireInterface.mapSeverity(problem.getProblemSeverity()));

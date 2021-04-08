@@ -25,7 +25,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.binding.NetconfBindingNotificationsImpl;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.binding.NetconfBindingAccessorImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContext;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.NetconfDomAccessorImpl;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -92,7 +92,8 @@ public class NetconfCommunicatorManager {
                 LOG.info("Slave mountpoint {} without databroker", mountPointNodeName);
             } else {
                 LOG.info("Master mountpoint {}", mountPointNodeName);
-                return Optional.of(new NetconfBindingNotificationsImpl(accessor, optionalNetconfNodeDatabroker.get(), mountPoint));
+                return Optional.of(
+                        new NetconfBindingAccessorImpl(accessor, optionalNetconfNodeDatabroker.get(), mountPoint));
             }
         }
         return Optional.empty();
@@ -104,15 +105,17 @@ public class NetconfCommunicatorManager {
                 .node(Topology.QNAME)
                 .nodeWithKey(Topology.QNAME, QName.create(Topology.QNAME, "topology-id").intern(), "topology-netconf")
                 .node(Node.QNAME)
-                .nodeWithKey(Node.QNAME, QName.create(Node.QNAME, "node-id").intern(), accessor.getNodeId().getValue()).build();
-        final Optional<DOMMountPoint> mountPoint = domMountPointService.getMountPoint(mountpointPath);
-        if (mountPoint.isEmpty()) {
+                .nodeWithKey(Node.QNAME, QName.create(Node.QNAME, "node-id").intern(), accessor.getNodeId().getValue())
+                .build();
+        final Optional<DOMMountPoint> oMountPoint = domMountPointService.getMountPoint(mountpointPath);
+        if (oMountPoint.isEmpty()) {
             return Optional.empty();
         }
 
-        final Optional<DOMDataBroker> domDataBroker = mountPoint.get().getService(DOMDataBroker.class);
+        final Optional<DOMDataBroker> domDataBroker = oMountPoint.get().getService(DOMDataBroker.class);
         if (domDataBroker.isPresent()) {
-           return Optional.of(new NetconfDomAccessorImpl(accessor, domDataBroker.get(), mountPoint.get(), domContext));
+            return Optional
+                    .of(new NetconfDomAccessorImpl(accessor, domDataBroker.get(), oMountPoint.get(), domContext));
         }
         return Optional.empty();
     }
