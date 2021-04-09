@@ -25,10 +25,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import org.apache.sshd.common.util.io.IoUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
@@ -43,7 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 
 public class TestTree {
 
-    private static String resourceDirectoryPath="/"+TestTree.class.getSimpleName()+"/";
+    private static String resourceDirectoryPath = "/" + TestTree.class.getSimpleName() + "/";
     private static ElasticSearchDataProvider dbProvider;
     private static HtDatabaseClient dbRawProvider;
 
@@ -53,44 +55,69 @@ public class TestTree {
         dbProvider = new ElasticSearchDataProvider(hosts);
         dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
         dbRawProvider = HtDatabaseClient.getClient(hosts);
+
+
+    }
+
+    public static void clearTestData(HtDatabaseClient dbRawProvider) throws IOException {
         DeleteByQueryRequest query = new DeleteByQueryRequest(Entity.Inventoryequipment.getName(), true);
         query.setQuery(QueryBuilders.matchAllQuery().toJSON());
         dbRawProvider.deleteByQuery(query);
-        fillTestData();
     }
 
-    private static void fillTestData() throws IOException {
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.5.5", getFileContent("1.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.7.0", getFileContent("2.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.55.1.2", getFileContent("3.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.65.1.2", getFileContent("4.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/SHELF-1.1.0.0", getFileContent("5.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.1.5", getFileContent("6.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.1.8", getFileContent("7.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.6.5", getFileContent("8.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/ODU-1.56.0.0", getFileContent("9.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.56.1.2", getFileContent("10.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/IDU-1.65.0.0", getFileContent("11.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.65.1.4", getFileContent("12.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.6.0", getFileContent("13.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.8.0", getFileContent("14.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.9.0", getFileContent("15.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.55.1.4", getFileContent("16.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.1.7", getFileContent("17.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/IDU-1.55.0.0", getFileContent("18.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.1.0", getFileContent("19.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/CARD-1.1.5.0", getFileContent("20.json"));
-        dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), "sim1/a2.module-1.1.5.6", getFileContent("21.json"));
+    public static void fillTestData(HtDatabaseClient dbRawProvider, String filename) throws IOException {
+        SearchHit[] entries = loadEntries(filename);
+        for (SearchHit entry : entries) {
+            dbRawProvider.doWriteRaw(Entity.Inventoryequipment.getName(), entry.getId(), entry.getSourceAsString());
+        }
 
+    }
+
+    public static SearchHit[] loadEntries(String filename) throws IOException {
+        String content = getFileContent(filename);
+        JSONArray a = new JSONArray(content);
+        SearchHit[] results = new SearchHit[a.length()];
+        for (int i = 0; i < a.length(); i++) {
+            results[i] = new SearchHit(a.getJSONObject(i));
+        }
+        return results;
     }
 
     @Test
     public void testInventoryTree() throws IOException {
+        test1();
+        //test2();
+
+    }
+
+    private void test1() throws IOException {
+        clearTestData(dbRawProvider);
+        fillTestData(dbRawProvider, "test1.json");
         DataTreeProviderImpl provider = new DataTreeProviderImpl();
         provider.setDatabaseClient(dbRawProvider);
 
 
         DataTreeObject tree = provider.readInventoryTree(null, null);
+        System.out.println(tree.toJSON());
+        JSONObject o = new JSONObject(tree.toJSON());
+        JSONAssert.assertContainsExactKeys(o, new String[]{"sim1","sim2"});
+        JSONObject children = o.getJSONObject("sim1").getJSONObject("children");
+        this.assertSim1(children);
+
+        tree = provider.readInventoryTree(Arrays.asList("sim1"), "*");
+        this.assertSim1(new JSONObject(tree.toJSON()));
+        System.out.println(tree.toJSON());
+    }
+
+    private void test2() throws IOException {
+        clearTestData(dbRawProvider);
+        fillTestData(dbRawProvider, "test2.json");
+        DataTreeProviderImpl provider = new DataTreeProviderImpl();
+        provider.setDatabaseClient(dbRawProvider);
+
+
+        DataTreeObject tree =
+                provider.readInventoryTree(Arrays.asList("netconf_server_simulator"), "*");
         System.out.println(tree.toJSON());
         JSONObject o = new JSONObject(tree.toJSON());
         JSONAssert.assertContainsOnlyKey(o, "sim1");
@@ -100,33 +127,39 @@ public class TestTree {
         tree = provider.readInventoryTree(Arrays.asList("sim1"), "*");
         this.assertSim1(new JSONObject(tree.toJSON()));
         System.out.println(tree.toJSON());
-
     }
 
     private void assertSim1(JSONObject sim1Children) {
-        JSONAssert.assertContainsExactKeys(sim1Children,new String[] {"sim1/ODU-1.56.0.0", "sim1/IDU-1.55.0.0", "sim1/IDU-1.65.0.0", "sim1/SHELF-1.1.0.0"});
+        JSONAssert.assertContainsExactKeys(sim1Children,
+                new String[] {"sim1/ODU-1.56.0.0", "sim1/IDU-1.55.0.0", "sim1/IDU-1.65.0.0", "sim1/SHELF-1.1.0.0"});
         JSONObject c1 = sim1Children.getJSONObject("sim1/ODU-1.56.0.0");
         JSONObject c2 = sim1Children.getJSONObject("sim1/IDU-1.55.0.0");
         JSONObject c3 = sim1Children.getJSONObject("sim1/IDU-1.65.0.0");
         JSONObject c4 = sim1Children.getJSONObject("sim1/SHELF-1.1.0.0");
-        JSONAssert.assertContainsExactKeys(c1.getJSONObject("children"),new String[] {"sim1/a2.module-1.56.1.2"});
-        JSONAssert.assertContainsExactKeys(c2.getJSONObject("children"),new String[] {"sim1/a2.module-1.55.1.2","sim1/CARD-1.55.1.4"});
-        JSONAssert.assertContainsExactKeys(c3.getJSONObject("children"),new String[] {"sim1/a2.module-1.65.1.2","sim1/CARD-1.65.1.4"});
-        JSONAssert.assertContainsExactKeys(c4.getJSONObject("children"),new String[] {"sim1/CARD-1.1.1.0",
-                "sim1/CARD-1.1.5.0", "sim1/CARD-1.1.7.0","sim1/CARD-1.1.6.0", "sim1/CARD-1.1.9.0","sim1/CARD-1.1.8.0"});
+        JSONAssert.assertContainsExactKeys(c1.getJSONObject("children"), new String[] {"sim1/a2.module-1.56.1.2"});
+        JSONAssert.assertContainsExactKeys(c2.getJSONObject("children"),
+                new String[] {"sim1/a2.module-1.55.1.2", "sim1/CARD-1.55.1.4"});
+        JSONAssert.assertContainsExactKeys(c3.getJSONObject("children"),
+                new String[] {"sim1/a2.module-1.65.1.2", "sim1/CARD-1.65.1.4"});
+        JSONAssert.assertContainsExactKeys(c4.getJSONObject("children"),
+                new String[] {"sim1/CARD-1.1.1.0", "sim1/CARD-1.1.5.0", "sim1/CARD-1.1.7.0", "sim1/CARD-1.1.6.0",
+                        "sim1/CARD-1.1.9.0", "sim1/CARD-1.1.8.0"});
         JSONObject c41 = c4.getJSONObject("children").getJSONObject("sim1/CARD-1.1.1.0");
         JSONObject c42 = c4.getJSONObject("children").getJSONObject("sim1/CARD-1.1.5.0");
         JSONObject c43 = c4.getJSONObject("children").getJSONObject("sim1/CARD-1.1.7.0");
         JSONObject c44 = c4.getJSONObject("children").getJSONObject("sim1/CARD-1.1.6.0");
         JSONObject c45 = c4.getJSONObject("children").getJSONObject("sim1/CARD-1.1.9.0");
         JSONObject c46 = c4.getJSONObject("children").getJSONObject("sim1/CARD-1.1.8.0");
-        JSONAssert.assertContainsExactKeys(c41.getJSONObject("children"),new String[] {"sim1/a2.module-1.1.1.7","sim1/a2.module-1.1.1.5","sim1/a2.module-1.1.1.8"});
-        JSONAssert.assertContainsExactKeys(c42.getJSONObject("children"),new String[] {"sim1/a2.module-1.1.5.6","sim1/a2.module-1.1.5.5"});
+        JSONAssert.assertContainsExactKeys(c41.getJSONObject("children"),
+                new String[] {"sim1/a2.module-1.1.1.7", "sim1/a2.module-1.1.1.5", "sim1/a2.module-1.1.1.8"});
+        JSONAssert.assertContainsExactKeys(c42.getJSONObject("children"),
+                new String[] {"sim1/a2.module-1.1.5.6", "sim1/a2.module-1.1.5.5"});
         JSONAssert.assertContainsNoKeys(c43.getJSONObject("children"));
-        JSONAssert.assertContainsExactKeys(c44.getJSONObject("children"),new String[] {"sim1/a2.module-1.1.6.5"});
+        JSONAssert.assertContainsExactKeys(c44.getJSONObject("children"), new String[] {"sim1/a2.module-1.1.6.5"});
         JSONAssert.assertContainsNoKeys(c45.getJSONObject("children"));
         JSONAssert.assertContainsNoKeys(c46.getJSONObject("children"));
     }
+
     @Test
     public void testUriConversion() {
         EntityWithTree e = DataTreeHttpServlet.getEntity("/tree/read-inventoryequipment-tree/sim1/sim1%2FODU");
@@ -135,7 +168,14 @@ public class TestTree {
         System.out.println(e);
     }
 
+    @Test
+    public void testUriConversion1() {
+        EntityWithTree e = DataTreeHttpServlet.getEntity("/tree/read-inventoryequipment-tree/sim1");
+        System.out.println(e);
+    }
+
     private static String getFileContent(String filename) throws IOException {
-        return String.join("\n",IoUtils.readAllLines(TestTree.class.getResourceAsStream(resourceDirectoryPath+filename)));
+        return String.join("\n",
+                IoUtils.readAllLines(TestTree.class.getResourceAsStream(resourceDirectoryPath + filename)));
     }
 }

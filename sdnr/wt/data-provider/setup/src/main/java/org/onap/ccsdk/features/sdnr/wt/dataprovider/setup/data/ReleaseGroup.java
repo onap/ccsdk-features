@@ -31,9 +31,10 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
  */
 public enum ReleaseGroup {
 
-    EL_ALTO(Release.EL_ALTO), FRANKFURT(Release.FRANKFURT_R1, Release.FRANKFURT_R2), GUILIN(Release.GUILIN_R1), HONOLULU(Release.HONOLULU_R1);
+    EL_ALTO(Release.EL_ALTO), FRANKFURT(Release.FRANKFURT_R1, Release.FRANKFURT_R2), GUILIN(
+            Release.GUILIN_R1), HONOLULU(Release.HONOLULU_R1), ISTANBUL(Release.ISTANBUL_R1);
 
-    public static final ReleaseGroup CURRENT_RELEASE = HONOLULU;
+    public static final ReleaseGroup CURRENT_RELEASE = ISTANBUL;
 
     private final List<Release> releases;
 

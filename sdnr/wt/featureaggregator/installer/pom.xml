@@ -41,6 +41,7 @@
     <name>ccsdk-features :: ${project.artifactId}</name>
 
     <properties>
+         <application.name>sdnr-wt-installer</application.name>
     </properties>
 
     <dependencies>
@@ -72,6 +73,12 @@
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <artifactId>sdnr-wt-data-provider-setup</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -155,30 +162,6 @@
                                     <outputDirectory>${project.build.directory}/assembly/opt/onap/sdnc/bin</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                    <execution>
-                        <id>copy-sdnr-data-migration-tool</id>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <phase>validate</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/assembly/system/org/onap/ccsdk/features/sdnr/wt/sdnr-wt-data-provider-setup/${project.version}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/../../data-provider/setup/target</directory>
-                                    <includes>
-                                        <include>sdnr-dmt.jar</include>
-                                    </includes>
-                                </resource>
-                            </resources>
                         </configuration>
                     </execution>
                 </executions>

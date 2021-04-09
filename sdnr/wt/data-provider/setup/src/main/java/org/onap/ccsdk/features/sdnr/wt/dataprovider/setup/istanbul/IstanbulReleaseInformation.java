@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.honolulu;
+package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.istanbul;
 
 import java.io.IOException;
 import java.util.Map;
@@ -33,28 +33,27 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo7;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.KeepDataSearchHitConverter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformationR2;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.honolulu.HonoluluReleaseInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HonoluluReleaseInformation extends ReleaseInformation {
+public class IstanbulReleaseInformation extends ReleaseInformation {
 
-    private final Logger LOG = LoggerFactory.getLogger(HonoluluReleaseInformation.class);
-    public HonoluluReleaseInformation() {
-        super(Release.HONOLULU_R1,createDBMap());
+    private final Logger LOG = LoggerFactory.getLogger(IstanbulReleaseInformation.class);
+    public IstanbulReleaseInformation() {
+        super(Release.ISTANBUL_R1,createDBMap());
 
     }
 
-    public static Map<ComponentName, DatabaseInfo> createDBMap() {
-        Map<ComponentName, DatabaseInfo> map= FrankfurtReleaseInformationR2.createDBMap();
-        map.put(ComponentName.GUICUTTHROUGH, new DatabaseInfo7("guicutthrough", "guicutthrough",
-                "{\"name\": {\"type\": \"keyword\"},\"weburi\": {\"type\": \"keyword\"}}"));
+    private static Map<ComponentName, DatabaseInfo> createDBMap() {
+        Map<ComponentName, DatabaseInfo> map= HonoluluReleaseInformation.createDBMap();
+        map.put(ComponentName.USERDATA, new DatabaseInfo7("userdata", "userdata", "{}"));
         return map;
     }
 
     @Override
     public SearchHitConverter getConverter(Release dst, ComponentName comp) {
-        if (dst == Release.HONOLULU_R1) {
+        if (dst == Release.ISTANBUL_R1) {
             return new KeepDataSearchHitConverter(comp);
         }
         return null;

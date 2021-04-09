@@ -30,9 +30,10 @@ public enum Release {
     FRANKFURT_R1("frankfurt-R1", "-v2", new EsVersion(6, 4, 3), new EsVersion(6, 8, 6)),
     FRANKFURT_R2("frankfurt-R2", "-v3", new EsVersion(7, 0, 1), new EsVersion(7, 6, 1)),
     GUILIN_R1("guilin-R1", "-v4", new EsVersion(7,1,1), new EsVersion(7,6,1)),
-	HONOLULU_R1("honolulu-R1", "-v5", new EsVersion(7,1,1), new EsVersion(8,0,0), false);
+	HONOLULU_R1("honolulu-R1", "-v5", new EsVersion(7,1,1), new EsVersion(8,0,0), false),
+	ISTANBUL_R1("istanbul-R1", "-v6", new EsVersion(7,1,1), new EsVersion(8,0,0), false);
 
-    public static final Release CURRENT_RELEASE = Release.HONOLULU_R1;
+    public static final Release CURRENT_RELEASE = Release.ISTANBUL_R1;
 
     private final String value;
     private final String dbSuffix;
