@@ -62,12 +62,12 @@
             <artifactId>commons-cli</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -133,7 +133,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <finalName>sdnr-dmt</finalName>
                   <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
@@ -145,7 +144,6 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 </project>

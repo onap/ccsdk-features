@@ -206,7 +206,6 @@ public class TestEventService {
         List<NetworkElementConnectionEntity> nes = service.getNetworkElementConnections();
         assertEquals(0, nes.size());
         service.updateNetworkConnection22(createNeConnection(NODEID, NetworkElementDeviceType.Unknown), NODEID);
-        service.updateNetworkConnection22(createNeConnection(NODEID, NetworkElementDeviceType.Unknown), NODEID);
         service.updateNetworkConnection22(createNeConnection(NODEID2, NetworkElementDeviceType.ORAN), NODEID2);
         nes = service.getNetworkElementConnections();
         assertEquals(2, nes.size());
@@ -279,7 +278,6 @@ public class TestEventService {
 
     /**
      * @param devType
-     * @param mountMethod
      * @param nodename3
      * @return
      */

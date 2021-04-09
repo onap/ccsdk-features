@@ -48,8 +48,8 @@
 
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
-        <databaseport>49402</databaseport>       
-        <initdb>${basedir}/../setup/target/sdnr-dmt.jar</initdb>
+        <databaseport>49402</databaseport>
+        <initdb>${basedir}/../setup/target/sdnr-wt-data-provider-setup-${project.version}.jar</initdb>
     </properties>
 
     <dependencies>

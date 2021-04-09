@@ -1,5 +1,7 @@
 # wt - wireless transport microservices
 
+ODL version: aluminium sr1
+
 ## apigateway (osgi)
 
 The API gateway provides WEB access to all wt related web service providers to prevent cross site requests. The Opendaylight default Web server is extended by additional URIs.
@@ -11,6 +13,10 @@ The API gateway provides WEB access to all wt related web service providers to p
 
 Common classes, included into most bundles
 
+## common-yang (osgi)
+
+yang files converted into jar bundles. Preferred way to include basic yang specs into a devicemanager project.
+
 ## data-provider (osgi)
 
 Interface to devicemanager database. In Frankfurt database is elasticsearch.
@@ -21,10 +27,7 @@ Devicemanager services, used by specfic devicemanagers for NETCONF devices.
 
 ## devicemanager-specific (osgi)
 
-Devicemanager implementation for specfic devicemodel. Today available are:
-  * onf: ONF Core model
-  * oran: O-RAN model
-  * gran: 3GPP model
+Devicemanager implementation for specfic devicemodel.
 
 ## featureaggregator (osgi)
 
@@ -44,7 +47,7 @@ Provide netconf state information to devicemanager and mountpoint-state-provider
 
 Web applications for user operations for devices
 
-## websocketmanager2 (osgi)
+## websocketmanager (osgi)
 
 Notification service for browser clients.
 

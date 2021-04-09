@@ -42,7 +42,7 @@ public class TestPNFMountPointClient extends PNFMountPointClient {
         testClient = new TestPNFMountPointClient();
         testClient.setAuthorization("admin", "admin");
         assertEquals(true,
-                testClient.pnfMountPointCreate("TEST_50001", "127.0.0.1", "TLS", "key_id", "admin", "admin", "17380"));
+                testClient.pnfMountPointCreate("TEST 50001", "127.0.0.1", "TLS", "key_id", "admin", "admin", "17380"));
 
         assertEquals(true,
                 testClient.pnfMountPointCreate("TEST_50001", "127.0.0.1", "SSH", "key_id", "admin", "admin", "17380"));
@@ -52,7 +52,7 @@ public class TestPNFMountPointClient extends PNFMountPointClient {
     @Nonnull
     public BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
             throws IOException {
-        System.out.println("In overridden sendRequest in TestPNFMountPointClient");
+        System.out.println("In overridden sendRequest in TestPNFMountPointClient, uri = "+uri);
         return new BaseHTTPResponse(200, body);
     }
 

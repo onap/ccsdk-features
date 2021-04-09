@@ -265,8 +265,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
      * @param internalEquipment with mandatory fields.
      */
 
-    @Override
-    public void writeInventory(Inventory internalEquipment) {
+    private void writeInventory(Inventory internalEquipment) {
 
         if (internalEquipment.getManufacturerIdentifier() == null) {
             internalEquipment = new InventoryBuilder(internalEquipment).setManufacturerIdentifier("").build();
