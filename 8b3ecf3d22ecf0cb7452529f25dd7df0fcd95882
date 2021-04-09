@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "3449e9ee_b04c941c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-04-09T13:21:03Z",
+      "side": 1,
+      "message": "Can we have something more informative description, that What are the changes and why those are (what those changes will support)",
+      "revId": "8b3ecf3d22ecf0cb7452529f25dd7df0fcd95882",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c3dae661_5d6d89c5",
         "filename": "sdnr/wt/README.md",
         "patchSetId": 1
