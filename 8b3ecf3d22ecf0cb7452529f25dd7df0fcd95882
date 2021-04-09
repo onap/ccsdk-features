@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c3dae661_5d6d89c5",
+        "filename": "sdnr/wt/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2021-04-09T12:04:00Z",
+      "side": 1,
+      "message": "Should be sr1",
+      "range": {
+        "startLine": 3,
+        "startChar": 23,
+        "endLine": 3,
+        "endChar": 26
+      },
+      "revId": "8b3ecf3d22ecf0cb7452529f25dd7df0fcd95882",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
