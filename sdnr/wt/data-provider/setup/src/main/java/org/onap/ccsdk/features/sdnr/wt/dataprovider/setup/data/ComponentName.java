@@ -25,10 +25,11 @@ public enum ComponentName {
 
     CONNECTIONLOG("connectionlog"), EVENTLOG("eventlog"), FAULTLOG("faultlog"), FAULTCURRENT(
             "faultcurrent"), HISTORICAL_PERFORMANCE_15M("historicalperformance15m"), HISTORICAL_PERFORMANCE_24H(
-                    "historicalperformance24h"), INVENTORY(
-                            "inventory"), INVENTORYTOPLEVEL("inventorytoplevel"), MAINTENANCE(
-                                    "maintenance"), MEDIATOR_SERVER("mediator-server"), REQUIRED_NETWORKELEMENT(
-                                            "required-networkelement"), GUICUTTHROUGH("guicutthrough");
+                    "historicalperformance24h"), INVENTORY("inventory"), INVENTORYTOPLEVEL(
+                            "inventorytoplevel"), MAINTENANCE("maintenance"), MEDIATOR_SERVER(
+                                    "mediator-server"), REQUIRED_NETWORKELEMENT(
+                                            "required-networkelement"), GUICUTTHROUGH(
+                                                    "guicutthrough"), USERDATA("userdata");
 
     private final String value;
 

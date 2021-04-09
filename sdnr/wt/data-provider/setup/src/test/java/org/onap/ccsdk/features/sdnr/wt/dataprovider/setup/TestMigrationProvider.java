@@ -42,7 +42,7 @@ public class TestMigrationProvider {
     @Test
     public void testCreateImport() throws Exception {
         DataMigrationProviderImpl provider = new DataMigrationProviderImpl(hosts, null, null, true, 5000);
-
+        DataMigrationReport report=null;
         try {
 
 
@@ -51,11 +51,13 @@ public class TestMigrationProvider {
                 fail("unable to init database");
             }
             //import data into database
-            DataMigrationReport report = provider.importData(FRANKFURT_BACKUP_FILE, false, Release.FRANKFURT_R2);
-            assertTrue(report.completed());
-            assertEquals(Release.CURRENT_RELEASE, provider.autoDetectRelease());
+            report = provider.importData(FRANKFURT_BACKUP_FILE, false, Release.FRANKFURT_R2);
         } catch (Exception e) {
+            e.printStackTrace();
             fail(e.getMessage());
         }
+        assertTrue(report.completed());
+        assertEquals(Release.CURRENT_RELEASE, provider.autoDetectRelease());
+
     }
 }
