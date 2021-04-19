@@ -21,36 +21,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.onap.ccsdk.parent</groupId>
-        <artifactId>odlparent-lite</artifactId>
-        <version>2.2.0-SNAPSHOT</version>
-        <relativePath/>
-    </parent>
-
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>sdnr-wt</artifactId>
+    <artifactId>sdnr-wt-devicemanager-onap</artifactId>
     <version>1.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>ccsdk-sdnr-wireless transport :: micro-services</name>
-    <description>SDN-R wireless transport micro-services</description>
+    <name>ccsdk-sdnr-wireless transport :: ONAP micro-services</name>
+    <description>SDN-R wireless transport micro-services (ONAP)</description>
 
     <modules>
-        <module>common</module>
-        <module>common-yang</module>
-        <module>featureaggregator</module>
-        <module>data-provider</module>
-        <module>apigateway</module>
-        <module>helpserver</module>
-        <module>websocketmanager</module>
-        <module>devicemanager-core</module>
-        <module>devicemanager-onap</module>
-        <module>devicemanager-o-ran-sc</module>
-        <module>mountpoint-registrar</module>
-        <module>odlux</module>
-        <module>netconfnode-state-service</module>
-        <module>mountpoint-state-provider</module>
-        <module>oauth-provider</module>
+        <module>adapter-manager</module>
+        <module>onf12</module>
+        <module>onf14</module>
+        <module>openroadm</module>
     </modules>
 </project>
