@@ -220,7 +220,7 @@ public class TestDMaaPPNFRegVESMsgConsumer {
             + "      \"modelNumbsdnrer\": \"1234 BestInClass\",\n"
             + "      \"oamV4IpAddress\": \"10.10.10.11\",\n"
             + "	   \"oamPort\":\"17380\",\n"
-            + "      \"oamV6IpAddress\": \"0:0:0:0:0:ffff:a0a:011\",\n"
+            //+ "      \"oamV6IpAddress\": \"\",\n"
             + "      \"serialNumber\": \"VENDORA-1234-10.10.10.11-1234 BestInClass\",\n"
             + "      \"softwareVersion\": \"2.3.5\",\n"
             + "      \"unitFamily\": \"VENDORA-1234\",\n"
@@ -266,4 +266,5 @@ public class TestDMaaPPNFRegVESMsgConsumer {
         System.out.println(pnfConsumer.getSDNRUser());
         System.out.println(pnfConsumer.getSDNRPasswd());
     }
+
 }

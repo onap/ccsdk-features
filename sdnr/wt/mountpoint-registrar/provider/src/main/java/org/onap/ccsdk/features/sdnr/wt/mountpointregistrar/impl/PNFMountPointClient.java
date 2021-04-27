@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPResponse;
@@ -90,35 +91,35 @@ public class PNFMountPointClient extends BaseHTTPClient {
 
     }
 
-    public boolean pnfMountPointCreate(String pnfName, String ipv4Address, String protocol, String keyId,
-            String username, String password, String commPort) {
+    public boolean pnfMountPointCreate(@NonNull String pnfName, @NonNull String ipAddress, @NonNull String protocol, String keyId,
+            String username, String password, @NonNull String commPort) {
         String message = "";
         if (protocol.equals("TLS")) {
-            message = updateTLSPayload(pnfName, ipv4Address, username, keyId, commPort);
+            message = updateTLSPayload(pnfName, ipAddress, username, keyId, commPort);
         } else { //SSH
-            message = updatePayload(pnfName, ipv4Address, username, password, commPort);
+            message = updatePayload(pnfName, ipAddress, username, password, commPort);
             LOG.debug("Payload after updating values is: {}", message);
         }
         return pnfRequest(pnfName, "PUT", message) == 200;
 
     }
 
-    private static String updatePayload(String pnfName, String ipv4Address, String username, String password,
+    private static String updatePayload(String pnfName, String ipAddress, String username, String password,
             String portNo) {
         // @formatter:off
         return SSH_PAYLOAD.replace("@device-name@", pnfName)
-                .replace("@device-ip@", ipv4Address)
+                .replace("@device-ip@", ipAddress)
                 .replace("@device-port@", portNo)
                 .replace("@username@", username)
                 .replace("@password@", password);
         // @formatter:on
     }
 
-    private static String updateTLSPayload(String pnfName, String ipv4Address, String username, String keyId,
+    private static String updateTLSPayload(String pnfName, String ipAddress, String username, String keyId,
             String portNo) {
         // @formatter:off
         return TLS_PAYLOAD.replace("@device-name@", pnfName)
-                .replace("@device-ip@", ipv4Address)
+                .replace("@device-ip@", ipAddress)
                 .replace("@username@", username)
                 .replace("@key-id@", keyId)
                 .replace("@device-port@", portNo);
