@@ -21,6 +21,7 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,19 +44,25 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
     @Override
     public void processMsg(String msg) {
         LOG.debug("Message from DMaaP topic is - {} ", msg);
+        @Nullable
         String pnfId;
-        String pnfIPv4Address;
+        String pnfIPAddress;
+        @Nullable
         String pnfCommProtocol;
+        @Nullable
         String pnfCommPort;
+        @Nullable
         String pnfKeyId = null;
+        @Nullable
         String pnfUsername;
+        @Nullable
         String pnfPasswd = null;
         ObjectMapper oMapper = new ObjectMapper();
         JsonNode dmaapMessageRootNode;
         try {
             dmaapMessageRootNode = oMapper.readTree(msg);
             pnfId = dmaapMessageRootNode.at("/event/commonEventHeader/sourceName").textValue();
-            pnfIPv4Address = dmaapMessageRootNode.at("/event/pnfRegistrationFields/oamV4IpAddress").textValue();
+            pnfIPAddress = getPNFIPAddress(dmaapMessageRootNode);
             pnfCommProtocol =
                     dmaapMessageRootNode.at("/event/pnfRegistrationFields/additionalFields/protocol").textValue();
             pnfCommPort = dmaapMessageRootNode.at("/event/pnfRegistrationFields/additionalFields/oamPort").textValue();
@@ -89,8 +96,9 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
                 pnfPasswd = DEFAULT_PASSWORD;
             }
 
-            LOG.debug("PNF Fields - {} : {} : {} : {} : {} : {} : {}", pnfId, pnfIPv4Address, pnfCommProtocol, pnfKeyId,
-                    pnfUsername, pnfPasswd, pnfCommPort);
+            LOG.debug(
+                    "PNF Fields - ID - {} : IP Address - {} : Protocol - {} : TLS Key ID - {} : User - {} : Port - {}",
+                    pnfId, pnfIPAddress, pnfCommProtocol, pnfKeyId, pnfUsername, pnfCommPort);
 
             String baseUrl = getBaseUrl();
             String sdnrUser = getSDNRUser();
@@ -100,18 +108,33 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
             LOG.debug("Setting RESTConf Authorization values - {} : {}", sdnrUser, sdnrPasswd);
             mountpointClient.setAuthorization(sdnrUser, sdnrPasswd);
 
-            if ((null != pnfId) && (null != pnfIPv4Address) && (null != pnfCommProtocol) && (null != pnfUsername)
+            if ((null != pnfId) && null != pnfIPAddress && (null != pnfCommProtocol) && (null != pnfUsername)
                     && (null != pnfCommPort)) {
-                mountpointClient.pnfMountPointCreate(pnfId, pnfIPv4Address, pnfCommProtocol, pnfKeyId, pnfUsername,
+                mountpointClient.pnfMountPointCreate(pnfId, pnfIPAddress, pnfCommProtocol, pnfKeyId, pnfUsername,
                         pnfPasswd, pnfCommPort);
             } else {
-                LOG.warn("One of the mandatory fields has a null value - pnfId = {} : pnfIPv4Address = {} : pnfCommProtocol = {} : pnfUsername {} : "
-                        + "pnfCommPort {}", pnfId, pnfIPv4Address, pnfCommProtocol, pnfUsername, pnfCommPort, "- not invoking mountpoint creation");
+                LOG.warn(
+                        "One of the mandatory fields has a null value - pnfId = {} : pnfIPAddress = {} : pnfCommProtocol = {} : pnfUsername {} : "
+                                + "pnfCommPort {}",
+                        pnfId, pnfIPAddress, pnfCommProtocol, pnfUsername, pnfCommPort,
+                        "- not invoking mountpoint creation");
             }
         } catch (IOException e) {
             LOG.info("Cannot parse json object, ignoring the received PNF Registration VES Message. Reason: {}",
                     e.getMessage());
         }
+    }
+
+    private String getPNFIPAddress(JsonNode dmaapMessageRootNode) {
+        String ipAddress = dmaapMessageRootNode.at("/event/pnfRegistrationFields/oamV6IpAddress").textValue();
+        if (ipAddress != null && ipAddress != "")
+            return ipAddress;
+
+        ipAddress = dmaapMessageRootNode.at("/event/pnfRegistrationFields/oamV4IpAddress").textValue();
+        if (ipAddress != null && ipAddress != "")
+            return ipAddress;
+
+        return null;
     }
 
     public String getBaseUrl() {
@@ -126,7 +149,7 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
         return generalConfig.getSDNRPasswd() != null ? generalConfig.getSDNRPasswd() : DEFAULT_SDNRPASSWD;
     }
 
-    public PNFMountPointClient getPNFMountPointClient(String baseUrl) {
+    private PNFMountPointClient getPNFMountPointClient(String baseUrl) {
         return new PNFMountPointClient(baseUrl);
     }
 }
