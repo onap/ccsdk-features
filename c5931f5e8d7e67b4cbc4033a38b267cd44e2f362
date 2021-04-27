@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0b430c25_0b796435",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPPNFRegVESMsgConsumer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-04-27T13:11:49Z",
+      "side": 1,
+      "message": "should avoid logging password !",
+      "revId": "c5931f5e8d7e67b4cbc4033a38b267cd44e2f362",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6cd943b7_59981d89",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/PNFMountPointClient.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-04-27T13:11:49Z",
+      "side": 1,
+      "message": "it should redact password or other critical information",
+      "revId": "c5931f5e8d7e67b4cbc4033a38b267cd44e2f362",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
