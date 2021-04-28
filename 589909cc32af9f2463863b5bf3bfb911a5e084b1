@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c82a46ca_f8736fea",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/PNFMountPointClient.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-04-28T13:21:21Z",
+      "side": 1,
+      "message": "This should be within else, to match up definition of message variable above !\n\nmessage does have field password for any protocol other than TLS !",
+      "revId": "589909cc32af9f2463863b5bf3bfb911a5e084b1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
