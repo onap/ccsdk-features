@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5af2d748_d53c6766",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPPNFRegVESMsgConsumer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-04-28T08:52:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "0b430c25_0b796435",
+      "revId": "c5931f5e8d7e67b4cbc4033a38b267cd44e2f362",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6cd943b7_59981d89",
         "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/PNFMountPointClient.java",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "c5931f5e8d7e67b4cbc4033a38b267cd44e2f362",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c5fdff0_bce0d662",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/PNFMountPointClient.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-04-28T08:52:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6cd943b7_59981d89",
+      "revId": "c5931f5e8d7e67b4cbc4033a38b267cd44e2f362",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
