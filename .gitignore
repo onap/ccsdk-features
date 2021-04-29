@@ -5,6 +5,7 @@
 # Logs dir in all projects
 **/logs/*
 **/debug-logs/*
+sdnr/northbound/ranSlice/provider/derby.log
 
 # Added for Intellij IDEA IDE
 **/.idea/*

@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,8 +71,11 @@ public class TestORanRegistrationToVESpnfRegistration {
         String dateTimeString = "2020-02-05T12:30:45.283Z";
         String name = "Slot-0";
 
+        NetconfNode testNetconfNode = mock(NetconfNode.class);
+        when(testNetconfNode.getHost()).thenReturn(new Host(new IpAddress(new Ipv4Address("10.10.10.10"))));
+        
         when(netconfAccessor.getNodeId()).thenReturn(new NodeId("nSky"));
-        when(netconfAccessor.getNetconfNode()).thenReturn(new TestNetconfNode());
+        when(netconfAccessor.getNetconfNode()).thenReturn(testNetconfNode);
         when(vesCollectorService.getConfig()).thenReturn(vesCfgService);
         when(vesCfgService.getReportingEntityName()).thenReturn("SDN-R");
         Component testComponent = ComponentHelper.get(name, dateTimeString);
@@ -79,170 +83,6 @@ public class TestORanRegistrationToVESpnfRegistration {
         ORanRegistrationToVESpnfRegistrationMapper mapper = new ORanRegistrationToVESpnfRegistrationMapper(netconfAccessor, vesCollectorService, testComponent);
         mapper.mapCommonEventHeader(SEQUENCE_NO);
         mapper.mapPNFRegistrationFields();
-    }
-
-    public class TestNetconfNode implements NetconfNode {
-
-        @Override
-        public @Nullable Credentials getCredentials() {
-            return null;
-        }
-
-        @Override
-        public @Nullable Host getHost() {
-            return new Host(new IpAddress(new Ipv4Address("10.10.10.10")));
-        }
-
-        @Override
-        public @Nullable PortNumber getPort() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Boolean isTcpOnly() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Protocol getProtocol() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Boolean isSchemaless() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable YangModuleCapabilities getYangModuleCapabilities() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable NonModuleCapabilities getNonModuleCapabilities() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Boolean isReconnectOnChangedSchema() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Uint32 getConnectionTimeoutMillis() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Uint32 getDefaultRequestTimeoutMillis() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Uint32 getMaxConnectionAttempts() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Uint16 getBetweenAttemptsTimeoutMillis() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable BigDecimal getSleepFactor() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Uint32 getKeepaliveDelay() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Uint16 getConcurrentRpcLimit() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable Uint16 getActorResponseWaitTime() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable OdlHelloMessageCapabilities getOdlHelloMessageCapabilities() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable ConnectionStatus getConnectionStatus() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable ClusteredConnectionStatus getClusteredConnectionStatus() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable String getConnectedMessage() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable AvailableCapabilities getAvailableCapabilities() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable UnavailableCapabilities getUnavailableCapabilities() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable PassThrough getPassThrough() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable String getSchemaCacheDirectory() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable YangLibrary getYangLibrary() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public @Nullable IgnoreMissingSchemaSources getIgnoreMissingSchemaSources() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
     }
 
 }

@@ -38,7 +38,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
-import org.opendaylight.yangtools.yang.model.api.SchemaPath;
+import org.opendaylight.yangtools.yang.model.api.stmt.SchemaNodeIdentifier.Absolute;
 
 /**
  * Interface handling netconf connection.
@@ -80,11 +80,11 @@ public interface NetconfDomAccessor extends NetconfAccessor {
      *
      * @param <T> specific child class of DOMNotificationListener
      * @param listener listener to be called
-     * @param types as list of SchemaPath
+     * @param types as list of Absolute
      * @return handler to manager registration
      */
     <T extends DOMNotificationListener> @NonNull ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
-            @NonNull T listener, Collection<SchemaPath> types);
+            @NonNull T listener, Collection<Absolute> types);
 
     /**
      * Register netconf notification listener for related mountpoint
@@ -92,11 +92,11 @@ public interface NetconfDomAccessor extends NetconfAccessor {
      * @See <a href="https://tools.ietf.org/html/rfc5277">https://tools.ietf.org/html/rfc5277</a>
      * @param <T>
      * @param listener to be registers
-     * @param types as array of SchemaPath
+     * @param types as array of Absolute
      * @return Object to close and access
      */
     <T extends DOMNotificationListener> @NonNull ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
-            @NonNull T listener, SchemaPath[] types);
+            @NonNull T listener, Absolute[] types);
 
     /**
      * Register netconf notification listener for related mountpoint

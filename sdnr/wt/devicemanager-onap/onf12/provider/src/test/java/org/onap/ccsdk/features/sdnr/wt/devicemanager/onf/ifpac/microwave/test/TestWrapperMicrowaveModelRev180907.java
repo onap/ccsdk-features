@@ -305,6 +305,7 @@ public class TestWrapperMicrowaveModelRev180907 {
         List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev180907.air._interface.historical.performances.g.HistoricalPerformanceDataList> airHistPMList =
                 Arrays.asList(
                         new org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev180907.air._interface.historical.performances.g.HistoricalPerformanceDataListBuilder()
+                                .setHistoryDataId("123")
                                 .setGranularityPeriod(GranularityPeriodType.Period15Min)
                                 .setPerformanceData(performanceData).build());
         AirInterfaceHistoricalPerformances airHistoricalPerformanceData =
@@ -322,6 +323,7 @@ public class TestWrapperMicrowaveModelRev180907 {
         List<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev180907.ethernet.container.historical.performances.g.HistoricalPerformanceDataList> ethHistPMList =
                 Arrays.asList(
                         new org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev180907.ethernet.container.historical.performances.g.HistoricalPerformanceDataListBuilder()
+                                .setHistoryDataId("123")
                                 .setGranularityPeriod(GranularityPeriodType.Period24Hours)
                                 .setPerformanceData(ethPerformanceData).build());
         EthernetContainerHistoricalPerformances ethContainerHistoricalPerformanceData =

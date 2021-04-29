@@ -68,7 +68,7 @@ import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
-import org.opendaylight.yangtools.yang.model.api.SchemaPath;
+import org.opendaylight.yangtools.yang.model.api.stmt.SchemaNodeIdentifier.Absolute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +77,6 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
     private static final Logger LOG = LoggerFactory.getLogger(NetconfDomAccessorImpl.class);
 
     private static final QName CREATE_SUBSCRIPTION = QName.create(CreateSubscriptionInput.QNAME, "create-subscription");
-    private static final SchemaPath RPC_PATH_CREATE_SUBSCRIPTION =
-            NetconfMessageTransformUtil.toPath(CREATE_SUBSCRIPTION);
     private static final YangInstanceIdentifier STREAMS_PATH =
             YangInstanceIdentifier.builder().node(Netconf.QNAME).node(Streams.QNAME).build();
 
@@ -174,7 +172,7 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
 
     @Override
     public @NonNull <T extends DOMNotificationListener> ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
-            @NonNull T listener, Collection<SchemaPath> types) {
+            @NonNull T listener, Collection<Absolute> types) {
         LOG.info("Begin register listener for Mountpoint {}", mountpoint.getIdentifier().toString());
 
         final ListenerRegistration<DOMNotificationListener> ranListenerRegistration =
@@ -188,14 +186,14 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
 
     @Override
     public @NonNull <T extends DOMNotificationListener> ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
-            @NonNull T listener, SchemaPath[] types) {
+            @NonNull T listener, Absolute[] types) {
         return doRegisterNotificationListener(listener, Arrays.asList(types));
     }
 
     @Override
     public @NonNull <T extends DOMNotificationListener> ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
             @NonNull T listener, QName[] types) {
-        List<SchemaPath> schemaPathList = Arrays.stream(types).map(qname -> NetconfMessageTransformUtil.toPath(qname)).collect(toList());
+        List<Absolute> schemaPathList = Arrays.stream(types).map(qname -> Absolute.of(qname)).collect(toList());
         return doRegisterNotificationListener(listener, schemaPathList);
     }
 
@@ -203,7 +201,7 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
     @Override
     public ListenableFuture<? extends DOMRpcResult> invokeCreateSubscription(CreateSubscriptionInput input) {
         final ContainerNode nnInput = serializer.toNormalizedNodeRpcData(input);
-        return rpcService.invokeRpc(RPC_PATH_CREATE_SUBSCRIPTION, nnInput);
+        return rpcService.invokeRpc(CREATE_SUBSCRIPTION, nnInput);
     }
 
     @Override

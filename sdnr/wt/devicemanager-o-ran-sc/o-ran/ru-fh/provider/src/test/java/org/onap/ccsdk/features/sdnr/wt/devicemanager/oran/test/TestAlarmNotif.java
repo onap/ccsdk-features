@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
 
 import java.util.Map;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.o.ran.fm._1._0.rev190204.AlarmNotif;
@@ -72,6 +73,16 @@ public class TestAlarmNotif implements AlarmNotif {
     @Override
     public @Nullable DateAndTime getEventTime() {
         return new DateAndTime("2021-03-23T18:19:42.326144Z");
+    }
+
+    @Override
+    public @NonNull Map<Class<? extends Augmentation<AlarmNotif>>, Augmentation<AlarmNotif>> augmentations() {
+        return null;
+    }
+
+    @Override
+    public Boolean getIsCleared() {
+        return null;
     }
 
 }
