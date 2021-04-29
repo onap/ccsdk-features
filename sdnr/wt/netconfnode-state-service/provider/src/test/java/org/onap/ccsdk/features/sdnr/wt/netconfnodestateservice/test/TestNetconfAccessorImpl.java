@@ -57,7 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.model.api.SchemaPath;
+import org.opendaylight.yangtools.yang.model.api.stmt.SchemaNodeIdentifier.Absolute;
 
 public class TestNetconfAccessorImpl extends Mockito {
 
@@ -154,7 +154,7 @@ public class TestNetconfAccessorImpl extends Mockito {
         DOMMountPoint domMountPoint = mock(DOMMountPoint.class);
 
         when(domNotificationService.registerNotificationListener(any(DOMNotificationListener.class),
-                ArgumentMatchers.<Collection<SchemaPath>>any()))
+                ArgumentMatchers.<Collection<Absolute>>any()))
                         .thenReturn(new ListenerRegistration<DOMNotificationListener>() {
                             @Override
                             public @NonNull DOMNotificationListener getInstance() {
@@ -178,7 +178,7 @@ public class TestNetconfAccessorImpl extends Mockito {
         NetconfDomAccessorImpl netconfDomAccessor =
                 new NetconfDomAccessorImpl(netconfAccessor, domDataBroker, domMountPoint, domContext);
 
-        Collection<SchemaPath> types = Arrays.asList(SchemaPath.create(false, NetworkTopology.QNAME));
+        Collection<Absolute> types = Arrays.asList(Absolute.of(NetworkTopology.QNAME));
         DOMNotificationListener listener = (notification) -> System.out.println("Notification: " + notification);
         ListenerRegistration<DOMNotificationListener> res =
                 netconfDomAccessor.doRegisterNotificationListener(listener, types);
@@ -186,7 +186,7 @@ public class TestNetconfAccessorImpl extends Mockito {
         //Capture parameters and assert them
         ArgumentCaptor<DOMNotificationListener> captor1 = ArgumentCaptor.forClass(DOMNotificationListener.class);
         @SuppressWarnings("unchecked")
-        ArgumentCaptor<Collection<SchemaPath>> captor2 = ArgumentCaptor.forClass(Collection.class);
+        ArgumentCaptor<Collection<Absolute>> captor2 = ArgumentCaptor.forClass(Collection.class);
         verify(domNotificationService).registerNotificationListener(captor1.capture(), captor2.capture());
 
         assertEquals("Listener", listener, captor1.getValue());

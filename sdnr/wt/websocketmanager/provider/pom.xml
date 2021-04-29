@@ -87,13 +87,8 @@
             <artifactId>json</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor_2.13</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-cluster_2.13</artifactId>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

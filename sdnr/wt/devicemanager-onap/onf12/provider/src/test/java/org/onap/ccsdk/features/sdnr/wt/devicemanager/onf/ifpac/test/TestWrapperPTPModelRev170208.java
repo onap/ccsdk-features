@@ -36,7 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset.rev170208.port.ds.entry.PortIdentityBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
+import org.opendaylight.yangtools.yang.common.Uint16;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -66,8 +66,10 @@ public class TestWrapperPTPModelRev170208 {
         when(netconfAccessor.getDataBroker()).thenReturn(dataBroker);
 
         PortIdentity portIdentity = new PortIdentityBuilder().setPortNumber(10).build();
-        List<PortDsList> portDsList = Arrays.asList(new PortDsListBuilder().setPortIdentity(portIdentity).build());
-        InstanceList instanceList = new InstanceListBuilder().setPortDsList(portDsList).build();
+        List<PortDsList> portDsList = 
+                Arrays.asList(new PortDsListBuilder().setPortNumber(10).setPortIdentity(portIdentity).build());
+        InstanceList instanceList = 
+                new InstanceListBuilder().setInstanceNumber(Uint16.valueOf(1)).setPortDsList(portDsList).build();
         InstanceIdentifier<InstanceList> PTPINSTANCES_IID =
                 InstanceIdentifier.builder(InstanceList.class, new InstanceListKey(1)).build();
         when(netconfAccessor.getTransactionUtils().readData(netconfAccessor.getDataBroker(),
