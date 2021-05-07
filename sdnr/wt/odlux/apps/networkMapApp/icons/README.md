@@ -19,7 +19,7 @@ Copyright of icons is as followes:
  */
  -->
  
-datacenter.png, lamp.png, factory.png, datacenterred.png, lampred.png, factoryred.png,   
+datacenter.png, lamp.png and customize.png with all variations (different colors)
 
 Taken from MS Word
 

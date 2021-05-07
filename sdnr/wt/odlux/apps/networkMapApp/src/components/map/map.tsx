@@ -21,25 +21,28 @@ import * as mapboxgl from 'mapbox-gl';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 
-import { Site } from '../model/site';
-import { SelectSiteAction, ClearHistoryAction, SelectLinkAction } from '../actions/detailsAction';
-import { OSM_STYLE, URL_API, URL_BASEPATH, URL_TILE_API } from '../config';
-import { link } from '../model/link';
+import { Site } from '../../model/site';
+import { SelectSiteAction, ClearHistoryAction, SelectLinkAction } from '../../actions/detailsAction';
+import { OSM_STYLE, URL_API, URL_BASEPATH, URL_TILE_API } from '../../config';
+import { link } from '../../model/link';
 import MapPopup from './mapPopup';
-import { SetPopupPositionAction, SelectMultipleLinksAction, SelectMultipleSitesAction } from '../actions/popupActions';
-import { Feature } from '../model/Feature';
-import { HighlightLinkAction, HighlightSiteAction, SetCoordinatesAction, SetStatistics } from '../actions/mapActions';
-import { addDistance, getUniqueFeatures, increaseBoundingBox } from '../utils/mapUtils';
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
+import { SetPopupPositionAction, SelectMultipleLinksAction, SelectMultipleSitesAction } from '../../actions/popupActions';
+import { Feature } from '../../model/Feature';
+import { HighlightLinkAction, HighlightSiteAction, SetCoordinatesAction, SetStatistics } from '../../actions/mapActions';
+import { addDistance, getUniqueFeatures, increaseBoundingBox } from '../../utils/mapUtils';
+import { IApplicationStoreState } from '../../../../../framework/src/store/applicationStore';
+import connect, { IDispatcher, Connect } from '../../../../../framework/src/flux/connect';
 import SearchBar from './searchBar';
-import { verifyResponse, IsTileServerReachableAction, handleConnectionError, setTileServerReachableAction } from '../actions/connectivityAction';
+import { verifyResponse, IsTileServerReachableAction, handleConnectionError, setTileServerReachableAction, IsBusycheckingConnectivityAction } from '../../actions/connectivityAction';
 import ConnectionInfo from './connectionInfo'
-import { showIconLayers, addBaseLayers, addBaseSources, addIconLayers } from '../utils/mapLayers';
+import  mapLayerService  from '../../utils/mapLayers';
 import Statistics from './statistics';
 import IconSwitch from './iconSwitch';
-import { addImages } from '../services/mapImagesService';
-import { PopupElement } from '../model/popupElements';
+import { addImages } from '../../services/mapImagesService';
+import { PopupElement } from '../../model/popupElements';
+import { Button } from '@material-ui/core';
+import { NavigateToApplication } from '../../../../../framework/src/actions/navigationActions';
+import customize from '../../../icons/customize.png';
 
 type coordinates = { lat: number, lon: number, zoom: number }
 
@@ -61,31 +64,52 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
     }
 
-    componentDidMount() {
+    updateTheme(){
+        mapLayerService.settings=this.props.settings.themes;
+        if(this.props.settings.mapSettings?.networkMap.styling.theme){
+            mapLayerService.selectedTheme = this.props.settings.mapSettings?.networkMap.styling.theme;
+        }
+    }
+
+    updateOpacity(){
+        if(this.props.settings.mapSettings && this.props.settings.mapSettings.networkMap.tileOpacity){
+            mapLayerService.changeMapOpacity(map, Number(this.props.settings.mapSettings.networkMap.tileOpacity));    
+        }
+    }
+
+    async componentDidMount() {
 
         // resize the map, if menu gets collapsed
         window.addEventListener("menu-resized", this.handleResize);
 
-        // try if connection to tile + topologyserver is available
+        //pass themes to mapLayerService
+        this.updateTheme();
 
-        fetch(URL_TILE_API + '/10/0/0.png')
-            .then(res => {
-                if (res.ok) {
-                    this.setupMap();
-                    this.props.setTileServerLoaded(true);
-                } else {
-                    this.props.setTileServerLoaded(false);
-                    console.error("tileserver " + URL_TILE_API + " can't be reached.");
-                }
-            })
-            .catch(err => {
+        // try if connection to tile + topologyserver are available
+
+        try {
+            const tiles = await fetch(URL_TILE_API + '/10/0/0.png');
+            if (tiles.ok) {
+                this.props.setTileServerLoaded(true);
+            }else{
                 this.props.setTileServerLoaded(false);
-                console.error("tileserver " + URL_TILE_API + " can't be reached.");
-            });
+            }
 
-        fetch(URL_API + "/info/count/all")
-            .then(result => verifyResponse(result))
-            .catch(error => this.props.handleConnectionError(error));
+        } catch (error) {
+            this.props.setTileServerLoaded(false);
+            console.error("tileserver " + URL_TILE_API + " can't be reached.");
+        }
+
+        try {
+           const topology = await fetch(URL_API + "/info/count/all");
+            verifyResponse(topology);
+        } catch (error) {
+            this.props.handleConnectionError(error)
+        }
+
+        //both done
+        this.props.setConnectivityCheck(false);
+        //map loaded in componentDidUpdate
     }
 
     setupMap = () => {
@@ -93,6 +117,21 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
         let lat = this.props.lat;
         let lon = this.props.lon;
         let zoom = this.props.zoom;
+
+        if(this.props.settings.mapSettings){
+            if(this.props.settings.mapSettings.networkMap.startupPosition.latitude){
+                lat = Number(this.props.settings.mapSettings.networkMap.startupPosition.latitude)
+            }
+
+            if(this.props.settings.mapSettings.networkMap.startupPosition.longitude){
+                lon = Number(this.props.settings.mapSettings.networkMap.startupPosition.longitude)
+            }
+
+            if(this.props.settings.mapSettings.networkMap.startupPosition.zoom){
+                zoom = Number(this.props.settings.mapSettings.networkMap.startupPosition.zoom)
+            }
+
+        }
 
         const coordinates = this.extractCoordinatesFromUrl();
         // override lat/lon/zoom with coordinates from url, if available
@@ -116,15 +155,17 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
             const bbox = map.getBounds();
             this.props.updateMapPosition(bbox.getCenter().lat, bbox.getCenter().lng, map.getZoom())
 
-            addBaseSources(map, this.props.selectedSite, this.props.selectedLink);
-                
+            mapLayerService.addBaseSources(map, this.props.selectedSite, this.props.selectedLink);
+            
             addImages(map, (result: boolean)=>{
                 if(map.getZoom()>11)
                 {
-                    addIconLayers(map, this.props.selectedSite?.properties.id)
+                    mapLayerService.addIconLayers(map, this.props.selectedSite?.properties.id)
                 }else{
-                    addBaseLayers(map, this.props.selectedSite, this.props.selectedLink);
+                    mapLayerService.addBaseLayers(map);
                 }
+            this.updateOpacity();
+
             });
 
             const boundingBox = increaseBoundingBox(map);
@@ -229,7 +270,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
            
             
             //switch icon layers if applicable
-            showIconLayers(map, this.props.showIcons, this.props.selectedSite?.properties.id);
+            mapLayerService.showIconLayers(map, this.props.showIcons, this.props.selectedSite?.properties.id);
 
             //update statistics
             const boundingBox = map.getBounds();
@@ -276,6 +317,29 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
     }
 
     componentDidUpdate(prevProps: mapProps, prevState: {}) {
+
+        //(load map)
+        //triggered if either settings were done loading or tile/topology server connectivity checked
+        if(prevProps.settings !== this.props.settings || this.props.isConnectivityCheckBusy !== prevProps.isConnectivityCheckBusy){
+            
+            //update theme if settings changed
+            if(prevProps.settings !== this.props.settings){
+                this.updateTheme();
+            }
+
+            //if everything done loading/reachable, load map
+            if(!this.props.isConnectivityCheckBusy && this.props.isTileServerReachable && !this.props.settings.isLoadingData && (prevProps.settings.isLoadingData !==this.props.settings.isLoadingData || prevProps.isConnectivityCheckBusy !== this.props.isConnectivityCheckBusy)){
+                if(map == undefined){
+                    this.setupMap();
+                }
+                else
+                if(map.getContainer() !== myRef.current){ 
+                    // reload map, because the current container (fresh div) doesn't hold the map and changing containers isn't supported
+                    map.remove();
+                    this.setupMap();
+                }
+            }
+        }
 
         if (map !== undefined) {
             if (prevProps.selectedSite?.properties.id !== this.props.selectedSite?.properties.id) {
@@ -361,7 +425,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
             if (prevProps.showIcons !== this.props.showIcons) {
                 if (map && map.getZoom() > 11) {
-                    showIconLayers(map, this.props.showIcons, this.props.selectedSite?.properties.id);
+                    mapLayerService.showIconLayers(map, this.props.showIcons, this.props.selectedSite?.properties.id);
                 }
             }
 
@@ -384,6 +448,9 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
     componentWillUnmount(){
         window.removeEventListener("menu-resized", this.handleResize);
         lastBoundingBox=null;
+
+        // will be checked again on next load
+        this.props.setConnectivityCheck(true); 
     }
 
     handleResize = () => {
@@ -543,6 +610,9 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
         return <>
 
+{
+    !this.props.settings.isLoadingData ?
+
             <div id="map" style={{ width: "70%", position: 'relative' }} ref={myRef} >
                 {
                     this.state.isPopupOpen &&
@@ -552,7 +622,16 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 <Statistics />
                 <IconSwitch visible={this.props.zoom>11} />
                 <ConnectionInfo />
+                <Button 
+                disabled={!this.props.isTopoServerReachable}
+                style={{'position': 'absolute', 'right':5, top:5, backgroundColor:'white'}}
+                onClick={e => this.props.navigateToApplication("network", "customize")} >
+                    <img src={customize} />
+                </Button>
             </div>
+            :<div style={{ width: "70%", position: 'relative' }} />
+
+    }
         </>
     }
 
@@ -572,7 +651,9 @@ const mapStateToProps = (state: IApplicationStoreState) => ({
     siteCount: state.network.map.statistics.sites,
     isTopoServerReachable: state.network.connectivity.isToplogyServerAvailable,
     isTileServerReachable: state.network.connectivity.isTileServerAvailable,
-    showIcons: state.network.map.allowIconSwitch
+    isConnectivityCheckBusy: state.network.connectivity.isBusy,
+    showIcons: state.network.map.allowIconSwitch,
+    settings: state.network.settings,
 });
 
 const mapDispatchToProps = (dispatcher: IDispatcher) => ({
@@ -587,7 +668,10 @@ const mapDispatchToProps = (dispatcher: IDispatcher) => ({
     updateMapPosition: (lat: number, lon: number, zoom: number) => dispatcher.dispatch(new SetCoordinatesAction(lat, lon, zoom)),
     setStatistics: (linkCount: string, siteCount: string) => dispatcher.dispatch(new SetStatistics(siteCount, linkCount)),
     setTileServerLoaded: (reachable: boolean) => dispatcher.dispatch(setTileServerReachableAction(reachable)),
-    handleConnectionError: (error: Error) => dispatcher.dispatch(handleConnectionError(error))
+    handleConnectionError: (error: Error) => dispatcher.dispatch(handleConnectionError(error)),
+    navigateToApplication: (applicationName: string, path?: string) => dispatcher.dispatch(new NavigateToApplication(applicationName, path, "test3")),
+    setConnectivityCheck: (done: boolean) => dispatcher.dispatch(new IsBusycheckingConnectivityAction(done)),
+
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Map));

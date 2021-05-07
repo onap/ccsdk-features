@@ -18,14 +18,14 @@
 
 import * as React from 'react';
 import { Typography, Select, MenuItem, ClickAwayListener, Popper, Paper, FormGroup, Portal, Popover } from '@material-ui/core';
-import { SelectSiteAction, ClearHistoryAction, ClearDetailsAction } from '../actions/detailsAction';
-import { Site } from '../model/site';
-import { link } from '../model/link';
-import { URL_API } from '../config';
-import { HighlightLinkAction, HighlightSiteAction } from '../actions/mapActions';
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
-import { verifyResponse, handleConnectionError } from '../actions/connectivityAction';
+import { SelectSiteAction, ClearHistoryAction, ClearDetailsAction } from '../../actions/detailsAction';
+import { Site } from '../../model/site';
+import { link } from '../../model/link';
+import { URL_API } from '../../config';
+import { HighlightLinkAction, HighlightSiteAction } from '../../actions/mapActions';
+import { IApplicationStoreState } from '../../../../../framework/src/store/applicationStore';
+import connect, { IDispatcher, Connect } from '../../../../../framework/src/flux/connect';
+import { verifyResponse, handleConnectionError } from '../../actions/connectivityAction';
 
 
 

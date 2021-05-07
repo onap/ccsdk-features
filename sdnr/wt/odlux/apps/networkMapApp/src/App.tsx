@@ -17,7 +17,7 @@
  */
 
 import * as React from 'react';
-import  Map from './components/map'
+import  Map from './components/map/map'
 import Details from './components/details/details'
 
 function MainView() {

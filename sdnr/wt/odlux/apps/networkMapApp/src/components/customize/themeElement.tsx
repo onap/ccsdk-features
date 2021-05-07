@@ -2,7 +2,7 @@
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
  * =================================================================================================
- * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,5 +16,32 @@
  * ============LICENSE_END==========================================================================
  */
 
-declare const factoryRed: string;
-export default factoryRed;
+import { Typography } from '@material-ui/core';
+import * as React from 'react'
+
+
+type props={
+    color: string,
+    text: string
+};
+
+const ThemeEntry = (props: props) =>{
+
+    var circleStyle = {
+        padding:10,
+        margin:20,
+        backgroundColor: props.color,
+        borderRadius: "50%",
+        width:10,
+        height:10,
+        left:0,
+        top:0};
+
+        return <div style={{display: 'flex', flexDirection:'row'}}>
+            <div style={circleStyle} />
+            <Typography variant="body1" style={{marginTop:24}}>{props.text}</Typography>
+            </div>
+
+}
+
+export default ThemeEntry;

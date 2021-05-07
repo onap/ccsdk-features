@@ -18,8 +18,8 @@
 
 import * as React from 'react'
 
-import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
-import connect, { IDispatcher, Connect } from "../../../../framework/src/flux/connect";
+import { IApplicationStoreState } from "../../../../../framework/src/store/applicationStore";
+import connect, { IDispatcher, Connect } from "../../../../../framework/src/flux/connect";
 import { Paper, Typography } from "@material-ui/core";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';

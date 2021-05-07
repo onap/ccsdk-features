@@ -139,7 +139,15 @@ module.exports = (env) => {
         "/yang-schema/": {
           target: "http://sdnr:8181",
           secure: false
-        },   
+        },  
+        "/userdata": {
+          target: "http://sdnr:8181",
+          secure: false
+        },  
+        "/userdata/": {
+          target: "http://sdnr:8181",
+          secure: false
+        }, 
         "/oauth2/": {
           target: "http://sdnr:8181",
           secure: false

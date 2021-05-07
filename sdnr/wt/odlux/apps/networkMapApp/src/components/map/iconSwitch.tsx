@@ -18,9 +18,9 @@
 
 import * as React from 'react';
 import { FormControlLabel, Switch, Paper } from "@material-ui/core";
-import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import { SetIconSwitchAction } from '../actions/mapActions';
+import connect, { Connect, IDispatcher } from '../../../../../framework/src/flux/connect';
+import { IApplicationStoreState } from '../../../../../framework/src/store/applicationStore';
+import { SetIconSwitchAction } from '../../actions/mapActions';
 
 type props = Connect<typeof mapStateToProps, typeof mapDispatchToProps> & {visible: boolean}
 

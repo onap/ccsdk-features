@@ -18,447 +18,168 @@
 
 import * as mapboxgl from 'mapbox-gl';
 import { Feature } from 'model/Feature';
+import { NetworkMapThemes, ThemeElement } from 'model/settings';
 
 const fibreLinkColor = "#1154d9";
-const microwaveLinkColor="#039903";
+const microwaveLinkColor = "#039903";
 
-export const addBaseSources = (map: mapboxgl.Map, selectedPoint: Feature|null, selectedLine: Feature|null) =>{
-    
+class MapLayerService {
 
-    // make sure the sources don't already exist
-    // (if the networkmap app gets opened quickly within short time periods, the prior sources might not be fully removed)
+    checkedLayers = false;
+    settings: NetworkMapThemes;
+    selectedTheme: string | null = null;
 
-    if(!map.getSource("lines")){
-        
-        map.addSource('lines', {
-            type: 'geojson',
-            data: { type: "FeatureCollection", features: [] }
-        });
-    }
-    
-    if(!map.getSource("selectedLine"))
-    {
-        const features = selectedLine !== null ? [selectedLine] : [];
-        map.addSource('selectedLine', {
-            type: 'geojson',
-            data: { type: "FeatureCollection", features: features }
-        });
-    }
+    public addBaseSources = (map: mapboxgl.Map, selectedPoint: Feature | null, selectedLine: Feature | null) => {
 
-    if(!map.getSource("points"))
-    {
-        map.addSource('points', {
-            type: 'geojson',
-            data: { type: "FeatureCollection", features: [] }
-        });
-    }
 
-    if(!map.getSource("selectedPoints"))
-    {
-        const selectedPointFeature = selectedPoint !== null ? [selectedPoint] : [];
-        map.addSource('selectedPoints', {
-            type: 'geojson',
-            data: { type: "FeatureCollection", features: selectedPointFeature }
-    
-        });
-    }
+        // make sure the sources don't already exist
+        // (if the networkmap app gets opened quickly within short time periods, the prior sources might not be fully removed)
 
-    if(!map.getSource("alarmedPoints"))
-    {
-        map.addSource("alarmedPoints", {
-            type: 'geojson',
-            data: {type:"FeatureCollection", features:[]}
-        });
-    }
-}
+        if (!map.getSource("lines")) {
 
-export const addBaseLayers = (map: mapboxgl.Map, selectedPoint: Feature|null, selectedLine: Feature|null) => {
-
-    addCommonLayers(map);
-
-    map.addLayer({
-        id: 'points',
-        source: 'points',
-        type: 'circle',
-        paint: {
-            'circle-color': '#11b4da',
-            'circle-radius': 7,
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
+            map.addSource('lines', {
+                type: 'geojson',
+                data: { type: "FeatureCollection", features: [] }
+            });
         }
-    });
 
-    map.addLayer({
-        id: 'selectedPoints',
-        source: 'selectedPoints',
-        type: 'circle',
-        paint: {
-            'circle-color': '#116bda',
-            'circle-radius': 9,
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
+        if (!map.getSource("selectedLine")) {
+            const features = selectedLine !== null ? [selectedLine] : [];
+            map.addSource('selectedLine', {
+                type: 'geojson',
+                data: { type: "FeatureCollection", features: features }
+            });
         }
-    });
 
-    map.addLayer({
-        id: 'alarmedPoints',
-        source: 'alarmedPoints',
-        type: 'circle',
-        paint: {
-            'circle-color': '#CC0000',
-            'circle-radius': 9,
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
+        if (!map.getSource("points")) {
+            map.addSource('points', {
+                type: 'geojson',
+                data: { type: "FeatureCollection", features: [] }
+            });
         }
-    });
-}
 
-export const addIconLayers = (map: mapboxgl.Map, selectedSiteId?: string) =>{
+        if (!map.getSource("selectedPoints")) {
+            const selectedPointFeature = selectedPoint !== null ? [selectedPoint] : [];
+            map.addSource('selectedPoints', {
+                type: 'geojson',
+                data: { type: "FeatureCollection", features: selectedPointFeature }
 
-    addCommonLayers(map);
-    createIconLayers(map, selectedSiteId);
-}
-
-const createIconLayers =(map: mapboxgl.Map, selectedSiteId?: string) =>{
-    map.addLayer({
-        'id': 'point-lamps',
-        'type': 'symbol',
-        'source': 'points',
-        'layout': {
-            'icon-allow-overlap': true,
-            'icon-image': 'lamp',
-            'icon-size': 0.1
-
-        },
-        'filter': createFilter("street lamp", selectedSiteId),
-    });
-
-    map.addLayer({
-        'id': 'point-building',
-        'type': 'symbol',
-        'source': 'points',
-        'filter': createFilter("high rise building", selectedSiteId),
-        'layout': {
-            'icon-allow-overlap': true,
-            'icon-image': 'house',
-            'icon-size': 0.1
+            });
         }
-    });
 
-    map.addLayer({
-        'id': 'point-data-center',
-        'type': 'symbol',
-        'source': 'points',
-        'filter': createFilter("data center", selectedSiteId),
-        'layout': {
-            'icon-allow-overlap': true,
-            'icon-image': 'data-center',
-            'icon-size': 0.1
-        } });
+        if (!map.getSource("alarmedPoints")) {
+            map.addSource("alarmedPoints", {
+                type: 'geojson',
+                data: { type: "FeatureCollection", features: [] }
+            });
+        }
+    }
+
+    private addCircleLayer = (map: mapboxgl.Map, id: string, source: string, circleColor: string, radius: number, strokeWidth: number, outerColor: string) => {
 
         map.addLayer({
-            'id': 'point-factory',
-            'type': 'symbol',
-            'source': 'points',
-            'filter': createFilter("factory", selectedSiteId),
-            'layout': {
-                'icon-allow-overlap': true,
-                'icon-image': 'factory',
-                'icon-size': 0.2
+            id: id,
+            source: source,
+            type: 'circle',
+            paint: {
+                'circle-color': circleColor,
+                'circle-radius': radius,
+                'circle-stroke-width': strokeWidth,
+                'circle-stroke-color': outerColor
             }
         });
+    }
+
+    private addLineLayer = (map: mapboxgl.Map, id: string, source: string, color: string, width: number, filter: string[]) => {
+
+        map.addLayer({
+            'id': id,
+            'type': 'line',
+            'source': source,
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': color,
+                'line-width': width
+            },
+            'filter': filter
+        });
+    }
+
+    private addIconLayer = (map: mapboxgl.Map, id: string, source: string, iconName: string, iconSize: number, filter: (string | string[])[]) => {
+        map.addLayer({
+            'id': id,
+            'type': 'symbol',
+            'source': source,
+            'layout': {
+                'icon-allow-overlap': true,
+                'icon-image': iconName,
+                'icon-size': iconSize
+
+            },
+            'filter': filter,
+        });
+    }
+
+    /**
+     * Pick the correct theme based on user selection
+     */
+    private pickTheme = () => {
+        if (this.selectedTheme !== null) {
+            const result = this.settings.networkMapThemes.themes.find(el => el.key === this.selectedTheme);
+            if (result)
+                return result;
+
+        }
+
+        return this.settings.networkMapThemes.themes[0];
+
+    }
+
+    public addBaseLayers = (map: mapboxgl.Map, themesettings?: ThemeElement) => {
+
+        const theme = !themesettings ? this.pickTheme() : themesettings;
+
+        this.addCommonLayers(map);
+
+        this.addCircleLayer(map, 'points', 'points', theme.site, 7, 1, '#fff');
+        this.addCircleLayer(map, 'selectedPoints', 'selectedPoints', theme.selectedSite, 9, 1, '#fff');
+        this.addCircleLayer(map, 'alarmedPoints', 'alarmedPoints', '#CC0000', 9, 1, '#fff');
+    }
+
+    public addIconLayers = (map: mapboxgl.Map, selectedSiteId?: string) => {
+
+        this.addCommonLayers(map);
+        this.createIconLayers(map, selectedSiteId);
+    }
+
+    private createIconLayers = (map: mapboxgl.Map, selectedSiteId?: string) => {
+
+        this.addIconLayer(map, 'point-lamps', 'points', 'lamp', 0.1, this.createFilter("street lamp", selectedSiteId));
+        this.addIconLayer(map, 'point-building', 'points', 'house', 0.1, this.createFilter("high rise building", selectedSiteId));
+        this.addIconLayer(map, 'point-data-center', 'points', 'data-center', 0.1, this.createFilter("data center", selectedSiteId));
+        this.addIconLayer(map, 'point-factory', 'points', 'factory', 0.2, this.createFilter("factory", selectedSiteId));
+
 
         //select layers
-
-        map.addLayer({
-            'id': 'select-point-lamps',
-            'type': 'symbol',
-            'source': 'selectedPoints',
-            'layout': {
-                'icon-allow-overlap': true,
-                'icon-image': 'lamp',
-                'icon-size': 0.15
-    
-            },
-            'filter': ['==', 'type', 'street lamp'],
-        });
-    
-        map.addLayer({
-            'id': 'select-point-buildings',
-            'type': 'symbol',
-            'source': 'selectedPoints',
-            'filter': ['==', 'type', 'high rise building'],
-            'layout': {
-                'icon-allow-overlap': true,
-                'icon-image': 'house',
-                'icon-size': 0.15
-            }
-        });
-    
-        map.addLayer({
-            'id': 'select-point-data-center',
-            'type': 'symbol',
-            'source': 'selectedPoints',
-            'filter': ['==', 'type', 'data center'],
-            'layout': {
-                'icon-allow-overlap': true,
-                'icon-image': 'data-center',
-                'icon-size': 0.15
-            }
-        });
-    
-        map.addLayer({
-            'id': 'select-point-factory',
-            'type': 'symbol',
-            'source': 'selectedPoints',
-            'filter': ['==', 'type', 'factory'],
-            'layout': {
-                'icon-allow-overlap': true,
-                'icon-image': 'factory',
-                'icon-size': 0.3
-            }
-        });
+        this.addIconLayer(map, 'select-point-lamps', 'selectedPoints', 'lamp', 0.15, ['==', 'type', 'street lamp']);
+        this.addIconLayer(map, 'select-point-buildings', 'selectedPoints', 'house', 0.15, ['==', 'type', 'high rise building']);
+        this.addIconLayer(map, 'select-point-data-center', 'selectedPoints', 'data-center', 0.15, ['==', 'type', 'data center']);
+        this.addIconLayer(map, 'select-point-factory', 'selectedPoints', 'factory', 0.3, ['==', 'type', 'factory']);
 
         //alarm layers
+        this.addIconLayer(map, 'point-lamps-alarm', 'alarmedPoints', 'lamp-red', 0.3, this.createFilter("street lamp"));
+        this.addIconLayer(map, 'point-building-alarm', 'alarmedPoints', 'house-red', 0.3, this.createFilter("high rise building"));
+        this.addIconLayer(map, 'point-data-center-alarm', 'alarmedPoints', 'data-center-red', 0.3, this.createFilter("data center"));
+        this.addIconLayer(map, 'point-factory-alarm', 'alarmedPoints', 'factory-red', 0.45, this.createFilter("factory"));
 
         map.addLayer({
-            'id': 'point-lamps-alarm',
-            'type': 'symbol',
-            'source': 'alarmedPoints',
-            'layout': {
-                'icon-allow-overlap': true,
-                'icon-image': 'lamp-red',
-                'icon-size': 0.15
-
-            },
-            'filter': createFilter("street lamp"),
-        });
-
-        map.addLayer({
-            'id': 'point-building-alarm',
-            'type': 'symbol',
-            'source': 'alarmedPoints',
-            'filter': createFilter("high rise building"),
-            'layout': {
-                'icon-allow-overlap': true,
-                'icon-image': 'house-red',
-                'icon-size': 0.15
-            }
-        });
-
-        map.addLayer({
-            'id': 'point-data-center-alarm',
-            'type': 'symbol',
-            'source': 'alarmedPoints',
-            'filter': createFilter("data center"),
-            'layout': {
-                'icon-allow-overlap': true,
-                'icon-image': 'data-center-red',
-                'icon-size': 0.15
-            } });
-
-            map.addLayer({
-                'id': 'point-factory-alarm',
-                'type': 'symbol',
-                'source': 'alarmedPoints',
-                'filter': createFilter("factory"),
-                'layout': {
-                    'icon-allow-overlap': true,
-                    'icon-image': 'factory-red',
-                    'icon-size': 0.3
-                }
-            });
-
-    map.addLayer({
-        id: 'point-remaining',
-        source: 'points',
-        type: 'circle',
-        'filter': ['none', ['==', 'type', "high rise building"], ['==', 'type', "data center"], ['==', 'type', "factory"], ['==', 'type', "street lamp"] ],
-        paint: {
-            'circle-color': '#11b4da',
-            'circle-radius': 7,
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
-        }
-    });
-}
-
- const addCommonLayers = (map: mapboxgl.Map) =>{
-    
-    map.addLayer({
-        'id': 'microwave-lines',
-        'type': 'line',
-        'source': 'lines',
-        'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        'paint': {
-            'line-color': microwaveLinkColor,
-            'line-width': 2
-        },
-        'filter': ['==', 'type', 'microwave']
-    });
-
-    map.addLayer({
-        'id': 'fibre-lines',
-        'type': 'line',
-        'source': 'lines',
-        'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        'paint': {
-            'line-color': fibreLinkColor,
-            'line-width': 2
-        },
-        'filter': ['==', 'type', 'fibre']
-    });
-
-    map.addLayer({
-        'id': 'selectedLineMicrowave',
-        'type': 'line',
-        'source': 'selectedLine',
-        'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        'paint': {
-            'line-color': microwaveLinkColor,
-            'line-width': 4
-        },
-        'filter': ['==', 'type', 'microwave']
-    });
-
-    map.addLayer({
-        'id': 'selectedLineFibre',
-        'type': 'line',
-        'source': 'selectedLine',
-        'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        'paint': {
-            'line-color': fibreLinkColor,
-            'line-width': 4
-        },
-        'filter': ['==', 'type', 'fibre']
-    });
-}
-
-export const removeBaseLayers = (map: mapboxgl.Map) => {
-
-    map.removeLayer("points");
-    map.removeLayer("lines");
-    map.removeLayer('selectedPoints');
-    map.removeLayer('selectedLine');
-}
-
-const removeIconLayers = (map: mapboxgl.Map) =>{
-
-    map.removeLayer('point-building');
-    map.removeLayer('point-lamps');
-    map.removeLayer('point-data-center');
-    map.removeLayer('point-factory');
-    map.removeLayer('point-remaining');
-    map.removeLayer('select-point-data-center');
-    map.removeLayer('select-point-buildings');
-    map.removeLayer('select-point-lamps');
-    map.removeLayer('select-point-factory');
-    map.removeLayer('point-building-alarm');
-    map.removeLayer('point-lamps-alarm');
-    map.removeLayer('point-data-center-alarm');
-    map.removeLayer('point-factory-alarm');
-}
-
-let checkedLayers = false;
-
-const createFilter = (type:'street lamp'|'high rise building'|'data center'|'factory', selectedSiteId?:string) =>{
-
-    return selectedSiteId === undefined ? ['==', 'type', type] : ["all", ['==', 'type', type], ['!=', 'id', selectedSiteId]]
-}
-
-export const showIconLayers = (map: mapboxgl.Map, show: boolean, selectedSiteId?: string) => {
-
-    const zoom = map.getZoom();
-    
-        if(show){
-
-    if (zoom > 11) {
-
-        const bounds = map.getBounds();
-
-        if(map.getLayer('points')!== undefined && map.getLayer('point-lamps')===undefined && !checkedLayers){
-
-        // if sites don't have a type don't change layers to icons
-        const elements = map.queryRenderedFeatures( undefined,{
-                layers: ['points'], filter:['has', 'type']
-            });
-            checkedLayers=true;
-
-        if(elements.length>0 && elements.length<1000){
-
-        if (map.getLayer('point-lamps') === undefined) {
-            map.removeLayer('points');
-            map.setLayoutProperty('alarmedPoints', 'visibility', 'none');
-            map.setLayoutProperty('selectedPoints', 'visibility', 'none');
-            createIconLayers(map,selectedSiteId);
-            //map.moveLayer('point-remaining','selectedPoints');
-
-            }
-        }
-        }
-       
-    } else {
-        swapLayersBack(map);
-    }
-}else{
-    swapLayersBack(map);
-}
-}
-
-export const swapLayersBack = (map: mapboxgl.Map) =>{
-    checkedLayers=false;
-
-    if(map.getLayer('selectedPoints') === undefined){
-        map.addLayer({
-            id: 'selectedPoints',
-            source: 'selectedPoints',
-            type: 'circle',
-            paint: {
-                'circle-color': '#116bda',
-                'circle-radius': 9,
-                'circle-stroke-width': 1,
-                'circle-stroke-color': '#fff'
-            }
-        });
-    }
-
-    if(map.getLayer('alarmedPoints') === undefined){
-        map.addLayer({
-            id: 'alarmedPoints',
-            source: 'alarmedPoints',
-            type: 'circle',
-            paint: {
-                'circle-color': '#CC0000',
-                'circle-radius': 9,
-                'circle-stroke-width': 1,
-                'circle-stroke-color': '#fff'
-            }
-        });
-    }
-
-
-    if (map.getLayer('points') === undefined) {
-
-        map.setLayoutProperty('selectedPoints', 'visibility', 'visible');
-        map.setLayoutProperty('alarmedPoints', 'visibility', 'visible');
-        removeIconLayers(map);
-
-        map.addLayer({
-            id: 'points',
+            id: 'point-remaining',
             source: 'points',
             type: 'circle',
+            'filter': ['none', ['==', 'type', "high rise building"], ['==', 'type', "data center"], ['==', 'type', "factory"], ['==', 'type', "street lamp"]],
             paint: {
                 'circle-color': '#11b4da',
                 'circle-radius': 7,
@@ -466,105 +187,144 @@ export const swapLayersBack = (map: mapboxgl.Map) =>{
                 'circle-stroke-color': '#fff'
             }
         });
+    }
 
-        map.moveLayer('points', map.getLayer('selectedPoints').id);
+    private addCommonLayers = (map: mapboxgl.Map, themesettings?: ThemeElement) => {
+
+        const theme = !themesettings ? this.pickTheme() : themesettings;
+
+        this.addLineLayer(map, 'microwave-lines', 'lines', theme.microwaveLink, 2, ['==', 'type', 'microwave']);
+        this.addLineLayer(map, 'fibre-lines', 'lines', theme.fiberLink, 2, ['==', 'type', 'fibre']);
+        this.addLineLayer(map, 'selectedLineMicrowave', 'selectedLine', theme.microwaveLink, 4, ['==', 'type', 'microwave']);
+        this.addLineLayer(map, 'selectedLineFibre', 'selectedLine', theme.fiberLink, 4, ['==', 'type', 'fibre']);
+    }
+
+    public removeBaseLayers = (map: mapboxgl.Map) => {
+
+        map.removeLayer("points");
+        map.removeLayer("lines");
+        map.removeLayer('selectedPoints');
+        map.removeLayer('selectedLine');
+    }
+
+    private removeIconLayers = (map: mapboxgl.Map) => {
+
+        map.removeLayer('point-building');
+        map.removeLayer('point-lamps');
+        map.removeLayer('point-data-center');
+        map.removeLayer('point-factory');
+        map.removeLayer('point-remaining');
+        map.removeLayer('select-point-data-center');
+        map.removeLayer('select-point-buildings');
+        map.removeLayer('select-point-lamps');
+        map.removeLayer('select-point-factory');
+        map.removeLayer('point-building-alarm');
+        map.removeLayer('point-lamps-alarm');
+        map.removeLayer('point-data-center-alarm');
+        map.removeLayer('point-factory-alarm');
+    }
+
+
+    private createFilter = (type: 'street lamp' | 'high rise building' | 'data center' | 'factory', selectedSiteId?: string) => {
+
+        return selectedSiteId === undefined ? ['==', 'type', type] : ["all", ['==', 'type', type], ['!=', 'id', selectedSiteId]]
+    }
+
+    public showIconLayers = (map: mapboxgl.Map, show: boolean, selectedSiteId?: string) => {
+
+        const zoom = map.getZoom();
+
+        if (show) {
+
+            if (zoom > 11) {
+
+                const bounds = map.getBounds();
+
+                if (map.getLayer('points') !== undefined && map.getLayer('point-lamps') === undefined && !this.checkedLayers) {
+
+                    // if sites don't have a type don't change layers to icons
+                    const elements = map.queryRenderedFeatures(undefined, {
+                        layers: ['points'], filter: ['has', 'type']
+                    });
+                    this.checkedLayers = true;
+
+                    if (elements.length > 0 && elements.length < 1000) {
+
+                        if (map.getLayer('point-lamps') === undefined) {
+                            map.removeLayer('points');
+                            map.setLayoutProperty('alarmedPoints', 'visibility', 'none');
+                            map.setLayoutProperty('selectedPoints', 'visibility', 'none');
+                            this.createIconLayers(map, selectedSiteId);
+                            //map.moveLayer('point-remaining','selectedPoints');
+
+                        }
+                    }
+                }
+
+            } else {
+                this.swapLayersBack(map);
+            }
+        } else {
+            this.swapLayersBack(map);
+        }
+    }
+
+    public swapLayersBack = (map: mapboxgl.Map) => {
+        this.checkedLayers = false;
+        const theme = this.pickTheme();
+
+        if (map.getLayer('selectedPoints') === undefined) {
+            this.addCircleLayer(map, 'selectedPoints', 'selectedPoints', theme.selectedSite, 9, 1, '#fff');
+
+        }
+
+        if (map.getLayer('alarmedPoints') === undefined) {
+            this.addCircleLayer(map, 'alarmedPoints', 'alarmedPoints', '#CC0000', 9, 1, '#fff');
+
+        }
+
+
+        if (map.getLayer('points') === undefined) {
+
+            map.setLayoutProperty('selectedPoints', 'visibility', 'visible');
+            map.setLayoutProperty('alarmedPoints', 'visibility', 'visible');
+            this.removeIconLayers(map);
+
+            this.addCircleLayer(map, 'points', 'points', theme.site, 7, 1, '#fff');
+
+
+            map.moveLayer('points', map.getLayer('selectedPoints').id);
+        }
+    }
+
+    public changeMapOpacity = (map: mapboxgl.Map, newValue: number) => {
+        const newOpacity = newValue / 100;
+        if (map) {
+            const tiles = map.getStyle().layers?.filter(el => el.id.includes("tiles"))
+            tiles?.forEach(layer => {
+                if (layer.type === 'symbol') {
+                    map.setPaintProperty(layer.id, `icon-opacity`, newOpacity);
+                    map.setPaintProperty(layer.id, `text-opacity`, newOpacity);
+                } else {
+                    map.setPaintProperty(layer.id, `${layer.type}-opacity`, newOpacity);
+                }
+            })
+        }
+
+    }
+
+    public changeTheme = (map: mapboxgl.Map, themeName: string) => {
+        this.selectedTheme = themeName;
+        const theme = this.pickTheme();
+        if (theme && map.loaded()) {
+            map.setPaintProperty('points', 'circle-color', theme.site);
+            map.setPaintProperty('selectedPoints', 'circle-color', theme.selectedSite);
+            map.setPaintProperty('microwave-lines', 'line-color', theme.microwaveLink);
+            map.setPaintProperty('fibre-lines', 'line-color', theme.fiberLink);
+        }
     }
 }
 
-const addClusterLayers = (map: mapboxgl.Map, data: any) => {
-    map.addSource('clusters', {
-        type: 'geojson',
-        data: data
-    });
+const mapLayerService = new MapLayerService();
+export default mapLayerService;
 
-    map.addSource('selectedLine', {
-        type: 'geojson',
-        data: { type: "FeatureCollection", features: [] }
-    });
-
-    map.addSource('selectedPoints', {
-        type: 'geojson',
-        data: { type: "FeatureCollection", features: [] }
-
-    });
-
-    map.addLayer({
-        id: 'clusters',
-        type: 'circle',
-        source: 'clusters',
-        filter: ['has', 'count'],
-        paint: {
-            'circle-color': [
-                'step',
-                ['get', 'count'],
-                '#51bbd6',
-                100,
-                '#f1f075',
-                750,
-                '#f28cb1'
-            ],
-            'circle-radius': [
-                'step',
-                ['get', 'count'],
-                20,
-                100,
-                30,
-                750,
-                40
-            ]
-        }
-    });
-
-
-    map.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: 'clusters',
-        filter: ['has', 'count'],
-        layout: {
-            'text-field': '{count}',
-            'text-font': ['Roboto Bold'],
-            'text-size': 12
-        }
-    });
-
-    map.addLayer({
-        'id': 'selectedLine',
-        'type': 'line',
-        'source': 'selectedLine',
-        'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        'paint': {
-            'line-color': '#888',
-            'line-width': 4
-        }
-    });
-
-    map.addLayer({
-        id: 'unclustered-points',
-        source: 'clusters',
-        filter: ['!', ['has', 'count'],],
-        type: 'circle',
-        paint: {
-            'circle-color': '#11b4da',
-            'circle-radius': 7,
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
-        }
-    });
-
-    map.addLayer({
-        id: 'selectedPoints',
-        source: 'selectedPoints',
-        type: 'circle',
-        paint: {
-            'circle-color': '#116bda',
-            'circle-radius': 9,
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
-        }
-    });
-
-}

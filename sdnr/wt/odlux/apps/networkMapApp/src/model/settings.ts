@@ -2,7 +2,7 @@
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
  * =================================================================================================
- * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,5 +16,19 @@
  * ============LICENSE_END==========================================================================
  */
 
-declare const factoryRed: string;
-export default factoryRed;
+export type NetworkMapSettings = { 
+    networkMap: { 
+        startupPosition: { latitude?: string, longitude?: string, zoom?: string }, 
+        tileOpacity: string, 
+        styling: { theme: string } } };
+
+export type ThemeElement = {
+    key: string, 
+    site: string, 
+    selectedSite: string, 
+    microwaveLink: string, 
+    fiberLink: string};
+    
+export type NetworkMapThemes = {networkMapThemes: {themes: ThemeElement[]} };
+
+export type NetworkSettings = NetworkMapSettings & NetworkMapThemes;

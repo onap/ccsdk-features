@@ -33,6 +33,12 @@ export class IsTileServerReachableAction extends Action{
     }
 }
 
+export class IsBusycheckingConnectivityAction extends Action{
+    constructor(public isBusy: boolean){
+        super();
+    }
+}
+
 export const verifyResponse = (response: Response) =>{
 
     if(response.ok){

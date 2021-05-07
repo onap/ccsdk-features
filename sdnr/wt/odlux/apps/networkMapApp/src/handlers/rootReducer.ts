@@ -23,13 +23,15 @@ import { PopupsReducer, popupStoreState } from "./popupReducer";
 import { MapReducer, mapState } from "./mapReducer";
 import { SearchReducer, searchState } from "./searchReducer";
 import { connectivityState, ConnectivityReducer } from './connectivityReducer';
+import { SettingsReducer, SettingsState } from './settingsReducer';
 
 export interface INetworkAppStoreState{
     details: DetailsStoreState,
     popup: popupStoreState,
     map: mapState,
     search: searchState,
-    connectivity: connectivityState
+    connectivity: connectivityState,
+    settings: SettingsState
 }
 
 declare module '../../../../framework/src/store/applicationStore' {
@@ -43,7 +45,8 @@ const appHandler = {
     popup: PopupsReducer, 
     map: MapReducer, 
     search: SearchReducer,
-    connectivity: ConnectivityReducer};
+    connectivity: ConnectivityReducer,
+    settings: SettingsReducer};
 
 export const networkmapRootHandler = combineActionHandler<INetworkAppStoreState>(appHandler)
 

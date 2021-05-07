@@ -20,8 +20,8 @@ import * as React from 'react';
 import { Paper, Typography, Tooltip } from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/Info';
 
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
+import { IApplicationStoreState } from '../../../../../framework/src/store/applicationStore';
+import connect, { IDispatcher, Connect } from '../../../../../framework/src/flux/connect';
 
 type props = Connect<typeof mapStateToProps, typeof mapDispatchToProps>;
 

@@ -2,7 +2,7 @@
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
  * =================================================================================================
- * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,5 +16,28 @@
  * ============LICENSE_END==========================================================================
  */
 
-declare const factoryRed: string;
-export default factoryRed;
+import { NetworkMapSettings, NetworkMapThemes, NetworkSettings } from "../model/settings";
+import { requestRest } from "../../../../framework/src/services/restService";
+
+ class SettingsService{
+
+    public getMapSettings = async () =>{
+        const result = await requestRest<any>("/userdata", {method: "GET"});
+        return result;
+    }
+
+    public getMapThemes = async () =>{
+        const result = await requestRest<NetworkMapThemes>("/userdata/networkMapThemes", {method: "GET"});
+        return result;
+    }
+
+    public updateMapSettings = async (newElement: NetworkMapSettings) =>{
+
+        const result = await requestRest<NetworkMapSettings>("/userdata/networkMap", {method: "PUT", body: JSON.stringify(newElement.networkMap)});
+        return result;
+    }
+
+
+ }
+
+ export const settingsService = new SettingsService();

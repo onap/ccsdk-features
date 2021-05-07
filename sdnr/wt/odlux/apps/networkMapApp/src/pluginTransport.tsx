@@ -30,17 +30,46 @@ import applicationApi from "../../../framework/src/services/applicationApi";
 import { UpdateDetailsView } from "./actions/detailsAction";
 import { findSiteToAlarm } from "./actions/mapActions";
 import { URL_BASEPATH } from "./config";
+import { Redirect, Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
+import CustomizationView from "./components/customize/customizationView";
+import { getSettings } from "./actions/settingsAction";
+import connect, { Connect, IDispatcher } from "../../../framework/src/flux/connect";
+import { IApplicationStoreState } from "../../../framework/src/store/applicationStore";
 
-const App : React.SFC = (props) => {
-  return <MainView />
-};
+const mapProps = (state: IApplicationStoreState) => ({
+});
+
+const mapDisp = (dispatcher: IDispatcher) => ({
+  getSettings: () => dispatcher.dispatch(getSettings())
+
+});
+
+
+const NetworkRouterApp = withRouter(connect(mapProps, mapDisp)((props: RouteComponentProps & Connect<typeof mapProps, typeof mapDisp>) => {
+
+  React.useLayoutEffect(() => {
+    (async function waitFor() {
+      await  props.getSettings();
+    })();
+   
+  }, []);
+
+  //props.history.action = "POP";
+  return (
+    <Switch>
+      <Route path={`${props.match.path}/customize`} component={CustomizationView} />
+      <Route path={`${props.match.path}`} component={MainView} />
+      <Redirect to={`${props.match.path}`} />
+    </Switch>
+  )
+}));
 
 export function register() {
   applicationManager.registerApplication({
     name: URL_BASEPATH, // used as name of state as well
     icon: faMapMarked,
     rootActionHandler: networkmapRootHandler,
-    rootComponent: App,
+    rootComponent: NetworkRouterApp,
     menuEntry: "Network Map"
   });
 }
@@ -73,12 +102,13 @@ subscribe<ObjectNotification & IFormatedMessage>(["ObjectCreationNotification", 
 }));
 */
 
+/*
 subscribe<FaultAlarmNotification & IFormatedMessage>("ProblemNotification", (fault => {
   const store = applicationApi && applicationApi.applicationStore;
   if (fault && store) {
-     store.dispatch(findSiteToAlarm(fault.nodeName));
+    store.dispatch(findSiteToAlarm(fault.nodeName));
 
-  
+
   }
-}));
+}));*/
 

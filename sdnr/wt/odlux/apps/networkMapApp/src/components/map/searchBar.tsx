@@ -20,16 +20,16 @@ import * as React from 'react';
 import { makeStyles, Paper, InputBase, IconButton, Divider, Popover, Typography } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { URL_API } from '../config';
-import { isSite } from '../utils/utils';
-import { Site } from '../model/site';
-import { link } from '../model/link';
-import { SelectSiteAction, SelectLinkAction } from '../actions/detailsAction';
-import { HighlightLinkAction, HighlightSiteAction, ZoomToSearchResultAction } from '../actions/mapActions';
-import { calculateMidPoint } from '../utils/mapUtils';
-import { SetSearchValueAction } from '../actions/searchAction';
-import connect,{ Connect, IDispatcher } from '../../../../framework/src/flux/connect';
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
+import { URL_API } from '../../config';
+import { isSite } from '../../utils/utils';
+import { Site } from '../../model/site';
+import { link } from '../../model/link';
+import { SelectSiteAction, SelectLinkAction } from '../../actions/detailsAction';
+import { HighlightLinkAction, HighlightSiteAction, ZoomToSearchResultAction } from '../../actions/mapActions';
+import { calculateMidPoint } from '../../utils/mapUtils';
+import { SetSearchValueAction } from '../../actions/searchAction';
+import connect,{ Connect, IDispatcher } from '../../../../../framework/src/flux/connect';
+import { IApplicationStoreState } from '../../../../../framework/src/store/applicationStore';
 
 
 

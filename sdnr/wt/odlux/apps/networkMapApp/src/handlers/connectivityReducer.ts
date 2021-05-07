@@ -17,12 +17,12 @@
  */
 
 import { IActionHandler } from "../../../../framework/src/flux/action";
-import { IsTopologyServerReachableAction, IsTileServerReachableAction } from "../actions/connectivityAction";
+import { IsTopologyServerReachableAction, IsTileServerReachableAction, IsBusycheckingConnectivityAction } from "../actions/connectivityAction";
 
 
-export type connectivityState = {isToplogyServerAvailable: boolean, isTileServerAvailable: boolean };
+export type connectivityState = {isToplogyServerAvailable: boolean, isTileServerAvailable: boolean, isBusy: boolean };
 
-const initialState: connectivityState = {isToplogyServerAvailable: true, isTileServerAvailable: true};
+const initialState: connectivityState = {isToplogyServerAvailable: true, isTileServerAvailable: true, isBusy: true};
 
 export const ConnectivityReducer: IActionHandler<connectivityState> =(state=initialState, action)=> {
 
@@ -32,6 +32,9 @@ export const ConnectivityReducer: IActionHandler<connectivityState> =(state=init
     else if (action instanceof IsTileServerReachableAction){
         state = Object.assign({}, state, { isTileServerAvailable: action.reachable });
 
+    }else if(action instanceof IsBusycheckingConnectivityAction){
+        state = {...state, isBusy: action.isBusy}
+        
     }
 
     return state;
