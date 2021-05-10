@@ -49,6 +49,7 @@
         <module>aafshiro</module>
         <module>lib/rlock</module>
         <module>lib/doorman</module>
+        <module>lib/network-prioritization</module>
     </modules>
 
     <scm>
