@@ -25,6 +25,8 @@ import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeConnectListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -51,8 +53,10 @@ public class MountpointNodeConnectListenerImpl implements NetconfNodeConnectList
         NodeId nNodeId = accessor.getNodeId();
         NetconfNode netconfNode = accessor.getNetconfNode();
 
+        Ipv4Address ipv4Address = netconfNode.getHost().getIpAddress().getIpv4Address();
+        Ipv6Address ipv6Address = netconfNode.getHost().getIpAddress().getIpv6Address();
         LOG.debug("In onEnterConnected of MountpointNodeConnectListenerImpl - nNodeId = {}, IP Address = {}",nNodeId.getValue()
-                ,netconfNode.getHost().getIpAddress().getIpv4Address().getValue());
+                ,ipv4Address != null?ipv4Address.getValue():ipv6Address.getValue());
 
         JSONObject obj = new JSONObject();
         obj.put(Constants.NODEID, nNodeId.getValue());
