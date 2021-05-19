@@ -29,7 +29,7 @@ import { IAlarmLogEntriesState, alarmLogEntriesActionHandler } from './alarmLogE
 import { SetPanelAction } from '../actions/panelChangeActions';
 import { IFaultStatus, faultStatusHandler } from './faultStatusHandler';
 import { stuckAlarmHandler } from './clearStuckAlarmsHandler';
-import { PanelId } from 'models/panelId';
+import { PanelId } from '../models/panelId';
 import { SetPartialUpdatesAction } from '../actions/partialUpdatesAction';
 
 export interface IFaultAppStoreState {

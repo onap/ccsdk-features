@@ -174,7 +174,7 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
         {
           activePanelId === 'CurrentProblem' &&
           <>
-            <FaultTable stickyHeader tableId="current-problems-table" idProperty={'id'} customActionButtons={customActions} columns={[
+            <FaultTable stickyHeader tableId="current-problems-table" idProperty="id" customActionButtons={customActions} columns={[
               { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
               { property: "timestamp", type: ColumnType.text, title: "Timestamp" },
               { property: "nodeId", title: "Node Name", type: ColumnType.text },
@@ -191,7 +191,7 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
         }
         {activePanelId === 'AlarmNotifications' &&
 
-          <FaultAlarmNotificationTable tableId="alarm-notifications-table" stickyHeader rows={this.props.faultNotifications.faults} asynchronus columns={[
+          <FaultAlarmNotificationTable tableId="alarm-notifications-table" idProperty="id" stickyHeader rows={this.props.faultNotifications.faults} asynchronus columns={[
             { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
             { property: "timeStamp", title: "Timestamp" },
             { property: "nodeName", title: "Node Name" },
@@ -199,8 +199,7 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
             { property: "objectId", title: "Object Id" },
             { property: "problem", title: "Alarm Type" },
             { property: "severity", title: "Severity", width: "140px" },
-          ]} idProperty={'id'} />
-
+          ]} />
         }
 
         {activePanelId === 'AlarmLog' &&

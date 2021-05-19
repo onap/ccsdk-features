@@ -31,7 +31,7 @@ import { IApplicationStoreState } from "../../../framework/src/store/application
 import { faultAppRootHandler } from './handlers/faultAppRootHandler';
 import { FaultApplication } from "./views/faultApplication";
 
-import { FaultAlarmNotification } from "./models/fault";
+import { FaultAlarmNotificationWS } from "./models/fault";
 import { PanelId } from "./models/panelId";
 
 import { SetPanelAction } from "./actions/panelChangeActions";
@@ -40,7 +40,6 @@ import { AddFaultNotificationAction } from "./actions/notificationActions";
 import { createCurrentProblemsProperties, createCurrentProblemsActions, currentProblemsReloadAction } from "./handlers/currentProblemsHandler";
 import { FaultStatus } from "./components/faultStatus";
 import { refreshFaultStatusAsyncAction } from "./actions/statusActions";
-import { alarmLogEntriesReloadAction } from "./handlers/alarmLogEntriesHandler";
 
 let currentMountId: string | undefined = undefined;
 
@@ -93,20 +92,21 @@ export function register() {
     menuEntry: "Fault"
   });
 
+  let counter = 0;
   // subscribe to the websocket notifications
-  subscribe<FaultAlarmNotification & IFormatedMessage>("ProblemNotification", (fault => {
+  subscribe<FaultAlarmNotificationWS & IFormatedMessage>("problem-notification", (fault => {
     const store = applicationApi && applicationApi.applicationStore;
     if (fault && store) {
-      store.dispatch(new AddFaultNotificationAction(fault));
 
-      // reload fault data if the view is displayed
-      if (store.state.fault.listenForPartialUpdates) {
-        if (store.state.fault.currentOpenPanel === "AlarmLog") {
-          store.dispatch(alarmLogEntriesReloadAction);
-        } else if (store.state.fault.currentOpenPanel === "CurrentProblem") {
-          store.dispatch(currentProblemsReloadAction);
-        }
-      }
+      store.dispatch(new AddFaultNotificationAction({
+        id: String(counter++),
+        nodeName: fault["node-id"],
+        counter: +fault.data.counter,
+        objectId: fault.data["object-id-ref"],
+        problem: fault.data.problem,
+        severity: fault.data.severity || '',
+        timeStamp: fault.data["time-stamp"],
+      }));
     }
   }));
 

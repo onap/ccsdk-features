@@ -22,21 +22,36 @@ export type Fault = {
   timestamp: string;
   objectId: string;
   problem: string;
-  severity: null | 'Warning' | 'Minor' | 'Major' | 'Critical';
+  severity: null | 'Warning' | 'Minor' | 'Major' | 'Critical' | 'NonAlarmed';
   type: string;
-  sourceType: string;
+  sourceType?: string;
 }
 
 export type FaultAlarmNotification = {
   id: string;
+  timeStamp: string;
   nodeName: string;
   counter: number;
-  timeStamp: string;
   objectId: string;
   problem: string;
-  severity: null | 'Warning' | 'Minor' | 'Major' | 'Critical';
-  type: string;
-  sourceType: string;
+  severity: string;
+}
+
+export type FaultAlarmNotificationWS = {
+  "node-id": string;
+  "data": {
+    "counter": number;
+    "time-stamp": string;
+    "object-id-ref": string;
+    "problem": string;
+    "severity": null | 'Warning' | 'Minor' | 'Major' | 'Critical' | 'NonAlarmed';
+  };
+  "type": {
+    "namespace": string;
+    "revision": string;
+    "type": string;
+  };
+  "event-time": string;
 }
 
 /**
