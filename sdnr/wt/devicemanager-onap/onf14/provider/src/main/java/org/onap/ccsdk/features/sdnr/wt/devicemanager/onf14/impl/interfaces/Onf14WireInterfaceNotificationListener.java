@@ -83,7 +83,7 @@ public class Onf14WireInterfaceNotificationListener implements WireInterface20Li
         .setSourceType(SourceType.Netconf)
         .setTimestamp(notification.getTimestamp());
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
-        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 ObjectDeletionNotification.QNAME, notification.getTimestamp());
 
         log.debug("onObjectDeletionNotification log entry written");
@@ -98,7 +98,7 @@ public class Onf14WireInterfaceNotificationListener implements WireInterface20Li
                 .setSeverity(mapSeverity(notification.getSeverity())).setCounter(notification.getCounter().intValue())
                 .build();
         serviceProvider.getFaultService().faultNotification(faultAlarm);
-        serviceProvider.getWebsocketService().sendNotification( notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification( notification, netconfAccessor.getNodeId(),
                 ProblemNotification.QNAME, notification.getTimestamp());
 
     }
@@ -120,7 +120,7 @@ public class Onf14WireInterfaceNotificationListener implements WireInterface20Li
         .setSourceType(SourceType.Netconf)
         .setTimestamp(notification.getTimestamp());
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
-        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 AttributeValueChangedNotification.QNAME, notification.getTimestamp());
 
 
@@ -140,7 +140,7 @@ public class Onf14WireInterfaceNotificationListener implements WireInterface20Li
         .setSourceType(SourceType.Netconf)
         .setTimestamp(notification.getTimestamp());
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
-        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 ObjectCreationNotification.QNAME, notification.getTimestamp());
 
         log.debug("onObjectCreationNotification log entry written");

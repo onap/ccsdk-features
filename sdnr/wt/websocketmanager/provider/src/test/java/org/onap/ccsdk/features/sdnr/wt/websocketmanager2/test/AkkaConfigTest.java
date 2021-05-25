@@ -20,13 +20,11 @@ package org.onap.ccsdk.features.sdnr.wt.websocketmanager2.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
+import java.nio.file.Files;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.utils.AkkaConfig;
 
@@ -58,19 +56,6 @@ public class AkkaConfigTest {
     public static String loadResourceContentAsString(String resourceName)
             throws URISyntaxException, FileNotFoundException, IOException {
 
-        StringBuilder sb = new StringBuilder();
-
-        ClassLoader classLoader = AkkaConfigTest.class.getClassLoader();
-        File file = Paths.get(classLoader.getResource(resourceName).toURI()).toFile();
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line = br.readLine();
-
-            while (line != null) {
-                sb.append(line);
-                sb.append(System.lineSeparator());
-                line = br.readLine();
-            }
-        }
-        return sb.toString();
+        return Files.readString(new File("src/test/resources/"+resourceName).toPath());
     }
 }

@@ -99,7 +99,7 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
                 .setAttributeName(eventNotification.getAttributeName()).setCounter(eventNotification.getCounter())
                 .setNewValue(eventNotification.getNewValue()).setObjectIdRef(eventNotification.getObjectId())
                 .setTimeStamp(eventNotification.getTimestamp()).build();
-        this.webSocketService.sendViaWebsockets(nodeId, notification, AttributeValueChangedNotification.QNAME,
+        this.webSocketService.sendViaWebsockets(new NodeId(nodeId), notification, AttributeValueChangedNotification.QNAME,
                 eventNotification.getTimestamp());
     }
 
@@ -119,7 +119,7 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
         databaseService.writeEventLog(eventlogEntity);
         ObjectCreationNotification notification = new ObjectCreationNotificationBuilder().setCounter(counter)
                 .setObjectIdRef(objectId).setTimeStamp(eventlogEntity.getTimestamp()).build();
-        this.webSocketService.sendViaWebsockets(nodeId.getValue(), notification, ObjectCreationNotification.QNAME,
+        this.webSocketService.sendViaWebsockets(nodeId, notification, ObjectCreationNotification.QNAME,
                 eventlogEntity.getTimestamp());
     }
 
@@ -132,7 +132,7 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
         databaseService.writeEventLog(eventlogEntity);
         ObjectDeletionNotification notification = new ObjectDeletionNotificationBuilder().setCounter(counter)
                 .setObjectIdRef(objectId).setTimeStamp(eventlogEntity.getTimestamp()).build();
-        this.webSocketService.sendViaWebsockets(nodeId.getValue(), notification, ObjectDeletionNotification.QNAME,
+        this.webSocketService.sendViaWebsockets(nodeId, notification, ObjectDeletionNotification.QNAME,
                 eventlogEntity.getTimestamp());
     }
 
@@ -161,12 +161,13 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
         } else {
             this.pushAlarmIfNotInMaintenance(nodeName, notificationXml);
         }
+        // Send
         ProblemNotification notification = new ProblemNotificationBuilder().setCounter(faultNotification.getCounter())
                 .setObjectIdRef(faultNotification.getObjectId()).setTimeStamp(faultNotification.getTimestamp())
                 .setProblem(faultNotification.getProblem())
                 .setSeverity(InternalSeverity.toYang(faultNotification.getSeverity())).build();
-        this.webSocketService.sendViaWebsockets(faultNotification.getNodeId(), notification,
-                ObjectDeletionNotification.QNAME, faultNotification.getTimestamp());
+        this.webSocketService.sendViaWebsockets(new NodeId(faultNotification.getNodeId()), notification,
+                ProblemNotification.QNAME, faultNotification.getTimestamp());
     }
 
     private void pushAlarmIfNotInMaintenance(String nodeName, ProblemNotificationXml notificationXml) {

@@ -22,6 +22,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.QName;
 
@@ -32,6 +33,6 @@ import org.opendaylight.yangtools.yang.common.QName;
  */
 public interface WebSocketServiceClientInternal extends AutoCloseable {
 
-    public void sendViaWebsockets(@NonNull String nodeName,Notification notification, QName qname, DateAndTime timestamp);
+    public void sendViaWebsockets(@NonNull NodeId nodeId,Notification notification, QName qname, DateAndTime timestamp);
 
 }

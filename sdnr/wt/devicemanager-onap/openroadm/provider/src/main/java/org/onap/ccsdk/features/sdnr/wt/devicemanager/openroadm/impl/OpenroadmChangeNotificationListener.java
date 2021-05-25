@@ -68,14 +68,14 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
     @Override
     public void onNetconfConfirmedCommit(NetconfConfirmedCommit notification) {
         log.info("onNetconfConfirmedCommit {} ", notification);
-        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfConfirmedCommit.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
     @Override
     public void onNetconfSessionStart(NetconfSessionStart notification) {
         log.info("onNetconfSessionStart {} ", notification);
-        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfSessionStart.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
 
     }
@@ -83,14 +83,14 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
     @Override
     public void onNetconfSessionEnd(NetconfSessionEnd notification) {
         log.info("onNetconfSessionEnd {}", notification);
-        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfSessionEnd.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
     @Override
     public void onNetconfCapabilityChange(NetconfCapabilityChange notification) {
         log.info("onNetconfCapabilityChange {}", notification);
-        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfCapabilityChange.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
@@ -120,7 +120,7 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
             databaseService.writeEventLog(eventlogBuilder.build());
         }
         log.info("onNetconfConfigChange (2) {}", sb);
-        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfConfigChange.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
 
     }
