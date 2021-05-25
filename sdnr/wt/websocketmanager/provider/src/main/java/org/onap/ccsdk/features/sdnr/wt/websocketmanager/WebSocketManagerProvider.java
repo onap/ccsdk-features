@@ -24,6 +24,7 @@ import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.NotificationO
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.osgi.service.http.HttpService;
@@ -84,24 +85,44 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
 
 
     @Override
-    public void sendNotification(Notification notification, String nodeId, QName eventType) {
+    public void sendNotification(Notification notification, NodeId nodeId, QName eventType) {
+        if(!assertNotificationType(notification, eventType)){
+            return;
+        }
         this.sendNotification(notification, nodeId, eventType, YangToolsMapperHelper.getTime(notification,Instant.now()));
     }
 
+    public static boolean assertNotificationType(Notification notification, QName eventType) {
+        final String yangTypeName = eventType.getLocalName();
+        final Class<?> cls = notification.getClass();
+        final String clsNameToTest = YangToolsMapperHelper.toCamelCaseClassName(yangTypeName);
+        if(cls.getSimpleName().equals(clsNameToTest)) {
+            return true;
+        }
+        Class<?>[] ifs = cls.getInterfaces();
+        for(Class<?> clsif:ifs) {
+            if(clsif.getSimpleName().equals(clsNameToTest)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     @Override
-    public void sendNotification(Notification notification, String nodeId, QName eventType, DateAndTime eventTime) {
-        WebSocketManagerSocket.broadCast(new NotificationOutput(notification, nodeId, eventType, eventTime));
+    public void sendNotification(Notification notification, NodeId nodeId, QName eventType, DateAndTime eventTime) {
+        WebSocketManagerSocket.broadCast(new NotificationOutput(notification, nodeId.getValue(), eventType, eventTime));
 
     }
 
     @Override
-    public void sendNotification(DOMNotification notification, String nodeId, QName eventType) {
+    public void sendNotification(DOMNotification notification, NodeId nodeId, QName eventType) {
         LOG.warn("not yet implemented");
 
     }
 
     @Override
-    public void sendNotification(DOMNotification notification, String nodeId, QName eventType, DateAndTime eventTime) {
+    public void sendNotification(DOMNotification notification, NodeId nodeId, QName eventType, DateAndTime eventTime) {
         LOG.warn("not yet implemented");
 
     }

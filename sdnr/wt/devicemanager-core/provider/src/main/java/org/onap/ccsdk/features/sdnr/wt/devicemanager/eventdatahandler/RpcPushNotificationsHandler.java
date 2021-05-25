@@ -42,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicema
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotificationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushAttributeChangeNotificationInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationInput;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +77,7 @@ public class RpcPushNotificationsHandler implements PushNotifications {
                 new AttributeValueChangedNotificationBuilder().setAttributeName(input.getAttributeName())
                         .setCounter(input.getCounter()).setNewValue(input.getNewValue())
                         .setObjectIdRef(input.getObjectId()).setTimeStamp(input.getTimestamp()).build();
-        webSocketService.sendViaWebsockets(OWNKEYNAME, notification, AttributeValueChangedNotification.QNAME,
+        webSocketService.sendViaWebsockets(new NodeId(input.getNodeId()!=null?input.getNodeId():OWNKEYNAME), notification, AttributeValueChangedNotification.QNAME,
                 input.getTimestamp());
 
     }
@@ -102,7 +103,7 @@ public class RpcPushNotificationsHandler implements PushNotifications {
                 .setCounter(input.getCounter()).setObjectIdRef(input.getObjectId())
                 .setSeverity(InternalSeverity.toYang(input.getSeverity())).setTimeStamp(input.getTimestamp()).build();
         aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(OWNKEYNAME, notificationXml);
-        webSocketService.sendViaWebsockets(OWNKEYNAME, notification, ProblemNotification.QNAME, input.getTimestamp());
+        webSocketService.sendViaWebsockets(new NodeId(input.getNodeId()!=null?input.getNodeId():OWNKEYNAME), notification, ProblemNotification.QNAME, input.getTimestamp());
     }
 
 }

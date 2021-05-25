@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl.OpenroadmFaultNotificationListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.AlarmNotification;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev191129.Severity;
@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.probablecause.rev191129.P
 import org.opendaylight.yang.gen.v1.http.org.openroadm.resource.rev191129.resource.Device;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.resource.rev191129.resource.DeviceBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 public class TestOpenRoadmAlarmNotification {
     private static final String myCircuitId = "Test_Id";
@@ -52,18 +53,25 @@ public class TestOpenRoadmAlarmNotification {
     ProbableCause myProbableCause =
             new ProbableCauseBuilder().setCause(ProbableCauseEnum.AutomaticLaserShutdown).build();
     Device device = new DeviceBuilder().setNodeId(NodeIdType.getDefaultInstance("zNhe2i5")).build();
-    Resource myResource = new ResourceBuilder().setDevice(device).build();
+    org.opendaylight.yang.gen.v1.http.org.openroadm.resource.rev191129.resource.resource.resource.CircuitPack resVal =
+            new org.opendaylight.yang.gen.v1.http.org.openroadm.resource.rev191129.resource.resource.resource.CircuitPackBuilder()
+            .setCircuitPackName("Slot-0-Port-A").build();
+    org.opendaylight.yang.gen.v1.http.org.openroadm.resource.rev191129.resource.Resource affectedResource =
+            new org.opendaylight.yang.gen.v1.http.org.openroadm.resource.rev191129.resource.ResourceBuilder().setResource(resVal).build();
+    Resource myResource = new ResourceBuilder().setResource(affectedResource).setDevice(device).build();
+
+
     static DeviceManagerServiceProvider serviceProvider;
     static @NonNull FaultService faultService;
     static AlarmNotification notification;
     Severity severity;
-    static NetconfAccessor accessor;
+    static NetconfBindingAccessor accessor;
     static WebsocketManagerService notificationService;
-
+    static NodeId nNodeId = new NodeId("nSky");
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
 
-        accessor = mock(NetconfAccessor.class);
+        accessor = mock(NetconfBindingAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
         faultService = mock(FaultService.class);
         notificationService = mock(WebsocketManagerService.class);
@@ -74,10 +82,11 @@ public class TestOpenRoadmAlarmNotification {
     @Test
     public void testNotification() {
         severity = Severity.Critical;
+        when(accessor.getNodeId()).thenReturn(nNodeId);
         when(serviceProvider.getFaultService()).thenReturn(faultService);
         when(serviceProvider.getWebsocketService()).thenReturn(notificationService);
         OpenroadmFaultNotificationListener alarmListener =
-                new OpenroadmFaultNotificationListener(serviceProvider);
+                new OpenroadmFaultNotificationListener(accessor, serviceProvider);
         notification = mock(AlarmNotification.class);
 
         when(notification.getId()).thenReturn(myId);

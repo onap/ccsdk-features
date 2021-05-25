@@ -57,6 +57,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>ietf-topology</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-yang-utils</artifactId>
             <version>${project.version}</version>
@@ -141,7 +146,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-devicemanager-provider</artifactId>
+            <artifactId>sdnr-wt-devicemanager-core-provider</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

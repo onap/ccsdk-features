@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.jetty.websocket.api.Session;
@@ -41,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 public class WebSocketManagerSocket extends WebSocketAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WebSocketManagerSocket.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(WebSocketManagerSocket.class);
     public static final String MSG_KEY_DATA = "data";
     public static final DataType MSG_KEY_SCOPES = DataType.scopes;
     public static final String MSG_KEY_PARAM = "param";
@@ -54,7 +58,47 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
     private static final Pattern PATTERN_SCOPEREGISTRATION =
             Pattern.compile(REGEX_SCOPEREGISTRATION, Pattern.MULTILINE);
     private static final Random RND = new Random();
+    private static final long SEND_MESSAGE_TIMEOUT_MILLIS = 1500;
+    private static final int QUEUE_SIZE = 100;
 
+    private final Thread sendingSyncThread;
+    private final ArrayBlockingQueue<String> messageQueue;
+    private boolean closed;
+
+    private final Runnable sendingRunner = new Runnable() {
+        @Override
+        public void run() {
+            LOG.debug("isrunning");
+            while (!closed) {
+                try {
+
+                    String message = messageQueue.poll();
+                    if (message != null) {
+                        WebSocketManagerSocket.this.session.getRemote().sendStringByFuture(message)
+                                .get(SEND_MESSAGE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+                        LOG.info("message sent");
+                    }
+                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                    LOG.warn("problem pushing message: ", e);
+                }
+
+                if (messageQueue.isEmpty()) {
+                    trySleep(1000);
+                }
+
+            }
+            LOG.debug("isstopped");
+
+        };
+    };
+
+    private static void trySleep(int sleepMs) {
+        try {
+            Thread.sleep(sleepMs);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
     /**
      * list of all sessionids
@@ -80,6 +124,8 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     public WebSocketManagerSocket() {
         this.myUniqueSessionId = _genSessionId();
+        this.sendingSyncThread = new Thread(this.sendingRunner);
+        this.messageQueue = new ArrayBlockingQueue<>(QUEUE_SIZE);
     }
 
     @Override
@@ -112,6 +158,8 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
     @Override
     public void onWebSocketConnect(Session sess) {
         this.session = sess;
+        closed = false;
+        this.sendingSyncThread.start();
         clientList.put(String.valueOf(this.hashCode()), this);
         LOG.debug("client connected from " + this.getRemoteAdr());
     }
@@ -119,13 +167,14 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
         clientList.remove(String.valueOf(this.hashCode()));
+        this.sendingSyncThread.interrupt();
+        closed = true;
         LOG.debug("client disconnected from " + this.getRemoteAdr());
     }
 
     @Override
     public void onWebSocketError(Throwable cause) {
         LOG.debug("error caused on " + this.getRemoteAdr() + " :" + cause.getMessage());
-        // super.onWebSocketError(cause);
     }
 
     private String getRemoteAdr() {
@@ -146,12 +195,12 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
     private boolean manageClientRequest(String request) {
         boolean ret = false;
         final Matcher matcher = PATTERN_SCOPEREGISTRATION.matcher(request);
-        if(!matcher.find()) {
+        if (!matcher.find()) {
             return false;
         }
         try {
             ScopeRegistration registration = mapper.readValue(request, ScopeRegistration.class);
-            if (registration!=null && registration.validate() && registration.isType(MSG_KEY_SCOPES)) {
+            if (registration != null && registration.validate() && registration.isType(MSG_KEY_SCOPES)) {
                 ret = true;
                 String sessionId = this.getSessionId();
                 UserScopes clientDto = new UserScopes();
@@ -188,9 +237,9 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
     public void send(String msg) {
         try {
             LOG.trace("sending {}", msg);
-            this.session.getRemote().sendString(msg);
-        } catch (Exception e) {
-            LOG.warn("problem sending message: " + e.getMessage());
+            this.messageQueue.put(msg);
+        } catch (InterruptedException e) {
+            LOG.warn("problem putting message into sending queue: " + e.getMessage());
         }
     }
 
@@ -200,7 +249,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     private void sendToAll(NotificationOutput output) {
         try {
-            this.sendToAll(output.getNodeId(), output.getType(), mapper.writeValueAsString(output));
+            sendToAll(output.getNodeId(), output.getType(), mapper.writeValueAsString(output));
         } catch (JsonProcessingException e) {
             LOG.warn("problem serializing noitifcation: ", e);
         }

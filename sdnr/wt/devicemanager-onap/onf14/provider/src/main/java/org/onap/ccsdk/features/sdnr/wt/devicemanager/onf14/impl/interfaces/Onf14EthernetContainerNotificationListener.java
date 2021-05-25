@@ -96,7 +96,7 @@ public class Onf14EthernetContainerNotificationListener implements EthernetConta
                 .setSeverity(mapSeverity(notification.getSeverity())).setCounter(notification.getCounter().intValue())
                 .build();
         serviceProvider.getFaultService().faultNotification(faultAlarm);
-        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 ProblemNotification.QNAME, notification.getTimestamp());
 
     }
@@ -115,7 +115,7 @@ public class Onf14EthernetContainerNotificationListener implements EthernetConta
                 .setNewValue(notification.getNewValue()).setObjectId(notification.getObjectIdRef().getValue())
                 .setSourceType(SourceType.Netconf).setTimestamp(notification.getTimestamp());
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
-        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 AttributeValueChangedNotification.QNAME, notification.getTimestamp());
 
         log.debug("onAttributeValueChangedNotification log entry written");
@@ -131,7 +131,7 @@ public class Onf14EthernetContainerNotificationListener implements EthernetConta
                 .setObjectId(notification.getObjectIdRef().getValue()).setSourceType(SourceType.Netconf)
                 .setTimestamp(notification.getTimestamp());
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
-        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 ObjectCreationNotification.QNAME, notification.getTimestamp());
 
         log.debug("onObjectCreationNotification log entry written");

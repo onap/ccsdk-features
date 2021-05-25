@@ -219,7 +219,7 @@ public class YangToolsMapperHelper {
                 return true;
             }
         }
-        return false;
+        return ifToImplement.isAssignableFrom(clz);
     }
 
     /**
@@ -235,7 +235,12 @@ public class YangToolsMapperHelper {
         final StringBuilder ret = new StringBuilder(name.length());
         if (!name.startsWith("_"))
             ret.append('_');
+        ret.append(toCamelCase(name));
+        return ret.toString();
+    }
+    public static String toCamelCase(final String name) {
         int start = 0;
+        final StringBuilder ret = new StringBuilder(name.length());
         for (final String word : name.split("-")) {
             if (!word.isEmpty()) {
                 if (start++ == 0) {
@@ -248,7 +253,10 @@ public class YangToolsMapperHelper {
         }
         return ret.toString();
     }
-
+    public static String toCamelCaseClassName(final String name) {
+        final String clsName = toCamelCase(name);
+        return clsName.substring(0,1).toUpperCase()+clsName.substring(1);
+    }
     private static BundleContext getBundleContext() {
         Bundle bundle = FrameworkUtil.getBundle(YangToolsMapperHelper.class);
         return bundle != null ? bundle.getBundleContext() : null;

@@ -206,9 +206,11 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
     public void onObjectCreationNotification(ObjectCreationNotification notification) {
         LOG.debug("Got event of type :: {}", ObjectCreationNotification.class.getSimpleName());
         if (notification != null) {
+            // Send devicemanager specific notification for database and ODLUX
             microwaveModelListener.creationNotification(acessor.getNodeId(), notification.getCounter(),
                     notification.getTimeStamp(), Helper.nnGetUniversalId(notification.getObjectIdRef()).getValue());
-            notificationService.sendNotification(notification, acessor.getNodeId().getValue(),
+            // Send model specific notification to WebSocketManager
+            notificationService.sendNotification(notification, acessor.getNodeId(),
                     ObjectCreationNotification.QNAME, notification.getTimeStamp());
         }
     }
@@ -217,9 +219,11 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
     public void onObjectDeletionNotification(ObjectDeletionNotification notification) {
         LOG.debug("Got event of type :: {}", ObjectDeletionNotification.class.getSimpleName());
         if (notification != null) {
+            // Send devicemanager specific notification for database and ODLUX
             microwaveModelListener.deletionNotification(acessor.getNodeId(), notification.getCounter(),
                     notification.getTimeStamp(), Helper.nnGetUniversalId(notification.getObjectIdRef()).getValue());
-            notificationService.sendNotification(notification, acessor.getNodeId().getValue(),
+            // Send model specific notification to WebSocketManager
+            notificationService.sendNotification(notification, acessor.getNodeId(),
                     ObjectDeletionNotification.QNAME, notification.getTimeStamp());
         }
     }
@@ -231,8 +235,10 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
                 .setCounter(notification.getCounter()).setTimestamp(notification.getTimeStamp())
                 .setObjectId(Helper.nnGetUniversalId(notification.getObjectIdRef()).getValue())
                 .setAttributeName(notification.getAttributeName()).setNewValue(notification.getNewValue()).build();
+        // Send devicemanager specific notification for database and ODLUX
         microwaveModelListener.eventNotification(beventlogEntity);
-        notificationService.sendNotification(notification, acessor.getNodeId().getValue(),
+        // Send model specific notification to WebSocketManager
+        notificationService.sendNotification(notification, acessor.getNodeId(),
                 AttributeValueChangedNotification.QNAME, notification.getTimeStamp());
         if (notificationQueue.isPresent()) {
             notificationQueue.get().put(beventlogEntity);
@@ -249,8 +255,10 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
                 .setNodeId(this.acessor.getNodeId().getValue())
                 .setSeverity(mapSeverity(notification.getSeverity())).setCounter(notification.getCounter())
                 .build();
+        // Send devicemanager specific notification for database and ODLUX
         faultService.faultNotification(faultAlarm);
-        notificationService.sendNotification(notification, acessor.getNodeId().getValue(), ProblemNotification.QNAME,
+        // Send model specific notification to WebSocketManager
+        notificationService.sendNotification(notification, acessor.getNodeId(), ProblemNotification.QNAME,
                 notification.getTimeStamp());
     }
 

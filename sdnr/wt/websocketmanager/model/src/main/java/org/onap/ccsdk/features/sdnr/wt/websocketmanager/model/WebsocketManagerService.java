@@ -2,6 +2,7 @@ package org.onap.ccsdk.features.sdnr.wt.websocketmanager.model;
 
 import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.QName;
 
@@ -57,7 +58,7 @@ public interface WebsocketManagerService {
      * @param nodeId
      * @param eventType
      */
-    void sendNotification(Notification notification, String nodeId, QName eventType);
+    void sendNotification(Notification notification, NodeId nodeId, QName eventType);
     /**
      * Send notification via Websocket to the connected clients.
      * @param notification
@@ -65,7 +66,7 @@ public interface WebsocketManagerService {
      * @param eventType
      * @param eventTime
      */
-    void sendNotification(Notification notification, String nodeId, QName eventType, DateAndTime eventTime);
+    void sendNotification(Notification notification, NodeId nodeId, QName eventType, DateAndTime eventTime);
 
     /**
      * Send notification via Websocket to the connected clients.
@@ -73,7 +74,7 @@ public interface WebsocketManagerService {
      * @param nodeId
      * @param eventType
      */
-    void sendNotification(DOMNotification notification, String nodeId, QName eventType);
+    void sendNotification(DOMNotification notification, NodeId nodeId, QName eventType);
     /**
      * Send notification via Websocket to the connected clients.
      * @param notification
@@ -81,7 +82,7 @@ public interface WebsocketManagerService {
      * @param eventType
      * @param eventTime
      */
-    void sendNotification(DOMNotification notification, String nodeId, QName eventType, DateAndTime eventTime);
+    void sendNotification(DOMNotification notification, NodeId nodeId, QName eventType, DateAndTime eventTime);
 
 
 

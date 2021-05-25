@@ -104,7 +104,7 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
             log.info("onDeviceConfigChange (2) {}", sb);
             counter++;
         }
-        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 ChangeNotification.QNAME, notification.getChangeTime());
     }
 
@@ -119,7 +119,7 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
                 .setCounter(counter).setNewValue(notification.getStatus().getName()).setSourceType(SourceType.Netconf)
                 .setTimestamp(now);
         databaseProvider.writeEventLog(eventlogBuilder.build());
-        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId().getValue(),
+        this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 CreateTechInfoNotification.QNAME, now);
         log.info("Create-techInfo Notification written ");
         counter++;
