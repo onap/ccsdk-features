@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicema
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ObjectDeletionNotificationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,7 +132,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
         // Write first to prevent missing entries
         databaseService.updateNetworkConnection22(e, registrationName);
         databaseService.writeConnectionLog(log);
-        webSocketService.sendViaWebsockets(ownKeyName, notification, ObjectCreationNotification.QNAME,
+        webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification, ObjectCreationNotification.QNAME,
                 NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
@@ -156,7 +157,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
         AttributeValueChangedNotification notification = new AttributeValueChangedNotificationBuilder()
                 .setCounter(popEvntNumber()).setTimeStamp(ts).setObjectIdRef(mountpointNodeName)
                 .setAttributeName("deviceType").setNewValue(deviceType.name()).build();
-        webSocketService.sendViaWebsockets(ownKeyName, notification, AttributeValueChangedNotification.QNAME, ts);
+        webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification, AttributeValueChangedNotification.QNAME, ts);
     }
 
     /**
@@ -190,7 +191,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
         // Write first to prevent missing entries
         databaseService.removeNetworkConnection(registrationName);
         databaseService.writeConnectionLog(log);
-        webSocketService.sendViaWebsockets(registrationName, notification, ObjectDeletionNotification.QNAME, ts);
+        webSocketService.sendViaWebsockets(new NodeId(registrationName), notification, ObjectDeletionNotification.QNAME, ts);
 
     }
 
@@ -217,7 +218,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
             this.updateNeConnectionRetryWithDelay(nNode, registrationName);
         }
         databaseService.writeConnectionLog(log);
-        webSocketService.sendViaWebsockets(ownKeyName, notification, AttributeValueChangedNotification.QNAME, ts);
+        webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification, AttributeValueChangedNotification.QNAME, ts);
     }
 
 
@@ -272,7 +273,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
 
         aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(ownKeyName, notificationXml);
 
-        webSocketService.sendViaWebsockets(ownKeyName, notification, ProblemNotification.QNAME, ts);
+        webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification, ProblemNotification.QNAME, ts);
     }
 
     @Override

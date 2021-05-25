@@ -90,7 +90,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
         this.openRdmListener = new OpenroadmChangeNotificationListener(netconfAccessor, databaseService,
                 serviceProvider.getWebsocketService());
         this.opnRdmFaultListenerRegistrationResult = null;
-        this.opnRdmFaultListener = new OpenroadmFaultNotificationListener(serviceProvider);
+        this.opnRdmFaultListener = new OpenroadmFaultNotificationListener(netconfAccessor, serviceProvider);
         this.opnRdmDeviceListenerRegistrationResult = null;
         this.opnRdmDeviceListener = new OpenroadmDeviceChangeNotificationListener(netconfAccessor, databaseService,
                 serviceProvider.getWebsocketService());

@@ -83,7 +83,7 @@ public class Onf14AirInterfaceNotificationListener implements AirInterface20List
                 .setObjectId(notification.getObjectIdRef().getValue()).setSourceType(SourceType.Netconf)
                 .setTimestamp(notification.getTimestamp());
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
-        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 ObjectDeletionNotification.QNAME, notification.getTimestamp());
 
         log.debug("onObjectDeletionNotification log entry written");
@@ -99,7 +99,7 @@ public class Onf14AirInterfaceNotificationListener implements AirInterface20List
                 .setSeverity(mapSeverity(notification.getSeverity())).setCounter(notification.getCounter())
                 .build();
         serviceProvider.getFaultService().faultNotification(faultAlarm);
-        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 ProblemNotification.QNAME, notification.getTimestamp());
 
     }
@@ -118,7 +118,7 @@ public class Onf14AirInterfaceNotificationListener implements AirInterface20List
                 .setNewValue(notification.getNewValue()).setObjectId(notification.getObjectIdRef().getValue())
                 .setSourceType(SourceType.Netconf).setTimestamp(notification.getTimestamp());
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
-        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 AttributeValueChangedNotification.QNAME, notification.getTimestamp());
         log.debug("onAttributeValueChangedNotification log entry written");
     }
@@ -133,7 +133,7 @@ public class Onf14AirInterfaceNotificationListener implements AirInterface20List
                 .setObjectId(notification.getObjectIdRef().getValue()).setSourceType(SourceType.Netconf)
                 .setTimestamp(notification.getTimestamp());
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
-        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId().getValue(),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 ObjectCreationNotification.QNAME, notification.getTimestamp());
         log.debug("onObjectCreationNotification log entry written");
     }

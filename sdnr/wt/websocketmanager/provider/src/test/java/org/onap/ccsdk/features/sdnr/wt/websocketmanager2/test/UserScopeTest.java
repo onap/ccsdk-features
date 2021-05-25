@@ -32,15 +32,10 @@ import org.opendaylight.yangtools.yang.common.QName;
 
 public class UserScopeTest {
 
-    private static final String SCOPE1 = "problem-notification";
-    private static final String SCOPE2 = "scope2";
-    private static final String SCOPE3 = "scope3";
-    private static final String SCOPE4 = "scope4";
 
     @Test
-    public void test() {
+    public void testAllNodes() {
         UserScopes scopes1 = new UserScopes();
-        List<String> json1 = Arrays.asList(SCOPE1, SCOPE2, SCOPE3);
         scopes1.setScopes(Arrays.asList(buildScope(null, ProblemNotification.QNAME)));
 
         assertTrue(scopes1.hasScope(new ReducedSchemaInfo(ProblemNotification.QNAME)));
@@ -50,6 +45,26 @@ public class UserScopeTest {
 
     }
 
+    @Test
+    public void testRevisionStar() {
+        UserScopes scopes1 = new UserScopes();
+        scopes1.setScopes(
+                Arrays.asList(buildScope(null, ProblemNotification.QNAME.getNamespace().toString(), "*", null)));
+
+        assertTrue(scopes1.hasScope(new ReducedSchemaInfo(ProblemNotification.QNAME)));
+        assertTrue(scopes1.hasScope("RoadmA", new ReducedSchemaInfo(ObjectCreationNotification.QNAME)));
+
+        assertTrue(scopes1.hasScope("RoadmA", new ReducedSchemaInfo(ProblemNotification.QNAME)));
+
+    }
+
+    private static final Scope buildScope(String nodeId, String namespace, String revision,
+            List<String> notifications) {
+        Scope scope = new Scope();
+        scope.setNodeId(nodeId);
+        scope.setSchema(new SchemaInfo(namespace, revision, notifications));
+        return scope;
+    }
 
     private static final Scope buildScope(String nodeId, QName qname) {
         Scope scope = new Scope();

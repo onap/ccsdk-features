@@ -260,8 +260,10 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
                 .setNodeId(this.acessor.getNodeId().getValue())
                 .setSeverity(mapSeverity(notification.getSeverity())).setCounter(notification.getCounter())
                 .build();
+        // Send devicemanager specific notification for database and ODLUX
         faultService.faultNotification(faultAlarm);
-        notificationService.sendNotification(notification, acessor.getNodeId().getValue(), ProblemNotification.QNAME,
+        // Send model specific notification to WebSocketManager
+        notificationService.sendNotification(notification, acessor.getNodeId(), ProblemNotification.QNAME,
                 notification.getTimeStamp());
     }
 

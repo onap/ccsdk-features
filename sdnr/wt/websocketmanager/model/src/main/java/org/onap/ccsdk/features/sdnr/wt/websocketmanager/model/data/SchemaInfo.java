@@ -36,10 +36,15 @@ public class SchemaInfo {
 
 
     public SchemaInfo(QName qname) {
-        this.namespace = qname.getNamespace().toString();
-        this.revision = qname.getRevision().isPresent() ? qname.getRevision().get().toString() : null;
-        this.notification = new ArrayList<>();
+        this(qname.getNamespace().toString(),
+                qname.getRevision().isPresent() ? qname.getRevision().get().toString() : null, new ArrayList<>());
         this.notification.add(qname.getLocalName());
+    }
+
+    public SchemaInfo(String namespace, String revision, List<String> notifications) {
+        this.namespace = namespace;
+        this.revision = revision;
+        this.notification = notifications;
     }
 
     public String getNamespace() {
@@ -66,6 +71,11 @@ public class SchemaInfo {
         this.notification = notification;
     }
 
+    /**
+     * SchemaInfo Validation restrictions: namespace!=null notification=null or if notification list set, then size>0
+     *
+     * @return
+     */
     @JsonIgnore
     public boolean isValid() {
         return this.namespace != null
@@ -74,6 +84,7 @@ public class SchemaInfo {
 
     /**
      * Check if schema(qname based info of notification) matches into this scope
+     *
      * @param schema
      * @return
      */
@@ -87,8 +98,8 @@ public class SchemaInfo {
         if (!this.namespace.equals(schema.getNamespace().toString())) {
             return false;
         }
-        //if revision of scope is set and it does not match => false
-        if (this.revision != null && !this.revision.equals(schema.getRevision())){
+        //if revision of scope is set and it does not match and is not '*' => false
+        if (this.revision != null && (!this.revision.equals(schema.getRevision()) && !this.revision.equals("*"))) {
             return false;
         }
         //if notification of scope is set and is current notification is not in the list
@@ -117,7 +128,7 @@ public class SchemaInfo {
 
     @JsonIgnore
     public void addNotification(String notification) {
-        if(this.notification ==null) {
+        if (this.notification == null) {
             this.notification = new ArrayList<>();
         }
         this.notification.add(notification);
