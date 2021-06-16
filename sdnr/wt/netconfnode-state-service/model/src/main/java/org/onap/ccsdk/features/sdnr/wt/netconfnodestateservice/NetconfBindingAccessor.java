@@ -64,7 +64,16 @@ public interface NetconfBindingAccessor extends NetconfAccessor {
     void registerNotificationsStream(List<Stream> streamList);
 
     /**
-     * Register notifications stream for the connection.
+     * Register default notifications stream for the connection.
+     * @See <a href="https://tools.ietf.org/html/rfc5277">https://tools.ietf.org/html/rfc5277</a>
+     *
+     * @return progress indication
+     */
+    ListenableFuture<RpcResult<CreateSubscriptionOutput>> registerNotificationsStream();
+
+    /**
+     * Register specific notifications stream for the connection.
+     * @See <a href="https://tools.ietf.org/html/rfc5277">https://tools.ietf.org/html/rfc5277</a>
      *
      * @param streamName that should be "NETCONF" as default.
      * @return progress indication
@@ -80,5 +89,6 @@ public interface NetconfBindingAccessor extends NetconfAccessor {
      */
     <T extends NotificationListener> ListenerRegistration<NotificationListener> doRegisterNotificationListener(
             @NonNull T listener);
+
 
 }

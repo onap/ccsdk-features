@@ -197,7 +197,7 @@ public class VESCollectorServiceImpl implements VESCollectorService, IConfigChan
     public VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader, VESPNFRegistrationFieldsPOJO pnfRegistrationFields) throws JsonProcessingException {
         Map<String, Object> innerEvent = new HashMap<String, Object>();
         innerEvent.put("commonEventHeader", commonEventHeader);
-        innerEvent.put("pnfRegistration", pnfRegistrationFields);
+        innerEvent.put("pnfRegistrationFields", pnfRegistrationFields);
 
         Map<String, Object> outerEvent = new HashMap<String, Object>();
         outerEvent.put("event", innerEvent);

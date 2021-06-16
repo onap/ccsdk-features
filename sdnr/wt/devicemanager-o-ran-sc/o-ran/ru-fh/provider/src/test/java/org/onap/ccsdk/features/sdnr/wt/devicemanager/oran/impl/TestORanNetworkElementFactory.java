@@ -15,18 +15,24 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Optional;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanNetworkElementFactory;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.yang.gen.v1.urn.o.ran.hardware._1._0.rev190328.ORANHWCOMPONENT;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
@@ -37,40 +43,50 @@ public class TestORanNetworkElementFactory {
     private static NetconfBindingAccessor accessor;
     private static DeviceManagerServiceProvider serviceProvider;
     private static Capabilities capabilities;
+    private static VESCollectorService vesCollectorService;
+    private static FaultService faultService;
+    private static WebsocketManagerService notificationService;
+    private static DataProvider databaseService;
 
-   // @BeforeClass
+    @BeforeClass
     public static void init() throws InterruptedException, IOException {
-        NetconfBindingAccessor bindingCommunicator = mock(NetconfBindingAccessor.class);
+        NetconfBindingAccessor bindingAccessor = mock(NetconfBindingAccessor.class);
         NodeId nodeId = new NodeId(NODEIDSTRING);
-        when(bindingCommunicator.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
-        when(bindingCommunicator.getNodeId()).thenReturn(nodeId);
+        when(bindingAccessor.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
+        when(bindingAccessor.getNodeId()).thenReturn(nodeId);
 
         capabilities = mock(Capabilities.class);
         accessor = mock(NetconfBindingAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
+        vesCollectorService = mock(VESCollectorService.class);
+        faultService = mock(FaultService.class);
+        notificationService = mock(WebsocketManagerService.class);
+        databaseService = mock(DataProvider.class);
 
         when(accessor.getCapabilites()).thenReturn(capabilities);
-        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingCommunicator));
-        when(serviceProvider.getDataProvider()).thenReturn(null);
-
+        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingAccessor));
+        when(serviceProvider.getFaultService()).thenReturn(faultService);
+        when(serviceProvider.getWebsocketService()).thenReturn(notificationService);
+        when(serviceProvider.getDataProvider()).thenReturn(databaseService);
+        when(serviceProvider.getVESCollectorService()).thenReturn(vesCollectorService);
 
     }
 
-    //@Test
+    @Test
     public void testCreateORANHWComponent() throws Exception {
         when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(true);
         ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
         assertTrue((factory.create(accessor, serviceProvider)).isPresent());
     }
 
-    //@Test
+    @Test
     public void testCreateNone() throws Exception {
         when(accessor.getCapabilites().isSupportingNamespace(ORANHWCOMPONENT.QNAME)).thenReturn(false);
         ORanNetworkElementFactory factory = new ORanNetworkElementFactory();
         assertTrue(!(factory.create(accessor, serviceProvider).isPresent()));
     }
 
-    //@After
+    @After
     public void cleanUp() throws Exception {
 
     }

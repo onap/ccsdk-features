@@ -16,8 +16,9 @@
  * ============LICENSE_END==========================================================================
  */
 
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.time.Instant;
@@ -29,7 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.ORanChangeNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationProxyParser;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
@@ -38,7 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.base._1._0.re
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfConfigChange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.netconf.config.change.Edit;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.netconf.config.change.EditBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -50,6 +50,8 @@ public class TestORanChangeNotificationListener {
 
     private static final String NODEID = "node1";
 
+    @Mock
+    DeviceManagerServiceProvider serviceProvider;
     @Mock
     NetconfBindingAccessor netconfAccessor;
     @Mock
@@ -69,9 +71,12 @@ public class TestORanChangeNotificationListener {
         when(vesCollectorService.getConfig()).thenReturn(vesCfgService);
         when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
         when(vesCfgService.isVESCollectorEnabled()).thenReturn(true);
+        when(serviceProvider.getDataProvider()).thenReturn(databaseService);
+        when(serviceProvider.getVESCollectorService()).thenReturn(vesCollectorService);
+        when(vesCollectorService.getNotificationProxyParser()).thenReturn(notifProxyParser);
 
         ORanChangeNotificationListener notifListener =
-                new ORanChangeNotificationListener(netconfAccessor, databaseService, vesCollectorService, notifProxyParser);
+                new ORanChangeNotificationListener(netconfAccessor, serviceProvider);
 
         Iterable<? extends PathArgument> pathArguments = Arrays.asList(new PathArgument() {
 
@@ -89,10 +94,7 @@ public class TestORanChangeNotificationListener {
         NetconfConfigChange confChangeNotification = createNotification(EditOperationType.Create, target);
         when(notifProxyParser.getTime(confChangeNotification)).thenReturn(Instant.now());
         notifListener.onNetconfConfigChange(confChangeNotification);
-        EventlogEntity event = new EventlogBuilder().setNodeId(NODEID)
-                .setNewValue(String.valueOf(EditOperationType.Create)).setObjectId(target.toString()).build();
-        verify(databaseService).writeEventLog(event);
-
+        verify(databaseService).writeEventLog(any(EventlogEntity.class));
     }
 
     /**

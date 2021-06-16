@@ -48,7 +48,7 @@ public class VESCommonEventHeaderPOJO {
     private String nfVendorName = "";
     private String timeZoneOffset = "+00:00";
     private String version = "4.1";
-    private String vesEventListenerVersion = "7.1.1";
+    private String vesEventListenerVersion = "7.2.1";
 
     public String getDomain() {
         return domain;

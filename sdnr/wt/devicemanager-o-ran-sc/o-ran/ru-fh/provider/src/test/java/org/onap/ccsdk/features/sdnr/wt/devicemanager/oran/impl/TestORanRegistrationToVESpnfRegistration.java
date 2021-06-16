@@ -19,12 +19,10 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import java.math.BigDecimal;
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,22 +35,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.re
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.optional.rev190614.netconf.node.augmented.optional.fields.IgnoreMissingSchemaSources;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.parameters.NonModuleCapabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.parameters.OdlHelloMessageCapabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.parameters.Protocol;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.parameters.YangModuleCapabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.AvailableCapabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.ClusteredConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.PassThrough;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.UnavailableCapabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.Credentials;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.schema.storage.YangLibrary;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.yang.common.Uint16;
-import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestORanRegistrationToVESpnfRegistration {
@@ -73,16 +57,16 @@ public class TestORanRegistrationToVESpnfRegistration {
 
         NetconfNode testNetconfNode = mock(NetconfNode.class);
         when(testNetconfNode.getHost()).thenReturn(new Host(new IpAddress(new Ipv4Address("10.10.10.10"))));
-        
+
         when(netconfAccessor.getNodeId()).thenReturn(new NodeId("nSky"));
         when(netconfAccessor.getNetconfNode()).thenReturn(testNetconfNode);
         when(vesCollectorService.getConfig()).thenReturn(vesCfgService);
         when(vesCfgService.getReportingEntityName()).thenReturn("SDN-R");
         Component testComponent = ComponentHelper.get(name, dateTimeString);
 
-        ORanRegistrationToVESpnfRegistrationMapper mapper = new ORanRegistrationToVESpnfRegistrationMapper(netconfAccessor, vesCollectorService, testComponent);
-        mapper.mapCommonEventHeader(SEQUENCE_NO);
-        mapper.mapPNFRegistrationFields();
+        ORanRegistrationToVESpnfRegistrationMapper mapper = new ORanRegistrationToVESpnfRegistrationMapper(netconfAccessor, vesCollectorService);
+        mapper.mapCommonEventHeader(testComponent);
+        mapper.mapPNFRegistrationFields(testComponent);
     }
 
 }

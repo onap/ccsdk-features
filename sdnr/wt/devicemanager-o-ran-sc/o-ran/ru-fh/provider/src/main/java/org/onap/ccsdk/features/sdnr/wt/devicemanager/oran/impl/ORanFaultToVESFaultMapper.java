@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  *
  *      VES Fields                  Mapping
+ *      ----------                  -------
  *      domain                      "fault"
  *      eventId                     "nt:network-topology/nt:topology/nt:node/nt:node-id"
  *      eventName                   "nt:network-topology/nt:topology/nt:node/nt:node-id"
@@ -43,17 +44,17 @@ import org.slf4j.LoggerFactory;
  *      lastEpochMicrosec           TimeStamp represented by <eventTime> field in NetConf notification header in unix time format - as microseconds elapsed since 1 Jan 1970 not including leap seconds.
  *      nfcNamingCode               always ""
  *      nfNamingCode                always ""
- *      nfVendorName                ???
+ *      nfVendorName                /ietf-hardware:hardware/component[not(parent)][1]/mfg-name
  *      priority                    "Normal"
  *      reportingEntityId           The OAM-Controller identifier with in the SMO - e.g. the fully qualified domain name or IP-Address.
  *      reportingEntityName         as configured by helm charts for the OpenDaylight cluster name ??????
  *      sequence                    As per NetConf notification increasing sequence number as unsigned integer 32 bits. The value is reused in the eventId field.
- *      sourceId                    ?????
+ *      sourceId                    Value of ietf-hardware (RFC8348) /hardware/component[not(parent)][1]/uuid or 'nt:network-topology/nt:topology/nt:node/nt:node-id' if ietf component not found.
  *      sourceName                  "nt:network-topology/nt:topology/nt:node/nt:node-id"
- *      startEpochMicrosec
- *      timeZoneOffset
+ *      startEpochMicrosec          Current OAM-Controller Node timestamp in unix time format - as microseconds elapsed since 1 Jan 1970 not including leap seconds.
+ *      timeZoneOffset              Static text: "+00:00"
  *      version                     "4.1"
- *      vesEventListenerVersion     "7.2"
+ *      vesEventListenerVersion     "7.2.1"
  *
  *
  *      alarmAdditionalInformation
@@ -61,7 +62,7 @@ import org.slf4j.LoggerFactory;
  *      alarmInterfaceA             Value of "o-ran-fm:alarm-notif/fault-source"
  *      eventCategory               Static text "O-RU failure"
  *      eventSeverity               Value of "o-ran-fm:alarm-notif/fault-severity". But if "o-ran-fm:alarm-notif/is-cleared" then "NORMAL"
- *      eventSourceType             The value of ietf-hardware (RFC8348) /hardware/component[not(parent)][1]/mfg-model or "O-RU" if not found.
+ *      eventSourceType             The value of ietf-hardware (RFC8348) /hardware/component[not(parent)][1]/model-name or "O-RU" if not found.
  *      faultFieldsVersion          "4.0"
  *      specificProblem             A mapping of the fault-id to its description according to O-RAN OpenFronthaul specification.
  *      vfStatus                    "Active"
@@ -71,6 +72,7 @@ import org.slf4j.LoggerFactory;
 
 public class ORanFaultToVESFaultMapper {
 
+    @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(ORanFaultToVESFaultMapper.class);
     private static final String VES_EVENT_DOMAIN = "fault";
     private static final String VES_EVENTTYPE = "ORAN_Fault";
@@ -82,13 +84,39 @@ public class ORanFaultToVESFaultMapper {
     private final VESCollectorService vesProvider;
     private final String notifName;    // Name
     private final String nodeIdString; // Sourcename
-
+    private String mfgName;
+    private String uuid;
+    private String modelName;
 
     public ORanFaultToVESFaultMapper(NodeId nodeId, VESCollectorService vesCollectorService,
             String notifName) {
         this.nodeIdString = nodeId.getValue();
         this.vesProvider = vesCollectorService;
         this.notifName = notifName;
+    }
+
+    public void setMfgName(String mfgName) {
+        this.mfgName= mfgName;
+    }
+
+    private String getMfgName() {
+        return mfgName;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    private String getUuid() {
+        return uuid;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
+    private String getModelName() {
+        return modelName;
     }
 
     public VESCommonEventHeaderPOJO mapCommonEventHeader(AlarmNotif notification, Instant eventTime, int sequenceNo) {
@@ -105,10 +133,10 @@ public class ORanFaultToVESFaultMapper {
         vesCEH.setEventId(eventId);
         vesCEH.setStartEpochMicrosec(eventTime.toEpochMilli() * 1000);
         vesCEH.setLastEpochMicrosec(eventTime.toEpochMilli() * 1000);
-        vesCEH.setNfVendorName("ORAN");
+        vesCEH.setNfVendorName(getMfgName());
         vesCEH.setReportingEntityName(vesProvider.getConfig().getReportingEntityName());
         vesCEH.setSequence(sequenceNo);
-        vesCEH.setSourceId("ORAN");
+        vesCEH.setSourceId(getUuid());
         vesCEH.setSourceName(nodeIdString);
 
         return vesCEH;
@@ -121,6 +149,7 @@ public class ORanFaultToVESFaultMapper {
         vesFaultFields.setAlarmInterfaceA(alarmNotif.getFaultSource());
         vesFaultFields.setEventCategory(VES_EVENT_CATEGORY);
         vesFaultFields.setEventSeverity(alarmNotif.getFaultSeverity().getName());
+        vesFaultFields.setEventSourceType(getModelName());
         vesFaultFields.setFaultFieldsVersion(VES_FAULT_FIELDS_VERSION);
         vesFaultFields.setSpecificProblem(alarmNotif.getFaultText());
         vesFaultFields.setVfStatus(VES_FAULT_FIELDS_VFSTATUS);

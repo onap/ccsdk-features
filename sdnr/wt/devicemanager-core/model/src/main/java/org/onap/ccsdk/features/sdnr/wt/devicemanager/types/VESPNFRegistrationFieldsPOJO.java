@@ -24,21 +24,25 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.types;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class VESPNFRegistrationFieldsPOJO {
 
     private Map<String, String> additionalFields = new HashMap<String, String>();
-    private String lastServiceDate = "";
-    private String macAddress = "";
-    private String manufactureDate = "";
-    private String modelNumber = "";
-    private String oamV4IpAddress = "";
-    private String oamV6IpAddress = "";
-    private String pnfRegistrationFieldsVersion = "2.0";
-    private String serialNumber = "";
-    private String softwareVersion = "";
-    private String unitFamily = "";
-    private String unitType = "";
-    private String vendorName = "";
+    private String lastServiceDate;
+    private String macAddress;
+    private String manufactureDate;
+    private String modelNumber;
+    private String oamV4IpAddress;
+    private String oamV6IpAddress;
+    private String pnfRegistrationFieldsVersion = "2.0"; // This is the only mandatory field as per the VES Event schema definition
+    private String serialNumber;
+    private String softwareVersion;
+    private String unitFamily;
+    private String unitType;
+    private String vendorName;
 
     public Map<String, String> getAdditionalFields() {
         return additionalFields;

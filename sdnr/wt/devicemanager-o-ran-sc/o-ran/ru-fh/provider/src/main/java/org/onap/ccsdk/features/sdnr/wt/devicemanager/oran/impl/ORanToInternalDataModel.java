@@ -17,6 +17,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,11 +28,17 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.iana.hardware.re
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.hardware.rev180313.hardware.Component;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.o.ran.fm._1._0.rev190204.Alarm.FaultSeverity;
+import org.opendaylight.yang.gen.v1.urn.o.ran.fm._1._0.rev190204.AlarmNotif;
 import org.opendaylight.yang.gen.v1.urn.onap.system.rev201026.System1;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GuicutthroughBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.binding.CodeHelpers;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -111,8 +118,8 @@ public class ORanToInternalDataModel {
     }
 
     /**
-     * Convert equipment into Inventory. Decide if inventory can by created from content or not.
-     * Public for test case.
+     * Convert equipment into Inventory. Decide if inventory can by created from content or not. Public for test case.
+     *
      * @param nodeId of node (Similar to mountpointId)
      * @param component to handle
      * @param treeLevel of components
@@ -181,6 +188,12 @@ public class ORanToInternalDataModel {
         return Optional.empty();
     }
 
+    /**
+     * If system data is available convert
+     *
+     * @param sys
+     * @return
+     */
     public static Optional<Guicutthrough> getGuicutthrough(@Nullable System1 sys) {
         if (sys != null) {
             String name = sys.getName();
@@ -198,6 +211,66 @@ public class ORanToInternalDataModel {
         }
         log.warn("Retrieving augmented System details failed. Gui cut through information not available");
         return Optional.empty();
+    }
+
+    /**
+     * Convert netconf time into Instant
+     *
+     * @param eventTime with netconf time
+     * @return Instant with converted time. If not convertable provide Instant.Min
+     */
+    public static Instant getInstantTime(@Nullable DateAndTime eventTime) {
+        return eventTime != null ? Instant.parse(eventTime.getValue()) : Instant.MIN;
+    }
+
+    /**
+     * Convert fault notification into data-provider FaultLogEntity
+     *
+     * @param notification with O-RAN notification
+     * @param nodeId of node to handle
+     * @param counter to be integrated into data
+     * @return FaultlogEntity with data
+     */
+    public static FaultlogEntity getFaultLog(AlarmNotif notification, NodeId nodeId, Integer counter) {
+        FaultlogBuilder faultAlarm = new FaultlogBuilder();
+        faultAlarm.setNodeId(nodeId.getValue());
+        faultAlarm.setObjectId(notification.getFaultSource());
+        faultAlarm.setProblem(notification.getFaultText());
+        faultAlarm.setSeverity(getSeverityType(notification.getFaultSeverity(), notification.isIsCleared()));
+        faultAlarm.setCounter(counter);
+        faultAlarm.setId(String.valueOf(notification.getFaultId()));
+        faultAlarm.setSourceType(SourceType.Netconf);
+        faultAlarm.setTimestamp(notification.getEventTime());
+        return faultAlarm.build();
+    }
+
+    /**
+     * Convert O-RAN specific severity into data-provider severity
+     *
+     * @param faultSeverity O-RAN severity
+     * @param isCleared clear indicator
+     * @return data-provider severity type
+     * @throws IllegalArgumentException if conversion not possible.
+     */
+    public static SeverityType getSeverityType(@Nullable FaultSeverity faultSeverity, @Nullable Boolean isCleared)
+            throws IllegalArgumentException {
+        if (isCleared != null && isCleared) {
+            return SeverityType.NonAlarmed;
+        }
+        if (faultSeverity != null) {
+            switch (faultSeverity) {
+                case CRITICAL:
+                    return SeverityType.Critical;
+                case MAJOR:
+                    return SeverityType.Major;
+                case MINOR:
+                    return SeverityType.Minor;
+                case WARNING:
+                    return SeverityType.Warning;
+            }
+        }
+        throw new IllegalArgumentException("Unknown Alarm state represent as Critical. isCleared=" + isCleared
+                + " faultSeverity=" + faultSeverity);
     }
 
 }

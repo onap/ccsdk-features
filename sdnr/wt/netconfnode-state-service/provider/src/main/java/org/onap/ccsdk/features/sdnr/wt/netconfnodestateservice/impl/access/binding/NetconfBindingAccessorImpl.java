@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.binding;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -34,7 +33,6 @@ import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionInput;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionOutput;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.NotificationsService;
@@ -45,9 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.r
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,19 +55,29 @@ public class NetconfBindingAccessorImpl extends NetconfAccessorImpl implements N
 
     private final DataBroker dataBroker;
     private final MountPoint mountpoint;
+    final NotificationsService mountpointNotificationService;
 
     /**
-     * Contains all data to access and manage netconf device
+     * Contains all data to access and manage NETCONF device
      *
-     * @param nodeId of managed netconf node
-     * @param netconfNode information
+     * @param accessor with basic mountpoint information
      * @param dataBroker to access node
      * @param mountpoint of netconfNode
+     * @throws IllegalArgumentException
      */
-    public NetconfBindingAccessorImpl(NetconfAccessorImpl accessor, DataBroker dataBroker, MountPoint mountpoint) {
+    public NetconfBindingAccessorImpl(NetconfAccessorImpl accessor, DataBroker dataBroker, MountPoint mountpoint)
+            throws IllegalArgumentException {
         super(accessor);
         this.dataBroker = Objects.requireNonNull(dataBroker);
         this.mountpoint = Objects.requireNonNull(mountpoint);
+
+        final Optional<RpcConsumerRegistry> optionalRpcConsumerService =
+                mountpoint.getService(RpcConsumerRegistry.class);
+        if (optionalRpcConsumerService.isPresent()) {
+            mountpointNotificationService = optionalRpcConsumerService.get().getRpcService(NotificationsService.class);
+        } else {
+            throw new IllegalArgumentException("Can not process without rpcConsumerService service");
+        }
     }
 
     @Override
@@ -103,41 +109,20 @@ public class NetconfBindingAccessorImpl extends NetconfAccessorImpl implements N
         return ranListenerRegistration;
     }
 
-
     @Override
     public ListenableFuture<RpcResult<CreateSubscriptionOutput>> registerNotificationsStream(
             @NonNull String streamName) {
-        String failMessage = "";
-        final Optional<RpcConsumerRegistry> optionalRpcConsumerService =
-                getMountpoint().getService(RpcConsumerRegistry.class);
-        if (optionalRpcConsumerService.isPresent()) {
-            final NotificationsService rpcService =
-                    optionalRpcConsumerService.get().getRpcService(NotificationsService.class);
-
-            final CreateSubscriptionInputBuilder createSubscriptionInputBuilder = new CreateSubscriptionInputBuilder();
+        final CreateSubscriptionInputBuilder createSubscriptionInputBuilder = new CreateSubscriptionInputBuilder();
+        if (streamName != null) {
             createSubscriptionInputBuilder.setStream(new StreamNameType(streamName));
-            log.info("Event listener triggering notification stream {} for node {}", streamName, getNodeId());
-            try {
-                CreateSubscriptionInput createSubscriptionInput = createSubscriptionInputBuilder.build();
-                if (createSubscriptionInput == null) {
-                    failMessage = "createSubscriptionInput is null for mountpoint " + getNodeId();
-                } else {
-                    // Regular case, return value
-                    return rpcService.createSubscription(createSubscriptionInput);
-                }
-            } catch (NullPointerException e) {
-                failMessage = "createSubscription failed";
-            }
-        } else {
-            failMessage = "No RpcConsumerRegistry avaialble.";
         }
-        //Be here only in case of problem and return failed indication
-        log.warn(failMessage);
-        RpcResultBuilder<CreateSubscriptionOutput> result = RpcResultBuilder.failed();
-        result.withError(ErrorType.APPLICATION, failMessage);
-        SettableFuture<RpcResult<CreateSubscriptionOutput>> future = SettableFuture.create();
-        future.set(result.build());
-        return future;
+        log.info("Event listener triggering notification stream '{}' for node {}", streamName, getNodeId());
+        return mountpointNotificationService.createSubscription(createSubscriptionInputBuilder.build());
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<CreateSubscriptionOutput>> registerNotificationsStream() {
+        return registerNotificationsStream((String)null);
     }
 
     @Override

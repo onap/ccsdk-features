@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
 import java.util.Arrays;
 import java.util.List;

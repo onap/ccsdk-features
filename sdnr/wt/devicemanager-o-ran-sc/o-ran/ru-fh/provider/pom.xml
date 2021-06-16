@@ -61,12 +61,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-devicemanager-core-provider</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-
         <!-- end for testing -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-devicemanager-o-ran-sc-oran-model</artifactId>
@@ -101,12 +105,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>rfc7317-ietf-system</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>onap-system</artifactId>
             <version>${project.version}</version>
         </dependency>

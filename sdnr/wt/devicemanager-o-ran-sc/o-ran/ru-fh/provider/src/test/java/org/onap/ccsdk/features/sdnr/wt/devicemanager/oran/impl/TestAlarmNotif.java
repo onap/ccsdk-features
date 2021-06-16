@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
 import java.util.Map;
 import org.eclipse.jdt.annotation.NonNull;
@@ -77,11 +77,13 @@ public class TestAlarmNotif implements AlarmNotif {
 
     @Override
     public @NonNull Map<Class<? extends Augmentation<AlarmNotif>>, Augmentation<AlarmNotif>> augmentations() {
+        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Boolean getIsCleared() {
+        // TODO Auto-generated method stub
         return null;
     }
 

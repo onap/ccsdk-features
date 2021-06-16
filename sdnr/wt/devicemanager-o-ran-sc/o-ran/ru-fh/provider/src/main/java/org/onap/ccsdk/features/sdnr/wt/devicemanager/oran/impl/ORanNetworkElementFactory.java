@@ -47,8 +47,7 @@ public class ORanNetworkElementFactory implements NetworkElementFactory {
                 log.info("Create device {} ", ORanNetworkElement.class.getName());
                 Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
                 if (bindingAccessor.isPresent()) {
-                    return Optional.of(new ORanNetworkElement(bindingAccessor.get(), serviceProvider.getDataProvider(),
-                            serviceProvider.getVESCollectorService()));
+                    return Optional.of(new ORanNetworkElement(bindingAccessor.get(), serviceProvider));
                 }
             }
         }

@@ -20,7 +20,10 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationProxyParser;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESNotificationFieldsPOJO;
@@ -33,6 +36,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.not
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfSessionStart;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.netconf.config.change.Edit;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.slf4j.Logger;
@@ -47,18 +52,20 @@ public class ORanChangeNotificationListener implements IetfNetconfNotificationsL
 
     private final NetconfBindingAccessor netconfAccessor;
     private final DataProvider databaseService;
+    private final NotificationService notificationService;
     private final VESCollectorService vesCollectorService;
     private final NotificationProxyParser notificationProxyParser;
     private ORanNotifToVESEventAssembly mapper = null;
 
     private static int sequenceNo = 0;
 
-    public ORanChangeNotificationListener(NetconfBindingAccessor netconfAccessor, DataProvider databaseService,
-            VESCollectorService vesCollectorService, NotificationProxyParser notificationProxyParser) {
+    public ORanChangeNotificationListener(NetconfBindingAccessor netconfAccessor,
+            DeviceManagerServiceProvider serviceProvider) {
         this.netconfAccessor = netconfAccessor;
-        this.databaseService = databaseService;
-        this.vesCollectorService = vesCollectorService;
-        this.notificationProxyParser = notificationProxyParser;
+        this.databaseService = serviceProvider.getDataProvider();
+        this.notificationService = serviceProvider.getNotificationService();
+        this.vesCollectorService = serviceProvider.getVESCollectorService();
+        this.notificationProxyParser = vesCollectorService.getNotificationProxyParser();
     }
 
     @Override
@@ -83,8 +90,8 @@ public class ORanChangeNotificationListener implements IetfNetconfNotificationsL
 
     @Override
     public void onNetconfConfigChange(NetconfConfigChange notification) {
-        log.info("onNetconfConfigChange (1) {}", notification);
-        sequenceNo++;
+        log.info("onNetconfConfigChange (1) {}", notification.toString());
+
         StringBuffer sb = new StringBuffer();
         List<Edit> editList = notification.nonnullEdit();
         for (Edit edit : editList) {
@@ -93,19 +100,19 @@ public class ORanChangeNotificationListener implements IetfNetconfNotificationsL
             }
             sb.append(edit);
 
-            EventlogBuilder eventlogBuilder = new EventlogBuilder();
-
             InstanceIdentifier<?> target = edit.getTarget();
             if (target != null) {
-                eventlogBuilder.setObjectId(target.toString());
-                log.info("TARGET: {} {} {}", target.getClass(), target.getTargetType());
+                log.info("TARGET: {} {}", target.getClass(), target.getTargetType());
                 for (PathArgument pa : target.getPathArguments()) {
-                    log.info("PathArgument {}", pa);
+                    log.info("PathArgument {} Type {}", pa, pa.getType().getFields());
                 }
+
+                EventlogEntity eventLogEntity1 = new EventlogBuilder().setNodeId(netconfAccessor.getNodeId().getValue())
+                        .setCounter(sequenceNo++).setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp())
+                        .setObjectId(target.getTargetType().getCanonicalName()).setAttributeName("N.A")
+                        .setSourceType(SourceType.Netconf).setNewValue(String.valueOf(edit.getOperation())).build();
+                databaseService.writeEventLog(eventLogEntity1);
             }
-            eventlogBuilder.setNodeId(netconfAccessor.getNodeId().getValue());
-            eventlogBuilder.setNewValue(String.valueOf(edit.getOperation()));
-            databaseService.writeEventLog(eventlogBuilder.build());
         }
         log.info("onNetconfConfigChange (2) {}", sb);
 
@@ -113,8 +120,9 @@ public class ORanChangeNotificationListener implements IetfNetconfNotificationsL
             if (mapper == null) {
                 this.mapper = new ORanNotifToVESEventAssembly(netconfAccessor, vesCollectorService);
             }
-            VESCommonEventHeaderPOJO header = mapper.createVESCommonEventHeader(notificationProxyParser.getTime(notification),
-                    NetconfConfigChange.class.getSimpleName(), sequenceNo);
+            VESCommonEventHeaderPOJO header =
+                    mapper.createVESCommonEventHeader(notificationProxyParser.getTime(notification),
+                            NetconfConfigChange.class.getSimpleName(), sequenceNo);
             VESNotificationFieldsPOJO body =
                     mapper.createVESNotificationFields(notificationProxyParser.parseNotificationProxy(notification),
                             NetconfConfigChange.class.getSimpleName());

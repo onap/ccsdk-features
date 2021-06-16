@@ -22,7 +22,6 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
 import java.time.Instant;
-import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESPNFRegistrationFieldsPOJO;
@@ -33,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 public class ORanRegistrationToVESpnfRegistrationMapper {
 
+    @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(ORanFaultToVESFaultMapper.class);
     //CommonEventHeader fields
     private static final String VES_EVENT_DOMAIN = "pnfRegistration";
@@ -40,17 +40,20 @@ public class ORanRegistrationToVESpnfRegistrationMapper {
     private static final String VES_EVENT_PRIORITY = "Normal";
 
     private final VESCollectorService vesProvider;
-    private final @NonNull Component component;
     private final NetconfAccessor netconfAccessor;
 
+    private Integer sequenceNo;
+
+
     public ORanRegistrationToVESpnfRegistrationMapper(NetconfAccessor netconfAccessor,
-            VESCollectorService vesCollectorService, Component component) {
+            VESCollectorService vesCollectorService) {
         this.netconfAccessor = netconfAccessor;
         this.vesProvider = vesCollectorService;
-        this.component = component;
+
+        this.sequenceNo = 0;
     }
 
-    public VESCommonEventHeaderPOJO mapCommonEventHeader(int sequenceNo) {
+    public VESCommonEventHeaderPOJO mapCommonEventHeader(Component component) {
         VESCommonEventHeaderPOJO vesCEH = new VESCommonEventHeaderPOJO();
         vesCEH.setDomain(VES_EVENT_DOMAIN);
         vesCEH.setEventId(netconfAccessor.getNodeId().getValue());
@@ -62,24 +65,24 @@ public class ORanRegistrationToVESpnfRegistrationMapper {
         vesCEH.setLastEpochMicrosec(Instant.now().toEpochMilli() * 1000);
         vesCEH.setNfVendorName(component.getMfgName());
         vesCEH.setReportingEntityName(vesProvider.getConfig().getReportingEntityName());
-        vesCEH.setSequence(sequenceNo);
-        vesCEH.setSourceId(component.getUuid().toString());
+        vesCEH.setSequence(sequenceNo++);
+        vesCEH.setSourceId(component.getUuid() != null ? component.getUuid().toString():netconfAccessor.getNodeId().getValue());
         vesCEH.setSourceName(netconfAccessor.getNodeId().getValue());
 
         return vesCEH;
     }
 
-    public VESPNFRegistrationFieldsPOJO mapPNFRegistrationFields() {
+    public VESPNFRegistrationFieldsPOJO mapPNFRegistrationFields(Component component) {
         VESPNFRegistrationFieldsPOJO vesPnfFields = new VESPNFRegistrationFieldsPOJO();
         vesPnfFields.setModelNumber(component.getModelName());
-        vesPnfFields.setOamV4IpAddress(netconfAccessor.getNetconfNode().getHost().getIpAddress().toString());
-        //vesPnfFields.setOamV6IpAddress(oamV6IpAddress); // Check if IP address in V6 format and then include it. Same with v4 address also
+        vesPnfFields.setOamV4IpAddress(netconfAccessor.getNetconfNode().getHost().getIpAddress().getIpv4Address()!=null?netconfAccessor.getNetconfNode().getHost().getIpAddress().getIpv4Address().getValue():null);
+        vesPnfFields.setOamV6IpAddress(netconfAccessor.getNetconfNode().getHost().getIpAddress().getIpv6Address()!=null?netconfAccessor.getNetconfNode().getHost().getIpAddress().getIpv6Address().getValue():null);
         vesPnfFields.setSerialNumber(component.getSerialNum());
         vesPnfFields.setVendorName(component.getMfgName());
         vesPnfFields.setSoftwareVersion(component.getSoftwareRev());
         vesPnfFields.setUnitType(component.getAlias());
         vesPnfFields.setUnitFamily(component.getXmlClass().toString());
-        vesPnfFields.setManufactureDate(component.getMfgDate().toString());
+        vesPnfFields.setManufactureDate(component.getMfgDate()!=null?component.getMfgDate().toString():"Unknown");
         //vesPnfFields.setLastServiceDate(component.getLastChange());
 
         return vesPnfFields;

@@ -15,36 +15,10 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.test;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl;
 
-import static org.mockito.Mockito.mock;
-import java.io.IOException;
-import org.junit.Before;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.DeviceManagerORanImpl;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.iana.hardware.rev180313.HardwareClass;
 
-public class TestDeviceManagerORanImpl {
-    DeviceManagerORanImpl devMgrOran;
+public interface TestHardwareClass extends HardwareClass {
 
-    @Before
-    public void init() throws InterruptedException, IOException {
-    }
-
-   // @Test
-    public void test() throws Exception {
-        devMgrOran = new DeviceManagerORanImpl();
-        NetconfNetworkElementService netconfNetworkElementService = mock(NetconfNetworkElementService.class);
-
-        try {
-            devMgrOran.setNetconfNetworkElementService(netconfNetworkElementService);
-            devMgrOran.init();
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    //@After
-    public void cleanUp() throws Exception {
-        devMgrOran.close();
-    }
 }

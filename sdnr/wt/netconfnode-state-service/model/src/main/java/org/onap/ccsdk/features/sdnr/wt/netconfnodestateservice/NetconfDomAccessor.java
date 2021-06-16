@@ -80,7 +80,7 @@ public interface NetconfDomAccessor extends NetconfAccessor {
      *
      * @param <T> specific child class of DOMNotificationListener
      * @param listener listener to be called
-     * @param types as list of Absolute
+     * @param types as list of SchemaPath
      * @return handler to manager registration
      */
     <T extends DOMNotificationListener> @NonNull ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
@@ -92,7 +92,7 @@ public interface NetconfDomAccessor extends NetconfAccessor {
      * @See <a href="https://tools.ietf.org/html/rfc5277">https://tools.ietf.org/html/rfc5277</a>
      * @param <T>
      * @param listener to be registers
-     * @param types as array of Absolute
+     * @param types as array of SchemaPath
      * @return Object to close and access
      */
     <T extends DOMNotificationListener> @NonNull ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
