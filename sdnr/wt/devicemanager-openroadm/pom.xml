@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>odlparent-lite</artifactId>
-        <version>2.1.4</version>
+        <version>2.1.7</version>
         <relativePath/>
     </parent>
 
@@ -48,12 +48,12 @@
         <feature-name>sdnr-wt-devicemanager-openroadm</feature-name>
     </properties>
     <!--          <reporting>
-        <plugins>           
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>2.9</version>
-            </plugin>           
-        </plugins>    
+            </plugin>
+        </plugins>
     </reporting> -->
 </project>
