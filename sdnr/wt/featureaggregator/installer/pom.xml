@@ -54,13 +54,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-feature-aggregator-devicemanager</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-feature-aggregator-devicemanager-base</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
