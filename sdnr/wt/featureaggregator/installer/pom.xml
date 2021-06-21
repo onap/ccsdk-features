@@ -41,44 +41,50 @@
     <name>ccsdk-features :: ${project.artifactId}</name>
 
     <properties>
-         <application.name>sdnr-wt-installer</application.name>
+        <application.name>sdnr-wt-installer</application.name>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-feature-aggregator</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-feature-aggregator-devicemanager</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-feature-aggregator-devicemanager-base</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-feature-aggregator-oauth</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-data-provider-setup</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-odlux-installer</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>repo</classifier>
+        </dependency>
     </dependencies>
 
     <build>
@@ -134,8 +140,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-                                    <artifactId>sdnr-wt-devicemanager-provider</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>sdnr-wt-devicemanager-core-model</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <includes>preload.cache.schema/**</includes>
@@ -154,7 +160,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+                                    <groupId>${project.groupId}</groupId>
                                     <artifactId>sdnr-wt-data-provider-provider</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
