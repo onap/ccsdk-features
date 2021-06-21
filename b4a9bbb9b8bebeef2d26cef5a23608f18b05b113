@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "888f104f_fa04ef5a",
+        "filename": "sdnr/wt/featureaggregator/feature-devicemanager/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-06-21T20:03:05Z",
+      "side": 0,
+      "message": "Removing this file, as I didn\u0027t find any of the artifacts from dependencyies",
+      "revId": "b4a9bbb9b8bebeef2d26cef5a23608f18b05b113",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5503a16b_a8c62667",
+        "filename": "sdnr/wt/featureaggregator/feature/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-06-21T20:03:05Z",
+      "side": 0,
+      "message": "Removed these as couldn\u0027t locate any of those dependencies",
+      "revId": "b4a9bbb9b8bebeef2d26cef5a23608f18b05b113",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
