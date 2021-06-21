@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d3e27b41_20128020",
+        "filename": "sdnr/wt/featureaggregator/installer/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-06-21T13:02:24Z",
+      "side": 1,
+      "message": "Missed earlier, ${project.version} can be used here",
+      "revId": "d689db84c533c612da92233f63517f604cdac908",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
