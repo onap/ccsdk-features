@@ -16,6 +16,24 @@
       "revId": "947718c93645270c2be875a283cddef2bae69473",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d3a3acb_a8724388",
+        "filename": "sdnr/wt/featureaggregator/installer/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-06-21T12:58:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a849b7f8_a3d8a83b",
+      "revId": "947718c93645270c2be875a283cddef2bae69473",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
