@@ -40,7 +40,7 @@ public class BoolQueryBuilder extends QueryBuilder {
     }
 
     public static boolean isEmpty(JSONObject o) {
-        return o.keySet().size() <= 0;
+        return o.keySet().isEmpty();
     }
 
     public BoolQueryBuilder must(QueryBuilder query) {

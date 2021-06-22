@@ -79,7 +79,7 @@ class SectionValue {
 
     public void removeComment(String comment) {
         this.comments.remove(comment);
-        this.isUncommented = this.comments.size()==0;
+        this.isUncommented = this.comments.isEmpty();
     }
 
     public List<String> getComments() {
