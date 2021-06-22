@@ -72,7 +72,7 @@ public class HelpInfrastructureObject extends JSONObject {
     public static class NodeObject extends JSONObject {
         public NodeObject(Path base, File dir, String label, ArrayList<VersionObject> versions) {
             this.put("label", label);
-            if (versions != null && versions.size() > 0) {
+            if (versions != null && !versions.isEmpty()) {
                 JSONObject o = new JSONObject();
                 this.put("versions", o);
                 for (VersionObject version : versions) {
@@ -87,7 +87,7 @@ public class HelpInfrastructureObject extends JSONObject {
             for (File f : list) {
                 if (f.isDirectory()) {
                     ArrayList<VersionObject> versions2 = findReadmeVersionFolders(base, f.toPath(), true);
-                    if (versions2 != null && versions2.size() > 0) {
+                    if (versions2 != null && !versions2.isEmpty()) {
                         JSONObject nodes;
                         if (!this.has("nodes")) {
                             this.put("nodes", new JSONObject());
@@ -112,7 +112,7 @@ public class HelpInfrastructureObject extends JSONObject {
         for (File f : list) {
             if (f.isDirectory()) {
                 ArrayList<VersionObject> versions = findReadmeVersionFolders(root.toPath(), f.toPath(), true);
-                if (versions != null && versions.size() > 0) {
+                if (versions != null && !versions.isEmpty()) {
                     NodeObject o = new NodeObject(pRoot, f, f.getName(), versions);
                     this.put(o.getString("label").toLowerCase(), o);
                 }
@@ -134,7 +134,7 @@ public class HelpInfrastructureObject extends JSONObject {
         }
         Collections.sort(list, VersionObject.getComparer());
         Collections.reverse(list);
-        if (list.size() > 0 && appendCurrent) {
+        if (!list.isEmpty() && appendCurrent) {
             list.add(list.get(0).cloneAsCurrent());
         }
         return list;
