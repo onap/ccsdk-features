@@ -41,7 +41,7 @@
     <name>ccsdk-features :: ${project.artifactId}</name>
 
     <properties>
-        <application.name>sdnr-wt-devicemanager-onf14</application.name>
+        <application.name>sdnr-wt-devicemanager-onap-onf14</application.name>
         <include.transitive.dependencies>false</include.transitive.dependencies>
     </properties>
 
