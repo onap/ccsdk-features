@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f430e6a0_af7cb646",
+        "filename": "sdnr/wt/featureaggregator/feature-devicemanager/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-06-22T04:22:43Z",
+      "side": 1,
+      "message": "devicemanager-core is not required as a dependency, hence this dependency can be removed. The featureaggregator-devicemanager contains only device specific devicemanagers.",
+      "range": {
+        "startLine": 46,
+        "startChar": 12,
+        "endLine": 46,
+        "endChar": 13
+      },
+      "revId": "4eb8306a15bb5d3f8e523ac0453208b860cc1b1b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
