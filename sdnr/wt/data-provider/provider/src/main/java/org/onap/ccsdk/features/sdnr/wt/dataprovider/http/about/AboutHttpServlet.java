@@ -314,7 +314,7 @@ public class AboutHttpServlet extends HttpServlet {
             if(!(name.contains("devicemanager") && name.contains("provider"))) {
                 continue;
             }
-            if(name.equals("org.onap.ccsdk.features.sdnr.wt.sdnr-wt-devicemanager-provider")) {
+            if(name.equals("org.onap.ccsdk.features.sdnr.wt.sdnr-wt-devicemanager-core-provider")) {
                 continue;
             }
             table.addRow(new String[] {String.valueOf(bundle.getBundleId()), bundle.getVersion().toString(), name,

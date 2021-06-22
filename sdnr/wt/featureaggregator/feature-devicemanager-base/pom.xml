@@ -71,7 +71,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-devicemanager-feature</artifactId>
+            <artifactId>sdnr-wt-devicemanager-core-feature</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
