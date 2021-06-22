@@ -48,7 +48,7 @@ public class MarkdownTable {
     public String toMarkDown() {
         StringBuilder sb = new StringBuilder();
         final int cols =
-                this.columns != null ? this.columns.length : this.rows.size() > 0 ? this.rows.get(0).length : 0;
+                this.columns != null ? this.columns.length : !this.rows.isEmpty() ? this.rows.get(0).length : 0;
         if (cols > 0) {
             sb.append("|");
             for (int i = 0; i < cols; i++) {

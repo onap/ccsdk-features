@@ -99,7 +99,7 @@ public class ResyncNetworkElementHouskeepingService implements ResyncNetworkElem
             List<String> nodeNamesInput;
 
             // Create list of mountpoints if input is empty, using the content in ES
-            if (nodeNames == null || nodeNames.size() <= 0) {
+            if (nodeNames == null || nodeNames.isEmpty()) {
                 nodeNamesInput = this.databaseClientEvents.getAllNodesWithCurrentAlarms();
             } else {
                 nodeNamesInput = nodeNames;

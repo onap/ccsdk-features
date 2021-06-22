@@ -361,7 +361,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
             }
         }
 
-        if (failures.size() > 0) {
+        if (!failures.isEmpty()) {
             throw new DataInconsistencyException(new ArrayList<>(repairList.values()),
                     "inventory list is not consistent;\n" + String.join("\n", failures));
         }

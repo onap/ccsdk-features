@@ -134,7 +134,7 @@ public class DataTreeProviderImpl {
     public DataTreeObject readInventoryTree(List<String> tree, String filter) throws IOException {
 
         //root nodes will be node-information -> below inventory
-        if (tree == null || tree.size() <= 0) {
+        if (tree == null || tree.isEmpty()) {
             return this.readInventoryTreeWithNode(filter);
         }
         //root node will be inventory on tree-level if sliced treePath
@@ -155,7 +155,7 @@ public class DataTreeProviderImpl {
             throws IOException {
         DataTreeObject tree = new DataTreeObject(INVENTORY_PROPERTY_PARENTUUID, INVENTORY_PROPERTY_UUID);
         final String parentUuid = list.size() > 1 ? list.get(list.size() - 2) : null;
-        final String uuid = list.size() > 0 ? list.get(list.size() - 1) : null;
+        final String uuid = list.isEmpty() ? null : list.get(list.size() - 1);
         List<SearchHit> matches = this.search(Entity.Inventoryequipment, filter, INVENTORY_PROPERTY_NODEID, nodeId,
                 INVENTORY_PROPERTY_PARENTUUID, parentUuid, INVENTORY_PROPERTY_UUID, uuid, INVENTORY_PROPERTY_TREELEVEL);
 
@@ -163,7 +163,7 @@ public class DataTreeProviderImpl {
         List<SearchHit> others = this.search(Entity.Inventoryequipment, (String) null, INVENTORY_PROPERTY_NODEID, nodeId,
                 null, null, null, null, INVENTORY_PROPERTY_TREELEVEL);
         if (matches.size() > 0) {
-            int treeLevelToStart = (list == null || list.size() <= 0) ? 0 : list.size() - 1;
+            int treeLevelToStart = (list == null || list.isEmpty()) ? 0 : list.size() - 1;
             //build tree
             JSONObject hitData;
             //fill root elems
