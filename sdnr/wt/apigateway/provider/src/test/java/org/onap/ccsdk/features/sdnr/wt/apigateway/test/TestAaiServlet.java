@@ -29,7 +29,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.MyProperties;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpAaiServlet;
-import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpEsServlet;
 import org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper.HelpServletBase;
 
 public class TestAaiServlet extends HelpServletBase {
@@ -64,10 +63,10 @@ public class TestAaiServlet extends HelpServletBase {
 
         // initEsTestWebserver(port);
         properties.load(new ByteArrayInputStream(tmpconfigcontent2.getBytes()));
-        testrequest(HTTPMETHOD_GET, query, HelpEsServlet.RESPONSE_GET, true);
-        testrequest(HTTPMETHOD_POST, query, HelpEsServlet.RESPONSE_POST, true);
-        testrequest(HTTPMETHOD_PUT, query, HelpEsServlet.RESPONSE_PUT, true);
-        testrequest(HTTPMETHOD_DELETE, query, HelpEsServlet.RESPONSE_DELETE, true);
+        testrequest(HTTPMETHOD_GET, query, HelpAaiServlet.RESPONSE_GET, true);
+        testrequest(HTTPMETHOD_POST, query, HelpAaiServlet.RESPONSE_POST, true);
+        testrequest(HTTPMETHOD_PUT, query, HelpAaiServlet.RESPONSE_PUT, true);
+        testrequest(HTTPMETHOD_DELETE, query, HelpAaiServlet.RESPONSE_DELETE, true);
         testrequest(HTTPMETHOD_OPTIONS, query, "", false);
         // stopTestWebserver();
         if (tmpFile.exists())
