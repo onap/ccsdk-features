@@ -29,10 +29,6 @@ import org.onap.ccsdk.features.sdnr.wt.apigateway.TilesServlet;
 public class HelpTilesServlet extends TilesServlet implements IPublicServlet {
 
     private static final long serialVersionUID = 1L;
-    public static final String RESPONSE_GET = "This is the response get";
-    public static final String RESPONSE_POST = "This is the response post";
-    public static final String RESPONSE_PUT = "This is the response put";
-    public static final String RESPONSE_DELETE = "This is the response delete";
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

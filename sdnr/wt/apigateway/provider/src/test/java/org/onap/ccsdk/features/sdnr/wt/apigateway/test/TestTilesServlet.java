@@ -63,10 +63,10 @@ public class TestTilesServlet extends HelpServletBase {
 
         // initEsTestWebserver(port);
         properties.load(new ByteArrayInputStream(tmpconfigcontent2.getBytes()));
-        testrequest(HTTPMETHOD_GET, query, HelpTilesServlet.RESPONSE_GET, true);
-        testrequest(HTTPMETHOD_POST, query, HelpTilesServlet.RESPONSE_POST, true);
-        testrequest(HTTPMETHOD_PUT, query, HelpTilesServlet.RESPONSE_PUT, true);
-        testrequest(HTTPMETHOD_DELETE, query, HelpTilesServlet.RESPONSE_DELETE, true);
+        testrequest(HTTPMETHOD_GET, query, RESPONSE_GET, true);
+        testrequest(HTTPMETHOD_POST, query, RESPONSE_POST, true);
+        testrequest(HTTPMETHOD_PUT, query, RESPONSE_PUT, true);
+        testrequest(HTTPMETHOD_DELETE, query, RESPONSE_DELETE, true);
         testrequest(HTTPMETHOD_OPTIONS, query, "", false);
         // stopTestWebserver();
         if (tmpFile.exists())

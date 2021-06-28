@@ -37,11 +37,7 @@ public class TestDatabaseServlet extends HelpServletBase {
         super("/database", PORT);
     }
 
-
-
     final String LR = "\n";
-
-
 
     @Test
     public void test() throws ServletException, IOException {
@@ -67,10 +63,10 @@ public class TestDatabaseServlet extends HelpServletBase {
 
         // initEsTestWebserver(port);
         properties.load(new ByteArrayInputStream(tmpconfigcontent2.getBytes()));
-        testrequest(HTTPMETHOD_GET, query, HelpEsServlet.RESPONSE_GET, true);
-        testrequest(HTTPMETHOD_POST, query, HelpEsServlet.RESPONSE_POST, true);
-        testrequest(HTTPMETHOD_PUT, query, HelpEsServlet.RESPONSE_PUT, true);
-        testrequest(HTTPMETHOD_DELETE, query, HelpEsServlet.RESPONSE_DELETE, true);
+        testrequest(HTTPMETHOD_GET, query, RESPONSE_GET, true);
+        testrequest(HTTPMETHOD_POST, query, RESPONSE_POST, true);
+        testrequest(HTTPMETHOD_PUT, query, RESPONSE_PUT, true);
+        testrequest(HTTPMETHOD_DELETE, query, RESPONSE_DELETE, true);
         testrequest(HTTPMETHOD_OPTIONS, query, "", false);
         // stopTestWebserver();
 

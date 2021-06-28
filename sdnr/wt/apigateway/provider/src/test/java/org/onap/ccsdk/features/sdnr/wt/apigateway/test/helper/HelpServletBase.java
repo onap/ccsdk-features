@@ -52,6 +52,11 @@ public class HelpServletBase {
     public static final String HTTPMETHOD_PUT = "PUT";
     public static final String HTTPMETHOD_DELETE = "DELETE";
     public static final String HTTPMETHOD_OPTIONS = "OPTIONS";
+    public static final String RESPONSE_GET = "This is the response get";
+    public static final String RESPONSE_POST = "This is the response post";
+    public static final String RESPONSE_PUT = "This is the response put";
+    public static final String RESPONSE_DELETE = "This is the response delete";
+    public static final String RESPONSE_OPTIONS = "This is the response options";
     private IPublicServlet servlet;
     private static HttpServer server;
     private static ExecutorService httpThreadPool;
@@ -170,23 +175,23 @@ public class HelpServletBase {
             OutputStream os = null;
             try {
                 if (method.equals(HTTPMETHOD_GET)) {
-                    t.sendResponseHeaders(200, HelpEsServlet.RESPONSE_GET.length());
+                    t.sendResponseHeaders(200, RESPONSE_GET.length());
                     os = t.getResponseBody();
-                    os.write(HelpEsServlet.RESPONSE_GET.getBytes());
+                    os.write(RESPONSE_GET.getBytes());
                 } else if (method.equals(HTTPMETHOD_POST)) {
-                    t.sendResponseHeaders(200, HelpEsServlet.RESPONSE_POST.length());
+                    t.sendResponseHeaders(200, RESPONSE_POST.length());
                     os = t.getResponseBody();
-                    os.write(HelpEsServlet.RESPONSE_POST.getBytes());
+                    os.write(RESPONSE_POST.getBytes());
                 } else if (method.equals(HTTPMETHOD_PUT)) {
-                    t.sendResponseHeaders(200, HelpEsServlet.RESPONSE_PUT.length());
+                    t.sendResponseHeaders(200, RESPONSE_PUT.length());
                     os = t.getResponseBody();
-                    os.write(HelpEsServlet.RESPONSE_PUT.getBytes());
+                    os.write(RESPONSE_PUT.getBytes());
                 } else if (method.equals(HTTPMETHOD_DELETE)) {
-                    t.sendResponseHeaders(200, HelpEsServlet.RESPONSE_DELETE.length());
+                    t.sendResponseHeaders(200, RESPONSE_DELETE.length());
                     os = t.getResponseBody();
-                    os.write(HelpEsServlet.RESPONSE_DELETE.getBytes());
+                    os.write(RESPONSE_DELETE.getBytes());
                 } else if (method.equals(HTTPMETHOD_OPTIONS)) {
-                    t.sendResponseHeaders(200, HelpEsServlet.RESPONSE_OPTIONS.length());
+                    t.sendResponseHeaders(200, RESPONSE_OPTIONS.length());
                     //os = t.getResponseBody();
                     //os.write(RESPONSE_OPTIONS.getBytes());
                 } else {

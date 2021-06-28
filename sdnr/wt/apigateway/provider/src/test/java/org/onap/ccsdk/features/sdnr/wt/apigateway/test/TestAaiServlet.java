@@ -63,10 +63,10 @@ public class TestAaiServlet extends HelpServletBase {
 
         // initEsTestWebserver(port);
         properties.load(new ByteArrayInputStream(tmpconfigcontent2.getBytes()));
-        testrequest(HTTPMETHOD_GET, query, HelpAaiServlet.RESPONSE_GET, true);
-        testrequest(HTTPMETHOD_POST, query, HelpAaiServlet.RESPONSE_POST, true);
-        testrequest(HTTPMETHOD_PUT, query, HelpAaiServlet.RESPONSE_PUT, true);
-        testrequest(HTTPMETHOD_DELETE, query, HelpAaiServlet.RESPONSE_DELETE, true);
+        testrequest(HTTPMETHOD_GET, query, RESPONSE_GET, true);
+        testrequest(HTTPMETHOD_POST, query, RESPONSE_POST, true);
+        testrequest(HTTPMETHOD_PUT, query, RESPONSE_PUT, true);
+        testrequest(HTTPMETHOD_DELETE, query, RESPONSE_DELETE, true);
         testrequest(HTTPMETHOD_OPTIONS, query, "", false);
         // stopTestWebserver();
         if (tmpFile.exists())
