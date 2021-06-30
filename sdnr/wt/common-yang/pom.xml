@@ -44,6 +44,7 @@
         <module>rfc8341</module>
         <module>rfc7317-ietf-system</module>
         <module>ietf-alarms</module>
+        <module>openroadm-pm-types</module>
         <module>utils</module>
     </modules>
 

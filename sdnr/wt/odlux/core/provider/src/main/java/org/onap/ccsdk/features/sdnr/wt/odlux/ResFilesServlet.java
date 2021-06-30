@@ -81,7 +81,11 @@ public class ResFilesServlet extends HttpServlet {
 
     //Provide own function that can be overloaded for test
     public String getMimeType(String fileName) {
-        return getServletContext().getMimeType(fileName);
+        String t =  getServletContext().getMimeType(fileName);
+        if(t.startsWith("text")) {
+            t+="; charset=utf-8";
+        }
+        return t;
     }
 
 }

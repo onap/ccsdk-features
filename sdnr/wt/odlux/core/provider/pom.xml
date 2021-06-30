@@ -63,6 +63,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-odlux-framework</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>

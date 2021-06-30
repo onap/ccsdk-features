@@ -47,7 +47,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>${application.name}-feature</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
@@ -60,12 +60,12 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>${application.name}-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>${application.name}-setup</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -112,30 +112,6 @@
                             <useRepositoryLayout>true</useRepositoryLayout>
                             <addParentPoms>false</addParentPoms>
                             <copyPom>false</copyPom>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-schemas</id>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <phase>validate</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/assembly/cache/schema</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/../provider/src/main/resources/preload.cache.schema</directory>
-                                    <includes>
-                                        <include>*.yang</include>
-                                    </includes>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
                         </configuration>
                     </execution>
                 </executions>
