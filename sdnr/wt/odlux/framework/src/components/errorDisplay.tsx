@@ -72,7 +72,7 @@ type ErrorDisplayProps = WithStyles<typeof styles> & Connect;
 // }
 
 /**
- * Represents a compnent for formaing and displaying errors.
+ * Represents a component for formatting and displaying errors.
  */
 class ErrorDisplayComponent extends React.Component<ErrorDisplayProps> {
   constructor(props: ErrorDisplayProps) {

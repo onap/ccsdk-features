@@ -106,13 +106,3 @@ export const runApplication = () => {
 
 };
 
-if (process.env.NODE_ENV === "development") {
-  const addTransportPCEUrl = () =>{
-    const url = window.localStorage.getItem(transportPCEUrl);
-    if(url === null){
-        window.localStorage.setItem(transportPCEUrl, "http://10.20.6.32:18082/");
-        console.log("set transport url :D")
-    }
-  }
-  addTransportPCEUrl();
-}

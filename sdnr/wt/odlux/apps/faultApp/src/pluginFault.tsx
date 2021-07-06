@@ -42,6 +42,7 @@ import { FaultStatus } from "./components/faultStatus";
 import { refreshFaultStatusAsyncAction } from "./actions/statusActions";
 
 let currentMountId: string | undefined = undefined;
+let currentSeverity: string | undefined = undefined;
 
 const mapProps = (state: IApplicationStoreState) => ({
   currentProblemsProperties: createCurrentProblemsProperties(state),
@@ -75,8 +76,30 @@ const FaultApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteCom
   )
 });
 
+const FaulttApplicationAlarmStatusRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ severity?: string }> & Connect<typeof mapProps, typeof mapDisp>) => {
+  if (currentSeverity !== props.match.params.severity) {
+    currentSeverity = props.match.params.severity || undefined;
+    window.setTimeout(() => {
+      if (currentSeverity) {
+        props.setCurrentPanel("CurrentProblem");
+        props.currentProblemsActions.onFilterChanged("severity", currentSeverity);
+        if (!props.currentProblemsProperties.showFilter) {
+          props.currentProblemsActions.onToggleFilter(false);
+          props.currentProblemsActions.onRefresh();
+        }
+        else
+          props.currentProblemsActions.onRefresh();
+      }
+    });
+  }
+  return (
+    <FaultApplication />
+  )
+});
+
 const App = withRouter((props: RouteComponentProps) => (
   <Switch>
+    <Route path={`${props.match.path}/alarmStatus/:severity?`} component={FaulttApplicationAlarmStatusRouteAdapter} />
     <Route path={`${props.match.path}/:mountId?`} component={FaultApplicationRouteAdapter} />
     <Redirect to={`${props.match.path}`} />
   </Switch>

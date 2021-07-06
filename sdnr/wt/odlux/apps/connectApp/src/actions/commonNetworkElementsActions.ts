@@ -28,7 +28,7 @@ import { connectionStatusLogReloadAction } from '../handlers/connectionStatusLog
 
 import { PanelId } from '../models/panelId';
 import { guiCutThrough } from '../models/guiCutTrough';
-import { connectService}  from '../services/connectService';
+import { connectService} from '../services/connectService';
 
 
 export class SetPanelAction extends Action {

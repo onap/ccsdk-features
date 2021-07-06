@@ -97,7 +97,14 @@ class AboutComponent extends React.Component<any, AboutState> {
 
   private loadAboutContent(): void {
     const baseUri = window.location.pathname.substring(0,window.location.pathname.lastIndexOf("/")+1);
-    const p1 = requestRestExt<string>('/about');
+    const init = {
+      'method': 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/markdown',
+      }
+    };
+    const p1 = requestRestExt<string>('/about',init);
     const p2 = requestRestExt<odluxVersion>(`${baseUri}version.json`);
     const p3 = requestRestExt<any>(`/topology/info/version`);
 

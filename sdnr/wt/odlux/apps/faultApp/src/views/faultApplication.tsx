@@ -137,7 +137,7 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
 
   render(): JSX.Element {
 
-    const refreshButton = {
+    const clearAlarmsAction = {
       icon: Sync, tooltip: 'Clear stuck alarms', onClick: this.onDialogOpen
     };
 
@@ -158,7 +158,7 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
     };
 
     const areFaultsAvailable = this.props.currentProblemsProperties.rows && this.props.currentProblemsProperties.rows.length > 0
-    const customActions = areFaultsAvailable ? [refreshButton, refreshCurrentProblemsAction] : [refreshCurrentProblemsAction];
+    const customActions = areFaultsAvailable ? [clearAlarmsAction, refreshCurrentProblemsAction] : [refreshCurrentProblemsAction];
 
     const { panelId: activePanelId } = this.props;
 
@@ -191,7 +191,7 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
         }
         {activePanelId === 'AlarmNotifications' &&
 
-          <FaultAlarmNotificationTable tableId="alarm-notifications-table" idProperty="id" stickyHeader rows={this.props.faultNotifications.faults} asynchronus columns={[
+          <FaultAlarmNotificationTable stickyHeader tableId="alarm-notifications-table" idProperty="id" defaultSortColumn='timeStamp' defaultSortOrder='desc' rows={this.props.faultNotifications.faults} asynchronus columns={[
             { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
             { property: "timeStamp", title: "Timestamp" },
             { property: "nodeName", title: "Node Name" },

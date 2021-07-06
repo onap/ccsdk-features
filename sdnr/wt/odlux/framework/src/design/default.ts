@@ -32,12 +32,13 @@
  *****************************************************************************/
 
 import { createMuiTheme } from '@material-ui/core/styles';
+import onapLogo from '../assets/images/onapLogo.gif'
 
 const theme = createMuiTheme({
   design: {
     id: "onap",
     name: "Open Networking Automation Plattform (ONAP)",
-    url: "https://www.onap.org/wp-content/uploads/sites/20/2017/02/logo_onap_2017.png",
+    url: onapLogo,
     height: 49,
     width: 229,
     logoHeight: 32,

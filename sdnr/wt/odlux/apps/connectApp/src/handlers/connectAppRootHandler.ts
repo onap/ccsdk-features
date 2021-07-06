@@ -24,6 +24,7 @@ import { IInfoNetworkElementsState, infoNetworkElementsActionHandler } from './i
 import { SetPanelAction, AddWebUriList, RemoveWebUri, SetWeburiSearchBusy } from '../actions/commonNetworkElementsActions';
 import { PanelId } from '../models/panelId';
 import { guiCutThrough } from '../models/guiCutTrough';
+import { connectionStatusCountHandler, IConnectionStatusCount } from './connectionStatusCountHandler';
 
 export interface IConnectAppStoreState {
   networkElements: INetworkElementsState;
@@ -31,6 +32,7 @@ export interface IConnectAppStoreState {
   currentOpenPanel: PanelId;
   elementInfo: IInfoNetworkElementsState;
   guiCutThrough: guiCutThroughState;
+  connectionStatusCount: IConnectionStatusCount;
 }
 
 const currentOpenPanelHandler: IActionHandler<PanelId> = (state = null, action) => {
@@ -87,7 +89,8 @@ const actionHandlers = {
   connectionStatusLog: connectionStatusLogActionHandler,
   currentOpenPanel: currentOpenPanelHandler,
   elementInfo: infoNetworkElementsActionHandler,
-  guiCutThrough: guiCutThroughHandler
+  guiCutThrough: guiCutThroughHandler,
+  connectionStatusCount: connectionStatusCountHandler
 };
 
 export const connectAppRootHandler = combineActionHandler<IConnectAppStoreState>(actionHandlers);

@@ -29,7 +29,16 @@ import { ErrorInfo } from '../models/errorInfo';
 import { SnackbarItem } from '../models/snackbarItem';
 import { ExternalLoginProvider } from '../models/externalLoginProvider';
 import { ApplicationConfig } from '../models/applicationConfig';
+import { IConnectAppStoreState } from '../../../apps/connectApp/src/handlers/connectAppRootHandler';
+import { IFaultAppStoreState } from '../../../apps/faultApp/src/handlers/faultAppRootHandler';
 
+
+declare module '../store/applicationStore' {
+  interface IApplicationStoreState {
+    connect: IConnectAppStoreState;
+    fault: IFaultAppStoreState
+  }
+}
 export interface IApplicationState {
   title: string;
   appId?: string;
@@ -44,12 +53,12 @@ export interface IApplicationState {
   enablePolicy: boolean             // false 
 }
 
-const applicationStateInit: IApplicationState = { 
-  title: "Loading ...", 
-  errors: [], 
-  snackBars: [], 
-  isMenuOpen: true, 
-  isMenuClosedByUser: false, 
+const applicationStateInit: IApplicationState = {
+  title: "Loading ...",
+  errors: [],
+  snackBars: [],
+  isMenuOpen: true,
+  isMenuClosedByUser: false,
   isWebsocketAvailable: undefined,
   externalLoginProviders: null,
   authentication: "basic",

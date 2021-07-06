@@ -21,10 +21,10 @@
   </script>
   <script>
     // run the application
-    require(["app" /*,"connectApp","inventoryApp","faultApp","helpApp"*/], function (app,connectApp,inventoryApp,faultApp,helpApp) {
-      // connectApp.register();
+    require(["app" ,"connectApp","faultApp"/*,"inventoryApp","helpApp"*/], function (app,connectApp,faultApp,/*inventoryApp,helpApp*/) {
+      connectApp.register();
+      faultApp.register();
       // inventoryApp.register();
-      // faultApp.register();
       // helpApp.register();
       app("./app.tsx").runApplication();
     });

@@ -51,7 +51,7 @@ function setCurrentSubscriptions(notificationSocket: WebSocket) {
       'data': 'scopes',
       'scopes':[{
         "schema":{
-            "namespace":"*",
+            "namespace":"urn:opendaylight:params:xml:ns:yang:devicemanager",
             "revision":"*",
             "notification": scopesToSubscribe 
          }
