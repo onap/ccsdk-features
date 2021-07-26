@@ -17,7 +17,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
-import java.util.Date;
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
@@ -81,6 +80,13 @@ public interface DataProvider extends ArchiveCleanProvider {
 
     /**
      *
+     * @param nodeName
+     * @return number of entries
+     */
+    public int clearGuiCutThroughEntriesOfNode(String nodeName);
+
+    /**
+     *
      * @param networkElementConnectionEntitiy to wirte to DB
      * @param nodeId Id for this DB element
      * @return if succeeded
@@ -98,12 +104,6 @@ public interface DataProvider extends ArchiveCleanProvider {
     boolean updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy, String nodeId);
 
     void removeNetworkConnection(String nodeId);
-
-    @Override
-    int doIndexClean(Date olderAreOutdated);
-
-    @Override
-    int getNumberOfOldObjects(Date olderAreOutdated);
 
     List<NetworkElementConnectionEntity> getNetworkElementConnections();
 

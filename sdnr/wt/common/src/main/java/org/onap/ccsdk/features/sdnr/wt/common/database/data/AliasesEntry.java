@@ -45,6 +45,10 @@ public class AliasesEntry {
     private final String alias;
     private final String index;
 
+    public AliasesEntry(String index, String alias) {
+        this.alias = alias;
+        this.index = index;
+    }
     public AliasesEntry(String line) throws ParseException {
         final Matcher matcher = pattern.matcher(line);
         if (!matcher.find() || matcher.groupCount() < 2) {

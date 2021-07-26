@@ -25,9 +25,9 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseServlet;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.MediatorServerDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.MediatorServerDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMediatorserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,8 +102,8 @@ public class MsServlet extends BaseServlet {
         trustAll = trust;
     }
 
-    public void setDataProvider(MediatorServerDataProvider mediatorServerDataProvider) {
-        entryProvider = mediatorServerDataProvider;
+    public void setDataProvider(HtDatabaseMediatorserver entryProvider2) {
+        entryProvider = new MediatorServerDataProvider(entryProvider2);
     }
 
     @Override
@@ -114,5 +114,12 @@ public class MsServlet extends BaseServlet {
     @Override
     protected boolean isCorsEnabled() {
         return false;
+    }
+
+    public void triggerReloadSync() {
+        if(entryProvider!=null) {
+            entryProvider.triggerReloadSync();
+        }
+
     }
 }

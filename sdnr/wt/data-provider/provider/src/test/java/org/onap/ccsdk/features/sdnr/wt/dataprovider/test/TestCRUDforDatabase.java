@@ -39,8 +39,9 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.HtUserdataManagerImpl;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.HtUserdataManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
@@ -125,7 +126,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 
 public class TestCRUDforDatabase {
 
-    private static ElasticSearchDataProvider dbProvider;
+    private static DatabaseDataProvider dbProvider;
     private static HtDatabaseClient dbRawProvider;
 
     @BeforeClass

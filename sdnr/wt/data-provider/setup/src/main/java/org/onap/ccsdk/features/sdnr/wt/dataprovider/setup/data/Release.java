@@ -22,34 +22,51 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntry;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
+import org.onap.ccsdk.features.sdnr.wt.common.database.data.DatabaseVersion;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
+
 
 public enum Release {
 
-    EL_ALTO("el alto", "_v1", new EsVersion(2, 2, 0), new EsVersion(2, 2, 0)),
-    FRANKFURT_R1("frankfurt-R1", "-v2", new EsVersion(6, 4, 3), new EsVersion(6, 8, 6)),
-    FRANKFURT_R2("frankfurt-R2", "-v3", new EsVersion(7, 0, 1), new EsVersion(7, 6, 1)),
-    GUILIN_R1("guilin-R1", "-v4", new EsVersion(7,1,1), new EsVersion(7,6,1)),
-	HONOLULU_R1("honolulu-R1", "-v5", new EsVersion(7,1,1), new EsVersion(8,0,0), false),
-	ISTANBUL_R1("istanbul-R1", "-v6", new EsVersion(7,1,1), new EsVersion(8,0,0), false);
+    EL_ALTO("el alto", "_v1", new DatabaseVersion(2, 2, 0), new DatabaseVersion(2, 2, 0)),
+    FRANKFURT_R1("frankfurt-R1", "-v2", new DatabaseVersion(6, 4, 3), new DatabaseVersion(6, 8, 6)),
+    FRANKFURT_R2("frankfurt-R2", "-v3", new DatabaseVersion(7, 0, 1), new DatabaseVersion(7, 6, 1)),
+    GUILIN_R1("guilin-R1", "-v4", new DatabaseVersion(7,1,1), new DatabaseVersion(7,6,1)),
+	HONOLULU_R1("honolulu-R1", "-v5", new DatabaseVersion(7,1,1), new DatabaseVersion(8,0,0), false),
+	ISTANBUL_R1("istanbul-R1", "-v6", new DatabaseVersion(7,1,1), new DatabaseVersion(8,0,0), false,
+	        new DatabaseVersion(10,2,7), new DatabaseVersion(10,6,0), false);
 
     public static final Release CURRENT_RELEASE = Release.ISTANBUL_R1;
 
     private final String value;
     private final String dbSuffix;
-    private final EsVersion minDbVersion;
-    private final EsVersion maxDbVersion;
+    private final DatabaseVersion minDbVersion;
+    private final DatabaseVersion maxDbVersion;
+    private final DatabaseVersion minMariaDbVersion;
+    private final DatabaseVersion maxMariaDbVersion;
     private final boolean includeEndVersion;
+    private final boolean mariaDbIncludeEndVersion;
 
-	private Release(String s, String dbsuffix, EsVersion minDbVersion, EsVersion maxDbVersion) {
-		this(s, dbsuffix, minDbVersion, maxDbVersion, true);
-	}
-    private Release(String s, String dbsuffix, EsVersion minDbVersion, EsVersion maxDbVersion, boolean includeEnd) {
+    private Release(String s, String dbsuffix, DatabaseVersion minDbVersion, DatabaseVersion maxDbVersion) {
+        this(s, dbsuffix, minDbVersion, maxDbVersion, true, null, null, false);
+    }
+
+    private Release(String s, String dbsuffix, DatabaseVersion minDbVersion, DatabaseVersion maxDbVersion,
+            boolean includeEnd) {
+        this(s, dbsuffix, minDbVersion, maxDbVersion, includeEnd, null, null, false);
+    }
+
+    private Release(String s, String dbsuffix, DatabaseVersion minDbVersion, DatabaseVersion maxDbVersion,
+            boolean includeEnd, DatabaseVersion minMariaDbVersion, DatabaseVersion maxMariaDbVersion,
+            boolean mariaDbIncludeEnd) {
         this.value = s;
         this.dbSuffix = dbsuffix;
         this.minDbVersion = minDbVersion;
         this.maxDbVersion = maxDbVersion;
         this.includeEndVersion = includeEnd;
+        this.minMariaDbVersion = minMariaDbVersion;
+        this.maxMariaDbVersion = maxMariaDbVersion;
+        this.mariaDbIncludeEndVersion = mariaDbIncludeEnd;
     }
 
     @Override
@@ -94,16 +111,24 @@ public enum Release {
         return this.dbSuffix;
     }
 
-    public EsVersion getDBVersion() {
+    public DatabaseVersion getDBVersion() {
         return this.minDbVersion;
     }
 
-    public boolean isDbInRange(EsVersion dbVersion) {
-        if(this.includeEndVersion) {
-            return dbVersion.isNewerOrEqualThan(minDbVersion) && dbVersion.isOlderOrEqualThan(maxDbVersion);
-        }
-        else {
-            return dbVersion.isNewerOrEqualThan(minDbVersion) && dbVersion.isOlderThan(maxDbVersion);
+    public boolean isDbInRange(DatabaseVersion dbVersion, SdnrDbType type) {
+        if (type == SdnrDbType.ELASTICSEARCH) {
+            if (this.includeEndVersion) {
+                return dbVersion.isNewerOrEqualThan(minDbVersion) && dbVersion.isOlderOrEqualThan(maxDbVersion);
+            } else {
+                return dbVersion.isNewerOrEqualThan(minDbVersion) && dbVersion.isOlderThan(maxDbVersion);
+            }
+        } else {
+            if (this.mariaDbIncludeEndVersion) {
+                return dbVersion.isNewerOrEqualThan(minMariaDbVersion)
+                        && dbVersion.isOlderOrEqualThan(maxMariaDbVersion);
+            } else {
+                return dbVersion.isNewerOrEqualThan(minMariaDbVersion) && dbVersion.isOlderThan(maxMariaDbVersion);
+            }
         }
     }
 }

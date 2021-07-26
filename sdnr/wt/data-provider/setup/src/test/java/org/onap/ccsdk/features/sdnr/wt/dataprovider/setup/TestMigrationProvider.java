@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataMigrationReport;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 
@@ -41,8 +42,9 @@ public class TestMigrationProvider {
 
     @Test
     public void testCreateImport() throws Exception {
-        DataMigrationProviderImpl provider = new DataMigrationProviderImpl(hosts, null, null, true, 5000);
-        DataMigrationReport report=null;
+        DataMigrationProviderImpl provider =
+                new DataMigrationProviderImpl(SdnrDbType.ELASTICSEARCH, hosts[0].toUrl(), null, null, true, 5000);
+        DataMigrationReport report = null;
         try {
 
 
