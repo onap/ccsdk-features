@@ -22,7 +22,6 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 
 import java.io.FileNotFoundException;
-
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataMigrationReport;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 
@@ -31,7 +30,7 @@ public interface DataMigrationProviderService {
 
     /**
      * import data from file and write these to database
-     * 
+     *
      * @param filename source
      * @param dryrun only loading file and check consistency, not pushing into database
      * @return report
@@ -40,18 +39,21 @@ public interface DataMigrationProviderService {
      */
     DataMigrationReport importData(String filename, boolean dryrun) throws FileNotFoundException, Exception;
 
+    DataMigrationReport importData(String filename, boolean dryrun, Release forRelease) throws Exception;
     /**
      * export current data to file
-     * 
+     *
      * @param filename
      */
     DataMigrationReport exportData(String filename);
 
     /**
-     * 
+     *
      * @return
      */
     Release getCurrentVersion();
+
+    Release autoDetectRelease();
 
     /**
      * @param release
@@ -67,8 +69,9 @@ public interface DataMigrationProviderService {
 
     /**
      * clean up the database all data will be removed complete structure will be destroyed
-     * 
+     *
      * @return
      */
     boolean clearDatabase(Release release, String dbPrefix, long timeoutms);
+
 }

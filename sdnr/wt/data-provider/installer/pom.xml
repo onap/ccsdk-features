@@ -69,6 +69,10 @@
             <artifactId>${application.name}-setup</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.highstreet-technologies.opendaylight</groupId>
+            <artifactId>odl-ready</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

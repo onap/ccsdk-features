@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.BaseIdentityDeserializer;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.ClassDeserializer;
@@ -48,7 +49,25 @@ import org.slf4j.LoggerFactory;
 public class YangToolsDeserializerModifier extends BeanDeserializerModifier {
 
     private static final Logger LOG = LoggerFactory.getLogger(YangToolsDeserializerModifier.class);
-    private static final String getEnumMethodName="valueOf";
+    private static final String getEnumMethodName = "valueOf";
+    private static final String getEnumMethodName2 = "forName";
+
+    @SuppressWarnings("unchecked")
+    public static Enum<?> parseEnum(String value, Class<?> clazz) throws IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        try {
+            Method method = clazz.getDeclaredMethod(getEnumMethodName, String.class);
+            Enum<?> result = (Enum<?>) method.invoke(null, value);
+            LOG.debug("Deserialize '{}' with class '{}' to '{}'", value, clazz.getName(), result);
+            return result;
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                | NoSuchElementException | SecurityException e) {
+            Method method = clazz.getDeclaredMethod(getEnumMethodName2, String.class);
+            Optional<Enum<?>> result = (Optional<Enum<?>>) method.invoke(null, value);
+            LOG.debug("Deserialize '{}' with class '{}' to '{}'", value, clazz.getName(), result);
+            return result.orElseThrow();
+        }
+    }
 
     @Override
     public JsonDeserializer<Enum<?>> modifyEnumDeserializer(DeserializationConfig config, final JavaType type,
@@ -60,10 +79,7 @@ public class YangToolsDeserializerModifier extends BeanDeserializerModifier {
                 Class<?> clazz = type.getRawClass();
 
                 try {
-                    Method method = clazz.getDeclaredMethod(getEnumMethodName, String.class);
-                    Enum<?> result = (Enum<?>) method.invoke(null, jp.getValueAsString());
-                    LOG.debug("Deserialize '{}' with class '{}' to '{}'", jp.getValueAsString(), clazz.getName(), result);
-                    return result;
+                    return parseEnum(jp.getValueAsString(), clazz);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
                         | NoSuchMethodException | NoSuchElementException | SecurityException e) {
                     LOG.warn("problem deserializing enum for {} with value {}: {}", clazz.getName(),

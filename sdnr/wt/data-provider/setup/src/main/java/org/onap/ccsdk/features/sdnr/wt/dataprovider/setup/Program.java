@@ -37,7 +37,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
-import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataMigrationReport;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.MavenDatabasePluginInitFile;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
@@ -77,7 +77,8 @@ public class Program {
     private static final int DEFAULT_SHARDS = 5;
     private static final int DEFAULT_REPLICAS = 1;
     private static final int DEFAULT_DATABASEWAIT_SECONDS = 30;
-    private static final String DEFAULT_DBURL = "http://sdnrdb:9200";
+    private static final String DEFAULT_DBURL_ELASTICSEARCH = "http://sdnrdb:9200";
+    private static final String DEFAULT_DBURL_MARIADB = "jdbc:mysql://sdnrdb:3306/sdnrdb";
     private static final String DEFAULT_DBPREFIX = "";
     private static final boolean DEFAULT_TRUSTINSECURESSL = false;
 
@@ -103,6 +104,8 @@ public class Program {
     private static final String OPTION_DATABASE_LONG = "dburl";
     private static final String OPTION_COMMAND_SHORT = "c";
     private static final String OPTION_COMMAND_LONG = "cmd";
+    private static final String OPTION_DATABASETYPE_SHORT = "dbt";
+    private static final String OPTION_DATABASETYPE_LONG = "db-type";
     private static final String OPTION_DATABASEUSER_SHORT = "dbu";
     private static final String OPTION_DATABASEUSER_LONG = "db-username";
     private static final String OPTION_DATABASEPASSWORD_SHORT = "dbp";
@@ -140,6 +143,9 @@ public class Program {
         }
         if (def instanceof Release) {
             return cmd.hasOption(option) ? (T) Release.getValueBySuffix(cmd.getOptionValue(option)) : def;
+        }
+        if (def instanceof SdnrDbType) {
+            return cmd.hasOption(option) ? (T) SdnrDbType.valueOf(cmd.getOptionValue(option).toUpperCase()) : def;
         }
         if (cmd.hasOption(option) && cmd.getOptionValue(option) != null) {
             if (option.equals(OPTION_VERSION_SHORT)) {
@@ -303,7 +309,7 @@ public class Program {
         if (filename == null) {
             throw new Exception("please add output file parameter");
         }
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(options.getUrl())},
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(options.getType(), options.getUrl(),
                 options.getUsername(), options.getPassword(), options.doTrustAll(), options.getTimeoutMs());
         DataMigrationReport report = service.importData(filename, false);
         LOG.info(report);
@@ -319,7 +325,7 @@ public class Program {
         if (filename == null) {
             throw new Exception("please add output file parameter");
         }
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(options.getUrl())},
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(options.getType(), options.getUrl(),
                 options.getUsername(), options.getPassword(), options.doTrustAll(), options.getTimeoutMs());
         DataMigrationReport report = service.exportData(filename);
         LOG.info(report);
@@ -342,7 +348,7 @@ public class Program {
         Release r = getOptionOrDefault(cmd, OPTION_VERSION_SHORT, (Release) null);
         DatabaseOptions options = new DatabaseOptions(cmd);
         String dbPrefix = getOptionOrDefault(cmd, OPTION_DATABASEPREFIX_SHORT, DEFAULT_DBPREFIX);
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(options.getUrl())},
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(options.getType(), options.getUrl(),
                 options.getUsername(), options.getPassword(), options.doTrustAll(), options.getTimeoutMs());
         if (!service.clearDatabase(r, dbPrefix, options.getTimeoutMs())) {
             throw new Exception("failed to init database");
@@ -352,7 +358,7 @@ public class Program {
 
     private static void cmd_clear_db_complete(CommandLine cmd) throws Exception {
         DatabaseOptions options = new DatabaseOptions(cmd);
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(options.getUrl())},
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(options.getType(), options.getUrl(),
                 options.getUsername(), options.getPassword(), options.doTrustAll(), options.getTimeoutMs());
         if (!service.clearCompleteDatabase(options.getTimeoutMs())) {
             throw new Exception("failed to init database");
@@ -366,7 +372,7 @@ public class Program {
         int numReplicas = getOptionOrDefault(cmd, OPTION_REPLICAS_SHORT, DEFAULT_REPLICAS);
         DatabaseOptions options = new DatabaseOptions(cmd);
         String dbPrefix = getOptionOrDefault(cmd, OPTION_DATABASEPREFIX_SHORT, DEFAULT_DBPREFIX);
-        DataMigrationProviderImpl service = new DataMigrationProviderImpl(new HostInfo[] {HostInfo.parse(options.getUrl())},
+        DataMigrationProviderImpl service = new DataMigrationProviderImpl(options.getType(),options.getUrl(),
                 options.getUsername(), options.getPassword(), options.doTrustAll(), options.getTimeoutMs());
         boolean forceRecreate = cmd.hasOption(OPTION_FORCE_RECREATE_SHORT);
         if (!service.initDatabase(r, numShards, numReplicas, dbPrefix, forceRecreate, options.getTimeoutMs())) {
@@ -380,6 +386,8 @@ public class Program {
         Options result = new Options();
         result.addOption(createOption(OPTION_COMMAND_SHORT, OPTION_COMMAND_LONG, true, "command to execute", false));
         result.addOption(createOption(OPTION_DATABASE_SHORT, OPTION_DATABASE_LONG, true, "database url", false));
+        result.addOption(createOption(OPTION_DATABASETYPE_SHORT, OPTION_DATABASETYPE_LONG, true,
+                "database type (elasticsearch|mariadb)", false));
         result.addOption(createOption(OPTION_DATABASEUSER_SHORT, OPTION_DATABASEUSER_LONG, true,
                 "database basic auth username", false));
         result.addOption(createOption(OPTION_DATABASEPASSWORD_SHORT, OPTION_DATABASEPASSWORD_LONG, true,
@@ -432,9 +440,13 @@ public class Program {
         private final String password;
         private final boolean trustAll;
         private final long timeoutMs;
+        private final SdnrDbType type;
 
         public String getUrl() {
             return this.url;
+        }
+        public SdnrDbType getType() {
+            return this.type;
         }
         public String getUsername() {
             return this.username;
@@ -448,8 +460,11 @@ public class Program {
         public long getTimeoutMs() {
             return this.timeoutMs;
         }
+
         public DatabaseOptions(CommandLine cmd) throws ParseException {
-            this.url = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT, DEFAULT_DBURL);
+            this.type = getOptionOrDefault(cmd, OPTION_DATABASETYPE_LONG, SdnrDbType.ELASTICSEARCH);
+            this.url = getOptionOrDefault(cmd, OPTION_DATABASE_SHORT,
+                    this.type == SdnrDbType.ELASTICSEARCH ? DEFAULT_DBURL_ELASTICSEARCH : DEFAULT_DBURL_MARIADB);
             this.username = getOptionOrDefault(cmd, OPTION_DATABASEUSER_SHORT, null);
             this.password = getOptionOrDefault(cmd, OPTION_DATABASEPASSWORD_SHORT, null);
             this.trustAll = getOptionOrDefault(cmd, OPTION_TRUSTINSECURESSL_SHORT, DEFAULT_TRUSTINSECURESSL);

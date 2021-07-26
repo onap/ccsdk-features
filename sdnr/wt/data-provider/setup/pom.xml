@@ -49,12 +49,18 @@
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <databaseport>49404</databaseport>
+        <sli.version>1.2.2</sli.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.vorburger.mariaDB4j</groupId>
+            <artifactId>mariaDB4j</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -76,8 +82,27 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-yang-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-data-provider-model</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-data-provider-dblib</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.onap.ccsdk.sli.core</groupId>
+            <artifactId>dblib-provider</artifactId>
+            <version>${sli.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
+            <artifactId>rfc6991-ietf-yang-types</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -133,7 +158,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                  <appendAssemblyId>false</appendAssemblyId>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
                             <mainClass>org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.Program</mainClass>

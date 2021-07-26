@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.test.JSONAssert;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.HtUserdataManagerImpl;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.HtUserdataManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 
 public class TestUserdata {

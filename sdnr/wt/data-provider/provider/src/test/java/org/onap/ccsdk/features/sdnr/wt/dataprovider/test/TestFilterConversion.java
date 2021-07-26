@@ -29,7 +29,7 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.rpctypehelper.QueryByFilter;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.rpctypehelper.QueryByFilter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SortOrder;
@@ -66,7 +66,7 @@ public class TestFilterConversion extends Mockito {
         List<Filter> filters = Arrays.asList(new FilterBuilder().setProperty(PROPERTY).setFiltervalue("si?ba").build());
         when(input.getFilter()).thenReturn(YangHelper2.getListOrMap(FilterKey.class, filters));
         try {
-            new QueryByFilter(input).getSearchRequestByFilter("test1", "test2", "test3", "test4");
+            new QueryByFilter(input).getSearchRequestByFilter("test1", "test2", "test3", "test4", false);
             fail();
         } catch (IllegalArgumentException e) { // fails if type not correct
 
