@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ec10a414_febe2a44",
+        "filename": "sdnr/wt/data-provider/dblib/.gitignore",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-07-26T13:02:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ea425736_da88ab50",
+      "revId": "f677bc7a7f5ea472c7900fbbd574070828a12afd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a4abe82_d3bc4ebb",
         "filename": "sdnr/wt/data-provider/setup/test.properties",
         "patchSetId": 3
@@ -33,6 +51,24 @@
       "revId": "f677bc7a7f5ea472c7900fbbd574070828a12afd",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "795067f6_2c146b7f",
+        "filename": "sdnr/wt/data-provider/setup/test.properties",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-07-26T13:02:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "3a4abe82_d3bc4ebb",
+      "revId": "f677bc7a7f5ea472c7900fbbd574070828a12afd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
