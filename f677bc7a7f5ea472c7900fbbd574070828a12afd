@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea425736_da88ab50",
+        "filename": "sdnr/wt/data-provider/dblib/.gitignore",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-07-26T12:13:00Z",
+      "side": 1,
+      "message": "all .gitignore files can be removed",
+      "revId": "f677bc7a7f5ea472c7900fbbd574070828a12afd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a4abe82_d3bc4ebb",
+        "filename": "sdnr/wt/data-provider/setup/test.properties",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-07-26T12:13:00Z",
+      "side": 1,
+      "message": "can be removed",
+      "revId": "f677bc7a7f5ea472c7900fbbd574070828a12afd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
