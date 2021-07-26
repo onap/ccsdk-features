@@ -60,6 +60,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
     private static final long TIMOUT_MS_DEFAULT = 30000;
     private static final long READ_MAX_SIZE = 9999;
     private final static long SLEEPTIMEMS = 5000;
+    private static final boolean FULLSIZEREQUEST_DEFAULT = false;
 
     private final Logger LOG = LoggerFactory.getLogger(HtDatabaseClient.class);
 
@@ -90,7 +91,7 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
     }
 
     static public HtDatabaseClient getClient(HostInfo[] hosts, String username, String password, boolean trustAll,
-            long timeoutms) throws HtDatabaseClientException {
+            boolean doFullsizeRequests, long timeoutms) throws HtDatabaseClientException {
         return getClient(hosts, REFRESH_AFTER_REWRITE_DEFAULT, username, password, trustAll, TIMOUT_MS_DEFAULT);
     }
 
@@ -261,7 +262,8 @@ public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, A
             total = response.getTotal();
 
         } catch (IOException e) {
-            LOG.warn("Possible Database connection failure. If this error persists, please check Database connectivity");
+            LOG.warn(
+                    "Possible Database connection failure. If this error persists, please check Database connectivity");
             LOG.warn("error do search {}: {}", queryBuilder, e);
         }
         return new SearchResult<SearchHit>(response != null ? response.getHits() : new SearchHit[] {}, total);

@@ -21,13 +21,17 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.IndicesEntryList;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.mariadb.MariaDBClient;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.KeepDataSearchHitConverter;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.MariaDBTableInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.elalto.ElAltoReleaseInformation;
@@ -42,14 +46,25 @@ public abstract class ReleaseInformation {
     // variables
     private final Release release;
     private final Map<ComponentName, DatabaseInfo> dbMap;
+    private Map<ComponentName, MariaDBTableInfo> mariadbMap;
     // end of variables
 
     // constructors
     public ReleaseInformation(Release r, Map<ComponentName, DatabaseInfo> dbMap) {
+        this(r, dbMap, new HashMap<>());
+    }
+
+    public ReleaseInformation(Release r, Map<ComponentName, DatabaseInfo> dbMap,
+            Map<ComponentName, MariaDBTableInfo> mariadbMap) {
         this.release = r;
         this.dbMap = dbMap;
+        this.mariadbMap = mariadbMap;
     }
     // end of constructors
+
+    protected Release getReleas() {
+        return this.release;
+    }
 
     /**
      * get database alias for component
@@ -120,6 +135,18 @@ public abstract class ReleaseInformation {
         return dbMap.get(name) == null ? null : dbMap.get(name).getSettings(shards, replicas);
     }
 
+    public String getDatabaseMapping(ComponentName name, SdnrDbType dbType) {
+        switch (dbType) {
+            case ELASTICSEARCH:
+                return this.getDatabaseMapping(name);
+            case MARIADB:
+                return mariadbMap.get(name) == null ? null
+                        : mariadbMap.get(name).getMapping(this.release.getDBSuffix());
+            default:
+                return null;
+        }
+    }
+
     /**
      * get converter for component data
      *
@@ -172,7 +199,7 @@ public abstract class ReleaseInformation {
      * @param indices
      * @return true if components of this release are covered by the given indices
      */
-    protected boolean containsIndices(IndicesEntryList indices) {
+    public boolean containsIndices(IndicesEntryList indices) {
 
         if (this.dbMap.size() <= 0) {
             return false;
@@ -191,13 +218,19 @@ public abstract class ReleaseInformation {
      * @param dbClient
      * @return if succeeded or not
      */
-    protected abstract boolean runPreInitCommands(HtDatabaseClient dbClient);
+    public abstract boolean runPreInitCommands(HtDatabaseClient dbClient);
+
+    public abstract boolean runPreInitCommands(MariaDBClient dbClient);
 
     /**
      *
      * @param dbClient
      * @return if succeeded or not
      */
-    protected abstract boolean runPostInitCommands(HtDatabaseClient dbClient);
+    public abstract boolean runPostInitCommands(HtDatabaseClient dbClient);
+
+    public abstract boolean runPostInitCommands(MariaDBClient dbClient);
+
+
 
 }

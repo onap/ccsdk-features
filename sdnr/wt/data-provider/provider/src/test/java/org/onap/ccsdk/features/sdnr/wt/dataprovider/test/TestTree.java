@@ -35,7 +35,8 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.test.JSONAssert;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet.EntityWithTree;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeObject;
@@ -46,7 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 public class TestTree {
 
     private static String resourceDirectoryPath = "/" + TestTree.class.getSimpleName() + "/";
-    private static ElasticSearchDataProvider dbProvider;
+    private static DatabaseDataProvider dbProvider;
     private static HtDatabaseClient dbRawProvider;
 
     @BeforeClass

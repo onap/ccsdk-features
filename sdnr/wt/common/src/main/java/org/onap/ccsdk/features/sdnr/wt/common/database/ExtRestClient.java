@@ -44,7 +44,7 @@ import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.json.JSONException;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo.Protocol;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
+import org.onap.ccsdk.features.sdnr.wt.common.database.data.DatabaseVersion;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterHealthRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterSettingsRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.CreateAliasRequest;
@@ -150,9 +150,9 @@ public class ExtRestClient {
         this.client = RestClient.builder(get(hosts))
                 .setHttpClientConfigCallback(new BasicAuthHttpClientConfigCallback(username, password, trustAll))
                 .build();
-        EsVersion tmp = autoDetectVersion();
+        DatabaseVersion tmp = autoDetectVersion();
         LOG.info("working with sdnrdb version {}", tmp.toString());
-        this.isES7 = tmp.isNewerOrEqualThan(new EsVersion(7, 0, 0));
+        this.isES7 = tmp.isNewerOrEqualThan(new DatabaseVersion(7, 0, 0));
     }
 
     /**
@@ -160,7 +160,7 @@ public class ExtRestClient {
      * @throws IOException
      * @throws Exception
      */
-    private EsVersion autoDetectVersion() throws IOException, Exception {
+    private DatabaseVersion autoDetectVersion() throws IOException, Exception {
         GetInfoResponse infoResponse = this.getInfo();
         return infoResponse.getVersion();
 

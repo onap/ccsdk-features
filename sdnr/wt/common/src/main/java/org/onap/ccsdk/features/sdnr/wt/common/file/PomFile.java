@@ -41,8 +41,10 @@ public class PomFile {
 
     public PomFile(InputStream is) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        // Remediate XML external entity vulnerabilty - prohibit the use of all protocols by external entities:
-        documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        //		documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        //		documentBuilderFactory.setFeature(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        //		documentBuilderFactory.setFeature(XMLInputFactory.SUPPORT_DTD, false);
+
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         this.xmlDoc = documentBuilder.parse(is);
     }

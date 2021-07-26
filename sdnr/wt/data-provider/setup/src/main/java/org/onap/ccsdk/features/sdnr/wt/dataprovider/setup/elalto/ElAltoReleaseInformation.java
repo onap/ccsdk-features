@@ -23,13 +23,14 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.elalto;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.mariadb.MariaDBClient;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.KeepDataSearchHitConverter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 
 public class ElAltoReleaseInformation extends ReleaseInformation {
 
@@ -96,13 +97,22 @@ public class ElAltoReleaseInformation extends ReleaseInformation {
     }
 
     @Override
-    protected boolean runPreInitCommands(HtDatabaseClient dbClient) {
+    public boolean runPreInitCommands(HtDatabaseClient dbClient) {
         return true;
     }
 
     @Override
-    protected boolean runPostInitCommands(HtDatabaseClient dbClient) {
+    public boolean runPostInitCommands(HtDatabaseClient dbClient) {
         return true;
     }
 
+    @Override
+    public boolean runPreInitCommands(MariaDBClient dbClient) {
+        return false;
+    }
+
+    @Override
+    public boolean runPostInitCommands(MariaDBClient dbClient) {
+        return false;
+    }
 }

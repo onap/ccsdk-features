@@ -33,6 +33,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.http.HttpHeaders;
 //import org.apache.karaf.bundle.core.BundleInfo;
 //import org.apache.karaf.bundle.core.BundleService;
 import org.onap.ccsdk.features.sdnr.wt.common.Resources;
@@ -71,22 +72,27 @@ public class AboutHttpServlet extends HttpServlet {
     private static final String PLACEHOLDER_KARAF_INFO = "{karaf-info}";
     private static final String PLACEHOLDER_DEVICEMANAGER_TABLE = "{devicemanagers}";
     private static final String README_FILE = "README.md";
+    private static final String JSON_FILE = "README.json";
     private static final String NO_DEVICEMANAGERS_RUNNING_MESSAGE = null;
+    private static final String MIMETYPE_JSON = "application/json";
+    private static final String MIMETYPE_MARKDOWN = "text/markdown";
 
     private final String groupId = this.getGroupIdOrDefault("org.onap.ccsdk.features.sdnr.wt");
     private final String artifactId = "sdnr-wt-data-provider-provider";
 
-    private final Map<Integer,String> BUNDLESTATE_LUT;
+    private final Map<Integer, String> BUNDLESTATE_LUT;
     private final Map<String, String> data;
     private final String readmeContent;
     //	private BundleService bundleService;
+    private String jsonContent;
 
 
     public AboutHttpServlet() {
 
         this.data = new HashMap<>();
         this.collectStaticData();
-        this.readmeContent = this.render(this.getResourceFileContent(README_FILE));
+        this.readmeContent = this.render(ContentType.MARKDOWN, this.getResourceFileContent(README_FILE));
+        this.jsonContent = this.render(ContentType.MARKDOWN, this.getResourceFileContent(JSON_FILE));
         this.BUNDLESTATE_LUT = new HashMap<>();
         this.BUNDLESTATE_LUT.put(Bundle.UNINSTALLED, "uninstalled");
         this.BUNDLESTATE_LUT.put(Bundle.INSTALLED, "installed");
@@ -98,17 +104,17 @@ public class AboutHttpServlet extends HttpServlet {
     }
 
     protected String getGroupIdOrDefault(String def) {
-		String symbolicName = this.getManifestValue("Bundle-SymbolicName");
-		if(symbolicName!=null) {
-			int idx =  symbolicName.indexOf(this.artifactId);
-			if(idx>0) {
-				return symbolicName.substring(0, idx-1);
-			}
-		}
-		return def;
-	}
+        String symbolicName = this.getManifestValue("Bundle-SymbolicName");
+        if (symbolicName != null) {
+            int idx = symbolicName.indexOf(this.artifactId);
+            if (idx > 0) {
+                return symbolicName.substring(0, idx - 1);
+            }
+        }
+        return def;
+    }
 
-	//	public void setBundleService(BundleService bundleService) {
+    //	public void setBundleService(BundleService bundleService) {
     //		this.bundleService = bundleService;
     //	}
 
@@ -136,15 +142,16 @@ public class AboutHttpServlet extends HttpServlet {
         String uri = req.getRequestURI().substring(URI_PRE.length());
         LOG.debug("request for {}", uri);
         if (uri.length() <= 0 || uri.equals("/")) {
+            ContentType ctype = this.detectContentType(req, ContentType.MARKDOWN);
             // collect data
-            this.collectData();
+            this.collectData(ctype);
             // render readme
-            String content = this.render();
+            String content = this.render(ctype);
             byte[] output = content != null ? content.getBytes() : new byte[0];
             // output
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentLength(output.length);
-            resp.setContentType("text/plain");
+            resp.setContentType(ctype.getMimeType());
             ServletOutputStream os = null;
             try {
                 os = resp.getOutputStream();
@@ -194,11 +201,11 @@ public class AboutHttpServlet extends HttpServlet {
     /**
      * collect dynamic data for about.md
      */
-    private void collectData() {
+    private void collectData(ContentType ctype) {
         LOG.info("collecting dynamic data");
         try {
             this.data.put(PLACEHOLDER_KARAF_INFO, SystemInfo.get());
-            this.data.put(PLACEHOLDER_DEVICEMANAGER_TABLE, this.getDevicemanagerBundles());
+            this.data.put(PLACEHOLDER_DEVICEMANAGER_TABLE, this.getDevicemanagerBundles(ctype));
         } catch (Exception e) {
             LOG.warn("problem collecting system data: {}", e);
         }
@@ -249,29 +256,6 @@ public class AboutHttpServlet extends HttpServlet {
     }
 
     /**
-     * get value for key out of /META-INF/maven/groupId/artifactId/pom.xml in properties section
-     *
-     * @param key
-     * @return
-     */
-    private String getPomProperty(String key) {
-        LOG.info("try to get pom property for {}", key);
-        URL url = Resources.getUrlForRessource(AboutHttpServlet.class,
-                METAINF_MAVEN + groupId + "/" + artifactId + "/pom.xml");
-        if (url == null) {
-            return null;
-        }
-        PomFile pomfile;
-        try {
-            pomfile = new PomFile(url.openStream());
-            return pomfile.getProperty(key);
-        } catch (Exception e) {
-            LOG.warn(EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE, e);
-        }
-        return null;
-    }
-
-    /**
      * get parent pom version out of /META-INF/maven/groupId/artifactId/pom.xml
      *
      * @return
@@ -293,35 +277,35 @@ public class AboutHttpServlet extends HttpServlet {
         return null;
     }
 
-    private String getDevicemanagerBundles() {
+    private String getDevicemanagerBundles(ContentType ctype) {
         Bundle thisbundle = FrameworkUtil.getBundle(this.getClass());
-        BundleContext context = thisbundle ==null?null:thisbundle.getBundleContext();
+        BundleContext context = thisbundle == null ? null : thisbundle.getBundleContext();
         if (context == null) {
             LOG.debug("no bundle context available");
-            return "";
+            return ctype==ContentType.MARKDOWN?"":"[]";
         }
         Bundle[] bundles = context.getBundles();
         if (bundles == null || bundles.length <= 0) {
             LOG.debug("no bundles found");
-            return NO_DEVICEMANAGERS_RUNNING_MESSAGE;
+            return ctype==ContentType.MARKDOWN?NO_DEVICEMANAGERS_RUNNING_MESSAGE:"[]";
         }
         LOG.debug("found {} bundles", bundles.length);
         MarkdownTable table = new MarkdownTable();
-        table.setHeader(new String[] {"Bundle-Id","Version","Symbolic-Name","Status"});
+        table.setHeader(new String[] {"Bundle-Id", "Version", "Symbolic-Name", "Status"});
         String name;
         for (Bundle bundle : bundles) {
             name = bundle.getSymbolicName();
-            if(!(name.contains("devicemanager") && name.contains("provider"))) {
+            if (!(name.contains("devicemanager") && name.contains("provider"))) {
                 continue;
             }
-            if(name.equals("org.onap.ccsdk.features.sdnr.wt.sdnr-wt-devicemanager-core-provider")) {
+            if (name.equals("org.onap.ccsdk.features.sdnr.wt.sdnr-wt-devicemanager-provider")) {
                 continue;
             }
             table.addRow(new String[] {String.valueOf(bundle.getBundleId()), bundle.getVersion().toString(), name,
-                BUNDLESTATE_LUT.getOrDefault(bundle.getState(),"unknown")});
+                    BUNDLESTATE_LUT.getOrDefault(bundle.getState(), "unknown")});
 
         }
-        return table.toMarkDown();
+        return ctype==ContentType.MARKDOWN?table.toMarkDown():table.toJson();
     }
 
     /**
@@ -382,10 +366,12 @@ public class AboutHttpServlet extends HttpServlet {
     /**
      * render this.readmeContent with this.data
      *
+     * @param ctype
+     *
      * @return
      */
-    private String render() {
-        return this.render(null);
+    private String render(ContentType ctype) {
+        return this.render(ctype, null);
     }
 
     /**
@@ -394,9 +380,9 @@ public class AboutHttpServlet extends HttpServlet {
      * @param content
      * @return
      */
-    private String render(String content) {
+    private String render(ContentType ctype, String content) {
         if (content == null) {
-            content = this.readmeContent;
+            content = ctype==ContentType.MARKDOWN? this.readmeContent:this.jsonContent;
         }
         if (content == null) {
             return null;
@@ -412,5 +398,31 @@ public class AboutHttpServlet extends HttpServlet {
 
     public void setClusterSize(String value) {
         this.data.put(PLACEHOLDER_CLUSTER_SIZE, value);
+    }
+
+    private ContentType detectContentType(HttpServletRequest req, ContentType def) {
+        String accept = req.getHeader(HttpHeaders.ACCEPT);
+        if (accept != null) {
+            if (accept.equals(MIMETYPE_JSON)) {
+                return ContentType.JSON;
+            } else if (accept.equals(MIMETYPE_MARKDOWN)) {
+                return ContentType.MARKDOWN;
+            }
+        }
+        return def;
+    }
+
+    private enum ContentType {
+        MARKDOWN(MIMETYPE_MARKDOWN), JSON(MIMETYPE_JSON);
+
+        private String mimeType;
+
+        ContentType(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
+        String getMimeType() {
+            return this.mimeType;
+        }
     }
 }
