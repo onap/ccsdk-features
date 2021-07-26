@@ -29,9 +29,6 @@ public interface IEntityDataProvider {
 
     public HtUserdataManager getHtDatabaseUserManager();
 
-    /** Set overall ready status from outside of this data-provider **/
-    public void setReadyStatus(boolean status);
-
     /** Set some static status information after startup */
     public void setStatus(StatusKey key, String value);
 

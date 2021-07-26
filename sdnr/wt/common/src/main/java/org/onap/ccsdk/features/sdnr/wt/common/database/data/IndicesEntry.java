@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  * @author Michael Dürre
  *
  *         Entry of list indices http request (/_cat/indices)
- * 
+ *
  *         yellow open inventoryequipment-v1 5nNPRbJ3T9arMxqxBbJKyQ 5 1 0 0 1.2kb 1.2kb
  */
 public class IndicesEntry {
@@ -91,6 +91,20 @@ public class IndicesEntry {
 
     public String getSize2() {
         return size2;
+    }
+
+    protected IndicesEntry(String name, String status, String status2, String hash, int shards, int replicas, int c1,
+            int c2, String size1, String size2) {
+        this.name = name;
+        this.status = status;
+        this.status2 = status2;
+        this.hash = hash;
+        this.shards = shards;
+        this.replicas = replicas;
+        this.c1 = c1;
+        this.c2 = c2;
+        this.size1 = size1;
+        this.size2 = size2;
     }
 
     public IndicesEntry(String line) throws ParseException {

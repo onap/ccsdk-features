@@ -50,6 +50,7 @@
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <databaseport>49402</databaseport>
         <initdb>${basedir}/../setup/target/sdnr-wt-data-provider-setup-${project.version}.jar</initdb>
+        <sli.version>1.2.2</sli.version>
     </properties>
 
     <dependencies>
@@ -84,6 +85,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-data-provider-dblib</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
@@ -105,11 +111,6 @@
             <artifactId>org.apache.karaf.shell.core</artifactId>
             <scope>provided</scope>
         </dependency>
-<!--          <dependency> -->
-<!--             <groupId>org.apache.karaf.bundle</groupId> -->
-<!--             <artifactId>org.apache.karaf.bundle.core</artifactId> -->
-<!--             <scope>provided</scope> -->
-<!--         </dependency> -->
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>sal-netconf-connector</artifactId>
@@ -135,6 +136,13 @@
             <artifactId>json</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!--  MariaDB beginn -->
+        <dependency>
+            <groupId>ch.vorburger.mariaDB4j</groupId>
+            <artifactId>mariaDB4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--  MariaDB end -->
     </dependencies>
 
     <build>
@@ -204,6 +212,18 @@
                     </execution>
                 </executions>
             </plugin>
+<!--             <plugin> -->
+<!--                 <groupId>org.apache.felix</groupId> -->
+<!--                 <artifactId>maven-bundle-plugin</artifactId> -->
+<!--                 <extensions>true</extensions> -->
+<!--                 <configuration> -->
+<!--                     <instructions> -->
+<!--                         <Export-Package>org.onap.ccsdk.features.sdnr.wt.dataprovider.*</Export-Package> -->
+<!--                         <Import-Package>*</Import-Package> -->
+<!--                         <Embed-Dependency>dblib-provider;scope=provided|;inline=false,utils-provider;scope=provided|;inline=false</Embed-Dependency> -->
+<!--                     </instructions> -->
+<!--                 </configuration> -->
+<!--             </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

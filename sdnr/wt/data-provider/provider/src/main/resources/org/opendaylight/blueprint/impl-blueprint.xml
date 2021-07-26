@@ -28,23 +28,10 @@
 
     <reference id="rpcProviderService"
                interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
-    <reference id="bundleService"
-                interface="org.apache.karaf.bundle.core.BundleService" />
-
-    <bean id="readyServlet"
-          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.ReadyHttpServlet">
-          <property name="bundleService" ref="bundleService"/>
-    </bean>
-    <service interface="javax.servlet.http.HttpServlet"
-             ref="readyServlet">
-        <service-properties>
-            <entry key="alias" value="/ready"/>
-        </service-properties>
-    </service>
-
+    <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
+ 
     <bean id="aboutServlet"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet">
-<!--           <property name="bundleService" ref="bundleService"/> -->
     </bean>
     <service interface="javax.servlet.http.HttpServlet"
              ref="aboutServlet">
@@ -87,6 +74,7 @@
         <property name="treeServlet" ref="treeServlet"/>
         <property name="mediatorServerServlet" ref="msServlet"/>
         <property name="userdataServlet" ref="userdataServlet"/>
+        <property name="dataBroker" ref="dataBroker" />
     </bean>
 
     <bean id="yangServlet"

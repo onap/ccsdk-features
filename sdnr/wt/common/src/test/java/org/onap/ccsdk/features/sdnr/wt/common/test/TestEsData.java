@@ -32,7 +32,7 @@ import java.text.ParseException;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntry;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntryList;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
+import org.onap.ccsdk.features.sdnr.wt.common.database.data.DatabaseVersion;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.IndicesEntry;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.IndicesEntryList;
 
@@ -45,9 +45,9 @@ public class TestEsData {
 
     @Test
     public void testVersion() {
-        EsVersion version = null;
+        DatabaseVersion version = null;
         try {
-            version = new EsVersion("2.3.4");
+            version = new DatabaseVersion("2.3.4");
         } catch (ParseException e) {
             fail(e.getMessage());
         }
@@ -56,8 +56,8 @@ public class TestEsData {
         assertEquals(3, version.getMinor());
         assertEquals(4, version.getRevision());
 
-        EsVersion versionNewer = new EsVersion(5, 0, 0);
-        EsVersion versionOlder = new EsVersion(2, 2, 0);
+        DatabaseVersion versionNewer = new DatabaseVersion(5, 0, 0);
+        DatabaseVersion versionOlder = new DatabaseVersion(2, 2, 0);
 
         assertTrue(version.isOlderOrEqualThan(versionNewer));
         assertTrue(version.isNewerOrEqualThan(versionOlder));

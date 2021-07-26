@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
+import org.opendaylight.mdsal.dom.api.DOMEvent;
+import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.yang.binding.EventInstantAware;
@@ -264,10 +266,25 @@ public class YangToolsMapperHelper {
     public static boolean hasTime(Notification notification) {
         return notification instanceof EventInstantAware;
     }
+    public static boolean hasTime(DOMNotification notification) {
+        return notification instanceof DOMEvent;
+    }
     public static DateAndTime getTime(Notification notification, Instant defaultValue) {
         Instant time;
         if (hasTime(notification)) { // If notification class extends/implements the EventInstantAware
             time = ((EventInstantAware) notification).eventInstant();
+            LOG.debug("Event time {}", time);
+        } else {
+            time = defaultValue;
+            LOG.debug("Defaulting to actual time of processing the notification - {}", time);
+        }
+        return DateAndTime.getDefaultInstance(ZonedDateTime.ofInstant(time, ZoneOffset.UTC).format(formatterOutput));
+    }
+
+    public static DateAndTime getTime(DOMNotification notification, Instant defaultValue) {
+        Instant time;
+        if (hasTime(notification)) { // If notification class extends/implements the EventInstantAware
+            time = ((DOMEvent) notification).getEventInstant();
             LOG.debug("Event time {}", time);
         } else {
             time = defaultValue;

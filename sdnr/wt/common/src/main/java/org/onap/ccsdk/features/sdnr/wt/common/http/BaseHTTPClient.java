@@ -113,7 +113,12 @@ public class BaseHTTPClient {
     @Nonnull
     public BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers)
             throws IOException {
-        return this.sendRequest(uri, method, body != null ? body.getBytes(CHARSET) : null, headers);
+        return this.sendRequest(uri, method, body != null ? body.getBytes(CHARSET) : null, headers, 0);
+    }
+    @Nonnull
+    public BaseHTTPResponse sendRequest(String uri, String method, String body, Map<String, String> headers, int timeoutMs)
+            throws IOException {
+        return this.sendRequest(uri, method, body != null ? body.getBytes(CHARSET) : null, headers, timeoutMs);
     }
     public BaseHTTPResponse sendRequest(HttpServletRequest req) throws IOException {
         final String method = req.getMethod();
@@ -125,7 +130,7 @@ public class BaseHTTPClient {
             is.close();
 
         }
-        return this.sendRequest(req.getRequestURI(), method, buffer,mapHeaders(req));
+        return this.sendRequest(req.getRequestURI(), method, buffer,mapHeaders(req), 0);
     }
 
     private Map<String, String> mapHeaders(HttpServletRequest req) {
@@ -138,8 +143,10 @@ public class BaseHTTPClient {
         }
         return headers;
     }
-
-    protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, byte[] body, Map<String, String> headers)
+    protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, byte[] body, Map<String, String> headers) throws IOException {
+    	return this.sendRequest(uri, method, body, headers, 0);
+    }
+    protected @Nonnull BaseHTTPResponse sendRequest(String uri, String method, byte[] body, Map<String, String> headers, int timeoutMs)
             throws IOException {
         if (uri == null) {
             uri = "";
@@ -156,7 +163,7 @@ public class BaseHTTPClient {
         LOG.trace("body:" + (body == null ? "null" : new String(body, CHARSET)));
         URL url = new URL(surl);
         URLConnection http = url.openConnection();
-        http.setConnectTimeout(this.timeout);
+        http.setConnectTimeout(timeoutMs>0?timeoutMs:this.timeout);
         if (surl.toString().startsWith("https")) {
             if (sc != null) {
                 ((HttpsURLConnection) http).setSSLSocketFactory(sc.getSocketFactory());

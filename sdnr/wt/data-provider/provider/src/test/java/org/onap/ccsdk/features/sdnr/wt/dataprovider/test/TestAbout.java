@@ -85,7 +85,7 @@ public class TestAbout {
         when(response.getOutputStream()).thenReturn(printOut);
         servlet.doGet(request, response);
         verify(response).setStatus(200);
-        verify(response).setContentType("text/plain");
+        verify(response).setContentType("text/markdown");
         System.out.println(printOut.getStringWriter().getBuffer().toString());
         assertTrue(printOut.getStringWriter().getBuffer().length() > 0);
     }

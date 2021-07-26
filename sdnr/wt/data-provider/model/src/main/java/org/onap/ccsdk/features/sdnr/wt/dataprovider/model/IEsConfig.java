@@ -33,6 +33,8 @@ public interface IEsConfig {
      */
     long getArchiveLifetimeSeconds();
 
+    boolean doFullsizeRequests();
+
     /**
      * @param archiveCleanService
      */
@@ -42,7 +44,6 @@ public interface IEsConfig {
      * @param archiveCleanService
      */
     void registerConfigChangedListener(IConfigChangedListener archiveCleanService);
-
 
 
 }
