@@ -70,12 +70,6 @@ public class DataTreeProviderImpl {
             if (nodeId != null) {
                 bquery.must(QueryBuilders.matchQuery(nodeKey, nodeId));
             }
-            //			if (parentKey != null && parentValue != null) {
-            //				bquery.must(QueryBuilders.matchQuery(parentKey, parentValue));
-            //			}
-            //			if (childKey != null && childValue != null) {
-            //				bquery.must(QueryBuilders.matchQuery(childKey, childValue));
-            //			}
             query = bquery;
 
         }
@@ -134,7 +128,7 @@ public class DataTreeProviderImpl {
     public DataTreeObject readInventoryTree(List<String> tree, String filter) throws IOException {
 
         //root nodes will be node-information -> below inventory
-        if (tree == null || tree.isEmpty()) {
+        if (tree == null || tree.size() <= 0) {
             return this.readInventoryTreeWithNode(filter);
         }
         //root node will be inventory on tree-level if sliced treePath
@@ -155,7 +149,7 @@ public class DataTreeProviderImpl {
             throws IOException {
         DataTreeObject tree = new DataTreeObject(INVENTORY_PROPERTY_PARENTUUID, INVENTORY_PROPERTY_UUID);
         final String parentUuid = list.size() > 1 ? list.get(list.size() - 2) : null;
-        final String uuid = list.isEmpty() ? null : list.get(list.size() - 1);
+        final String uuid = list.size() > 0 ? list.get(list.size() - 1) : null;
         List<SearchHit> matches = this.search(Entity.Inventoryequipment, filter, INVENTORY_PROPERTY_NODEID, nodeId,
                 INVENTORY_PROPERTY_PARENTUUID, parentUuid, INVENTORY_PROPERTY_UUID, uuid, INVENTORY_PROPERTY_TREELEVEL);
 
@@ -163,13 +157,13 @@ public class DataTreeProviderImpl {
         List<SearchHit> others = this.search(Entity.Inventoryequipment, (String) null, INVENTORY_PROPERTY_NODEID, nodeId,
                 null, null, null, null, INVENTORY_PROPERTY_TREELEVEL);
         if (matches.size() > 0) {
-            int treeLevelToStart = (list == null || list.isEmpty()) ? 0 : list.size() - 1;
+            int treeLevelToStart = (list == null || list.size() <= 0) ? 0 : list.size() - 1;
             //build tree
             JSONObject hitData;
             //fill root elems
             for (SearchHit hit : matches) {
                 hitData = hit.getSource();
-                if (hitData.getLong("tree-level") == treeLevelToStart) {
+                if (hitData.getLong(INVENTORY_PROPERTY_TREELEVEL) == treeLevelToStart) {
                     tree.put(hit.getId(),
                             new DataTreeChildObject(hitData.getString(INVENTORY_PROPERTY_FOR_LABEL), true)
                                     .setProperty(INVENTORY_PROPERTY_UUID, hitData.getString(INVENTORY_PROPERTY_UUID))
@@ -179,7 +173,7 @@ public class DataTreeProviderImpl {
             }
             for (SearchHit hit : others) {
                 hitData = hit.getSource();
-                if (hitData.getLong("tree-level") == treeLevelToStart) {
+                if (hitData.getLong(INVENTORY_PROPERTY_TREELEVEL) == treeLevelToStart) {
                     tree.putIfNotExists(hit.getId(),
                             new DataTreeChildObject(hitData.getString(INVENTORY_PROPERTY_FOR_LABEL), false)
                                     .setProperty(INVENTORY_PROPERTY_UUID, hitData.getString(INVENTORY_PROPERTY_UUID))
@@ -190,8 +184,8 @@ public class DataTreeProviderImpl {
             //fill child elems
             for (SearchHit hit : matches) {
                 hitData = hit.getSource();
-                if (hitData.getLong("tree-level") > treeLevelToStart) {
-                    tree.put(hitData.getLong("tree-level") - treeLevelToStart - 1, hit.getId(),
+                if (hitData.getLong(INVENTORY_PROPERTY_TREELEVEL) > treeLevelToStart) {
+                    tree.put(hitData.getLong(INVENTORY_PROPERTY_TREELEVEL) - treeLevelToStart - 1, hit.getId(),
                             new DataTreeChildObject(hitData.getString(INVENTORY_PROPERTY_FOR_LABEL), true)
                                     .setProperty(INVENTORY_PROPERTY_UUID, hitData.getString(INVENTORY_PROPERTY_UUID))
                                     .setProperty(INVENTORY_PROPERTY_PARENTUUID,
@@ -200,8 +194,8 @@ public class DataTreeProviderImpl {
             }
             for (SearchHit hit : others) {
                 hitData = hit.getSource();
-                if (hitData.getLong("tree-level") > treeLevelToStart) {
-                    tree.putIfNotExists(hitData.getLong("tree-level") - treeLevelToStart - 1, hit.getId(),
+                if (hitData.getLong(INVENTORY_PROPERTY_TREELEVEL) > treeLevelToStart) {
+                    tree.putIfNotExists(hitData.getLong(INVENTORY_PROPERTY_TREELEVEL) - treeLevelToStart - 1, hit.getId(),
                             new DataTreeChildObject(hitData.getString(INVENTORY_PROPERTY_FOR_LABEL), false)
                                     .setProperty(INVENTORY_PROPERTY_UUID, hitData.getString(INVENTORY_PROPERTY_UUID))
                                     .setProperty(INVENTORY_PROPERTY_PARENTUUID,
@@ -255,7 +249,7 @@ public class DataTreeProviderImpl {
             //fill root elems
             for (SearchHit hit : matches) {
                 hitData = hit.getSource();
-                if (hitData.getLong("tree-level") == 0) {
+                if (hitData.getLong(INVENTORY_PROPERTY_TREELEVEL) == 0) {
                     tree.put(0, hit.getId(),
                             new DataTreeChildObject(hitData.getString(INVENTORY_PROPERTY_FOR_LABEL), true)
                                     .setProperty(INVENTORY_PROPERTY_UUID, hitData.getString(INVENTORY_PROPERTY_UUID))
@@ -266,7 +260,7 @@ public class DataTreeProviderImpl {
             if (others != null) {
                 for (SearchHit hit : others) {
                     hitData = hit.getSource();
-                    if (hitData.getLong("tree-level") == 0) {
+                    if (hitData.getLong(INVENTORY_PROPERTY_TREELEVEL) == 0) {
                         tree.putIfNotExists(0, hit.getId(),
                                 new DataTreeChildObject(hitData.getString(INVENTORY_PROPERTY_FOR_LABEL), false)
                                         .setProperty(INVENTORY_PROPERTY_UUID,
@@ -279,7 +273,7 @@ public class DataTreeProviderImpl {
             //fill child elements
             for (SearchHit hit : matches) {
                 hitData = hit.getSource();
-                long treeLevel = hitData.getLong("tree-level");
+                long treeLevel = hitData.getLong(INVENTORY_PROPERTY_TREELEVEL);
                 if (treeLevel > 0) {
                     tree.put(treeLevel, hit.getId(),
                             new DataTreeChildObject(hitData.getString(INVENTORY_PROPERTY_FOR_LABEL_CHILD), true)
@@ -291,8 +285,8 @@ public class DataTreeProviderImpl {
             if (others != null) {
                 for (SearchHit hit : others) {
                     hitData = hit.getSource();
-                    long treeLevel = hitData.getLong("tree-level");
-                    if (hitData.getLong("tree-level") > 0) {
+                    long treeLevel = hitData.getLong(INVENTORY_PROPERTY_TREELEVEL);
+                    if (hitData.getLong(INVENTORY_PROPERTY_TREELEVEL) > 0) {
                         tree.putIfNotExists(treeLevel, hit.getId(),
                                 new DataTreeChildObject(hitData.getString(INVENTORY_PROPERTY_FOR_LABEL_CHILD), false)
                                         .setProperty(INVENTORY_PROPERTY_UUID,

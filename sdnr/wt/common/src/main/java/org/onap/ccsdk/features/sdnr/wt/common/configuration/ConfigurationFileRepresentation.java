@@ -46,7 +46,7 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFileRepresentation.class);
 
     private static final long FILE_POLL_INTERVAL_MS = 1000;
-    private static final String SECTIONNAME_ROOT = "";
+    public static final String SECTIONNAME_ROOT = "";
     private static final String LR = "\n";
     private static final String EMPTY = "";
     // end of constants
