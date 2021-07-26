@@ -23,6 +23,8 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * @author Michael Dürre
@@ -48,7 +50,7 @@ public class MarkdownTable {
     public String toMarkDown() {
         StringBuilder sb = new StringBuilder();
         final int cols =
-                this.columns != null ? this.columns.length : !this.rows.isEmpty() ? this.rows.get(0).length : 0;
+                this.columns != null ? this.columns.length : this.rows.size() > 0 ? this.rows.get(0).length : 0;
         if (cols > 0) {
             sb.append("|");
             for (int i = 0; i < cols; i++) {
@@ -67,9 +69,23 @@ public class MarkdownTable {
                 }
                 sb.append("\n");
             }
-
-
         }
         return sb.toString();
+    }
+
+    public String toJson() {
+        JSONArray a = new JSONArray();
+        final int cols =
+                this.columns != null ? this.columns.length : this.rows.size() > 0 ? this.rows.get(0).length : 0;
+        if (cols > 0) {
+            for (String[] row : this.rows) {
+                JSONObject o = new JSONObject();
+                for (int i = 0; i < cols; i++) {
+                    o.put(this.columns[i], row[i]);
+                }
+                a.put(o);
+            }
+        }
+        return a.toString();
     }
 }

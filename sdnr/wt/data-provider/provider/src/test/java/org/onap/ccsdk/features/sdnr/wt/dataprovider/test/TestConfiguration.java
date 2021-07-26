@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.exception.ConfigurationException;
 import org.onap.ccsdk.features.sdnr.wt.common.util.ResourceFileLoader;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.EsConfig;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.EsConfig;
 
 public class TestConfiguration {
 

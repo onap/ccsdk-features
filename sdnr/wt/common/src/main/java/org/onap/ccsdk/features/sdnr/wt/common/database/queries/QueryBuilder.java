@@ -100,4 +100,17 @@ public class QueryBuilder {
     public QueryBuilder aggregations(String key) {
         return this.aggregations(key, null);
     }
+
+    public void doFullsizeRequest() {
+        this.setFullsizeRequest(true);
+    }
+
+    public QueryBuilder setFullsizeRequest(boolean doFullsizeRequest) {
+        if (doFullsizeRequest) {
+            this.outerQuery.put("track_total_hits", doFullsizeRequest);
+        } else {
+            this.outerQuery.remove("track_total_hits");
+        }
+        return this;
+    }
 }
