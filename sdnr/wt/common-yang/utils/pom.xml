@@ -69,6 +69,11 @@
             <artifactId>rfc6991-ietf-yang-types</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-dom-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

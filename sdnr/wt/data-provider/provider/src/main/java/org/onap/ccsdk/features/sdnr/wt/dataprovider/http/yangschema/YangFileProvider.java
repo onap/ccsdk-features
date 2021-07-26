@@ -33,10 +33,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,22 +69,21 @@ public class YangFileProvider {
     }
 
     private List<YangFilename> findYangFiles(String module) {
+        LOG.debug("try to find yang files for {}", module);
         List<YangFilename> list = new ArrayList<>();
         String[] files = this.mainSourcePath.toFile().list(yangFilenameFilter);
         YangFilename yangfile;
-        for (String file : files) {
-            files = this.mainSourcePath.toFile().list(yangFilenameFilter);
-            for (String fn : files) {
-                try {
-                    yangfile = new YangFilename(this.mainSourcePath.resolve(fn).toString());
-                    if (yangfile.getModule().equals(module)) {
-                        list.add(yangfile);
-                    }
-                } catch (ParseException e) {
-                    LOG.warn("unable to handle yangfile {}: {}", file, e);
+        for (String fn : files) {
+            try {
+                yangfile = new YangFilename(this.mainSourcePath.resolve(fn).toString());
+                if (yangfile.getModule().equals(module)) {
+                    list.add(yangfile);
                 }
+            } catch (ParseException e) {
+                LOG.warn("unable to handle yangfile {}: {}", fn, e);
             }
         }
+
         for (Path addPath : this.additionalSources) {
             files = addPath.toFile().list(yangFilenameFilter);
             for (String file : files) {
@@ -105,7 +102,7 @@ public class YangFileProvider {
 
     /**
      * get yang file from source with specified version or least newer one if version is null then the latest one
-     * 
+     *
      * @param module
      * @param version
      * @return
@@ -140,7 +137,7 @@ public class YangFileProvider {
 
     /**
      * write filestream directly to output stream easier for http handling
-     * 
+     *
      * @param module
      * @param version
      * @param outputStream

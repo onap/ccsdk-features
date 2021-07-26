@@ -25,19 +25,28 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.HtUserdataManagerImpl;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.MediatorServerDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.HtUserdataManagerImpl;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.mariadb.data.MariaDBDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
@@ -92,9 +101,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,24 +115,29 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     private static final Logger LOG = LoggerFactory.getLogger(DataProviderServiceImpl.class);
     public static final String CONFIGURATIONFILE = "etc/dataprovider.properties";
     private static final long DATABASE_TIMEOUT_MS = 120 * 1000L;
+    private static final long DEFAULT_PAGESIZE = 20;
+    private static final long DEFAULT_PAGE = 1;
 
     private final ObjectRegistration<@NonNull DataProviderServiceImpl> rpcReg;
-    private final ElasticSearchDataProvider dataProvider;
+    private final DatabaseDataProvider dataProvider;
     private final ConfigurationFileRepresentation configuration;
-    private final EsConfig esConfig;
-    private final MediatorServerDataProvider mediatorServerDataProvider;
+    private final DataProviderConfig dbConfig;
     private final HtUserdataManager dbUserManager;
-
-    DataProviderServiceImpl(final RpcProviderService rpcProviderService, MsServlet mediatorServerServlet)
-            throws Exception {
+    private final DataBroker dataBroker;
+    private final MsServlet mediatorServerServlet;
+    public DataProviderServiceImpl(final RpcProviderService rpcProviderService, MsServlet mediatorServerServlet,
+            DataBroker dataBroker) throws Exception {
         this.configuration = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
-        this.esConfig = new EsConfig(configuration);
-        this.dataProvider = new ElasticSearchDataProvider(esConfig.getHosts(), esConfig.getBasicAuthUsername(),
-                esConfig.getBasicAuthPassword(), esConfig.trustAllCerts());
+        this.dbConfig = new DataProviderConfig(configuration);
+        this.dataBroker = dataBroker;
+        this.mediatorServerServlet = mediatorServerServlet;
+        if (this.dbConfig.getDbType() == SdnrDbType.ELASTICSEARCH) {
+            this.dataProvider = new ElasticSearchDataProvider(this.dbConfig.getEsConfig());
+        } else {
+            this.dataProvider = new MariaDBDataProvider(this.dbConfig.getMariadbConfig());
+        }
         this.dataProvider.waitForYellowDatabaseStatus(DATABASE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        this.mediatorServerDataProvider = new MediatorServerDataProvider(esConfig.getHosts(),
-                esConfig.getBasicAuthUsername(), esConfig.getBasicAuthPassword(),esConfig.trustAllCerts());
-        mediatorServerServlet.setDataProvider(this.mediatorServerDataProvider);
+        mediatorServerServlet.setDataProvider(this.dataProvider.getHtDatabaseMediatorServer());
         this.dbUserManager = new HtUserdataManagerImpl(this.dataProvider.getRawClient());
         // Register ourselves as the REST API RPC implementation
         LOG.info("Register RPC Service " + DataProviderServiceImpl.class.getSimpleName());
@@ -128,7 +145,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     }
 
     private void sendResyncCallbackToApiGateway() {
-        mediatorServerDataProvider.triggerReloadSync();
+        this.mediatorServerServlet.triggerReloadSync();
     }
 
     /**
@@ -153,7 +170,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
      * @return configuration object
      */
     public IEsConfig getEsConfig() {
-        return esConfig;
+        return dbConfig.getEsConfig();
     }
 
 
@@ -385,6 +402,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
                 read(() -> DataProviderServiceImpl.this.dataProvider.readGuiCutThroughEntry(input));
         return result.buildFuture();
     }
+
     // -- private classes and functions
 
     private static String assembleExceptionMessage(Exception e) {
@@ -419,5 +437,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public HtUserdataManager getHtDatabaseUserManager() {
         return this.dbUserManager;
     }
+
+
 
 }

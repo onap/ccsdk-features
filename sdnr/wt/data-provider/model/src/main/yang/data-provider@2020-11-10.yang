@@ -1313,6 +1313,50 @@ module data-provider {
       description
         "An object containing the number of current faults per its severity.";
     }
+    container network-element-connections {
+      leaf total {
+        type uint32;
+        description
+          "The number of all network-elements.";
+      }
+      leaf Mounted {
+        type uint32;
+        description
+          "The number of network-elements with state 'Mounted'.";
+      }
+      leaf Unmounted {
+        type uint32;
+        description
+          "The number of network-elements with state 'Unmounted'.";
+      }
+      leaf Connecting {
+        type uint32;
+        description
+          "The number of network-elements with state 'Connecting'.";
+      }
+      leaf Connected {
+        type uint32;
+        description
+          "The number of network-elements with state 'Connected'.";
+      }
+      leaf UnableToConnect {
+        type uint32;
+        description
+          "The number of network-elements with state 'UnableToConnect'.";
+      }
+      leaf Disconnected {
+        type uint32;
+        description
+          "The number of network-elements with state 'Disconnected'.";
+      }
+      leaf Undefined {
+        type uint32;
+        description
+          "The number of network-elements with state 'Undefined'.";
+      }
+      description
+        "An object containing the number of network-elements per its connection-state.";
+    }
     description
       "An object class defining an status entity for current faults
        (also called active alarms).";

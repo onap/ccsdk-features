@@ -37,7 +37,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.CreateIndexRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteIndexRequest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.EsDataObjectReaderWriter2;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.EsDataObjectReaderWriter2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;

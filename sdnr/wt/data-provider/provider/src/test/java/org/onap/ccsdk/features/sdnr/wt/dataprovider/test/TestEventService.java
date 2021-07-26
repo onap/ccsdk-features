@@ -37,8 +37,9 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.ElasticSearchDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.entity.HtDatabaseEventsService;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity.HtDatabaseEventsService;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
@@ -70,7 +71,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  */
 public class TestEventService {
-    private static ElasticSearchDataProvider dbProvider;
+    private static DatabaseDataProvider dbProvider;
     private static HtDatabaseClient dbRawProvider;
     private static HtDatabaseEventsService service = null;
 
@@ -154,7 +155,7 @@ public class TestEventService {
         service.writeFaultLog(createFaultLog(NODEID2, OBJECTREFID2, "problem", SeverityType.Major, 1));
         TestCRUDforDatabase.trySleep(100);
         now = new Date();
-        int numOlds = service.getNumberOfOldObjects(now);
+        long numOlds = service.getNumberOfOldObjects(now);
         assertEquals(5, numOlds);
         TestCRUDforDatabase.trySleep(100);
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.Major, 3));
@@ -205,11 +206,12 @@ public class TestEventService {
         clearDbEntity(Entity.NetworkelementConnection);
         List<NetworkElementConnectionEntity> nes = service.getNetworkElementConnections();
         assertEquals(0, nes.size());
-        service.updateNetworkConnection22(createNeConnection(NODEID, NetworkElementDeviceType.Unknown), NODEID);
-        service.updateNetworkConnection22(createNeConnection(NODEID2, NetworkElementDeviceType.ORAN), NODEID2);
+        service.updateNetworkConnection22(createNeConnection(NODEID, NetworkElementDeviceType.Unknown, null), NODEID);
+        service.updateNetworkConnection22(createNeConnection(NODEID, NetworkElementDeviceType.Unknown, "old"), NODEID);
+        service.updateNetworkConnection22(createNeConnection(NODEID2, NetworkElementDeviceType.ORAN, "old"), NODEID2);
         nes = service.getNetworkElementConnections();
         assertEquals(2, nes.size());
-        service.updateNetworkConnectionDeviceType(createNeConnection(NODEID, NetworkElementDeviceType.Wireless),
+        service.updateNetworkConnectionDeviceType(createNeConnection(NODEID, NetworkElementDeviceType.Wireless,"old"),
                 NODEID);
         nes = service.getNetworkElementConnections();
         assertEquals(2, nes.size());
@@ -278,12 +280,13 @@ public class TestEventService {
 
     /**
      * @param devType
+     * @param mountMethod
      * @param nodename3
      * @return
      */
-    private static NetworkElementConnectionEntity createNeConnection(String nodeId, NetworkElementDeviceType devType) {
+    private static NetworkElementConnectionEntity createNeConnection(String nodeId, NetworkElementDeviceType devType, String mountMethod) {
         return new NetworkElementConnectionBuilder().setNodeId(nodeId).setHost("host")
-                .setPort(YangHelper2.getLongOrUint32(1234L)).setCoreModelCapability("123")
+                .setPort(YangHelper2.getLongOrUint32(1234L)).setCoreModelCapability("123")//.setMountMethod(mountMethod)
                 .setStatus(ConnectionLogStatus.Connected).setDeviceType(devType).setIsRequired(true).build();
     }
 
