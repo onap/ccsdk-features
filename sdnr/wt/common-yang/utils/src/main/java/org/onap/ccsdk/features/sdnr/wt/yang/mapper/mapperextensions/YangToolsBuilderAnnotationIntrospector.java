@@ -99,15 +99,15 @@ public class YangToolsBuilderAnnotationIntrospector extends JacksonAnnotationInt
         Class<?> p2 = setter2.getRawParameterType(0);
         AnnotatedMethod res = null;
 
-        if (this.isAssignable(p1, p2, Map.class, List.class)) {
+        if (isAssignable(p1, p2, Map.class, List.class)) {
 			res = p1.isAssignableFrom(List.class) ? setter1 : setter2; //prefer List setter
-        } else if (this.isAssignable(p1, p2, Uint64.class, BigInteger.class)) {
+        } else if (isAssignable(p1, p2, Uint64.class, BigInteger.class)) {
             res = setter1;
-        } else if (this.isAssignable(p1, p2, Uint32.class, Long.class)) {
+        } else if (isAssignable(p1, p2, Uint32.class, Long.class)) {
             res = setter1;
-        } else if (this.isAssignable(p1, p2, Uint16.class, Integer.class)) {
+        } else if (isAssignable(p1, p2, Uint16.class, Integer.class)) {
             res = setter1;
-        } else if (this.isAssignable(p1, p2, Uint8.class, Short.class)) {
+        } else if (isAssignable(p1, p2, Uint8.class, Short.class)) {
             res = setter1;
         }
         if (res == null) {
@@ -123,7 +123,7 @@ public class YangToolsBuilderAnnotationIntrospector extends JacksonAnnotationInt
         return res;
     }
 
-    private boolean isAssignable(Class<?> p1, Class<?> p2, Class<?> c1, Class<?> c2) {
+    public static boolean isAssignable(Class<?> p1, Class<?> p2, Class<?> c1, Class<?> c2) {
         return ((p1.isAssignableFrom(c1) && p2.isAssignableFrom(c2))
                 || (p2.isAssignableFrom(c1) && p1.isAssignableFrom(c2)));
 

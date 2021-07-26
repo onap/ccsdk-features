@@ -188,8 +188,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
-        this.iEntityDataProvider.setReadyStatus(false);
-
         this.dataProvider = iEntityDataProvider.getDataProvider();
 
         // Get configuration
@@ -255,8 +253,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         this.devicemanagerInitializationOk = true;
 
         LOG.info("Session Initiated end. Initialization done {}", devicemanagerInitializationOk);
-        this.iEntityDataProvider.setReadyStatus(true);
-
     }
 
     @Override

@@ -91,15 +91,6 @@ public class DataTreeChildObject {
                 }
             }
         } else {
-            //			if(this.children!=null) {
-            //				for(DataTreeChildObject child:this.children.values()) {
-            //					itemValue=(String) child.getProperty(childKey, null);
-            //					if(itemValue!=null && itemValue.equals(itemValueToMatch)) {
-            //						child.children.put(id, data);
-            //						return true;
-            //					}
-            //				}
-            //			}
             itemValue = this.getProperty(childKey, null);
             if (itemValue != null && itemValue.equals(itemValueToMatch)) {
                 this.children.put(id, data);
@@ -157,8 +148,8 @@ public class DataTreeChildObject {
             }
         }
         o.put("children", c);
-        //		o.put("ownSeverity", null);
-        //		o.put("childrenSeveritySummary", null);
+        //o.put("ownSeverity", null);
+        //o.put("childrenSeveritySummary", null);
         return o;
     }
 

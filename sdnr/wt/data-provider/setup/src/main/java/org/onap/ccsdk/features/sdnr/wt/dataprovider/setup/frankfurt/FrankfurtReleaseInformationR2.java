@@ -27,6 +27,7 @@ import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterSettingsRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterSettingsResponse;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.mariadb.MariaDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
@@ -59,10 +60,10 @@ public class FrankfurtReleaseInformationR2 extends ReleaseInformation {
                 "{\"date\": {\"type\": \"keyword\"},\"model-identifier\": {\"type\": \"keyword\"},\"manufacturer-identifier\": {\"type\": \"keyword\"},\"type-name\": {\"type\": \"keyword\"},\"description\": {\"type\": \"keyword\"},\"uuid\": {\"type\": \"keyword\"},\"version\": {\"type\": \"keyword\"},\"parent-uuid\": {\"type\": \"keyword\"},\"contained-holder\": {\"type\": \"keyword\"},\"node-id\": {\"type\": \"keyword\"},\"tree-level\": {\"type\": \"long\"},\"part-type-id\": {\"type\": \"keyword\"},\"serial\": {\"type\": \"keyword\"}}"));
         map.put(ComponentName.HISTORICAL_PERFORMANCE_15M, new DatabaseInfo7("historicalperformance15min",
                 "historicalperformance15min",
-                "{\"node-name\":{\"type\": \"keyword\"},\"timestamp\":{\"type\": \"date\"},\"suspect-interval-flag\":{\"type\":\"boolean\"},\"scanner-id\":{\"type\": \"keyword\"},\"uuid-interface\":{\"type\": \"keyword\"},\"layer-protocol-name\":{\"type\": \"keyword\"},\"granularity-period\":{\"type\": \"keyword\"},\"radio-signal-id\":{\"type\": \"keyword\"}}"));
+                "{\"node-name\":{\"type\": \"keyword\"},\"time-stamp\":{\"type\": \"date\"},\"suspect-interval-flag\":{\"type\":\"boolean\"},\"scanner-id\":{\"type\": \"keyword\"},\"uuid-interface\":{\"type\": \"keyword\"},\"layer-protocol-name\":{\"type\": \"keyword\"},\"granularity-period\":{\"type\": \"keyword\"},\"radio-signal-id\":{\"type\": \"keyword\"}}"));
         map.put(ComponentName.HISTORICAL_PERFORMANCE_24H, new DatabaseInfo7("historicalperformance24h",
                 "historicalperformance24h",
-                "{\"node-name\":{\"type\": \"keyword\"},\"timestamp\":{\"type\": \"date\"},\"suspect-interval-flag\":{\"type\":\"boolean\"},\"scanner-id\":{\"type\": \"keyword\"},\"uuid-interface\":{\"type\": \"keyword\"},\"layer-protocol-name\":{\"type\": \"keyword\"},\"granularity-period\":{\"type\": \"keyword\"},\"radio-signal-id\":{\"type\": \"keyword\"}}"));
+                "{\"node-name\":{\"type\": \"keyword\"},\"time-stamp\":{\"type\": \"date\"},\"suspect-interval-flag\":{\"type\":\"boolean\"},\"scanner-id\":{\"type\": \"keyword\"},\"uuid-interface\":{\"type\": \"keyword\"},\"layer-protocol-name\":{\"type\": \"keyword\"},\"granularity-period\":{\"type\": \"keyword\"},\"radio-signal-id\":{\"type\": \"keyword\"}}"));
         map.put(ComponentName.REQUIRED_NETWORKELEMENT, new DatabaseInfo7("networkelement-connection",
                 "networkelement-connection",
                 "{\"node-id\": {\"type\": \"keyword\"},\"host\": {\"type\": \"keyword\"},\"port\": {\"type\": \"long\"},\"username\": {\"type\": \"keyword\"},\"password\": {\"type\": \"keyword\"},\"core-model-capability\": {\"type\": \"keyword\"},\"device-type\": {\"type\": \"keyword\"},\"is-required\": {\"type\": \"boolean\"},\"status\": {\"type\": \"keyword\"}}"));
@@ -83,7 +84,7 @@ public class FrankfurtReleaseInformationR2 extends ReleaseInformation {
     }
 
     @Override
-    protected boolean runPreInitCommands(HtDatabaseClient dbClient) {
+    public boolean runPreInitCommands(HtDatabaseClient dbClient) {
 
         ClusterSettingsResponse response = null;
         try {
@@ -95,8 +96,18 @@ public class FrankfurtReleaseInformationR2 extends ReleaseInformation {
     }
 
     @Override
-    protected boolean runPostInitCommands(HtDatabaseClient dbClient) {
+    public boolean runPostInitCommands(HtDatabaseClient dbClient) {
         return true;
+    }
+
+    @Override
+    public boolean runPreInitCommands(MariaDBClient dbClient) {
+        return false;
+    }
+
+    @Override
+    public boolean runPostInitCommands(MariaDBClient dbClient) {
+        return false;
     }
 
 }

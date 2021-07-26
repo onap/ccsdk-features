@@ -25,7 +25,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClientException;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.ReadyHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
@@ -36,6 +35,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.StatusChangedHandler.StatusKey;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +52,7 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     private DataTreeHttpServlet treeServlet;
     private UserdataHttpServlet userdataServlet;
     private HtDatabaseClient dbClient;
+    private DataBroker dataBroker;
 
     // Blueprint 1
     public DataProviderImpl() {
@@ -77,12 +78,15 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     public void setUserdataServlet(UserdataHttpServlet userdataServlet) {
         this.userdataServlet = userdataServlet;
     }
+    public void setDataBroker(DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
+    }
     public void init() throws Exception {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
         try {
             // Start RPC Service
-            this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.mediatorServerServlet);
+            this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.mediatorServerServlet, this.dataBroker);
             this.treeServlet.setDatabaseClient(this.rpcApiService.getRawClient());
             this.userdataServlet.setDatabaseClient(this.rpcApiService.getHtDatabaseUserManager());
             LOG.info("Session Initiated end. Initialization done");
@@ -134,11 +138,6 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     @Override
     public NetconfTimeStamp getConverter() {
         return NetconfTimeStampImpl.getConverter();
-    }
-
-    @Override
-    public void setReadyStatus(boolean status) {
-        ReadyHttpServlet.setStatus(status);
     }
 
     @Override

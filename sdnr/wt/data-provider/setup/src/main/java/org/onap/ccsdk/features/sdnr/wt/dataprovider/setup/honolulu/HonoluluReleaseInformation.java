@@ -26,6 +26,7 @@ import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterSettingsRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterSettingsResponse;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.mariadb.MariaDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
@@ -61,7 +62,7 @@ public class HonoluluReleaseInformation extends ReleaseInformation {
     }
 
     @Override
-    protected boolean runPreInitCommands(HtDatabaseClient dbClient) {
+    public boolean runPreInitCommands(HtDatabaseClient dbClient) {
         ClusterSettingsResponse response = null;
         try {
             response = dbClient.setupClusterSettings(new ClusterSettingsRequest(false).maxCompilationsPerMinute(400));
@@ -72,8 +73,18 @@ public class HonoluluReleaseInformation extends ReleaseInformation {
     }
 
     @Override
-    protected boolean runPostInitCommands(HtDatabaseClient dbClient) {
+    public boolean runPostInitCommands(HtDatabaseClient dbClient) {
         return true;
+    }
+
+    @Override
+    public boolean runPreInitCommands(MariaDBClient dbClient) {
+        return false;
+    }
+
+    @Override
+    public boolean runPostInitCommands(MariaDBClient dbClient) {
+        return false;
     }
 
 }
