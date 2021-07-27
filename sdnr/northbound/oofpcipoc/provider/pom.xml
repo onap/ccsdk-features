@@ -37,17 +37,6 @@
 
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.onap.ccsdk.sli.core</groupId>
-                <artifactId>sli-core-artifacts</artifactId>
-                <version>${ccsdk.sli.core.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
@@ -65,11 +54,13 @@
         <dependency>
             <groupId>org.onap.ccsdk.sli.core</groupId>
             <artifactId>sli-common</artifactId>
+            <version>${ccsdk.sli.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.onap.ccsdk.sli.core</groupId>
             <artifactId>sli-provider</artifactId>
+            <version>${ccsdk.sli.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
