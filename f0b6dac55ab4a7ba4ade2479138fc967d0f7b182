@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6fee0f43_dc3d8c9c",
+        "filename": "sdnr/wt/data-provider/dblib/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-07-27T12:31:07Z",
+      "side": 1,
+      "message": "can be removed",
+      "revId": "f0b6dac55ab4a7ba4ade2479138fc967d0f7b182",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81b300fe_3c8f7d58",
+        "filename": "sdnr/wt/data-provider/provider/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-07-27T12:31:07Z",
+      "side": 1,
+      "message": "can be removed.",
+      "revId": "f0b6dac55ab4a7ba4ade2479138fc967d0f7b182",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5b40218_697bc854",
+        "filename": "sdnr/wt/data-provider/setup/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-07-27T12:31:07Z",
+      "side": 1,
+      "message": "shouldn\u0027t this be using latest SLI (Istanbul release: 1.3.0-SNAPSHOT)",
+      "revId": "f0b6dac55ab4a7ba4ade2479138fc967d0f7b182",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
