@@ -46,13 +46,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>org.onap.ccsdk.sli.core</groupId>
-                <artifactId>sli-core-artifacts</artifactId>
-                <version>${ccsdk.sli.core.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -98,17 +91,19 @@
         <dependency>
             <groupId>org.onap.ccsdk.sli.core</groupId>
             <artifactId>sli-common</artifactId>
+            <version>${ccsdk.sli.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.onap.ccsdk.sli.core</groupId>
             <artifactId>sli-provider</artifactId>
+            <version>${ccsdk.sli.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.onap.ccsdk.sli.core</groupId>
             <artifactId>utils-provider</artifactId>
-            <!-- <version>${sdnctl.sli.version}</version> -->
+            <version>${ccsdk.sli.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
