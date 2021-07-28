@@ -16,7 +16,9 @@
  * ============LICENSE_END==========================================================================
  */
 
-export type AvailableCapabilities = {
+ export type AvailableCapabilities = {
+    id?: string,
     module: string,
-    revision: string
+    revision: string,
+    features: string
 }

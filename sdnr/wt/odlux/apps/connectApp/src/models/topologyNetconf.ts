@@ -16,7 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 
-export interface AvailableCapability {
+ export interface AvailableCapability {
   "capability-origin": string;
   capability: string;
 }
@@ -33,4 +33,27 @@ export interface TopologyNode {
 export interface Topology {
   "topology-id": string;
   "network-topology:node": TopologyNode[];
+}
+
+/**
+  * Represents the type of the features of the Module. 
+  */
+export interface Module {
+  feature?: string[];
+  location?: string[];
+  name: string;
+  namespace?: string;
+  revision?: string;
+}
+
+export interface ModuleFeatures {
+   module: Module[];
+}
+
+export interface ModuleSet {
+  "module-set": ModuleFeatures[];
+}
+
+export interface FeatureTopology {
+  "ietf-yang-library:yang-library" : ModuleSet 
 }

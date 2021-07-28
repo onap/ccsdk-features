@@ -20,7 +20,7 @@ import { IActionHandler } from '../../../../framework/src/flux/action';
 import { combineActionHandler } from '../../../../framework/src/flux/middleware';
 import { INetworkElementsState, networkElementsActionHandler } from './networkElementsHandler';
 import { IConnectionStatusLogState, connectionStatusLogActionHandler } from './connectionStatusLogHandler';
-import { IInfoNetworkElementsState, infoNetworkElementsActionHandler } from './infoNetworkElementHandler';
+import { IInfoNetworkElementsState, infoNetworkElementsActionHandler, IInfoNetworkElementFeaturesState, infoNetworkElementFeaturesActionHandler } from './infoNetworkElementHandler';
 import { SetPanelAction, AddWebUriList, RemoveWebUri, SetWeburiSearchBusy } from '../actions/commonNetworkElementsActions';
 import { PanelId } from '../models/panelId';
 import { guiCutThrough } from '../models/guiCutTrough';
@@ -31,6 +31,7 @@ export interface IConnectAppStoreState {
   connectionStatusLog: IConnectionStatusLogState;
   currentOpenPanel: PanelId;
   elementInfo: IInfoNetworkElementsState;
+  elementFeatureInfo: IInfoNetworkElementFeaturesState;
   guiCutThrough: guiCutThroughState;
   connectionStatusCount: IConnectionStatusCount;
 }
@@ -48,7 +49,7 @@ interface guiCutThroughState {
   unsupportedElements: string[];
 }
 
-const guiCutThroughHandler: IActionHandler<guiCutThroughState> = (state = { searchedElements: [], notSearchedElements: [], unsupportedElements:[] }, action) => {
+const guiCutThroughHandler: IActionHandler<guiCutThroughState> = (state = { searchedElements: [], notSearchedElements: [], unsupportedElements: [] }, action) => {
   if (action instanceof AddWebUriList) {
     let notSearchedElements: string[];
     let searchedElements: guiCutThrough[];
@@ -73,7 +74,7 @@ const guiCutThroughHandler: IActionHandler<guiCutThroughState> = (state = { sear
     const webUris = state.searchedElements.filter(item => item.id !== nodeId);
     const knownElements = state.notSearchedElements.filter(item => item !== nodeId);
     const unsupportedElement = state.unsupportedElements.filter(item => item != nodeId);
-    state = { notSearchedElements: knownElements, searchedElements: webUris, unsupportedElements: unsupportedElement  };
+    state = { notSearchedElements: knownElements, searchedElements: webUris, unsupportedElements: unsupportedElement };
   }
   return state;
 }
@@ -89,6 +90,7 @@ const actionHandlers = {
   connectionStatusLog: connectionStatusLogActionHandler,
   currentOpenPanel: currentOpenPanelHandler,
   elementInfo: infoNetworkElementsActionHandler,
+  elementFeatureInfo: infoNetworkElementFeaturesActionHandler,
   guiCutThrough: guiCutThroughHandler,
   connectionStatusCount: connectionStatusCountHandler
 };

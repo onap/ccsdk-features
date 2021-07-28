@@ -36,12 +36,12 @@ import { NavigateToApplication } from '../../../../framework/src/actions/navigat
 import { createNetworkElementsActions, createNetworkElementsProperties } from '../handlers/networkElementsHandler';
 
 import { NetworkElementConnection } from '../models/networkElementConnection';
-import { TopologyNode } from '../models/topologyNetconf';
+import { ModuleSet, TopologyNode } from '../models/topologyNetconf';
 import EditNetworkElementDialog, { EditNetworkElementDialogMode } from './editNetworkElementDialog';
 import RefreshNetworkElementsDialog, { RefreshNetworkElementsDialogMode } from './refreshNetworkElementsDialog';
 
 import InfoNetworkElementDialog, { InfoNetworkElementDialogMode } from './infoNetworkElementDialog';
-import { loadAllInfoElementAsync } from '../actions/infoNetworkElementActions';
+import { loadAllInfoElementAsync, loadAllInfoElementFeaturesAsync } from '../actions/infoNetworkElementActions';
 import { connectService } from '../services/connectService';
 import { getAccessPolicyByUrl } from '../../../../framework/src/services/restService';
 
@@ -92,6 +92,7 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   networkElementsActions: createNetworkElementsActions(dispatcher.dispatch),
   navigateToApplication: (applicationName: string, path?: string) => dispatcher.dispatch(new NavigateToApplication(applicationName, path)),
   networkElementInfo: async (nodeId: string) => await dispatcher.dispatch(loadAllInfoElementAsync(nodeId)),
+  networkElementFeaturesInfo: async (nodeId: string) => await dispatcher.dispatch(loadAllInfoElementFeaturesAsync(nodeId))
 });
 
 type NetworkElementsListComponentProps = WithStyles<typeof styles> & Connect<typeof mapProps, typeof mapDispatch>;
@@ -100,7 +101,8 @@ type NetworkElementsListComponentState = {
   networkElementEditorMode: EditNetworkElementDialogMode,
   refreshNetworkElementsEditorMode: RefreshNetworkElementsDialogMode,
   infoNetworkElementEditorMode: InfoNetworkElementDialogMode,
-  elementInfo: TopologyNode | null
+  elementInfo: TopologyNode | null,
+  elementInfoFeature: ModuleSet | null
 }
 
 const emptyRequireNetworkElement: NetworkElementConnection = { id: "", nodeId: "", host: "", port: 0, status: "Disconnected", isRequired: false };
@@ -117,6 +119,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       networkElementEditorMode: EditNetworkElementDialogMode.None,
       refreshNetworkElementsEditorMode: RefreshNetworkElementsDialogMode.None,
       elementInfo: null,
+      elementInfoFeature:null,
       infoNetworkElementEditorMode: InfoNetworkElementDialogMode.None
     };
   }
@@ -164,7 +167,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
     const canAdd = true;
 
     const addRequireNetworkElementAction = {
-      icon: AddIcon, tooltip: 'Add', onClick: () => {
+      icon: AddIcon, tooltip: 'Add', ariaLabel:"add-element", onClick: () => {
         this.setState({
           networkElementEditorMode: EditNetworkElementDialogMode.AddNewNetworkElement,
           networkElementToEdit: emptyRequireNetworkElement,
@@ -173,7 +176,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
     };
 
     const refreshNetworkElementsAction = {
-      icon: Refresh, tooltip: 'Refresh Network Elements table', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh Network Elements table', ariaLabel:'refresh', onClick: () => {
         this.setState({
           refreshNetworkElementsEditorMode: RefreshNetworkElementsDialogMode.RefreshNetworkElementsTable
         });
@@ -266,6 +269,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
 
   private onOpenInfoNetworkElementDialog = (event: React.MouseEvent<HTMLElement>, element: NetworkElementConnection) => {
     this.props.networkElementInfo(element.nodeId);
+    this.props.networkElementFeaturesInfo(element.nodeId);
     this.setState({
       networkElementToEdit: element,
       infoNetworkElementEditorMode: InfoNetworkElementDialogMode.InfoNetworkElement,

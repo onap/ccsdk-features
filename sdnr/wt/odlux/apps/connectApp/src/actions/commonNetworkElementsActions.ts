@@ -64,6 +64,9 @@ export const findWebUrisForGuiCutThroughAsyncAction = (networkElementIds: string
 
   // keep method from executing simultanously; state not used because change of iu isn't needed
 
+  if (isBusy)
+    return;
+  isBusy = true;
 
   const { connect: { guiCutThrough, networkElements } } = getState();
 
@@ -78,16 +81,16 @@ export const findWebUrisForGuiCutThroughAsyncAction = (networkElementIds: string
       if (item.status === "Connected") {
 
         // if (item.coreModelCapability !== "Unsupported") {
-          // element is connected and is added to search list, if it doesn't exist already
-          const exists = guiCutThrough.searchedElements.filter(element => element.id === id).length > 0;
-          if (!exists) {
-            elementsToSearch.push(id);
+        // element is connected and is added to search list, if it doesn't exist already
+        const exists = guiCutThrough.searchedElements.filter(element => element.id === id).length > 0;
+        if (!exists) {
+          elementsToSearch.push(id);
 
-            //element was found previously, but wasn't connected
-            if (guiCutThrough.notSearchedElements.length > 0 && guiCutThrough.notSearchedElements.includes(id)) {
-              prevFoundElements.push(id);
-            }
+          //element was found previously, but wasn't connected
+          if (guiCutThrough.notSearchedElements.length > 0 && guiCutThrough.notSearchedElements.includes(id)) {
+            prevFoundElements.push(id);
           }
+        }
         // } else {
         //   // element does not support core model and must not be searched for a weburi  
         //   const id = item.id as string;
@@ -113,9 +116,10 @@ export const findWebUrisForGuiCutThroughAsyncAction = (networkElementIds: string
 
 
   if (elementsToSearch.length > 0 || notConnectedElements.length > 0 || unsupportedElements.length > 0) {
-      const result = await connectService.getAllWebUriExtensionsForNetworkElementListAsync(elementsToSearch);
-     dispatcher(new AddWebUriList(result, notConnectedElements, unsupportedElements, prevFoundElements));
+    const result = await connectService.getAllWebUriExtensionsForNetworkElementListAsync(elementsToSearch);
+    dispatcher(new AddWebUriList(result, notConnectedElements, unsupportedElements, prevFoundElements));
   }
+  isBusy = false;
 
 }
 
