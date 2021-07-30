@@ -23,7 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.responses;
 
 import org.elasticsearch.client.Response;
 import org.json.JSONObject;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
+import org.onap.ccsdk.features.sdnr.wt.common.database.data.DatabaseVersion;
 
 public class GetInfoResponse extends BaseResponse {
 
@@ -37,7 +37,7 @@ public class GetInfoResponse extends BaseResponse {
     private final String clusterName;
     private final String name;
 
-    private final EsVersion version;
+    private final DatabaseVersion version;
 
     public GetInfoResponse(Response response) throws Exception {
         super(response);
@@ -47,7 +47,7 @@ public class GetInfoResponse extends BaseResponse {
         }
         this.name = o.getString("name");
         this.clusterName = o.getString("cluster_name");
-        this.version = new EsVersion(o.getJSONObject("version").getString("number"));
+        this.version = new DatabaseVersion(o.getJSONObject("version").getString("number"));
     }
 
     public String getClusterName() {
@@ -58,7 +58,7 @@ public class GetInfoResponse extends BaseResponse {
         return name;
     }
 
-    public EsVersion getVersion() {
+    public DatabaseVersion getVersion() {
         return version;
     }
 

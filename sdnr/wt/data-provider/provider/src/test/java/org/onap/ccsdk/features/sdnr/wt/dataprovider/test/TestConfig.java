@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section.EnvGetter;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.EsConfig;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.EsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

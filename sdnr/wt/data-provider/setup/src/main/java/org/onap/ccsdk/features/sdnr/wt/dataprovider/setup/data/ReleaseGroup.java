@@ -23,7 +23,9 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.EsVersion;
+import org.onap.ccsdk.features.sdnr.wt.common.database.data.DatabaseVersion;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
+
 
 /**
  * @author Michael Dürre
@@ -51,10 +53,10 @@ public enum ReleaseGroup {
      * @param dbVersion
      * @return
      */
-    public Release getLatestCompatibleRelease(EsVersion dbVersion) {
+    public Release getLatestCompatibleRelease(DatabaseVersion dbVersion, SdnrDbType type) {
         Release match = null;
         for (Release r : this.releases) {
-            if (r.isDbInRange(dbVersion)) {
+            if (r.isDbInRange(dbVersion, type)) {
                 match = r;
             }
         }

@@ -23,7 +23,7 @@ public interface ArchiveCleanProvider {
 
     /**
      * Remove all index data older, than specified from faultlog and eventlog
-     * 
+     *
      * @param olderAreOutdated time to specify older elements
      * @return number of removed elements
      */
@@ -31,11 +31,11 @@ public interface ArchiveCleanProvider {
 
     /**
      * Get number of elements older then
-     * 
+     *
      * @param olderAreOutdated date to compare with and specify older elements
      * @return number of elements
      */
-    public int getNumberOfOldObjects(Date olderAreOutdated);
+    public long getNumberOfOldObjects(Date olderAreOutdated);
 
 
 }

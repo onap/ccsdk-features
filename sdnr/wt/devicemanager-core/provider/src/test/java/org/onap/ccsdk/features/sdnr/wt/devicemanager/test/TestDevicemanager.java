@@ -93,7 +93,6 @@ public class TestDevicemanager extends Mockito {
         WebsocketManagerService websocketmanagerService = mock(WebsocketManagerService.class);
 
         IEntityDataProvider iEntityDataProvider = mock(IEntityDataProvider.class);
-        doNothing().when(iEntityDataProvider).setReadyStatus(isA(Boolean.class));
 
         DataProvider dataProvider = mock(DataProvider.class);
         when(iEntityDataProvider.getDataProvider()).thenReturn(dataProvider);

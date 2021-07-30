@@ -81,7 +81,6 @@ public class TestImplementation {
         }
 
         impl.setStatus(StatusKey.CLUSTER_SIZE, "3");
-        impl.setReadyStatus(true);
         try {
             impl.close();
         } catch (Exception e) {
