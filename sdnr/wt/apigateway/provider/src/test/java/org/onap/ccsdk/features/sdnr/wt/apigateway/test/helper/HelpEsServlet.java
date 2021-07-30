@@ -30,6 +30,12 @@ public class HelpEsServlet extends EsServlet implements IPublicServlet {
 
     private static final long serialVersionUID = 6502905928958752573L;
 
+    public static final String RESPONSE_GET = "This is the response get";
+    public static final String RESPONSE_POST = "This is the response post";
+    public static final String RESPONSE_PUT = "This is the response put";
+    public static final String RESPONSE_DELETE = "This is the response delete";
+    public static final String RESPONSE_OPTIONS = "This is the response options";
+
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         super.doGet(req, resp);

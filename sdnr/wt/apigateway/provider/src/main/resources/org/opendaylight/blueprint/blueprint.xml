@@ -62,4 +62,23 @@
         </service-properties>
     </service>
 
+    <bean id="sitedocServlet"
+          class="org.onap.ccsdk.features.sdnr.wt.apigateway.SitedocServlet">
+    </bean>
+
+    <service interface="javax.servlet.http.HttpServlet" ref="sitedocServlet">
+        <service-properties>
+            <entry key="alias" value="/sitedoc"/>
+        </service-properties>
+    </service>
+
+    <bean id="terrainServlet"
+          class="org.onap.ccsdk.features.sdnr.wt.apigateway.TerrainServlet">
+    </bean>
+
+    <service interface="javax.servlet.http.HttpServlet" ref="terrainServlet">
+        <service-properties>
+            <entry key="alias" value="/terrain"/>
+        </service-properties>
+    </service>
 </blueprint>

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : CCSDK.apps.sdnr.wt.apigateway
  * ================================================================================
- * Copyright (C) 2018 highstreet technologies GmbH Intellectual Property.
+ * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,40 +18,55 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.apigateway.test.helper;
+package org.onap.ccsdk.features.sdnr.wt.apigateway;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.onap.ccsdk.features.sdnr.wt.apigateway.TopologyServlet;
 
-public class HelpTopologyServlet extends TopologyServlet implements IPublicServlet {
+public class TerrainServlet extends BaseServlet {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5946205120796162644L;
+    private static final String OFFLINE_RESPONSE_MESSAGE = "Terrain interface is offline";
+    private static final String BASEURL = "/terrain";
+    private static boolean trustAll = false;
 
-    @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doGet(req, resp);
+    public TerrainServlet() {
+        super();
     }
 
     @Override
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setStatus(200);
     }
 
     @Override
-    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPut(req, resp);
+    protected String getOfflineResponse() {
+        return OFFLINE_RESPONSE_MESSAGE;
     }
 
     @Override
-    public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doOptions(req, resp);
+    protected boolean isOff() {
+        return MyProperties.getInstance().isTopologyOff();
     }
 
     @Override
-    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doDelete(req, resp);
+    protected String getRemoteUrl(String uri) {
+
+        if (uri != null && uri.length() > 0) {
+            uri = uri.substring(BASEURL.length());
+        }
+        return MyProperties.getInstance().getTerrainBaseUrl() + uri;
+    }
+
+    @Override
+    protected boolean doTrustAll() {
+        return trustAll;
+    }
+
+    @Override
+    protected void trustAll(boolean trust) {
+        trustAll = trust;
     }
 }

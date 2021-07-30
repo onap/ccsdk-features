@@ -46,6 +46,9 @@ public class MyProperties {
     private static final String DEFAULT_URL_OFF = "off";
     private static final String DEFAULT_TILES = "${TILEURL}";
     private static final String DEFAULT_TOPOLOGY = "${TOPOURL}";
+    private static final String DEFAULT_SITEDOC = "${SITEDOCURL}";
+    private static final String DEFAULT_TERRAIN = "${TERRAINURL}";
+
     private static MyProperties mObj;
     private static final String ENVVARIABLE = "${";
     private static final String REGEXENVVARIABLE = "(\\$\\{[A-Z0-9_-]+\\})";
@@ -57,9 +60,10 @@ public class MyProperties {
     private String esBase;
     private String tilesBase;
     private String topologyBase;
+    private String sitedocBase;
+    private String terrainBase;
 
     private boolean trustInsecure;
-
     private boolean corsEnabled;
 
     public boolean isAAIOff() {
@@ -92,6 +96,13 @@ public class MyProperties {
 
     public String getTopologyBaseUrl() {
         return this.topologyBase;
+    }
+    public String getSitedocBaseUrl() {
+        return this.sitedocBase;
+    }
+
+    public String getTerrainBaseUrl() {
+        return this.terrainBase;
     }
 
     public Map<String, String> getAAIHeaders() {
@@ -143,6 +154,8 @@ public class MyProperties {
         this.esBase = getProperty(defaultProps,"database", DEFAULT_ESDATABASE);
         this.tilesBase = getProperty(defaultProps,"tiles", DEFAULT_TILES, DEFAULT_URL_OFF);
         this.topologyBase = getProperty(defaultProps,"topology", DEFAULT_TOPOLOGY, DEFAULT_URL_OFF);
+        this.sitedocBase = getProperty(defaultProps,"sitedoc", DEFAULT_SITEDOC, DEFAULT_URL_OFF);
+        this.terrainBase = getProperty(defaultProps,"terrain", DEFAULT_TERRAIN, DEFAULT_URL_OFF);
         this.trustInsecure = Integer.parseInt(getProperty(defaultProps,"insecure", DEFAULT_TRUSTINSECURE)) == 1;
         this.corsEnabled = Integer.parseInt(getProperty(defaultProps,"cors", DEFAULT_CORSENABLED)) == 1;
     }
@@ -207,6 +220,7 @@ public class MyProperties {
         sb.append("database=" + DEFAULT_ESDATABASE + LR);
         sb.append("tiles=" + DEFAULT_TILES + LR);
         sb.append("topology=" + DEFAULT_TOPOLOGY + LR);
+        sb.append("terrain=" + DEFAULT_TERRAIN + LR);
         sb.append("insecure=" + DEFAULT_TRUSTINSECURE + LR);
         sb.append("cors=" + DEFAULT_CORSENABLED);
         try {
@@ -228,5 +242,6 @@ public class MyProperties {
         return "MyProperties [aaiBase=" + aaiBase + ", aaiHeaders=" + aaiHeaders + ", esBase=" + esBase
                 + ", trustInsecure=" + trustInsecure + ", corsEnabled=" + corsEnabled + "]";
     }
+
 
 }
