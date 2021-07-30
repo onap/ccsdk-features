@@ -23,7 +23,6 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import com.google.common.io.Files;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -37,9 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
@@ -47,6 +44,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.util.ResourceFileLoader;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl.AaiProviderClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl.config.AaiConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationDcae;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 public class TestAai {
 
@@ -113,14 +111,14 @@ public class TestAai {
         ifInfos.add("LP-MWPS-RADIO");
         InventoryInformationDcae ii = new InventoryInformationDcae(type, model, vendor, ipv4, ipv6, ifInfos);
         System.out.println("registering device");
-        provider.onDeviceRegistered(mountPointName, ii);
+        provider.onDeviceRegistered(new NodeId(mountPointName), ii);
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("unregistering device");
-        provider.onDeviceUnregistered(mountPointName);
+        provider.onDeviceUnregistered(new NodeId(mountPointName));
         System.out.println("finished");
         try {
             provider.close();
@@ -148,15 +146,15 @@ public class TestAai {
         ifInfos.add("LP-MWPS-RADIO");
         InventoryInformationDcae ii = new InventoryInformationDcae(type, model, vendor, ipv4, ipv6, ifInfos);
         System.out.println("registering device");
-        provider.onDeviceRegistered(mountPointName);
-        provider.onDeviceRegistered(mountPointName, ii);
+        provider.onDeviceRegistered(new NodeId(mountPointName));
+        provider.onDeviceRegistered(new NodeId(mountPointName), ii);
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("unregistering device");
-        provider.onDeviceUnregistered(mountPointName);
+        provider.onDeviceUnregistered(new NodeId(mountPointName));
         System.out.println("finished");
         try {
             provider.close();

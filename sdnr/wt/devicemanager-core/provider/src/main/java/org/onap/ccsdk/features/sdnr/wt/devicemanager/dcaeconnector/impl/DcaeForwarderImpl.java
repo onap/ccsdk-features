@@ -24,6 +24,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.HtAssert;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.ProviderClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.MaintenanceService;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,23 +48,23 @@ public class DcaeForwarderImpl implements DcaeForwarderInternal, AutoCloseable {
 
     @Override
     @SuppressWarnings("null")
-    public void sendProblemNotificationUsingMaintenanceFilter(String nodeId, ProblemNotificationXml notificationXml) {
-        if (!this.maintenanceService.isONFObjectInMaintenance(nodeId, notificationXml.getObjectId(),
+    public void sendProblemNotificationUsingMaintenanceFilter(NodeId oWNKEYID, ProblemNotificationXml notificationXml) {
+        if (!this.maintenanceService.isONFObjectInMaintenance(oWNKEYID, notificationXml.getObjectId(),
                 notificationXml.getProblem())) {
             if (dcaeProvider != null) {
-                this.dcaeProvider.sendProblemNotification(nodeId, notificationXml);
+                this.dcaeProvider.sendProblemNotification(oWNKEYID, notificationXml);
             }
             if (this.aotsmClient != null) {
-                this.aotsmClient.sendProblemNotification(nodeId, notificationXml);
+                this.aotsmClient.sendProblemNotification(oWNKEYID, notificationXml);
             }
         } else {
             LOG.debug(
-                    "Notification will not be sent to external services. Device " + nodeId + " is in maintenance mode");
+                    "Notification will not be sent to external services. Device " + oWNKEYID.getValue() + " is in maintenance mode");
         }
     }
 
     @Override
-    public void sendProblemNotification(String nodeId, ProblemNotificationXml notificationXml) {
+    public void sendProblemNotification(NodeId nodeId, ProblemNotificationXml notificationXml) {
         //to prevent push alarms on reconnect
         //=> only pushed alarms are forwared to dcae
         if (dcaeProvider != null) {

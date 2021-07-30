@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicema
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.TestMaintenanceModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.TestMaintenanceModeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.show.required.network.element.output.RequiredNetworkElementBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,13 +55,13 @@ public class MaintenanceServiceImpl implements MaintenanceService, MaintenanceRP
     }
 
     @Override
-    public void createIfNotExists(String mountPointNodeName) {
-        database.createIfNotExists(mountPointNodeName);
+    public void createIfNotExists(NodeId nodeId) {
+        database.createIfNotExists(nodeId.getValue());
     }
 
     @Override
-    public void deleteIfNotRequired(String mountPointNodeName) {
-        database.deleteIfNotRequired(mountPointNodeName);
+    public void deleteIfNotRequired(NodeId nodeId) {
+        database.deleteIfNotRequired(nodeId.getValue());
     }
 
     /*-------------------------------------------------
@@ -159,10 +160,10 @@ public class MaintenanceServiceImpl implements MaintenanceService, MaintenanceRP
      */
 
     @Override
-    public boolean isONFObjectInMaintenance(String mountpointReference, String objectIdRef, String problem) {
-        MaintenanceEntity maintenanceMode = database.getMaintenance(mountpointReference);
+    public boolean isONFObjectInMaintenance(NodeId nodeId, String objectIdRef, String problem) {
+        MaintenanceEntity maintenanceMode = database.getMaintenance(nodeId.getValue());
         boolean res = MaintenanceCalculator.isONFObjectInMaintenance(maintenanceMode, objectIdRef, problem);
-        LOG.debug("inMaintenance={} for mountpoint/id/problem:{} {} {} Definition: {}", res, mountpointReference,
+        LOG.debug("inMaintenance={} for mountpoint/id/problem:{} {} {} Definition: {}", res, nodeId.getValue(),
                 objectIdRef, problem, this);
         return res;
     }

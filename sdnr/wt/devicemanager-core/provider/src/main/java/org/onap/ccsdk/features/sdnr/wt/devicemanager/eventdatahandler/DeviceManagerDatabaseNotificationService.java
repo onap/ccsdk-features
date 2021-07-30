@@ -171,9 +171,9 @@ public class DeviceManagerDatabaseNotificationService implements NotificationSer
     }
 
     private void pushAlarmIfNotInMaintenance(String nodeName, ProblemNotificationXml notificationXml) {
-        if (!this.maintenanceService.isONFObjectInMaintenance(nodeName, notificationXml.getObjectId(),
+        if (!this.maintenanceService.isONFObjectInMaintenance(new NodeId(nodeName), notificationXml.getObjectId(),
                 notificationXml.getProblem())) {
-            this.aotsDcaeForwarder.sendProblemNotification(nodeName, notificationXml);
+            this.aotsDcaeForwarder.sendProblemNotification(new NodeId(nodeName), notificationXml);
         } else {
             LOG.debug("Notification will not be sent to external services. Device " + nodeName
                     + " is in maintenance mode");

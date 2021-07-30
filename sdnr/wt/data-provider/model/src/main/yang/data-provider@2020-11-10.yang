@@ -195,7 +195,7 @@ module data-provider {
         description
           "implements sth. like o-ran*.yang";
       }
-      enum ORAN {
+      enum O-RAN {
         description
           "implements RAN according to o-ran*.yang";
       }
@@ -1253,6 +1253,11 @@ module data-provider {
       description
         "categorized type of device based on implemented yang specs";
     }
+    leaf device-function {
+      type string;
+      description
+            "specifies the RAN functions supported by the device";
+    }
     leaf is-required {
       type boolean;
       description
@@ -1272,6 +1277,11 @@ module data-provider {
       type string;
       description
         "TLS key-id in MD-SAL";
+    }
+    leaf mount-method {
+      type string;
+      description
+        "netconf-node credential type for mount";
     }
     description
       "An object class defining the NetConf connection towards a
@@ -1894,6 +1904,25 @@ module data-provider {
           uses guicutthrough-entity;
           description
             "The output data as list of found GUI Cut through entities";
+        }
+      }
+    }
+  rpc read-tls-key-entry {
+      description
+        "Get tls-keys of netconf-keystore";
+      input {
+        uses entity-input;
+      }
+      output {
+        container pagination {
+          uses pagination-output-g;
+          description
+            "The pagination details used by the provider to filter the data.";
+        }
+        leaf-list data {
+          type string;
+          description
+            "The output data as list of tls-keys in netconf-keystore";
         }
       }
     }

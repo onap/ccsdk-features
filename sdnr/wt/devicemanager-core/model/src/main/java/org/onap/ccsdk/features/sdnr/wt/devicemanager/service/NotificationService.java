@@ -24,30 +24,51 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 /**
- * Central notification management of devicemanager
+ * Central notification management of devicemanagers.
+ * Notifications are forwarded to ODLUX-Clients and written into database.
+ * Type {@link #EventlogEntity} contains all information.
+ * Basically, all fields have to be provided with meaningful or
+ * unique value.
+ * <ul>
+ * <li>SourceType: Mandatory to choose one of the ENUMS, specified by SDNC software
+ * <li>Host Name: Mountpoint name
+ * <li>Timestamp: From message or created by controller
+ * <li>ObjectId: Unique ID of Object (e.g. device, interface) within namespace device
+ * <li>attributeName: Unique ID within namespace object or message about changed value,
+ *     presented in ODLUX "Message" column.
+ * </ul>
  */
 public interface NotificationService extends DeviceManagerService {
 
-
-    /** Event notification to devicemanager. Can be change, create or remove indication **/
+    /**
+     * Handling of event notification, received by devicemanager.
+     * Can be a change, create or remove indication.
+     *
+     * @param eventNotification is containing all event related information.
+     */
     void eventNotification(@NonNull EventlogEntity eventNotification);
 
-//    void eventNotification(NodeId nodeId, Notification notification, @NonNull QName qname,
-//            @Nullable DateAndTime timeStamp);
-
-    /** create notification for an object **/
+    /**
+     * create notification for an object. Message set to "Create"
+     *
+     * @param nodeId of device
+     * @param counter provided
+     * @param timeStamp provided
+     * @param objectId provided
+     */
     void creationNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId);
 
-//    void creationNotification(NodeId nodeId, Notification notification, @NonNull QName qname,
-//            @Nullable DateAndTime timeStamp);
-
-    /** delete notification of object **/
+    /**
+     * delete notification of object. Message set to "Deletion"
+     *
+     * @param nodeId of device
+     * @param counter provided
+     * @param timeStamp provided
+     * @param objectId provided
+     */
     void deletionNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId);
-
-//    void deletionNotification(NodeId nodeId, Notification notification, @NonNull QName qname,
-//            @Nullable DateAndTime timeStamp);
 
     /**
      * change notification of attribute of object
@@ -61,10 +82,5 @@ public interface NotificationService extends DeviceManagerService {
      */
     void changeNotification(NodeId nodeId, @Nullable Integer counter, @Nullable DateAndTime timeStamp,
             @Nullable String objectId, @Nullable String attributeName, @Nullable String newValue);
-
-//    void changeNotification(NodeId nodeId, Notification notification, @NonNull QName qname,
-//            @Nullable DateAndTime timeStamp);
-
-
 
 }
