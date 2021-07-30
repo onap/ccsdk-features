@@ -24,10 +24,13 @@ import { TreeView, TreeViewCtorType, SearchMode } from '../../../../framework/sr
 
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Link from '@material-ui/core/Link';
+
 import { updateInventoryTreeAsyncAction, selectInventoryNodeAsyncAction, UpdateSelectedNodeAction, UpdateExpandedNodesAction, setSearchTermAction } from "../actions/inventoryTreeActions";
 import { TreeDemoItem } from "../models/inventory";
 
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from 'react-router-dom';
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -56,7 +59,7 @@ const mapProps = (state: IApplicationStoreState) => ({
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
   updateExpendedNodes: (expendedNodes: TreeDemoItem[]) => dispatcher.dispatch(new UpdateExpandedNodesAction(expendedNodes)),
-  updateInventoryTree: (mountId: string, seatchTerm?: string) => dispatcher.dispatch(updateInventoryTreeAsyncAction(mountId, seatchTerm)),
+  updateInventoryTree: (mountId: string, searchTerm?: string) => dispatcher.dispatch(updateInventoryTreeAsyncAction(mountId, searchTerm)),
   selectTreeNode: (nodeId?: string) => nodeId ? dispatcher.dispatch(selectInventoryNodeAsyncAction(nodeId)) : dispatcher.dispatch(new UpdateSelectedNodeAction(undefined)),
   setSearchTerm: (searchTerm: string) => dispatcher.dispatch(setSearchTermAction(searchTerm)),
 });
@@ -97,24 +100,46 @@ class DashboardComponent extends React.Component<TreeviewComponentProps, Treevie
   render() {
     const { classes, updateInventoryTree, updateExpendedNodes, expendedItems, selectedNode, selectTreeNode, searchTerm, match: { params: { mountId } } } = this.props;
     const scrollbar = { overflow: "auto", paddingRight: "20px" }
+
+    let filteredDashboardPath = `/inventory/dashboard/${this.props.match.params.mountId}`;
+    let basePath = `/inventory/${this.props.match.params.mountId}`;
+
     return (
-      <div style={scrollbar} className={classes.root}>
-        <InventoryTree className={classes.tree} items={this.state.rootNodes} enableSearchBar initialSearchTerm={searchTerm} searchMode={SearchMode.OnEnter} searchTerm={searchTerm}
-          onSearch={(searchTerm) => updateInventoryTree(mountId, searchTerm)} expandedItems={expendedItems} onFolderClick={(item) => {
-            const indexOfItemToToggle = expendedItems.indexOf(item);
-            if (indexOfItemToToggle === -1) {
-              updateExpendedNodes([...expendedItems, item]);
-            } else {
-              updateExpendedNodes([
-                ...expendedItems.slice(0, indexOfItemToToggle),
-                ...expendedItems.slice(indexOfItemToToggle + 1),
-              ]);
-            }
-          }}
-          onItemClick={(elm) => selectTreeNode(elm.value)} />
-        <div className={classes.details}>{
-          selectedNode && renderObject(selectedNode, "tree-view") || null
-        }</div>
+      <div style={scrollbar} >
+        <div >
+          <Breadcrumbs aria-label="breadcrumbs">
+            <Link color="inherit" href="#" aria-label="back-breadcrumb"
+              onClick={(event: React.MouseEvent<HTMLElement>) => {
+                event.preventDefault();
+                this.props.history.push(filteredDashboardPath);
+              }}>Back</Link>
+            <Link color="inherit" href="#"
+              aria-label={this.props.match.params.mountId + '-breadcrumb'}
+              onClick={(event: React.MouseEvent<HTMLElement>) => {
+                event.preventDefault();
+                this.props.history.push(basePath);
+              }}><span>{this.props.match.params.mountId}</span></Link>
+          </Breadcrumbs>
+        </div>
+        <br />
+        <div style={scrollbar} className={classes.root}>
+          <InventoryTree className={classes.tree} items={this.state.rootNodes} enableSearchBar initialSearchTerm={searchTerm} searchMode={SearchMode.OnEnter} searchTerm={searchTerm}
+            onSearch={(searchTerm) => updateInventoryTree(mountId, searchTerm)} expandedItems={expendedItems} onFolderClick={(item) => {
+              const indexOfItemToToggle = expendedItems.indexOf(item);
+              if (indexOfItemToToggle === -1) {
+                updateExpendedNodes([...expendedItems, item]);
+              } else {
+                updateExpendedNodes([
+                  ...expendedItems.slice(0, indexOfItemToToggle),
+                  ...expendedItems.slice(indexOfItemToToggle + 1),
+                ]);
+              }
+            }}
+            onItemClick={(elm) => selectTreeNode(elm.value)} />
+          <div className={classes.details}>{
+            selectedNode && renderObject(selectedNode, "tree-view") || null
+          }</div>
+        </div>
       </div>
     );
   }
@@ -125,7 +150,7 @@ class DashboardComponent extends React.Component<TreeviewComponentProps, Treevie
   }
 
   componentWillUnmount() {
-    this.props.setSearchTerm("");
+    this.props.setSearchTerm("*");
   }
 }
 
