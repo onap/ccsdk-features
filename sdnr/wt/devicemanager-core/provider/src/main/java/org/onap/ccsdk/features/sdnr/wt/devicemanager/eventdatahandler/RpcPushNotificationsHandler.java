@@ -102,7 +102,7 @@ public class RpcPushNotificationsHandler implements PushNotifications {
         ProblemNotification notification = new ProblemNotificationBuilder().setProblem(input.getProblem())
                 .setCounter(input.getCounter()).setObjectIdRef(input.getObjectId())
                 .setSeverity(InternalSeverity.toYang(input.getSeverity())).setTimeStamp(input.getTimestamp()).build();
-        aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(OWNKEYNAME, notificationXml);
+        aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(new NodeId(OWNKEYNAME), notificationXml);
         webSocketService.sendViaWebsockets(new NodeId(input.getNodeId()!=null?input.getNodeId():OWNKEYNAME), notification, ProblemNotification.QNAME, input.getTimestamp());
     }
 

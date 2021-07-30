@@ -21,7 +21,10 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
 import static org.junit.Assert.fail;
-
+import com.google.common.io.Files;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,10 +43,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalDateAndTi
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationDcae;
-import com.google.common.io.Files;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 @SuppressWarnings("restriction")
 public class TestDcae {
@@ -93,7 +92,7 @@ public class TestDcae {
         boolean neDeviceAlarm = false;
         ProblemNotificationXml notification = new ProblemNotificationXml(mountPointName, "network-element",
                 "problemName", InternalSeverity.Critical, 123, InternalDateAndTime.getTestpattern());
-        provider.sendProblemNotification(mountPointName, notification, neDeviceAlarm);
+        provider.sendProblemNotification(new NodeId(mountPointName), notification, neDeviceAlarm);
 
         try {
             Thread.sleep(5000);

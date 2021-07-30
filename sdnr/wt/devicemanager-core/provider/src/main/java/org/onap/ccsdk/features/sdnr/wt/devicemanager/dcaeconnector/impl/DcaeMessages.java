@@ -41,6 +41,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificatio
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.InventoryProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationDcae;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +104,7 @@ public class DcaeMessages {
      * @return String with answer
      */
 
-    public String postNotification(String mountPointName, ProblemNotificationXml notification) {
+    public String postNotification(NodeId nodeId, ProblemNotificationXml notification) {
 
         String problemName = notification.getProblem();
         String sequence = notification.getCounter();
@@ -111,7 +112,7 @@ public class DcaeMessages {
         String severity = convert(notification.getSeverity());
         String timeStamp = convert(notification.getTimeStamp());
 
-        String body = assembleEventNotificationFromTemplate(null, timeStamp, sequence, mountPointName, objId,
+        String body = assembleEventNotificationFromTemplate(null, timeStamp, sequence, nodeId, objId,
                 problemName, severity, notification.getTimeStamp()).toString();
 
         return dcaeSender.sendDcaePost(body);
@@ -243,7 +244,7 @@ public class DcaeMessages {
      */
 
     private StringBuffer assembleEventNotificationFromTemplate(StringBuffer sb, String epochTimeMicrosecondsString,
-            String sequence, String mountpointName, String objId, String problemName, String severity,
+            String sequence, NodeId nodeId, String objId, String problemName, String severity,
             String eventTimeValueNetconfFormatString) {
 
         if (sb == null) {
@@ -251,7 +252,7 @@ public class DcaeMessages {
         }
 
         NetworkElement optionalNe =
-                deviceManager != null ? deviceManager.getConnectedNeByMountpoint(mountpointName) : null;
+                deviceManager != null ? deviceManager.getConnectedNeByMountpoint(nodeId.getValue()) : null;
         InventoryInformationDcae neInventory = InventoryInformationDcae.getDefault();
         if (optionalNe != null) {
             Optional<InventoryProvider> inventoryProvider = optionalNe.getService(InventoryProvider.class);
@@ -265,7 +266,7 @@ public class DcaeMessages {
                 + "    \"event\": {\n"
                 + "        \"commonEventHeader\": {\n"
                 + "            \"domain\": \"fault\",\n"
-                + "            \"eventId\": \"" + mountpointName + "_" + objId + "_" + problemName + "\",\n"
+                + "            \"eventId\": \"" + nodeId.getValue() + "_" + objId + "_" + problemName + "\",\n"
                 + "            \"eventName\": \"" + eventNamePrefix + "_" + problemName + "\",\n"
                 + "            \"eventType\": \"" + eventType + "\",\n"
                 + "            \"sequence\": " + sequence + ",\n"
@@ -273,7 +274,7 @@ public class DcaeMessages {
                 + "            \"reportingEntityId\": \"\",\n"
                 + "            \"reportingEntityName\": \"" + entityName + "\",\n"
                 + "            \"sourceId\": \"\",\n"
-                + "            \"sourceName\": \"" + mountpointName + "\",\n"
+                + "            \"sourceName\": \"" + nodeId.getValue() + "\",\n"
                 + "            \"startEpochMicrosec\": " + epochTimeMicrosecondsString + ",\n"
                 + "            \"lastEpochMicrosec\": " + epochTimeMicrosecondsString + ",\n"
                 + "            \"version\": 3.0\n"

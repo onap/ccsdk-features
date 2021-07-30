@@ -17,28 +17,30 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+
 public interface MaintenanceService extends DeviceManagerService {
 
     /**
      * Verify maintenance state of given object according to the filter settings. The object is specified by the
      * criteria provided in the parameters. The data _id (uuid) is equal to the mountpointReference.
-     * 
+     *
      * @param mountpointReference used as reference, to query the data from database.
      * @param objectIdRef first level id in onf core model, delivered by notification objectid
      * @param problem problem name of device, delivered in problem notification
      * @return boolean indication
      */
-    boolean isONFObjectInMaintenance(String mountpointReference, String objectIdRef, String problem);
+    boolean isONFObjectInMaintenance(NodeId nodeId, String objectIdRef, String problem);
 
     /**
      * @param mountPointNodeName
      */
-    void createIfNotExists(String mountPointNodeName);
+    void createIfNotExists(NodeId nodeId);
 
     /**
      * @param mountPointNodeName
      */
-    void deleteIfNotRequired(String mountPointNodeName);
+    void deleteIfNotRequired(NodeId nodeId);
 
 
 }

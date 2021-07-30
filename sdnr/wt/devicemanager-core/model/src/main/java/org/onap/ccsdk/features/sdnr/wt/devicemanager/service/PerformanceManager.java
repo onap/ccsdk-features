@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 /**
  * @author herbert
@@ -29,11 +30,11 @@ public interface PerformanceManager extends DeviceManagerService {
      * @param mountPointNodeName
      * @param ne
      */
-    void registration(String mountPointNodeName, NetworkElement ne);
+    void registration(NodeId nodeId, NetworkElement ne);
 
     /**
      * @param mountPointNodeName
      */
-    void deRegistration(String mountPointNodeName);
+    void deRegistration(NodeId nodeId);
 
 }

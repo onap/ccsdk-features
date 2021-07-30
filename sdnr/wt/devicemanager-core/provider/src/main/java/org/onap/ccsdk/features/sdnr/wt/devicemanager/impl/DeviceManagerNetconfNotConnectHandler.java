@@ -75,7 +75,7 @@ public class DeviceManagerNetconfNotConnectHandler implements NetconfNodeStateLi
     public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
         LOG.info("onCreated {}", nNodeId);
         if (isOdlEventListenerHandlerMaster()) {
-            odlEventListenerHandler.registration(nNodeId.getValue(), netconfNode);
+            odlEventListenerHandler.registration(nNodeId, netconfNode);
         }
         if (deviceMonitorEnabled) {
             deviceMonitor.deviceDisconnectIndication(nNodeId.getValue());
@@ -86,20 +86,19 @@ public class DeviceManagerNetconfNotConnectHandler implements NetconfNodeStateLi
     public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
         LOG.info("onStateChange {}", nNodeId);
         if (isOdlEventListenerHandlerMaster()) {
-            odlEventListenerHandler.onStateChangeIndication(nNodeId.getValue(), netconfNode);
+            odlEventListenerHandler.onStateChangeIndication(nNodeId, netconfNode);
         }
     }
 
     @Override
     public void onRemoved(NodeId nNodeId) {
-        String mountPointNodeName = nNodeId.getValue();
         LOG.info("mountpointNodeRemoved {}", nNodeId.getValue());
 
         if (deviceMonitorEnabled) {
-            deviceMonitor.removeMountpointIndication(mountPointNodeName);
+            deviceMonitor.removeMountpointIndication(nNodeId.getValue());
         }
         if (isOdlEventListenerHandlerMaster()) {
-            odlEventListenerHandler.deRegistration(mountPointNodeName); //Additional indication for log
+            odlEventListenerHandler.deRegistration(nNodeId); //Additional indication for log
         }
     }
 

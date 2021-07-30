@@ -23,6 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 
 public class InternalConnectionStatus {
     public static ConnectionLogStatus statusFromNodeStatus(ConnectionStatus nodeStatus) {
+        if(nodeStatus==null) {
+            return ConnectionLogStatus.Undefined;
+        }
         switch (nodeStatus) {
             case Connected:
                 return ConnectionLogStatus.Connected;

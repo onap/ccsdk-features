@@ -19,6 +19,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 /**
  * Event Forwarding for central event management by devicemanager
@@ -29,12 +30,12 @@ public interface EventHandlingService {
      * @param mountPointNodeName
      * @param deviceType
      */
-    void connectIndication(String mountPointNodeName, NetworkElementDeviceType deviceType);
+    void connectIndication(NodeId nodeId, NetworkElementDeviceType deviceType);
 
     /**
      * @param mountPointNodeName
      */
-    void deRegistration(String mountPointNodeName);
+    void deRegistration(NodeId nodeId);
 
     /**
      *
@@ -43,13 +44,13 @@ public interface EventHandlingService {
      * @param attributeNewValue
      * @param nNode
      */
-    void updateRegistration(String registrationName, String attribute, String attributeNewValue, NetconfNode nNode);
+    void updateRegistration(NodeId nodeId, String attribute, String attributeNewValue, NetconfNode nNode);
 
     /**
      * @param nodeIdString
      * @param nNode
      */
-    void registration(String nodeIdString, NetconfNode nNode);
+    void registration(NodeId nodeId, NetconfNode nNode);
 
     /**
      * @param objectId

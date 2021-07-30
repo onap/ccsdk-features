@@ -23,6 +23,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.config.D
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.DeviceManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.ProviderClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,16 +56,16 @@ public class DcaeProviderClient implements AutoCloseable, ProviderClient {
     }
 
     @Override
-    public void sendProblemNotification(String mountPointName, ProblemNotificationXml notification) {
+    public void sendProblemNotification(NodeId nodeId, ProblemNotificationXml notification) {
         synchronized (lock) {
-            worker.sendProblemNotification(mountPointName, notification);
+            worker.sendProblemNotification(nodeId, notification);
         }
     }
 
     @Override
-    public void sendProblemNotification(String mountPointName, ProblemNotificationXml notification,
+    public void sendProblemNotification(NodeId nodeId, ProblemNotificationXml notification,
             boolean neDeviceAlarm) {
-        sendProblemNotification(mountPointName, notification);
+        sendProblemNotification(nodeId, notification);
     }
 
     @Override
