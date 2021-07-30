@@ -32,7 +32,7 @@ class InventoryService {
       "query": searchTerm
     };
     const inventoryTree = await requestRest<InventoryTreeNode>(path, { method: "POST" , body: JSON.stringify(body)});
-    return inventoryTree && convertPropertyNames(inventoryTree, replaceHyphen) || null;
+    return inventoryTree && inventoryTree || null;
   }
 
   public async getInventoryEntry(id: string): Promise<InventoryType | undefined> {
@@ -61,7 +61,7 @@ class InventoryService {
     }>(path, { method: "POST", body: JSON.stringify(body) });
 
     return inventoryTreeElement && inventoryTreeElement["data-provider:output"] && inventoryTreeElement["data-provider:output"].pagination && inventoryTreeElement["data-provider:output"].pagination.total >= 1 &&
-      inventoryTreeElement["data-provider:output"].data && convertPropertyNames(inventoryTreeElement["data-provider:output"].data[0], replaceHyphen) || undefined;
+      inventoryTreeElement["data-provider:output"].data && inventoryTreeElement["data-provider:output"].data[0] || undefined;
    // return await getElement(id);
   }
 

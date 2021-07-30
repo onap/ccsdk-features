@@ -55,7 +55,7 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   },
   inventoryElementsActions: createInventoryElementsActions(dispatcher.dispatch),
   navigateToApplication: (applicationName: string, path?: string) => dispatcher.dispatch(new NavigateToApplication(applicationName, path)),
-  updateInventoryTree: (mountId: string, seatchTerm?: string) => dispatcher.dispatch(updateInventoryTreeAsyncAction(mountId, seatchTerm)),
+  updateInventoryTree: (mountId: string, searchTerm?: string) => dispatcher.dispatch(updateInventoryTreeAsyncAction(mountId, searchTerm)),
 });
 
 let treeViewInitialSorted = false;
@@ -173,19 +173,19 @@ class DashboardSelectorComponent extends React.Component<DashboardComponentProps
         {
           activePanelId === "TreeviewTable" &&
 
-          <ConnectedElementTable stickyHeader tableId="treeview-networkelement-selection-table"  
-          onHandleClick={(e, row) => { 
-            this.props.history.push(`${this.props.match.path}/${row.nodeId}`);
-            this.props.updateInventoryTree(row.nodeId, '*');
-         }} 
-          columns={[
-            { property: "nodeId", title: "Node Name", type: ColumnType.text },
-            { property: "isRequired", title: "Required", type: ColumnType.boolean },
-            { property: "host", title: "Host", type: ColumnType.text },
-            { property: "port", title: "Port", type: ColumnType.numeric },
-            { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
-            { property: "deviceType", title: "Type", type: ColumnType.text },
-          ]} idProperty="id" {...this.props.connectedNetworkElementsActions} {...this.props.connectedNetworkElementsProperties} asynchronus >
+          <ConnectedElementTable stickyHeader tableId="treeview-networkelement-selection-table"
+            onHandleClick={(e, row) => {
+              this.props.navigateToApplication("inventory", row.nodeId);
+              this.props.updateInventoryTree(row.nodeId, '*');
+            }}
+            columns={[
+              { property: "nodeId", title: "Node Name", type: ColumnType.text },
+              { property: "isRequired", title: "Required", type: ColumnType.boolean },
+              { property: "host", title: "Host", type: ColumnType.text },
+              { property: "port", title: "Port", type: ColumnType.numeric },
+              { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
+              { property: "deviceType", title: "Type", type: ColumnType.text },
+            ]} idProperty="id" {...this.props.connectedNetworkElementsActions} {...this.props.connectedNetworkElementsProperties} asynchronus >
           </ConnectedElementTable>
         }
       </>
