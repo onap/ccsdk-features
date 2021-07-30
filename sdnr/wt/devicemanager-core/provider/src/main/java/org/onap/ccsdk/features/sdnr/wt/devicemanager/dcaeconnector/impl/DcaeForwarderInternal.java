@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl;
 
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 /**
  * @author herbert
@@ -29,12 +30,12 @@ public interface DcaeForwarderInternal {
      * @param oWNKEYNAME
      * @param notificationXml
      */
-    void sendProblemNotificationUsingMaintenanceFilter(String oWNKEYNAME, ProblemNotificationXml notificationXml);
+    void sendProblemNotificationUsingMaintenanceFilter(NodeId oWNKEYID, ProblemNotificationXml notificationXml);
 
     /**
      * @param nodeName
      * @param notificationXml
      */
-    void sendProblemNotification(String nodeName, ProblemNotificationXml notificationXml);
+    void sendProblemNotification(NodeId nodeId, ProblemNotificationXml notificationXml);
 
 }

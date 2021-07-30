@@ -17,6 +17,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util;
 
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InternalConnectionStatus;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
@@ -24,12 +25,16 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.Credentials;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.KeyAuth;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPassword;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPw;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPwUnencrypted;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.network.element.connection.entity.NodeDetailsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +63,11 @@ public class NetworkElementConnectionEntitiyUtil {
      * @return NetworkElementConnectionEntity specific information
      */
     public static NetworkElementConnectionEntity getNetworkConnection(String nodeId, @Nonnull NetconfNode nNode) {
+        return getNetworkConnection(nodeId, nNode, Optional.empty());
+    }
+
+    public static NetworkElementConnectionEntity getNetworkConnection(String nodeId, @Nonnull NetconfNode nNode,
+            Optional<NetconfNode> configNetconfNode) {
 
         NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
         // -- basics
@@ -79,15 +89,34 @@ public class NetworkElementConnectionEntitiyUtil {
         Host host = nNode.getHost();
         PortNumber portNumber = nNode.getPort();
         if (host != null && portNumber != null) {
-            eb.setHost(host.stringValue()).setPort(portNumber.getValue().longValue());
+            eb.setHost(host.stringValue()).setPort(Uint32.valueOf(portNumber.getValue()));
         }
 
-        Credentials credentials = nNode.getCredentials();
+        Credentials credentials =
+                configNetconfNode.isPresent() ? configNetconfNode.get().getCredentials() : nNode.getCredentials();
         if (credentials instanceof LoginPassword) {
             LoginPassword loginPassword = (LoginPassword) credentials;
-            eb.setUsername(loginPassword.getUsername()).setPassword(loginPassword.getPassword());
+            eb.setUsername(loginPassword.getUsername()).setPassword(loginPassword.getPassword())
+                    .setMountMethod(LoginPassword.class.getSimpleName());
+        } else if (credentials instanceof LoginPwUnencrypted) {
+            LoginPwUnencrypted loginPassword = (LoginPwUnencrypted) credentials;
+            eb.setUsername(loginPassword.getLoginPasswordUnencrypted().getUsername())
+                    .setPassword(loginPassword.getLoginPasswordUnencrypted().getPassword())
+                    .setMountMethod(LoginPwUnencrypted.class.getSimpleName());
+        } else if (credentials instanceof LoginPw) {
+            LoginPw loginPassword = (LoginPw) credentials;
+            eb.setUsername(loginPassword.getLoginPassword().getUsername())
+                    .setPassword(loginPassword.getLoginPassword().getPassword())
+                    .setMountMethod(LoginPw.class.getSimpleName());
+        } else if (credentials instanceof KeyAuth) {
+            KeyAuth keyAuth = (KeyAuth) credentials;
+            eb.setUsername(keyAuth.getKeyBased().getUsername()).setTlsKey(keyAuth.getKeyBased().getKeyId())
+                    .setMountMethod(KeyAuth.class.getSimpleName());
         }
-        eb.setCoreModelCapability("Unsupported"); // Default value. Specific value (if any) is set in the specific devicemanagers
+        LOG.debug("mount-method: {} ({})", eb.getMountMethod(),
+                credentials == null ? null : credentials.getClass().getName());
+        // Default value. Specific value (if any) is set in the specific devicemanagers
+        eb.setCoreModelCapability("Unsupported");
         return eb.build();
     }
 }

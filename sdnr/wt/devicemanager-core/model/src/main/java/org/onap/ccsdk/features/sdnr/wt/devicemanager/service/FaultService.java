@@ -28,9 +28,18 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 public interface FaultService extends DeviceManagerService {
 
     /**
-     * Notify fault information to devicemanager
+     * Forward received fault information to devicemanager. Devicemanager writes abstracted fault information to
+     * database and send abstracted fault information to websocket.
+     * For sending specific notifications to a client, additionally use
+     * {@link org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService}
+     * <ul>
+     * <li>write to database faultcurrent FaultlogEntity namespace: urn:opendaylight:params:xml:ns:yang:data-provider
+     * <li>write to database faultlog
+     * <li>send via websocket as ProblemNotification namespace: urn:opendaylight:params:xml:ns:yang:devicemanager
+     * </ul>
      *
      * @param faultNotification to send
+     *
      */
     void faultNotification(@NonNull FaultlogEntity faultNotification);
 

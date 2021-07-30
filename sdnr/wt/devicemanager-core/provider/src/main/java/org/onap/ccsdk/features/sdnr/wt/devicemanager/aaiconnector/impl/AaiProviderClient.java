@@ -30,6 +30,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.InventoryProvide
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.AaiService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationDcae;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,33 +60,35 @@ public class AaiProviderClient implements AaiService, AutoCloseable {
         return this.config;
     }
 
-    public void onDeviceRegistered(String mountPointName) {
+    @Override
+    public void onDeviceRegistered(NodeId nodeId) {
         if (this.config.isOff()) {
             return;
         }
         NetworkElement ne =
-                this.deviceManager != null ? this.deviceManager.getConnectedNeByMountpoint(mountPointName) : null;
+                this.deviceManager != null ? this.deviceManager.getConnectedNeByMountpoint(nodeId.getValue()) : null;
         Optional<InventoryProvider> oip = ne != null ? ne.getService(InventoryProvider.class) : Optional.empty();
-        this.onDeviceRegistered(mountPointName,
+        this.onDeviceRegistered(nodeId,
                 oip.isPresent() ? oip.get().getInventoryInformation("MWPS") : InventoryInformationDcae.getDefault());
     }
 
-    public void onDeviceRegistered(String mountPointName, InventoryInformationDcae i) {
+    public void onDeviceRegistered(NodeId nodeId, InventoryInformationDcae i) {
         if (this.config.isOff()) {
             return;
         }
-        new Thread(new AaiCreateRequestRunnable(mountPointName, i.getType(), i.getModel(), i.getVendor(),
+        new Thread(new AaiCreateRequestRunnable(nodeId.getValue(), i.getType(), i.getModel(), i.getVendor(),
                 i.getDeviceIpv4(), i.getInterfaceUuidList())).start();
     }
 
-    public void onDeviceUnregistered(String mountPointName) {
+    @Override
+    public void onDeviceUnregistered(NodeId nodeId) {
         if (this.config.isOff()) {
             return;
         }
         if (this.config.doDeleteOnMountPointRemoved()) {
-            new Thread(new AaiDeleteRequestRunnable(mountPointName)).start();
+            new Thread(new AaiDeleteRequestRunnable(nodeId.getValue())).start();
         } else {
-            LOG.debug("prevent deleting device {} by config", mountPointName);
+            LOG.debug("prevent deleting device {} by config", nodeId.getValue());
         }
     }
 

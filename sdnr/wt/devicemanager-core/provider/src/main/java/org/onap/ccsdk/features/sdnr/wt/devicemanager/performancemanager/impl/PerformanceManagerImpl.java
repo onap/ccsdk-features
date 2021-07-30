@@ -23,6 +23,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl.config.PmConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,18 +66,18 @@ public class PerformanceManagerImpl implements PerformanceManager, AutoCloseable
     }
 
     @Override
-    public void registration(String mountPointNodeName, NetworkElement ne) {
-        LOG.debug("Register {}", mountPointNodeName);
+    public void registration(NodeId nodeId, NetworkElement ne) {
+        LOG.debug("Register {}", nodeId.getValue());
         if (task != null) {
-            task.registration(mountPointNodeName, ne);
+            task.registration(nodeId.getValue(), ne);
         }
     }
 
     @Override
-    public void deRegistration(String mountPointNodeName) {
-        LOG.debug("Deregister {}", mountPointNodeName);
+    public void deRegistration(NodeId nodeId) {
+        LOG.debug("Deregister {}", nodeId.getValue());
         if (task != null) {
-            task.deRegistration(mountPointNodeName);
+            task.deRegistration(nodeId.getValue());
         }
     }
 

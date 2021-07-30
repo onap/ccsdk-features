@@ -42,12 +42,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>rfc8341</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>iana-crypt-hash</artifactId>
             <version>${project.version}</version>
         </dependency>

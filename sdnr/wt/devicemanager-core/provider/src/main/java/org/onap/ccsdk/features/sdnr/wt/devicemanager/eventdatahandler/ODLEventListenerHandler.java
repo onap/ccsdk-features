@@ -17,6 +17,8 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.eventdatahandler;
 
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -30,9 +32,12 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.NetworkElementCon
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EventHandlingService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Connectionlog;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
@@ -48,7 +53,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicema
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ObjectDeletionNotificationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +90,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     private final WebSocketServiceClientInternal webSocketService;
     private final DataProvider databaseService;
     private final DcaeForwarderInternal aotsDcaeForwarder;
+    private final DataBroker dataBroker;
     private final ExecutorService executor = Executors.newFixedThreadPool(5);
     private int eventNumber;
 
@@ -95,7 +108,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
      * @param dcaeForwarder to deliver problems to external service
      */
     public ODLEventListenerHandler(String ownKeyName, WebSocketServiceClientInternal webSocketService,
-            DataProvider databaseService, DcaeForwarderInternal dcaeForwarder) {
+            DataProvider databaseService, DcaeForwarderInternal dcaeForwarder, DataBroker dataBroker) {
         super();
 
         this.ownKeyName = ownKeyName;
@@ -103,6 +116,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
 
         this.databaseService = databaseService;
         this.aotsDcaeForwarder = dcaeForwarder;
+        this.dataBroker = dataBroker;
 
         this.eventNumber = 0;
     }
@@ -118,22 +132,41 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
      * @param nNode with mountpoint data
      */
     @Override
-    public void registration(String registrationName, NetconfNode nNode) {
+    public void registration(NodeId nodeId, NetconfNode nNode) {
 
         DateAndTime ts = NETCONFTIME_CONVERTER.getTimeStamp();
         ObjectCreationNotification notification = new ObjectCreationNotificationBuilder()
-                .setObjectIdRef(registrationName).setCounter(popEvntNumber()).setTimeStamp(ts).build();
-        Connectionlog log = new ConnectionlogBuilder().setNodeId(registrationName)
+                .setObjectIdRef(nodeId.getValue()).setCounter(popEvntNumber()).setTimeStamp(ts).build();
+        Connectionlog log = new ConnectionlogBuilder().setNodeId(nodeId.getValue())
                 .setStatus(ConnectionLogStatus.Mounted).setTimestamp(ts).build();
-        NetworkElementConnectionEntity e =
-                NetworkElementConnectionEntitiyUtil.getNetworkConnection(registrationName, nNode);
-        LOG.debug("registration networkelement-connection for {} with status {}", registrationName, e.getStatus());
+
+        NetworkElementConnectionEntity e = NetworkElementConnectionEntitiyUtil.getNetworkConnection(nodeId.getValue(),
+                nNode, getNnodeConfig(nodeId));
+        LOG.debug("registration networkelement-connection for {} with status {}", nodeId.getValue(), e.getStatus());
 
         // Write first to prevent missing entries
-        databaseService.updateNetworkConnection22(e, registrationName);
+        databaseService.updateNetworkConnection22(e, nodeId.getValue());
         databaseService.writeConnectionLog(log);
         webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification, ObjectCreationNotification.QNAME,
                 NetconfTimeStampImpl.getConverter().getTimeStamp());
+    }
+
+    private Optional<NetconfNode> getNnodeConfig(NodeId nodeId) {
+        if (this.dataBroker != null) {
+
+            InstanceIdentifier<NetconfNode> iif = InstanceIdentifier.create(NetworkTopology.class)
+                    .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
+                    .child(Node.class, new NodeKey(nodeId)).augmentation(NetconfNode.class);
+
+            try {
+                Optional<NetconfNode> onode =
+                        this.dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, iif).get();
+                return onode;
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.warn("problem requesting netconfnode again:", e);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -143,21 +176,22 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
      * @param deviceType according to assessement
      */
     @Override
-    public void connectIndication(String mountpointNodeName, NetworkElementDeviceType deviceType) {
+    public void connectIndication(NodeId nNodeId, NetworkElementDeviceType deviceType) {
 
         // Write first to prevent missing entries
-        LOG.debug("updating networkelement-connection devicetype for {} with {}", mountpointNodeName, deviceType);
+        LOG.debug("updating networkelement-connection devicetype for {} with {}", nNodeId.getValue(), deviceType);
         NetworkElementConnectionEntity e =
                 NetworkElementConnectionEntitiyUtil.getNetworkConnectionDeviceTpe(deviceType);
         //if updating db entry for ne connection fails retry later on (due elasticsearch max script executions error)
-        if (!databaseService.updateNetworkConnectionDeviceType(e, mountpointNodeName)) {
-            this.updateNeConnectionRetryWithDelay(e, mountpointNodeName);
+        if (!databaseService.updateNetworkConnectionDeviceType(e, nNodeId.getValue())) {
+            this.updateNeConnectionRetryWithDelay(e, nNodeId.getValue());
         }
         DateAndTime ts = NETCONFTIME_CONVERTER.getTimeStamp();
         AttributeValueChangedNotification notification = new AttributeValueChangedNotificationBuilder()
-                .setCounter(popEvntNumber()).setTimeStamp(ts).setObjectIdRef(mountpointNodeName)
+                .setCounter(popEvntNumber()).setTimeStamp(ts).setObjectIdRef(nNodeId.getValue())
                 .setAttributeName("deviceType").setNewValue(deviceType.name()).build();
-        webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification, AttributeValueChangedNotification.QNAME, ts);
+        webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification,
+                AttributeValueChangedNotification.QNAME, ts);
     }
 
     /**
@@ -166,11 +200,11 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
      * @param mountpointNodeName nodeid
      * @param netconfNode node
      */
-    public void onStateChangeIndication(String mountpointNodeName, NetconfNode netconfNode) {
-        LOG.debug("mountpoint state changed indication for {}", mountpointNodeName);
+    public void onStateChangeIndication(NodeId nodeId, NetconfNode netconfNode) {
+        LOG.debug("mountpoint state changed indication for {}", nodeId.getValue());
         ConnectionStatus csts = netconfNode.getConnectionStatus();
-        this.updateRegistration(mountpointNodeName, ConnectionStatus.class.getSimpleName(),
-                csts != null ? csts.getName() : "null", netconfNode);
+        this.updateRegistration(nodeId, ConnectionStatus.class.getSimpleName(), csts != null ? csts.getName() : "null",
+                netconfNode);
 
     }
 
@@ -181,17 +215,18 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
      */
     @SuppressWarnings("null")
     @Override
-    public void deRegistration(String registrationName) {
+    public void deRegistration(NodeId nodeId) {
 
         DateAndTime ts = NETCONFTIME_CONVERTER.getTimeStamp();
         ObjectDeletionNotification notification = new ObjectDeletionNotificationBuilder().setCounter(popEvntNumber())
-                .setTimeStamp(ts).setObjectIdRef(registrationName).build();
-        Connectionlog log = new ConnectionlogBuilder().setNodeId(registrationName)
+                .setTimeStamp(ts).setObjectIdRef(nodeId.getValue()).build();
+        Connectionlog log = new ConnectionlogBuilder().setNodeId(nodeId.getValue())
                 .setStatus(ConnectionLogStatus.Unmounted).setTimestamp(ts).build();
         // Write first to prevent missing entries
-        databaseService.removeNetworkConnection(registrationName);
+        databaseService.removeNetworkConnection(nodeId.getValue());
         databaseService.writeConnectionLog(log);
-        webSocketService.sendViaWebsockets(new NodeId(registrationName), notification, ObjectDeletionNotification.QNAME, ts);
+        webSocketService.sendViaWebsockets(new NodeId(nodeId.getValue()), notification,
+                ObjectDeletionNotification.QNAME, ts);
 
     }
 
@@ -201,24 +236,24 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
      * @param registrationName Name of the event that is used as key in the database.
      */
     @Override
-    public void updateRegistration(String registrationName, String attribute, String attributeNewValue,
-            NetconfNode nNode) {
+    public void updateRegistration(NodeId nodeId, String attribute, String attributeNewValue, NetconfNode nNode) {
         DateAndTime ts = NETCONFTIME_CONVERTER.getTimeStamp();
         AttributeValueChangedNotification notification = new AttributeValueChangedNotificationBuilder()
-                .setCounter(popEvntNumber()).setTimeStamp(ts).setObjectIdRef(registrationName)
+                .setCounter(popEvntNumber()).setTimeStamp(ts).setObjectIdRef(nodeId.getValue())
                 .setAttributeName(attribute).setNewValue(attributeNewValue).build();
-        Connectionlog log = new ConnectionlogBuilder().setNodeId(registrationName).setStatus(getStatus(attributeNewValue))
-                .setTimestamp(ts).build();
-        NetworkElementConnectionEntity e =
-                NetworkElementConnectionEntitiyUtil.getNetworkConnection(registrationName, nNode);
-        LOG.debug("updating networkelement-connection for {} with status {}", registrationName, e.getStatus());
+        Connectionlog log = new ConnectionlogBuilder().setNodeId(nodeId.getValue())
+                .setStatus(getStatus(attributeNewValue)).setTimestamp(ts).build();
+        NetworkElementConnectionEntity e = NetworkElementConnectionEntitiyUtil.getNetworkConnection(nodeId.getValue(),
+                nNode, getNnodeConfig(nodeId));
+        LOG.debug("updating networkelement-connection for {} with status {}", nodeId.getValue(), e.getStatus());
 
         //if updating db entry for ne connection fails retry later on (due elasticsearch max script executions error)
-        if (!databaseService.updateNetworkConnection22(e, registrationName)) {
-            this.updateNeConnectionRetryWithDelay(nNode, registrationName);
+        if (!databaseService.updateNetworkConnection22(e, nodeId.getValue())) {
+            this.updateNeConnectionRetryWithDelay(nNode, nodeId.getValue());
         }
         databaseService.writeConnectionLog(log);
-        webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification, AttributeValueChangedNotification.QNAME, ts);
+        webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification,
+                AttributeValueChangedNotification.QNAME, ts);
     }
 
 
@@ -271,7 +306,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
         databaseService.writeFaultLog(notificationXml.getFaultlog(SourceType.Controller));
         databaseService.updateFaultCurrent(notificationXml.getFaultcurrent());
 
-        aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(ownKeyName, notificationXml);
+        aotsDcaeForwarder.sendProblemNotificationUsingMaintenanceFilter(new NodeId(ownKeyName), notificationXml);
 
         webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification, ProblemNotification.QNAME, ts);
     }

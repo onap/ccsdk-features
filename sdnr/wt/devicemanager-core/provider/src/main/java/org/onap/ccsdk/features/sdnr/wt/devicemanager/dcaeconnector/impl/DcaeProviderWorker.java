@@ -21,10 +21,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.config.DcaeConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.DeviceManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +62,8 @@ class DcaeProviderWorker implements AutoCloseable {
         LOG.info("Fault task scheduled");
     }
 
-    public void sendProblemNotification(String mountPointName, ProblemNotificationXml notification) {
-        LOG.debug("Notification answer: {}", dcaeMessages.postNotification(mountPointName, notification));
+    public void sendProblemNotification(NodeId nodeId, ProblemNotificationXml notification) {
+        LOG.debug("Notification answer: {}", dcaeMessages.postNotification(nodeId, notification));
     }
 
     @Override

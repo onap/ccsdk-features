@@ -17,6 +17,8 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+
 /**
  * Forward to Active and Available Inventory
  */
@@ -25,11 +27,11 @@ public interface AaiService extends DeviceManagerService {
     /**
      * @param mountPointNodeName
      */
-    void onDeviceRegistered(String mountPointNodeName);
+    void onDeviceRegistered(NodeId nodeId);
 
     /**
      * @param mountPointNodeName
      */
-    void onDeviceUnregistered(String mountPointNodeName);
+    void onDeviceUnregistered(NodeId nodeId);
 
 }

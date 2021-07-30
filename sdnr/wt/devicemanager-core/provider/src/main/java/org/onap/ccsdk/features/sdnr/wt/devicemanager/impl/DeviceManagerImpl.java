@@ -218,8 +218,8 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
         RpcPushNotificationsHandler rpcPushNotificationsHandler =
                 new RpcPushNotificationsHandler(webSocketService, dataProvider, aotsDcaeForwarder);
-        this.odlEventListenerHandler =
-                new ODLEventListenerHandler(myDbKeyNameExtended, webSocketService, dataProvider, aotsDcaeForwarder);
+        this.odlEventListenerHandler = new ODLEventListenerHandler(myDbKeyNameExtended, webSocketService, dataProvider,
+                aotsDcaeForwarder, dataBroker);
         this.archiveCleanService = new ArchiveCleanService(iEntityDataProvider.getEsConfig(),
                 clusterSingletonServiceProvider, dataProvider);
         this.housekeepingService = new ConnectionStatusHousekeepingService(config, clusterSingletonServiceProvider,

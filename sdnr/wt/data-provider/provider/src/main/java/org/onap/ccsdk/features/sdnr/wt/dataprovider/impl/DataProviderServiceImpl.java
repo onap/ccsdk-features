@@ -95,12 +95,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadStatusInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadStatusOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadTlsKeyEntryInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadTlsKeyEntryOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadTlsKeyEntryOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.tls.key.entry.output.Pagination;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.tls.key.entry.output.PaginationBuilder;
 import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -119,6 +124,8 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public static final String CONFIGURATIONFILE = "etc/dataprovider.properties";
     private static final long DATABASE_TIMEOUT_MS = 120 * 1000L;
     private static final @NonNull InstanceIdentifier<Keystore> KEYSTORE_IIF = InstanceIdentifier.create(Keystore.class);
+    private static final Pagination EMPTY_PAGINATION = new PaginationBuilder().setSize(Uint32.valueOf(20))
+            .setTotal(Uint64.valueOf(0)).setPage(Uint64.valueOf(1)).build();
     private static final long DEFAULT_PAGESIZE = 20;
     private static final long DEFAULT_PAGE = 1;
 
@@ -405,6 +412,45 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         RpcResultBuilder<ReadGuiCutThroughEntryOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readGuiCutThroughEntry(input));
         return result.buildFuture();
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<ReadTlsKeyEntryOutput>> readTlsKeyEntry(ReadTlsKeyEntryInput input) {
+        LOG.debug("RPC Request: readTlsKeyEntry with input {}", input);
+        RpcResultBuilder<ReadTlsKeyEntryOutput> result = read(() -> DataProviderServiceImpl.this.readTlsKeys(input));
+        return result.buildFuture();
+    }
+
+    // -- private classes and functions
+
+    private ReadTlsKeyEntryOutputBuilder readTlsKeys(ReadTlsKeyEntryInput input) {
+        Optional<Keystore> result = Optional.empty();
+        try {
+            result = this.dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, KEYSTORE_IIF)
+                    .get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("problem reading netconf-keystore: ", e);
+        }
+        ReadTlsKeyEntryOutputBuilder output = new ReadTlsKeyEntryOutputBuilder();
+        if (result.isEmpty()) {
+            return output.setData(Arrays.asList()).setPagination(EMPTY_PAGINATION);
+        }
+        Map<KeyCredentialKey, KeyCredential> keyCredential = result.get().getKeyCredential();
+        if (keyCredential == null) {
+            return output.setData(Arrays.asList()).setPagination(EMPTY_PAGINATION);
+        }
+        long pageNum = input.getPagination() == null ? DEFAULT_PAGE
+                : input.getPagination().getPage() == null ? DEFAULT_PAGE : input.getPagination().getPage().longValue();
+        long size = input.getPagination() == null ? DEFAULT_PAGESIZE
+                : input.getPagination().getSize() == null ? DEFAULT_PAGESIZE
+                        : input.getPagination().getSize().longValue();
+        long from = pageNum > 0 ? (pageNum - 1) * size : 0;
+        output.setData(keyCredential.keySet().stream().skip(from).limit(size).map(e -> e.getKeyId())
+                .collect(Collectors.toList()));
+        output.setPagination(new PaginationBuilder().setPage(Uint64.valueOf(pageNum))
+                .setSize(Uint32.valueOf(output.getData().size())).setTotal(Uint64.valueOf(keyCredential.size()))
+                .build());
+        return output;
     }
 
     private static String assembleExceptionMessage(Exception e) {

@@ -29,11 +29,11 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.MaintenanceService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +66,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
     private final @NonNull DataProvider dataProvider;
 
 
-    private final @NonNull String mountPointNodeName;
+    private final @NonNull NodeId mountPointNodeId;
     private final @NonNull NetconfBindingAccessor acessor;
     private final @NonNull DeviceManagerOnfConfiguration pollAlarmConfig;
 
@@ -84,7 +84,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
             @NonNull DeviceManagerServiceProvider serviceProvider, DeviceManagerOnfConfiguration configuration) {
 
         super(acessor);
-        this.mountPointNodeName = acessor.getNodeId().getValue();
+        this.mountPointNodeId = acessor.getNodeId();
         this.acessor = acessor;
         this.pollAlarmConfig = configuration;
 
@@ -200,8 +200,10 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         // Setup microwaveEventListener for notification service
         doRegisterEventListener(acessor.getMountpoint());
 
-        // Register netconf stream
-        acessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
+		if (acessor.isNotificationsRFC5277Supported()) {
+			// Register default (NETCONF) stream
+			acessor.registerNotificationsStream();
+		}
 
         // Set core-model revision value in "core-model-capability" field
         setCoreModel(acessor.getNetconfNode());
@@ -211,17 +213,17 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
         // create automatic empty maintenance entry into db before reading and listening
         // for problems
-        maintenanceService.createIfNotExists(mountPointNodeName);
+        maintenanceService.createIfNotExists(mountPointNodeId);
 
-        aaiProviderClient.onDeviceRegistered(mountPointNodeName);
+        aaiProviderClient.onDeviceRegistered(mountPointNodeId);
         // -- Register NE to performance manager
-        performanceManager.registration(mountPointNodeName, this);
+        performanceManager.registration(mountPointNodeId, this);
 
         //events will be already pushed by base devmgr (needs more clarification SDNC-1123)
         //eventListenerHandler.registration(mountPointNodeName, acessor.getNetconfNode());
         //LOG.debug("refresh necon entry for {} with type {} not",mountPointNodeName,this.getDeviceType());
         //eventListenerHandler.connectIndication(mountPointNodeName, getDeviceType());
-        LOG.info("Starting Event listener finished. Added Netconf device:{} type:{}", mountPointNodeName,
+        LOG.info("Starting Event listener finished. Added Netconf device:{} type:{}", mountPointNodeId,
                 getDeviceType());
 
     }
@@ -229,9 +231,9 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
     @Override
     public void deregister() {
-        maintenanceService.deleteIfNotRequired(mountPointNodeName);
-        performanceManager.deRegistration(mountPointNodeName);
-        aaiProviderClient.onDeviceUnregistered(mountPointNodeName);
+        maintenanceService.deleteIfNotRequired(mountPointNodeId);
+        performanceManager.deRegistration(mountPointNodeId);
+        aaiProviderClient.onDeviceUnregistered(mountPointNodeId);
         faultService.removeAllCurrentProblemsOfNode(acessor.getNodeId());
     }
 

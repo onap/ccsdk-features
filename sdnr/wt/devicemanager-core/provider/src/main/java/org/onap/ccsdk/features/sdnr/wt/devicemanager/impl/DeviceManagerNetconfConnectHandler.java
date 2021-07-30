@@ -88,13 +88,13 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
         }
         // update db with connect status
         NetconfNode netconfNode = acessor.getNetconfNode();
-        sendUpdateNotification(mountPointNodeName, netconfNode.getConnectionStatus(), netconfNode);
+        sendUpdateNotification(acessor.getNodeId(), netconfNode.getConnectionStatus(), netconfNode);
 
         for (NetworkElementFactory f : getFactoryList()) {
             Optional<NetworkElement> optionalNe = f.create(acessor, getServiceProvider());
             if (optionalNe.isPresent()) {
                 // sendUpdateNotification(mountPointNodeName, nNode.getConnectionStatus(), nNode);
-                handleNeStartup(mountPointNodeName, optionalNe.get());
+                handleNeStartup(acessor.getNodeId(), optionalNe.get());
                 break; // Use the first provided
             }
         }
@@ -109,7 +109,7 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
         if (optionalNetconfNode.isPresent()) {
             NetconfNode nNode = optionalNetconfNode.get();
             ConnectionStatus csts = nNode.getConnectionStatus();
-            sendUpdateNotification(mountPointNodeName, csts, nNode);
+            sendUpdateNotification(nNodeId, csts, nNode);
         }
 
         // Handling if mountpoint exist. connected -> connecting/UnableToConnect
@@ -137,7 +137,7 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
 
     /**
      * Do all tasks necessary to move from mountpoint state connected -> connecting
-     * 
+     *
      * @param mountPointNodeName provided
      */
     private void stopListenerOnNodeForConnectedState(String mountPointNodeName) {
@@ -154,32 +154,32 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
     }
 
 
-    private void handleNeStartup(String mountPointNodeName, NetworkElement inNe) {
+    private void handleNeStartup(NodeId nodeId, NetworkElement inNe) {
 
-        LOG.info("NE Management for {} with {}", mountPointNodeName, inNe.getClass().getName());
+        LOG.info("NE Management for {} with {}", nodeId.getValue(), inNe.getClass().getName());
         NetworkElement result;
         synchronized (networkelementLock) {
-            result = connectedNetworkElementRepresentations.put(mountPointNodeName, inNe);
+            result = connectedNetworkElementRepresentations.put(nodeId.getValue(), inNe);
         }
         if (result != null) {
             LOG.warn("NE list was not empty as expected, but contained {} ", result.getNodeId());
         } else {
-            LOG.debug("refresh necon entry for {} with type {}", mountPointNodeName, inNe.getDeviceType());
+            LOG.debug("refresh necon entry for {} with type {}", nodeId.getValue(), inNe.getDeviceType());
             if (isOdlEventListenerHandlerEnabled()) {
-                getOdlEventListenerHandler().connectIndication(mountPointNodeName, inNe.getDeviceType());
+                getOdlEventListenerHandler().connectIndication(nodeId, inNe.getDeviceType());
             }
         }
         if (isDeviceMonitorEnabled()) {
-            getDeviceMonitor().deviceConnectMasterIndication(mountPointNodeName, inNe);
+            getDeviceMonitor().deviceConnectMasterIndication(nodeId.getValue(), inNe);
         }
 
         inNe.register();
     }
 
-    private void sendUpdateNotification(String mountPointNodeName, ConnectionStatus csts, NetconfNode nNode) {
-        LOG.info("update ConnectedState for device :: Name : {} ConnectionStatus {}", mountPointNodeName, csts);
+    private void sendUpdateNotification(NodeId nodeId, ConnectionStatus csts, NetconfNode nNode) {
+        LOG.info("update ConnectedState for device :: Name : {} ConnectionStatus {}", nodeId.getValue(), csts);
         if (isOdlEventListenerHandlerEnabled()) {
-            getOdlEventListenerHandler().updateRegistration(mountPointNodeName, ConnectionStatus.class.getSimpleName(),
+            getOdlEventListenerHandler().updateRegistration(nodeId, ConnectionStatus.class.getSimpleName(),
                     csts != null ? csts.getName() : "null", nNode);
         }
     }

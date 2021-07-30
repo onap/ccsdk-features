@@ -6,9 +6,9 @@
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -18,25 +18,26 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl;
 
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
 public interface ProviderClient extends AutoCloseable {
 
     /**
      * Send out problem notification, that was created by a device/ or NE
-     * 
+     *
      * @param mountPointName related
      * @param notification xml description
      */
-    public void sendProblemNotification(String mountPointName, ProblemNotificationXml notification);
+    public void sendProblemNotification(NodeId nodeId, ProblemNotificationXml notification);
 
     /**
      * Send out problem notification
-     * 
+     *
      * @param mountPointName related
      * @param notification xml description
      * @param neDeviceAlarm true indicates an NE originated alarm, false an sdncontroller generated alarm
      */
-    public void sendProblemNotification(String mountPointName, ProblemNotificationXml notification,
+    public void sendProblemNotification(NodeId nodeId, ProblemNotificationXml notification,
             boolean neDeviceAlarm);
 
 }
