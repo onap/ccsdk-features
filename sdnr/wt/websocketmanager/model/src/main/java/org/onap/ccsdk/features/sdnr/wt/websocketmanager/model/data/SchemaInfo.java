@@ -79,7 +79,7 @@ public class SchemaInfo {
     @JsonIgnore
     public boolean isValid() {
         return this.namespace != null
-                && (this.notification == null || (this.notification != null && !this.notification.isEmpty()));
+                && (this.notification == null || (this.notification != null && this.notification.size() > 0));
     }
 
     /**

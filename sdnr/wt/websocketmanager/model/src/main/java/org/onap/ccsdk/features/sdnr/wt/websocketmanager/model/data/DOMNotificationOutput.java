@@ -21,19 +21,19 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data;
 
+import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.QName;
 
-public class NotificationOutput implements INotificationOutput{
+public class DOMNotificationOutput implements INotificationOutput{
 
     private DateAndTime eventTime;
-    private Notification data;
+    private DOMNotification data;
     private String nodeId;
     private ReducedSchemaInfo type;
 
 
-    public NotificationOutput() {
+    public DOMNotificationOutput() {
 
     }
 
@@ -46,7 +46,7 @@ public class NotificationOutput implements INotificationOutput{
         this.eventTime = eventTime;
     }
 
-    public Notification getData() {
+    public DOMNotification getData() {
         return data;
     }
 
@@ -60,7 +60,7 @@ public class NotificationOutput implements INotificationOutput{
         return this.type;
     }
 
-    public void setData(Notification data) {
+    public void setData(DOMNotification data) {
         this.data = data;
     }
 
@@ -72,7 +72,7 @@ public class NotificationOutput implements INotificationOutput{
         this.type = type;
     }
 
-    public NotificationOutput(Notification notification, String nodeId, QName type, DateAndTime eventTime) {
+    public DOMNotificationOutput(DOMNotification notification, String nodeId, QName type, DateAndTime eventTime) {
         this.data = notification;
         this.nodeId = nodeId;
         this.eventTime = eventTime;
