@@ -20,6 +20,7 @@ package org.onap.ccsdk.features.sdnr.wt.websocketmanager;
 import java.time.Instant;
 import javax.servlet.ServletException;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.DOMNotificationOutput;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.NotificationOutput;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
@@ -83,31 +84,30 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
         this.wsServlet = wsServlet;
     }
 
-
-    @Override
-    public void sendNotification(Notification notification, NodeId nodeId, QName eventType) {
-        if(!assertNotificationType(notification, eventType)){
-            return;
-        }
-        this.sendNotification(notification, nodeId, eventType, YangToolsMapperHelper.getTime(notification,Instant.now()));
-    }
-
     public static boolean assertNotificationType(Notification notification, QName eventType) {
         final String yangTypeName = eventType.getLocalName();
         final Class<?> cls = notification.getClass();
         final String clsNameToTest = YangToolsMapperHelper.toCamelCaseClassName(yangTypeName);
-        if(cls.getSimpleName().equals(clsNameToTest)) {
+        if (cls.getSimpleName().equals(clsNameToTest)) {
             return true;
         }
         Class<?>[] ifs = cls.getInterfaces();
-        for(Class<?> clsif:ifs) {
-            if(clsif.getSimpleName().equals(clsNameToTest)) {
+        for (Class<?> clsif : ifs) {
+            if (clsif.getSimpleName().equals(clsNameToTest)) {
                 return true;
             }
         }
         return false;
     }
 
+    @Override
+    public void sendNotification(Notification notification, NodeId nodeId, QName eventType) {
+        if (!assertNotificationType(notification, eventType)) {
+            return;
+        }
+        this.sendNotification(notification, nodeId, eventType,
+                YangToolsMapperHelper.getTime(notification, Instant.now()));
+    }
 
     @Override
     public void sendNotification(Notification notification, NodeId nodeId, QName eventType, DateAndTime eventTime) {
@@ -117,14 +117,14 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
 
     @Override
     public void sendNotification(DOMNotification notification, NodeId nodeId, QName eventType) {
-        LOG.warn("not yet implemented");
-
+        WebSocketManagerSocket.broadCast(new DOMNotificationOutput(notification, nodeId.getValue(), eventType,
+                YangToolsMapperHelper.getTime(notification, Instant.now())));
     }
 
     @Override
     public void sendNotification(DOMNotification notification, NodeId nodeId, QName eventType, DateAndTime eventTime) {
-        LOG.warn("not yet implemented");
-
+        WebSocketManagerSocket
+                .broadCast(new DOMNotificationOutput(notification, nodeId.getValue(), eventType, eventTime));
     }
 
 }
