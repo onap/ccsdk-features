@@ -17,8 +17,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.test;
 
-import static org.junit.Assert.*;
-
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.WrapperPTPModelRev170208;
@@ -37,13 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.mockito.Mockito.*;
 
 public class TestWrapperPTPModelRev170208 {
 
@@ -65,10 +60,11 @@ public class TestWrapperPTPModelRev170208 {
         when(netconfAccessor.getTransactionUtils()).thenReturn(transactionUtils);
         when(netconfAccessor.getDataBroker()).thenReturn(dataBroker);
 
-        PortIdentity portIdentity = new PortIdentityBuilder().setPortNumber(10).build();
-        List<PortDsList> portDsList = 
-                Arrays.asList(new PortDsListBuilder().setPortNumber(10).setPortIdentity(portIdentity).build());
-        InstanceList instanceList = 
+        Uint16 portNumber = Uint16.valueOf(10);
+        PortIdentity portIdentity = new PortIdentityBuilder().setPortNumber(portNumber).build();
+        List<PortDsList> portDsList =
+                Arrays.asList(new PortDsListBuilder().setPortNumber(portNumber).setPortIdentity(portIdentity).build());
+        InstanceList instanceList =
                 new InstanceListBuilder().setInstanceNumber(Uint16.valueOf(1)).setPortDsList(portDsList).build();
         InstanceIdentifier<InstanceList> PTPINSTANCES_IID =
                 InstanceIdentifier.builder(InstanceList.class, new InstanceListKey(1)).build();
