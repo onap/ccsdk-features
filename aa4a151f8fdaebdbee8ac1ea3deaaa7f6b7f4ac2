@@ -16,6 +16,24 @@
       "revId": "aa4a151f8fdaebdbee8ac1ea3deaaa7f6b7f4ac2",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4c92e0a_559e17b7",
+        "filename": "sdnr/wt/websocketmanager/model/src/main/java/org/onap/ccsdk/features/sdnr/wt/websocketmanager/model/data/SchemaInfo.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-08-02T06:05:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "debfeed0_410342df",
+      "revId": "aa4a151f8fdaebdbee8ac1ea3deaaa7f6b7f4ac2",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
