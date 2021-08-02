@@ -33,6 +33,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.DOMNotificationOutput;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.INotificationOutput;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.NotificationOutput;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.ReducedSchemaInfo;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.ScopeRegistration;
@@ -247,7 +249,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
         return this.myUniqueSessionId;
     }
 
-    private void sendToAll(NotificationOutput output) {
+    private void sendToAll(INotificationOutput output) {
         try {
             sendToAll(output.getNodeId(), output.getType(), mapper.writeValueAsString(output));
         } catch (JsonProcessingException e) {
@@ -281,7 +283,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
         }
     }
 
-    public static void broadCast(NotificationOutput output) {
+    public static void broadCast(INotificationOutput output) {
         if (clientList.size() > 0) {
             Set<Entry<String, WebSocketManagerSocket>> e = clientList.entrySet();
             WebSocketManagerSocket s = e.iterator().next().getValue();
@@ -289,6 +291,11 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
                 s.sendToAll(output);
             }
         }
+    }
+
+    public static void broadCast(DOMNotificationOutput domNotificationOutput) {
+        // TODO Auto-generated method stub
+
     }
 
 }
