@@ -57,9 +57,8 @@ public class Config {
 
     @Override
     public String toString() {
-        return "Config [providers=" + providers + ", redirectUri=" + redirectUri
-                + ", supportOdlUsers=" + supportOdlUsers + ", tokenSecret=" + tokenSecret + ", tokenIssuer="
-                + tokenIssuer + "]";
+        return "Config [providers=" + providers + ", redirectUri=" + redirectUri + ", supportOdlUsers="
+                + supportOdlUsers + ", tokenSecret=" + tokenSecret + ", tokenIssuer=" + tokenIssuer + "]";
     }
 
 
@@ -130,6 +129,11 @@ public class Config {
         if (isEnvExpression(supportOdlUsers)) {
             this.supportOdlUsers = getProperty(supportOdlUsers, null);
         }
+        if (this.providers != null && this.providers.size() > 0) {
+            for(OAuthProviderConfig cfg : this.providers) {
+                cfg.handleEnvironmentVars();
+            }
+        }
     }
 
     @JsonIgnore
@@ -154,9 +158,11 @@ public class Config {
     static boolean isEnvExpression(String key) {
         return key != null && key.contains(ENVVARIABLE);
     }
+
     public static String generateSecret() {
         return generateSecret(30);
     }
+
     public static String generateSecret(int targetStringLength) {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
@@ -234,8 +240,9 @@ public class Config {
     public static Config getInstance() throws IOException {
         return getInstance(DEFAULT_CONFIGFILENAME);
     }
+
     public static Config getInstance(String filename) throws IOException {
-        if(_instance==null) {
+        if (_instance == null) {
             _instance = load(filename);
         }
         return _instance;

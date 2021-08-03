@@ -60,8 +60,8 @@ public class TestGitlabAuthService {
     public static void init() {
 
         TokenCreator tokenCreator = TokenCreator.getInstance(TOKENCREATOR_SECRET, "issuer");
-        OAuthProviderConfig config =
-                new OAuthProviderConfig("git", GITURL, "odlux.app", OAUTH_SECRET, "openid", "gitlab test");
+        OAuthProviderConfig config = new OAuthProviderConfig("git", GITURL, null, "odlux.app", OAUTH_SECRET, "openid",
+                "gitlab test", "", false);
         oauthService = new GitlabProviderServiceToTest(config, REDIRECT_URI, tokenCreator);
         try {
             initGitlabTestWebserver(PORT, "/");
@@ -142,13 +142,17 @@ public class TestGitlabAuthService {
         }
         return null;
     }
+
     public static class MyHandler implements HttpHandler {
         private static final String GITLAB_TOKEN_ENDPOINT = "/oauth/token";
         private static final String GITLAB_USER_ENDPOINT = "/api/v4/user";
         private static final String GITLAB_GROUP_ENDPOINT = "/api/v4/groups?min_access_level=10";
-        private static final String GITLAB_TOKEN_RESPONSE = loadResourceFileContent("src/test/resources/oauth/gitlab-token-response.json");
-        private static final String GITLAB_USER_RESPONSE =loadResourceFileContent("src/test/resources/oauth/gitlab-user-response.json");
-        private static final String GITLAB_GROUP_RESPONSE =loadResourceFileContent("src/test/resources/oauth/gitlab-groups-response.json");
+        private static final String GITLAB_TOKEN_RESPONSE =
+                loadResourceFileContent("src/test/resources/oauth/gitlab-token-response.json");
+        private static final String GITLAB_USER_RESPONSE =
+                loadResourceFileContent("src/test/resources/oauth/gitlab-user-response.json");
+        private static final String GITLAB_GROUP_RESPONSE =
+                loadResourceFileContent("src/test/resources/oauth/gitlab-groups-response.json");
 
         @Override
         public void handle(HttpExchange t) throws IOException {
@@ -159,23 +163,21 @@ public class TestGitlabAuthService {
             String response = "";
             try {
                 if (method.equals("GET")) {
-                    if(uri.equals(GITLAB_USER_ENDPOINT)) {
+                    if (uri.equals(GITLAB_USER_ENDPOINT)) {
                         t.sendResponseHeaders(200, GITLAB_USER_RESPONSE.length());
                         os = t.getResponseBody();
                         os.write(GITLAB_USER_RESPONSE.getBytes());
-                    }
-                    else if(uri.equals(GITLAB_GROUP_ENDPOINT)) {
+                    } else if (uri.equals(GITLAB_GROUP_ENDPOINT)) {
                         t.sendResponseHeaders(200, GITLAB_GROUP_RESPONSE.length());
                         os = t.getResponseBody();
                         os.write(GITLAB_GROUP_RESPONSE.getBytes());
                     }
                 } else if (method.equals("POST")) {
-                    if(uri.equals(GITLAB_TOKEN_ENDPOINT)){
+                    if (uri.equals(GITLAB_TOKEN_ENDPOINT)) {
                         t.sendResponseHeaders(200, GITLAB_TOKEN_RESPONSE.length());
                         os = t.getResponseBody();
                         os.write(GITLAB_TOKEN_RESPONSE.getBytes());
-                    }
-                    else {
+                    } else {
                         t.sendResponseHeaders(404, 0);
                     }
                 } else {

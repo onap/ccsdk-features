@@ -60,8 +60,8 @@ public class TestKeycloakAuthService {
     public static void init() {
 
         TokenCreator tokenCreator = TokenCreator.getInstance(TOKENCREATOR_SECRET, "issuer");
-        OAuthProviderConfig config =
-                new OAuthProviderConfig("kc", KEYCLOAKURL, "odlux.app", OAUTH_SECRET, "openid", "keycloak test");
+        OAuthProviderConfig config = new OAuthProviderConfig("kc", KEYCLOAKURL, null, "odlux.app", OAUTH_SECRET,
+                "openid", "keycloak test", "onap", false);
         oauthService = new KeycloakProviderServiceToTest(config, REDIRECT_URI, tokenCreator);
         try {
             initKeycloakTestWebserver(PORT, "/");
@@ -100,7 +100,8 @@ public class TestKeycloakAuthService {
 
     public static class KeycloakProviderServiceToTest extends KeycloakProviderService {
 
-        public KeycloakProviderServiceToTest(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) {
+        public KeycloakProviderServiceToTest(OAuthProviderConfig config, String redirectUri,
+                TokenCreator tokenCreator) {
             super(config, redirectUri, tokenCreator);
         }
     }
@@ -137,9 +138,11 @@ public class TestKeycloakAuthService {
         }
         return null;
     }
+
     public static class MyHandler implements HttpHandler {
         private static final String KEYCLOAK_TOKEN_ENDPOINT = "/auth/realms/onap/protocol/openid-connect/token";
-        private static final String KEYCLOAK_TOKEN_RESPONSE = loadResourceFileContent("src/test/resources/oauth/keycloak-token-response.json");
+        private static final String KEYCLOAK_TOKEN_RESPONSE =
+                loadResourceFileContent("src/test/resources/oauth/keycloak-token-response.json");
 
         @Override
         public void handle(HttpExchange t) throws IOException {
@@ -148,13 +151,12 @@ public class TestKeycloakAuthService {
             System.out.println(String.format("req received: %s %s", method, t.getRequestURI()));
             OutputStream os = null;
             try {
-               if (method.equals("POST")) {
-                    if(uri.equals(KEYCLOAK_TOKEN_ENDPOINT)){
+                if (method.equals("POST")) {
+                    if (uri.equals(KEYCLOAK_TOKEN_ENDPOINT)) {
                         t.sendResponseHeaders(200, KEYCLOAK_TOKEN_RESPONSE.length());
                         os = t.getResponseBody();
                         os.write(KEYCLOAK_TOKEN_RESPONSE.getBytes());
-                    }
-                    else {
+                    } else {
                         t.sendResponseHeaders(404, 0);
                     }
                 } else {
