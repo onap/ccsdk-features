@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "55ec8796_56e7f6ad",
+        "filename": "sdnr/wt/oauth-provider/provider-jar/src/main/java/org/onap/ccsdk/features/sdnr/wt/oauthprovider/data/Config.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-08-03T11:01:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c966b922_f476eebb",
+      "revId": "f4625ac281639cd93fc2c36267efad4eca003e0b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8d82e833_633e0279",
         "filename": "sdnr/wt/oauth-provider/provider-jar/src/test/resources/aaa-app-config.test.xml",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "f4625ac281639cd93fc2c36267efad4eca003e0b",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2fab28ba_d7d8bc66",
+        "filename": "sdnr/wt/oauth-provider/provider-jar/src/test/resources/aaa-app-config.test.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-08-03T11:01:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8d82e833_633e0279",
+      "revId": "f4625ac281639cd93fc2c36267efad4eca003e0b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
