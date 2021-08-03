@@ -141,6 +141,7 @@ public class ORanNetworkElement implements NetworkElement {
         if (oRanFaultListenerRegistrationResult != null) {
             this.oRanFaultListenerRegistrationResult.close();
         } ;
+        databaseService.clearGuiCutThroughEntriesOfNode(getMountpointId());
     }
 
     @Override
