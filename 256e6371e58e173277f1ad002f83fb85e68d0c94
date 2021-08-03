@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "48003012_202d4d2a",
+        "filename": "sdnr/wt/devicemanager-onap/openroadm71/provider/copyright",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-08-03T10:50:09Z",
+      "side": 1,
+      "message": "don\u0027t know if this file is really needed",
+      "revId": "256e6371e58e173277f1ad002f83fb85e68d0c94",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
