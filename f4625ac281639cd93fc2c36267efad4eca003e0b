@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c966b922_f476eebb",
+        "filename": "sdnr/wt/oauth-provider/provider-jar/src/main/java/org/onap/ccsdk/features/sdnr/wt/oauthprovider/data/Config.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-08-03T10:31:39Z",
+      "side": 1,
+      "message": "isEmpty",
+      "revId": "f4625ac281639cd93fc2c36267efad4eca003e0b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d82e833_633e0279",
+        "filename": "sdnr/wt/oauth-provider/provider-jar/src/test/resources/aaa-app-config.test.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-08-03T10:31:39Z",
+      "side": 1,
+      "message": "pls merge back license header",
+      "revId": "f4625ac281639cd93fc2c36267efad4eca003e0b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
