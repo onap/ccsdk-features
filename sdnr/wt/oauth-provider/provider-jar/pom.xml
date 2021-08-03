@@ -50,15 +50,6 @@
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <checkstyle.skip>true</checkstyle.skip>
     </properties>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.shiro</groupId>
-                <artifactId>shiro-core</artifactId>
-                <version>1.3.2</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -70,7 +61,6 @@
             <artifactId>jackson-databind</artifactId>
             <scope>provided</scope>
         </dependency>
- 
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
@@ -89,7 +79,6 @@
         <dependency>
             <groupId>com.highstreet-technologies.aaa</groupId>
             <artifactId>aaa-shiro</artifactId>
-            <version>0.12.3</version>
             <exclusions>
 <!--                 <exclusion> -->
 <!--                     <groupId>org.opendaylight.aaa</groupId> -->

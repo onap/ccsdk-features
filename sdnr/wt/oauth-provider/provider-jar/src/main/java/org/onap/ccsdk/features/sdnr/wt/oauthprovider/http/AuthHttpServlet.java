@@ -37,7 +37,11 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.ShiroException;
 import org.apache.shiro.codec.Base64;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import org.jolokia.osgi.security.Authenticator;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
@@ -66,7 +70,7 @@ public class AuthHttpServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String BASEURI = "/oauth";
     private static final String LOGINURI = BASEURI + "/login";
-    //private static final String LOGOUTURI = BASEURI + "/logout";
+    private static final String LOGOUTURI = BASEURI + "/logout";
     private static final String PROVIDERSURI = BASEURI + "/providers";
     public static final String REDIRECTURI = BASEURI + "/redirect";
     private static final String REDIRECTURI_FORMAT = REDIRECTURI + "/%s";
@@ -137,6 +141,8 @@ public class AuthHttpServlet extends HttpServlet {
             this.sendResponse(resp, HttpServletResponse.SC_OK, getConfigs(this.providerStore.values()));
         } else if (req.getRequestURI().startsWith(LOGINURI)) {
             this.handleLoginRedirect(req, resp);
+        } else if (req.getRequestURI().equals(LOGOUTURI)) {
+            this.handleLogout(req, resp);
         } else if (POLICIESURI.equals(req.getRequestURI())) {
             this.sendResponse(resp, HttpServletResponse.SC_OK, this.getPoliciesForUser(req));
         } else if (req.getRequestURI().startsWith(REDIRECTURI)) {
@@ -146,7 +152,10 @@ public class AuthHttpServlet extends HttpServlet {
         }
 
     }
-
+    private void handleLogout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        this.logout();
+        this.sendResponse(resp, HttpServletResponse.SC_OK,"");
+    }
     private void handleLoginRedirect(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         final String uri = req.getRequestURI();
         final Matcher matcher = LOGIN_REDIRECT_PATTERN.matcher(uri);
@@ -458,5 +467,16 @@ public class AuthHttpServlet extends HttpServlet {
         os.write(output);
 
     }
-
+    private void logout() {
+        final Subject subject = SecurityUtils.getSubject();
+        try {
+            subject.logout();
+            Session session = subject.getSession(false);
+            if (session != null) {
+                session.stop();
+            }
+        } catch (ShiroException e) {
+            LOG.debug("Couldn't log out {}", subject, e);
+        }
+    }
 }

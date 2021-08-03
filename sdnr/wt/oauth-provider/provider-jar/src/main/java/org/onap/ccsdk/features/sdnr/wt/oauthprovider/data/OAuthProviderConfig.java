@@ -29,33 +29,40 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.OAuthProviderFact
 public class OAuthProviderConfig {
 
     private String url;
+    private String internalUrl;
     private String clientId;
     private String secret;
     private String id;
     private String title;
     private String scope;
+    private String realmName;
+    private boolean trustAll;
     private OAuthProvider type;
-    private Map<String,String> roleMapping;
+    private Map<String, String> roleMapping;
 
     public OAuthProvider getType() {
         return type;
     }
 
-    public OAuthProviderConfig(String id, String url, String clientId, String secret, String scope,
-            String title) {
+    public OAuthProviderConfig(String id, String url, String internalUrl, String clientId, String secret, String scope,
+            String title, String realmName, boolean trustAll) {
         this.id = id;
         this.url = url;
+        this.internalUrl = internalUrl;
         this.clientId = clientId;
         this.secret = secret;
         this.scope = scope;
         this.title = title;
+        this.realmName = realmName;
+        this.trustAll = trustAll;
         this.roleMapping = new HashMap<>();
     }
 
     @Override
     public String toString() {
-        return "OAuthProviderConfig [host=" + url + ", clientId=" + clientId + ", secret=" + secret + ", id=" + id
-                + ", title=" + title + ", scope=" + scope + ", type=" + type + "]";
+        return "OAuthProviderConfig [url=" + url + ", clientId=" + clientId + ", secret=" + secret + ", id=" + id
+                + ", title=" + title + ", scope=" + scope + ", realmName=" + realmName + ", trustAll=" + trustAll
+                + ", type=" + type + ", roleMapping=" + roleMapping + "]";
     }
 
     public void setType(OAuthProvider type) {
@@ -63,7 +70,7 @@ public class OAuthProviderConfig {
     }
 
     public OAuthProviderConfig() {
-        this(null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null, false);
     }
 
     public void setUrl(String url) {
@@ -114,6 +121,22 @@ public class OAuthProviderConfig {
         return this.scope;
     }
 
+    public String getRealmName() {
+        return realmName;
+    }
+
+    public void setRealmName(String realmName) {
+        this.realmName = realmName;
+    }
+
+    public boolean trustAll() {
+        return trustAll;
+    }
+
+    public void setTrustAll(boolean trustAll) {
+        this.trustAll = trustAll;
+    }
+
     public Map<String, String> getRoleMapping() {
         return roleMapping;
     }
@@ -122,26 +145,45 @@ public class OAuthProviderConfig {
         this.roleMapping = roleMapping;
     }
 
+    public String getInternalUrl() {
+        return internalUrl;
+    }
+
+    public void setInternalUrl(String internalUrl) {
+        this.internalUrl = internalUrl;
+    }
+
     @JsonIgnore
     public void handleEnvironmentVars() {
-        if (Config.isEnvExpression(id)) {
-            this.id = Config.getProperty(id, null);
+        if (Config.isEnvExpression(this.id)) {
+            this.id = Config.getProperty(this.id, null);
         }
-        if (Config.isEnvExpression(url)) {
-            this.url = Config.getProperty(url, null);
+        if (Config.isEnvExpression(this.url)) {
+            this.url = Config.getProperty(this.url, null);
         }
-        if (Config.isEnvExpression(clientId)) {
-            this.clientId = Config.getProperty(clientId, null);
+        if (Config.isEnvExpression(this.internalUrl)) {
+            this.internalUrl = Config.getProperty(this.internalUrl, null);
         }
-        if (Config.isEnvExpression(secret)) {
-            this.secret = Config.getProperty(secret, null);
+        if (Config.isEnvExpression(this.clientId)) {
+            this.clientId = Config.getProperty(this.clientId, null);
         }
-        if (Config.isEnvExpression(scope)) {
-            this.scope = Config.getProperty(scope, null);
+        if (Config.isEnvExpression(this.secret)) {
+            this.secret = Config.getProperty(this.secret, null);
         }
-        if (Config.isEnvExpression(title)) {
-            this.title = Config.getProperty(title, null);
+        if (Config.isEnvExpression(this.scope)) {
+            this.scope = Config.getProperty(this.scope, null);
         }
+        if (Config.isEnvExpression(this.title)) {
+            this.title = Config.getProperty(this.title, null);
+        }
+        if (Config.isEnvExpression(this.realmName)) {
+            this.realmName = Config.getProperty(this.realmName, null);
+        }
+    }
+
+    @JsonIgnore
+    public String getUrlOrInternal() {
+        return this.internalUrl != null && this.internalUrl.length() > 0 ? this.internalUrl : this.url;
     }
 
 }

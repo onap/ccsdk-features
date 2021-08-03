@@ -12,7 +12,8 @@
             "clientId": "odlux.app",
             "secret": "5da4ea3d-8cc9-4669-bd7e-3ecb91d120cd",
             "scope": "openid",
-            "title": "OSNL Keycloak Provider"
+            "title": "OSNL Keycloak Provider",
+            "realmName":"onap"
         }
     ]
 }
