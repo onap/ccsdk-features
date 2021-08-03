@@ -90,7 +90,7 @@ class MediatorServerSelectionComponent extends React.Component<MediatorServerSel
   render() {
     const { classes } = this.props;
     const refreshMediatorAction = {
-      icon: Refresh, tooltip: 'Refresh Mediator Server Table', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh Mediator Server Table', ariaLabel:'refresh', onClick: () => {
         this.setState({
           refreshMediatorEditorMode: RefreshMediatorDialogMode.RefreshMediatorTable
         });
@@ -98,7 +98,7 @@ class MediatorServerSelectionComponent extends React.Component<MediatorServerSel
     };
 
     const addMediatorServerActionButton = {
-      icon: AddIcon, tooltip: 'Add', onClick: () => {
+      icon: AddIcon, tooltip: 'Add', ariaLabel:'add-element', onClick: () => {
         this.setState({
           mediatorServerEditorMode: EditMediatorServerDialogMode.AddMediatorServer,
           mediatorServerToEdit: emptyMediatorServer,

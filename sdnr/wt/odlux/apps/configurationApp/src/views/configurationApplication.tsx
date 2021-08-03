@@ -588,7 +588,8 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
     const addNewElementAction = {
       icon: AddIcon, 
-      tooltip: 'Add', 
+      tooltip: 'Add',
+      ariaLabel:'add-element',
       onClick: () => {
         navigate("[]"); // empty key means new element
       },
@@ -597,7 +598,8 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
     const addWithApiDocElementAction = {
       icon: PostAdd, 
-      tooltip: 'Add', 
+      tooltip: 'Add',
+      ariaLabel:'add-element-via-api-doc',
       onClick: () => {
         window.open(apiDocPathCreate, '_blank');
       },

@@ -113,7 +113,7 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
   render() {
     const { classes } = this.props;
     const addMaintenenceEntryAction = {
-      icon: AddIcon, tooltip: 'Add', onClick: () => {
+      icon: AddIcon, tooltip: 'Add', ariaLabel:'add-element', onClick: () => {
         const startTime = (new Date().valueOf());
         const endTime = startTime;
         this.setState({
@@ -128,7 +128,7 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     };
 
     const refreshMaintenanceEntriesAction = {
-      icon: Refresh, tooltip: 'Refresh Maintenance Entries', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh Maintenance Entries', ariaLabel: 'refresh', onClick: () => {
         this.setState({
           refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode.RefreshMaintenanceEntriesTable
         });

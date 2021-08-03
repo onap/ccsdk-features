@@ -41,7 +41,6 @@ import Refresh from '@material-ui/icons/Refresh';
 import ClearStuckAlarmsDialog, { ClearStuckAlarmsDialogMode } from '../components/clearStuckAlarmsDialog';
 import RefreshAlarmLogDialog, { RefreshAlarmLogDialogMode } from '../components/refreshAlarmLogDialog';
 import RefreshCurrentProblemsDialog, { RefreshCurrentProblemsDialogMode } from '../components/refreshCurrentProblemsDialog';
-import { SetPartialUpdatesAction } from '../actions/partialUpdatesAction';
 
 const mapProps = (state: IApplicationStoreState) => ({
   panelId: state.fault.currentOpenPanel,
@@ -58,7 +57,6 @@ const mapDisp = (dispatcher: IDispatcher) => ({
   switchActivePanel: (panelId: PanelId) => {
     dispatcher.dispatch(setPanelAction(panelId));
   },
-  setPartialUpdates: (active: boolean) => dispatcher.dispatch(new SetPartialUpdatesAction(active))
 });
 
 type FaultApplicationComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp>;
@@ -138,11 +136,11 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
   render(): JSX.Element {
 
     const clearAlarmsAction = {
-      icon: Sync, tooltip: 'Clear stuck alarms', onClick: this.onDialogOpen
+      icon: Sync, tooltip: 'Clear stuck alarms', ariaLabel:'clear-stuck-alarms', onClick: this.onDialogOpen
     };
 
     const refreshCurrentProblemsAction = {
-      icon: Refresh, tooltip: 'Refresh Current Problems List', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh Current Problems List', ariaLabel:'refresh', onClick: () => {
         this.setState({
           refreshCurrentProblemsEditorMode: RefreshCurrentProblemsDialogMode.RefreshCurrentProblemsTable
         });
@@ -150,7 +148,7 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
     };
 
     const refreshAlarmLogAction = {
-      icon: Refresh, tooltip: 'Refresh Alarm log table', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh Alarm log table', ariaLabel:'refresh', onClick: () => {
         this.setState({
           refreshAlarmLogEditorMode: RefreshAlarmLogDialogMode.RefreshAlarmLogTable
         });
@@ -230,15 +228,12 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
 
   };
 
-  componentWillUnmount() {
-    this.props.setPartialUpdates(false);
-  }
-
   public componentDidMount() {
     if (this.props.panelId === null) { //set default tab if none is set
       this.onToggleTabs("CurrentProblem");
+    }else{
+      this.onToggleTabs(this.props.panelId);
     }
-    this.props.setPartialUpdates(true);
   }
 
   private renderIcon = (props: { rowData: Fault | FaultAlarmNotification }) => {

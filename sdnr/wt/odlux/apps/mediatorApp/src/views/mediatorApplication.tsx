@@ -151,7 +151,7 @@ class MediatorApplicationComponent extends React.Component<MediatorApplicationCo
       </>
     );
 
-    const addMediatorConfigAction = { icon: AddIcon, tooltip: 'Add', onClick: this.onOpenAddConfigurationDialog };
+    const addMediatorConfigAction = { icon: AddIcon, tooltip: 'Add', ariaLabel: 'add-element', onClick: this.onOpenAddConfigurationDialog };
 
     return (
       <div className={classes.root}>

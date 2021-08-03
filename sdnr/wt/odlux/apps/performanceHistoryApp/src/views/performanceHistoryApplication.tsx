@@ -251,7 +251,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
                   <Tab label="Transmission Power" value="TransmissionPower" aria-label="transmission-power" />
                   <Tab label="Adaptive Modulation" value="AdaptiveModulation" aria-label="adaptive-modulation" />
                   <Tab label="Temperature" value="Temperature" aria-label="temperature"  />
-                  <Tab label="Signal-to-interference-plus-noise ratio (SINR)" value="SINR" aria-label="snir" />
+                  <Tab label="Signal-to-interference-plus-noise ratio (SINR)" value="SINR" aria-label="sinr" />
                   <Tab label="Cross Polar Discrimination" value="CPD" aria-label="cross-polar-discrimination" />
                 </Tabs>
               </AppBar>

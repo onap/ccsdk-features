@@ -87,9 +87,10 @@ const styles = (theme: Theme) => createStyles({
 const tabletWidthBreakpoint = 768;
 
 export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, dispatch }: WithStyles<typeof styles> & Connect & Connect) => {
-  const { user } = state.framework.authenticationState
-  const isOpen = state.framework.applicationState.isMenuOpen
-  const closedByUser = state.framework.applicationState.isMenuClosedByUser
+  const { user } = state.framework.authenticationState;
+  const isOpen = state.framework.applicationState.isMenuOpen;
+  const closedByUser = state.framework.applicationState.isMenuClosedByUser;
+  const transportUrl = state.framework.applicationState.transportpceUrl;
 
   const [responsive, setResponsive] = React.useState(false);
 
@@ -139,20 +140,25 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
     ) || null;
   }) || null;
 
-  const transportPCELink = <ListItemLink
-    key={"transportPCE"}
-    to={window.localStorage.getItem(transportPCEUrl)!}
-    primary={"TransportPCE"}
-    icon={<FontAwesomeIcon icon={faProjectDiagram}/>} 
-    external/>;
+  if(transportUrl.length>0){
 
-  const linkFound = menuItems.find(obj=>obj.key === "linkCalculation");
-  if(linkFound){
-    const index = menuItems.indexOf(linkFound);
-    menuItems.splice(index+1,0,transportPCELink);
-  }else{
-    menuItems.push(transportPCELink);
+    const transportPCELink = <ListItemLink
+      key={"transportPCE"}
+      to={transportUrl}
+      primary={"TransportPCE"}
+      icon={<FontAwesomeIcon icon={faProjectDiagram} />}
+      external />;
+
+    const linkFound = menuItems.find(obj => obj.key === "linkCalculation");
+    
+    if (linkFound) {
+      const index = menuItems.indexOf(linkFound);
+      menuItems.splice(index + 1, 0, transportPCELink);
+    } else {
+      menuItems.push(transportPCELink);
+    }
   }
+  
 
   return (
     <Drawer
