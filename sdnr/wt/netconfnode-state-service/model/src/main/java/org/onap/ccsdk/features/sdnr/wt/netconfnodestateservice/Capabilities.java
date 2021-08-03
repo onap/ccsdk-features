@@ -21,20 +21,18 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.AvailableCapabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.UnavailableCapabilities;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapability;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.unavailable.capabilities.UnavailableCapability;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,14 +46,12 @@ public class Capabilities {
 
     private static final Logger LOG = LoggerFactory.getLogger(Capabilities.class);
 
-    private static final String METHODNAME = "getCapability";
     private static final String UNSUPPORTED = "Unsupported";
     private final List<String> capabilities = new ArrayList<>();
     private final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     private Capabilities() {}
 
-    @SuppressWarnings("null")
     public static Capabilities getAvailableCapabilities(@Nullable NetconfNode nnode) {
         LOG.info("GetAvailableCapabilities for node");
         Capabilities capabilities = new Capabilities();
@@ -72,14 +68,13 @@ public class Capabilities {
         return capabilities;
     }
 
-    @SuppressWarnings("null")
     public static Capabilities getUnavailableCapabilities(NetconfNode nnode) {
         LOG.info("GetUnavailableCapabilities for node");
         Capabilities capabilities = new Capabilities();
         if (nnode != null) {
             UnavailableCapabilities availableCapabilites = nnode.getUnavailableCapabilities();
             if (availableCapabilites != null) {
-                capabilities.constructor(availableCapabilites.getUnavailableCapability());
+                capabilities.constructor2(availableCapabilites.getUnavailableCapability());
             } else {
                 LOG.debug("empty capabilites");
             }
@@ -93,30 +88,20 @@ public class Capabilities {
     /**
      * Does all construction steps
      *
-     * @param pcapabilities with a list of capabilities. <br>
-     *        Type could be <br>
-     *        - Boron: List<code><String></code> <br>
-     *        - Carbon: List<AvailableCapability>
+     * @param pcapabilities with a list of capabilities.
      */
-    private void constructor(List<@NonNull ?> pcapabilities) {
+    private void constructor(List<AvailableCapability> pcapabilities) {
         if (pcapabilities != null) {
-            Method methodGetCapability;
+            for (AvailableCapability capability : pcapabilities) {
+                this.capabilities.add(capability.getCapability());
+            }
+        }
+    }
 
-            for (Object capability : pcapabilities) {
-                if (capability instanceof String) { // ODL Boron specific
-                    this.capabilities.add((String) capability);
-                } else { // Carbon specific part .. handled via generics
-                    try {
-                        methodGetCapability = capability.getClass().getDeclaredMethod(METHODNAME);
-                        methodGetCapability.setAccessible(true);
-                        this.capabilities.add(methodGetCapability.invoke(capability).toString());
-                    } catch (NoSuchMethodException | SecurityException | IllegalAccessException
-                            | IllegalArgumentException | InvocationTargetException e) {
-                        LOG.warn("Capability class with missing interface method {}: {} {} {}", METHODNAME,
-                                e.getMessage(), capability.getClass(),
-                                Arrays.toString(capability.getClass().getInterfaces()));
-                    }
-                }
+    private void constructor2(List<UnavailableCapability> pcapabilities) {
+        if (pcapabilities != null) {
+            for (UnavailableCapability capability : pcapabilities) {
+                this.capabilities.add(capability.getCapability());
             }
         }
     }
@@ -132,6 +117,7 @@ public class Capabilities {
 
     /**
      * Verify if the namespace is supported
+     *
      * @param qCapability from model
      * @return true if namespace is supported
      */
@@ -142,6 +128,7 @@ public class Capabilities {
 
     /**
      * Verify if the namespace is supported
+     *
      * @param namespace
      * @return
      */
@@ -151,12 +138,12 @@ public class Capabilities {
 
     /**
      * check if the namespace and its revision are supported by the given capabilities
+     *
      * @param qCapability capability from the model
      * @return true if supporting the model AND revision<br>
      *         false if revision not available or both not found.
      */
     public boolean isSupportingNamespaceAndRevision(QName qCapability) {
-
         String namespace = qCapability.getNamespace().toString();
         String revision = getRevisionString(qCapability);
         return revision == null ? false : isSupportingNamespaceAndRevision(namespace, revision);
@@ -170,8 +157,11 @@ public class Capabilities {
      */
     public boolean isSupportingNamespaceAndRevision(String namespace, @Nullable String revision) {
         LOG.trace("isSupportingNamespaceAndRevision: Model namespace {}?[revision {}]", namespace, revision);
+
+        final String nsAndRev = String.format("%s?revision=%s", namespace, revision);
         for (String capability : capabilities) {
-            if (capability.contains(namespace) && (revision == null || capability.contains(revision))) {
+            //if (capability.contains(namespace) && (revision == null || capability.contains(revision))) {
+            if (capability.contains(revision != null ? nsAndRev : namespace)) {
                 LOG.trace("Verify true with: {}", capability);
                 return true;
             } else {
@@ -228,11 +218,12 @@ public class Capabilities {
 
     /**
      * Verify if QName namespace is supported by capabilities
+     *
      * @param revision result of getRevisionForNamespace()
      * @return true if namespace is supported.
      */
     static public boolean isNamespaceSupported(String revision) {
-    	return revision != UNSUPPORTED;
+        return revision != UNSUPPORTED;
     }
 
     @Override
