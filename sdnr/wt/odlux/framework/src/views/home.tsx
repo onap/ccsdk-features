@@ -91,6 +91,9 @@ class Home extends React.Component<HomeComponentProps>  {
     const connectionStatusOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      animation: {
+        duration: 0
+      },
       plugins: {
         legend: {
           display: true,
@@ -109,6 +112,9 @@ class Home extends React.Component<HomeComponentProps>  {
     const connectionStatusUnavailableOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      animation: {
+        duration: 0
+      },
       plugins: {
         legend: {
           display: true,
@@ -178,6 +184,9 @@ class Home extends React.Component<HomeComponentProps>  {
     const alarmStatusOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      animation: {
+        duration: 0
+      },
       plugins: {
         legend: {
           display: true,
@@ -196,6 +205,9 @@ class Home extends React.Component<HomeComponentProps>  {
     const alarmStatusUnavailableOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      animation: {
+        duration: 0
+      },
       plugins: {
         legend: {
           display: true,

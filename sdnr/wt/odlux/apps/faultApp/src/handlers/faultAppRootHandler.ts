@@ -30,7 +30,6 @@ import { SetPanelAction } from '../actions/panelChangeActions';
 import { IFaultStatus, faultStatusHandler } from './faultStatusHandler';
 import { stuckAlarmHandler } from './clearStuckAlarmsHandler';
 import { PanelId } from '../models/panelId';
-import { SetPartialUpdatesAction } from '../actions/partialUpdatesAction';
 
 export interface IFaultAppStoreState {
   currentProblems: ICurrentProblemsState;
@@ -38,19 +37,11 @@ export interface IFaultAppStoreState {
   alarmLogEntries: IAlarmLogEntriesState;
   currentOpenPanel: PanelId | null;
   faultStatus: IFaultStatus;
-  listenForPartialUpdates: boolean;
 }
 
 const currentOpenPanelHandler: IActionHandler<PanelId | null> = (state = null, action) => {
   if (action instanceof SetPanelAction) {
     state = action.panelId;
-  }
-  return state;
-}
-
-const arePartialUpdatesActiveHandler: IActionHandler<boolean> = (state = false, action) => {
-  if (action instanceof SetPartialUpdatesAction) {
-    state = action.isActive;
   }
   return state;
 }
@@ -67,7 +58,6 @@ const actionHandlers = {
   alarmLogEntries: alarmLogEntriesActionHandler,
   currentOpenPanel: currentOpenPanelHandler,
   faultStatus: faultStatusHandler,
-  listenForPartialUpdates: arePartialUpdatesActiveHandler
 };
 
 export const faultAppRootHandler = combineActionHandler<IFaultAppStoreState>(actionHandlers);

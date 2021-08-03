@@ -67,7 +67,7 @@ interface ITableToolbarComponentProps extends WithStyles<typeof styles> {
   numSelected: number | null;
   title?: string;
   tableId?: string;
-  customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, onClick: () => void, disabled?: boolean }[];
+  customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, ariaLabel: string, onClick: () => void, disabled?: boolean }[];
   onToggleFilter: () => void;
   onExportToCsv: () => void;
 }
@@ -91,7 +91,7 @@ class TableToolbarComponent extends React.Component<ITableToolbarComponentProps,
   render() {
     const { numSelected, classes } = this.props;
     const open = !!this.state.anchorEl;
-    const buttonPrefix = this.props.tableId !== undefined ? this.props.tableId + '-' : '';
+    const buttonPrefix = this.props.tableId !== undefined ? this.props.tableId : 'table';
     return (
       <Toolbar className={`${classes.root} ${numSelected && numSelected > 0 ? classes.highlight : ''} `} >
         <div className={classes.title}>
@@ -110,7 +110,7 @@ class TableToolbarComponent extends React.Component<ITableToolbarComponentProps,
           {this.props.customActionButtons
             ? this.props.customActionButtons.map((action, ind) => (
               <Tooltip key={`custom-action-${ind}`} title={action.tooltip || ''}>
-                <IconButton disabled={action.disabled} aria-label={buttonPrefix + `custom-action-${ind}`} onClick={() => action.onClick()}>
+                <IconButton disabled={action.disabled} aria-label={`${buttonPrefix}-${action.ariaLabel}-button`} onClick={() => action.onClick()}>
                   <action.icon />
                 </IconButton>
               </Tooltip>
@@ -118,20 +118,20 @@ class TableToolbarComponent extends React.Component<ITableToolbarComponentProps,
             : null}
           {numSelected && numSelected > 0 ? (
             <Tooltip title="Delete">
-              <IconButton aria-label={buttonPrefix + "delete"}>
+              <IconButton aria-label={`${buttonPrefix}-delete-button`}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
           ) : (
               <Tooltip title="Filter list">
-                <IconButton aria-label={buttonPrefix + "filter-list"} onClick={() => { this.props.onToggleFilter && this.props.onToggleFilter() }}>
+                <IconButton aria-label={`${buttonPrefix}-filter-list-button`} onClick={() => { this.props.onToggleFilter && this.props.onToggleFilter() }}>
                   <FilterListIcon />
                 </IconButton>
               </Tooltip>
             )}
           <Tooltip title="Actions">
             <IconButton color="inherit"
-            aria-label={buttonPrefix +"additional-actions-button"}
+            aria-label={`${buttonPrefix}-additional-actions-button`}
               aria-owns={open ? 'menu-appbar' : undefined}
               aria-haspopup="true"
               onClick={this.handleMenu} >

@@ -124,7 +124,7 @@ class DashboardSelectorComponent extends React.Component<DashboardComponentProps
   render() {
 
     const refreshInventoryAction = {
-      icon: Refresh, tooltip: 'Refresh Inventory', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh Inventory', ariaLabel: 'refresh', onClick: () => {
         this.setState({
           refreshInventoryEditorMode: RefreshInventoryDialogMode.RefreshInventoryTable
         });

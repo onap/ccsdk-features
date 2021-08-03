@@ -50,7 +50,8 @@ export interface IApplicationState {
   isWebsocketAvailable: boolean | undefined;
   externalLoginProviders: ExternalLoginProvider[] | null;
   authentication: "basic"|"oauth",  // basic 
-  enablePolicy: boolean             // false 
+  enablePolicy: boolean,             // false 
+  transportpceUrl : string
 }
 
 const applicationStateInit: IApplicationState = {
@@ -63,11 +64,13 @@ const applicationStateInit: IApplicationState = {
   externalLoginProviders: null,
   authentication: "basic",
   enablePolicy: false,
+  transportpceUrl: ""
 };
 
 export const configureApplication = (config: ApplicationConfig) => {
   applicationStateInit.authentication = config.authentication === "oauth" ? "oauth" : "basic";
   applicationStateInit.enablePolicy = config.enablePolicy ? true : false;
+  applicationStateInit.transportpceUrl=config.transportpceUrl == undefined ? "" : config.transportpceUrl;
 }
 
 export const applicationStateHandler: IActionHandler<IApplicationState> = (state = applicationStateInit, action) => {

@@ -85,7 +85,7 @@ class PerformanceDataComponent extends React.Component<PerformanceDataComponentP
       <>
         <ToggleContainer onToggleFilterButton={() => this.props.toggleFilterButton(!this.props.isFilterVisible)} existingFilter={this.props.existingFilter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} showFilter={this.props.isFilterVisible} onChange={this.props.setSubView}>
           {lineChart(chartPagedData)}
-          <PerformanceDataTable stickyHeader idProperty={"_id"} tableId="perfromance-data-table" columns={performanceColumns} {...properties} {...actions} />
+          <PerformanceDataTable stickyHeader idProperty={"_id"} tableId="performance-data-table" columns={performanceColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );

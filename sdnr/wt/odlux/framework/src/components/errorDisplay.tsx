@@ -82,6 +82,7 @@ class ErrorDisplayComponent extends React.Component<ErrorDisplayProps> {
   render(): JSX.Element {
     const { classes, state } = this.props;
     const errorInfo = state.framework.applicationState.errors.length && state.framework.applicationState.errors[state.framework.applicationState.errors.length - 1];
+    
     return (
       <Modal className={classes.modal}
         aria-labelledby="simple-modal-title"

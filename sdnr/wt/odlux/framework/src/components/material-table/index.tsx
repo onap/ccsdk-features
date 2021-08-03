@@ -159,7 +159,7 @@ type MaterialTableComponentBaseProps<TData> = WithStyles<typeof styles> & {
   enableSelection?: boolean;
   disableSorting?: boolean;
   disableFilter?: boolean;
-  customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, onClick: () => void, disabled?: boolean }[];
+  customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, ariaLabel: string, onClick: () => void, disabled?: boolean }[];
   onHandleClick?(event: React.MouseEvent<HTMLTableRowElement>, rowData: TData): void;
   createContextMenu?: (row: TData) => React.ReactElement<MenuItemProps | DividerTypeMap<{}, "hr">, React.ComponentType<MenuItemProps | DividerTypeMap<{}, "hr">>>[];
 };
@@ -253,8 +253,8 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
               {rows // may need ordering here
                 .map((entry: TData & { [RowDisabled]?: boolean, [kex: string]: any }, index) => {
                   const entryId = getId(entry);
-                  const isSelected = this.isSelected(entryId);
                   const contextMenu = (this.props.createContextMenu && this.state.contextMenuInfo.index === index && this.props.createContextMenu(entry)) || null;
+                  const isSelected = this.isSelected(entryId) || this.state.contextMenuInfo.index === index;
                   return (
                     <TableRowExt
                       hover

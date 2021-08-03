@@ -55,7 +55,7 @@ class EventLogComponent extends React.Component<EventLogComponentProps, EventLog
   render(): JSX.Element {
 
     const refreshEventLogAction = {
-      icon: Refresh, tooltip: 'Refresh Event log', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh Event log', ariaLabel:'refresh', onClick: () => {
         this.setState({
           refreshEventLogEditorMode: RefreshEventLogDialogMode.RefreshEventLogTable
         });

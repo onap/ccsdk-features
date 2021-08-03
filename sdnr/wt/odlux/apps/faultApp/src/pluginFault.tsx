@@ -140,6 +140,7 @@ export function register() {
   applicationApi.applicationStoreInitialized.then(store => {
     store.dispatch(refreshFaultStatusAsyncAction);
   });
+  
   window.setInterval(() => {
     applicationApi.applicationStoreInitialized.then(store => {
       store.dispatch(refreshFaultStatusAsyncAction);
