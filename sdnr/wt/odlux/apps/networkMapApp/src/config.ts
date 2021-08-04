@@ -17,6 +17,7 @@
  */
 
 export const URL_API="/topology/network"
+export const SITEDOC_URL="/sitedoc";
 export const URL_TILE_API = '/tiles'; // http://tile.openstreetmap.org can be used for local testing, never commit with tile url changed! /tiles
 
 

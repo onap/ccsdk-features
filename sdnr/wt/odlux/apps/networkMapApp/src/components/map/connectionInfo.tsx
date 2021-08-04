@@ -29,7 +29,7 @@ type props = Connect<typeof mapStateToProps, typeof mapDispatchToProps>;
 
 const ConnectionInfo: React.FunctionComponent<props> = (props) => {
 
-    return ((props.isTopoServerReachable === false || props.isTileServerReachable === false )?  <Paper style={{padding:5, position: 'absolute', top: 160, width: 230, left:"40%"}}>
+    return ((props.isTopoServerReachable === false || props.isTileServerReachable === false )?  <Paper style={{padding:5, position: 'absolute', top: 160, width: 230, left:"40%", zIndex:1}}>
         <div style={{display: 'flex', flexDirection: 'column'}}>
         <div style={{'alignSelf': 'center', marginBottom:5}}> <Typography> <FontAwesomeIcon icon={faExclamationTriangle} /> Connection Error</Typography></div>
         {props.isTileServerReachable === false && <Typography> Tile data can't be loaded.</Typography>}

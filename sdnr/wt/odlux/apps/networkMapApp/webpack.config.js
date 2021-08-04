@@ -67,6 +67,10 @@ module.exports = (env) => {
             name: './icons/[hash].[ext]'
           }
         }]
+      },
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
       }]
     },
 
@@ -168,8 +172,15 @@ module.exports = (env) => {
           target: "http://localhost:3002",
           secure: false
         },
+        "/sitedoc/": {
+          target: "http://localhost:3002",
+          secure: false,
+          pathRewrite(pathname) {
+            return pathname.replace(/^\/sitedoc/, '/topology/stadok')
+          }
+        },
         "/tiles/": {
-          target: "http://www.openstreetmap.org",
+          target: "http://tile.openstreetmap.org",
           secure: false
         },
         "/help/": {

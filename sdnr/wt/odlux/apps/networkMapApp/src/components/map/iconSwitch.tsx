@@ -32,9 +32,9 @@ const IconSwitch: React.FunctionComponent<props> = (props) =>{
 
     return (
       props.visible ?
-             <FormControlLabel style={{ padding:5, position: 'absolute',top: 190}}
+             <FormControlLabel style={{ padding:5, position: 'absolute',top: 190, zIndex:1}}
         value="end"
-        control={<Switch color="secondary" checked={props.areIconsEnabled} onChange={toggleChecked} />}
+        control={<Switch color="secondary" style={{zIndex:1}} checked={props.areIconsEnabled} onChange={toggleChecked} />}
         label="Show icons"
         labelPlacement="end"
       />: null)

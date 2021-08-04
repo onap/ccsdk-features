@@ -30,6 +30,9 @@ import { CheckDeviceList, InitializeLoadedDevicesAction } from '../../actions/de
 import { NavigateToApplication } from '../../../../../framework/src/actions/navigationActions';
 import connect, { Connect, IDispatcher } from '../../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../../framework/src/store/applicationStore';
+import StadokSite from '../../model/stadokSite';
+import { requestRest } from '../../../../../framework/src/services/restService';
+import StadokDetailsPopup from './stadokDetailsPopup';
 
 type linkRow = { name: string, azimuth?: string}
 type deviceRow = { id: string;type: string,name: string,manufacturer: string,owner: string,status?: string,port: number[]}
@@ -48,6 +51,8 @@ const SiteDetails: React.FunctionComponent<siteDetailProps> = (props) => {
 
     const [value, setValue] = React.useState<panelId>("links");
     const [height, setHeight] = React.useState(330);
+    const [openPopup, setOpenPopup] = React.useState(false);
+    const [staSite, setStaSite] = React.useState<StadokSite|null>(null);
 
     const handleResize = () =>{
         const el = document.getElementById('site-details-panel')?.getBoundingClientRect();
@@ -82,35 +87,55 @@ const SiteDetails: React.FunctionComponent<siteDetailProps> = (props) => {
         setValue(newValue);
     }
 
+    const getFurtherInformation = (url: string) =>{
+
+        const request = requestRest<StadokSite>(url, { method: "GET"});
+
+        request.then(result =>{
+            if(result){
+                setStaSite(result);
+                setOpenPopup(true);
+            }else{
+                console.error(result);
+            }
+          
+
+        });
+    }
+
+    const closePopup = () =>{
+        setOpenPopup(false);
+    }
+
     //prepare link table
 
     let hasAzimuth = false;
-    const linkRows: linkRow[] = props.site.links.map(link=> 
+    const linkRows: linkRow[] = props.site.links?.map(link=> 
         { 
             if(link.azimuthB!==null){
                 hasAzimuth=true;
-                return {name: link.name, azimuth: link.azimuthB.toFixed(2) }   
+            return {name: link.name, azimuth: link.azimuthB.toFixed(2) }    
 
-            }else{
-                return {name: link.name }   
-            }
-            
-        });
+        }else{
+            return {name: link.name }    
+        }   
+    });
        
     const linkTableHeader = hasAzimuth ?  ["Link Name", "Azimuth in °"] : ["Link Name"];
 
     //prepare device table
-    const deviceRows : deviceRow[] = props.updatedDevices.map(device=>{
-        return{ 
-            id: device.id,
-            name: device.name,
-            type: device.type,
-            status: device.status,
-            manufacturer: device.manufacturer,
-            owner: device.owner,
-            port: device.port
-        }
-    });
+    const deviceRows : deviceRow[] = props.updatedDevices?.map(device=>{
+            return{ 
+                id: device.id,
+                name: device.name,
+                type: device.type,
+                status: device.status,
+                manufacturer: device.manufacturer,
+                owner: device.owner,
+                port: device.port
+            }
+        });
+    
 
     const adressString = props.site.address == null ? null : buildAdress(props.site.address);
 
@@ -152,12 +177,12 @@ const SiteDetails: React.FunctionComponent<siteDetailProps> = (props) => {
             value === "links" &&
             <>
                 {
-                    props.site.links.length === 0 &&
+                    props.site.links==null &&
                     <Typography aria-label="no-links-available" variant="body1" style={{ marginTop: '10px' }}>No links available.</Typography>
                 }
                
                 {
-                    props.site.links.length > 0 &&
+                    props.site.links?.length > 0 &&
                     <DenseTable ariaLabelRow="available-links-table" ariaLabelColumn={["link-name", "azimuth"]} height={height} hover={true} headers={linkTableHeader}  data={linkRows} onClick={props.onLinkClick}  ></DenseTable>
                 }
 
@@ -178,6 +203,15 @@ const SiteDetails: React.FunctionComponent<siteDetailProps> = (props) => {
                 }
             </>
         }
+        {
+       props.isSitedocReachable && props.site.furtherInformation!==null && props.site.furtherInformation.length>0 &&
+    <Button  style={{marginTop:20}} fullWidth variant="contained" color="primary" onClick={e => getFurtherInformation(props.site.furtherInformation) }>Further information available</Button>
+        }
+
+        {
+            staSite !== null && openPopup && <StadokDetailsPopup site={staSite} onClose={closePopup} open={true} />
+        }
+       
     </div>
     )
 }
@@ -200,7 +234,8 @@ const buildAdress = (adress: Address) =>{
 }
 
 const mapStateToProps = (state: IApplicationStoreState) => ({
-    updatedDevices: state.network.details.checkedDevices
+    updatedDevices: state.network.details.checkedDevices,
+    isSitedocReachable: state.network.details.isSitedocReachable
 });
 
 const mapDispatchToProps = (dispatcher: IDispatcher) => ({

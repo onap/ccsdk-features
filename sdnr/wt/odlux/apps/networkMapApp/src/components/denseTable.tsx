@@ -26,7 +26,16 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Button, Tooltip } from '@material-ui/core';
 
-type props = { headers: string[], height: number, navigate?(applicationName: string, path?: string): void, onLinkClick?(id: string): void, data: any[], hover: boolean, ariaLabelRow: string, ariaLabelColumn: string[], verticalTable?: boolean, onClick?(id: string): void, actions?: boolean };
+type props = { headers: string[], 
+    height: number, 
+    navigate?(applicationName: string, path?: string): void, 
+    onLinkClick?(id: string): void, data: any[], 
+    hover: boolean, 
+    ariaLabelRow: string, 
+    ariaLabelColumn?: string[], 
+    verticalTable?: boolean, 
+    onClick?(id: string): void, 
+    actions?: boolean };
 
 
 const styles = makeStyles({
@@ -81,7 +90,7 @@ const DenseTable: React.FunctionComponent<props> = (props) => {
                                             if (data !== undefined) {
 
                                                 if (!props.verticalTable) {
-                                                    const ariaLabel = props.ariaLabelColumn[i];
+                                                    const ariaLabel = props.ariaLabelColumn === undefined ? props.headers[i].toLowerCase() : props.ariaLabelColumn[i]; 
                                                     if (ariaLabel.length > 0) {
                                                         return <TableCell aria-label={ariaLabel}>{data}</TableCell>
                                                     } else {
@@ -93,7 +102,7 @@ const DenseTable: React.FunctionComponent<props> = (props) => {
                                                     if (i === 0) {
                                                         return <TableCell>{data}</TableCell>
                                                     } else {
-                                                        const ariaLabel = props.ariaLabelColumn[index];
+                                                        const ariaLabel = props.ariaLabelColumn === undefined ? props.headers[index].toLowerCase() : props.ariaLabelColumn[index]; 
                                                         return <TableCell aria-label={ariaLabel}>{data}</TableCell>
                                                     }
                                                 }

@@ -88,7 +88,7 @@ const ConfigurationApplicationRouteAdapter = connect(undefined, mapDisp)((props:
           // result += `${indention}  [${view.canEdit ? 'rw' : 'ro'}] ${view.ns}:${view.name} ${ds.displayMode === DisplayModeType.displayAsList ? '[LIST]' : ''}\r\n`;
           result += Object.keys(view.elements).reduce((acc, cur) => {
             const elm = view.elements[cur];
-            acc += `${indention}  [${elm.config ? 'rw' : 'ro'}:${elm.id}] (${elm.module}:${elm.label}) {${elm.uiType}} ${elm.uiType === "object" && elm.isList ? `as LIST with KEY [${elm.key}]` : ""}\r\n`;
+            acc += `${indention}  [${elm.uiType === "rpc" ? "x" : elm.config ? 'rw' : 'ro'}:${elm.id}] (${elm.module}:${elm.label}) {${elm.uiType}} ${elm.uiType === "object" && elm.isList ? `as LIST with KEY [${elm.key}]` : ""}\r\n`;
             // acc += `${indention}    +${elm.mandatory ? "mandetory" : "none"} - ${elm.path} \r\n`;
             
             switch (elm.uiType) {

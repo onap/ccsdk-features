@@ -125,13 +125,13 @@
                                     <overWrite>false</overWrite>
                                 </artifactItem>
                                 <!-- minimumApp -->
-                                <artifactItem>
+				<!--<artifactItem>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>sdnr-wt-odlux-app-minimumApp</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                </artifactItem>
+				</artifactItem>-->
                                 <!-- configurationApp -->
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
@@ -141,13 +141,13 @@
                                     <overWrite>false</overWrite>
                                 </artifactItem>
                                 <!-- demoApp -->
-                                <artifactItem>
+				<!--<artifactItem>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>sdnr-wt-odlux-app-demoApp</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                </artifactItem>
+				</artifactItem>-->
                                 <!-- faultApp -->
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>

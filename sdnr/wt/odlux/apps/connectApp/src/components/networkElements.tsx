@@ -19,7 +19,7 @@ import * as React from 'react';
 import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 
 import AddIcon from '@material-ui/icons/Add';
-import  Refresh  from '@material-ui/icons/Refresh';
+import Refresh from '@material-ui/icons/Refresh';
 import LinkIcon from '@material-ui/icons/Link';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
 import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
@@ -68,18 +68,18 @@ const styles = (theme: Theme) => createStyles({
 });
 
 type GetStatelessComponentProps<T> = T extends (props: infer P & { children?: React.ReactNode }) => any ? P : any
-const MenuItemExt : React.FC<GetStatelessComponentProps<typeof MenuItem>> = (props) => {
+const MenuItemExt: React.FC<GetStatelessComponentProps<typeof MenuItem>> = (props) => {
   const [disabled, setDisabled] = React.useState(true);
   const onMouseDown = (ev: React.MouseEvent<HTMLElement>) => {
-      if (ev.button ===1){
-        setDisabled(!disabled);  
-        ev.preventDefault();
-      }
+    if (ev.button === 1) {
+      setDisabled(!disabled);
+      ev.preventDefault();
+    }
   };
   return (
     <div onMouseDown={onMouseDown} >
-      <MenuItem {...{...props, disabled: props.disabled && disabled }}  />
-    </div>  
+      <MenuItem {...{ ...props, disabled: props.disabled && disabled }} />
+    </div>
   );
 };
 
@@ -119,17 +119,17 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       networkElementEditorMode: EditNetworkElementDialogMode.None,
       refreshNetworkElementsEditorMode: RefreshNetworkElementsDialogMode.None,
       elementInfo: null,
-      elementInfoFeature:null,
+      elementInfoFeature: null,
       infoNetworkElementEditorMode: InfoNetworkElementDialogMode.None
     };
   }
-  
+
   getContextMenu(rowData: NetworkElementConnection): JSX.Element[] {
     const mountUri = rowData.id && connectService.getNetworkElementUri(rowData.id);
     const mountPolicy = mountUri && getAccessPolicyByUrl(mountUri);
-    const canMount =  mountPolicy && mountPolicy.POST || false;
-    
-    const { configuration} = this.props.applicationState as any;
+    const canMount = mountPolicy && mountPolicy.POST || false;
+
+    const { configuration } = this.props.applicationState as any;
     const buttonArray = [
       <MenuItemExt aria-label={"mount-button"} onClick={event => this.onOpenMountdNetworkElementsDialog(event, rowData)} disabled={!canMount} ><LinkIcon /><Typography>Mount</Typography></MenuItemExt>,
       <MenuItemExt aria-label={"unmount-button"} onClick={event => this.onOpenUnmountdNetworkElementsDialog(event, rowData)} disabled={!canMount} ><LinkOffIcon /><Typography>Unmount</Typography></MenuItemExt>,
@@ -160,6 +160,12 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
   render(): JSX.Element {
     const { classes } = this.props;
     const { networkElementToEdit } = this.state;
+    let savedRadio = "password";
+    if (this.state.networkElementToEdit.password && this.state.networkElementToEdit.password.length > 0) {
+      savedRadio = 'password'
+    } else if (this.state.networkElementToEdit.tlsKey && this.state.networkElementToEdit.tlsKey.length > 0) {
+      savedRadio = 'tlsKey'
+    }
 
     // const mountUri = rowData.id && connectService.getNetworkElementUri(rowData.id);
     // const mountPolicy = mountUri && getAccessPolicyByUrl(mountUri);
@@ -167,7 +173,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
     const canAdd = true;
 
     const addRequireNetworkElementAction = {
-      icon: AddIcon, tooltip: 'Add', ariaLabel:"add-element", onClick: () => {
+      icon: AddIcon, tooltip: 'Add', ariaLabel: "add-element", onClick: () => {
         this.setState({
           networkElementEditorMode: EditNetworkElementDialogMode.AddNewNetworkElement,
           networkElementToEdit: emptyRequireNetworkElement,
@@ -176,16 +182,16 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
     };
 
     const refreshNetworkElementsAction = {
-      icon: Refresh, tooltip: 'Refresh Network Elements table', ariaLabel:'refresh', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh Network Elements table', ariaLabel: 'refresh', onClick: () => {
         this.setState({
           refreshNetworkElementsEditorMode: RefreshNetworkElementsDialogMode.RefreshNetworkElementsTable
         });
       }
     };
-    
+
     return (
       <>
-        <NetworkElementTable stickyHeader tableId="network-element-table" customActionButtons={[refreshNetworkElementsAction, ...canAdd ? [addRequireNetworkElementAction]: []]} columns={[
+        <NetworkElementTable stickyHeader tableId="network-element-table" customActionButtons={[refreshNetworkElementsAction, ...canAdd ? [addRequireNetworkElementAction] : []]} columns={[
           { property: "nodeId", title: "Node Name", type: ColumnType.text },
           { property: "isRequired", title: "Required", type: ColumnType.boolean },
           { property: "status", title: "Connection Status", type: ColumnType.text },
@@ -202,6 +208,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
           initialNetworkElement={networkElementToEdit}
           mode={this.state.networkElementEditorMode}
           onClose={this.onCloseEditNetworkElementDialog}
+          radioChecked={savedRadio}
         />
         <RefreshNetworkElementsDialog
           mode={this.state.refreshNetworkElementsEditorMode}
@@ -240,6 +247,11 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
   }
 
   private onOpenEditNetworkElementDialog = (event: React.MouseEvent<HTMLElement>, element: NetworkElementConnection) => {
+    let radioSaved;
+    if (element.password && element.password.length > 0)
+      radioSaved = 'password'
+    else if (element.tlsKey && element.tlsKey.length > 0)
+      radioSaved = 'tlsKey'
     this.setState({
       networkElementToEdit: {
         nodeId: element.nodeId,
@@ -248,6 +260,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
         port: element.port,
         username: element.username,
         password: element.password,
+        tlsKey: element.tlsKey
       },
       networkElementEditorMode: EditNetworkElementDialogMode.EditNetworkElement
     });

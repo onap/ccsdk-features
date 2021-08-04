@@ -25,6 +25,7 @@ import { link } from '../model/link';
 import { HistoryEntry } from "../model/historyEntry";
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { Dispatch } from '../../../../framework/src/flux/store';
+import { SITEDOC_URL } from '../config';
 
 export class SelectSiteAction extends Action {
   constructor(public site: Site){
@@ -76,6 +77,12 @@ export class ClearLoadedDevicesAction extends Action{
 
 export class InitializeLoadedDevicesAction extends Action{
   constructor(public devices: Device[]){
+    super();
+  }
+}
+
+export class IsSitedocReachableAction extends Action{
+  constructor(public isReachable: boolean){
     super();
   }
 }
@@ -137,4 +144,18 @@ running=true;
   dispatcher(new IsBusyCheckingDeviceListAction(false));
 
   });
+}
+
+export const checkSitedockReachablity = () => async (dispatcher: Dispatch, getState: () => IApplicationStoreState) =>{
+  console.log("searching for sitedoc server...")
+  requestRest<any>(SITEDOC_URL+'/app/versioninfo').then(response =>{
+    console.log(response);
+    if(response){
+     
+        dispatcher(new IsSitedocReachableAction(true));
+      
+    }else{
+      dispatcher(new IsSitedocReachableAction(false));
+    }
+  })
 }

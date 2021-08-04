@@ -13,15 +13,14 @@
   <div id="app"></div>
   <script type="text/javascript" src="./require.js"></script>
   <script type="text/javascript" src="./config.js"></script>
-  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
 
   <script>
     // run the application
     require(["app","connectApp","faultApp", "networkMapApp", "configurationApp", "linkCalculationApp"], function (app, connectApp, faultApp, networkMapApp, configurationApp, linkCalculationApp) {
       connectApp.register();
-      //faultApp.register();
+      faultApp.register();
       //configurationApp.register();
-      //linkCalculationApp.register();
+      linkCalculationApp.register();
       networkMapApp.register();
       app("./app.tsx").runApplication();
     });

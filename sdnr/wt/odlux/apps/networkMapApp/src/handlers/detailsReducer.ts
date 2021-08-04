@@ -20,13 +20,14 @@ import { IActionHandler } from '../../../../framework/src/flux/action';
 import { link } from "../model/link";
 import { Site, Device } from "../model/site";
 import { HistoryEntry } from "../model/historyEntry";
-import { SelectSiteAction, SelectLinkAction, AddToHistoryAction, ClearHistoryAction, IsBusyCheckingDeviceListAction, FinishedLoadingDeviceListAction, ClearLoadedDevicesAction, ClearDetailsAction, InitializeLoadedDevicesAction } from '../actions/detailsAction';
+import { SelectSiteAction, SelectLinkAction, AddToHistoryAction, ClearHistoryAction, IsBusyCheckingDeviceListAction, FinishedLoadingDeviceListAction, ClearLoadedDevicesAction, ClearDetailsAction, InitializeLoadedDevicesAction, IsSitedocReachableAction } from '../actions/detailsAction';
 
 export type DetailsStoreState={
     data: Site | link | null,
     history: HistoryEntry[],
     isBusyCheckingDeviceList: boolean,
-    checkedDevices: Device[] 
+    checkedDevices: Device[],
+    isSitedocReachable: boolean
 
 }
 
@@ -34,7 +35,8 @@ const initialState: DetailsStoreState = {
     data: null,
     history:[],
     isBusyCheckingDeviceList: false,
-    checkedDevices: []
+    checkedDevices: [],
+    isSitedocReachable: false
 }
 
 export const DetailsReducer:IActionHandler<DetailsStoreState>=(state = initialState, action)=>{
@@ -63,6 +65,8 @@ export const DetailsReducer:IActionHandler<DetailsStoreState>=(state = initialSt
 
     }else if(action instanceof InitializeLoadedDevicesAction){
         state = Object.assign({}, state, {checkedDevices: action.devices});
+    }else if(action instanceof IsSitedocReachableAction){
+        state = Object.assign({}, state, {isSitedocReachable: action.isReachable});
     }
 
 

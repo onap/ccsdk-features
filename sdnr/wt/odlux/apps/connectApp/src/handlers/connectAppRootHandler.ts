@@ -25,6 +25,7 @@ import { SetPanelAction, AddWebUriList, RemoveWebUri, SetWeburiSearchBusy } from
 import { PanelId } from '../models/panelId';
 import { guiCutThrough } from '../models/guiCutTrough';
 import { connectionStatusCountHandler, IConnectionStatusCount } from './connectionStatusCountHandler';
+import { availableTlsKeysActionHandler, IAvailableTlsKeysState } from './tlsKeyHandler';
 
 export interface IConnectAppStoreState {
   networkElements: INetworkElementsState;
@@ -34,6 +35,7 @@ export interface IConnectAppStoreState {
   elementFeatureInfo: IInfoNetworkElementFeaturesState;
   guiCutThrough: guiCutThroughState;
   connectionStatusCount: IConnectionStatusCount;
+  availableTlsKeys: IAvailableTlsKeysState
 }
 
 const currentOpenPanelHandler: IActionHandler<PanelId> = (state = null, action) => {
@@ -92,7 +94,8 @@ const actionHandlers = {
   elementInfo: infoNetworkElementsActionHandler,
   elementFeatureInfo: infoNetworkElementFeaturesActionHandler,
   guiCutThrough: guiCutThroughHandler,
-  connectionStatusCount: connectionStatusCountHandler
+  connectionStatusCount: connectionStatusCountHandler,
+  availableTlsKeys: availableTlsKeysActionHandler
 };
 
 export const connectAppRootHandler = combineActionHandler<IConnectAppStoreState>(actionHandlers);

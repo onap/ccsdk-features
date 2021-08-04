@@ -88,9 +88,9 @@ export function register() {
   subscribe<IFormatedMessage>(["object-creation-notification", "object-deletion-notification", "attribute-value-changed-notification"], (msg => {
     const store = applicationApi.applicationStore;
     if (msg && msg.type.type === "object-creation-notification" && store) {
-      store.dispatch(new AddSnackbarNotification({ message: `Adding network element [${msg['node-id']}]`, options: { variant: 'info' } }));
+      store.dispatch(new AddSnackbarNotification({ message: `Adding network element [${msg.data['object-id-ref']}]`, options: { variant: 'info' } }));
     } else if (msg && (msg.type.type === "object-deletion-notification" || msg.type.type === "attribute-value-changed-notification") && store) {
-      store.dispatch(new AddSnackbarNotification({ message: `Updating network element [${msg['node-id']}]`, options: { variant: 'info' } }));
+      store.dispatch(new AddSnackbarNotification({ message: `Updating network element [${msg.data['object-id-ref']}]`, options: { variant: 'info' } }));
     }
     if (store) {
       store.dispatch(updateCurrentViewAsyncAction() as any).then(() => {

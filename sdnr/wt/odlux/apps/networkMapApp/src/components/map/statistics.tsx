@@ -41,7 +41,7 @@ const Statistics: React.FunctionComponent<props> = (props: props) =>{
     const reachabe = props.isTopoServerReachable && props.isTileServerReachable;
 
 
-    return (<Paper style={{ padding: 5, position: 'absolute', display: 'flex', flexDirection: "column", top: 70, width: 200, marginLeft: 5 }}>
+    return (<Paper style={{ padding: 5, position: 'absolute', display: 'flex', flexDirection: "column", top: 70, width: 200, marginLeft: 5, zIndex:1 }}>
     <div style={{ display: 'flex', flexDirection: "row" }}>
         <Typography style={{ fontWeight: "bold", flex: "1", color: reachabe ? "black" : "lightgrey" }} >Statistics</Typography>
         <Tooltip style={{ alignSelf: "flex-end" }} title="Gets updated when the map stops moving.">

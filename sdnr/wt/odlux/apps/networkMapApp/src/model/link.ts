@@ -16,6 +16,12 @@
  * ============LICENSE_END==========================================================================
  */
 
+type Antenna = {
+    name:string,
+    waveguideLossIndB: number,
+    gain: number
+}
+
 export type link = {id: string, 
     name: string,
     length: number,
@@ -25,6 +31,6 @@ export type link = {id: string,
      siteB: string,
     azimuthA: number | null,
     azimuthB: number | null,
-    locationA: { lon: number, lat: number, amsl:number | null, antennaHeight: number | null },
-    locationB: { lon: number, lat: number, amsl:number | null, antennaHeight: number | null },
+    locationA: { lon: number, lat: number, amsl:number | null, antennaHeight: number | null, antenna: Antenna |null },
+    locationB: { lon: number, lat: number, amsl:number | null, antennaHeight: number | null, antenna: Antenna |null },
  };
