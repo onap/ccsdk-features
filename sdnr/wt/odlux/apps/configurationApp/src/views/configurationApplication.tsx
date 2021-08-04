@@ -578,9 +578,11 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
   private renderUIViewList(listSpecification: ViewSpecification, dataPath: string, listKeyProperty: string, apiDocPath: string, listData: { [key: string]: any }[]) {
     const listElements = listSpecification.elements;
-    const apiDocPathCreate = apiDocPath ? `${location.origin}${apiDocPath
+    const apiDocPathCreate = apiDocPath  ? `${location.origin}${apiDocPath
       .replace("$$$standard$$$", "topology-netconfnode%20resources%20-%20RestConf%20RFC%208040")
-      .replace("$$$action$$$", "put")}_${listKeyProperty.replace(/[\/=\-\:]/g, '_')}_` : undefined;
+      .replace("$$$action$$$", "put")}${listKeyProperty ? `_${listKeyProperty.replace(/[\/=\-\:]/g, '_')}_` : '' }` : undefined;
+
+    const config = listSpecification.config && listKeyProperty; // We can not configure a list with no key.
 
     const navigate = (path: string) => {
       this.props.history.push(`${this.props.match.url}${path}`);
@@ -593,7 +595,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       onClick: () => {
         navigate("[]"); // empty key means new element
       },
-      disabled: !listSpecification.config,
+      disabled: !config,
     };
 
     const addWithApiDocElementAction = {
@@ -603,7 +605,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       onClick: () => {
         window.open(apiDocPathCreate, '_blank');
       },
-      disabled: !listSpecification.config,
+      disabled: !config,
     };
 
     const { classes, removeElement } = this.props;
@@ -650,13 +652,13 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         }, []).concat([{
           property: "Actions", disableFilter: true, disableSorting: true, type: ColumnType.custom, customControl: (({ rowData }) => {
             return (
-              <DeleteIconWithConfirmation disabled={!listSpecification.config} rowData={rowData} onReload={() => this.props.vPath && this.props.reloadView(this.props.vPath)} />
+              <DeleteIconWithConfirmation disabled={!config} rowData={rowData} onReload={() => this.props.vPath && this.props.reloadView(this.props.vPath)} />
             );
           })
         }])
       } onHandleClick={(ev, row) => {
         ev.preventDefault();
-        navigate(`[${encodeURIComponent(row[listKeyProperty])}]`);
+        listKeyProperty && navigate(`[${encodeURIComponent(row[listKeyProperty])}]`); // Do not navigate without key.
       }} ></SelectElementTable>
     );
   }

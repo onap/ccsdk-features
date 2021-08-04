@@ -24,6 +24,7 @@ export type NetworkElementConnection = {
   port: number;
   username?: string;
   password?: string;
+  tlsKey?: string;
   weburi?: string;
   isWebUriUnreachable?: boolean;
   status?: "Connected" | "mounted" | "unmounted" | "Connecting" | "Disconnected" | "idle";
@@ -47,11 +48,17 @@ export type UpdateNetworkElement = {
   isRequired?: boolean;
   username?: string;
   password?: string;
+  tlsKey?: string;
 }
 
 export type ConnectionStatus = {
   status: string
 }
+
+export type TlsKeys = {
+  key: string
+}
+
 
 /**
  * Checks if a object has a given propertyname, if yes, the name is returned as string.

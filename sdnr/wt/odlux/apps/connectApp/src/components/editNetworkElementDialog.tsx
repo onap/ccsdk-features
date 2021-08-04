@@ -24,7 +24,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { FormControl, InputLabel, Select, MenuItem, Typography } from '@material-ui/core';
+import { FormControl, InputLabel, Select, MenuItem, Typography, Radio, RadioGroup, Options, FormLabel, FormControlLabel } from '@material-ui/core';
+import { loadAllTlsKeyListAsync } from '../actions/tlsKeyActions';
+import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
 import { IDispatcher, connect, Connect } from '../../../../framework/src/flux/connect';
 
@@ -67,13 +69,13 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
     //make sure properties are there in case they get renamed
     const idProperty = propertyOf<UpdateNetworkElement>("id");
     const isRequiredProperty = propertyOf<UpdateNetworkElement>("isRequired");
-   
+
 
     if (values.length === 2 && values.includes(idProperty as string) && values.includes(isRequiredProperty as string)) {
       // do not mount network element, if only isRequired is changed
       await dispatcher.dispatch(editNetworkElementAsyncActionCreator(element));
 
-    } else if(!(values.length===1 &&values.includes(idProperty as string))) { //do not edit or mount element, if only id was saved into object (no changes made!)
+    } else if (!(values.length === 1 && values.includes(idProperty as string))) { //do not edit or mount element, if only id was saved into object (no changes made!)
       await dispatcher.dispatch(editNetworkElementAsyncActionCreator(element));
       await dispatcher.dispatch(mountNetworkElementAsyncActionCreator(mountElement));
     }
@@ -81,7 +83,8 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   removeNetworkElement: async (element: UpdateNetworkElement) => {
     await dispatcher.dispatch(removeNetworkElementAsyncActionCreator(element));
     dispatcher.dispatch(removeWebUriAction(element.id));
-  }
+  },
+  getAvailableTlsKeys: async () => await dispatcher.dispatch(loadAllTlsKeyListAsync()),
 });
 
 type DialogSettings = {
@@ -156,26 +159,62 @@ type EditNetworkElementDialogComponentProps = Connect<undefined, typeof mapDispa
   mode: EditNetworkElementDialogMode;
   initialNetworkElement: NetworkElementConnection;
   onClose: () => void;
+  radioChecked: string
 };
 
-type EditNetworkElementDialogComponentState = NetworkElementConnection & { isNameValid: boolean, isHostSet: boolean };
+type EditNetworkElementDialogComponentState = NetworkElementConnection & {
+  isNameValid: boolean,
+  isHostSet: boolean,
+  isPasswordSelected: boolean,
+  isTlsSelected: boolean,
+  radioSelected: string,
+  showPasswordTextField: boolean,
+  showTlsDropdown: boolean
+};
 
 class EditNetworkElementDialogComponent extends React.Component<EditNetworkElementDialogComponentProps, EditNetworkElementDialogComponentState> {
   constructor(props: EditNetworkElementDialogComponentProps) {
     super(props);
-
+    this.handleRadioChange = this.handleRadioChange.bind(this);
     this.state = {
       nodeId: this.props.initialNetworkElement.nodeId,
       isRequired: false,
       host: this.props.initialNetworkElement.host,
       port: this.props.initialNetworkElement.port,
       isNameValid: true,
-      isHostSet: true
+      isHostSet: true,
+      isPasswordSelected: true,
+      isTlsSelected: false,
+      radioSelected: '',
+      showPasswordTextField: true,
+      showTlsDropdown: false
     };
+  }
+  public handleRadioChange = (event: any) => {
+    this.setState({
+      radioSelected: event.target.value,
+      showPasswordTextField: event.target.value === 'password',
+      showTlsDropdown: event.target.value === 'tlsKey'
+    });
   }
 
   render(): JSX.Element {
     const setting = settings[this.props.mode];
+    let { showPasswordTextField, showTlsDropdown, radioSelected } = this.state;
+    radioSelected = this.state.radioSelected.length > 0 ? this.state.radioSelected : this.props.radioChecked;
+
+    if (radioSelected === 'password') {
+      radioSelected = 'password';
+      showPasswordTextField = true;
+      showTlsDropdown = false;
+    } else if (radioSelected === 'tlsKey') {
+      radioSelected = 'tlsKey';
+      showPasswordTextField = false;
+      showTlsDropdown = true;
+    }
+
+    let tlsKeysList = this.props.state.connect.availableTlsKeys ? this.props.state.connect.availableTlsKeys.tlsKeysList ? this.props.state.connect.availableTlsKeys.tlsKeysList : [] : []
+
     return (
       <Dialog open={this.props.mode !== EditNetworkElementDialogMode.None}>
         <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, "-").toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
@@ -187,9 +226,39 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
           {!this.state.isNameValid && <Typography variant="body1" color="error">Name cannot be empty.</Typography>}
           <TextField disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="ipaddress" label="IP address" aria-label="ip adress" type="text" fullWidth value={this.state.host} onChange={(event) => { this.setState({ host: event.target.value }); }} />
           {!this.state.isHostSet && <Typography variant="body1" color="error">IP Adress cannot be empty.</Typography>}
+
           <TextField disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="netconfport" label="NetConf port" aria-label="netconf port" type="number" fullWidth value={this.state.port.toString()} onChange={(event) => { this.setState({ port: +event.target.value }); }} />
           {setting.enableUsernameEditor && <TextField disabled={!setting.enableUsernameEditor} spellCheck={false} margin="dense" id="username" label="Username" aria-label="username" type="text" fullWidth value={this.state.username} onChange={(event) => { this.setState({ username: event.target.value }); }} /> || null}
-          {setting.enableUsernameEditor && <TextField disabled={!setting.enableUsernameEditor} spellCheck={false} margin="dense" id="password" label="Password" aria-label="password" type="password" fullWidth value={this.state.password} onChange={(event) => { this.setState({ password: event.target.value }); }} /> || null}
+
+          {setting.enableUsernameEditor &&
+            <RadioGroup row aria-label="password-tls-key" name="password-tls-key" value={radioSelected}
+              onChange={this.handleRadioChange} >
+              <FormControlLabel value='password' control={<Radio />} label="Password" onChange={this.onRadioSelect} />
+              <FormControlLabel value='tlsKey' control={<Radio />} label="TlsKey" onChange={this.onRadioSelect} />
+            </RadioGroup> || null}
+
+          {setting.enableUsernameEditor && showPasswordTextField &&
+            <TextField disabled={!setting.enableUsernameEditor || !showPasswordTextField} spellCheck={false} margin="dense"
+              id="password" aria-label="password" type="password" fullWidth value={this.state.password}
+              onChange={(event) => { this.setState({ password: event.target.value }); }}
+            /> || null}
+
+          <FormControl fullWidth disabled={!setting.enableUsernameEditor}>
+            {setting.enableUsernameEditor && showTlsDropdown &&
+              <div>
+                <InputLabel htmlFor="pass">--Select tls-key--</InputLabel>
+                <Select disabled={!setting.enableUsernameEditor || !showTlsDropdown}
+                  id="tlsKey" aria-label="tlsKey" value={this.state.tlsKey} fullWidth // displayEmpty
+                  onChange={(event) => { this.setState({ tlsKey: event.target.value as any }); }}
+                  inputProps={{ name: 'tlsKey', id: 'tlsKey' }}  >
+                  <MenuItem value={""} disabled >--Select tls-key--</MenuItem>
+                  {tlsKeysList.map(tlsKey =>
+                    (<MenuItem value={tlsKey.key} key={tlsKey.key} aria-label={tlsKey.key} >{tlsKey.key}</MenuItem>))}
+                </Select>
+              </div>
+            }
+          </FormControl>
+
           <FormControl fullWidth disabled={!setting.enableUsernameEditor}>
             <InputLabel htmlFor="active">Required</InputLabel>
             <Select aria-label="required-selection" value={this.state.isRequired || false} onChange={(event) => {
@@ -212,6 +281,7 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
                 port: this.state.port,
                 username: this.state.username,
                 password: this.state.password,
+                tlsKey: this.state.tlsKey
               });
             }
             event.preventDefault();
@@ -227,14 +297,44 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
     )
   }
 
+  public renderTlsKeys = () => {
+    try {
+      this.props.getAvailableTlsKeys();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  public componentDidMount() {
+    this.renderTlsKeys();
+  }
+
+  public onRadioSelect = (e: any) => {
+    if (e.target.value == 'password') {
+      this.setState({ isPasswordSelected: true, isTlsSelected: false })
+    } else if (e.target.value == 'tlsKey') {
+      this.setState({ isPasswordSelected: false, isTlsSelected: true })
+    }
+  };
+
   private onApply = (element: NetworkElementConnection) => {
     this.props.onClose && this.props.onClose();
     let updateElement: UpdateNetworkElement = {
       id: this.state.nodeId
     }
+    if (this.state.isPasswordSelected) {
+      element.tlsKey = ''
+    }
+    else if (this.state.isTlsSelected) { //check here
+      element.password = ''
+    }
+
     switch (this.props.mode) {
       case EditNetworkElementDialogMode.AddNewNetworkElement:
         element && this.props.addNewNetworkElement(element);
+        this.setState({
+          radioSelected: ''
+        });
         break;
       case EditNetworkElementDialogMode.MountNetworkElement:
         element && this.props.mountNetworkElement(element);
@@ -247,22 +347,31 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
           updateElement.isRequired = this.state.isRequired;
         if (this.props.initialNetworkElement.username !== this.state.username)
           updateElement.username = this.state.username;
-        if (this.props.initialNetworkElement.password !== this.state.password)
+        if (this.props.initialNetworkElement.password !== this.state.password && this.state.isPasswordSelected) {
           updateElement.password = this.state.password;
+          updateElement.tlsKey = '';
+        }
+        if (this.props.initialNetworkElement.tlsKey !== this.state.tlsKey && this.state.isTlsSelected) {
+          updateElement.tlsKey = this.state.tlsKey;
+          updateElement.password = '';
+        }
         element && this.props.editNetworkElement(updateElement, element);
+        this.setState({
+          radioSelected: ''
+        });
         break;
       case EditNetworkElementDialogMode.RemoveNetworkElement:
         element && this.props.removeNetworkElement(updateElement);
         break;
     }
 
-    this.setState({ password: '', username: '' });
+    this.setState({ password: '', username: '', tlsKey: '' });
     this.resetRequieredFields();
   };
 
   private onCancel = () => {
     this.props.onClose && this.props.onClose();
-    this.setState({ password: '', username: '' });
+    this.setState({ password: '', username: '', tlsKey: '', radioSelected: '' });
     this.resetRequieredFields();
   }
 

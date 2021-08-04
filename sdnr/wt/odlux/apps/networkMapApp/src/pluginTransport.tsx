@@ -27,7 +27,7 @@ import { networkmapRootHandler } from './handlers/rootReducer';
 import MainView from "./App";
 import { subscribe, IFormatedMessage } from "../../../framework/src/services/notificationService";
 import applicationApi from "../../../framework/src/services/applicationApi";
-import { UpdateDetailsView } from "./actions/detailsAction";
+import { checkSitedockReachablity, IsSitedocReachableAction, UpdateDetailsView } from "./actions/detailsAction";
 import { findSiteToAlarm } from "./actions/mapActions";
 import { URL_BASEPATH } from "./config";
 import { Redirect, Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
@@ -40,7 +40,8 @@ const mapProps = (state: IApplicationStoreState) => ({
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
-  getSettings: () => dispatcher.dispatch(getSettings())
+  getSettings: () => dispatcher.dispatch(getSettings()),
+  tryReachSitedoc: () => dispatcher.dispatch(checkSitedockReachablity())
 
 });
 
@@ -51,6 +52,8 @@ const NetworkRouterApp = withRouter(connect(mapProps, mapDisp)((props: RouteComp
     (async function waitFor() {
       await  props.getSettings();
     })();
+
+    props.tryReachSitedoc();
    
   }, []);
 

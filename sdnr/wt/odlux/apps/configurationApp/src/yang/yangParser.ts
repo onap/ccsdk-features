@@ -286,7 +286,7 @@ export class YangParser {
 
   public static ResolveStack = Symbol("ResolveStack");
 
-  constructor(private _unavailableCapabilities: { failureReason: string; capability: string; }[] = []) {
+  constructor(private _unavailableCapabilities: { failureReason: string; capability: string; }[] = [], private _importOnlyModules: { name: string; revision: string; }[] = []) {
    
   }
 
@@ -298,16 +298,16 @@ export class YangParser {
     return this._views;
   }
 
-  public async addCapability(capability: string, version?: string) {
+  public async addCapability(capability: string, version?: string, parentImportOnlyModule?: boolean) {
     // do not add twice
     if (this._modules[capability]) {
-      // console.warn(`Skipped capability: ${capability} since allready contained.` );
+      // console.warn(`Skipped capability: ${capability} since already contained.` );
       return;
     }
 
-    // // do not add unavaliabe capabilities
+    // // do not add unavailable capabilities
     // if (this._unavailableCapabilities.some(c => c.capability === capability)) {
-    //   // console.warn(`Skipped capability: ${capability} since it is marked as unavaliable.` );
+    //   // console.warn(`Skipped capability: ${capability} since it is marked as unavailable.` );
     //   return;
     // }
 
@@ -325,7 +325,8 @@ export class YangParser {
       throw new Error(`Root element capability ${rootStatement.arg} does not requested ${capability}.`);
     }
 
-    const isUnavaliabe = this._unavailableCapabilities.some(c => c.capability === capability);
+    const isUnavailable = this._unavailableCapabilities.some(c => c.capability === capability);
+    const isImportOnly = parentImportOnlyModule === true || this._importOnlyModules.some(c => c.name === capability);
     
     const module = this._modules[capability] = {
       name: rootStatement.arg,
@@ -338,9 +339,11 @@ export class YangParser {
       typedefs: {},
       views: {},
       elements: {},
-      state: isUnavaliabe
-           ? ModuleState.unabaliabe 
-           : ModuleState.stable,
+      state: isUnavailable
+           ? ModuleState.unavailable 
+           : isImportOnly 
+             ? ModuleState.importOnly
+             : ModuleState.stable,
     };
 
     await this.handleModule(module, rootStatement, capability);
@@ -406,7 +409,7 @@ export class YangParser {
     // import all required files and set module state 
     if (imports) for (let ind = 0; ind < imports.length; ++ind) {
       const moduleName = imports[ind].arg!; 
-      await this.addCapability(moduleName);
+      await this.addCapability(moduleName, undefined, module.state === ModuleState.importOnly);
       const importedModule = this._modules[imports[ind].arg!];
       if (importedModule && importedModule.state > ModuleState.stable) {
           module.state = Math.max(module.state, ModuleState.instable);
@@ -415,7 +418,7 @@ export class YangParser {
 
     this.extractTypeDefinitions(rootStatement, module, "");
 
-    this.extractIdentites(rootStatement, 0, module, "");
+    this.extractIdentities(rootStatement, 0, module, "");
 
     const groupings = this.extractGroupings(rootStatement, 0, module, "");
     this._views.push(...groupings);
@@ -440,8 +443,8 @@ export class YangParser {
           module.views[key] = this._views[viewIdIndex];
         }
         
-        // add only the UI View if the module is avliable
-        if (module.state !== ModuleState.unabaliabe) this._views[0].elements[key] = module.elements[key];
+        // add only the UI View if the module is available
+        if (module.state === ModuleState.stable || module.state === ModuleState.instable) this._views[0].elements[key] = module.elements[key];
       });
     });
     return module;
@@ -449,7 +452,7 @@ export class YangParser {
 
   public postProcess() {
 
-    // execute all post processes like resolving in propper order
+    // execute all post processes like resolving in proper order
     this._unionsToResolve.forEach(cb => {
       try { cb(); } catch (error) {
         console.warn(error.message);
@@ -463,7 +466,7 @@ export class YangParser {
       }
     });
 
-    // process all augmentations / sort by namespace changes to ensure propper order 
+    // process all augmentations / sort by namespace changes to ensure proper order 
     Object.keys(this.modules).forEach(modKey => {
       const module = this.modules[modKey];
       const augmentKeysWithCounter = Object.keys(module.augments).map((key) => {
@@ -517,7 +520,7 @@ export class YangParser {
       return result;
     }
 
-    const baseIdentites: Identity[] = [];
+    const baseIdentities: Identity[] = [];
     Object.keys(this.modules).forEach(modKey => {
       const module = this.modules[modKey];
       Object.keys(module.identities).forEach(idKey => {
@@ -526,11 +529,11 @@ export class YangParser {
           const base = this.resolveIdentity(identity.base, module);
           base.children?.push(identity);
         } else {
-          baseIdentites.push(identity);
+          baseIdentities.push(identity);
         }
       });
     });
-    baseIdentites.forEach(identity => {
+    baseIdentities.forEach(identity => {
       identity.values = identity.children && traverseIdentity(identity.children) || [];
     });
 
@@ -598,7 +601,7 @@ export class YangParser {
     });
   }
 
-  /** Handles Goupings like named Container */
+  /** Handles groupings like named Container */
   private extractGroupings(statement: Statement, parentId: number, module: Module, currentPath: string): ViewSpecification[] {
     const subViews: ViewSpecification[] = [];
     const groupings = this.extractNodes(statement, "grouping");
@@ -620,7 +623,7 @@ export class YangParser {
     return subViews;
   }
 
-  /** Handles Augmants also like named Container */
+  /** Handles augments also like named container */
   private extractAugments(statement: Statement, parentId: number, module: Module, currentPath: string): ViewSpecification[] {
     const subViews: ViewSpecification[] = [];
     const augments = this.extractNodes(statement, "augment");
@@ -645,8 +648,8 @@ export class YangParser {
     return subViews;
   }
 
-  /** Handles Identities  */
-  private extractIdentites(statement: Statement, parentId: number, module: Module, currentPath: string) {
+  /** Handles identities  */
+  private extractIdentities(statement: Statement, parentId: number, module: Module, currentPath: string) {
     const identities = this.extractNodes(statement, "identity");
     module.identities = identities.reduce<{ [name: string]: Identity }>((acc, cur) => {
       if (!cur.arg) {

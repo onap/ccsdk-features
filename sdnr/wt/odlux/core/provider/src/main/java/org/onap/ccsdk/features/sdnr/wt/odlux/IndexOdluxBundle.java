@@ -48,14 +48,18 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
     private static final String ENABLE_OAUTH_DEFAULT = "false";
     private static final String ENV_ENABLE_ODLUX_RBAC = "ENABLE_ODLUX_RBAC";
     private static final String ENABLE_ODLUX_RBAC_DEFAULT = "false";
+    private static final String ENV_TRANSPORTPCEGUIURL = "TRPCEGUIURL";
+    private static final String TRANSPORTPCEGUIURL_DEFAULT = "";
 
     private final boolean oauthEnabled;
     private final boolean policyEnabled;
+    private final String transportPceGuiUrl;
 
     public IndexOdluxBundle() {
         super(null, BUNDLENAME_APP);
         this.oauthEnabled = "true".equals(getEnvVar(ENV_ENABLE_OAUTH, ENABLE_OAUTH_DEFAULT));
         this.policyEnabled = "true".equals(getEnvVar(ENV_ENABLE_ODLUX_RBAC, ENABLE_ODLUX_RBAC_DEFAULT));
+        this.transportPceGuiUrl = getEnvVar(ENV_TRANSPORTPCEGUIURL, TRANSPORTPCEGUIURL_DEFAULT);
         LOG.info("instantiating index with oauthEnabled={} and policyEnabled={}",this.oauthEnabled, this.policyEnabled);
 
     }
@@ -134,8 +138,15 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
     }
 
     private String generateConfigureJson() {
-        return String.format("{\"authentication\":\"%s\",\"enablePolicy\":%s}", this.oauthEnabled ? "oauth" : "basic",
-                String.valueOf(this.policyEnabled));
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("{\"authentication\":\"%s\",\"enablePolicy\":%s", this.oauthEnabled ? "oauth" : "basic",
+                String.valueOf(this.policyEnabled)));
+        if (this.transportPceGuiUrl != null && this.transportPceGuiUrl.length() > 0) {
+            sb.append(String.format(",\"transportpceUrl\":\"%s\"}", this.transportPceGuiUrl));
+        } else {
+            sb.append("}");
+        }
+        return sb.toString();
     }
 
     private static String getEnvVar(String v, String defaultValue) {

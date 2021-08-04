@@ -141,6 +141,8 @@ class MapLayerService {
     public addBaseLayers = (map: mapboxgl.Map, themesettings?: ThemeElement) => {
 
         const theme = !themesettings ? this.pickTheme() : themesettings;
+        console.log("user selected theme: " + this.selectedTheme)
+        console.log("found theme:" + theme);
 
         this.addCommonLayers(map);
 

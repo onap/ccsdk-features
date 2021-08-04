@@ -46,6 +46,7 @@ const styles =  makeStyles({
       top: 15,
       marginLeft: 5,
       width: 400,
+      zIndex:1
     },
     input: {
       flex: 1,

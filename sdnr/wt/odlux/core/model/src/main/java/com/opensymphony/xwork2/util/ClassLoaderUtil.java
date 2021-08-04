@@ -203,7 +203,7 @@ public class ClassLoaderUtil {
 
         private Enumeration<E> determineCurrentEnumeration() {
             if (cur != null && !cur.hasMoreElements()) {
-                if (!enums.isEmpty()) {
+                if (enums.size() > 0) {
                     cur = enums.removeLast();
                 } else {
                     cur = null;

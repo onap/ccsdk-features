@@ -54,6 +54,7 @@ let notLoadedBoundingBoxes: mapboxgl.LngLatBounds[] = [];
 let lastBoundingBox: mapboxgl.LngLatBounds | null = null;
 let myRef = React.createRef<HTMLDivElement>();
 
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
@@ -158,7 +159,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
             mapLayerService.addBaseSources(map, this.props.selectedSite, this.props.selectedLink);
             
             addImages(map, (result: boolean)=>{
-                if(map.getZoom()>11)
+                if(map.getZoom()>11 && this.props.showIcons)
                 {
                     mapLayerService.addIconLayers(map, this.props.selectedSite?.properties.id)
                 }else{
@@ -190,107 +191,20 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                     }
                 })
                 .catch(error => this.props.handleConnectionError(error));
+                
+                map.on('click', this.mapClick);
+                map.on('moveend', this.mapMoveEnd);
+                map.on('move', this.mapMove);
+               
         });
+    }
 
-        map.on('click', (e: any) => {
-
-            if (map.getLayer('points')) { // data is shown as points
-
-                var clickedLines = getUniqueFeatures(map.queryRenderedFeatures([[e.point.x - 5, e.point.y - 5],
-                [e.point.x + 5, e.point.y + 5]], {
-                    layers: ['microwave-lines', 'fibre-lines']
-                }), "id");
-
-                const clickedPoints = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['points'] }), "id");
-                const alarmedSites = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['alarmedPoints'] }), "id");
-
-                if (clickedPoints.length != 0) {
-
-
-                    if (alarmedSites.length > 0) {
-                        alarmedSites.forEach(alarm => {
-                            const index = clickedPoints.findIndex(item => item.properties!.id === alarm.properties!.id);
-
-                            if (index !== -1) {
-                                clickedPoints[index].properties!.alarmed = true;
-                                clickedPoints[index].properties!.type = "alarmed";
-                            }
-                        });
-                    }
-
-                    this.showSitePopup(clickedPoints, e.point.x, e.point.y);
-                } else if (clickedLines.length != 0) {
-                    this.showLinkPopup(clickedLines, e.point.x, e.point.y);
-                }
-
-
-            } else { // data is shown as icons
-
-                const clickedSites = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-lamps', 'point-building', 'point-data-center', 'point-factory', 'point-remaining'] }), "id");
-                const clickedLines = getUniqueFeatures(map.queryRenderedFeatures([[e.point.x - 5, e.point.y - 5],
-                [e.point.x + 5, e.point.y + 5]], {
-                    layers: ['microwave-lines', 'fibre-lines']
-                }), "id");
-
-                if (clickedSites.length > 0)
-                    this.showSitePopup(clickedSites, e.point.x, e.point.y);
-                else if (clickedLines.length != 0) {
-                    this.showLinkPopup(clickedLines, e.point.x, e.point.y);
-                }
-            }
-
-        });
-
-        map.on('moveend', () => {
-
-            const mapZoom = Number(map.getZoom().toFixed(2));
-            const lat = Number(map.getCenter().lat.toFixed(4));
-            const lon = Number(map.getCenter().lng.toFixed(4));
-
-
-            if (this.props.lat !== lat || this.props.lon !== lon || this.props.zoom !== mapZoom) {
-                this.props.updateMapPosition(lat, lon, mapZoom)
-            }
-
-            // update the url to current lat,lon,zoom values
-
-            const currentUrl = window.location.href;
-            const parts = currentUrl.split(URL_BASEPATH);
-            if(parts.length>0){
-
-                const detailsPath = parts[1].split("/details/");
-
-                if (detailsPath[1] !== undefined && detailsPath[1].length > 0) {
-                    this.props.history.replace(`/${URL_BASEPATH}/${map.getCenter().lat.toFixed(4)},${map.getCenter().lng.toFixed(4)},${mapZoom.toFixed(2)}/details/${detailsPath[1]}`)
-                }
-                else {
-                    this.props.history.replace(`/${URL_BASEPATH}/${map.getCenter().lat.toFixed(4)},${map.getCenter().lng.toFixed(4)},${mapZoom.toFixed(2)}`)
-                }
-            }
-           
+    mapMove = () => {
             
-            //switch icon layers if applicable
-            mapLayerService.showIconLayers(map, this.props.showIcons, this.props.selectedSite?.properties.id);
+        const mapZoom = map.getZoom();
 
-            //update statistics
-            const boundingBox = map.getBounds();
-
-            fetch(`${URL_API}/info/count/${boundingBox.getWest()},${boundingBox.getSouth()},${boundingBox.getEast()},${boundingBox.getNorth()}`)
-                .then(result => verifyResponse(result))
-                .then(res => res.json())
-                .then(result => {
-                    if (result.links !== this.props.linkCount || result.sites !== this.props.siteCount) {
-                        this.props.setStatistics(result.links, result.sites);
-                    }
-                })
-                .catch(error => this.props.handleConnectionError(error));;
-        })
-
-        map.on('move', () => {
-            const mapZoom = map.getZoom();
-
-            const boundingBox = map.getBounds();
-
+        const boundingBox = map.getBounds();
+        
             this.loadNetworkData(boundingBox);
             if (mapZoom > 9) {
 
@@ -313,11 +227,106 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                     map.setPaintProperty('microwave-lines', 'line-width', 2);
                 }
             }
-        });
+    };
+
+    mapClick = (e: any) => {
+
+           
+        if (map.getLayer('points')) { // data is shown as points
+
+            var clickedLines = getUniqueFeatures(map.queryRenderedFeatures([[e.point.x - 5, e.point.y - 5],
+            [e.point.x + 5, e.point.y + 5]], {
+                layers: ['microwave-lines', 'fibre-lines']
+            }), "id");
+
+            const clickedPoints = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['points'] }), "id");
+            const alarmedSites = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['alarmedPoints'] }), "id");
+
+            if (clickedPoints.length != 0) {
+
+
+                if (alarmedSites.length > 0) {
+                    alarmedSites.forEach(alarm => {
+                        const index = clickedPoints.findIndex(item => item.properties!.id === alarm.properties!.id);
+
+                        if (index !== -1) {
+                            clickedPoints[index].properties!.alarmed = true;
+                            clickedPoints[index].properties!.type = "alarmed";
+                        }
+                    });
+                }
+
+                this.showSitePopup(clickedPoints, e.point.x, e.point.y);
+            } else if (clickedLines.length != 0) {
+                this.showLinkPopup(clickedLines, e.point.x, e.point.y);
+            }
+
+
+        } else { // data is shown as icons
+
+            const clickedSites = getUniqueFeatures(map.queryRenderedFeatures(e.point, { layers: ['point-lamps', 'point-building', 'point-data-center', 'point-factory', 'point-remaining'] }), "id");
+            const clickedLines = getUniqueFeatures(map.queryRenderedFeatures([[e.point.x - 5, e.point.y - 5],
+            [e.point.x + 5, e.point.y + 5]], {
+                layers: ['microwave-lines', 'fibre-lines']
+            }), "id");
+
+            if (clickedSites.length > 0)
+                this.showSitePopup(clickedSites, e.point.x, e.point.y);
+            else if (clickedLines.length != 0) {
+                this.showLinkPopup(clickedLines, e.point.x, e.point.y);
+            }
+        }
+    };
+
+    mapMoveEnd = () => {
+
+        const mapZoom = Number(map.getZoom().toFixed(2));
+        const lat = Number(map.getCenter().lat.toFixed(4));
+        const lon = Number(map.getCenter().lng.toFixed(4));
+
+
+        if (this.props.lat !== lat || this.props.lon !== lon || this.props.zoom !== mapZoom) {
+            this.props.updateMapPosition(lat, lon, mapZoom)
+        }
+
+        // update the url to current lat,lon,zoom values
+
+        const currentUrl = window.location.href;
+        const parts = currentUrl.split(URL_BASEPATH);
+        if (parts.length > 0) {
+
+            const detailsPath = parts[1].split("/details/");
+
+            if (detailsPath[1] !== undefined && detailsPath[1].length > 0) {
+                this.props.history.replace(`/${URL_BASEPATH}/${map.getCenter().lat.toFixed(4)},${map.getCenter().lng.toFixed(4)},${mapZoom.toFixed(2)}/details/${detailsPath[1]}`)
+            }
+            else {
+                this.props.history.replace(`/${URL_BASEPATH}/${map.getCenter().lat.toFixed(4)},${map.getCenter().lng.toFixed(4)},${mapZoom.toFixed(2)}`)
+            }
+        }
+
+
+        //switch icon layers if applicable
+
+        mapLayerService.showIconLayers(map, this.props.showIcons, this.props.selectedSite?.properties.id);
+
+        //update statistics
+        const boundingBox = map.getBounds();
+
+        fetch(`${URL_API}/info/count/${boundingBox.getWest()},${boundingBox.getSouth()},${boundingBox.getEast()},${boundingBox.getNorth()}`)
+            .then(result => verifyResponse(result))
+            .then(res => res.json())
+            .then(result => {
+                if (result.links !== this.props.linkCount || result.sites !== this.props.siteCount) {
+                    this.props.setStatistics(result.links, result.sites);
+                }
+            })
+            .catch(error => this.props.handleConnectionError(error));;
     }
 
     componentDidUpdate(prevProps: mapProps, prevState: {}) {
 
+        if(prevProps !== this.props){
         //(load map)
         //triggered if either settings were done loading or tile/topology server connectivity checked
         if(prevProps.settings !== this.props.settings || this.props.isConnectivityCheckBusy !== prevProps.isConnectivityCheckBusy){
@@ -329,6 +338,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
 
             //if everything done loading/reachable, load map
             if(!this.props.isConnectivityCheckBusy && this.props.isTileServerReachable && !this.props.settings.isLoadingData && (prevProps.settings.isLoadingData !==this.props.settings.isLoadingData || prevProps.isConnectivityCheckBusy !== this.props.isConnectivityCheckBusy)){
+
                 if(map == undefined){
                     this.setupMap();
                 }
@@ -443,12 +453,22 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 }
             }
         }
+        }
     }
 
     componentWillUnmount(){
-        window.removeEventListener("menu-resized", this.handleResize);
-        lastBoundingBox=null;
 
+        //unregister events
+        window.removeEventListener("menu-resized", this.handleResize);
+        
+        if(map){
+            map.off('click', this.mapClick);
+            map.off('moveend', this.mapMoveEnd);
+            map.off('move', this.mapMove);
+        }
+
+        lastBoundingBox=null;
+        
         // will be checked again on next load
         this.props.setConnectivityCheck(true); 
     }
@@ -624,7 +644,7 @@ class Map extends React.Component<mapProps, { isPopupOpen: boolean }> {
                 <ConnectionInfo />
                 <Button 
                 disabled={!this.props.isTopoServerReachable}
-                style={{'position': 'absolute', 'right':5, top:5, backgroundColor:'white'}}
+                style={{'position': 'absolute', 'right':5, top:5, backgroundColor:'white', zIndex:1}}
                 onClick={e => this.props.navigateToApplication("network", "customize")} >
                     <img src={customize} />
                 </Button>

@@ -2,7 +2,7 @@
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
  * =================================================================================================
- * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,35 +16,39 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { link } from "./link";
+import { Address } from "./site";
 
-export type Site = {
-    id: string,
-    name: string,
-    address: Address,
-    heightAmslInMeters?: number, //AboveGroundLevel
-    antennaHeightAmslInMeters?: number,
-    type?: string,
-    operator: string,
-    location:{lon: number, lat: number},
-    devices: Device[],
-    links: link[],
-    furtherInformation:string
-}
+type StadokSite = {
 
-export type Address={
-    streetAndNr: string,
-    city: string,
-    zipCode: string | null,
-    country: string
-}
-
-export class Device {
-    id: string;
+    siteId: string;
+    createdBy: Contact;
+    updatedOn: Date;
+    location: { lat: number, lon: number },
+    address: Address;
+    contacts: { manager: Contact, owner: Contact };
+    safteyNotices: string[];
+    images: string[];
     type: string;
-    name: string;
-    manufacturer: string;
-    owner: string;
-    status?: string;
-    port: number[];
-}
+    devices: Device[];
+    logs: Log[];
+
+};
+
+type Contact = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    telephoneNumber: string;
+};
+type Log = {
+    date: Date, //string?
+    person: string;
+    entry: string;
+};
+
+type Device = {
+    "device": string,
+    "antenna": string
+};
+
+export default StadokSite;

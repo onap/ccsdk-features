@@ -58,5 +58,7 @@
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
+
 </project>

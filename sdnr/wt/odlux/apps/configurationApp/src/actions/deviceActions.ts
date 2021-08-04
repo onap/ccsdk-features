@@ -52,26 +52,20 @@ export const updateNodeIdAsyncActionCreator = (nodeId: string) => async (dispatc
   dispatch(new UpdateDeviceDescription("", {}, []));
   dispatch(new SetCollectingSelectionData(true));
   
-  const { avaliableCapabilities, unavaliableCapabilities } = await restService.getCapabilitiesByMoutId(nodeId);
-
-  if (!avaliableCapabilities || avaliableCapabilities.length <= 0) {
+  const { availableCapabilities, unavailableCapabilities, importOnlyModules } = await restService.getCapabilitiesByMountId(nodeId);
+  
+  if (!availableCapabilities || availableCapabilities.length <= 0) {
     throw new Error(`NetworkElement : [${nodeId}] has no capabilities.`);
   }
-  
-  const capParser = /^\(.*\?revision=(\d{4}-\d{2}-\d{2})\)(\S+)$/i;
-  
-  const parser = new YangParser(unavaliableCapabilities?.map(cap => {
-      const capMatch = cap && capParser.exec(cap.capability);
-      return { capability:capMatch && capMatch[2] || '', failureReason: cap.failureReason };
-  }) || undefined);
+    
+  const parser = new YangParser(unavailableCapabilities || undefined, importOnlyModules || undefined);
 
-  for (let i = 0; i < avaliableCapabilities.length; ++i){
-    const capRaw = avaliableCapabilities[i];
-    const capMatch = capRaw && capParser.exec(capRaw.capability);
+  for (let i = 0; i < availableCapabilities.length; ++i){
+    const capRaw = availableCapabilities[i];
     try {
-      capMatch && await parser.addCapability(capMatch[2], capMatch[1]);
+      await parser.addCapability(capRaw.capability, capRaw.version);
     } catch (err) {
-      console.error(`Error in ${capMatch && capMatch[2]} ${capMatch && capMatch[1]}`, err);
+      console.error(`Error in ${capRaw.capability} ${capRaw.version}`, err);
     }
   }
 

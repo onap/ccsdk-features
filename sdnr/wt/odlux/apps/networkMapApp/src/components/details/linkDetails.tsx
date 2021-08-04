@@ -37,7 +37,7 @@ const LinkDetails: React.FunctionComponent<props> = (props) => {
 
         if(el && el2){
             if(props.link.type==="microwave")
-              setHeight(el!.height - el2!.y -30);
+              setHeight(el!.height - el2!.y -50);
             else
               setHeight(el!.height - el2!.y +20);
 
@@ -68,10 +68,34 @@ const LinkDetails: React.FunctionComponent<props> = (props) => {
        const distance = props.link.length > 0 ? props.link.length : props.link.calculatedLength;
        const azimuthA = props.link.azimuthA;
        const azimuthB = props.link.azimuthB;
+       const antennaA = props.link.locationA.antenna;
+       const antennaB = props.link.locationB.antenna;
+
+       
+       let antennaData = "";
+       if(antennaA!==null && antennaB!==null){
+           antennaData = `&antennaNameA=${antennaA.name}&antennaGainA=${antennaA.gain}&waveguideLossA=${antennaA.waveguideLossIndB}&antennaNameB=${antennaB.name}&antennaGainB=${antennaB.gain}&waveguideLossB=${antennaB.waveguideLossIndB}`;
+       }
+       
+
        
        const baseUrl = window.location.pathname.split('#')[0];
-       window.open(`${baseUrl}#/linkCalculation?lat1=${siteA.lat}&lon1=${siteA.lon}&lat2=${siteB.lat}&lon2=${siteB.lon}&siteA=${nameA}&siteB=${nameB}&azimuthA=${azimuthA}&azimuthB=${azimuthB}&distance=${distance}&amslSiteA=${siteA.amsl}&AGLsiteA=${siteA.antennaHeight}&amslSiteB=${siteB.amsl}&AGLsiteB=${siteB.antennaHeight}`)
+       window.open(`${baseUrl}#/linkCalculation?lat1=${siteA.lat}&lon1=${siteA.lon}&lat2=${siteB.lat}&lon2=${siteB.lon}&siteA=${nameA}&siteB=${nameB}&azimuthA=${azimuthA}&azimuthB=${azimuthB}&distance=${distance}&amslSiteA=${siteA.amsl}&AGLsiteA=${siteA.antennaHeight}&amslSiteB=${siteB.amsl}&AGLsiteB=${siteB.antennaHeight}${antennaData}`)
 
+    }
+
+    const onLineofSightClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>{
+        e.preventDefault();
+
+        const siteA= props.link.locationA;
+        const siteB =props.link.locationB;
+
+        //TODO: add check if available
+        let heightPart = `&amslA=${siteA.amsl}&antennaHeightA=${siteA.antennaHeight}&amslB=${siteB.amsl}&antennaHeightB=${siteB.antennaHeight}`;
+        
+
+        const baseUrl = window.location.pathname.split('#')[0];
+        window.open(`${baseUrl}#/lineofsight/los?lat1=${siteA.lat}&lon1=${siteA.lon}&lat2=${siteB.lat}&lon2=${siteB.lon}${heightPart}`);
     }
 
     const data = [
@@ -94,7 +118,11 @@ const LinkDetails: React.FunctionComponent<props> = (props) => {
         </AppBar>
         <DenseTable ariaLabelRow="site-information-table-entry" ariaLabelColumn={["site-name", "latitude", "longitude", "azimuth"]} verticalTable height={height} hover={false} headers={["", "Site A", "Site B"]} data={data} />
         {
-            props.link.type==="microwave" && <Button style={{marginTop:20}} fullWidth variant="contained" color="primary" onClick={onCalculateLinkClick}>Calculate link</Button>
+            props.link.type==="microwave" &&<> 
+            <Button style={{marginTop:20}} fullWidth variant="contained" color="primary" onClick={onCalculateLinkClick}>Calculate link</Button> 
+            <Button style={{marginTop:20}} fullWidth variant="contained" color="primary" onClick={onLineofSightClick}>Line of Sight</Button> 
+            
+            </>
         }
     </div>)
 }

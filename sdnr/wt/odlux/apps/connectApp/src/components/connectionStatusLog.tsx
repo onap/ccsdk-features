@@ -54,7 +54,7 @@ class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogCo
 
   render(): JSX.Element {
     const refreshConnectionStatusLogAction = {
-      icon: Refresh, tooltip: 'Refresh Connection Status Log Table', ariaLabel:'refresh', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh Connection Status Log Table',ariaLabel:'refresh', onClick: () => {
         this.setState({
           refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode.RefreshConnectionStatusLogTable
         });

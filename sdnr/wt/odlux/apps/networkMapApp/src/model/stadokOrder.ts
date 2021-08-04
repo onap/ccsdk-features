@@ -2,7 +2,7 @@
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
  * =================================================================================================
- * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,35 +16,41 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { link } from "./link";
+export type StadokOrder = {
+    date: Date,
+    assignedUser: string,
+    state: string, //todo: type restrict
+    tasks: Task[],
 
-export type Site = {
-    id: string,
-    name: string,
-    address: Address,
-    heightAmslInMeters?: number, //AboveGroundLevel
-    antennaHeightAmslInMeters?: number,
-    type?: string,
-    operator: string,
-    location:{lon: number, lat: number},
-    devices: Device[],
-    links: link[],
-    furtherInformation:string
-}
 
-export type Address={
-    streetAndNr: string,
-    city: string,
-    zipCode: string | null,
-    country: string
-}
+};
 
-export class Device {
-    id: string;
-    type: string;
-    name: string;
-    manufacturer: string;
-    owner: string;
-    status?: string;
-    port: number[];
+export class OrderToDisplay {
+
+    static parse = (stadokOrder: StadokOrder) =>{
+        let order = new OrderToDisplay();
+        order.assignedUser=stadokOrder.assignedUser;
+        order.state=stadokOrder.state;
+
+        const firstOpenTask = stadokOrder.tasks.find(task => !task.status);
+        
+        if(firstOpenTask){
+            order.currentTask=firstOpenTask.description;
+        }else{
+            order.currentTask="No task description available";
+        }
+
+        return order;
+    }
+
+    state: string;
+    assignedUser: string;
+    currentTask: string;
+
+};
+
+type Task = {
+    type: string,
+    description: string,
+    status: boolean
 }
