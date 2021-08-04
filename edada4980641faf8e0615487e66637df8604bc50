@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "18bb8cb0_659594d9",
+        "filename": "sdnr/wt/odlux/installer/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-08-04T13:02:20Z",
+      "side": 1,
+      "message": "have those properly indented (sapce instead of tabs)",
+      "revId": "edada4980641faf8e0615487e66637df8604bc50",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
