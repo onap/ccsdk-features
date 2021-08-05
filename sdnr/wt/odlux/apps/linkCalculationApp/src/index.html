@@ -15,10 +15,11 @@
   <script type="text/javascript" src="./config.js"></script>
   <script>
     // run the application
-    require(["app","connectApp", "linkCalculationApp", "networkMapApp"], function (app, connectApp, linkCalculationApp,networkMapApp) {
+    require(["app","connectApp", "linkCalculationApp", "networkMapApp" , "lineOfSightApp"], function (app, connectApp, linkCalculationApp,networkMapApp, lineOfSightApp) {
       connectApp.register();
       linkCalculationApp.register();
       networkMapApp.register();
+      lineOfSightApp.register();
       app("./app.tsx").runApplication();
     });
   </script>

@@ -24,7 +24,7 @@
   "author": "Matthias Fischer",
   "license": "Apache-2.0",
   "peerDependencies": {
-    "@types/node": "12.0.0",
+    "@types/node": "^12.0.0",
     "@types/react": "17.0.3",
     "@types/react-dom": "17.0.2",
     "@types/react-router-dom": "5.1.7",

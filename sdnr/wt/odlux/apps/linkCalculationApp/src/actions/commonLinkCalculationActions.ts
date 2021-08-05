@@ -116,60 +116,45 @@ export class UpdateWorstMonthRainAction extends Action {
     }
 }
 
-export class UpdateEIRPAction extends Action {
-    constructor(public eirpA: number,public eirpB: number) {
-        super();
-    }
-}
+
 export class UpdateAntennaGainAction extends Action {
-    constructor(public antennaGainList: string[]) {
+    constructor(public antennaGainA: number, public antennaGainB: number) {
         super();
     }
 }
-export class UpdateAntennaListAction extends Action {
-    constructor(public antennaList: string[]) {
-        super();
-    }
-}
-export class UpdateAntennaAction extends Action {
-    constructor(public antennaA: string | null, public antennaB : string | null) {
-        super();
-    }
-}
-export class UpdateRadioAttributesAction extends Action {
-    constructor(public som: number , public eirpA : number, public eirpB : number) {
+export class updateAntennaNameAction extends Action {
+    constructor(public antennaNameA: string, public antennaNameB: string) {
         super();
     }
 }
 export class UpdateTxPowerAction extends Action {
-    constructor(public txPowerA: string | null , public txPowerB : string | null) {
+    constructor(public txPowerA: string | null, public txPowerB: string | null) {
         super();
     }
 }
 export class UpdateRxSensitivityAction extends Action {
-    constructor(public rxSensitivityA: string | null , public rxSensitivityB : string | null) {
+    constructor(public rxSensitivityA: string | null, public rxSensitivityB: string | null) {
+        super();
+    }
+}
+export class UpdateWaveguideLossAction extends Action {
+    constructor(public waveguideLossA: number, public waveguideLossB: number) {
         super();
     }
 }
 
-
-export const updateAntennaList = (frequency: number) => async (dispatcher: Dispatch, getState: () => IApplicationStoreState) => {
-    let antennaList: string[] = []
-    let antennaDiameterList: string[] = []
-    let antennaGainList :string[] =[]
-    //switch case here     frequency = 26? antennaList.push
-    switch (frequency) {
-        case 7: antennaList.push('ANDREW VHLPX2.5-7W', 'ANDREW VHLPX3-7W', 'ANDREW VHLPX4-7W', 'ANDREW VHLPX6-7W' ), antennaDiameterList.push('0.6','0.9','1.2','1.8'), antennaGainList.push('33.90','35.50','37.30','40.61'); break
-        case 11: antennaList.push('ANDREW VHLPX2-11W', 'ANDREW VHLPX3-11W', 'ANDREW VHLPX4-11W'), antennaDiameterList.push('0.6','0.9','1.2'), antennaGainList.push('34.50','38.4','40.70');break
-        case 15: antennaList.push('ANDREW VHLPX1-15', 'ANDREW VHLPX2-15', 'ANDREW VHLPX3-15', 'ANDREW VHLPX4-15'), antennaDiameterList.push('0.3','0.6','0.9','1.2'), antennaGainList.push('32.00','36.80','41.11','42.90');break
-        case 23: antennaList.push('ANDREW VHLPX1-23', 'ANDREW VHLPX2-23', 'ANDREW VHLPX3-23', 'ANDREW VHLPX4-23'), antennaDiameterList.push('0.3','0.6','0.9','1.2'), antennaGainList.push('35.30','40.21','44.80','46.71');break
-        case 26: antennaList.push('ANDREW VHLPX1-26', 'ANDREW VHLPX2-26', 'ANDREW VHLPX3-26'), antennaDiameterList.push('0.3','0.6','0.9'), antennaGainList.push('36.61','40.21','41.21','45.80');break
-        case 28: antennaList.push('ANDREW VHLPX1-28', 'ANDREW VHLPX2-28'), antennaDiameterList.push('0.3','0.6'), antennaGainList.push('38.11','42.21');break
-        case 38: antennaList.push('ANDREW VHLPX1-38', 'ANDREW VHLPX2-38'), antennaDiameterList.push('0.3','0.6'), antennaGainList.push('40.11','45.21');break
-        case 42: antennaList.push('ANDREW VHLPX1-42-XXX/D', 'ANDREW VHLPX2-42-XXX/A'), antennaDiameterList.push('0.3','0.6'), antennaGainList.push('40.80','46.00');break
-        case 80: antennaList.push('Radio Waves HPCPE-80', 'Radio Waves HPLP2-80'), antennaDiameterList.push('0.3','0.6'), antennaGainList.push('43.80','50.80');break
+export class UpdateEIRPAction extends Action {
+    constructor(public eirpA: number, public eirpB: number) {
+        super();
     }
-    dispatcher(new UpdateAntennaListAction(antennaList))
-    dispatcher(new UpdateAntennaGainAction(antennaGainList))
 }
-
+export class UpdateRxPowerAction extends Action {
+    constructor(public rxPowerA: number, public rxPowerB: number) {
+        super();
+    }
+}
+export class UpdateSomAction extends Action {
+    constructor(public somA: number, public somB:number) {
+        super();
+    }
+}

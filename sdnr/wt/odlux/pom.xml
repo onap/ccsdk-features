@@ -54,6 +54,7 @@
         <module>apps/configurationApp</module>
         <module>apps/networkMapApp</module>
         <module>apps/linkCalculationApp</module>
+        <module>apps/lineOfSightApp</module>
         <module>apps/app-feature</module>
         <module>apps/app-installer</module>
         <module>installer</module>

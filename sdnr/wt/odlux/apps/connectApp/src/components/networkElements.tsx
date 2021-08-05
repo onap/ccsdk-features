@@ -194,11 +194,12 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
         <NetworkElementTable stickyHeader tableId="network-element-table" customActionButtons={[refreshNetworkElementsAction, ...canAdd ? [addRequireNetworkElementAction] : []]} columns={[
           { property: "nodeId", title: "Node Name", type: ColumnType.text },
           { property: "isRequired", title: "Required", type: ColumnType.boolean },
-          { property: "status", title: "Connection Status", type: ColumnType.text },
+          { property: "status", title: "Connection Status", type: ColumnType.text, width:'15%' },
           { property: "host", title: "Host", type: ColumnType.text },
           { property: "port", title: "Port", type: ColumnType.numeric },
           { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
-          { property: "deviceType", title: "Type", type: ColumnType.text },
+          { property: "deviceType", title: "Device Type", type: ColumnType.text },
+          { property: "deviceFunction", title: "Device Function", type: ColumnType.text, width: '15%' }
         ]} idProperty="id" {...this.props.networkElementsActions} {...this.props.networkElementsProperties} asynchronus createContextMenu={rowData => {
 
           return this.getContextMenu(rowData);

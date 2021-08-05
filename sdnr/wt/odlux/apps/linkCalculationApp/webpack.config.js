@@ -165,6 +165,20 @@ module.exports = (env) => {
           ws: true,
           changeOrigin: true,
           secure: false
+        },
+        "/terrain": {
+          target: "http://10.20.11.163:5200",
+          secure: false,
+          pathRewrite(pathname) {
+            return pathname.replace(/^\/terrain/, '')
+          }
+        },
+        "/terrain/": {
+          target: "http://10.20.11.163:5200",
+          secure: false,
+          pathRewrite(pathname) {
+            return pathname.replace(/^\/terrain/, '/')
+          }
         }
       }
 

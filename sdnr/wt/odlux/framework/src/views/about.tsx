@@ -46,7 +46,7 @@ type odluxVersion= {version:string,build:string, framework: string,
     permanceHistoryApp: string
   }};
 
-type topologyVersion = {version: string};
+type topologyVersion = {version: string, buildTimestamp: string};
 
 class AboutComponent extends React.Component<any, AboutState> {
   textarea: React.RefObject<HTMLTextAreaElement>;
@@ -91,7 +91,9 @@ class AboutComponent extends React.Component<any, AboutState> {
     }
     else
     {
-      return `| | |\n| --- | --- |\n| Version | ${data.version} |\n`
+      const topologyInfo = `| | |\n| --- | --- |\n| Version | ${data.version} |\n` +
+                           `| Build timestamp | ${data.buildTimestamp} |\n`;
+      return topologyInfo;
     }
   }
 

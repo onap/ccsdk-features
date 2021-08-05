@@ -24,7 +24,7 @@ import { TextField, Tabs, Tab, Typography, AppBar, Button, Tooltip, Checkbox, Ta
 import './Style.scss'
 
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
-import { UpdateFrequencyAction, UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, UpdateFslCalculation, isCalculationServerReachableAction, UpdatePolAction, UpdateDistanceAction, updateAltitudeAction, UpdateAbsorptionLossAction, UpdateWorstMonthRainAction, updateAntennaList, UpdateAntennaAction, UpdateRadioAttributesAction, UpdateTxPowerAction, UpdateRxSensitivityAction } from "../actions/commonLinkCalculationActions";
+import { UpdateFrequencyAction, UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, UpdateFslCalculation, isCalculationServerReachableAction, UpdatePolAction, UpdateDistanceAction, updateAltitudeAction, UpdateAbsorptionLossAction, UpdateWorstMonthRainAction, UpdateTxPowerAction, UpdateRxSensitivityAction, UpdateEIRPAction, UpdateRxPowerAction, UpdateSomAction } from "../actions/commonLinkCalculationActions";
 import { faPlaneArrival, faAlignCenter } from "@fortawesome/free-solid-svg-icons";
 import ConnectionInfo from '../components/connectionInfo'
 import { red } from "@material-ui/core/colors";
@@ -55,15 +55,22 @@ const mapProps = (state: IApplicationStoreState) => ({
   absorptionOxygen: state.linkCalculation.calculations.absorptionOxygen,
   absorptionWater: state.linkCalculation.calculations.absorptionWater,
   month: state.linkCalculation.calculations.month,
-  eirpSiteA: state.linkCalculation.calculations.eirpA,
-  eirpSiteB: state.linkCalculation.calculations.eirpB,
+  eirpA: state.linkCalculation.calculations.eirpA,
+  eirpB: state.linkCalculation.calculations.eirpB,
   antennaGainA: state.linkCalculation.calculations.antennaGainA,
   antennaGainB: state.linkCalculation.calculations.antennaGainB,
-  antennaList: state.linkCalculation.calculations.antennaList,
-  antennaGainList: state.linkCalculation.calculations.antennaGainList,
-  antennaA: state.linkCalculation.calculations.antennaA,
-  antennaB: state.linkCalculation.calculations.antennaB,
-  systemOperatingMargin : state.linkCalculation.calculations.systemOperatingMargin
+  antennaNameA: state.linkCalculation.calculations.antennaNameA,
+  antennaNameB: state.linkCalculation.calculations.antennaNameB,
+  systemOperatingMarginA: state.linkCalculation.calculations.systemOperatingMarginA,
+  systemOperatingMarginB: state.linkCalculation.calculations.systemOperatingMarginB,
+  waveguideLossA: state.linkCalculation.calculations.waveguideLossA,
+  waveguideLossB: state.linkCalculation.calculations.waveguideLossB,
+  rxPowerA: state.linkCalculation.calculations.rxPowerA,
+  rxPowerB: state.linkCalculation.calculations.rxPowerB,
+  txPowerA: state.linkCalculation.calculations.txPowerA,
+  txPowerB: state.linkCalculation.calculations.txPowerB,
+  rxSensitivityA: state.linkCalculation.calculations.rxSensitivityA,
+  rxSensitivityB: state.linkCalculation.calculations.rxSensitivityB
 
 });
 
@@ -74,7 +81,6 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   updateFrequency: (frequency: number) => {
 
     dispatcher.dispatch(new UpdateFrequencyAction(frequency))
-    dispatcher.dispatch(updateAntennaList(frequency))
   },
   updateLatLon: (Lat1: number, Lon1: number, Lat2: number, Lon2: number) => {
     dispatcher.dispatch(new UpdateLatLonAction(Lat1, Lon1, Lat2, Lon2))
@@ -114,16 +120,20 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   UpdateWorstMonthRain: (month: string) => {
     dispatcher.dispatch(new UpdateWorstMonthRainAction(month))
   },
-  UpdateAntenas: (antennaA: string | null, antennaB: string | null) => {
-    dispatcher.dispatch(new UpdateAntennaAction(antennaA, antennaB))
+  UpdateEIRP: (eirpA: number, eirpB: number) => {
+    dispatcher.dispatch(new UpdateEIRPAction(eirpA, eirpB))
   },
-  UpdateRadioAttributes :(som: number, eirpA: number, eirpB: number)=>{
-    dispatcher.dispatch(new UpdateRadioAttributesAction(som,eirpA, eirpB))
+  UpdateRxPower: (rxPowerA: number, rxPowerB: number) => {
+    dispatcher.dispatch(new UpdateRxPowerAction(rxPowerA, rxPowerB))
   },
-  UpdateTxPower :(txPowerA: string | null, txPowerB: string | null)=>{
+  UpdateSom: (somA: number, somB: number) => {
+    dispatcher.dispatch(new UpdateSomAction(somA, somB))
+  },
+
+  UpdateTxPower: (txPowerA: string | null, txPowerB: string | null) => {
     dispatcher.dispatch(new UpdateTxPowerAction(txPowerA, txPowerB))
-  }, 
-  UpdateRxSensitivity :(rxSensitivityA : string | null, rxSensitivityB : string | null)=>{
+  },
+  UpdateRxSensitivity: (rxSensitivityA: string | null, rxSensitivityB: string | null) => {
     dispatcher.dispatch(new UpdateRxSensitivityAction(rxSensitivityA, rxSensitivityB))
   }
 });
@@ -145,6 +155,7 @@ interface initialState {
   attenuationMethodError: string,
   worstmonth: boolean,
   showWM: string,
+  rainMethodErrorState: string
 }
 
 class LinkCalculation extends React.Component<linkCalculationProps, initialState> {
@@ -164,6 +175,7 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
       antennaTypeError: '',
       worstmonth: false,
       showWM: '',
+      rainMethodErrorState: '0'
     };
   }
 
@@ -246,10 +258,10 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
     }
   }
 
-  linkBudget = (antennaA: string, antennaB: string, transmissionPowerA: number, transmissionPowerB: number) => {
-    fetch(BASE_URL + '/linkbudget/' + antennaA + '/' + antennaB + '/' + transmissionPowerA + '/' + transmissionPowerB)
-    .then(res=>res.json())
-    .then(result => {this.props.UpdateRadioAttributes(result.systemOperatingMargin, result.eirpA, result.eirpB)})
+  linkBudget = (lat1: number, lon1: number, lat2: number, lon2: number, distance: number, frequency: number, absorptionMethod: string, polarization: string, antennaGainA: number, antennaGainB: number, waveguideLossA: number, waveguideLossB: number, transmissionPowerA: number, transmissionPowerB: number, rxSensitivityA: number, rxSensitivityB: number) => {
+    fetch(BASE_URL + '/linkbudget/' + lat1 + ',' + lon1 + ',' + lat2 + ',' + lon2 + '/' + distance + '/' + frequency + '/' + absorptionMethod + '/' + polarization.toUpperCase() + '/' + antennaGainA + '/' + antennaGainB + '/' + waveguideLossA + '/' + waveguideLossB + '/' + transmissionPowerA + '/' + transmissionPowerB + '/' + rxSensitivityA + '/' + rxSensitivityB)
+      .then(res => res.json())
+      .then(result => { this.props.UpdateEIRP(result.eirpA, result.eirpB); this.props.UpdateRxPower(result.receivedPowerA, result.receivedPowerB); this.props.UpdateSom(result.systemOperatingMarginA, result.systemOperatingMarginA) })
   }
 
   formValid = () => {
@@ -260,7 +272,10 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
     this.props.lon2 === 0 ? this.setState({ longitude2Error: 'Enter a number between -180 to 180' }) : null
     this.props.frequency === 0 ? this.setState({ frequencyError: 'Select a frequency' }) : this.setState({ frequencyError: '' })
 
-    this.state.rainMethodDisplay === null && this.props.rainVal === 0 ? this.setState({ rainMethodError: 'Select the rain method' }) : this.setState({ rainMethodError: '' })
+    // this.state.rainMethodDisplay === null && this.props.rainVal === 0 ? this.setState({ rainMethodError: 'Select the rain method' }) : this.setState({ rainMethodError: '' })
+
+    this.state.rainMethodErrorState === '0' ? this.setState({ rainMethodError: 'Select the rain method' }) : this.setState({ rainMethodError: '' })
+
     this.state.absorptionMethod === '0' ? this.setState({ attenuationMethodError: 'Select the attenuation method' }) : this.setState({ attenuationMethodError: '' })
     console.log(this.state);
     console.log(this.props.lat1 !== 0 && this.props.lat2 !== 0 && this.props.lon1 !== 0 && this.props.lon2 !== 0 && this.props.frequency !== 0 && this.state.rainMethodError === '' && this.state.attenuationMethodError === '');
@@ -282,21 +297,18 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
         this.setState({ showWM: ' ' })
         this.props.UpdateWorstMonthRain('')
         this.AbsorptionAtt(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.distance, this.props.frequency, this.state.worstmonth, this.state.absorptionMethod)
+        this.linkBudget(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.distance, this.props.frequency, this.state.absorptionMethod, this.props.polarization!, this.props.antennaGainA, this.props.antennaGainB, this.props.waveguideLossA, this.props.waveguideLossB, Number(this.props.txPowerA), Number(this.props.txPowerB), Number(this.props.rxSensitivityA), Number(this.props.rxSensitivityB))
 
         if (this.state.rainMethodDisplay === true) {
 
           this.manualRain(this.props.rainVal, this.props.frequency, this.props.distance, this.props.polarization!);
         }
         else {
-          // this.updateRainValue(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.state.worstmonth)
           this.rainAttCal(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency, this.props.distance, this.props.polarization!, this.state.worstmonth);
         }
       }
       else {
         this.AbsorptionAtt(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.distance, this.props.frequency, this.state.worstmonth, this.state.absorptionMethod)
-
-        // this.updateRainValue(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.state.worstmonth)
-
         this.rainAttCal(this.props.lat1, this.props.lon1, this.props.lat2, this.props.lon2, this.props.frequency, this.props.distance, this.props.polarization!, this.state.worstmonth);
       }
     }
@@ -432,7 +444,7 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
           </div>
           <div>
             <div style={{ marginTop: 5 }}>Frequency</div>
-            <div style={{ marginTop: 5 }}> {<select aria-label="select-frequency-in-ghz" className={this.state.frequencyError.length > 0 ? 'error' : 'input'} onChange={(e) => { this.props.updateFrequency(Number(e.target.value)); e.target.value === '0' ? this.setState({ frequencyError: 'select a frequency' }) : this.setState({ frequencyError: '' }); this.props.UpdateAntenas('0', '0') }}>
+            <div style={{ marginTop: 5 }}> {<select aria-label="select-frequency-in-ghz" className={this.state.frequencyError.length > 0 ? 'error' : 'input'} onChange={(e) => { this.props.updateFrequency(Number(e.target.value)); e.target.value === '0' ? this.setState({ frequencyError: 'select a frequency' }) : this.setState({ frequencyError: '' }) }}>
 
               <option value='0' aria-label="none-value" >Select Freq</option>
               <option value='7' aria-label="7" >7 GHz</option>
@@ -452,7 +464,7 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
           </div>
           <div>
             <div>Rain Model</div>
-            <div> {<select aria-label="select-rain-method" className={this.state.rainMethodError.length > 0 ? 'error' : 'input'} onChange={(e) => { e.target.value === 'itu' ? this.setState({ rainMethodDisplay: false }) : this.setState({ rainMethodDisplay: true }); e.target.value === '0' ? this.setState({ rainMethodError: 'select a Rain model' }) : this.setState({ rainMethodError: '' }) }}>
+            <div> {<select aria-label="select-rain-method" className={this.state.rainMethodError.length > 0 ? 'error' : 'input'} onChange={(e) => {if (e.target.value !== '') { this.setState({ rainMethodErrorState: e.target.value, rainMethodError: '' }) }; e.target.value === 'itu' ? this.setState({ rainMethodDisplay: false }) : this.setState({ rainMethodDisplay: true }) }}>
               <option value='0' aria-label="none-value" >Select Rain Method</option>
               <option value='itu' aria-label="itur8377">ITU-R P.837-7</option>
               <option value='manual' aria-label="manual-entry">Specific Rain</option>
@@ -471,7 +483,7 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
           </div>
           <div>
             <div>Absorption Model</div>
-            <div> {<select aria-label="select-absorption-method" className={this.state.attenuationMethodError.length > 0 ? 'error' : 'input'} onChange={(e) => { if (e.target.value !== '') { this.setState({ absorptionMethod: e.target.value }); this.setState({ attenuationMethodError: '' }) } }}>
+            <div> {<select aria-label="select-absorption-method" className={this.state.attenuationMethodError.length > 0 ? 'error' : 'input'} onChange={(e) => { if (e.target.value !== '') { this.setState({ absorptionMethod: e.target.value, attenuationMethodError: '' }) } }}>
               <option value='0' aria-label="none-value" >Select Absorption Method</option>
               <option value='ITURP67612' aria-label="iturp67612" >ITU-R P.676-12</option>
               <option value='ITURP67611' aria-label="iturp67611"  >ITU-R P.676-11</option>
@@ -489,14 +501,15 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
           </div>
           <div>
             <div>System Operating Margin</div>
-            <div aria-label="system-operating-margin">{this.props.systemOperatingMargin} dB</div>
+            <div aria-label="system-operating-margin">{this.props.systemOperatingMarginA.toFixed(3)} dB</div>
+            <div aria-label="system-operating-margin">{this.props.systemOperatingMarginB.toFixed(3)} dB</div>
           </div>
           <div>
-            <div>Radio Transmitted Power</div>    
-            <div> {<form><input aria-label="site-a-transmitted-power" type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => {if (e.target.value !== '') this.props.UpdateTxPower(e.target.value,null) }}
+            <div>Radio Transmitted Power</div>
+            <div> {<form><input aria-label="site-a-transmitted-power" type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => { if (e.target.value !== '') this.props.UpdateTxPower(e.target.value, null) }}
             >
             </input> dBm </form>} </div>
-            <div> {<form><input aria-label="site-b-transmitted-power" type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => { if (e.target.value !== '') this.props.UpdateTxPower(null,e.target.value) }}
+            <div> {<form><input aria-label="site-b-transmitted-power" type="number" style={{ width: 70, height: 15, fontSize: 14 }} onChange={(e) => { if (e.target.value !== '') this.props.UpdateTxPower(null, e.target.value) }}
             >
             </input>  dBm  </form>} </div>
           </div>
@@ -509,40 +522,42 @@ class LinkCalculation extends React.Component<linkCalculationProps, initialState
             >
             </input>  dBm  </form>} </div>
           </div>
+          <div>
+            <div>Rx power</div>
+            <div aria-label="site-a-effective-isotropic-radiated-power">{this.props.rxPowerA.toFixed(3)} dBm</div>
+            <div aria-label="site-b-effective-isotropic-radiated-power">{this.props.rxPowerB.toFixed(3)} dBm</div>
+          </div>
         </div>
         <div className='antennaContainer'>
           <div>
             <div></div>
             <div className='antennaFont'>Antenna Settings</div>
           </div>
+
           <div>
             <div>Antenna</div>
-
-            <div> {<select aria-label="site-a-select-antenna" value={this.props.antennaA} style={{ width: 160, height: 22, fontSize: 13 }} className={this.state.antennaTypeError.length > 0 ? 'error' : 'input'} onChange={(e) => { if (e.target.value !== '') { this.props.UpdateAntenas(e.target.value, null); this.setState({ antennaTypeError: '' }) } }}>
-              <option value='0' aria-label="none-value" >Select Antenna</option>
-              {this.props.antennaList.map(antenna => <option value={antenna}>{antenna}</option>)}
-
-            </select>} <div style={{ fontSize: 12, color: 'red' }}>{this.state.antennaTypeError}</div>
-            </div>
-            <div> {<select aria-label="site-b-select-antenna" value={this.props.antennaB} style={{ width: 160, height: 22, fontSize: 13 }} className={this.state.antennaTypeError.length > 0 ? 'error' : 'input'} onChange={(e) => { if (e.target.value !== '') { this.props.UpdateAntenas(null, e.target.value); this.setState({ antennaTypeError: '' }) } }}>
-              <option value='0' aria-label="none-value" >Select Antenna</option>
-              {this.props.antennaList.map(antenna => <option value={antenna}>{antenna}</option>)}
-
-            </select>} <div style={{ fontSize: 12, color: 'red' }}>{this.state.antennaTypeError}</div>
-            </div>
+            <div aria-label="site-a-amsl">{this.props.antennaNameA} </div>
+            <div aria-label="site-b-amsl">{this.props.antennaNameB}</div>
           </div>
+
+
           <div>
             <div>EIRP</div>
-            <div aria-label="site-a-effective-isotropic-radiated-power">{this.props.eirpSiteA} dBm</div>
-            <div aria-label="site-b-effective-isotropic-radiated-power">{this.props.eirpSiteB} dBm</div>
+            <div aria-label="site-a-effective-isotropic-radiated-power">{this.props.eirpA.toFixed(3)} dBm</div>
+            <div aria-label="site-b-effective-isotropic-radiated-power">{this.props.eirpB.toFixed(3)} dBm</div>
           </div>
-          
+
           <div>
             <div>Gain</div>
-            <div aria-label="site-a-antenna-gain" > {this.props.antennaGainList[this.props.antennaList.indexOf(this.props.antennaA)]} dBi</div>
-            <div aria-label="site-b-antenna-gain">{this.props.antennaGainList[this.props.antennaList.indexOf(this.props.antennaB)]} dBi</div>
-
+            <div aria-label="site-a-antenna-gain" > {this.props.antennaGainA} dBi</div>
+            <div aria-label="site-b-antenna-gain">{this.props.antennaGainB} dBi</div>
           </div>
+          <div>
+            <div>Waveguide Loss</div>
+            <div aria-label="site-a-waveguide-loss" > {this.props.waveguideLossA} dB</div>
+            <div aria-label="site-b-waveguide-loss">{this.props.waveguideLossB} dB</div>
+          </div>
+
           <div>
             <div></div>
             <div>{<button aria-label="calculate-button" style={{ color: '#222', fontFamily: 'Arial', boxAlign: 'center', display: 'inline-block', insetInlineStart: '20', alignSelf: 'center' }}

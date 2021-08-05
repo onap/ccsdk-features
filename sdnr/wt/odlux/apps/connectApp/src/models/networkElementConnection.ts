@@ -30,6 +30,7 @@ export type NetworkElementConnection = {
   status?: "Connected" | "mounted" | "unmounted" | "Connecting" | "Disconnected" | "idle";
   coreModelCapability?: string;
   deviceType?: string;
+  deviceFunction?: string;
   nodeDetails?: {
     availableCapabilites: {
       capabilityOrigin: string;

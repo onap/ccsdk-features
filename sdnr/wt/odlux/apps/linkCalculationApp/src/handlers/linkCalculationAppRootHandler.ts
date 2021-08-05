@@ -21,7 +21,7 @@ import { combineActionHandler } from '../../../../framework/src/flux/middleware'
 // ** do not remove **
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { IActionHandler } from '../../../../framework/src/flux/action';;
-import { UpdateLinkIdAction, UpdateFrequencyAction , UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, updateHideForm, UpdateFslCalculation, UpdateSiteAction, UpdateDistanceAction, isCalculationServerReachableAction, UpdatePolAction, updateAltitudeAction, UpdateAbsorptionLossAction, UpdateWorstMonthRainAction, UpdateEIRPAction,  UpdateAntennaAction, UpdateAntennaListAction, UpdateAntennaGainAction, UpdateTxPowerAction, UpdateRxSensitivityAction} from '../actions/commonLinkCalculationActions';
+import { UpdateLinkIdAction, UpdateFrequencyAction , UpdateLatLonAction, UpdateRainAttAction, UpdateRainValAction, updateHideForm, UpdateFslCalculation, UpdateSiteAction, UpdateDistanceAction, isCalculationServerReachableAction, UpdatePolAction, updateAltitudeAction, UpdateAbsorptionLossAction, UpdateWorstMonthRainAction, UpdateEIRPAction, UpdateAntennaGainAction, UpdateTxPowerAction, UpdateRxSensitivityAction, updateAntennaNameAction, UpdateWaveguideLossAction, UpdateRxPowerAction, UpdateSomAction} from '../actions/commonLinkCalculationActions';
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
@@ -60,15 +60,18 @@ export type ILinkCalculationAppStateState= {
   eirpB: number, 
   antennaGainA: number,
   antennaGainB :number,
-  antennaList:string[],
-  antennaGainList:string[],
-  antennaA: string,
-  antennaB:string,
-  systemOperatingMargin : number,
+  antennaNameA: string,
+  antennaNameB:string,
+  systemOperatingMarginA : number,
+  systemOperatingMarginB : number,
   txPowerA : string,
   txPowerB: string,
   rxSensitivityA : string,
-  rxSensitivityB: string
+  rxSensitivityB: string, 
+  waveguideLossA : number, 
+  waveguideLossB: number,
+  rxPowerA :number, 
+  rxPowerB: number
 }
 
 const initialState: ILinkCalculationAppStateState ={
@@ -98,18 +101,19 @@ const initialState: ILinkCalculationAppStateState ={
   eirpB: 0, 
   antennaGainA :0,
   antennaGainB :0,
-  antennaList:[],
-  antennaGainList:[],
-  antennaA: '0',
-  antennaB:'0',
-  systemOperatingMargin : 0,
+  antennaNameA: '',
+  antennaNameB:'',
+  systemOperatingMarginA : 0,
+  systemOperatingMarginB : 0,
   txPowerA : '0',
   txPowerB: '0', 
   rxSensitivityA: '0',
-  rxSensitivityB: '0'
+  rxSensitivityB: '0', 
+  waveguideLossA : 0,
+  waveguideLossB: 0, 
+  rxPowerA : 0,
+  rxPowerB: 0
 }
-
-
 
 export const LinkCalculationHandler: IActionHandler<ILinkCalculationAppStateState> = (state=initialState, action) => {
     
@@ -156,17 +160,12 @@ export const LinkCalculationHandler: IActionHandler<ILinkCalculationAppStateStat
   else if (action instanceof UpdateWorstMonthRainAction){
     state = Object.assign({}, state, {month:action.month})
   }
-  else if (action instanceof UpdateEIRPAction){
-    state = Object.assign({}, state, {eirpA:action.eirpA, eirpB:action.eirpB})
-  }
+  
   else if (action instanceof UpdateAntennaGainAction){
-    state = Object.assign({}, state, {antennaGainList:action.antennaGainList})
+    state = Object.assign({}, state, {antennaGainA:action.antennaGainA,antennaGainB:action.antennaGainB})
   }
-  else if (action instanceof UpdateAntennaListAction){
-    state = Object.assign({}, state, {antennaList:action.antennaList})
-  }
-  else if (action instanceof UpdateAntennaAction){
-    state = Object.assign({}, state, {antennaA:action.antennaA == null ? state.antennaA : action.antennaA , antennaB: action.antennaB == null? state.antennaB : action.antennaB})
+  else if (action instanceof updateAntennaNameAction){
+    state = Object.assign({}, state, {antennaNameA:action.antennaNameA, antennaNameB: action.antennaNameB})
   }
   else if (action instanceof UpdateTxPowerAction){
     state = Object.assign({}, state, {txPowerA:action.txPowerA == null ? state.txPowerA : action.txPowerA , txPowerB: action.txPowerB == null? state.txPowerB : action.txPowerB})
@@ -174,6 +173,19 @@ export const LinkCalculationHandler: IActionHandler<ILinkCalculationAppStateStat
   else if (action instanceof UpdateRxSensitivityAction){
     state = Object.assign({}, state, {rxSensitivityA:action.rxSensitivityA == null ? state.rxSensitivityA : action.rxSensitivityA , rxSensitivityB: action.rxSensitivityB == null? state.rxSensitivityB : action.rxSensitivityB})
   }
+  else if (action instanceof UpdateWaveguideLossAction){
+    state = Object.assign({}, state, {waveguideLossA:action.waveguideLossA, waveguideLossB: action.waveguideLossB})
+  }
+  else if (action instanceof UpdateEIRPAction){
+    state = Object.assign({}, state, {eirpA:action.eirpA, eirpB:action.eirpB})
+  }
+  else if (action instanceof UpdateRxPowerAction){
+    state = Object.assign({}, state, {rxPowerA:action.rxPowerA, rxPowerB:action.rxPowerB})
+  }
+  else if (action instanceof UpdateSomAction){
+    state = Object.assign({}, state, {systemOperatingMarginA:action.somA , systemOperatingMarginB :action.somB})
+  }
+  
 
   return state
 }

@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
         border: "1px solid #ced4da",
         fontSize: 16,
         width: "auto",
-        padding: "5px 26px 5px 12px",
+        padding: "5px 5px 5px 5px",
         transition: theme.transitions.create(["border-color", "box-shadow"]),
     },
     center: {
