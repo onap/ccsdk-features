@@ -94,6 +94,9 @@ public class PmDataBuilderOpenRoadm {
     // Build PM entity for writing into the database
     public List<PmdataEntity> buildPmDataEntity(HistoricalPmList historicalPmEnitityList) {
         List<PmdataEntity> pmEntitiyList = new ArrayList<>();
+        if(historicalPmEnitityList==null) {
+            return pmEntitiyList;
+        }
         Collection<HistoricalPmEntry> pmDataEntryList =
                 YangHelper.getCollection(historicalPmEnitityList.getHistoricalPmEntry());
         for (HistoricalPmEntry pmDataEntry : pmDataEntryList) {

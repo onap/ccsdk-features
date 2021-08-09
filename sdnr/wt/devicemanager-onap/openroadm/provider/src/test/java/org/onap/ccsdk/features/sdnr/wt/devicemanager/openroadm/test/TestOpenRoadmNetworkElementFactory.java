@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Optional;
 import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl.OpenroadmNetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
@@ -43,54 +43,56 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class TestOpenRoadmNetworkElementFactory {
 
-    private static NetconfBindingAccessor accessor;
+    private static NetconfBindingAccessor bindingAccessor;
     private static DeviceManagerServiceProvider serviceProvider;
     private static Capabilities capabilities;
     private static TransactionUtils transactionUtils;
     private static DataBroker dataBroker;
 
-    @BeforeClass
-    public static void init() throws InterruptedException, IOException {
-        accessor = mock(NetconfBindingAccessor.class);
+    @Before
+    public void init() throws InterruptedException, IOException {
+        bindingAccessor = mock(NetconfBindingAccessor.class);
         capabilities = mock(Capabilities.class);
         dataBroker = mock(DataBroker.class);
         transactionUtils = mock(TransactionUtils.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
-        when(accessor.getNodeId()).thenReturn(new NodeId("RoadmA2"));
-        when(accessor.getCapabilites()).thenReturn(capabilities);
-        when(accessor.getDataBroker()).thenReturn(dataBroker);
-        when(accessor.getTransactionUtils()).thenReturn(transactionUtils);
-        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(accessor));
+
+        when(bindingAccessor.getCapabilites()).thenReturn(capabilities);
+        when(bindingAccessor.getNetconfBindingAccessor()).thenReturn(Optional.of(bindingAccessor));
+        when(bindingAccessor.getNodeId()).thenReturn(new NodeId("RoadmA2"));
+        when(bindingAccessor.getNodeId()).thenReturn(new NodeId("RoadmA2"));
+        when(bindingAccessor.getDataBroker()).thenReturn(dataBroker);
+        when(bindingAccessor.getTransactionUtils()).thenReturn(transactionUtils);
         when(serviceProvider.getDataProvider()).thenReturn(null);
 
         final Class<OrgOpenroadmDevice> openRoadmDev = OrgOpenroadmDevice.class;
         InstanceIdentifier<OrgOpenroadmDevice> deviceId = InstanceIdentifier.builder(openRoadmDev).build();
-        when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
+        when(bindingAccessor.getTransactionUtils().readData(bindingAccessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 deviceId)).thenReturn(mock(OrgOpenroadmDevice.class));
 
-        when(accessor.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
+        when(bindingAccessor.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
     }
 
     @Test
     public void testCapabiltiesAvailable1() {
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(OrgOpenroadmDevice.QNAME)).thenReturn(true);
+        when(bindingAccessor.getCapabilites().isSupportingNamespaceAndRevision(OrgOpenroadmDevice.QNAME)).thenReturn(true);
         OpenroadmNetworkElementFactory factory = new OpenroadmNetworkElementFactory();
-        assertTrue((factory.create(accessor, serviceProvider)).isPresent());
+        assertTrue((factory.create(bindingAccessor, serviceProvider)).isPresent());
     }
 
     @Test
     public void testCapabiltiesAvailable2() {
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision("http://org/openroadm/device", "2018-10-19"))
+        when(bindingAccessor.getCapabilites().isSupportingNamespaceAndRevision("http://org/openroadm/device", "2018-10-19"))
                 .thenReturn(true);
         OpenroadmNetworkElementFactory factory = new OpenroadmNetworkElementFactory();
-        assertTrue((factory.create(accessor, serviceProvider)).isPresent());
+        assertTrue((factory.create(bindingAccessor, serviceProvider)).isPresent());
     }
 
     @Test
     public void testCapabiltiesNotAvailable() throws Exception {
-        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(OrgOpenroadmDevice.QNAME)).thenReturn(false);
+        when(bindingAccessor.getCapabilites().isSupportingNamespaceAndRevision(OrgOpenroadmDevice.QNAME)).thenReturn(false);
         OpenroadmNetworkElementFactory factory = new OpenroadmNetworkElementFactory();
-        assertFalse(factory.create(accessor, serviceProvider).isPresent());
+        assertFalse(factory.create(bindingAccessor, serviceProvider).isPresent());
     }
 
     @After
