@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.test;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm71.test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
