@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
 
     // variables
-    private final long equipmentLevel = 1;
+    private final long equipmentLevel = 0;
     private static final Logger log = LoggerFactory.getLogger(OpenroadmNetworkElement.class);
     private Hashtable<String, Long> circuitPacksRecord;
     private Hashtable<String, Long> shelfProvisionedcircuitPacks;

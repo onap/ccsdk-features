@@ -66,7 +66,7 @@ public class TestOpenRoadmInventory {
             .setMaxNumBin15minHistoricalPm(Uint16.valueOf(32)).setMaxNumBin24hourHistoricalPm(Uint16.valueOf(7))
             .setOpenroadmVersion(OpenroadmVersionType._20).build();
 
-    private OrgOpenroadmDevice device = mock(OrgOpenroadmDevice.class);;
+    private OrgOpenroadmDevice device = mock(OrgOpenroadmDevice.class);
     private Shelves shelf = mock(Shelves.class);
     private Interface interfaces = mock(Interface.class);
     private CircuitPacks cp = mock(CircuitPacks.class);

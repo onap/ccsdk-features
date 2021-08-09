@@ -63,7 +63,7 @@ public class OpenroadmNetworkElementFactory implements NetworkElementFactory {
             if (bindingAccessor.isPresent()) {
                 return Optional.of(new OpenroadmNetworkElementBase(bindingAccessor.get(), serviceProvider));
             }
-        } 
+        }
         return Optional.empty();
     }
     // end of public methods

@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.test;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -91,13 +92,7 @@ public class TestOpenRoadmDeviceChangeNotification {
     public void testOnCreateTechInfoNotification() {
         when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
         deviceChangeListener.onCreateTechInfoNotification(createTechInfoNotification());
-        EventlogEntity event = new EventlogBuilder().setNodeId(NODEID).setCounter(1)
-                .setId(createTechInfoNotification().getShelfId())
-                .setAttributeName(createTechInfoNotification().getShelfId())
-                .setObjectId(createTechInfoNotification().getShelfId())
-                .setNewValue(createTechInfoNotification().getStatus().getName()).setSourceType(SourceType.Netconf)
-                .setTimestamp(ncTimeConverter.getTimeStamp()).build();
-        verify(databaseService).writeEventLog(event);
+        verify(databaseService).writeEventLog(any(EventlogEntity.class));
     }
 
     /**

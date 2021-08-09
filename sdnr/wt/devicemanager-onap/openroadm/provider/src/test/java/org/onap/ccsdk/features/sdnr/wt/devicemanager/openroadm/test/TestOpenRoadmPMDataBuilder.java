@@ -66,6 +66,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
+
 public class TestOpenRoadmPMDataBuilder {
     // variables
     // end of variables
@@ -87,16 +88,8 @@ public class TestOpenRoadmPMDataBuilder {
     private Map<HistoricalPmKey, HistoricalPm> historicalPMCollection = new HashMap<HistoricalPmKey, HistoricalPm>();
     private Map<HistoricalPmEntryKey, HistoricalPmEntry> historicalPmEntryCollection =
             new HashMap<HistoricalPmEntryKey, HistoricalPmEntry>();
-    private PathArgument pa =new PathArgument() {
-        @Override
-        public int compareTo(PathArgument o) {
-            return 0;
-        }
-        @Override
-        public @NonNull Class<? extends DataObject> getType() {
-            return Pmdata15mEntity.class;
-        }
-    };
+
+
 
     // public methods
     @Before
@@ -138,8 +131,22 @@ public class TestOpenRoadmPMDataBuilder {
         when(historicalPm.getMeasurement()).thenReturn(measurementData);
 
         historicalPMCollection.put(historicalPmBuilder.key(), historicalPmBuilder.build());
+        PathArgument pa =new PathArgument() {
+
+            @Override
+            public int compareTo(PathArgument o) {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public @NonNull Class<? extends DataObject> getType() {
+                // TODO Auto-generated method stub
+                return Pmdata15mEntity.class;
+            }
+        };
         historicalPmEntryBuiler.setPmResourceInstance(InstanceIdentifier.create(Arrays.asList(pa)))
-                .setPmResourceTypeExtension("dshjdekjdewkk")
+        .setPmResourceTypeExtension("dshjdekjdewkk")
                 .setPmResourceType(ResourceTypeEnum.CircuitPack).setHistoricalPm(historicalPMCollection);
 
         historicalPmEntryCollection.put(historicalPmEntryBuiler.key(), historicalPmEntryBuiler.build());
@@ -161,10 +168,23 @@ public class TestOpenRoadmPMDataBuilder {
         historicalPmBuilder.setType(PmNamesEnum.ErroredSeconds).setDirection(Direction.Rx)
                 .setExtension("sajhsiwiduwugdhegdeuz").setLocation(Location.FarEnd).setMeasurement(measurementData);
         when(historicalPm.getMeasurement()).thenReturn(measurementData);
+        PathArgument pa =new PathArgument() {
 
+            @Override
+            public int compareTo(PathArgument o) {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public Class<? extends DataObject> getType() {
+                // TODO Auto-generated method stub
+                return Pmdata15mEntity.class;
+            }
+        };
         historicalPMCollection.put(historicalPmBuilder.key(), historicalPmBuilder.build());
         historicalPmEntryBuiler.setPmResourceInstance(InstanceIdentifier.create(Arrays.asList(pa)))
-                .setPmResourceTypeExtension("dshjdekjdewkk")
+            .setPmResourceTypeExtension("dshjdekjdewkk")
                 .setPmResourceType(ResourceTypeEnum.Device).setHistoricalPm(historicalPMCollection);
 
         historicalPmEntryCollection.put(historicalPmEntryBuiler.key(), historicalPmEntryBuiler.build());
