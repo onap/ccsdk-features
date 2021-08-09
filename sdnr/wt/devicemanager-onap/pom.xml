@@ -34,5 +34,6 @@
         <module>onf12</module>
         <module>onf14</module>
         <module>openroadm</module>
+        <module>openroadm71</module>
     </modules>
 </project>
