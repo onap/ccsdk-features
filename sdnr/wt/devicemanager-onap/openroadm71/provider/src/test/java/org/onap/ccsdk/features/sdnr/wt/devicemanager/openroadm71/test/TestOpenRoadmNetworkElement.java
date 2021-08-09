@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.test;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm71.test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm71.impl.OpenroadmInventoryInput;
@@ -298,13 +297,15 @@ public class TestOpenRoadmNetworkElement {
 
 
 
-    @Ignore
     @Test
     public void test() {
         OpenroadmNetworkElement optionalNe = new OpenroadmNetworkElement(accessor, serviceProvider);
         optionalNe.initialReadFromNetworkElement();
         verify(dataprovider).writeInventory(accessor.getNodeId().getValue(),
-                Arrays.asList(inventoryData.getInventoryData(Uint32.valueOf(1))));
+                Arrays.asList(inventoryData.getInventoryData(Uint32.valueOf(0)),
+                        inventoryData.getShelvesInventory(shelf, Uint32.valueOf(1)),
+                        inventoryData.getXponderInventory(xpdr, Uint32.valueOf(1)),
+                        inventoryData.getCircuitPackInventory(cp3, Uint32.valueOf(2))));
     }
 
 }
