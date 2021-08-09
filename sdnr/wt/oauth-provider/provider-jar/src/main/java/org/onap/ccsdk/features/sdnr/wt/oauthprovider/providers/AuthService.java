@@ -84,7 +84,7 @@ public abstract class AuthService {
         this.redirectUri = redirectUri;
         this.mapper = new ObjectMapper();
         this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        this.httpClient = new MappingBaseHttpClient(this.config.getUrl());
+        this.httpClient = new MappingBaseHttpClient(this.config.getUrlOrInternal(), this.config.trustAll());
     }
 
     public PublicOAuthProviderConfig getConfig() {
