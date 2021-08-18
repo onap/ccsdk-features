@@ -88,28 +88,32 @@ public class Onf14NetworkElement implements NetworkElement {
     private final NetconfBindingAccessor netconfAccessor;
     private final DataProvider databaseService;
     private final Onf14ToInternalDataModel onf14Mapper;
-    private final @NonNull FaultService faultService;
+    @NonNull
+    private final FaultService faultService;
 
     // for storing the Equipment UUIDs that are inserted in the DB
-    private final List<String> equipmentUuidList = new ArrayList<String>();
+    private final List<String> equipmentUuidList = new ArrayList<>();
 
     // air interface related members
-    private final List<TechnologySpecificPacKeys> airInterfaceList = new ArrayList<TechnologySpecificPacKeys>();
+    private final List<TechnologySpecificPacKeys> airInterfaceList = new ArrayList<>();
     @SuppressWarnings("unused")
     private ListenerRegistration<NotificationListener> airInterfaceNotificationListenerHandler;
-    private @NonNull final Onf14AirInterfaceNotificationListener airInterfaceNotificationListener;
+    @NonNull
+    private final Onf14AirInterfaceNotificationListener airInterfaceNotificationListener;
 
     // ethernet container related members
-    private final List<TechnologySpecificPacKeys> ethernetContainerList = new ArrayList<TechnologySpecificPacKeys>();
+    private final List<TechnologySpecificPacKeys> ethernetContainerList = new ArrayList<>();
     @SuppressWarnings("unused")
     private ListenerRegistration<NotificationListener> etherneContainerNotificationListenerHandler;
-    private @NonNull final Onf14EthernetContainerNotificationListener ethernetContainerNotificationListener;
+    @NonNull
+    private final Onf14EthernetContainerNotificationListener ethernetContainerNotificationListener;
 
     // wire interface related members
-    private final List<TechnologySpecificPacKeys> wireInterfaceList = new ArrayList<TechnologySpecificPacKeys>();
+    private final List<TechnologySpecificPacKeys> wireInterfaceList = new ArrayList<>();
     @SuppressWarnings("unused")
     private ListenerRegistration<NotificationListener> wireInterfaceNotificationListenerHandler;
-    private @NonNull final Onf14WireInterfaceNotificationListener wireInterfaceNotificationListener;
+    @NonNull
+    private final Onf14WireInterfaceNotificationListener wireInterfaceNotificationListener;
 
     Onf14NetworkElement(NetconfBindingAccessor netconfAccess, DeviceManagerServiceProvider serviceProvider) {
         log.info("Create {}", Onf14NetworkElement.class.getSimpleName());
@@ -132,7 +136,7 @@ public class Onf14NetworkElement implements NetworkElement {
         // reading the inventory (CoreModel 1.4 Equipment Model) and adding it to the DB
         readEquipmentData();
 
-        FaultData resultList = new FaultData();
+        var resultList = new FaultData();
 
         int problems = faultService.removeAllCurrentProblemsOfNode(netconfAccessor.getNodeId());
         log.debug("Removed all {} problems from database at registration", problems);
@@ -223,7 +227,8 @@ public class Onf14NetworkElement implements NetworkElement {
                 netconfAccessor.doRegisterNotificationListener(ethernetContainerNotificationListener);
         wireInterfaceNotificationListenerHandler =
                 netconfAccessor.doRegisterNotificationListener(wireInterfaceNotificationListener);
-        //netconfAccessor.registerNotificationsStream(NetconfBindingAccessor.DefaultNotificationsStream);
+        // Register to default (NETCONF) stream
+        netconfAccessor.registerNotificationsStream();
     }
 
     @Override
@@ -277,7 +282,6 @@ public class Onf14NetworkElement implements NetworkElement {
                     }
                 }
                 this.databaseService.writeInventory(this.netconfAccessor.getNodeId().getValue(), inventoryList);
-
             }
         }
 
