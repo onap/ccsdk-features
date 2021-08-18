@@ -40,7 +40,6 @@ public class SelectQuery implements SqlQuery {
 
     private static final long DEFAULT_PAGESIZE = 20;
     private static final long DEFAULT_PAGE = 1;
-    private static final List<String> TIMESTAMPPROPERTYNAMES = Arrays.asList("timestamp", "time-stamp", "start", "end");
     private final String tableName;
     private final List<Filter> filters;
     private final List<String> sortExpressions;

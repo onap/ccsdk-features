@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.rpctypehelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PaginationOutputG;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.PaginationBuilder;
@@ -53,6 +54,10 @@ public class QueryResult<T> {
     @Override
     public String toString() {
         return "QueryResult [result=" + result + ", pagination=" + pagination + "]";
+    }
+
+    public static <X> QueryResult<X> createEmpty() {
+        return new QueryResult<X>(new ArrayList<>(), 1, 0, 0);
     }
 
 

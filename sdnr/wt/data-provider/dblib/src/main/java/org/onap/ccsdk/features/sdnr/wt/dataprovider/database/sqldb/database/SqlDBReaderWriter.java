@@ -104,7 +104,7 @@ public class SqlDBReaderWriter<T extends DataObject> {
 
     public QueryResult<T> getData(EntityInput input) {
         SelectQuery query = new SelectQuery(this.tableName, input, this.controllerId);
-        LOG.info("query={}", query.toSql());
+        LOG.trace("query={}", query.toSql());
         try {
             ResultSet data = this.dbService.read(query.toSql());
             List<T> mappedData = SqlDBMapper.read(data, clazz);
@@ -115,7 +115,7 @@ public class SqlDBReaderWriter<T extends DataObject> {
                 | InstantiationException | SecurityException | NoSuchMethodException | JsonProcessingException e) {
             LOG.warn("problem reading data {}: ", this.entity, e);
         }
-        return null;
+        return QueryResult.createEmpty();
     }
 
 
@@ -172,7 +172,7 @@ public class SqlDBReaderWriter<T extends DataObject> {
         UpsertQuery<S> query = new UpsertQuery<S>(this.entity, object, this.controllerId);
         query.setId(id);
         String insertedId = null;
-        LOG.info("query={}", query.toSql());
+        LOG.trace("query={}", query.toSql());
         try {
             Connection connection = this.dbService.getConnection();
             PreparedStatement stmt = connection.prepareStatement(query.toSql());

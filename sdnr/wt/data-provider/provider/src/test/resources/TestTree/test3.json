@@ -1,0 +1,180 @@
+[
+{
+"_index": "inventoryequipment-v6",
+"_type": "_doc",
+"_id": "FSP3000-ROADM-2/10.20.4.12/MOD-1-15",
+"_score": 3.465736,
+"_source": {
+"node-id": "FSP3000-ROADM-2",
+"manufacturer-identifier": "ADVA",
+"model-identifier": "4ROADM-C96/0/OPM",
+"parent-uuid": "10.20.4.12/SHELF-1",
+"tree-level": 2,
+"uuid": "10.20.4.12/MOD-1-15",
+"description": "ProductCode: null Mode: NORMAL",
+"date": "N/A",
+"serial": "n/a",
+"type-name": "ROADM",
+"id": "10.20.4.12/MOD-1-15"
+}
+}
+,
+{
+"_index": "inventoryequipment-v6",
+"_type": "_doc",
+"_id": "FSP3000-ROADM-2/10.20.4.12/SHELF-1",
+"_score": 2.358155,
+"_source": {
+"node-id": "FSP3000-ROADM-2",
+"manufacturer-identifier": "ADVA",
+"model-identifier": "FSP 3000R7",
+"parent-uuid": "ADVA-ENC-SDN-40990-rdm",
+"tree-level": 2,
+"uuid": "10.20.4.12/SHELF-1",
+"description": "Position: null State: InService",
+"date": "N/A",
+"serial": "FA71171552617",
+"type-name": "FSP 3000R7",
+"id": "10.20.4.12/SHELF-1"
+}
+}
+,
+{
+"_index": "inventoryequipment-v6",
+"_type": "_doc",
+"_id": "FSP3000-ROADM-2/10.20.4.12/MOD-1-7",
+"_score": 2.358155,
+"_source": {
+"node-id": "FSP3000-ROADM-2",
+"manufacturer-identifier": "ADVA",
+"model-identifier": "4ROADM-C96/0/OPM",
+"parent-uuid": "10.20.4.12/SHELF-1",
+"tree-level": 2,
+"uuid": "10.20.4.12/MOD-1-7",
+"description": "ProductCode: null Mode: NORMAL",
+"date": "N/A",
+"serial": "n/a",
+"type-name": "ROADM",
+"id": "10.20.4.12/MOD-1-7"
+}
+}
+,
+{
+"_index": "inventoryequipment-v6",
+"_type": "_doc",
+"_id": "FSP3000-ROADM-2/ADVA-ENC-SDN-40990-rdm",
+"_score": 2.358155,
+"_source": {
+"node-id": "FSP3000-ROADM-2",
+"manufacturer-identifier": "",
+"parent-uuid": "unbound",
+"part-type-id": "device",
+"tree-level": 1,
+"uuid": "ADVA-ENC-SDN-40990-rdm",
+"description": "org-openroadm-device",
+"date": "",
+"type-name": "rdm",
+"id": "ADVA-ENC-SDN-40990-rdm"
+}
+}
+,
+{
+"_index": "inventoryequipment-v6",
+"_type": "_doc",
+"_id": "FSP3000-ROADM-2/10.20.4.12/MOD-1-14",
+"_score": 2.1238933,
+"_source": {
+"node-id": "FSP3000-ROADM-2",
+"manufacturer-identifier": "ADVA",
+"model-identifier": "EDFA-C-D20-VLGC-DM",
+"parent-uuid": "10.20.4.12/SHELF-1",
+"tree-level": 2,
+"uuid": "10.20.4.12/MOD-1-14",
+"description": "ProductCode: null Mode: NORMAL",
+"date": "N/A",
+"serial": "n/a",
+"type-name": "AMPLIFIER",
+"id": "10.20.4.12/MOD-1-14"
+}
+}
+,
+{
+"_index": "inventoryequipment-v6",
+"_type": "_doc",
+"_id": "FSP3000-ROADM-2/10.20.4.12/MOD-1-13",
+"_score": 2.1238933,
+"_source": {
+"node-id": "FSP3000-ROADM-2",
+"manufacturer-identifier": "ADVA",
+"model-identifier": "EDFA-C-D20-VLGC-DM",
+"parent-uuid": "10.20.4.12/SHELF-1",
+"tree-level": 2,
+"uuid": "10.20.4.12/MOD-1-13",
+"description": "ProductCode: null Mode: NORMAL",
+"date": "N/A",
+"serial": "n/a",
+"type-name": "AMPLIFIER",
+"id": "10.20.4.12/MOD-1-13"
+}
+}
+,
+{
+"_index": "inventoryequipment-v6",
+"_type": "_doc",
+"_id": "FSP3000-ROADM-2/10.20.4.12/MOD-1-17",
+"_score": 2.1238933,
+"_source": {
+"node-id": "FSP3000-ROADM-2",
+"manufacturer-identifier": "ADVA",
+"model-identifier": "EDFA-C-S20-GCB-DM",
+"parent-uuid": "10.20.4.12/SHELF-1",
+"tree-level": 2,
+"uuid": "10.20.4.12/MOD-1-17",
+"description": "ProductCode: null Mode: NORMAL",
+"date": "N/A",
+"serial": "n/a",
+"type-name": "AMPLIFIER",
+"id": "10.20.4.12/MOD-1-17"
+}
+}
+,
+{
+"_index": "inventoryequipment-v6",
+"_type": "_doc",
+"_id": "FSP3000-ROADM-2/10.20.4.12/MOD-1-6",
+"_score": 2.1238933,
+"_source": {
+"node-id": "FSP3000-ROADM-2",
+"manufacturer-identifier": "ADVA",
+"model-identifier": "EDFA-C-S20-GCB-DM",
+"parent-uuid": "10.20.4.12/SHELF-1",
+"tree-level": 2,
+"uuid": "10.20.4.12/MOD-1-6",
+"description": "ProductCode: null Mode: NORMAL",
+"date": "N/A",
+"serial": "n/a",
+"type-name": "AMPLIFIER",
+"id": "10.20.4.12/MOD-1-6"
+}
+}
+,
+{
+"_index": "inventoryequipment-v6",
+"_type": "_doc",
+"_id": "FSP3000-ROADM-2/10.20.4.12/MOD-1-11",
+"_score": 2.1238933,
+"_source": {
+"node-id": "FSP3000-ROADM-2",
+"manufacturer-identifier": "ADVA",
+"model-identifier": "4ROADM-C96/0/OPM",
+"parent-uuid": "10.20.4.12/SHELF-1",
+"tree-level": 2,
+"uuid": "10.20.4.12/MOD-1-11",
+"description": "ProductCode: null Mode: NORMAL",
+"date": "N/A",
+"serial": "n/a",
+"type-name": "ROADM",
+"id": "10.20.4.12/MOD-1-11"
+}
+}
+]

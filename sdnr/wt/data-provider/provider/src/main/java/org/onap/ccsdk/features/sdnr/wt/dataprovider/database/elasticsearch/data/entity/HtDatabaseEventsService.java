@@ -80,6 +80,8 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
     private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStampImpl.getConverter();
 
+    private static final int ROOT_TREE_LEVEL = 0;
+
     private HtDatabaseClient client;
     private EsDataObjectReaderWriter2<EventlogEntity> eventRWEventLogDevicemanager;
     private EsDataObjectReaderWriter2<InventoryEntity> eventRWEquipment;
@@ -306,20 +308,21 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
                 .setTreeLevel(Uint32.valueOf(0));;
         for (Inventory item : list) {
             repairedItem = new InventoryBuilder(item);
-            // check missing tree-level
+            // check for bad node-id
             if (!nodeId.equals(item.getNodeId())) {
                 failures.add(String.format("missing node-id for equipment(uuid=%s)", item.getUuid()));
                 repairedItem.setNodeId(nodeId);
                 failCounter++;
             }
+            // check missing tree-level
             if (item.getTreeLevel() == null) {
                 failures.add(String.format("missing tree-level for equipment(uuid=%s)", item.getUuid()));
-                repairedItem.setTreeLevel(Uint32.valueOf(1));
+                repairedItem.setTreeLevel(Uint32.valueOf(ROOT_TREE_LEVEL));
                 failCounter++;
 
             } else {
                 treeLevel = item.getTreeLevel().longValue();
-                if (treeLevel > 0) {
+                if (treeLevel > ROOT_TREE_LEVEL) {
                     // check non root elem and missing parent
                     if (item.getParentUuid() == null) {
                         failures.add(String.format("Non root level element (uuid=%s) has to have a parent element",

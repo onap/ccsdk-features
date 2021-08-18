@@ -335,7 +335,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         }
         CreateNetworkElementConnectionOutputBuilder builder = new CreateNetworkElementConnectionOutputBuilder();
         builder.setId(id).setNodeId(input.getNodeId()).setHost(input.getHost()).setPort(input.getPort())
-                .setUsername(input.getUsername()).setPassword(input.getPassword()).setIsRequired(input.isIsRequired())
+                .setUsername(input.getUsername()).setPassword(input.getPassword()).setIsRequired(input.getIsRequired())
                 .setCoreModelCapability(input.getCoreModelCapability()).setDeviceType(input.getDeviceType());
         return builder;
     }
@@ -482,17 +482,17 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         LOG.info("set controllerId {}", this.controllerId);
         String query = String.format("SELECT * FROM `%s` WHERE `id`='%s';", this.controllerTableName,
                 this.controllerId);
-        LOG.info(query);
+        LOG.trace(query);
         ResultSet data = this.dbClient.read(query);
 
         if (!data.next()) {
             query = String.format("INSERT INTO `%s` (`id`,`desc`) VALUES ('%s','%s')",
                     this.controllerTableName, this.controllerId, "");
-            LOG.info(query);
+            LOG.trace(query);
             return this.dbClient.write(query);
         }
         else {
-            LOG.info("controllerId already set");
+            LOG.trace("controllerId already set");
         }
         return true;
     }

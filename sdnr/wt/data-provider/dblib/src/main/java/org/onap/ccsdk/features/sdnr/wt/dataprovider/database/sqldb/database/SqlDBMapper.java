@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.sql.rowset.CachedRowSet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.DBKeyValuePair;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
@@ -336,44 +335,10 @@ public class SqlDBMapper {
         return YangToolsMapperHelper.implementsInterface(valueType, Enumeration.class);
     }
 
-    public static <T extends DataObject> List<T> read(CachedRowSet data, Class<T> clazz)
-            throws JsonMappingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            InstantiationException, SecurityException, NoSuchMethodException, JsonProcessingException, SQLException {
-        return read(data, clazz, null);
-    }
-
     public static <T extends DataObject> List<T> read(ResultSet data, Class<T> clazz)
             throws JsonMappingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
             InstantiationException, SecurityException, NoSuchMethodException, JsonProcessingException, SQLException {
         return read(data, clazz, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> List<T> read(CachedRowSet data, Class<T> clazz, String column) throws IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException, SQLException, InstantiationException,
-            SecurityException, NoSuchMethodException, JsonMappingException, JsonProcessingException {
-
-        List<T> list = new ArrayList<>();
-        while (data.next()) {
-            if (column == null) {
-                Builder<T> builder = findPOJOBuilder(clazz);
-                Class<?> argType;
-                String col;
-                for (Method m : getFilteredMethods(builder.getClass(), false)) {
-                    argType = m.getParameterTypes()[0];
-                    col = getColumnName(m);
-                    m.setAccessible(true);
-                    m.invoke(builder, getValueOrDefault(data, col, argType, null));
-                }
-                list.add(builder.build());
-            } else {
-                Object value = getValueOrDefault(data, column, clazz, null);
-                if (value != null) {
-                    list.add((T) value);
-                }
-            }
-        }
-        return list;
     }
 
     @SuppressWarnings("unchecked")
@@ -426,27 +391,6 @@ public class SqlDBMapper {
 
         }
         return null;
-    }
-
-    private static Object getValueOrDefault(CachedRowSet data, String col, Class<?> dstType, Object defaultValue)
-            throws SQLException, JsonMappingException, JsonProcessingException {
-        if (isBoolean(dstType)) {
-            return data.getBoolean(col);
-        } else if (isNumeric(dstType)) {
-            return getNumeric(dstType, data.getLong(col));
-        } else if (String.class.equals(dstType)) {
-            return data.getString(col);
-        } else if (isYangEnum(dstType)) {
-            return getYangEnum(data.getString(col), dstType);
-        } else if (isDateTime(dstType)) {
-            String v = data.getString(col);
-            return v == null || v.equals("null") ? null : DateAndTime.getDefaultInstance(v.replace(" ", "T") + "Z");
-        } else if (isComplex(dstType)) {
-            String v = data.getString(col);
-
-            return (v == null || v.toLowerCase().equals("null")) ? null : mapper.readValue(v, dstType);
-        }
-        return defaultValue;
     }
 
     private static Object getValueOrDefault(ResultSet data, String col, Class<?> dstType, Object defaultValue)
