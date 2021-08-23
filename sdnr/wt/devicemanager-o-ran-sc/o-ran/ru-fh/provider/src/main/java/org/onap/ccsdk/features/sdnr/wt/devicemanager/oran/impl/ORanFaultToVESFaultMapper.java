@@ -148,7 +148,11 @@ public class ORanFaultToVESFaultMapper {
         vesFaultFields.setAlarmCondition(alarmNotif.getFaultId().toString());
         vesFaultFields.setAlarmInterfaceA(alarmNotif.getFaultSource());
         vesFaultFields.setEventCategory(VES_EVENT_CATEGORY);
-        vesFaultFields.setEventSeverity(alarmNotif.getFaultSeverity().getName());
+        if (alarmNotif.getIsCleared()) {
+            vesFaultFields.setEventSeverity("NORMAL");
+        } else {
+            vesFaultFields.setEventSeverity(alarmNotif.getFaultSeverity().getName());
+        }
         vesFaultFields.setEventSourceType(getModelName());
         vesFaultFields.setFaultFieldsVersion(VES_FAULT_FIELDS_VERSION);
         vesFaultFields.setSpecificProblem(alarmNotif.getFaultText());

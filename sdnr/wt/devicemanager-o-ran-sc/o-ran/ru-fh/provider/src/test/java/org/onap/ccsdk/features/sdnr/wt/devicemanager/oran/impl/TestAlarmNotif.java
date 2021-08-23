@@ -83,8 +83,7 @@ public class TestAlarmNotif implements AlarmNotif {
 
     @Override
     public Boolean getIsCleared() {
-        // TODO Auto-generated method stub
-        return null;
+        return true;
     }
 
 }
