@@ -40,7 +40,7 @@
     <name>ccsdk-features :: aafshiro-features :: ${project.artifactId}</name>
 
     <properties>
-        <aaf-shiro-bundle.version>2.1.13</aaf-shiro-bundle.version>
+        <aaf-shiro-bundle.version>2.1.19</aaf-shiro-bundle.version>
         <skip.karaf.featureTest>true</skip.karaf.featureTest>
     </properties>
 
