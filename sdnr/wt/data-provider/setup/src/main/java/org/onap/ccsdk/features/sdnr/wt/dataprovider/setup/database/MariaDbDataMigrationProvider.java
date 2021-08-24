@@ -58,6 +58,7 @@ public class MariaDbDataMigrationProvider implements DataMigrationProviderServic
 
     private static final Logger LOG = LoggerFactory.getLogger(MariaDbDataMigrationProvider.class);
     private static final SdnrDbType DBTYPE = SdnrDbType.MARIADB;
+    private static final String LOG_DELETING_INDEX = "deleting index {}";
     private final SqlDBClient dbClient;
 
     public MariaDbDataMigrationProvider(String url, String username, String password, boolean trustAll,
@@ -211,7 +212,7 @@ public class MariaDbDataMigrationProvider implements DataMigrationProviderServic
         }
         List<Release> foundReleases = new ArrayList<>();
         //if there are active aliases reduce indices to the active ones
-        if (aliases != null && aliases.size() > 0) {
+        if (aliases != null && !aliases.isEmpty()) {
             indices = indices.subList(aliases.getLinkedIndices());
         }
         for (Release r : Release.values()) {
@@ -337,7 +338,7 @@ public class MariaDbDataMigrationProvider implements DataMigrationProviderServic
         }
         ReleaseInformation ri = ReleaseInformation.getInstance(release);
         boolean response;
-        if (entries.size() <= 0) {
+        if (entries.isEmpty()) {
             LOG.info("no aliases to clear");
         } else {
             //check for every component of release if alias exists
@@ -358,7 +359,7 @@ public class MariaDbDataMigrationProvider implements DataMigrationProviderServic
                     IndicesEntry entry2ToDelete = entries2.findByIndex(aliasToDelete);
                     if (entry2ToDelete != null) {
                         try {
-                            LOG.info("deleting index {}", entry2ToDelete.getName());
+                            LOG.info(LOG_DELETING_INDEX, entry2ToDelete.getName());
                             response = this.dbClient.deleteTable(entry2ToDelete.getName());
                             LOG.info(response ? "succeeded" : "failed");
                         } catch (SQLException e) {
@@ -372,7 +373,7 @@ public class MariaDbDataMigrationProvider implements DataMigrationProviderServic
         if (entries2 == null) {
             return false;
         }
-        if (entries2.size() <= 0) {
+        if (entries2.isEmpty()) {
             LOG.info("no indices to clear");
         } else {
             //check for every component of release if index exists
@@ -381,7 +382,7 @@ public class MariaDbDataMigrationProvider implements DataMigrationProviderServic
                 IndicesEntry entryToDelete = entries2.findByIndex(indexToDelete);
                 if (entryToDelete != null) {
                     try {
-                        LOG.info("deleting index {}", entryToDelete.getName());
+                        LOG.info(LOG_DELETING_INDEX, entryToDelete.getName());
                         response = this.dbClient.deleteTable(entryToDelete.getName());
                         LOG.info(response ? "succeeded" : "failed");
                     } catch (SQLException e) {
@@ -420,7 +421,7 @@ public class MariaDbDataMigrationProvider implements DataMigrationProviderServic
         }
         for (IndicesEntry index : indices) {
             try {
-                LOG.info("deleting index {}", index.getName());
+                LOG.info(LOG_DELETING_INDEX, index.getName());
                 this.dbClient.deleteTable(index.getName());
             } catch (SQLException e) {
                 LOG.error("problem deleting index {}: {}", index.getName(), e);

@@ -150,7 +150,7 @@ public class MyProperties {
         in.close();
 
         this.aaiBase = getProperty(defaultProps,"aai", DEFAULT_AAI);
-        this.aaiHeaders = _parseHeadersMap(getProperty(defaultProps,"aaiHeaders", DEFAULT_AAI_HEADERS));
+        this.aaiHeaders = parseHeadersMap(getProperty(defaultProps,"aaiHeaders", DEFAULT_AAI_HEADERS));
         this.esBase = getProperty(defaultProps,"database", DEFAULT_ESDATABASE);
         this.tilesBase = getProperty(defaultProps,"tiles", DEFAULT_TILES, DEFAULT_URL_OFF);
         this.topologyBase = getProperty(defaultProps,"topology", DEFAULT_TOPOLOGY, DEFAULT_URL_OFF);
@@ -187,12 +187,12 @@ public class MyProperties {
             }
             value = tmp;
         }
-        if((value==null || value == "") && valueIfEmpty!=null) {
+        if((value==null || value.isEmpty()) && valueIfEmpty!=null) {
             value = valueIfEmpty;
         }
         return value;
     }
-    private static Map<String, String> _parseHeadersMap(String s) {
+    private static Map<String, String> parseHeadersMap(String s) {
         Map<String, String> r = new HashMap<>();
         try {
             JSONArray a = new JSONArray(s);

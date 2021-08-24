@@ -29,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
@@ -70,9 +71,9 @@ public class DataTreeHttpServlet extends HttpServlet {
         String body = null;
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader bufferedReader = null;
+        IOException toThrow = null;
+        try (InputStream inputStream = request.getInputStream()) {
 
-        try {
-            InputStream inputStream = request.getInputStream();
             if (inputStream != null) {
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 char[] charBuffer = new char[128];
@@ -84,17 +85,20 @@ public class DataTreeHttpServlet extends HttpServlet {
                 stringBuilder.append("");
             }
         } catch (IOException ex) {
-            throw ex;
+            toThrow = ex;
         } finally {
             if (bufferedReader != null) {
                 try {
                     bufferedReader.close();
                 } catch (IOException ex) {
-                    throw ex;
+                    LOG.debug("problem closing reader:", ex);
+                    toThrow = ex;
                 }
             }
         }
-
+        if (toThrow != null) {
+            throw toThrow;
+        }
         body = stringBuilder.toString();
         return body;
     }
@@ -164,13 +168,16 @@ public class DataTreeHttpServlet extends HttpServlet {
         final String regex = "^\\/tree\\/read-(.*)-tree\\/?(.*)$";
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(uri);
-        Entity e = null;
         if (matcher.find() && matcher.groupCount() > 0) {
             try {
-                e = Entity.forName(matcher.group(1)).get();
-                return new EntityWithTree(e, matcher.groupCount() > 1 ? matcher.group(2) : null);
+                Optional<Entity> oe = Entity.forName(matcher.group(1));
+                if (oe.isPresent()) {
+                    return new EntityWithTree(oe.get(), matcher.groupCount() > 1 ? matcher.group(2) : null);
+                } else {
+                    LOG.warn("unable to find entity for name {}", matcher.group(1));
+                }
             } catch (Exception e2) {
-                LOG.warn("unable to parse {} into entity: {}", matcher.group(2), e2);
+                LOG.warn("unable to parse {} into entity: ", matcher.group(2), e2);
             }
         }
         return null;
@@ -182,7 +189,7 @@ public class DataTreeHttpServlet extends HttpServlet {
         try {
             resp.getWriter().write(data.toJSON());
         } catch (IOException e) {
-            LOG.warn("problem sending response: {}", e);
+            LOG.warn("problem sending response: ", e);
         }
     }
 
@@ -196,14 +203,14 @@ public class DataTreeHttpServlet extends HttpServlet {
         }
 
         /**
-         *
-         * @param e database enttity to access
-         * @param tree tree description
-         *   e.g. nodeA           => tree entry for node-id=nodeA
-         *        nodeA/key0      => tree entry for node-id=nodeA and uuid=key0 and tree-level=0
-         *        nodeA/key0/key1 => tree entry for node-id=nodeA and uuid=key1 and tree-level=1
-         *
-         */
+        *
+        * @param e database enttity to access
+        * @param tree tree description
+        *   e.g. nodeA           => tree entry for node-id=nodeA
+        *        nodeA/key0      => tree entry for node-id=nodeA and uuid=key0 and tree-level=0
+        *        nodeA/key0/key1 => tree entry for node-id=nodeA and uuid=key1 and tree-level=1
+        *
+        */
         public EntityWithTree(Entity e, String tree) {
             this.entity = e;
             if (tree != null) {

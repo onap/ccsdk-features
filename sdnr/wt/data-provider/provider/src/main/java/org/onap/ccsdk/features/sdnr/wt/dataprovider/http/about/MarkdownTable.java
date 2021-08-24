@@ -47,10 +47,20 @@ public class MarkdownTable {
         this.rows.add(values);
     }
 
+    private int getColNumbers() {
+        int cols = 0;
+        if (this.columns != null) {
+            cols = this.columns.length;
+        } else {
+            cols = !this.rows.isEmpty() ? this.rows.get(0).length : 0;
+        }
+        return cols;
+    }
+
     public String toMarkDown() {
         StringBuilder sb = new StringBuilder();
-        final int cols =
-                this.columns != null ? this.columns.length : this.rows.size() > 0 ? this.rows.get(0).length : 0;
+
+        final int cols = this.getColNumbers();
         if (cols > 0) {
             sb.append("|");
             for (int i = 0; i < cols; i++) {
@@ -75,9 +85,8 @@ public class MarkdownTable {
 
     public String toJson() {
         JSONArray a = new JSONArray();
-        final int cols =
-                this.columns != null ? this.columns.length : this.rows.size() > 0 ? this.rows.get(0).length : 0;
-        if (cols > 0) {
+        final int cols = this.getColNumbers();
+        if (cols > 0 && this.columns!=null) {
             for (String[] row : this.rows) {
                 JSONObject o = new JSONObject();
                 for (int i = 0; i < cols; i++) {

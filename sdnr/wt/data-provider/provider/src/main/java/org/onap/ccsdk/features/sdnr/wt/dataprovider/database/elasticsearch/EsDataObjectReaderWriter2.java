@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EsDataObjectReaderWriter2<T extends DataObject> {
 
-    private final Logger LOG = LoggerFactory.getLogger(EsDataObjectReaderWriter2.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EsDataObjectReaderWriter2.class);
 
     /** Typename for elastic search data schema **/
     private String dataTypeName;
@@ -202,7 +202,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
      *
      * @param writeInterfaceClazz
      */
-    public EsDataObjectReaderWriter2<T> setWriteInterface(@Nonnull Class<? extends DataObject> writeInterfaceClazz) {
+    public EsDataObjectReaderWriter2<T> setWriteInterface(Class<? extends DataObject> writeInterfaceClazz) {
         LOG.debug("Set write interface to {}", writeInterfaceClazz);
         if (writeInterfaceClazz == null) {
             throw new IllegalArgumentException("Null not allowed here.");
@@ -359,7 +359,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
         if(this.doFullsizeRequest) {
             query.doFullsizeRequest();
         }
-        SearchResult<T> res = new SearchResult<T>();
+        SearchResult<T> res = new SearchResult<>();
         SearchResult<SearchHit> result;
         List<SearchHit> hits;
         if (query != null) {

@@ -56,6 +56,7 @@ public class SqlDBClient {
     private static final String DBVERSION_REGEX = "^([\\d]+\\.[\\d]+\\.[\\d]+)";
     private static final Pattern DBVERSION_PATTERN = Pattern.compile(DBVERSION_REGEX);
     private static final String SELECT_VERSION_QUERY = "SELECT @@version as version";
+    private static final String LOG_PROBLEM_CLOSING_CONNECTION = "problem closing connection: ";
 
     private static final String DBNAME_DEFAULT = "sdnrdb";
     private final String dbConnectionString;
@@ -72,8 +73,8 @@ public class SqlDBClient {
     public SqlDBClient(String dbUrl, String username, String password) throws IllegalArgumentException {
         this.dbConnectionString = String.format("%s?user=%s&password=%s", dbUrl, username, password);
         final Matcher matcher = DBURL_PATTERN.matcher(dbUrl);
-        if(!matcher.find()) {
-            throw new IllegalArgumentException("unable to parse databaseUrl "+dbUrl);
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("unable to parse databaseUrl " + dbUrl);
         }
         this.dbHost = matcher.group(2);
         this.dbPort = Integer.parseInt(matcher.group(3));
@@ -117,7 +118,7 @@ public class SqlDBClient {
     }
 
     public void waitForYellowStatus(long timeoutms) {
-        Portstatus.waitSecondsTillAvailable(timeoutms/1000, this.dbHost, this.dbPort);
+        Portstatus.waitSecondsTillAvailable(timeoutms / 1000, this.dbHost, this.dbPort);
     }
 
     public DatabaseVersion readActualVersion() throws SQLException, ParseException {
@@ -136,7 +137,7 @@ public class SqlDBClient {
                 }
             }
         } catch (SQLException e) {
-            LOG.warn("problem reading tables: ", e);
+            LOG.warn("problem reading actual version: ", e);
         }
         throw new SQLException("unable to read version from database");
     }
@@ -152,16 +153,26 @@ public class SqlDBClient {
     }
 
     public boolean createTable(String query) {
+        boolean result = false;
+        PreparedStatement stmt = null;
         try {
             Connection connection = this.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.execute();
             connection.close();
-            return true;
+            result = true;
         } catch (SQLException e) {
             LOG.warn("problem creating table:", e);
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    LOG.warn("problem closing stmt:", e);
+                }
+            }
         }
-        return false;
+        return result;
     }
 
     public boolean createView(String tableName, String viewName) throws SQLException {
@@ -186,31 +197,81 @@ public class SqlDBClient {
 
     public boolean update(String query) throws SQLException {
         boolean result = false;
-        Connection connection = null;
-        connection = DriverManager.getConnection(this.dbConnectionString);
-        Statement stmt = connection.createStatement();
-        result = stmt.execute(query);
-        return stmt.getUpdateCount() > 0 ? stmt.getUpdateCount() > 0 : result;
+        SQLException innerE = null;
+        Statement stmt = null;
+        try (Connection connection = this.getConnection()) {
+            stmt = connection.createStatement();
+            result = stmt.execute(query);
+            result = stmt.getUpdateCount() > 0 ? stmt.getUpdateCount() > 0 : result;
+        } catch (SQLException e) {
+            innerE = e;
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(LOG_PROBLEM_CLOSING_CONNECTION, e);
+            }
+        }
+        if (innerE != null) {
+            throw innerE;
+        }
+        return result;
     }
 
     public boolean write(String query) throws SQLException {
-        Connection connection = this.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        boolean result = stmt.execute();
-        connection.close();
-        return stmt.getUpdateCount() > 0 ? stmt.getUpdateCount() > 0 : result;
+        boolean result = false;
+        SQLException innerE = null;
+        PreparedStatement stmt = null;
+        try (Connection connection = this.getConnection()) {
+            stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            result = stmt.execute();
+            result = stmt.getUpdateCount() > 0 ? stmt.getUpdateCount() > 0 : result;
+        } catch (SQLException e) {
+            innerE = e;
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(LOG_PROBLEM_CLOSING_CONNECTION, e);
+            }
+        }
+        if (innerE != null) {
+            throw innerE;
+        }
+        return result;
     }
 
     public String writeAndReturnId(String query) throws SQLException {
-        Connection connection = this.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        stmt.execute();
-        ResultSet generatedKeys = stmt.getGeneratedKeys();
-        connection.close();
-        if (generatedKeys.next()) {
-            return String.valueOf(generatedKeys.getLong(1));
+        String result = null;
+        SQLException innerE = null;
+        PreparedStatement stmt = null;
+        try (Connection connection = this.getConnection()) {
+            stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            stmt.execute();
+            ResultSet generatedKeys = stmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                result = String.valueOf(generatedKeys.getLong(1));
+            }
+        } catch (SQLException e) {
+            innerE = e;
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+            } catch (SQLException e) {
+                LOG.warn(LOG_PROBLEM_CLOSING_CONNECTION, e);
+            }
         }
-        return null;
+        if (innerE != null) {
+            throw innerE;
+        }
+        return result;
     }
 
     public boolean deleteTable(String tableName) throws SQLException {
@@ -229,24 +290,21 @@ public class SqlDBClient {
 
     public ResultSet read(String query) {
         ResultSet data = null;
-        Connection connection = null;
         Statement stmt = null;
-        try {
-            connection = DriverManager.getConnection(this.dbConnectionString);
+        try (Connection connection = this.getConnection()) {
             stmt = connection.createStatement();
             data = stmt.executeQuery(query);
         } catch (SQLException e) {
-            LOG.warn("problem reading tables: ", e);
+            LOG.warn("problem reading db for query '{}': ", query, e);
         } finally {
             try {
-                if (connection != null) {
-                    connection.close();
+                if (stmt != null) {
+                    stmt.close();
                 }
             } catch (SQLException e) {
-                LOG.warn("problem closing connection: ", e);
+                LOG.warn(LOG_PROBLEM_CLOSING_CONNECTION, e);
             }
         }
-
         return data;
     }
 
@@ -258,7 +316,4 @@ public class SqlDBClient {
         this.write(query);
         return true;
     }
-
-
-
 }

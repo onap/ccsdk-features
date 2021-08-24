@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class TokenCreator {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthHttpServlet.class.getName());
-    private static final long DEFAULT_TOKEN_LIFETIME_MS = 30 * 60 * 1000;
+    private static final long DEFAULT_TOKEN_LIFETIME_MS = 30 * 60 * 1000L;
     private final String issuer;
     private static TokenCreator _instance;
     private final String secret;
@@ -98,8 +98,8 @@ public class TokenCreator {
         return new Date().getTime() + DEFAULT_TOKEN_LIFETIME_MS;
     }
 
-    public long getDefaultExp(long exp_in) {
-        return new Date().getTime() + exp_in;
+    public long getDefaultExp(long expIn) {
+        return new Date().getTime() + expIn;
     }
 
     public UserTokenPayload decode(HttpServletRequest req) throws JWTDecodeException {

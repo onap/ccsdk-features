@@ -66,12 +66,13 @@ public class ElasticsearchDataMigrationProvider implements DataMigrationProvider
 
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchDataMigrationProvider.class);
+    private static final String LOG_DELETING_INDEX = "deleting index {}";
     private final HtDatabaseClient dbClient;
 
     public ElasticsearchDataMigrationProvider(String url, String username, String password, boolean trustAll,
             long timeoutms) throws Exception {
-        dbClient = HtDatabaseClient.getClient(new HostInfo[] {HostInfo.parse(url)}, username, password, trustAll,
-                true, timeoutms);
+        dbClient = HtDatabaseClient.getClient(new HostInfo[] {HostInfo.parse(url)}, username, password, trustAll, true,
+                timeoutms);
     }
 
     @Override
@@ -215,7 +216,7 @@ public class ElasticsearchDataMigrationProvider implements DataMigrationProvider
         }
         List<Release> foundReleases = new ArrayList<>();
         //if there are active aliases reduce indices to the active ones
-        if (aliases != null && aliases.size() > 0) {
+        if (aliases != null && !aliases.isEmpty()) {
             indices = indices.subList(aliases.getLinkedIndices());
         }
         for (Release r : Release.values()) {
@@ -368,7 +369,7 @@ public class ElasticsearchDataMigrationProvider implements DataMigrationProvider
         }
         ReleaseInformation ri = ReleaseInformation.getInstance(release);
         AcknowledgedResponse response;
-        if (entries.size() <= 0) {
+        if (entries.isEmpty()) {
             LOG.info("no aliases to clear");
         } else {
             //check for every component of release if alias exists
@@ -387,10 +388,10 @@ public class ElasticsearchDataMigrationProvider implements DataMigrationProvider
                     }
                 } else {
                     //try to find malformed typed index with alias name
-                    IndicesEntry entry2ToDelete = entries2.findByIndex(aliasToDelete);
+                    IndicesEntry entry2ToDelete = entries2 == null ? null : entries2.findByIndex(aliasToDelete);
                     if (entry2ToDelete != null) {
                         try {
-                            LOG.info("deleting index {}", entry2ToDelete.getName());
+                            LOG.info(LOG_DELETING_INDEX, entry2ToDelete.getName());
                             response = this.dbClient.deleteIndex(new DeleteIndexRequest(entry2ToDelete.getName()));
                             LOG.info(response.isResponseSucceeded() ? "succeeded" : "failed");
                         } catch (IOException e) {
@@ -404,7 +405,7 @@ public class ElasticsearchDataMigrationProvider implements DataMigrationProvider
         if (entries2 == null) {
             return false;
         }
-        if (entries2.size() <= 0) {
+        if (entries2.isEmpty()) {
             LOG.info("no indices to clear");
         } else {
             //check for every component of release if index exists
@@ -413,7 +414,7 @@ public class ElasticsearchDataMigrationProvider implements DataMigrationProvider
                 IndicesEntry entryToDelete = entries2.findByIndex(indexToDelete);
                 if (entryToDelete != null) {
                     try {
-                        LOG.info("deleting index {}", entryToDelete.getName());
+                        LOG.info(LOG_DELETING_INDEX, entryToDelete.getName());
                         response = this.dbClient.deleteIndex(new DeleteIndexRequest(entryToDelete.getName()));
                         LOG.info(response.isResponseSucceeded() ? "succeeded" : "failed");
                     } catch (IOException e) {
@@ -452,7 +453,7 @@ public class ElasticsearchDataMigrationProvider implements DataMigrationProvider
         }
         for (IndicesEntry index : indices) {
             try {
-                LOG.info("deleting index {}", index.getName());
+                LOG.info(LOG_DELETING_INDEX, index.getName());
                 this.dbClient.deleteIndex(new DeleteIndexRequest(index.getName()));
             } catch (IOException e) {
                 LOG.error("problem deleting index {}: {}", index.getName(), e);

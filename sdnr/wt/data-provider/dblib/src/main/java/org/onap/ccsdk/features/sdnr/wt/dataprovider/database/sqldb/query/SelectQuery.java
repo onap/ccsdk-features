@@ -85,14 +85,13 @@ public class SelectQuery implements SqlQuery {
             this.addFilter(SqlDBMapper.ODLID_DBCOL, controllerId);
         }
 
-        Map<SortorderKey, Sortorder> so = input.getSortorder();
-        if (so != null && so.size() > 0) {
+        Map<SortorderKey, Sortorder> so = input != null ? input.getSortorder() : null;
+        if (so != null && !so.isEmpty()) {
             for (Sortorder s : so.values()) {
-                this.addSortOrder(s.getProperty(),
-                        s.getSortorder() == SortOrder.Ascending ? "ASC" : "DESC");
+                this.addSortOrder(s.getProperty(), s.getSortorder() == SortOrder.Ascending ? "ASC" : "DESC");
             }
         }
-        Pagination pagination = input.getPagination();
+        Pagination pagination = input != null ? input.getPagination() : null;
         if (pagination != null) {
             this.setPagination(pagination.getPage().longValue(), pagination.getSize().longValue());
         } else {
@@ -118,11 +117,11 @@ public class SelectQuery implements SqlQuery {
     public void setPagination(@Nullable Pagination pagination) {
         long page = DEFAULT_PAGE;
         long pageSize = DEFAULT_PAGESIZE;
-        if(pagination!=null) {
-            if(pagination.getPage()!=null) {
+        if (pagination != null) {
+            if (pagination.getPage() != null) {
                 page = pagination.getPage().longValue();
             }
-            if(pagination.getSize()!=null) {
+            if (pagination.getSize() != null) {
                 pageSize = pagination.getSize().longValue();
             }
         }

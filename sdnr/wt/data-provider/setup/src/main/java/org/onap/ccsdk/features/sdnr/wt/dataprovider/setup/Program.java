@@ -413,7 +413,7 @@ public class Program {
     }
 
     private static long getTimeoutOptionMillis(CommandLine cmd) throws ParseException {
-        return getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, DEFAULT_DATABASEWAIT_SECONDS) * 1000;
+        return getOptionOrDefault(cmd, OPTION_DATABASEWAIT_SHORT, DEFAULT_DATABASEWAIT_SECONDS) * 1000L;
     }
 
     /**

@@ -21,7 +21,9 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data;
 
+import java.util.Optional;
 import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.common.Revision;
 
 public class ReducedSchemaInfo {
     private String namespace;
@@ -34,14 +36,23 @@ public class ReducedSchemaInfo {
 
     public ReducedSchemaInfo(QName qname) {
         this.namespace = qname.getNamespace().toString();
-        this.revision = qname.getRevision().isPresent() ? qname.getRevision().get().toString() : null;
+        Optional<Revision> orev = qname.getRevision();
+        this.revision = orev.isPresent() ? orev.get().toString() : null;
         this.type = qname.getLocalName();
     }
 
     public boolean equals(QName obj) {
-        return this.namespace.equals(obj.getNamespace().toString()) && this.type.equals(obj.getLocalName())
-                && ((this.revision == null && obj.getRevision().isEmpty())
-                        || (this.revision.equals(obj.getRevision().get().toString())));
+        Optional<Revision> orev = obj.getRevision();
+        if (this.namespace.equals(obj.getNamespace().toString()) && this.type.equals(obj.getLocalName())) {
+            if (this.revision == null) {
+                return orev.isEmpty();
+            } else if (orev.isEmpty()) {
+                return false;
+            } else {
+                return orev.get().toString().equals(this.revision);
+            }
+        }
+        return false;
     }
 
     public String getNamespace() {

@@ -80,8 +80,12 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
                                 .get(SEND_MESSAGE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
                         LOG.info("message sent");
                     }
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                } catch (ExecutionException | TimeoutException e) {
                     LOG.warn("problem pushing message: ", e);
+                } catch (InterruptedException e) {
+                    LOG.warn("Interrupted!", e);
+                    // Restore interrupted state...
+                    Thread.currentThread().interrupt();
                 }
 
                 if (messageQueue.isEmpty()) {
@@ -163,7 +167,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
         closed = false;
         this.sendingSyncThread.start();
         clientList.put(String.valueOf(this.hashCode()), this);
-        LOG.debug("client connected from " + this.getRemoteAdr());
+        LOG.debug("client connected from {}", this.getRemoteAdr());
     }
 
     @Override
@@ -171,12 +175,12 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
         clientList.remove(String.valueOf(this.hashCode()));
         this.sendingSyncThread.interrupt();
         closed = true;
-        LOG.debug("client disconnected from " + this.getRemoteAdr());
+        LOG.debug("client disconnected from {}", this.getRemoteAdr());
     }
 
     @Override
     public void onWebSocketError(Throwable cause) {
-        LOG.debug("error caused on " + this.getRemoteAdr() + " :" + cause.getMessage());
+        LOG.debug("error caused on {}: ",this.getRemoteAdr(), cause);
     }
 
     private String getRemoteAdr() {
@@ -212,11 +216,11 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
             }
 
         } catch (JsonProcessingException e) {
-            LOG.warn("problem set scope: " + e.getMessage());
+            LOG.warn("problem set scope: {}" ,e.getMessage());
             try {
                 this.send(mapper.writeValueAsString(ScopeRegistrationResponse.error(e.getMessage())));
             } catch (JsonProcessingException e1) {
-                LOG.warn("problem sending error response via ws: " + e1);
+                LOG.warn("problem sending error response via ws: ", e1);
             }
         }
         return ret;
@@ -232,7 +236,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
                 this.sendToAll(notification.getNodeId(), notification.getType(), request);
             }
         } catch (Exception e) {
-            LOG.warn("handle ws request failed:" + e.getMessage());
+            LOG.warn("handle ws request failed:",e);
         }
     }
 
@@ -241,7 +245,9 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
             LOG.trace("sending {}", msg);
             this.messageQueue.put(msg);
         } catch (InterruptedException e) {
-            LOG.warn("problem putting message into sending queue: " + e.getMessage());
+            LOG.warn("problem putting message into sending queue: {}", e.getMessage());
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -294,8 +300,13 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
     }
 
     public static void broadCast(DOMNotificationOutput domNotificationOutput) {
-        // TODO Auto-generated method stub
-
+        if (clientList.size() > 0) {
+            Set<Entry<String, WebSocketManagerSocket>> e = clientList.entrySet();
+            WebSocketManagerSocket s = e.iterator().next().getValue();
+            if (s != null) {
+                s.sendToAll(domNotificationOutput);
+            }
+        }
     }
 
 }

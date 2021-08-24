@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
@@ -44,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,8 +98,8 @@ public class SqlDBReaderWriter<T extends DataObject> {
             list.remove(cFilter.get());
         }
         if (controllerId != null) {
-            list.add(new FilterBuilder().setProperty(SqlDBMapper.ODLID_DBCOL).setFiltervalue(this.controllerId)
-                    .build());
+            list.add(
+                    new FilterBuilder().setProperty(SqlDBMapper.ODLID_DBCOL).setFiltervalue(this.controllerId).build());
         }
         return this.count(list);
     }
@@ -108,8 +110,8 @@ public class SqlDBReaderWriter<T extends DataObject> {
         try {
             ResultSet data = this.dbService.read(query.toSql());
             List<T> mappedData = SqlDBMapper.read(data, clazz);
-            long total = this.count(input.getFilter() != null ? new ArrayList<>(input.getFilter().values()) : null,
-                    this.controllerId);
+            final Map<FilterKey, Filter> filter = input.getFilter();
+            long total = this.count(filter != null ? new ArrayList<>(filter.values()) : null, this.controllerId);
             return new QueryResult<T>(mappedData, query.getPage(), query.getPageSize(), total);
         } catch (SQLException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | InstantiationException | SecurityException | NoSuchMethodException | JsonProcessingException e) {
@@ -151,9 +153,10 @@ public class SqlDBReaderWriter<T extends DataObject> {
         UpdateQuery<S> query = new UpdateQuery<S>(this.entity, object, this.controllerId);
         query.setId(id);
         String insertedId = null;
+        PreparedStatement stmt = null;
         try {
             Connection connection = this.dbService.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(query.toSql());
+            stmt = connection.prepareStatement(query.toSql());
             stmt.execute();
 
             int affectedRows = stmt.getUpdateCount();
@@ -163,6 +166,14 @@ public class SqlDBReaderWriter<T extends DataObject> {
             }
         } catch (SQLException e) {
             LOG.warn("problem writing data into db: ", e);
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    LOG.warn("problem closing sql statement: ", e);
+                }
+            }
         }
 
         return insertedId;
@@ -173,9 +184,10 @@ public class SqlDBReaderWriter<T extends DataObject> {
         query.setId(id);
         String insertedId = null;
         LOG.trace("query={}", query.toSql());
+        PreparedStatement stmt = null;
         try {
             Connection connection = this.dbService.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(query.toSql());
+            stmt = connection.prepareStatement(query.toSql());
             stmt.execute();
 
             int affectedRows = stmt.getUpdateCount();
@@ -185,6 +197,14 @@ public class SqlDBReaderWriter<T extends DataObject> {
             }
         } catch (SQLException e) {
             LOG.warn("problem writing data into db: ", e);
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    LOG.warn("problem closing sql statement: ", e);
+                }
+            }
         }
         return insertedId;
     }
@@ -202,14 +222,23 @@ public class SqlDBReaderWriter<T extends DataObject> {
     public int remove(List<Filter> filters) {
         DeleteQuery query = new DeleteQuery(this.entity, filters);
         int affectedRows = 0;
+        PreparedStatement stmt = null;
         try {
             Connection connection = this.dbService.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(query.toSql());
+            stmt = connection.prepareStatement(query.toSql());
             stmt.execute();
             affectedRows = stmt.getUpdateCount();
             connection.close();
         } catch (SQLException e) {
             LOG.warn("problem execute delete query: ", e);
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    LOG.warn("problem closing sql statement: ", e);
+                }
+            }
         }
         return affectedRows;
     }
@@ -226,7 +255,7 @@ public class SqlDBReaderWriter<T extends DataObject> {
             return mappedData;
         } catch (SQLException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | InstantiationException | SecurityException | NoSuchMethodException | JsonProcessingException e) {
-            LOG.warn("problem reading data {}: ", this.entity, e);
+            LOG.warn("problem reading all data{}: ", this.entity, e);
         }
         return null;
     }
@@ -239,7 +268,7 @@ public class SqlDBReaderWriter<T extends DataObject> {
             return mappedData;
         } catch (SQLException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | InstantiationException | SecurityException | NoSuchMethodException | JsonProcessingException e) {
-            LOG.warn("problem reading data {}: ", this.entity, e);
+            LOG.warn("problem reading all data {} for key: ", this.entity, key, e);
         }
         return null;
     }

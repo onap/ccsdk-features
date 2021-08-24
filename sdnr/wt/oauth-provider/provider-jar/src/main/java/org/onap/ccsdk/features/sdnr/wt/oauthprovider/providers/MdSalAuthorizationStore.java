@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy.PolicyMethods;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.HttpAuthorization;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.authorization.Policies;
@@ -49,17 +50,25 @@ public class MdSalAuthorizationStore {
     public Optional<OdlPolicy> getPolicy(String path, List<String> userRoles) {
         InstanceIdentifier<Policies> iif = InstanceIdentifier.create(HttpAuthorization.class).child(Policies.class);
         Optional<Policies> odata = Optional.empty();
-        try {
-            odata = this.dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, iif).get();
-        } catch (InterruptedException | ExecutionException e) {
+        try (ReadTransaction transaction = this.dataBroker.newReadOnlyTransaction()) {
+            odata = transaction.read(LogicalDatastoreType.CONFIGURATION, iif).get();
+        } catch (ExecutionException e) {
             LOG.warn("unable to read policies from mdsal: ", e);
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted!", e);
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
         }
         if (odata.isEmpty()) {
             return Optional.empty();
         }
-
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.authorization.policies.Policies> data =
+                odata.get().getPolicies();
+        if (data == null) {
+            return Optional.empty();
+        }
         Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.authorization.policies.Policies> entry =
-                odata.get().getPolicies().stream().filter((e) -> path.equals(e.getResource())).findFirst();
+                data.stream().filter(e -> path.equals(e.getResource())).findFirst();
         if (entry.isEmpty()) {
             return Optional.empty();
         }
@@ -96,7 +105,7 @@ public class MdSalAuthorizationStore {
                     methods.setPatch(true);
                     break;
                 default:
-                    LOG.warn("unknown http method {}",action);
+                    LOG.warn("unknown http method {}", action);
                     break;
             }
         }

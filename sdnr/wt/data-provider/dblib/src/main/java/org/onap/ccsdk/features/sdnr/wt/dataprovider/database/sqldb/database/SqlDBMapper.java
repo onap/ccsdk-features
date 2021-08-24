@@ -58,17 +58,23 @@ public class SqlDBMapper {
     private static final String ODLID_DBTYPE = "VARCHAR(40)";
     private static final String STRING_DBTYPE = "VARCHAR(255)";
     private static final String ENUM_DBTYPE = "VARCHAR(100)";
+    private static final String BIGINT_DBTYPE = "BIGINT";
     public static final String ODLID_DBCOL = "controller-id";
+    private static final String ID_DBCOL = "id";
     private static List<Class<?>> numericClasses = Arrays.asList(Byte.class, Integer.class, Long.class,
             BigInteger.class, Uint8.class, Uint16.class, Uint32.class, Uint64.class);
     private static final YangToolsMapper mapper = new YangToolsMapper();
     public static final String TABLENAME_CONTROLLER = "controller";
     private static final String DEFAULTID_DBTYPE = "int(11)";
 
+    private SqlDBMapper() {
+
+    }
+
     public static String createTableOdl() {
-        return "CREATE TABLE IF NOT EXISTS " + TABLENAME_CONTROLLER + " (" + "`id` " + ODLID_DBTYPE + " "
-                + getColumnOptions("id", ODLID_DBTYPE) + "," + "`desc` " + STRING_DBTYPE + " "
-                + getColumnOptions("description", STRING_DBTYPE) + "," + "primary key(id))";
+        return "CREATE TABLE IF NOT EXISTS " + TABLENAME_CONTROLLER + " (`" + ID_DBCOL + "` " + ODLID_DBTYPE + " "
+                + getColumnOptions(ID_DBCOL, ODLID_DBTYPE) + "," + "`desc` " + STRING_DBTYPE + " "
+                + getColumnOptions("description", STRING_DBTYPE) + "," + "primary key(" + ID_DBCOL + "))";
     }
 
     public static <T> String createTable(Class<T> clazz, Entity e) throws UnableToMapClassException {
@@ -88,23 +94,24 @@ public class SqlDBMapper {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE IF NOT EXISTS `" + e.getName() + suffix + "` (\n");
         if (autoIndex) {
-            sb.append("`id` " + DEFAULTID_DBTYPE + " " + getColumnOptions("id", DEFAULTID_DBTYPE) + ",\n");
+            sb.append("`" + ID_DBCOL + "` " + DEFAULTID_DBTYPE + " " + getColumnOptions(ID_DBCOL, DEFAULTID_DBTYPE)
+                    + ",\n");
         } else {
-            sb.append("`id` " + STRING_DBTYPE + " " + getColumnOptions("id", STRING_DBTYPE) + ",\n");
+            sb.append("`" + ID_DBCOL + "` " + STRING_DBTYPE + " " + getColumnOptions(ID_DBCOL, STRING_DBTYPE) + ",\n");
         }
         sb.append("`" + ODLID_DBCOL + "` " + ODLID_DBTYPE + " " + getColumnOptions(ODLID_DBCOL, ODLID_DBTYPE) + ",\n");
         for (Method method : getFilteredMethods(clazz, true)) {
             Class<?> valueType = method.getReturnType();
             String colName = getColumnName(method);
-            if (colName.equals("id")) {
+            if (ID_DBCOL.equals(colName)) {
                 continue;
             }
             String dbType = getDBType(valueType);
             String options = getColumnOptions(colName, dbType);
             sb.append("`" + colName + "` " + dbType + " " + options + ",\n");
         }
-        sb.append("primary key(id),");
-        sb.append("foreign key(`" + ODLID_DBCOL + "`) references " + TABLENAME_CONTROLLER + "(id)");
+        sb.append("primary key(" + ID_DBCOL + "),");
+        sb.append("foreign key(`" + ODLID_DBCOL + "`) references " + TABLENAME_CONTROLLER + "(" + ID_DBCOL + ")");
 
         sb.append(");");
         return sb.toString();
@@ -115,7 +122,7 @@ public class SqlDBMapper {
         if (dbType.contains("VARCHAR")) {
             options.append("CHARACTER SET utf8 ");
         }
-        if (colName.equals("id") || colName.equals(ODLID_DBCOL)) {
+        if (ID_DBCOL.equals(colName) || ODLID_DBCOL.equals(colName)) {
             if (dbType.equals(DEFAULTID_DBTYPE)) {
                 options.append("NOT NULL AUTO_INCREMENT");
             } else {
@@ -157,8 +164,8 @@ public class SqlDBMapper {
         map.put(BigInteger.class, "BIGINT");
         map.put(Uint8.class, "SMALLINT");
         map.put(Uint16.class, "INTEGER");
-        map.put(Uint32.class, "BIGINT");
-        map.put(Uint64.class, "BIGINT"); //????
+        map.put(Uint32.class, BIGINT_DBTYPE);
+        map.put(Uint64.class, BIGINT_DBTYPE); //????
         map.put(DateAndTime.class, "DATETIME(3)");
         return map;
     }
@@ -174,12 +181,10 @@ public class SqlDBMapper {
                 //resolve conflict
                 return !resolveConflict(method, cm, getterOrSetter);
             }
-            //silicon fix
-            if (method.getReturnType().equals(Boolean.class) && getterOrSetter) {
-                if (name.startsWith("get") && cm.getName().startsWith("is")
-                        && cm.getName().endsWith(name.substring(3))) {
-                    return true;
-                }
+            //silicon fix for deprecated is-... and getIs- methods for booleans
+            if (method.getReturnType().equals(Boolean.class) && getterOrSetter && name.startsWith("get")
+                    && cm.getName().startsWith("is") && cm.getName().endsWith(name.substring(3))) {
+                return true;
             }
         }
         return false;
@@ -336,20 +341,23 @@ public class SqlDBMapper {
     }
 
     public static <T extends DataObject> List<T> read(ResultSet data, Class<T> clazz)
-            throws JsonMappingException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            InstantiationException, SecurityException, NoSuchMethodException, JsonProcessingException, SQLException {
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException,
+            SecurityException, NoSuchMethodException, JsonProcessingException, SQLException {
         return read(data, clazz, null);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> List<T> read(ResultSet data, Class<T> clazz, String column) throws IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException, SQLException, InstantiationException,
-            SecurityException, NoSuchMethodException, JsonMappingException, JsonProcessingException {
+    public static <T> List<T> read(ResultSet data, Class<T> clazz, String column)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException,
+            InstantiationException, SecurityException, NoSuchMethodException, JsonProcessingException {
 
+        Builder<T> builder = findPOJOBuilder(clazz);
+        if(builder==null && column==null) {
+            throw new InstantiationException("unable to find builder for class "+clazz.getName());
+        }
         List<T> list = new ArrayList<>();
         while (data.next()) {
             if (column == null) {
-                Builder<T> builder = findPOJOBuilder(clazz);
                 Class<?> argType;
                 String col;
                 for (Method m : getFilteredMethods(builder.getClass(), false)) {
@@ -409,7 +417,7 @@ public class SqlDBMapper {
         } else if (isComplex(dstType)) {
             String v = data.getString(col);
 
-            return (v == null || v.toLowerCase().equals("null")) ? null : mapper.readValue(v, dstType);
+            return (v == null || v.equalsIgnoreCase("null")) ? null : mapper.readValue(v, dstType);
         }
         return defaultValue;
     }
@@ -436,14 +444,14 @@ public class SqlDBMapper {
             return Uint32.valueOf(value);
         } else if (dstType.equals(Uint16.class)) {
             return Uint16.valueOf(value);
-        } else if (dstType.equals(Uint16.class)) {
+        } else if (dstType.equals(Uint8.class)) {
             return Uint8.valueOf(value);
         } else if (dstType.equals(Long.class)) {
-            return Long.valueOf(value);
+            return value;
         } else if (dstType.equals(Integer.class)) {
-            return Long.valueOf(value).intValue();
+            return (int)value;
         } else if (dstType.equals(Byte.class)) {
-            return Long.valueOf(value).byteValue();
+            return (byte)value;
         }
         return null;
     }
@@ -463,7 +471,7 @@ public class SqlDBMapper {
         } else {
             svalue = "'" + escape(value) + "'";
         }
-        return new DBKeyValuePair<String>("`" + col + "`", svalue);
+        return new DBKeyValuePair<>("`" + col + "`", svalue);
     }
 
     private static String getDateTimeValue(DateAndTime value) {
@@ -475,6 +483,4 @@ public class SqlDBMapper {
         }
         return s;
     }
-
-
 }

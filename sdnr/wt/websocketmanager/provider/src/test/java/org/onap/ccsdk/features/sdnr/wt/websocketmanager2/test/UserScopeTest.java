@@ -58,6 +58,16 @@ public class UserScopeTest {
 
     }
 
+    @Test
+    public void testSchemaInfoClass() {
+        ReducedSchemaInfo si = new ReducedSchemaInfo(ProblemNotification.QNAME);
+        assertTrue(si.equals(ProblemNotification.QNAME));
+        assertFalse(si.equals(ObjectCreationNotification.QNAME));
+        si.setRevision(null);
+        assertFalse(si.equals(ProblemNotification.QNAME));
+
+    }
+
     private static final Scope buildScope(String nodeId, String namespace, String revision,
             List<String> notifications) {
         Scope scope = new Scope();

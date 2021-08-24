@@ -96,10 +96,10 @@ public class QueryByFilter {
         if (fromPage < 0 || pageSize > 10000)
             throw new IllegalArgumentException("mismatching input parameters. From:" + fromPage + " size:" + pageSize);
 
-        filterList = YangHelper.getList(input.getFilter());
+        filterList = input == null ? null : YangHelper.getList(input.getFilter());
         if (filterList == null)
             filterList = emptyFilterList;
-        sortOrder = YangHelper.getList(input.getSortorder());
+        sortOrder = input == null ? null : YangHelper.getList(input.getSortorder());
         if (sortOrder == null)
             sortOrder = emptySortOrderList;
 
@@ -167,7 +167,7 @@ public class QueryByFilter {
      * Private and static implementations
      */
     private static QueryBuilder setSortOrder(QueryBuilder query, @Nullable List<Sortorder> sortorder, String prefix) {
-        if (sortorder != null && sortorder.size() > 0) {
+        if (sortorder != null && !sortorder.isEmpty()) {
             for (Sortorder so : sortorder) {
                 query.sort(handlePrefix(prefix, so.getProperty()), convert(so.getSortorder()));
             }
@@ -179,7 +179,7 @@ public class QueryByFilter {
         return sortOrder == SortOrder.Ascending
                 ? org.onap.ccsdk.features.sdnr.wt.common.database.queries.SortOrder.ASCENDING
                 : org.onap.ccsdk.features.sdnr.wt.common.database.queries.SortOrder.DESCENDING;
-    };
+    }
 
     private static Sortorder getSortOrder(@Nullable List<Sortorder> list, String prop) {
         if (list == null) {
@@ -353,7 +353,7 @@ public class QueryByFilter {
     }
 
     private static List<String> collectValues(Filter filter) {
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         if (filter.getFiltervalue() != null) {
             values.add(filter.getFiltervalue());
         }
@@ -364,7 +364,7 @@ public class QueryByFilter {
     }
 
     private static QueryBuilder fromFilter(@Nullable List<Filter> filters, String prefix) {
-        if (filters == null || filters.size() == 0) {
+        if (filters == null || filters.isEmpty()) {
             return QueryBuilders.matchAllQuery();
 
         } else if (filters.size() == 1) {
@@ -399,7 +399,6 @@ public class QueryByFilter {
                         tmpQuery.should(getSinglePropertyQuery(p, v, prefix));
                     }
                     query.must(tmpQuery);
-                    tmpQuery = QueryBuilders.boolQuery();
                 }
             }
             LOG.trace("Query result. {}", query.toJSON());

@@ -47,10 +47,7 @@ public class DBKeyValuePair<T> implements SqlDBFilter {
     }
 
     protected boolean isNumericValue(T v) {
-        if ((v instanceof Long) || (v instanceof Integer) || (v instanceof Byte) || (v instanceof BigInteger)) {
-            return true;
-        }
-        return false;
+        return ((v instanceof Long) || (v instanceof Integer) || (v instanceof Byte) || (v instanceof BigInteger));
     }
 
     @Override

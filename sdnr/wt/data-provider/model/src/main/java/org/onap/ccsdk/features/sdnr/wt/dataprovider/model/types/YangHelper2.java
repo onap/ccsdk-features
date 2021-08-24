@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.yangtools.yang.binding.Identifiable;
 import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -38,43 +37,47 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class YangHelper2 {
 
-    static public @NonNull Uint64 getUint64(@NonNull BigInteger val) {
+    private YangHelper2() {
+
+    }
+
+    public static @NonNull Uint64 getUint64(@NonNull BigInteger val) {
         return Uint64.valueOf(val);
     }
 
-    static public @NonNull Uint64 getUint64(@NonNull Uint64 val) {
+    public static @NonNull Uint64 getUint64(@NonNull Uint64 val) {
         return val;
     }
 
-    static public @NonNull Uint32 getUint32(@NonNull Long val) {
+    public static @NonNull Uint32 getUint32(@NonNull Long val) {
         return Uint32.valueOf(val);
     }
 
-    static public @NonNull Uint32 getUint32(@NonNull Uint32 val) {
+    public static @NonNull Uint32 getUint32(@NonNull Uint32 val) {
         return val;
     }
 
-    public static @NonNull Uint16 getUint16(@Nullable Integer val) {
+    public static @NonNull Uint16 getUint16(@NonNull Integer val) {
         return Uint16.valueOf(val);
     }
 
-    public static @NonNull Uint16 getUint16(@Nullable Uint16 val) {
+    public static @NonNull Uint16 getUint16(@NonNull Uint16 val) {
         return val;
     }
 
-    public static @NonNull Integer getInteger(@Nullable Integer val) {
+    public static @NonNull Integer getInteger(@NonNull Integer val) {
         return val;
     }
 
-    public static @NonNull Integer getInteger(@Nullable Uint16 val) {
+    public static @NonNull Integer getInteger(@NonNull Uint16 val) {
         return val.intValue();
     }
 
-    public static @NonNull Long getInteger(@Nullable Long val) {
+    public static @NonNull Long getInteger(@NonNull Long val) {
         return val;
     }
 
-    public static @NonNull Long getInteger(@Nullable Uint32 val) {
+    public static @NonNull Long getInteger(@NonNull Uint32 val) {
         return val.longValue();
     }
     /**

@@ -45,6 +45,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.keystore.rev171017.Keystore;
@@ -136,6 +137,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     private final HtUserdataManager dbUserManager;
     private final DataBroker dataBroker;
     private final MsServlet mediatorServerServlet;
+
     public DataProviderServiceImpl(final RpcProviderService rpcProviderService, MsServlet mediatorServerServlet,
             DataBroker dataBroker) throws Exception {
         this.configuration = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
@@ -151,7 +153,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         mediatorServerServlet.setDataProvider(this.dataProvider.getHtDatabaseMediatorServer());
         this.dbUserManager = new HtUserdataManagerImpl(this.dataProvider.getRawClient());
         // Register ourselves as the REST API RPC implementation
-        LOG.info("Register RPC Service " + DataProviderServiceImpl.class.getSimpleName());
+        LOG.info("Register RPC Service {}", DataProviderServiceImpl.class.getSimpleName());
         this.rpcReg = rpcProviderService.registerRpcImplementation(DataProviderService.class, this);
     }
 
@@ -425,11 +427,15 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     private ReadTlsKeyEntryOutputBuilder readTlsKeys(ReadTlsKeyEntryInput input) {
         Optional<Keystore> result = Optional.empty();
-        try {
-            result = this.dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, KEYSTORE_IIF)
-                    .get();
-        } catch (InterruptedException | ExecutionException e) {
+        try (ReadTransaction transaction = this.dataBroker.newReadOnlyTransaction()) {
+            result = transaction.read(LogicalDatastoreType.CONFIGURATION, KEYSTORE_IIF).get();
+        } catch (ExecutionException e) {
             LOG.warn("problem reading netconf-keystore: ", e);
+
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted!", e);
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
         }
         ReadTlsKeyEntryOutputBuilder output = new ReadTlsKeyEntryOutputBuilder();
         if (result.isEmpty()) {
@@ -439,11 +445,12 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         if (keyCredential == null) {
             return output.setData(Arrays.asList()).setPagination(EMPTY_PAGINATION);
         }
-        long pageNum = input.getPagination() == null ? DEFAULT_PAGE
-                : input.getPagination().getPage() == null ? DEFAULT_PAGE : input.getPagination().getPage().longValue();
-        long size = input.getPagination() == null ? DEFAULT_PAGESIZE
-                : input.getPagination().getSize() == null ? DEFAULT_PAGESIZE
-                        : input.getPagination().getSize().longValue();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Pagination pagination =
+                input.getPagination();
+        long pageNum = pagination == null ? DEFAULT_PAGE
+                : pagination.getPage() == null ? DEFAULT_PAGE : pagination.getPage().longValue();
+        long size = pagination == null ? DEFAULT_PAGESIZE
+                : pagination.getSize() == null ? DEFAULT_PAGESIZE : pagination.getSize().longValue();
         long from = pageNum > 0 ? (pageNum - 1) * size : 0;
         output.setData(keyCredential.keySet().stream().skip(from).limit(size).map(e -> e.getKeyId())
                 .collect(Collectors.toList()));

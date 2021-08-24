@@ -112,7 +112,7 @@ public class Scope {
 
     public static List<Scope> createList(String nodeId, List<QName> qnames) {
         List<Scope> scopes = new ArrayList<>();
-        Optional<Scope> listElem = null;
+        Optional<Scope> listElem;
         for (QName qname : qnames) {
             listElem = scopes.stream().filter(e -> e.schema != null && e.schema.equalsNamespaceAndRevision(qname))
                     .findFirst();

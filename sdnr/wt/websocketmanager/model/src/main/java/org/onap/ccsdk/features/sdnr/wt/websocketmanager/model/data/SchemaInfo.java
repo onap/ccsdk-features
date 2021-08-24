@@ -24,7 +24,9 @@ package org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.common.Revision;
 
 public class SchemaInfo {
     private String namespace;
@@ -33,13 +35,17 @@ public class SchemaInfo {
 
     public SchemaInfo() {}
 
-
-
     public SchemaInfo(QName qname) {
-        this(qname.getNamespace().toString(),
-                qname.getRevision().isPresent() ? qname.getRevision().get().toString() : null, new ArrayList<>());
+        this(qname.getNamespace().toString(), getRevision(qname), new ArrayList<>());
         this.notification.add(qname.getLocalName());
     }
+
+    private static String getRevision(QName qname) {
+        Optional<Revision> orev = qname.getRevision();
+        return orev.isPresent() ? orev.get().toString() : null;
+    }
+
+
 
     public SchemaInfo(String namespace, String revision, List<String> notifications) {
         this.namespace = namespace;
@@ -78,8 +84,7 @@ public class SchemaInfo {
      */
     @JsonIgnore
     public boolean isValid() {
-        return this.namespace != null
-                && (this.notification == null || (this.notification != null && !this.notification.isEmpty()));
+        return this.namespace != null && (this.notification == null || !this.notification.isEmpty());
     }
 
     /**
@@ -95,7 +100,7 @@ public class SchemaInfo {
             return true;
         }
         //if namespace does not match => false
-        if (!this.namespace.equals(schema.getNamespace().toString())) {
+        if (!this.namespace.equals(schema.getNamespace())) {
             return false;
         }
         //if revision of scope is set and it does not match and is not '*' => false
@@ -120,8 +125,9 @@ public class SchemaInfo {
         if (this.revision == null && qname.getRevision().isEmpty()) {
             return true;
         }
+        Optional<Revision> orev = qname.getRevision();
         if (this.revision != null) {
-            return this.revision.equals(qname.getRevision().isEmpty() ? null : qname.getRevision().get().toString());
+            return this.revision.equals(orev.isEmpty() ? null : orev.get().toString());
         }
         return false;
     }

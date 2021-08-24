@@ -87,7 +87,7 @@ public class YangToolsMapperHelper {
             }
         }
         // really not found in any bundle
-        throw new ClassNotFoundException("Can not find class '"+name+"'");
+        throw new ClassNotFoundException("Can not find class '" + name + "'");
     }
 
     private static Class<?> loadClass(Bundle b, String name) throws ClassNotFoundException {
@@ -126,11 +126,13 @@ public class YangToolsMapperHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static <B extends Builder<?>> Class<B> findBuilderClass(DeserializationContext ctxt, Class<?> clazz) throws ClassNotFoundException {
+    public static <B extends Builder<?>> Class<B> findBuilderClass(DeserializationContext ctxt, Class<?> clazz)
+            throws ClassNotFoundException {
         return (Class<B>) findClass(getBuilderClassName(clazz));
     }
 
-    public static <B extends Builder<?>> Optional<Class<B>> findBuilderClassOptional(DeserializationContext ctxt, Class<?> clazz) {
+    public static <B extends Builder<?>> Optional<Class<B>> findBuilderClassOptional(DeserializationContext ctxt,
+            Class<?> clazz) {
         try {
             return Optional.of(findBuilderClass(ctxt, clazz));
         } catch (ClassNotFoundException e) {
@@ -149,7 +151,9 @@ public class YangToolsMapperHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Optional<T> getInstanceByConstructor(Class<?> clazz, String arg) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+    public static <T> Optional<T> getInstanceByConstructor(Class<?> clazz, String arg)
+            throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+            NoSuchMethodException, SecurityException {
         List<Class<?>> ctypes = getConstructorParameterTypes(clazz, String.class);
         Optional<Object> oObj;
         for (Class<?> ctype : ctypes) {
@@ -167,17 +171,16 @@ public class YangToolsMapperHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Optional<T> getDefaultInstance(@Nullable Class<?> clazz, String arg)
-            throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
-            InvocationTargetException {
-        LOG.trace("arg:'{}' clazz '{}'", arg, clazz.getName());
+    public static <T> Optional<T> getDefaultInstance(@Nullable Class<?> clazz, String arg) throws NoSuchMethodException,
+            SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        LOG.trace("arg:'{}' clazz '{}'", arg, clazz != null ? clazz.getName() : "null");
         if (clazz != null) {
             Method[] methods = clazz.getDeclaredMethods();
             for (Method m : methods) {
                 //TODO Verify argument type to avoid exception
                 if (m.getName().equals(TYPEOBJECT_INSTANCE_METHOD)) {
                     Method method = clazz.getDeclaredMethod(TYPEOBJECT_INSTANCE_METHOD, String.class);
-                    LOG.trace("Invoke {} available {}",TYPEOBJECT_INSTANCE_METHOD, method != null);
+                    LOG.trace("Invoke {} available {}", TYPEOBJECT_INSTANCE_METHOD, method != null);
                     return Optional.of((T) method.invoke(null, arg));
                 }
             }
@@ -212,7 +215,7 @@ public class YangToolsMapperHelper {
     }
 
     public static boolean implementsInterface(Class<?> clz, Class<?> ifToImplement) {
-        if(clz.equals(ifToImplement)) {
+        if (clz.equals(ifToImplement)) {
             return true;
         }
         Class<?>[] ifs = clz.getInterfaces();
@@ -240,6 +243,7 @@ public class YangToolsMapperHelper {
         ret.append(toCamelCase(name));
         return ret.toString();
     }
+
     public static String toCamelCase(final String name) {
         int start = 0;
         final StringBuilder ret = new StringBuilder(name.length());
@@ -255,20 +259,25 @@ public class YangToolsMapperHelper {
         }
         return ret.toString();
     }
+
     public static String toCamelCaseClassName(final String name) {
         final String clsName = toCamelCase(name);
-        return clsName.substring(0,1).toUpperCase()+clsName.substring(1);
+        return clsName.substring(0, 1).toUpperCase() + clsName.substring(1);
     }
+
     private static BundleContext getBundleContext() {
         Bundle bundle = FrameworkUtil.getBundle(YangToolsMapperHelper.class);
         return bundle != null ? bundle.getBundleContext() : null;
     }
+
     public static boolean hasTime(Notification notification) {
         return notification instanceof EventInstantAware;
     }
+
     public static boolean hasTime(DOMNotification notification) {
         return notification instanceof DOMEvent;
     }
+
     public static DateAndTime getTime(Notification notification, Instant defaultValue) {
         Instant time;
         if (hasTime(notification)) { // If notification class extends/implements the EventInstantAware

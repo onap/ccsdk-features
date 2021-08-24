@@ -43,7 +43,7 @@ public class UserdataHttpServlet extends HttpServlet {
     private static final String REGEX = "^\\/userdata[\\/]?([a-zA-Z0-9]+)?$";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
     private static final String JWT_PAYLOAD_USERNAME_PROPERTYKEY = "sub";
-    private HtUserdataManager dbUserManager;
+    private static HtUserdataManager dbUserManager;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -91,47 +91,46 @@ public class UserdataHttpServlet extends HttpServlet {
 
     private void handleGetRequest(HttpServletRequest req, HttpServletResponse resp, String key) {
         final String username = this.getUsername(req);
-        if(username==null) {
+        if (username == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         sendJsonResponse(resp,
-                key == null ? this.dbUserManager.getUserdata(username) : this.dbUserManager.getUserdata(username, key));
+                key == null ? dbUserManager.getUserdata(username) : dbUserManager.getUserdata(username, key));
     }
 
 
     private void handlePutRequest(HttpServletRequest req, HttpServletResponse resp, String data, String key) {
         final String username = this.getUsername(req);
-        if(username==null) {
+        if (username == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
-        boolean success = key == null ? this.dbUserManager.setUserdata(username, data)
-                : this.dbUserManager.setUserdata(username, key, data);
+        boolean success = key == null ? dbUserManager.setUserdata(username, data)
+                : dbUserManager.setUserdata(username, key, data);
         resp.setStatus(success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
     private void handleDeleteRequest(HttpServletRequest req, HttpServletResponse resp, String key) {
         final String username = this.getUsername(req);
-        if(username==null) {
+        if (username == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
-        boolean success = key == null ? this.dbUserManager.removeUserdata(username)
-                : this.dbUserManager.removeUserdata(username, key);
+        boolean success =
+                key == null ? dbUserManager.removeUserdata(username) : dbUserManager.removeUserdata(username, key);
         resp.setStatus(success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
     private String getUsername(HttpServletRequest req) {
         final String authHeader = req.getHeader("Authorization");
-        if(authHeader==null) {
+        if (authHeader == null) {
             return null;
         }
         String username = null;
-        if(authHeader.startsWith("Basic")) {
+        if (authHeader.startsWith("Basic")) {
             username = BaseHTTPClient.decodeBasicAuthHeaderUsername(authHeader);
-        }
-        else if(authHeader.startsWith("Bearer")) {
+        } else if (authHeader.startsWith("Bearer")) {
             username = decodeJWTPayloadUsername(authHeader, JWT_PAYLOAD_USERNAME_PROPERTYKEY);
         }
         return username;
@@ -139,16 +138,16 @@ public class UserdataHttpServlet extends HttpServlet {
 
     public static String decodeJWTPayloadUsername(String authHeader, String key) {
         String username = null;
-        if(authHeader.startsWith("Bearer")) {
+        if (authHeader.startsWith("Bearer")) {
             authHeader = authHeader.substring(7);
         }
         String[] tmp = authHeader.split("\\.");
-        if(tmp.length==3) {
+        if (tmp.length == 3) {
             final String decoded = new String(Base64.getDecoder().decode(tmp[1]));
-            JSONObject o  = new JSONObject(decoded);
-            if(o.has(key)) {
+            JSONObject o = new JSONObject(decoded);
+            if (o.has(key)) {
                 username = o.getString(key);
-                if(username!=null && username.contains("@")) {
+                if (username != null && username.contains("@")) {
                     username = username.split("@")[0];
                 }
             }
@@ -168,8 +167,8 @@ public class UserdataHttpServlet extends HttpServlet {
 
     }
 
-    public void setDatabaseClient(HtUserdataManager dbUserManager) {
-        this.dbUserManager = dbUserManager;
+    public void setDatabaseClient(HtUserdataManager dbMgr) {
+        dbUserManager = dbMgr;
     }
 
 }

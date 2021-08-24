@@ -44,8 +44,8 @@ public class Config {
     private static final String DEFAULT_TOKENSECRET = generateSecret();
     private static final String DEFAULT_REDIRECTURI = "/odlux/index.html#/oauth?token=";
     private static final String DEFAULT_SUPPORTODLUSERS = "true";
+    private static Random random;
     private static Config _instance;
-
 
     private List<OAuthProviderConfig> providers;
     private String redirectUri;
@@ -166,8 +166,9 @@ public class Config {
     public static String generateSecret(int targetStringLength) {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
-        Random random = new Random();
-
+        if(random==null) {
+            random = new Random();
+        }
         String generatedString = random.ints(leftLimit, rightLimit + 1)
                 .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
@@ -197,7 +198,7 @@ public class Config {
                         String envvar = mkey.substring(2, mkey.length() - 1);
                         String env = System.getenv(envvar);
                         tmp = tmp.replace(mkey, env == null ? "" : env);
-                        if (env != null && env != "") {
+                        if (env != null && env.isEmpty()) {
                             found = true;
                         }
                     } catch (SecurityException e) {

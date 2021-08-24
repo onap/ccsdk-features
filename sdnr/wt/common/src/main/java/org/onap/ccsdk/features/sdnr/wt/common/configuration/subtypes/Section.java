@@ -29,7 +29,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.exception.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -266,7 +265,7 @@ public class Section {
     }
 
     // static methods
-    public static void setEnvGetter(@NonNull EnvGetter newEnvGetter) {
+    public static void setEnvGetter(EnvGetter newEnvGetter) {
         if (Objects.nonNull(newEnvGetter)) {
             envGetter = newEnvGetter;
         } else {

@@ -75,10 +75,8 @@ public class AuthHttpServlet extends HttpServlet {
     public static final String REDIRECTURI = BASEURI + "/redirect";
     private static final String REDIRECTURI_FORMAT = REDIRECTURI + "/%s";
     private static final String POLICIESURI = BASEURI + "/policies";
-    //private static final String PROVIDERID_REGEX = "^\\" + BASEURI + "\\/providers\\/([^\\/]+)$";
     private static final String REDIRECTID_REGEX = "^\\" + BASEURI + "\\/redirect\\/([^\\/]+)$";
     private static final String LOGIN_REDIRECT_REGEX = "^\\" + LOGINURI + "\\/([^\\/]+)$";
-    //private static final Pattern PROVIDERID_PATTERN = Pattern.compile(PROVIDERID_REGEX);
     private static final Pattern REDIRECTID_PATTERN = Pattern.compile(REDIRECTID_REGEX);
     private static final Pattern LOGIN_REDIRECT_PATTERN = Pattern.compile(LOGIN_REDIRECT_REGEX);
 
@@ -96,13 +94,12 @@ public class AuthHttpServlet extends HttpServlet {
     private final ObjectMapper mapper;
     /* state <=> AuthProviderService> */
     private final Map<String, AuthService> providerStore;
-    private Authenticator odlAuthenticator;
-    private IdMService odlIdentityService;
     private final TokenCreator tokenCreator;
     private final Config config;
-    private ShiroConfiguration shiroConfiguration;
-    private DataBroker dataBroker;
-    private MdSalAuthorizationStore mdsalAuthStore;
+    private static Authenticator odlAuthenticator;
+    private static IdMService odlIdentityService;
+    private static ShiroConfiguration shiroConfiguration;
+    private static MdSalAuthorizationStore mdsalAuthStore;
 
     public AuthHttpServlet() throws IOException {
         this.config = Config.getInstance();
@@ -116,21 +113,20 @@ public class AuthHttpServlet extends HttpServlet {
 
     }
 
-    public void setOdlAuthenticator(Authenticator odlAuthenticator) {
-        this.odlAuthenticator = odlAuthenticator;
+    public void setOdlAuthenticator(Authenticator odlAuthenticator2) {
+        odlAuthenticator = odlAuthenticator2;
     }
 
-    public void setOdlIdentityService(IdMService odlIdentityService) {
-        this.odlIdentityService = odlIdentityService;
+    public void setOdlIdentityService(IdMService odlIdentityService2) {
+        odlIdentityService = odlIdentityService2;
     }
 
-    public void setShiroConfiguration(ShiroConfiguration shiroConfiguration) {
-        this.shiroConfiguration = shiroConfiguration;
+    public void setShiroConfiguration(ShiroConfiguration shiroConfiguration2) {
+        shiroConfiguration = shiroConfiguration2;
     }
 
     public void setDataBroker(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-        this.mdsalAuthStore = new MdSalAuthorizationStore(this.dataBroker);
+        mdsalAuthStore = new MdSalAuthorizationStore(dataBroker);
     }
 
     @Override
@@ -152,10 +148,12 @@ public class AuthHttpServlet extends HttpServlet {
         }
 
     }
+
     private void handleLogout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         this.logout();
-        this.sendResponse(resp, HttpServletResponse.SC_OK,"");
+        this.sendResponse(resp, HttpServletResponse.SC_OK, "");
     }
+
     private void handleLoginRedirect(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         final String uri = req.getRequestURI();
         final Matcher matcher = LOGIN_REDIRECT_PATTERN.matcher(uri);
@@ -163,7 +161,6 @@ public class AuthHttpServlet extends HttpServlet {
             final String id = matcher.group(1);
             AuthService provider = this.providerStore.getOrDefault(id, null);
             if (provider != null) {
-                //provider.setLocalHostUrl(getHost(req));
                 String redirectUrl = getHost(req) + String.format(REDIRECTURI_FORMAT, id);
                 provider.sendLoginRedirectResponse(resp, redirectUrl);
                 return;
@@ -185,7 +182,7 @@ public class AuthHttpServlet extends HttpServlet {
      * @return
      */
     private List<OdlPolicy> getPoliciesForUser(HttpServletRequest req) {
-        List<Urls> urlRules = this.shiroConfiguration.getUrls();
+        List<Urls> urlRules = shiroConfiguration.getUrls();
         UserTokenPayload data = this.getUserInfo(req);
         List<OdlPolicy> policies = new ArrayList<>();
         if (urlRules != null) {
@@ -209,7 +206,7 @@ public class AuthHttpServlet extends HttpServlet {
                         } else if (authClass.equals(CLASSNAME_ODLBEARERANDBASICAUTH)) {
                             policy = this.getTokenBasedPolicy(urlRule, matcher, data);
                         } else if (authClass.equals(CLASSNAME_ODLMDSALAUTH)) {
-                            policy = this.getMdSalBasedPolicy(urlRule, matcher, data);
+                            policy = this.getMdSalBasedPolicy(urlRule, data);
                         }
                         if (policy.isPresent()) {
                             policies.add(policy.get());
@@ -236,13 +233,12 @@ public class AuthHttpServlet extends HttpServlet {
      * extract policy rule for user from MD-SAL not yet supported
      *
      * @param urlRule
-     * @param matcher
      * @param data
      * @return
      */
-    private Optional<OdlPolicy> getMdSalBasedPolicy(Urls urlRule, Matcher matcher, UserTokenPayload data) {
-        if (this.mdsalAuthStore != null) {
-            return data != null ? this.mdsalAuthStore.getPolicy(urlRule.getPairKey(), data.getRoles())
+    private Optional<OdlPolicy> getMdSalBasedPolicy(Urls urlRule, UserTokenPayload data) {
+        if (mdsalAuthStore != null) {
+            return data != null ? mdsalAuthStore.getPolicy(urlRule.getPairKey(), data.getRoles())
                     : Optional.of(OdlPolicy.denyAll(urlRule.getPairKey()));
         }
         return Optional.empty();
@@ -293,8 +289,9 @@ public class AuthHttpServlet extends HttpServlet {
         if ("anon".equals(key)) {
             return null;
         }
+        List<Main> list = shiroConfiguration.getMain();
         Optional<Main> main =
-                this.shiroConfiguration.getMain().stream().filter((e) -> e.getPairKey().equals(key)).findFirst();
+                list == null ? Optional.empty() : list.stream().filter(e -> e.getPairKey().equals(key)).findFirst();
         if (main.isPresent()) {
             return main.get().getPairValue();
         }
@@ -314,7 +311,7 @@ public class AuthHttpServlet extends HttpServlet {
                 if (!username.contains("@")) {
                     username = String.format("%s@%s", username, domain);
                 }
-                List<String> roles = this.odlIdentityService.listRoles(username, domain);
+                List<String> roles = odlIdentityService.listRoles(username, domain);
                 return UserTokenPayload.create(username, roles);
             }
         }
@@ -440,8 +437,8 @@ public class AuthHttpServlet extends HttpServlet {
         }
         HttpServletRequest req = new HeadersOnlyHttpServletRequest(
                 Map.of("Authorization", BaseHTTPClient.getAuthorizationHeaderValue(username, password)));
-        if (this.odlAuthenticator.authenticate(req)) {
-            List<String> roles = this.odlIdentityService.listRoles(username, domain);
+        if (odlAuthenticator.authenticate(req)) {
+            List<String> roles = odlIdentityService.listRoles(username, domain);
             UserTokenPayload data = new UserTokenPayload();
             data.setPreferredUsername(username);
             data.setFamilyName("");
@@ -467,6 +464,7 @@ public class AuthHttpServlet extends HttpServlet {
         os.write(output);
 
     }
+
     private void logout() {
         final Subject subject = SecurityUtils.getSubject();
         try {

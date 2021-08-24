@@ -52,7 +52,7 @@ public interface SqlQuery {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        if (filters.size() > 0) {
+        if (!filters.isEmpty()) {
 
             sb.append(" WHERE (" + getFilterExpression(filters.get(0)) + ")");
             for (int i = 1; i < filters.size(); i++) {
@@ -80,7 +80,7 @@ public interface SqlQuery {
     }
 
     public static String getFilterExpression(String property, String value) {
-        String filter = null;;
+        String filter = null;
         if (DbFilter.hasSearchParams(value)) {
             if (TIMESTAMPPROPERTYNAMES.contains(property.toLowerCase())) {
                 if (DbFilter.isComparisonValid(value)) {
@@ -224,12 +224,15 @@ public interface SqlQuery {
                 netconfToMariaDBTimestamp(upperEnd), false);
     }
 
-        private static String netconfToMariaDBTimestamp(String ts) {
-            String v = ts.replace("T", " ").replace("Z", "");
-            return v.length() > MARIADB_TIMESTAMP_REPLACER_MAX_LENGTH
-                    ? v.substring(0, MARIADB_TIMESTAMP_REPLACER_MAX_LENGTH)
-                    : v;
+    private static String netconfToMariaDBTimestamp(String ts) {
+        if(ts==null) {
+            return null;
         }
+        String v = ts.replace("T", " ").replace("Z", "");
+        return v.length() > MARIADB_TIMESTAMP_REPLACER_MAX_LENGTH
+                ? v.substring(0, MARIADB_TIMESTAMP_REPLACER_MAX_LENGTH)
+                : v;
+    }
 
     private static String getTimestampUpperLimit(String lowerEnd, int idx) {
 
@@ -244,7 +247,7 @@ public interface SqlQuery {
         if (dt == null) {
             return null;
         }
-        //        property.substring(0,idx)+REPLACE.substring(idx+1);
+
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         c.setTime(dt);
         int tmpvalue;

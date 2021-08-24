@@ -66,7 +66,7 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
                         .createMaintenance(new CreateMaintenanceInputBuilder().setNodeId(nodeId).build());
                 e = createResult.build();
             } catch (IOException e1) {
-                LOG.warn("problem writing initial maintenance entry for {} : ", nodeId, e);
+                LOG.warn("problem writing initial maintenance entry for {} : ", nodeId, e1);
             }
         }
         return e;
@@ -84,10 +84,12 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
         ReadNetworkElementConnectionListOutput result = this.dbProvider.readNetworkElementConnectionList(
                 new ReadNetworkElementConnectionListInputBuilder().setFilter(getFilterInput("node-id", nodeId)).build())
                 .build();
-        if (result.getData() != null && result.getData().size() > 0) {
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data> data =
+                result.getData();
+        if (data != null && !data.isEmpty()) {
             org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data entry =
-                    result.getData().get(0);
-            if (entry.isIsRequired()) {
+                    data.get(0);
+            if (entry.getIsRequired()) {
                 return;
 
             }
@@ -111,8 +113,8 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
                 .readMaintenanceList(
                         new ReadMaintenanceListInputBuilder().setFilter(getFilterInput("node-id", nodeId)).build())
                 .build();
-
-        return result.getData() != null ? result.getData().size() > 0 ? result.getData().get(0) : null : null;
+        final List<Data> data = result.getData();
+        return data != null ? !data.isEmpty() ? data.get(0) : null : null;
     }
 
     @Override

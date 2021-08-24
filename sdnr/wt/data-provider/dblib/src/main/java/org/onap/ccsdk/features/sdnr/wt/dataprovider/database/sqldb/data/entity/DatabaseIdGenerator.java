@@ -40,6 +40,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 public class DatabaseIdGenerator {
 
     private static final Pattern FAULTPATTERN = Pattern.compile(".*\\[layerProtocol=(.*)\\]");
+    private static final String FORMAT_PMDATA_ID = "%s/%s/%s";
+    private static final String FORMAT_FAULTDATA_ID = "%s/%s/%s";
+    private static final String FORMAT_INVENTORYDATA_ID = "%s/%s";
+
+    private DatabaseIdGenerator(){
+
+    }
 
     public static String getMaintenanceId(String nodeId) {
         return nodeId;
@@ -62,7 +69,7 @@ public class DatabaseIdGenerator {
         } else {
             uuId = objectId;
         }
-        return String.format("%s/%s/%s", nodeId, uuId, problemName);
+        return String.format(FORMAT_FAULTDATA_ID, nodeId, uuId, problemName);
     }
 
     public static String getFaultcurrentId(FaultcurrentEntity object) {
@@ -78,7 +85,7 @@ public class DatabaseIdGenerator {
     }
 
     public static String getPmData15mId(String nodeId, String uuidInterface, String timestamp) {
-        return String.format("%s/%s/%s", nodeId, uuidInterface, timestamp);
+        return String.format(FORMAT_PMDATA_ID, nodeId, uuidInterface, timestamp);
     }
 
     public static String getPmData15mId(Pmdata15mEntity object) {
@@ -86,7 +93,7 @@ public class DatabaseIdGenerator {
                 : getPmData15mId(object.getNodeName(), object.getUuidInterface(), object.getTimeStamp().getValue());
     }
     public static String getPmData24hId(String nodeId, String uuidInterface, String timestamp) {
-        return String.format("%s/%s/%s", nodeId, uuidInterface, timestamp);
+        return String.format(FORMAT_PMDATA_ID, nodeId, uuidInterface, timestamp);
     }
 
     public static String getPmData24hId(Pmdata24hEntity object) {
@@ -99,6 +106,6 @@ public class DatabaseIdGenerator {
     }
 
     private static String getInventoryId(String nodeId, String uuid) {
-        return String.format("%s/%s", nodeId, uuid);
+        return String.format(FORMAT_INVENTORYDATA_ID, nodeId, uuid);
     }
 }

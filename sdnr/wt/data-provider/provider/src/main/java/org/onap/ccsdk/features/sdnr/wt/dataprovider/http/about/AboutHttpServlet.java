@@ -34,8 +34,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpHeaders;
-//import org.apache.karaf.bundle.core.BundleInfo;
-//import org.apache.karaf.bundle.core.BundleService;
 import org.onap.ccsdk.features.sdnr.wt.common.Resources;
 import org.onap.ccsdk.features.sdnr.wt.common.file.PomFile;
 import org.onap.ccsdk.features.sdnr.wt.common.file.PomPropertiesFile;
@@ -83,8 +81,7 @@ public class AboutHttpServlet extends HttpServlet {
     private final Map<Integer, String> BUNDLESTATE_LUT;
     private final Map<String, String> data;
     private final String readmeContent;
-    //	private BundleService bundleService;
-    private String jsonContent;
+    private final String jsonContent;
 
 
     public AboutHttpServlet() {
@@ -113,10 +110,6 @@ public class AboutHttpServlet extends HttpServlet {
         }
         return def;
     }
-
-    //	public void setBundleService(BundleService bundleService) {
-    //		this.bundleService = bundleService;
-    //	}
 
     /**
      * collect static versioning data
@@ -152,22 +145,11 @@ public class AboutHttpServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentLength(output.length);
             resp.setContentType(ctype.getMimeType());
-            ServletOutputStream os = null;
-            try {
-                os = resp.getOutputStream();
+            try (ServletOutputStream os = resp.getOutputStream()) {
                 os.write(output);
             } catch (IOException e) {
                 LOG.warn("problem writing response for {}: {}", uri, e);
-            } finally {
-                if (os != null) {
-                    try {
-                        os.close();
-                    } catch (IOException e) {
-                        LOG.warn("problem closing response stream: {}", e);
-                    }
-                }
             }
-
         } else {
             this.doGetFile(uri, resp);
         }
@@ -183,7 +165,7 @@ public class AboutHttpServlet extends HttpServlet {
         if (content == null) {
             return def;
         }
-        String lines[] = content.split("\n");
+        String[] lines = content.split("\n");
         for (String line : lines) {
             if (line.startsWith("git.commit.id")) {
                 def = line.substring("git.commit.id=".length());
@@ -207,7 +189,7 @@ public class AboutHttpServlet extends HttpServlet {
             this.data.put(PLACEHOLDER_KARAF_INFO, SystemInfo.get());
             this.data.put(PLACEHOLDER_DEVICEMANAGER_TABLE, this.getDevicemanagerBundles(ctype));
         } catch (Exception e) {
-            LOG.warn("problem collecting system data: {}", e);
+            LOG.warn("problem collecting system data: ", e);
         }
     }
 
@@ -228,7 +210,7 @@ public class AboutHttpServlet extends HttpServlet {
             Attributes attr = manifest.getMainAttributes();
             return attr.getValue(key);
         } catch (IOException e) {
-            LOG.warn("problem reading manifest: {}", e);
+            LOG.warn("problem reading manifest: ", e);
         }
         return null;
 
@@ -282,12 +264,12 @@ public class AboutHttpServlet extends HttpServlet {
         BundleContext context = thisbundle == null ? null : thisbundle.getBundleContext();
         if (context == null) {
             LOG.debug("no bundle context available");
-            return ctype==ContentType.MARKDOWN?"":"[]";
+            return ctype == ContentType.MARKDOWN ? "" : "[]";
         }
         Bundle[] bundles = context.getBundles();
         if (bundles == null || bundles.length <= 0) {
             LOG.debug("no bundles found");
-            return ctype==ContentType.MARKDOWN?NO_DEVICEMANAGERS_RUNNING_MESSAGE:"[]";
+            return ctype == ContentType.MARKDOWN ? NO_DEVICEMANAGERS_RUNNING_MESSAGE : "[]";
         }
         LOG.debug("found {} bundles", bundles.length);
         MarkdownTable table = new MarkdownTable();
@@ -302,10 +284,10 @@ public class AboutHttpServlet extends HttpServlet {
                 continue;
             }
             table.addRow(new String[] {String.valueOf(bundle.getBundleId()), bundle.getVersion().toString(), name,
-                    BUNDLESTATE_LUT.getOrDefault(bundle.getState(), "unknown")});
+                    BUNDLESTATE_LUT.getOrDefault(bundle.getState(), UNKNOWN)});
 
         }
-        return ctype==ContentType.MARKDOWN?table.toMarkDown():table.toJson();
+        return ctype == ContentType.MARKDOWN ? table.toMarkDown() : table.toJson();
     }
 
     /**
@@ -329,7 +311,7 @@ public class AboutHttpServlet extends HttpServlet {
             try {
                 resp.getOutputStream().write(data);
             } catch (IOException e) {
-                LOG.debug("unable to send data : {}", e);
+                LOG.debug("unable to send data: ", e);
             }
         }
 
@@ -352,7 +334,7 @@ public class AboutHttpServlet extends HttpServlet {
             case "bmp":
                 return "image/" + ext;
             case "json":
-                return "application/json";
+                return MIMETYPE_JSON;
             case "html":
             case "htm":
                 return "text/html";
@@ -382,7 +364,7 @@ public class AboutHttpServlet extends HttpServlet {
      */
     private String render(ContentType ctype, String content) {
         if (content == null) {
-            content = ctype==ContentType.MARKDOWN? this.readmeContent:this.jsonContent;
+            content = ctype == ContentType.MARKDOWN ? this.readmeContent : this.jsonContent;
         }
         if (content == null) {
             return null;

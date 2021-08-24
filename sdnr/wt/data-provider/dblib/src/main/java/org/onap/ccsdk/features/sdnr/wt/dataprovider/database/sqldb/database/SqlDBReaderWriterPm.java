@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.entity.DatabaseIdGenerator;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.rpctypehelper.QueryResult;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.SelectQuery;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
@@ -82,9 +83,9 @@ public class SqlDBReaderWriterPm<T extends DataObject> extends SqlDBReaderWriter
         try {
             ResultSet data = this.dbService.read(query.toSql());
             List<String> mappedData = SqlDBMapper.read(data, String.class, UUID_KEY);
-            long total = this.count(input.getFilter() != null ? new ArrayList<>(input.getFilter().values()) : null,
-                    this.controllerId);
-            return new QueryResult<String>(mappedData, query.getPage(), query.getPageSize(), total);
+            Map<FilterKey, Filter> inpFilter = input.getFilter();
+            long total = this.count(inpFilter != null ? new ArrayList<>(inpFilter.values()) : null, this.controllerId);
+            return new QueryResult<>(mappedData, query.getPage(), query.getPageSize(), total);
         } catch (SQLException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | InstantiationException | SecurityException | NoSuchMethodException | JsonProcessingException e) {
             LOG.warn("problem reading ltp list: ", e);
@@ -113,9 +114,9 @@ public class SqlDBReaderWriterPm<T extends DataObject> extends SqlDBReaderWriter
         try {
             ResultSet data = this.dbService.read(query.toSql());
             List<String> mappedData = SqlDBMapper.read(data, String.class, NODE_KEY);
-            long total = this.count(input.getFilter() != null ? new ArrayList<>(input.getFilter().values()) : null,
-                    this.controllerId);
-            return new QueryResult<String>(mappedData, query.getPage(), query.getPageSize(), total);
+            Map<FilterKey, Filter> inpFilter = input.getFilter();
+            long total = this.count(inpFilter != null ? new ArrayList<>(inpFilter.values()) : null, this.controllerId);
+            return new QueryResult<>(mappedData, query.getPage(), query.getPageSize(), total);
         } catch (SQLException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | InstantiationException | SecurityException | NoSuchMethodException | JsonProcessingException e) {
             LOG.warn("problem reading device list: ", e);
@@ -125,7 +126,7 @@ public class SqlDBReaderWriterPm<T extends DataObject> extends SqlDBReaderWriter
 
     public void write(PmdataEntity pmData) {
         DateAndTime date = pmData.getTimeStamp();
-        final String id = String.format("%s/%s/%s", pmData.getNodeName(), pmData.getUuidInterface(),
+        final String id = DatabaseIdGenerator.getPmData15mId(pmData.getNodeName(), pmData.getUuidInterface(),
                 date != null ? date.getValue() : "null");
         this.updateOrInsert(pmData, id);
     }

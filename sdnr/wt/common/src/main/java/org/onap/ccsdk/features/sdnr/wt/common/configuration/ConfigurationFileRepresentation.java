@@ -49,6 +49,8 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
     public static final String SECTIONNAME_ROOT = "";
     private static final String LR = "\n";
     private static final String EMPTY = "";
+
+    private static final String LOG_UNKNWON_CONFIG_SECTION = "Unknown configuration section {}";
     // end of constants
 
     // variables
@@ -70,8 +72,12 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
                 if (!this.mFile.createNewFile()) {
                     LOG.error("Can not create file {}", f.getAbsolutePath());
                 }
-                this.mFile.setReadable(true, false);
-                this.mFile.setWritable(true, false);
+                if (!this.mFile.setReadable(true, false)) {
+                    LOG.warn("unable to set file as readable");
+                }
+                if (!this.mFile.setWritable(true, false)) {
+                    LOG.warn("unable to set file as writable");
+                }
             }
             reLoad();
 
@@ -106,9 +112,7 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
         String curSectionName = SECTIONNAME_ROOT;
         Optional<Section> sectionOptional = this.getSection(curSectionName);
         Section curSection = sectionOptional.isPresent() ? sectionOptional.get() : this.addSection(curSectionName);
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(this.mFile));
+        try (BufferedReader br = new BufferedReader(new FileReader(this.mFile))) {
             for (String line; (line = br.readLine()) != null;) {
                 line = line.trim();
                 if (line.isEmpty()) {
@@ -124,13 +128,6 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
 
         } catch (Exception e) {
             LOG.info("Problem loading configuration file. {} {}", getMFileName(), e);
-        } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-            } catch (IOException e) {
-            }
         }
         LOG.debug("finished loading file");
         LOG.debug("start parsing sections");
@@ -164,9 +161,8 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
                     bw.write(String.join(LR, section.toLines()) + LR + LR);
                 }
             }
-            bw.close();
         } catch (Exception e) {
-            LOG.warn("problem saving value: " + e.getMessage());
+            LOG.warn("problem saving value: {}", e.getMessage());
         }
     }
 
@@ -194,7 +190,6 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
         if (this.fileObserver != null) {
             this.fileObserver.interrupt();
         }
-        super.finalize();
     }
 
     /*
@@ -206,7 +201,7 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
             os.get().setProperty(key, value == null ? "null" : value.toString());
             save();
         } else {
-            LOG.info("Unknown configuration section {}", section);
+            LOG.info(LOG_UNKNWON_CONFIG_SECTION, section);
         }
     }
 
@@ -215,7 +210,7 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
         if (os.isPresent()) {
             return os.get().getProperty(propertyKey);
         } else {
-            LOG.debug("Unknown configuration section {}", section);
+            LOG.debug(LOG_UNKNWON_CONFIG_SECTION, section);
             return EMPTY;
         }
     }
@@ -225,7 +220,7 @@ public class ConfigurationFileRepresentation implements IConfigChangedListener {
         if (os.isPresent()) {
             return os.get().getLong(propertyKey);
         } else {
-            LOG.debug("Unknown configuration section {}", section);
+            LOG.debug(LOG_UNKNWON_CONFIG_SECTION, section);
             return Optional.empty();
         }
     }
