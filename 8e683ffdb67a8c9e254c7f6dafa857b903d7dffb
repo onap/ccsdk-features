@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "26abf801_5f3f9c28",
+        "filename": "sdnr/northbound/addCMHandle/feature/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-08-26T18:51:34Z",
+      "side": 1,
+      "message": "is this not part of parent pom dependencyManagement ?",
+      "revId": "8e683ffdb67a8c9e254c7f6dafa857b903d7dffb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6a33a4e_0ba413f1",
+        "filename": "sdnr/northbound/addCMHandle/installer/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-08-26T18:51:34Z",
+      "side": 1,
+      "message": "is this not part of parent pom dependencyManagement ?",
+      "revId": "8e683ffdb67a8c9e254c7f6dafa857b903d7dffb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aac8c62d_aa905ad7",
+        "filename": "sdnr/northbound/addCMHandle/model/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-08-26T18:51:34Z",
+      "side": 1,
+      "message": "Are these not part of parent pom dependencyManagement ?",
+      "revId": "8e683ffdb67a8c9e254c7f6dafa857b903d7dffb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6fded3b3_bbd98e21",
+        "filename": "sdnr/northbound/addCMHandle/provider/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 865
+      },
+      "writtenOn": "2021-08-26T18:51:34Z",
+      "side": 1,
+      "message": "is this not part of parent pom dependencyManagement ?",
+      "revId": "8e683ffdb67a8c9e254c7f6dafa857b903d7dffb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
