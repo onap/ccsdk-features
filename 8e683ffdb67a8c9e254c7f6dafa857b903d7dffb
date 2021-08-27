@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "f1402297_26b52215",
+        "filename": "sdnr/northbound/addCMHandle/model/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 6219
+      },
+      "writtenOn": "2021-08-27T05:14:58Z",
+      "side": 1,
+      "message": "No they weren\u0027t managed, was throwing version missing error. Same for all the remaining comments. I will try to remove the dependency or use the ones managed by the parent as I work on this further.",
+      "parentUuid": "aac8c62d_aa905ad7",
+      "revId": "8e683ffdb67a8c9e254c7f6dafa857b903d7dffb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6fded3b3_bbd98e21",
         "filename": "sdnr/northbound/addCMHandle/provider/pom.xml",
         "patchSetId": 2
