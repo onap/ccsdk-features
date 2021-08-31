@@ -61,19 +61,24 @@ public class ONFCoreNetworkElementFactory implements NetworkElementFactory {
         if (capabilities.isSupportingNamespaceAndRevision(NetworkElement.QNAME)) {
             OnfMicrowaveModel onfMicrowaveModel = null;
             Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
-            if (capabilities.isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME)) {
-                onfMicrowaveModel = new WrapperMicrowaveModelRev170324(bindingAccessor.get(), serviceProvider);
-            } else if (capabilities.isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME)) {
-                onfMicrowaveModel = new WrapperMicrowaveModelRev180907(bindingAccessor.get(), serviceProvider);
-            } else if (capabilities.isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev181010.QNAME)) {
-                onfMicrowaveModel = new WrapperMicrowaveModelRev181010(bindingAccessor.get(), serviceProvider);
-            }
+            if (bindingAccessor.isPresent()) {
+                if (capabilities.isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev170324.QNAME)) {
+                    onfMicrowaveModel = new WrapperMicrowaveModelRev170324(bindingAccessor.get(), serviceProvider);
+                } else if (capabilities.isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev180907.QNAME)) {
+                    onfMicrowaveModel = new WrapperMicrowaveModelRev180907(bindingAccessor.get(), serviceProvider);
+                } else if (capabilities.isSupportingNamespaceAndRevision(WrapperMicrowaveModelRev181010.QNAME)) {
+                    onfMicrowaveModel = new WrapperMicrowaveModelRev181010(bindingAccessor.get(), serviceProvider);
+                }
 
-            if (onfMicrowaveModel != null) {
-                return Optional.of(new ONFCoreNetworkElement12Microwave(bindingAccessor.get(), serviceProvider, configuration,
-                        onfMicrowaveModel));
+                if (onfMicrowaveModel != null) {
+                    return Optional.of(new ONFCoreNetworkElement12Microwave(bindingAccessor.get(), serviceProvider,
+                            configuration, onfMicrowaveModel));
+                } else {
+                    return Optional.of(
+                            new ONFCoreNetworkElement12Basic(bindingAccessor.get(), serviceProvider, configuration));
+                }
             } else {
-                return Optional.of(new ONFCoreNetworkElement12Basic(bindingAccessor.get(), serviceProvider, configuration));
+                log.error("Netconf Bindingaccessor is not present. This is a fatal issue and needs to be corrected for devicemanagers to work correctly.");
             }
         }
 

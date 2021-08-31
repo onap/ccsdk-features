@@ -194,7 +194,7 @@ public class Onf14DomInterfacePacManager implements DOMNotificationListener {
             Class<? extends LAYERPROTOCOLNAMETYPE> layerProtocolName = lp.getLayerProtocolName();
             if (layerProtocolName != null) {
                 // if the LTP has an airInterface technology extension, the layer protocol name is air-layer
-                if (layerProtocolName.getTypeName() == LAYERPROTOCOLNAMETYPEAIRLAYER.class.getName()) {
+                if (layerProtocolName.getTypeName().equals(LAYERPROTOCOLNAMETYPEAIRLAYER.class.getName())) {
                     TechnologySpecificPacKeys airInterfaceKey =
                             new TechnologySpecificPacKeys(ltp.getUuid(), lp.getLocalId());
                     airInterfaceList.add(airInterfaceKey);
@@ -202,14 +202,14 @@ public class Onf14DomInterfacePacManager implements DOMNotificationListener {
                             ltp.getUuid().getValue(), lp.getLocalId());
                 }
                 // if the LTP has an ethernetContainier technology extension, the layer protocol name is ethernet-container-layer
-                else if (layerProtocolName.getTypeName() == LAYERPROTOCOLNAMETYPEETHERNETCONTAINERLAYER.class
-                        .getName()) {
+                else if (layerProtocolName.getTypeName().equals(LAYERPROTOCOLNAMETYPEETHERNETCONTAINERLAYER.class
+                        .getName())) {
                     TechnologySpecificPacKeys ethernetContainerKey =
                             new TechnologySpecificPacKeys(ltp.getUuid(), lp.getLocalId());
                     ethernetContainerList.add(ethernetContainerKey);
                     log.debug("Adding Ltp with uuid {} and local-id {} to the ethernet-contatinier list",
                             ltp.getUuid().getValue(), lp.getLocalId());
-                } else if (layerProtocolName.getTypeName() == LAYERPROTOCOLNAMETYPEWIRELAYER.class.getName()) {
+                } else if (layerProtocolName.getTypeName().equals(LAYERPROTOCOLNAMETYPEWIRELAYER.class.getName())) {
                     TechnologySpecificPacKeys wireInterfaceKey =
                             new TechnologySpecificPacKeys(ltp.getUuid(), lp.getLocalId());
                     wireInterfaceList.add(wireInterfaceKey);

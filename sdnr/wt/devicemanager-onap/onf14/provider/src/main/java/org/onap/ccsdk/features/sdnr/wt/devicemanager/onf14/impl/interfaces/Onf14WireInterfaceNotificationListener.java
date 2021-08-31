@@ -95,7 +95,7 @@ public class Onf14WireInterfaceNotificationListener implements WireInterface20Li
         FaultlogEntity faultAlarm = new FaultlogBuilder().setObjectId(notification.getObjectIdRef().getValue())
                 .setProblem(notification.getProblem()).setTimestamp(notification.getTimestamp())
                 .setNodeId(this.netconfAccessor.getNodeId().getValue()).setSourceType(SourceType.Netconf)
-                .setSeverity(mapSeverity(notification.getSeverity())).setCounter(notification.getCounter().intValue())
+                .setSeverity(mapSeverity(notification.getSeverity())).setCounter(notification.getCounter())
                 .build();
         serviceProvider.getFaultService().faultNotification(faultAlarm);
         serviceProvider.getWebsocketService().sendNotification( notification, netconfAccessor.getNodeId(),

@@ -380,11 +380,15 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
         LOG.info("Begin registration listener for Mountpoint");
         final Optional<NotificationService> optionalNotificationService =
                 mountPoint.getService(NotificationService.class);
-        final NotificationService notificationService = optionalNotificationService.get();
-        // notificationService.registerNotificationListener(microwaveEventListener);
-        listenerRegistrationresult =
-                notificationService.registerNotificationListener(microwaveModel.getNotificationListener());
-        LOG.info("End registration listener for Mountpoint Result: {}", listenerRegistrationresult);
+        if (optionalNotificationService.isPresent()) {
+            final NotificationService notificationService = optionalNotificationService.get();
+            // notificationService.registerNotificationListener(microwaveEventListener);
+            listenerRegistrationresult =
+                    notificationService.registerNotificationListener(microwaveModel.getNotificationListener());
+            LOG.info("End registration listener for Mountpoint Result: {}", listenerRegistrationresult);
+        } else {
+            LOG.error("Could not get NotificationService, hence microwave notification listener not registered");
+        }
     }
 
     /*------------------------------------------------------------
