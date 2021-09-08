@@ -3,6 +3,7 @@
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,10 +98,14 @@ public class DMaaPFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
             String sdnrUser = getSDNRUser();
             String sdnrPasswd = getSDNRPasswd();
 
-            FaultNotificationClient faultClient = getFaultNotificationClient(baseUrl);
+            Map<String, String> payloadMapMessage = FaultNotificationClient.createFaultNotificationPayloadMap(faultNodeId,
+                    Integer.toString(faultSequence), faultOccurrenceTime, faultObjectId, faultReason, faultSeverity);
+
+            FaultNotificationClient faultClient = new FaultNotificationClient(baseUrl);
+            LOG.debug("Setting RESTConf Authorization values - {} : {}", sdnrUser, sdnrPasswd);
             faultClient.setAuthorization(sdnrUser, sdnrPasswd);
-            faultClient.sendFaultNotification(faultNodeId, Integer.toString(faultSequence), faultOccurrenceTime,
-                    faultObjectId, faultReason, faultSeverity);
+            String message = faultClient.prepareMessageFromPayloadMap(payloadMapMessage);
+            faultClient.sendNotification(message);
 
         } catch (IOException e) {
             LOG.info("Cannot parse json object ");

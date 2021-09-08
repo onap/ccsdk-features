@@ -3,6 +3,7 @@
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -18,7 +19,7 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -41,11 +42,14 @@ public class TestPNFMountPointClient extends PNFMountPointClient {
     public void testPNFMountPointClient() {
         testClient = new TestPNFMountPointClient();
         testClient.setAuthorization("admin", "admin");
-        assertEquals(true,
-                testClient.pnfMountPointCreate("TEST 50001", "127.0.0.1", "TLS", "key_id", "admin", "admin", "17380"));
+        Map<String, String> payloadMap = PNFMountPointClient.createPNFNotificationPayloadMap(
+                "TEST 50001", "127.0.0.1", "TLS", "key_id",
+                "admin", "admin", "17380");
+        String msg = testClient.prepareMessageFromPayloadMap(payloadMap);
 
-        assertEquals(true,
-                testClient.pnfMountPointCreate("TEST_50001", "127.0.0.1", "SSH", "key_id", "admin", "admin", "17380"));
+        assertTrue(testClient.sendNotification(msg));
+        assertTrue(testClient.sendNotification(msg));
+
     }
 
     @Override

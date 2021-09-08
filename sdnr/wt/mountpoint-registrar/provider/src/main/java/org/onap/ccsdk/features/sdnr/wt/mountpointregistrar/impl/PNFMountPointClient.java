@@ -3,6 +3,7 @@
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -18,32 +19,32 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 
-import java.io.IOException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
-import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
-import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class PNFMountPointClient extends BaseHTTPClient {
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    private static final Logger LOG = LoggerFactory.getLogger(PNFMountPointClient.class);
+import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient.MessageType.*;
+import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient.SendMethod.PUT;
+
+public class PNFMountPointClient extends MessageClient {
+
     private static final String MOUNTPOINT_URI =
             "restconf/config/network-topology:network-topology/topology/topology-netconf/node/";
-    private final Map<String, String> headerMap;
-    // @formatter:off
+    public static final String DEVICE_NAME = "@device-name@", DEVICE_IP = "@device-ip@", DEVICE_PORT = "@device-port@",
+            USERNAME = "@username@", PASSWORD = "@password@", KEY_ID = "@key-id@";
+    private static final String PROTOCOL = "protocol";
+    public static List<String> REQUIRED_FIELDS_SSH = List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME, PASSWORD);
+    public static List<String> REQUIRED_FIELDS_TLS = List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME, KEY_ID);
+
     private static final String SSH_PAYLOAD = "<node xmlns=\"urn:TBD:params:xml:ns:yang:network-topology\">\n"
-            + "  <node-id>@device-name@</node-id>\n"
-            + "  <host xmlns=\"urn:opendaylight:netconf-node-topology\">@device-ip@</host>\n"
-            + "  <port xmlns=\"urn:opendaylight:netconf-node-topology\">@device-port@</port>\n"
-            + "  <username xmlns=\"urn:opendaylight:netconf-node-topology\">@username@</username>\n"
-            + "  <password xmlns=\"urn:opendaylight:netconf-node-topology\">@password@</password>\n"
+            + "  <node-id>" + DEVICE_NAME + "</node-id>\n"
+            + "  <host xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_IP + "</host>\n"
+            + "  <port xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_PORT + "</port>\n"
+            + "  <username xmlns=\"urn:opendaylight:netconf-node-topology\">" + USERNAME + "</username>\n"
+            + "  <password xmlns=\"urn:opendaylight:netconf-node-topology\">" + PASSWORD + "</password>\n"
             + "  <tcp-only xmlns=\"urn:opendaylight:netconf-node-topology\">false</tcp-only>\n"
             + "  <!-- non-mandatory fields with default values, you can safely remove these if you do not wish to override any of these values-->\n"
             + "  <reconnect-on-changed-schema xmlns=\"urn:opendaylight:netconf-node-topology\">false</reconnect-on-changed-schema>\n"
@@ -54,15 +55,14 @@ public class PNFMountPointClient extends BaseHTTPClient {
             + "  <!-- keepalive-delay set to 0 turns off keepalives-->\n"
             + "  <keepalive-delay xmlns=\"urn:opendaylight:netconf-node-topology\">120</keepalive-delay>\n"
             + "</node>";
-    // @formatter:on
-    // @formatter:off
+
     private static final String TLS_PAYLOAD = "<node xmlns=\"urn:TBD:params:xml:ns:yang:network-topology\">\n"
-            + "  <node-id>@device-name@</node-id>\n"
-            + "  <host xmlns=\"urn:opendaylight:netconf-node-topology\">@device-ip@</host>\n"
-            + "  <port xmlns=\"urn:opendaylight:netconf-node-topology\">@device-port@</port>\n"
+            + "  <node-id>" + DEVICE_NAME + "</node-id>\n"
+            + "  <host xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_IP + "</host>\n"
+            + "  <port xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_PORT + "</port>\n"
             + "  <key-based xmlns=\"urn:opendaylight:netconf-node-topology\">\n"
-            + "  <username xmlns=\"urn:opendaylight:netconf-node-topology\">@username@</username>\n"
-            + "  <key-id>@key-id@</key-id>\n"
+            + "  <username xmlns=\"urn:opendaylight:netconf-node-topology\">" + USERNAME + "</username>\n"
+            + "  <key-id>" + KEY_ID + "</key-id>\n"
             + "  </key-based>\n"
             + "  <tcp-only xmlns=\"urn:opendaylight:netconf-node-topology\">false</tcp-only>\n"
             + "  <protocol xmlns=\"urn:opendaylight:netconf-node-topology\">\n"
@@ -77,81 +77,48 @@ public class PNFMountPointClient extends BaseHTTPClient {
             + "<!-- keepalive-delay set to 0 turns off keepalives-->\n"
             + "<keepalive-delay xmlns=\"urn:opendaylight:netconf-node-topology\">120</keepalive-delay>\n"
             + "</node>";
-    // @formatter:on
+
 
     public PNFMountPointClient(String baseUrl) {
-        super(baseUrl);
-
-        this.headerMap = new HashMap<>();
-        this.headerMap.put("Content-Type", "application/xml");
-        this.headerMap.put("Accept", "application/xml");
+        super(baseUrl, MOUNTPOINT_URI);
     }
 
-    public void setAuthorization(String username, String password) {
-        String credentials = username + ":" + password;
-        this.headerMap.put("Authorization", "Basic " + new String(Base64.getEncoder().encode(credentials.getBytes())));
-
-    }
-
-    public boolean pnfMountPointCreate(@NonNull String pnfName, @NonNull String ipAddress, @NonNull String protocol, String keyId,
-            String username, String password, @NonNull String commPort) {
+    @Override
+    public String prepareMessageFromPayloadMap(Map<String, String> notificationPayloadMap) {
+        updateNotificationUriWithPnfName(notificationPayloadMap.get(DEVICE_NAME));
         String message = "";
-        if (protocol.equals("TLS")) {
-            message = updateTLSPayload(pnfName, ipAddress, username, keyId, commPort);
-        } else { //SSH
-            message = updatePayload(pnfName, ipAddress, username, password, commPort);
+        if(!notificationPayloadMap.containsKey(PROTOCOL)) {
+            return message;
         }
-        LOG.debug("Payload after updating values is: {}", redactMessage(message, protocol));
-        return pnfRequest(pnfName, "PUT", message) == 200;
-
-    }
-
-    private static String updatePayload(String pnfName, String ipAddress, String username, String password,
-            String portNo) {
-        // @formatter:off
-        return SSH_PAYLOAD.replace("@device-name@", pnfName)
-                .replace("@device-ip@", ipAddress)
-                .replace("@device-port@", portNo)
-                .replace("@username@", username)
-                .replace("@password@", password);
-        // @formatter:on
-    }
-
-    private static String updateTLSPayload(String pnfName, String ipAddress, String username, String keyId,
-            String portNo) {
-        // @formatter:off
-        return TLS_PAYLOAD.replace("@device-name@", pnfName)
-                .replace("@device-ip@", ipAddress)
-                .replace("@username@", username)
-                .replace("@key-id@", keyId)
-                .replace("@device-port@", portNo);
-        // @formatter:on
-    }
-
-    private int pnfRequest(String pnfName, String method, String message) {
-        LOG.info("In pnfRequest - {} : {} ", pnfName, method);
-        BaseHTTPResponse response;
-        try {
-            String uri = MOUNTPOINT_URI + BaseRequest.urlEncodeValue(pnfName);
-            response = this.sendRequest(uri, method, message, headerMap);
-            LOG.debug("finished with responsecode {}", response.code);
-            return response.code;
-        } catch (IOException e) {
-            LOG.warn("problem registering {} : {}", pnfName, e.getMessage());
-            return -1;
+        if(notificationPayloadMap.get(PROTOCOL).equals("SSH")) {
+            message = super.prepareMessageFromPayloadMap(notificationPayloadMap, SSH_PAYLOAD, REQUIRED_FIELDS_SSH);
+        } else if(notificationPayloadMap.get(PROTOCOL).equals("TLS")) {
+            message = super.prepareMessageFromPayloadMap(notificationPayloadMap, TLS_PAYLOAD, REQUIRED_FIELDS_TLS);
         }
+        return message;
     }
 
-    private String redactMessage(String message, String protocol) {
-        String REGEX = "";
-        if (("TLS").equals(protocol)) {
-            REGEX = "(<key-id.*>)(.*)(<\\/key-id>)";
-        } else {
-            REGEX = "(<password.*>)(.*)(<\\/password>)";
-        }
-        Pattern p = Pattern.compile(REGEX, Pattern.MULTILINE);
-        Matcher matcher = p.matcher(message);
-        return matcher.replaceAll("$1*********$3");
+    private void updateNotificationUriWithPnfName(String pnfName) {
+        setNotificationUri(MOUNTPOINT_URI + BaseRequest.urlEncodeValue(pnfName));
+    }
+
+    @Override
+    public boolean sendNotification(String message) {
+        return super.sendNotification(message, PUT, xml);
+    }
+
+    public static Map<String, String> createPNFNotificationPayloadMap(@NonNull String pnfName, @NonNull String ipAddress,
+                                                                      @NonNull String commPort, @NonNull String protocol,
+                                                                      String username, String password, String keyId) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put(DEVICE_NAME, pnfName);
+        map.put(DEVICE_IP, ipAddress);
+        map.put(DEVICE_PORT, commPort);
+        map.put(PROTOCOL, protocol);
+        map.put(USERNAME, username);
+        map.put(PASSWORD, password);
+        map.put(KEY_ID, keyId);
+        return map;
     }
 
 }

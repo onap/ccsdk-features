@@ -3,6 +3,7 @@
  * ONAP : ccsdk feature sdnr wt mountpoint-registrar
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -21,6 +22,7 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,25 +113,33 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
             String sdnrUser = getSDNRUser();
             String sdnrPasswd = getSDNRPasswd();
 
-            PNFMountPointClient mountpointClient = getPNFMountPointClient(baseUrl);
-            LOG.debug("Setting RESTConf Authorization values - {} : {}", sdnrUser, sdnrPasswd);
-            mountpointClient.setAuthorization(sdnrUser, sdnrPasswd);
-
-            if ((null != pnfId) && null != pnfIPAddress && (null != pnfCommProtocol) && (null != pnfUsername)
-                    && (null != pnfCommPort)) {
-                mountpointClient.pnfMountPointCreate(pnfId, pnfIPAddress, pnfCommProtocol, pnfKeyId, pnfUsername,
-                        pnfPasswd, pnfCommPort);
-            } else {
-                LOG.warn(
-                        "One of the mandatory fields has a null value - pnfId = {} : pnfIPAddress = {} : pnfCommProtocol = {} : pnfUsername {} : "
-                                + "pnfCommPort {}",
-                        pnfId, pnfIPAddress, pnfCommProtocol, pnfUsername, pnfCommPort,
-                        "- not invoking mountpoint creation");
+            if (hasNullInRequiredField(pnfId, pnfIPAddress, pnfCommPort, pnfCommProtocol, pnfUsername)) {
+                LOG.warn("One of the mandatory fields has a null value - pnfId = {} : pnfIPAddress = {} : " +
+                         "pnfCommProtocol = {} : pnfUsername {} : pnfCommPort {} - not invoking mountpoint creation",
+                          pnfId, pnfIPAddress, pnfCommProtocol, pnfUsername, pnfCommPort);
+                return;
             }
+
+            Map<String, String> payloadMap = PNFMountPointClient.createPNFNotificationPayloadMap(pnfId, pnfIPAddress,
+                    pnfCommPort, pnfCommProtocol, pnfUsername, pnfPasswd, pnfKeyId);
+
+            PNFMountPointClient mountPointClient = new PNFMountPointClient(baseUrl);
+            LOG.debug("Setting RESTConf Authorization values - {} : {}", sdnrUser, sdnrPasswd);
+            mountPointClient.setAuthorization(sdnrUser, sdnrPasswd);
+            String message = mountPointClient.prepareMessageFromPayloadMap(payloadMap);
+            mountPointClient.sendNotification(message);
+
         } catch (IOException e) {
             LOG.info("Cannot parse json object, ignoring the received PNF Registration VES Message. Reason: {}",
                     e.getMessage());
         }
+    }
+
+    private boolean hasNullInRequiredField(String pnfId, String pnfIPAddress, String pnfCommPort,
+                                           String pnfCommProtocol, String pnfUsername) {
+
+        return pnfId == null || pnfIPAddress == null || pnfCommProtocol == null ||
+                pnfCommPort == null || pnfUsername == null;
     }
 
     private String getPNFIPAddress(JsonNode dmaapMessageRootNode) {
