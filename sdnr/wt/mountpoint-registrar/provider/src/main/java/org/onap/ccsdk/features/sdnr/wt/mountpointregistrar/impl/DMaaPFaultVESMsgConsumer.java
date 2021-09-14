@@ -33,13 +33,8 @@ public class DMaaPFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(DMaaPFaultVESMsgConsumer.class);
 
-    private static final String DEFAULT_SDNRUSER = "admin";
-    private static final String DEFAULT_SDNRPASSWD = "admin";
-
-    private final GeneralConfig generalConfig;
-
     public DMaaPFaultVESMsgConsumer(GeneralConfig generalConfig) {
-        this.generalConfig = generalConfig;
+        super(generalConfig);
     }
 
     @Override
@@ -113,19 +108,4 @@ public class DMaaPFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
         }
     }
 
-    public String getBaseUrl() {
-        return generalConfig.getBaseUrl();
-    }
-
-    public String getSDNRUser() {
-        return generalConfig.getSDNRUser() != null ? generalConfig.getSDNRUser() : DEFAULT_SDNRUSER;
-    }
-
-    public String getSDNRPasswd() {
-        return generalConfig.getSDNRPasswd() != null ? generalConfig.getSDNRPasswd() : DEFAULT_SDNRPASSWD;
-    }
-
-    public FaultNotificationClient getFaultNotificationClient(String baseUrl) {
-        return new FaultNotificationClient(baseUrl);
-    }
 }
