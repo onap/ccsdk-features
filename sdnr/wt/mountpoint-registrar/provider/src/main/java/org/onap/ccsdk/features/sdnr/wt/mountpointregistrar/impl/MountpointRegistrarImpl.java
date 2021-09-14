@@ -3,6 +3,7 @@
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -21,7 +22,6 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
 
     private GeneralConfig generalConfig;
     private boolean dmaapEnabled = false;
-    private Map<String, Configuration> configMap = new HashMap<>();
+    private Map<String, MessageConfig> configMap = new HashMap<>();
     private DMaaPVESMsgConsumerMain dmaapConsumerMain = null;
 
     // Blueprint 1

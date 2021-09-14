@@ -34,13 +34,10 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
     private static final String DEFAULT_PORT = "17830";
     private static final String DEFAULT_USERNAME = "netconf";
     private static final String DEFAULT_PASSWORD = "netconf";
-    private static final String DEFAULT_SDNRUSER = "admin";
-    private static final String DEFAULT_SDNRPASSWD = "admin";
 
-    private final GeneralConfig generalConfig;
 
     public DMaaPPNFRegVESMsgConsumer(GeneralConfig generalConfig) {
-        this.generalConfig = generalConfig;
+        super(generalConfig);
     }
 
     @Override
@@ -154,19 +151,4 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
         return null;
     }
 
-    public String getBaseUrl() {
-        return generalConfig.getBaseUrl();
-    }
-
-    public String getSDNRUser() {
-        return generalConfig.getSDNRUser() != null ? generalConfig.getSDNRUser() : DEFAULT_SDNRUSER;
-    }
-
-    public String getSDNRPasswd() {
-        return generalConfig.getSDNRPasswd() != null ? generalConfig.getSDNRPasswd() : DEFAULT_SDNRPASSWD;
-    }
-
-    private PNFMountPointClient getPNFMountPointClient(String baseUrl) {
-        return new PNFMountPointClient(baseUrl);
-    }
 }
