@@ -3,6 +3,7 @@
  * ONAP : ccsdk feature sdnr wt mountpoint-registrar
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -22,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,18 +40,17 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
 	private FaultConfig faultConfig;
 	private GeneralConfig generalConfig;
 
-	public DMaaPVESMsgConsumerMain(Map<String, Configuration> configMap, GeneralConfig generalConfig) {
+	public DMaaPVESMsgConsumerMain(Map<String, MessageConfig> configMap, GeneralConfig generalConfig) {
 		this.generalConfig = generalConfig;
-		configMap.forEach((k, v) -> initialize(k, v));
+		configMap.forEach(this::initialize);
 	}
 
-	public void initialize(String domain, Configuration domainConfig) {
+	public void initialize(String domain, MessageConfig domainConfig) {
 		LOG.debug("In initialize method : Domain = {} and domainConfig = {}", domain, domainConfig);
-		String consumerClass = null;
+		String consumerClass;
 		Properties consumerProperties = new Properties();
 		if (domain.equalsIgnoreCase(_PNFREG_DOMAIN)) {
 			this.pnfRegistrationConfig = (PNFRegistrationConfig) domainConfig;
-
 			consumerClass = _PNFREG_CLASS;
 			LOG.debug("Consumer class = {}", consumerClass);
 

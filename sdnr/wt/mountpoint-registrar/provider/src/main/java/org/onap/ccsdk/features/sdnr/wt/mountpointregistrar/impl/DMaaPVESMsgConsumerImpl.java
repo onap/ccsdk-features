@@ -3,6 +3,7 @@
  * ONAP : ccsdk feature sdnr wt mountpoint-registrar
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -18,7 +19,13 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 
+import java.util.List;
 import java.util.Properties;
+import java.util.function.Consumer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import org.onap.dmaap.mr.client.MRClientFactory;
 import org.onap.dmaap.mr.client.MRConsumer;
 import org.onap.dmaap.mr.client.response.MRConsumerResponse;
@@ -28,6 +35,8 @@ import org.slf4j.LoggerFactory;
 public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
 
     private static final Logger LOG = LoggerFactory.getLogger(DMaaPVESMsgConsumerImpl.class);
+    private static final String DEFAULT_SDNRUSER = "admin";
+    private static final String DEFAULT_SDNRPASSWD = "admin";
 
     private final String name = this.getClass().getSimpleName();
     private Properties properties = null;
@@ -36,9 +45,10 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
     private boolean ready = false;
     private int fetchPause = 5000; // Default pause between fetch - 5 seconds
     private int timeout = 15000; // Default timeout - 15 seconds
+    protected final GeneralConfig generalConfig;
 
-    protected DMaaPVESMsgConsumerImpl() {
-
+    protected DMaaPVESMsgConsumerImpl(GeneralConfig generalConfig) {
+        this.generalConfig = generalConfig;
     }
 
     /*
@@ -154,7 +164,16 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
         running = false;
     }
 
-    /*@Override
-    public abstract void processMsg(String msg) throws Exception;*/
 
+    public String getBaseUrl() {
+        return generalConfig.getBaseUrl();
+    }
+
+    public String getSDNRUser() {
+        return generalConfig.getSDNRUser() != null ? generalConfig.getSDNRUser() : DEFAULT_SDNRUSER;
+    }
+
+    public String getSDNRPasswd() {
+        return generalConfig.getSDNRPasswd() != null ? generalConfig.getSDNRPasswd() : DEFAULT_SDNRPASSWD;
+    }
 }

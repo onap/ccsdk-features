@@ -3,6 +3,7 @@
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -27,18 +28,12 @@ import java.util.List;
 import java.util.Map;
 import org.junit.After;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPVESMsgConsumer;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPVESMsgConsumerMain;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.FaultConfig;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.GeneralConfig;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.PNFRegistrationConfig;
+import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.*;
 
 public class TestDMaaPVESMsgConsumerMain {
 
     private static final String CONFIGURATIONFILE = "test1.properties";
-    // @formatter:off
     private static final String TESTCONFIG_GENERAL = "[general]\n"
             + "dmaapEnabled=false\n"
             + "baseUrl=http://localhost:8181\n"
@@ -46,7 +41,7 @@ public class TestDMaaPVESMsgConsumerMain {
             + "sdnrPasswd=admin\n"
             + "\n"
             + "[pnfRegistration]\n"
-            + "pnfRegConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyPNFRegVESMsgConsumer\n"
+            + "pnfRegConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DMaaPPNFRegVESMsgConsumer\n"
             + "TransportType=HTTPNOAUTH\n"
             + "host=onap-dmap:3904\n"
             + "topic=unauthenticated.VES_PNFREG_OUTPUT\n"
@@ -57,7 +52,7 @@ public class TestDMaaPVESMsgConsumerMain {
             + "limit=10000\n"
             + "\n"
             + "[fault]\n"
-            + "faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyFaultVESMsgConsumer\n"
+            + "faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer.java\n"
             + "TransportType=HTTPNOAUTH\n"
             + "host=onap-dmap:3904\n"
             + "topic=unauthenticated.SEC_FAULT_OUTPUT\n"
@@ -77,7 +72,7 @@ public class TestDMaaPVESMsgConsumerMain {
             + "sdnrPasswd=admin\n"
             + "\n"
             + "[pnfRegistration]\n"
-            + "pnfRegConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyPNFRegVESMsgConsumer\n"
+            + "pnfRegConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer.java\n"
             + "TransportType=HTTPNOAUTH\n"
             + "host=onap-dmap:3904\n"
             + "topic=unauthenticated.VES_PNFREG_OUTPUT\n"
@@ -88,7 +83,7 @@ public class TestDMaaPVESMsgConsumerMain {
             + "limit=10000\n"
             + "\n"
             + "[fault]\n"
-            + "faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.impl.DummyFaultVESMsgConsumer\n"
+            + "faultConsumerClass=org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer.java\n"
             + "TransportType=HTTPNOAUTH\n"
             + "host=onap-dmap:3904\n"
             + "topic=unauthenticated.SEC_FAULT_OUTPUT\n"
@@ -100,12 +95,11 @@ public class TestDMaaPVESMsgConsumerMain {
             + "fetchPause=WORLD\n"
             + "\n"
             + "";
-    // @formatter:on
     public GeneralConfig generalConfig;
-    Map<String, Configuration> configMap = new HashMap<String, Configuration>();
+    Map<String, MessageConfig> configMap = new HashMap<>();
     DMaaPVESMsgConsumerMain dmaapMain;
 
-    //	@Before
+
     public void preTest1() {
         try {
             Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_GENERAL);
