@@ -89,6 +89,50 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
         }
     }
 
+    protected JsonNode convertMessageToJsonNode(String message) throws InvalidMessageException {
+        try {
+            return new ObjectMapper().readTree(message);
+        } catch (JsonProcessingException e) {
+            LOG.warn("Cannot convert message to JsonNode");
+            throw new InvalidMessageException("Cannot convert message to JsonNode");
+        }
+    }
+
+    protected abstract boolean areDetailedEventFieldsValid(JsonNode jsonNode) throws InvalidMessageException;
+
+    protected boolean areBasicEventFieldsValid(JsonNode dmaapMessageRootNode) throws InvalidMessageException {
+        List<String> fieldNamesToValid = List.of("domain", "reportingEntityName", "eventName", "eventId",
+                "vesEventListenerVersion", "priority");
+        try {
+            JsonNode commonEventHeader = dmaapMessageRootNode.get("event").get("commonEventHeader").requireNonNull();
+            fieldNamesToValid.forEach(checkIfFieldExistsInNode(commonEventHeader));
+        } catch (NullPointerException e) {
+            String info = e.getMessage() != null ? e.getMessage() : "One of required fields doesn't exist in the node";
+            throw new InvalidMessageException(info);
+        }
+        return true;
+    }
+
+    protected Consumer<String> checkIfFieldExistsInNode(JsonNode jsonNode) throws NullPointerException {
+        return fieldName -> {
+            JsonNode fieldNode = jsonNode.get(fieldName).requireNonNull();
+            JsonNodeType fieldNodeType = fieldNode.getNodeType();
+            if (fieldNodeType.equals(JsonNodeType.STRING)) {
+                if (fieldNode.textValue().isEmpty()) {
+                    LOG.warn("Node '{}' has no value!", fieldName);
+                    throw new NullPointerException(String.format("Node '%s' has no value!", fieldName));
+                }
+            } else if(fieldNodeType.equals(JsonNodeType.OBJECT) || fieldNodeType.equals(JsonNodeType.ARRAY)) {
+                if (fieldNode.size() == 0) {
+                    LOG.warn("Node '{}' has size == 0 thus no values inside!", fieldName);
+                    throw new NullPointerException(
+                            String.format("Node '%s' has size == 0 thus no values inside!", fieldName));
+                }
+            }
+        };
+    }
+
+
     /*
      * Create a consumer by specifying  properties containing information such as topic name, timeout, URL etc
      */
