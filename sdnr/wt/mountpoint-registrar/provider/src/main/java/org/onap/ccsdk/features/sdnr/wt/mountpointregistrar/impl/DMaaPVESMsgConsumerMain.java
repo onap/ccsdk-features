@@ -31,13 +31,16 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(DMaaPVESMsgConsumerMain.class);
 	private static final String _PNFREG_CLASS = "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPPNFRegVESMsgConsumer";
 	private static final String _FAULT_CLASS = "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPFaultVESMsgConsumer";
+	private static final String _CM_CLASS = "org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.DMaaPCMVESMsgConsumer";
 	private static final String _PNFREG_DOMAIN = "pnfRegistration";
 	private static final String _FAULT_DOMAIN = "fault";
+	private static final String _CM_DOMAIN = "provisioning";
 
 	boolean threadsRunning = false;
 	List<DMaaPVESMsgConsumer> consumers = new LinkedList<>();
 	private PNFRegistrationConfig pnfRegistrationConfig;
 	private FaultConfig faultConfig;
+	private ProvisioningConfig provisioningConfig;
 	private GeneralConfig generalConfig;
 
 	public DMaaPVESMsgConsumerMain(Map<String, MessageConfig> configMap, GeneralConfig generalConfig) {
@@ -116,6 +119,35 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
 					faultConfig.getHTTPProxyPassword());
 			threadsRunning = createConsumer(_FAULT_DOMAIN, consumerProperties);
 		}
+		else if (domain.equalsIgnoreCase(_CM_DOMAIN)) {
+			this.provisioningConfig = (ProvisioningConfig) domainConfig;
+			consumerClass = _CM_CLASS;
+			LOG.debug("Consumer class = {}", consumerClass);
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_TRANSPORTTYPE, provisioningConfig.getTransportType());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_HOST_PORT, provisioningConfig.getHostPort());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_CONTENTTYPE, provisioningConfig.getContenttype());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_GROUP, provisioningConfig.getConsumerGroup());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_ID, provisioningConfig.getConsumerId());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_TOPIC, provisioningConfig.getTopic());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_TIMEOUT, provisioningConfig.getTimeout());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_LIMIT, provisioningConfig.getLimit());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_FETCHPAUSE, provisioningConfig.getFetchPause());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_PROTOCOL, provisioningConfig.getProtocol());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_USERNAME, provisioningConfig.getUsername());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_PASSWORD, provisioningConfig.getPassword());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_CLIENT_READTIMEOUT,
+					provisioningConfig.getClientReadTimeout());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_CLIENT_CONNECTTIMEOUT,
+					provisioningConfig.getClientConnectTimeout());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_URI,
+					provisioningConfig.getHTTPProxyURI());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_AUTH_USER,
+					provisioningConfig.getHTTPProxyUsername());
+			consumerProperties.put(ProvisioningConfig.PROPERTY_KEY_CONSUMER_CLIENT_HTTPPROXY_AUTH_PASSWORD,
+					provisioningConfig.getHTTPProxyPassword());
+			threadsRunning = createConsumer(_CM_DOMAIN, consumerProperties);
+
+		}
 	}
 
 	private boolean updateThreadState(List<DMaaPVESMsgConsumer> consumers) {
@@ -135,6 +167,8 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
 			consumer = new DMaaPPNFRegVESMsgConsumer(generalConfig);
 		else if (consumerType.equalsIgnoreCase(_FAULT_DOMAIN))
 			consumer = new DMaaPFaultVESMsgConsumer(generalConfig);
+		else if (consumerType.equalsIgnoreCase(_CM_DOMAIN))
+			consumer = new DMaaPCMVESMsgConsumer(generalConfig);
 
 		handleConsumer(consumer, properties, consumers);
 		return !consumers.isEmpty();
