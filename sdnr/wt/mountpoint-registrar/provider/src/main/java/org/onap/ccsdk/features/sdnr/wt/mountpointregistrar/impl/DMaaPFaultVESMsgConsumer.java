@@ -108,4 +108,9 @@ public class DMaaPFaultVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
         }
     }
 
+    @Override
+    protected boolean areDetailedEventFieldsValid(JsonNode jsonNode) throws InvalidMessageException {
+        return true;
+    }
+
 }
