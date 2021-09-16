@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "1d4131b8_67a34d5e",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPCMVESMsgConsumer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 7353
+      },
+      "writtenOn": "2021-09-16T13:27:52Z",
+      "side": 1,
+      "message": "I suggest for INFO logging level only log information that CM event with specific notificationId and notificationType was received, while for DEBUG - log entire message as it is now. However until successful validation, you can\u0027t assume that notificationId (stndDefinedFields-\u003edata-\u003enotificationId/notificationType fields are available",
+      "revId": "025bcb33d09f43570d8d000d6dd3361b6a9c8df5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d66900ce_f43e680c",
         "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPCMVESMsgConsumer.java",
         "patchSetId": 1
