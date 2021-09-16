@@ -11,10 +11,10 @@ import java.util.concurrent.Future;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-
+import org.onap.ccsdk.features.sdnr.northbound.addCMHandle.AddCMHandleProvider;
 public class AddCMHandleProviderTest {
 
     private AddCMHandleProvider esProvider;
@@ -22,8 +22,8 @@ public class AddCMHandleProviderTest {
     @Before
     public void setUp() throws Exception {
         DataBroker dataBroker = mock(DataBroker.class);
-        RpcProviderRegistry rpcRegistry = mock(RpcProviderRegistry.class);
-        esProvider = new AddCMHandleProvider(dataBroker, rpcRegistry);
+        RpcProviderService rpcRegistry = mock(RpcProviderService.class);
+        esProvider = new AddCMHandleProvider();
     }
 
     @After
