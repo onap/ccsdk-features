@@ -20,12 +20,12 @@
   ~
   -->
 
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
-        <artifactId>feature-repo-parent</artifactId>
+        <artifactId>single-feature-parent</artifactId>
         <version>2.2.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
@@ -37,96 +37,11 @@
 
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>mdsal-artifacts</artifactId>
-                <version>1.6.1</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
-            <artifactId>addCMHandle-model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>addCMHandle-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.onap.ccsdk.sli.core</groupId>
-            <artifactId>sli-common</artifactId>
-            <version>${ccsdk.sli.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.onap.ccsdk.sli.core</groupId>
-            <artifactId>sli-provider</artifactId>
-            <version>${ccsdk.sli.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.onap.ccsdk.sli.core</groupId>
-            <artifactId>utils-provider</artifactId>
-            <version>${ccsdk.sli.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity-engine-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
     </dependencies>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.codehaus.mojo</groupId>
-                                        <artifactId>properties-maven-plugin</artifactId>
-                                        <versionRange>[1.0.0,)</versionRange>
-                                        <goals>
-                                            <goal>set-system-properties</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute/>
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.karaf.tooling</groupId>
-                                        <artifactId>karaf-maven-plugin</artifactId>
-                                        <versionRange>[4.0.0,)</versionRange>
-                                        <goals>
-                                            <goal>features-generate-descriptor</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute/>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
 </project>
