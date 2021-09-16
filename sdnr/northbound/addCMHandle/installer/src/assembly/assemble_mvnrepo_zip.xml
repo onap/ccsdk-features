@@ -2,7 +2,7 @@
   ~ ============LICENSE_START=======================================================
   ~ ONAP : ccsdk features
   ~ ================================================================================
-  ~  Copyright (C) 2021 Wipro Limited.
+  ~ Copyright (C) 2021 Wipro Limited.
   ~ ================================================================================
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,16 +19,20 @@
   ~
   -->
 
+<!-- Defines how we build the .zip file which is our distribution. -->
 
 <assembly
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
   xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
-    <id>bin</id>
+    <id>repo</id>
     <formats>
         <format>zip</format>
     </formats>
 
+    <!--  we want "system" and related files right at the root level
+          as this file is suppose to be unzip on top of a karaf
+          distro. -->
     <includeBaseDirectory>false</includeBaseDirectory>
 
     <fileSets>
