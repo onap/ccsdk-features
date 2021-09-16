@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9832d13a_8018fa37",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPVESMsgConsumerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-09-16T06:17:52Z",
+      "side": 1,
+      "message": "[Major] Here we hardcoding the VES event keys. This should be configurable via config file/external configuration. This give more possibility in the future to use e.g configmap in the deployment to provide new/update existing configuration.",
+      "revId": "24f44d311a2112ff7cdca39571857a606cbd3f50",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6dce9dc0_cbb5afec",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPVESMsgConsumerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-09-16T06:17:52Z",
+      "side": 1,
+      "message": "[Minor] Here we only checking if:\n- array have some value\n- string value are not empty\n\nWhich is fine but potentail improvment is to check which file can be in what type.\nThis problem is also connected with how to define configuration for this validation.",
+      "revId": "24f44d311a2112ff7cdca39571857a606cbd3f50",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9bf65d6_71646671",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/InvalidMessageException.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-09-16T06:17:52Z",
+      "side": 1,
+      "message": "[Major] like before licence format.",
+      "revId": "24f44d311a2112ff7cdca39571857a606cbd3f50",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
