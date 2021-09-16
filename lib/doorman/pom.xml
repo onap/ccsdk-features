@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.onap.ccsdk.features.lib.rlock</groupId>
             <artifactId>rlock</artifactId>
-            <version>1.2.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
