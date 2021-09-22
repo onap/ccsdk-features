@@ -18,6 +18,8 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPResponse;
 import org.slf4j.Logger;
@@ -86,7 +88,7 @@ public abstract class MessageClient extends BaseHTTPClient {
     public abstract boolean sendNotification(String message);
 
     protected boolean sendNotification(String message, SendMethod method, MessageType messageType) {
-        LOG.debug("In sendRequestNotification - {}-{}", method, message);
+        LOG.debug("In sendRequestNotification - {}-{}", method, redactMessage(message));
         headerMap.put("Content-Type", "application/".concat(messageType.toString()));
         headerMap.put("Accept", "application/".concat(messageType.toString()));
         BaseHTTPResponse response;
@@ -104,5 +106,18 @@ public abstract class MessageClient extends BaseHTTPClient {
         this.notificationUri = notificationUri;
     }
 
+    private String redactMessage(String message) {
+        String REGEX = "";
+        if (message.contains("<key-id")) {
+            REGEX = "(<key-id.*>)(.*)(<\\/key-id>)";
+        } else if (message.contains("<password")) {
+            REGEX = "(<password.*>)(.*)(<\\/password>)";
+        } else {
+            return message;
+        }
+        Pattern p = Pattern.compile(REGEX, Pattern.MULTILINE);
+        Matcher matcher = p.matcher(message);
+        return matcher.replaceAll("$1*********$3");
+    }
 
 }
