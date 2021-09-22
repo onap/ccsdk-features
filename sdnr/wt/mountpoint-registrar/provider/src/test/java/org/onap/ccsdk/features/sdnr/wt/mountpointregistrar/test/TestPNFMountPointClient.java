@@ -43,8 +43,8 @@ public class TestPNFMountPointClient extends PNFMountPointClient {
         testClient = new TestPNFMountPointClient();
         testClient.setAuthorization("admin", "admin");
         Map<String, String> payloadMap = PNFMountPointClient.createPNFNotificationPayloadMap(
-                "TEST 50001", "127.0.0.1", "TLS", "key_id",
-                "admin", "admin", "17380");
+                "TEST 50001", "127.0.0.1", "17830", "TLS",
+                "admin", "admin", "key_id");
         String msg = testClient.prepareMessageFromPayloadMap(payloadMap);
 
         assertTrue(testClient.sendNotification(msg));

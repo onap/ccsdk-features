@@ -19,15 +19,13 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
-
+import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient.MessageType.xml;
+import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient.SendMethod.PUT;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient.MessageType.*;
-import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient.SendMethod.PUT;
+import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
 
 public class PNFMountPointClient extends MessageClient {
 
@@ -35,7 +33,7 @@ public class PNFMountPointClient extends MessageClient {
             "restconf/config/network-topology:network-topology/topology/topology-netconf/node/";
     public static final String DEVICE_NAME = "@device-name@", DEVICE_IP = "@device-ip@", DEVICE_PORT = "@device-port@",
             USERNAME = "@username@", PASSWORD = "@password@", KEY_ID = "@key-id@";
-    private static final String PROTOCOL = "protocol";
+    private static final String PROTOCOL = "protocol_sec";
     public static List<String> REQUIRED_FIELDS_SSH = List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME, PASSWORD);
     public static List<String> REQUIRED_FIELDS_TLS = List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME, KEY_ID);
 
