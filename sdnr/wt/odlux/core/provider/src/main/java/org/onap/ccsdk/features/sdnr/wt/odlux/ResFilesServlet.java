@@ -17,6 +17,8 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.odlux;
 
+import com.google.common.io.Files;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -31,8 +33,9 @@ import org.slf4j.LoggerFactory;
 public class ResFilesServlet extends HttpServlet {
 
     private static final long serialVersionUID = -6807215213921798293L;
-    private static Logger LOG = LoggerFactory.getLogger(ResFilesServlet.class);
-
+    private static final Logger LOG = LoggerFactory.getLogger(ResFilesServlet.class);
+    private static final String LOGO_OVERWRITE_FILENAME = "etc/logo.gif";
+    private static final String LOGO_URL="/odlux/images/onapLogo.gif";
 
     private final IndexOdluxBundle indexBundle;
 
@@ -47,6 +50,15 @@ public class ResFilesServlet extends HttpServlet {
         final String fn = req.getRequestURI();
         LOG.debug("Get request with for URI: {}", fn);
 
+        if(LOGO_URL.equals(fn)) {
+            File f = new File(LOGO_OVERWRITE_FILENAME);
+            if(f.exists()) {
+                resp.setStatus(HttpURLConnection.HTTP_OK);
+                resp.setContentType("image/gif");
+                Files.copy(f, resp.getOutputStream());
+                return;
+            }
+        }
         OdluxBundleLoader odluxBundleLoader = OdluxBundleLoaderImpl.getInstance();
         if (odluxBundleLoader != null) {
             String fileContent = odluxBundleLoader.getResourceContent(fn, indexBundle);

@@ -141,11 +141,10 @@ public class IndexOdluxBundle extends OdluxBundle implements OdluxBundleResource
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("{\"authentication\":\"%s\",\"enablePolicy\":%s", this.oauthEnabled ? "oauth" : "basic",
                 String.valueOf(this.policyEnabled)));
-        if (this.transportPceGuiUrl != null && this.transportPceGuiUrl.length() > 0) {
-            sb.append(String.format(",\"transportpceUrl\":\"%s\"}", this.transportPceGuiUrl));
-        } else {
-            sb.append("}");
+        if (this.transportPceGuiUrl != null && !this.transportPceGuiUrl.isBlank()) {
+            sb.append(String.format(",\"transportpceUrl\":\"%s\"", this.transportPceGuiUrl));
         }
+        sb.append("}");
         return sb.toString();
     }
 
