@@ -25,12 +25,19 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
+import org.opendaylight.yangtools.yang.binding.Enumeration;
 
 @SuppressWarnings("rawtypes")
 public class EnumSerializer extends JsonSerializer<Enum> {
 
     @Override
     public void serialize(Enum value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeString(value.name());
+        //sadly a seperate serializer for class Enumeration doesn't work, so we have to catch it here
+        if(value instanceof Enumeration) {
+            gen.writeString(((Enumeration)value).getName());
+        }
+        else {
+            gen.writeString(value.name());
+        }
     }
 }
