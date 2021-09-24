@@ -83,7 +83,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
     public ONFCoreNetworkElement12Basic(@NonNull NetconfBindingAccessor acessor,
             @NonNull DeviceManagerServiceProvider serviceProvider, DeviceManagerOnfConfiguration configuration) {
 
-        super(acessor);
+        super(acessor, serviceProvider);
         this.mountPointNodeId = acessor.getNodeId();
         this.acessor = acessor;
         this.pollAlarmConfig = configuration;
@@ -235,6 +235,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
         performanceManager.deRegistration(mountPointNodeId);
         aaiProviderClient.onDeviceUnregistered(mountPointNodeId);
         faultService.removeAllCurrentProblemsOfNode(acessor.getNodeId());
+        dataProvider.clearGuiCutThroughEntriesOfNode(acessor.getNodeId().getValue());
     }
 
     @Override

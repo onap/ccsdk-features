@@ -27,26 +27,30 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.NetworkElementCoreData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.WrapperPTPModelRev170208;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.equipment.ONFCoreNetworkElement12Equipment;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.Helper;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.WrapperMicrowaveModelRev181010;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationDcae;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.NetworkElement;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.extension.g.Extension;
+import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.extension.g.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.logical.termination.point.g.Lp;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.network.element.Ltp;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.NetworkElementPac;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.network.element.pac.NetworkElementCurrentProblems;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GuicutthroughBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -77,7 +81,7 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
     @SuppressWarnings("null")
     private final @NonNull List<Lp> interfaceList = Collections.synchronizedList(new CopyOnWriteArrayList<>());
     private Optional<NetworkElement> optionalNe;
-
+    private final DataProvider databaseService;
     // Performance monitoring specific part
     /** Lock for the PM access specific elements that could be null */
     private final @NonNull Object pmLock = new Object();
@@ -99,13 +103,14 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
      * Constructor
      */
 
-    protected ONFCoreNetworkElement12Base(@NonNull NetconfBindingAccessor acessor) {
+    protected ONFCoreNetworkElement12Base(@NonNull NetconfBindingAccessor acessor, @NonNull DeviceManagerServiceProvider serviceProvider) {
         super(acessor);
         this.optionalNe = Optional.empty();
         this.nodeId = getAcessor().get().getNodeId();
         this.isNetworkElementCurrentProblemsSupporting12 =
                 acessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElementPac.QNAME);
         this.equipment = new ONFCoreNetworkElement12Equipment(acessor, this);
+        this.databaseService = serviceProvider.getDataProvider();
         WrapperPTPModelRev170208.initSynchronizationExtension(acessor);
         LOG.debug("support necurrent-problem-list={}", this.isNetworkElementCurrentProblemsSupporting12);
     }
@@ -163,6 +168,10 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
 
             } else {
                 NetworkElement ne = optionalNe.get();
+                Optional<Guicutthrough> oGuicutthrough = getGuicutthrough(ne);
+                if (oGuicutthrough.isPresent()) {
+                    databaseService.writeGuiCutThroughData(oGuicutthrough.get(), getAcessor().get().getNodeId().getValue());
+                }
                 LOG.debug("Mountpoint '{}' NE-Name '{}'", getMountpoint(), ne.getName());
                 List<Lp> actualInterfaceList = getLtpList(ne);
                 if (!interfaceList.equals(actualInterfaceList)) {
@@ -433,6 +442,19 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
     @Override
     public Optional<PerformanceDataLtp> getLtpHistoricalPerformanceData() {
         return Optional.empty();
+    }
+
+    //Guicutthrough
+    public Optional<Guicutthrough> getGuicutthrough(NetworkElement ne) {
+        Extension extension = ne.nonnullExtension().get(new ExtensionKey("webUri"));
+        if (extension != null) {
+            GuicutthroughBuilder gcBuilder = new GuicutthroughBuilder();
+            gcBuilder.setName(getAcessor().get().getNodeId().getValue());
+            gcBuilder.setWeburi(extension.getValue());
+            return Optional.of(gcBuilder.build());
+        } else {
+            return Optional.empty();
+        }
     }
 
 }
