@@ -19,20 +19,15 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 
-import java.util.List;
 import java.util.Properties;
-import java.util.function.Consumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
 import org.onap.dmaap.mr.client.MRClientFactory;
 import org.onap.dmaap.mr.client.MRConsumer;
 import org.onap.dmaap.mr.client.response.MRConsumerResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
+public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer, DMaaPVESMsgValidator {
 
     private static final Logger LOG = LoggerFactory.getLogger(DMaaPVESMsgConsumerImpl.class);
     private static final String DEFAULT_SDNRUSER = "admin";
@@ -68,7 +63,9 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
                     for (String msg : consumerResponse.getActualMessages()) {
                         noData = false;
                         LOG.debug("{} received ActualMessage from DMaaP VES Message topic {}", name,msg);
-                        processMsg(msg);
+                        if(isMessageValid(msg)) {
+                            processMsg(msg);
+                        }
                     }
 
                     if (noData) {
@@ -81,12 +78,19 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer {
                         }
                         pauseThread();
                     }
+                } catch (JsonProcessingException jsonProcessingException) {
+                    LOG.warn("Failed to convert message to JsonNode: {}", jsonProcessingException.getMessage());
                 } catch (Exception e) {
                     LOG.error("Caught exception reading from DMaaP VES Message Topic", e);
                     running = false;
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isMessageValid(String message) {
+        return true;
     }
 
     /*
