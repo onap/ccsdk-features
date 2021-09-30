@@ -55,9 +55,11 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
         generalConfig = new GeneralConfig(configFileRepresentation);
         PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
         FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
+        ProvisioningConfig provisioningConfig = new ProvisioningConfig(configFileRepresentation);
 
         configMap.put("pnfRegistration", pnfRegConfig);
         configMap.put("fault", faultConfig);
+        configMap.put("provisioning", provisioningConfig);
 
         dmaapEnabled = generalConfig.getEnabled();
         if (dmaapEnabled) { // start dmaap consumer thread only if dmaapEnabled=true

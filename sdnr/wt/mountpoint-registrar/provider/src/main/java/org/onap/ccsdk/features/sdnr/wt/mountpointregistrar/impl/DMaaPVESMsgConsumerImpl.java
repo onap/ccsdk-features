@@ -21,6 +21,8 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 
 import java.util.Properties;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.onap.dmaap.mr.client.MRClientFactory;
 import org.onap.dmaap.mr.client.MRConsumer;
 import org.onap.dmaap.mr.client.response.MRConsumerResponse;
@@ -93,6 +95,10 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer, DM
     @Override
     public boolean isMessageValid(String message) {
         return true;
+    }
+
+    protected JsonNode convertMessageToJsonNode(String message) throws JsonProcessingException {
+        return new ObjectMapper().readTree(message);
     }
 
     /*
