@@ -1,0 +1,10 @@
+{
+  "event": {
+    "commonEventHeader": {
+      "version": "4.1",
+      "vesEventListenerVersion":
+      "domain": "stndDefined",
+      "stndDefinedNamespace": "3GPP-Provisioning"
+    }
+  }
+}

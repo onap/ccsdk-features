@@ -109,9 +109,11 @@ public class TestDMaaPVESMsgConsumerMain {
             generalConfig = new GeneralConfig(configFileRepresentation);
             PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
             FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
+            ProvisioningConfig provisioningConfig = new ProvisioningConfig(configFileRepresentation);
 
             configMap.put("pnfRegistration", pnfRegConfig);
             configMap.put("fault", faultConfig);
+            configMap.put("provisioning", provisioningConfig);
         } catch (Exception e) {
             System.out.println("Failed in preTest execution " + e.getMessage());
         }
@@ -126,9 +128,11 @@ public class TestDMaaPVESMsgConsumerMain {
             generalConfig = new GeneralConfig(configFileRepresentation);
             PNFRegistrationConfig pnfRegConfig = new PNFRegistrationConfig(configFileRepresentation);
             FaultConfig faultConfig = new FaultConfig(configFileRepresentation);
+            ProvisioningConfig provisioningConfig = new ProvisioningConfig(configFileRepresentation);
 
             configMap.put("pnfRegistration", pnfRegConfig);
             configMap.put("fault", faultConfig);
+            configMap.put("provisioning", provisioningConfig);
         } catch (Exception e) {
             System.out.println("Failed in preTest execution " + e.getMessage());
         }
