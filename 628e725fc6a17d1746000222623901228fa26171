@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "17436eec_6f4369a4",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPVESMsgValidator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-09-30T12:54:09Z",
+      "side": 1,
+      "message": "Wondering why we would need this validation as the VES Collector already validates the message it receives and only publishes them to DMaaP if the received message is valid. Is there a plan to extend mountpoint-registrar to receive messages which do not come from the VES-collector into DMaaP but somehow directly into DMaaP?",
+      "revId": "628e725fc6a17d1746000222623901228fa26171",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
