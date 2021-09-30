@@ -80,6 +80,8 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer, DM
                     }
                 } catch (JsonProcessingException jsonProcessingException) {
                     LOG.warn("Failed to convert message to JsonNode: {}", jsonProcessingException.getMessage());
+                } catch (InvalidMessageException invalidMessageException) {
+                    LOG.warn("Message is invalid because of: {}", invalidMessageException.getMessage());
                 } catch (Exception e) {
                     LOG.error("Caught exception reading from DMaaP VES Message Topic", e);
                     running = false;
