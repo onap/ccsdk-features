@@ -16,6 +16,24 @@
       "revId": "628e725fc6a17d1746000222623901228fa26171",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5423f85e_75022783",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPVESMsgValidator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 7854
+      },
+      "writtenOn": "2021-10-01T07:15:34Z",
+      "side": 1,
+      "message": "There are several reasons. First of all, as you mentioned, we take into consideration, that someone can put message directly into DMaaP. We also don\u0027t want to duplicate VES colletor validation, so we left it as interface, that all consumers can have it\u0027s own way of validation. And finally this approach allows as to check values of fields in incoming messages. Let\u0027s say in our fault message there will be some wierd value in one of required fields, that will make all event as a trash and unusefull in further processing. Or let\u0027s say in our nearly comming commits about CM events we will want to know if some objects exists, if they have to according to other fields value. This allows us to stop processing and not send further or save into DB events, that are in some way corrupted from our point of view.",
+      "parentUuid": "17436eec_6f4369a4",
+      "revId": "628e725fc6a17d1746000222623901228fa26171",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
