@@ -1,0 +1,11 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Marcin Wilk <m.wilk@samsung.com>
+Code-Review+1: Jakub Dominik <j.dominik@samsung.com>
+Code-Review+1: Ravi Pendurty <ravi.pendurty@highstreet-technologies.com>
+Code-Review+1: Krystian Kedron <k.kedron@partner.samsung.com>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Thu, 07 Oct 2021 11:33:51 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/124529
+Project: ccsdk/features
+Branch: refs/heads/master
