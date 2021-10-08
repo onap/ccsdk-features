@@ -55,7 +55,12 @@ public class ResFilesServlet extends HttpServlet {
             if(f.exists()) {
                 resp.setStatus(HttpURLConnection.HTTP_OK);
                 resp.setContentType("image/gif");
-                Files.copy(f, resp.getOutputStream());
+                try {
+                    Files.copy(f, resp.getOutputStream());
+                } catch (IOException e) {
+                    LOG.warn("Can not copy data", e);
+                    resp.setStatus(500);
+                }
                 return;
             }
         }
@@ -73,16 +78,19 @@ public class ResFilesServlet extends HttpServlet {
                 resp.setContentType(mimeType);
                 resp.setContentLength(length);
                 resp.setStatus(HttpURLConnection.HTTP_OK);
-                OutputStream os = resp.getOutputStream();
-                os.write(byteContent);
-                os.flush();
-                os.close();
+                try (OutputStream os = resp.getOutputStream()) {
+                    os.write(byteContent);
+                    os.flush();
+                } catch (IOException e) {
+                    LOG.warn("Can not write data", e);
+                    resp.setStatus(500);
+                }
             } else {
                 LOG.debug("File {} not found in res.", fn);
                 resp.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
             }
         } else {
-            LOG.debug("BundleLoaderInstance to found.", fn);
+            LOG.debug("BundleLoaderInstance to found. {}", fn);
             resp.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
         }
     }

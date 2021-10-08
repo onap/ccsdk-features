@@ -171,6 +171,7 @@ public class DMaaPVESMsgConsumerMain implements Runnable {
 				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				LOG.error(e.getLocalizedMessage(), e);
+				Thread.currentThread().interrupt();
 			}
 		}
 

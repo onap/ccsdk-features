@@ -141,13 +141,14 @@ public class DMaaPPNFRegVESMsgConsumer extends DMaaPVESMsgConsumerImpl {
 
     private String getPNFIPAddress(JsonNode dmaapMessageRootNode) {
         String ipAddress = dmaapMessageRootNode.at("/event/pnfRegistrationFields/oamV6IpAddress").textValue();
-        if (ipAddress != null && ipAddress != "")
+        if (!"".equals(ipAddress)) {
             return ipAddress;
+        }
 
         ipAddress = dmaapMessageRootNode.at("/event/pnfRegistrationFields/oamV4IpAddress").textValue();
-        if (ipAddress != null && ipAddress != "")
+        if (!"".equals(ipAddress)) {
             return ipAddress;
-
+        }
         return null;
     }
 

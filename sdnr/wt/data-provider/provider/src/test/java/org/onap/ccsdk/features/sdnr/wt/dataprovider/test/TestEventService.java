@@ -113,13 +113,40 @@ public class TestEventService {
         service.updateFaultCurrent(createFault(NODEID, OBJECTREFID2, "abcde", SeverityType.Major));
         service.updateFaultCurrent(createFault(NODEID2, OBJECTREFID2, "abcde", SeverityType.Major));
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 2);
+        assertEquals(2, nodeIds.size());
         service.clearFaultsCurrentOfNodeWithObjectId(NODEID, OBJECTREFID1);
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 2);
+        assertEquals(2, nodeIds.size());
         service.updateFaultCurrent(createFault(NODEID, OBJECTREFID2, "abcde", SeverityType.NonAlarmed));
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 1);
+        assertEquals(1, nodeIds.size());
+    }
+
+
+    @Test
+    public void testClearFaultsCurrentWithOldRefFormat() {
+
+        service.clearFaultsCurrentOfNode(NODEID);
+        service.clearFaultsCurrentOfNode(NODEID2);
+
+        List<String> nodeIds = service.getAllNodesWithCurrentAlarms();
+        if (nodeIds.size() > 0) {
+            for (String nodeId : nodeIds) {
+                service.clearFaultsCurrentOfNode(nodeId);
+            }
+        }
+        service.updateFaultCurrent(createFault(NODEID, "[layerProtocol="+OBJECTREFID1+"]", "abc", SeverityType.Major));
+        service.updateFaultCurrent(createFault(NODEID, "[layerProtocol="+OBJECTREFID1+"]", "abcde", SeverityType.Major));
+        service.updateFaultCurrent(createFault(NODEID, "[layerProtocol="+OBJECTREFID2+"]", "abcde", SeverityType.Major));
+        service.updateFaultCurrent(createFault(NODEID2, "[layerProtocol="+OBJECTREFID2+"]", "abcde", SeverityType.Major));
+        nodeIds = service.getAllNodesWithCurrentAlarms();
+        assertEquals(2, nodeIds.size());
+        service.clearFaultsCurrentOfNodeWithObjectId(NODEID, OBJECTREFID1);
+        nodeIds = service.getAllNodesWithCurrentAlarms();
+        assertEquals(2, nodeIds.size());
+        service.updateFaultCurrent(createFault(NODEID, OBJECTREFID2, "abcde", SeverityType.NonAlarmed));
+        nodeIds = service.getAllNodesWithCurrentAlarms();
+        assertEquals(1, nodeIds.size());
     }
 
     private static FaultcurrentEntity createFault(String nodeId, String objectRefId, String problem,

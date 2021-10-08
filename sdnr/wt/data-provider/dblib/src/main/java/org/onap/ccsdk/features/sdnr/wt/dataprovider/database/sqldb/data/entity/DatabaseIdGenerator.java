@@ -39,7 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
  */
 public class DatabaseIdGenerator {
 
-    private static final Pattern FAULTPATTERN = Pattern.compile(".*\\[layerProtocol=(.*)\\]");
+    private static final String FAULT_TAG = "[layerProtocol=";
     private static final String FORMAT_PMDATA_ID = "%s/%s/%s";
     private static final String FORMAT_FAULTDATA_ID = "%s/%s/%s";
     private static final String FORMAT_INVENTORYDATA_ID = "%s/%s";
@@ -63,9 +63,8 @@ public class DatabaseIdGenerator {
     public static String getFaultcurrentId(String nodeId, String objectId, String problemName) {
         String uuId;
 
-        Matcher matcher = FAULTPATTERN.matcher(objectId);
-        if (matcher.matches() && matcher.groupCount() == 1) {
-            uuId = matcher.group(1);
+        if (objectId.endsWith("]") && objectId.contains(FAULT_TAG)) {
+            uuId = objectId.substring(objectId.indexOf(FAULT_TAG) + FAULT_TAG.length(), objectId.length()-1);
         } else {
             uuId = objectId;
         }
