@@ -49,7 +49,7 @@ public class AkkaConfig {
         }
 
         public ClusterNodeInfo(String s) throws Exception {
-            final String regex = "([a-z.]*):\\/\\/([a-zA-Z0-9-]*)@([a-zA-Z0-9.-]*):([0-9]*)";
+            final String regex = "([a-z.]{0,10}):\\/\\/([a-zA-Z0-9-]{0,1024})@([a-zA-Z0-9.-]{0,1024}):([0-9]{0,10})";
             final Pattern pattern = Pattern.compile(regex);
             final Matcher matcher = pattern.matcher(s);
             if (!matcher.find()) {
@@ -71,7 +71,10 @@ public class AkkaConfig {
         private final int Index;
 
         public ClusterRoleInfo(String s) throws Exception {
-            final String regex = "([a-z]*)-([0-9]*)";
+            // role with minimum 1 character
+            // index with minimum 1 character or Integer.parseInt raise an exception
+            // index with maximum 10 because it's an integer
+            final String regex = "([a-z]{1,1024})-([0-9]{1,10})";
             final Pattern pattern = Pattern.compile(regex);
             final Matcher matcher = pattern.matcher(s);
             if (!matcher.find()) {
@@ -177,7 +180,7 @@ public class AkkaConfig {
     }
 
     public boolean isCluster() {
-        return this.cluserConfig != null ? this.cluserConfig.isCluster() : false;
+        return this.cluserConfig != null && this.cluserConfig.isCluster();
     }
 
     public static AkkaConfig load() throws Exception {

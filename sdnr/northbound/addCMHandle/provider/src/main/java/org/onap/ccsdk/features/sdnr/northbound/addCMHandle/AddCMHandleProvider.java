@@ -146,20 +146,16 @@ public class AddCMHandleProvider implements CMHandleAPIService, NetconfNodeState
         // GET configuration from properties file
         config = new HashMap<String, String>();
 
-        try {
-            FileInputStream fileInput = new FileInputStream(propDir + PROPERTIES_FILE_NAME);
+        try (FileInputStream fileInput = new FileInputStream(propDir + PROPERTIES_FILE_NAME)) {
             Properties properties = new Properties();
             properties.load(fileInput);
-            fileInput.close();
 
             for (String param : new String[] {"url", "user", "password",
                     "authentication, dmi-service-name"}) {
                 config.put(param, properties.getProperty(param));
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error while reading properties file: ", e);
         }
 
         LOG.info("addCMHandle Session Initiated");
@@ -167,7 +163,7 @@ public class AddCMHandleProvider implements CMHandleAPIService, NetconfNodeState
 
     @Override
     public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
-        LOG.info("NetConf device connected ", nNodeId.getValue());
+        LOG.info("NetConf device connected {}", nNodeId.getValue());
         JSONObject obj = new JSONObject();
         obj.put("cm-handle-id", nNodeId.getValue());
         obj.put("dmi-service-name", config.get("dmi-service-name"));
@@ -178,7 +174,7 @@ public class AddCMHandleProvider implements CMHandleAPIService, NetconfNodeState
         String authenticationMethod = config.get("authentication");
         ClientResponse response = null;
         try {
-            if (authenticationMethod.equals("basic")) {
+            if ("basic".equals(authenticationMethod)) {
                 LOG.debug("Sending message to dmaap-message-router: {}", obj.toString());
                 dmaapClient.addFilter(new HTTPBasicAuthFilter(config.get("user"), config.get("password")));
 
@@ -188,11 +184,11 @@ public class AddCMHandleProvider implements CMHandleAPIService, NetconfNodeState
                 response = dmaapClient.resource(config.get("url")).type(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, obj);
             }
+            LOG.info("Received response from dmaap-message-router: \n {}", response.toString());
         } catch (Exception e) {
-            LOG.error("Error while posting message to CM_HANDLE topic: {}", e);
+            LOG.error("Error while posting message to CM_HANDLE topic: ", e);
         }
 
-        LOG.info("Received response from dmaap-message-router: \n {}", response.toString());
     }
 
     @Override

@@ -115,14 +115,10 @@ public final class GenericTransactionUtils implements TransactionUtils {
                 if (od != null) {
                     statusIndicator.set("Unwrap checkFuture done");
                     Optional<T> optionalData = od.get();
-                    if (optionalData != null) {
-                        statusIndicator.set("Unwrap optional done");
-                        data = optionalData.orElse(null);
-                        statusIndicator.set("Read transaction done");
-                        noErrorIndication.set(true);
-                    } else {
-                        statusIndicator.set("optional Data is null");
-                    }
+                    statusIndicator.set("Unwrap optional done");
+                    data = optionalData.orElse(null);
+                    statusIndicator.set("Read transaction done");
+                    noErrorIndication.set(true);
                 } else {
                     statusIndicator.set("od feature is null");
                 }

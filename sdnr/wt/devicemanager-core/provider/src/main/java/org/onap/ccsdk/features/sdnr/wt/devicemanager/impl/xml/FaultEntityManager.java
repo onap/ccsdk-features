@@ -25,7 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 
 public class FaultEntityManager {
 
-    private static final Pattern pattern = Pattern.compile(".*\\[layerProtocol=(.*)\\]");
+    private static final String FAULT_TAG = "[layerProtocol=";
 
     /**
      * The leading indication for notification or events that are not in the currentProblem data of the ONF Coremodel
@@ -66,9 +66,8 @@ public class FaultEntityManager {
 
         String uuId;
 
-        Matcher matcher = pattern.matcher(objectId);
-        if (matcher.matches() && matcher.groupCount() == 1) {
-            uuId = matcher.group(1);
+        if (objectId.endsWith("]") && objectId.contains(FAULT_TAG)) {
+            uuId = objectId.substring(objectId.indexOf(FAULT_TAG) + FAULT_TAG.length(), objectId.length()-1);
         } else {
             uuId = objectId;
         }
