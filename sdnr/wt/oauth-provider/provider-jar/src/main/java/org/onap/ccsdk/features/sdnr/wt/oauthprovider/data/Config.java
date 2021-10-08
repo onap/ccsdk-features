@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -44,7 +45,7 @@ public class Config {
     private static final String DEFAULT_TOKENSECRET = generateSecret();
     private static final String DEFAULT_REDIRECTURI = "/odlux/index.html#/oauth?token=";
     private static final String DEFAULT_SUPPORTODLUSERS = "true";
-    private static Random random;
+    private static SecureRandom random;
     private static Config _instance;
 
     private List<OAuthProviderConfig> providers;
@@ -167,7 +168,7 @@ public class Config {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
         if(random==null) {
-            random = new Random();
+            random = new SecureRandom();
         }
         String generatedString = random.ints(leftLimit, rightLimit + 1)
                 .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(targetStringLength)

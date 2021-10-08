@@ -124,6 +124,7 @@ public class TestDevMgrPropertiesFile {
         try {
             Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 

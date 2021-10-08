@@ -427,7 +427,9 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     private ReadTlsKeyEntryOutputBuilder readTlsKeys(ReadTlsKeyEntryInput input) {
         Optional<Keystore> result = Optional.empty();
-        try (ReadTransaction transaction = this.dataBroker.newReadOnlyTransaction()) {
+        // The implicite close is not handled correctly by underlaying opendaylight netconf service
+        ReadTransaction transaction = this.dataBroker.newReadOnlyTransaction();
+        try {
             result = transaction.read(LogicalDatastoreType.CONFIGURATION, KEYSTORE_IIF).get();
         } catch (ExecutionException e) {
             LOG.warn("problem reading netconf-keystore: ", e);

@@ -52,8 +52,15 @@ public class DBKeyValuePair<T> implements SqlDBFilter {
 
     @Override
     public String getFilterExpression() {
-        if (isNumericValue(this.value)) {
-            return String.format("`%s`=%d", this.key, this.value);
+        // remove isNumericValue and add cast to remove sonar issue
+        if (this.getValue() instanceof Long) {
+            return String.format("`%s`=%d", this.key, (Long)this.value);
+        } else if (this.getValue() instanceof Integer) {
+            return String.format("`%s`=%d", this.key, (Integer)this.value);
+        } else if (this.getValue() instanceof Byte) {
+            return String.format("`%s`=%d", this.key, (Byte)this.value);
+        } else if (this.getValue() instanceof BigInteger) {
+            return String.format("`%s`=%d", this.key, (BigInteger)this.value);
         } else {
             return String.format("`%s`='%s'", this.key, this.value);
         }

@@ -22,8 +22,11 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database.data;
 
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Michael Dürre
@@ -33,14 +36,6 @@ import java.util.regex.Pattern;
  *         yellow open inventoryequipment-v1 5nNPRbJ3T9arMxqxBbJKyQ 5 1 0 0 1.2kb 1.2kb
  */
 public class IndicesEntry {
-
-    private static final String regex =
-            "^(yellow|red|green)[\\ ]+([^\\ ]*)[\\ ]+([^\\ ]*)[\\ ]+([^\\ ]*)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([^\\ ]+)[\\ ]+([^\\ ]+)$";
-    private static final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-    //for ES 2.2.0
-    private static final String regexOld =
-            "^(yellow|red|green)[\\ ]+([^\\ ]*)[\\ ]+([^\\ ]*)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([0-9]+)[\\ ]+([^\\ ]+)[\\ ]+([^\\ ]+)$";
-    private static final Pattern patternOld = Pattern.compile(regexOld, Pattern.MULTILINE);
 
     private final String status;
     private final String status2;
@@ -108,33 +103,38 @@ public class IndicesEntry {
     }
 
     public IndicesEntry(String line) throws ParseException {
-        Matcher matcher = pattern.matcher(line.trim());
-        if (!matcher.find() || matcher.groupCount() < 10) {
-            matcher = patternOld.matcher(line.trim());
-            if (!matcher.find() || matcher.groupCount() < 9) {
+        List<String> allElem = Arrays.stream(line.split(" ")).filter(e -> !e.isEmpty()).collect(Collectors.toList());
+        try {
+            if (allElem.size() == 10) {
+                // new format
+                this.status = allElem.get(0);
+                this.status2 = allElem.get(1);
+                this.name = allElem.get(2);
+                this.hash = allElem.get(3);
+                this.shards = Integer.parseInt(allElem.get(4));
+                this.replicas = Integer.parseInt(allElem.get(5));
+                this.c1 = Integer.parseInt(allElem.get(6));
+                this.c2 = Integer.parseInt(allElem.get(7));
+                this.size1 = allElem.get(8);
+                this.size2 = allElem.get(9);
+            } else if (allElem.size() == 9) {
+                // old format without hash
+                //for ES 2.2.0
+                this.status = allElem.get(0);
+                this.status2 = allElem.get(1);
+                this.name = allElem.get(2);
+                this.hash = "";
+                this.shards = Integer.parseInt(allElem.get(3));
+                this.replicas = Integer.parseInt(allElem.get(4));
+                this.c1 = Integer.parseInt(allElem.get(5));
+                this.c2 = Integer.parseInt(allElem.get(6));
+                this.size1 = allElem.get(7);
+                this.size2 = allElem.get(8);
+            } else {
                 throw new ParseException("unable to parse string:" + line, 0);
             }
-            this.status = matcher.group(1);
-            this.status2 = matcher.group(2);
-            this.name = matcher.group(3);
-            this.hash = "";
-            this.shards = Integer.parseInt(matcher.group(4));
-            this.replicas = Integer.parseInt(matcher.group(5));
-            this.c1 = Integer.parseInt(matcher.group(6));
-            this.c2 = Integer.parseInt(matcher.group(7));
-            this.size1 = matcher.group(8);
-            this.size2 = matcher.group(9);
-        } else {
-            this.status = matcher.group(1);
-            this.status2 = matcher.group(2);
-            this.name = matcher.group(3);
-            this.hash = matcher.group(4);
-            this.shards = Integer.parseInt(matcher.group(5));
-            this.replicas = Integer.parseInt(matcher.group(6));
-            this.c1 = Integer.parseInt(matcher.group(7));
-            this.c2 = Integer.parseInt(matcher.group(8));
-            this.size1 = matcher.group(9);
-            this.size2 = matcher.group(10);
+        } catch (NumberFormatException e) {
+            throw new ParseException("unable to parse int:" + line, 0);
         }
     }
 }
