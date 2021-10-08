@@ -415,7 +415,9 @@ public class NpmServiceManagerImpl implements NpmServiceManager {
         try {
             logger.trace("Initializing NPM Configurations from:({})", configFilePath);
             if (new File(configFilePath).exists()) {
-                npmConfigurations.load(new FileInputStream(configFilePath));
+                try (FileInputStream configInputStream = new FileInputStream(configFilePath)) {
+                    npmConfigurations.load(configInputStream);
+                }
             } else {
                 logger.warn("Config File:({}) not found, Initializing NPM with default configurations.", configFilePath);
                 configFilePath = "properties" + File.separator + NpmConstants.NPM_CONFIG_PROPERTIES_FILE_NAME;

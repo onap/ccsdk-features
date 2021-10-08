@@ -24,13 +24,12 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.entity.DatabaseIdGenerator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Fault;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
 
 public class FaultEntityManager {
-
-    private static final Pattern pattern = Pattern.compile(".*\\[layerProtocol=(.*)\\]");
 
     /**
      * The leading indication for notification or events that are not in the currentProblem data of the ONF Coremodel
@@ -68,14 +67,7 @@ public class FaultEntityManager {
      */
     public static String genSpecificEsId(String nodeName, String objectId, String problemName) {
 
-        String uuId;
-
-        Matcher matcher = pattern.matcher(objectId);
-        if (matcher.matches() && matcher.groupCount() == 1) {
-            uuId = matcher.group(1);
-        } else {
-            uuId = objectId;
-        }
+        String uuId = DatabaseIdGenerator.getFaultcurrentId(nodeName, objectId, problemName);
 
         StringBuffer strBuf = new StringBuffer();
         strBuf.append(nodeName);

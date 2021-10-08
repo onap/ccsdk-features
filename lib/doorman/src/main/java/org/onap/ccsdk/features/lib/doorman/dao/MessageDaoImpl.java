@@ -66,19 +66,11 @@ public class MessageDaoImpl implements MessageDao {
 
     @Override
     public void updateMessageStarted(long messageId, Date timestamp) {
-        updateMessageStatus("started_timestamp", messageId, null, timestamp);
-    }
-
-    @Override
-    public void updateMessageCompleted(long messageId, String resolution, Date timestamp) {
-        updateMessageStatus("completed_timestamp", messageId, resolution, timestamp);
-    }
-
-    private void updateMessageStatus(String timestampColumn, long messageId, String resolution, Date timestamp) {
+        // duplicate code with updateMessageCompleted to avoid SQL injection issue for sonar
         try (Connection con = dataSource.getConnection()) {
             try {
                 con.setAutoCommit(false);
-                String sql = "UPDATE message SET " + timestampColumn + " = ? WHERE message_id = ?";
+                String sql = "UPDATE message SET started_timestamp = ? WHERE message_id = ?";
                 try (PreparedStatement ps = con.prepareStatement(sql)) {
                     ps.setTimestamp(1, new Timestamp(timestamp.getTime()));
                     ps.setLong(2, messageId);
@@ -92,6 +84,29 @@ public class MessageDaoImpl implements MessageDao {
         } catch (SQLException e) {
             throw new RuntimeException("Error updating message status in DB: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void updateMessageCompleted(long messageId, String resolution, Date timestamp) {
+        // duplicate code with updateMessageStarted to avoid SQL injection issue for sonar
+        try (Connection con = dataSource.getConnection()) {
+            try {
+                con.setAutoCommit(false);
+                String sql = "UPDATE message SET completed_timestamp = ? WHERE message_id = ?";
+                try (PreparedStatement ps = con.prepareStatement(sql)) {
+                    ps.setTimestamp(1, new Timestamp(timestamp.getTime()));
+                    ps.setLong(2, messageId);
+                    ps.executeUpdate();
+                }
+                con.commit();
+            } catch (SQLException ex) {
+                con.rollback();
+                throw ex;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating message status in DB: " + e.getMessage(), e);
+        }
+
     }
 
     @Override

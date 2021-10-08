@@ -226,7 +226,6 @@ public class ORanNetworkElement implements NetworkElement {
                         vesCollectorService.publishVESMessage(vesCollectorService.generateVESEvent(header, body));
                     } catch (JsonProcessingException e) {
                         LOG.warn("Error while serializing VES Event to String ", e);
-                        e.printStackTrace();
                     }
                 }
             }
