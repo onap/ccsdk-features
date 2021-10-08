@@ -50,7 +50,9 @@ public class MdSalAuthorizationStore {
     public Optional<OdlPolicy> getPolicy(String path, List<String> userRoles) {
         InstanceIdentifier<Policies> iif = InstanceIdentifier.create(HttpAuthorization.class).child(Policies.class);
         Optional<Policies> odata = Optional.empty();
-        try (ReadTransaction transaction = this.dataBroker.newReadOnlyTransaction()) {
+        // The implicite close is not handled correctly by underlaying opendaylight netconf service
+        ReadTransaction transaction = this.dataBroker.newReadOnlyTransaction();
+        try {
             odata = transaction.read(LogicalDatastoreType.CONFIGURATION, iif).get();
         } catch (ExecutionException e) {
             LOG.warn("unable to read policies from mdsal: ", e);
