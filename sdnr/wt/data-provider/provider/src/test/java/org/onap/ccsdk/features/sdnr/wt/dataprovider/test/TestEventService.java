@@ -38,6 +38,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity.FaultEntityManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity.HtDatabaseEventsService;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
@@ -113,13 +114,26 @@ public class TestEventService {
         service.updateFaultCurrent(createFault(NODEID, OBJECTREFID2, "abcde", SeverityType.Major));
         service.updateFaultCurrent(createFault(NODEID2, OBJECTREFID2, "abcde", SeverityType.Major));
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 2);
+        assertEquals(2, nodeIds.size());
         service.clearFaultsCurrentOfNodeWithObjectId(NODEID, OBJECTREFID1);
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 2);
+        assertEquals(2, nodeIds.size());
         service.updateFaultCurrent(createFault(NODEID, OBJECTREFID2, "abcde", SeverityType.NonAlarmed));
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 1);
+        assertEquals(1, nodeIds.size());
+    }
+
+
+    @Test
+    public void testGenSpecificEsId() {
+        String objectRefOld = FaultEntityManager.genSpecificEsId(createFault(NODEID, "[layerProtocol="+OBJECTREFID1+"]", "abc", SeverityType.Major));
+        assertEquals(OBJECTREFID1, objectRefOld);
+        String objectRefOld2 = FaultEntityManager.genSpecificEsId(createFault(NODEID2, "[layerProtocol="+OBJECTREFID2+"]", "abcde", SeverityType.Major));
+        assertEquals(OBJECTREFID2, objectRefOld2);
+        String objectRef = FaultEntityManager.genSpecificEsId(createFault(NODEID, OBJECTREFID1, "abc", SeverityType.Major));
+        assertEquals(OBJECTREFID1, objectRef);
+        String objectRef2 = FaultEntityManager.genSpecificEsId(createFault(NODEID2, OBJECTREFID2, "abcde", SeverityType.Major));
+        assertEquals(OBJECTREFID2, objectRef2);
     }
 
     private static FaultcurrentEntity createFault(String nodeId, String objectRefId, String problem,

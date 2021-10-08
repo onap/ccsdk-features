@@ -75,17 +75,17 @@ public class AaiClientPropertiesFile {
 
     public void load() throws IOException, NumberFormatException {
         Properties defaultProps = new Properties();
-        FileInputStream in = new FileInputStream(this.mFile);
-        defaultProps.load(in);
-        this.mPCKS12CertFilename = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.ssl.key", null);
-        this.mPCKS12Passphrase = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.ssl.key.psswd", null);
-        this.mTrustInsecureSSL = defaultProps
+        try (FileInputStream in = new FileInputStream(this.mFile)) {
+            defaultProps.load(in);
+            this.mPCKS12CertFilename = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.ssl.key", null);
+            this.mPCKS12Passphrase = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.ssl.key.psswd", null);
+            this.mTrustInsecureSSL = defaultProps
                 .getProperty("org.onap.ccsdk.sli.adaptors.aai.host.certificate.ignore", "false").equals("true");
-        this.mApplicationIdentifier = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.application", null);
-        this.mRemoteUrl = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.uri", null);
-        this.mConnectionTimeout = Integer.parseInt(defaultProps.getProperty("connection.timeout", "60000"));
-        this.mReadTimeout = Integer.parseInt(defaultProps.getProperty("read.timeout", "60000"));
-        in.close();
+            this.mApplicationIdentifier = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.application", null);
+            this.mRemoteUrl = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.uri", null);
+            this.mConnectionTimeout = Integer.parseInt(defaultProps.getProperty("connection.timeout", "60000"));
+            this.mReadTimeout = Integer.parseInt(defaultProps.getProperty("read.timeout", "60000"));
+        }
     }
 
 }

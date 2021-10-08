@@ -112,8 +112,7 @@ public class EnergysavingsProvider implements EnergysavingsService {
         HashMap<String, String> dmaapPolicyHttpParams = new HashMap<String, String>();
         HashMap<String, String> energySavingsServerHttpParams = new HashMap<String, String>();
 
-        try {
-            FileInputStream fileInput = new FileInputStream(propDir + PROPERTIES_FILE_NAME);
+        try (FileInputStream fileInput = new FileInputStream(propDir + PROPERTIES_FILE_NAME)) {
             Properties properties = new Properties();
             properties.load(fileInput);
             fileInput.close();
@@ -123,9 +122,9 @@ public class EnergysavingsProvider implements EnergysavingsService {
                 energySavingsServerHttpParams.put(param, properties.getProperty("energySavingsServer." + param));
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            LOG.error("Unexpected value for energy savings server authentication: ");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Unexpected value for energy savings server authentication: ");
         }
 
         // Create a web resource for the Energy Savings server

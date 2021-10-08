@@ -22,6 +22,8 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.entity.DatabaseIdGenerator;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
@@ -49,6 +51,11 @@ public class TestObjectIds {
 
     @Test
     public void testGenerator() {
+        assertEquals(FAULTCURRENTID1, DatabaseIdGenerator.getFaultcurrentId(NODEID1, "toto[layerProtocol="+OBJECTID1+"]", PROBLEMNAME1));
+        assertEquals(FAULTCURRENTID1, DatabaseIdGenerator.getFaultcurrentId(NODEID1, "[layerProtocol="+OBJECTID1+"]", PROBLEMNAME1));
+        assertEquals(FAULTCURRENTID1, DatabaseIdGenerator.getFaultcurrentId(NODEID1, "[layerPtoto[layerProtocol="+OBJECTID1+"]", PROBLEMNAME1));
+        assertNotEquals(FAULTCURRENTID1, DatabaseIdGenerator.getFaultcurrentId(NODEID1, "[layerProtocol="+OBJECTID1+"]aaa", PROBLEMNAME1));
+
         assertEquals(FAULTCURRENTID1, DatabaseIdGenerator.getFaultcurrentId(NODEID1, OBJECTID1, PROBLEMNAME1));
         assertEquals(INVENTORY_ID1, DatabaseIdGenerator
                 .getInventoryId(new InventoryBuilder().setNodeId(NODEID1).setUuid(EQUIPMENT_UUID1).build()));

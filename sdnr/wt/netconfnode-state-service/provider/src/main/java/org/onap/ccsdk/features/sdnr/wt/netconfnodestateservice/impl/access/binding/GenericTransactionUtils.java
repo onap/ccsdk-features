@@ -107,22 +107,18 @@ public final class GenericTransactionUtils implements TransactionUtils {
 
             LOG.debug("Sending message with retry {} ", retry);
             statusIndicator.set("Create Read Transaction");
-            ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction();
-            try {
+
+            try (ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction()) {
                 @NonNull
                 FluentFuture<Optional<T>> od = readTransaction.read(dataStoreType, iid);
                 statusIndicator.set("Read done");
                 if (od != null) {
                     statusIndicator.set("Unwrap checkFuture done");
                     Optional<T> optionalData = od.get();
-                    if (optionalData != null) {
-                        statusIndicator.set("Unwrap optional done");
-                        data = optionalData.orElse(null);
-                        statusIndicator.set("Read transaction done");
-                        noErrorIndication.set(true);
-                    } else {
-                        statusIndicator.set("optional Data is null");
-                    }
+                    statusIndicator.set("Unwrap optional done");
+                    data = optionalData.orElse(null);
+                    statusIndicator.set("Read transaction done");
+                    noErrorIndication.set(true);
                 } else {
                     statusIndicator.set("od feature is null");
                 }

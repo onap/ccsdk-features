@@ -97,12 +97,13 @@ public class TestDcae {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("Break sleep : " + e.getMessage());
+            Thread.currentThread().interrupt();
         }
         try {
             provider.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Close provider error : " + e.getMessage());
         }
     }
 

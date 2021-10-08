@@ -1,5 +1,6 @@
 package org.onap.ccsdk.features.lib.rlock;
 
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -99,6 +100,7 @@ public abstract class SynchronizedFunction {
     }
 
     private static String generateLockRequester() {
-        return "SynchronizedFunction-" + (int) (Math.random() * 1000000);
+        SecureRandom random = new SecureRandom();
+        return "SynchronizedFunction-" + (random.nextInt() % 1000000);
     }
 }

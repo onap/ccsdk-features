@@ -196,11 +196,15 @@ public class ConnectionStatusHousekeepingService
         @NonNull
         InstanceIdentifier<Node> instanceIdentifier =
                 NETCONF_TOPO_IID.child(Node.class, new NodeKey(new NodeId(nodeId)));
-        ReadTransaction trans = this.dataBroker.newReadOnlyTransaction();
-        FluentFuture<Optional<Node>> optionalNode = trans.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
-        try {
+        try (ReadTransaction trans = this.dataBroker.newReadOnlyTransaction()) {
+            FluentFuture<Optional<Node>> optionalNode = trans.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
             //Node node = optionalNode.get(5, TimeUnit.SECONDS).get();
-            Node node = optionalNode.get().get();
+            Optional<Node> nodeOpt = optionalNode.get();
+            if (nodeOpt.isEmpty()) {
+                LOG.warn("unable to get node info");
+                return null;
+            }
+            Node node = nodeOpt.get();
             LOG.debug("node is {}", node);
             NetconfNode nNode = node.augmentation(NetconfNode.class);
             LOG.debug("nnode is {}", nNode);
@@ -209,10 +213,11 @@ public class ConnectionStatusHousekeepingService
             }
         } catch (NoSuchElementException e) {
             return ConnectionLogStatus.Disconnected;
-        } catch (ExecutionException | InterruptedException e) {// | TimeoutException e) {
-            LOG.warn("unable to get node info: {}", e);
-        } finally {
-            trans.close();
+        } catch (InterruptedException e) {
+            LOG.warn("unable to get node info: ", e);
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {// | TimeoutException e) {
+            LOG.warn("unable to get node info: ", e);
         }
 
         return null;

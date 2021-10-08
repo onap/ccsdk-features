@@ -61,7 +61,7 @@ public class NpmUtils {
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(instance);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.warn(e.getMessage(), e);
         }
         return null;
     }

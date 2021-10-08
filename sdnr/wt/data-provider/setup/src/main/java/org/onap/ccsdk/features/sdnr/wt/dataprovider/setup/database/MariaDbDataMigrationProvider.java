@@ -161,8 +161,9 @@ public class MariaDbDataMigrationProvider implements DataMigrationProviderServic
         boolean componentsSucceeded = true;
         for (ComponentName c : ri.getComponents()) {
             ComponentData data = new ComponentData(c);
-            SearchResult<SearchHit> result = null;//this.dbClient.doReadAllJsonData(ri.getAlias(c), ri.getDataType(c), false);
-            data.addAll(result.getHits());
+            // TODO : check why doReadAllJsonData are comment
+            //SearchResult<SearchHit> result = null;//this.dbClient.doReadAllJsonData(ri.getAlias(c), ri.getDataType(c), false);
+            //data.addAll(result.getHits());
             container.addComponent(c, data);
         }
         try {
