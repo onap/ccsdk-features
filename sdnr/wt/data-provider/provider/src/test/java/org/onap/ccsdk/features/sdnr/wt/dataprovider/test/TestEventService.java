@@ -122,13 +122,26 @@ public class TestEventService {
         service.updateFaultCurrent(createFault(NODEID, OBJECTREFID2, "abcde", SeverityType.Major));
         service.updateFaultCurrent(createFault(NODEID2, OBJECTREFID2, "abcde", SeverityType.Major));
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 2);
+        assertEquals(2, nodeIds.size());
         service.clearFaultsCurrentOfNodeWithObjectId(NODEID, OBJECTREFID1);
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 2);
+        assertEquals(2, nodeIds.size());
         service.updateFaultCurrent(createFault(NODEID, OBJECTREFID2, "abcde", SeverityType.NonAlarmed));
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 1);
+        assertEquals(1, nodeIds.size());
+    }
+
+
+    @Test
+    public void testGenSpecificEsId() {
+        String objectRefOld = FaultEntityManager.genSpecificEsId(createFault(NODEID, "[layerProtocol="+OBJECTREFID1+"]", "abc", SeverityType.Major));
+        assertEquals(String.format("%s/%s/%s", NODEID, OBJECTREFID1, "abc"), objectRefOld);
+        String objectRefOld2 = FaultEntityManager.genSpecificEsId(createFault(NODEID2, "[layerProtocol="+OBJECTREFID2+"]", "abcde", SeverityType.Major));
+        assertEquals(String.format("%s/%s/%s", NODEID2, OBJECTREFID2, "abcde"), objectRefOld2);
+        String objectRef = FaultEntityManager.genSpecificEsId(createFault(NODEID, OBJECTREFID1, "abc", SeverityType.Major));
+        assertEquals(String.format("%s/%s/%s", NODEID, OBJECTREFID1, "abc"), objectRef);
+        String objectRef2 = FaultEntityManager.genSpecificEsId(createFault(NODEID2, OBJECTREFID2, "abcde", SeverityType.Major));
+        assertEquals(String.format("%s/%s/%s", NODEID2, OBJECTREFID2, "abcde"), objectRef2);
     }
 
 

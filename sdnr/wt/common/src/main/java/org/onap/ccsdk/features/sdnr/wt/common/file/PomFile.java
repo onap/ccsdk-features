@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,7 +45,8 @@ public class PomFile {
         //		documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         //		documentBuilderFactory.setFeature(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
         //		documentBuilderFactory.setFeature(XMLInputFactory.SUPPORT_DTD, false);
-
+        documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         this.xmlDoc = documentBuilder.parse(is);
     }

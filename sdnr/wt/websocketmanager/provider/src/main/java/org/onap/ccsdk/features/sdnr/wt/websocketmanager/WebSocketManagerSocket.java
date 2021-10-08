@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
     private static final String REGEX_SCOPEREGISTRATION = "\"data\"[\\s]*:[\\s]*\"scopes\"";
     private static final Pattern PATTERN_SCOPEREGISTRATION =
             Pattern.compile(REGEX_SCOPEREGISTRATION, Pattern.MULTILINE);
-    private static final Random RND = new Random();
+    private static final SecureRandom RND = new SecureRandom();
     private static final long SEND_MESSAGE_TIMEOUT_MILLIS = 1500;
     private static final int QUEUE_SIZE = 100;
 

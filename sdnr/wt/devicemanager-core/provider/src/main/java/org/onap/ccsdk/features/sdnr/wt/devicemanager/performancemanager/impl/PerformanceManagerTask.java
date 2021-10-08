@@ -29,6 +29,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.PerformanceDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,8 +136,9 @@ public class PerformanceManagerTask implements Runnable {
     public void run() {
 
         String mountpointName = "No NE";
-        if (actualNE != null && actualNE.getAcessor().isPresent()) {
-            mountpointName = actualNE.getAcessor().get().getNodeId().getValue();
+        Optional<NetconfAccessor> netconfAccessorOpt = actualNE.getAcessor();
+        if (actualNE != null && netconfAccessorOpt.isPresent()) {
+            mountpointName = netconfAccessorOpt.get().getNodeId().getValue();
         }
         LOG.debug("{} start {} Start with mountpoint {}", LOGMARKER, tickCounter, mountpointName);
 
