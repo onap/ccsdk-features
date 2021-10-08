@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4bbedafb_8dfed1e9",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPCMVESMsgConsumer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 7353
+      },
+      "writtenOn": "2021-10-08T06:04:58Z",
+      "side": 1,
+      "message": "It would be nice to add stndDefinedFields.data.notificationId to the log message. This would allow user to identify particular message in the log in case of having multiple CM events coming at high velocity.",
+      "revId": "37dbb5e1c32f2865ca0de46fa7dd362c972c6068",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
