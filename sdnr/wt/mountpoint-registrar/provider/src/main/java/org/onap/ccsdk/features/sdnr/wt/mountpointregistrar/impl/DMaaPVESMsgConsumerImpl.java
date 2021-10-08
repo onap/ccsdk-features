@@ -80,7 +80,7 @@ public abstract class DMaaPVESMsgConsumerImpl implements DMaaPVESMsgConsumer, DM
                         }
                         pauseThread();
                     }
-		} catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     LOG.warn("Caught exception reading from DMaaP VES Message Topic", e);
                     Thread.currentThread().interrupt();
                 } catch (JsonProcessingException jsonProcessingException) {

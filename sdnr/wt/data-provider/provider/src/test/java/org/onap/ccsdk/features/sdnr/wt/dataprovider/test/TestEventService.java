@@ -122,13 +122,13 @@ public class TestEventService {
         service.updateFaultCurrent(createFault(NODEID, OBJECTREFID2, "abcde", SeverityType.Major));
         service.updateFaultCurrent(createFault(NODEID2, OBJECTREFID2, "abcde", SeverityType.Major));
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 2);
+        assertEquals(2, nodeIds.size());
         service.clearFaultsCurrentOfNodeWithObjectId(NODEID, OBJECTREFID1);
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 2);
+        assertEquals(2, nodeIds.size());
         service.updateFaultCurrent(createFault(NODEID, OBJECTREFID2, "abcde", SeverityType.NonAlarmed));
         nodeIds = service.getAllNodesWithCurrentAlarms();
-        assertTrue(nodeIds.size() == 1);
+        assertEquals(1, nodeIds.size());
     }
 
 

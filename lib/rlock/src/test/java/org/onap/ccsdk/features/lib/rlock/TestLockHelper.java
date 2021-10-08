@@ -42,6 +42,7 @@ public class TestLockHelper {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 log.warn("Thread interrupted: " + e.getMessage(), e);
             }
 

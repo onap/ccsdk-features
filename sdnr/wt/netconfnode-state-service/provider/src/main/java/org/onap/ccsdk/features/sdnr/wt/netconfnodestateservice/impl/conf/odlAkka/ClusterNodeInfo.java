@@ -32,7 +32,7 @@ public class ClusterNodeInfo {
     }
 
     public ClusterNodeInfo(String s) throws Exception {
-        final String regex = "([a-z.]*):\\/\\/([a-zA-Z0-9-]*)@([a-zA-Z0-9.-]*):([0-9]*)";
+        final String regex = "([a-z.]{0,10}):\\/\\/([a-zA-Z0-9-]{0,1024})@([a-zA-Z0-9.-]{0,1024}):([0-9]{0,10})";
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(s);
         if (!matcher.find()) {
