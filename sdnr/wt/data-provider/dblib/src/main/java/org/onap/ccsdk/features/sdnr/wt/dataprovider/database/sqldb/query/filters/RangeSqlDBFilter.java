@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters;
 
+import java.math.BigInteger;
 import org.eclipse.jdt.annotation.Nullable;
 
 public class RangeSqlDBFilter extends DBKeyValuePair<Object> implements SqlDBFilter {
@@ -34,8 +35,15 @@ public class RangeSqlDBFilter extends DBKeyValuePair<Object> implements SqlDBFil
 
     @Override
     public String getFilterExpression() {
-        if (isNumericValue(this.getValue())) {
-            return String.format("`%s`%s%d", this.getKey(), this.comparator, this.getValue());
+        // remove isNumericValue and add cast to remove sonar issue
+        if (this.getValue() instanceof Long) {
+            return String.format("`%s`%s%d", this.getKey(), this.comparator, (Long)this.getValue());
+        } else if (this.getValue() instanceof Integer) {
+            return String.format("`%s`%s%d", this.getKey(), this.comparator, (Integer)this.getValue());
+        } else if (this.getValue() instanceof Byte) {
+            return String.format("`%s`%s%d", this.getKey(), this.comparator, (Byte)this.getValue());
+        } else if (this.getValue() instanceof BigInteger) {
+            return String.format("`%s`%s%d", this.getKey(), this.comparator, (BigInteger)this.getValue());
         } else {
             return String.format("`%s`%s'%s'", this.getKey(), this.comparator, this.getValue());
         }

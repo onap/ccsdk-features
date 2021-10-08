@@ -25,7 +25,7 @@ public class ClusterRoleInfo {
     private final int Index;
 
     public ClusterRoleInfo(String s) throws Exception {
-        final String regex = "([a-zA-Z]*)-([0-9]*)";
+        final String regex = "([a-zA-Z]{1,1024})-([0-9]{1,10})";
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(s);
         if (!matcher.find()) {
