@@ -104,6 +104,7 @@ public class MessageQueueTest {
                 try {
                     Thread.sleep(startTime);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
 
                 MessageData r = interceptor.processRequest(request);
@@ -112,6 +113,7 @@ public class MessageQueueTest {
                     try {
                         Thread.sleep(processTime);
                     } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
 
                     interceptor.processResponse(response);
@@ -158,6 +160,7 @@ public class MessageQueueTest {
             try {
                 Thread.sleep(processTime);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
     }
