@@ -175,6 +175,8 @@ public abstract class ReleaseInformation {
                 return new HonoluluReleaseInformation();
             case ISTANBUL_R1:
                 return new IstanbulReleaseInformation();
+            case JAKARTA_R1:
+                return new JakartaReleaseInformation();
             default:
                 return null;
         }

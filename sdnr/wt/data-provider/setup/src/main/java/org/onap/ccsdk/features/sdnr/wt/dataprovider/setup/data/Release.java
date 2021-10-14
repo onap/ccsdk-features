@@ -34,9 +34,12 @@ public enum Release {
     GUILIN_R1("guilin-R1", "-v4", new DatabaseVersion(7,1,1), new DatabaseVersion(7,6,1)),
 	HONOLULU_R1("honolulu-R1", "-v5", new DatabaseVersion(7,1,1), new DatabaseVersion(8,0,0), false),
 	ISTANBUL_R1("istanbul-R1", "-v6", new DatabaseVersion(7,1,1), new DatabaseVersion(8,0,0), false,
-	        new DatabaseVersion(10,2,7), new DatabaseVersion(10,6,0), false);
+            new DatabaseVersion(10,2,7), new DatabaseVersion(10,6,0), false),
+    JAKARTA_R1("jakarta-R1", "-v7", new DatabaseVersion(7,1,1), new DatabaseVersion(8,0,0), false,
+            new DatabaseVersion(10,2,7), new DatabaseVersion(10,6,0), false);
 
-    public static final Release CURRENT_RELEASE = Release.ISTANBUL_R1;
+
+    public static final Release CURRENT_RELEASE = Release.JAKARTA_R1;
 
     private final String value;
     private final String dbSuffix;

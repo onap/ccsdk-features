@@ -5,6 +5,8 @@
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,6 +49,9 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmNotificationType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmOperation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmSourceIndicator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
@@ -66,6 +71,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultlog;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GranularityPeriodType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutputBuilder;
@@ -583,6 +591,92 @@ public class TestCRUDforDatabase {
         System.out.println("verify entries deleted");
         readResult = dbProvider
                 .readFaultLogList(new ReadFaultlogListInputBuilder().setPagination(getPagination(20, 1)).build());
+        data = readResult.getData();
+        assertEquals(0, data.size());
+    }
+
+    @Test
+    public void testCMLog() {
+        System.out.println("Starting CM log test...");
+        String dbId = clearAndCreateCMEntity("1", Entity.Cmlog.getName(),
+            "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateCmlogInput");
+        // ==READ===========================
+        System.out.println("try to read entry");
+
+        ReadCmlogListInput readinput = new ReadCmlogListInputBuilder()
+            .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+            .setPagination(getPagination(20, 1)).build();
+
+        ReadCmlogListOutputBuilder readResult = null;
+        try {
+            readResult = dbProvider.readCMLogList(readinput);
+
+        } catch (Exception e) {
+            fail("CM log not read: " + e.getMessage());
+        }
+
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data>
+            data = readResult.getData();
+
+        assertNotNull(data);
+        assertEquals("1", dbId);
+        assertEquals(1, data.size());
+        assertEquals("node-1", data.get(0).getNodeId());
+        assertEquals(1, data.get(0).getCounter().intValue());
+        assertEquals(CmNotificationType.NotifyMOIChanges, data.get(0).getNotificationType());
+        assertEquals("123", data.get(0).getNotificationId());
+        assertEquals(CmSourceIndicator.MANAGEMENTOPERATION, data.get(0).getSourceIndicator());
+        assertEquals(CmOperation.REPLACE, data.get(0).getOperation());
+        assertEquals("pnf-registration:true", data.get(0).getValue());
+
+        //== UPDATE ================================
+        System.out.println("try to update entry");
+
+        dbRawProvider.doUpdateOrCreate(Entity.Cmlog.getName(), "1",
+            "{'node-id': 'test4657-78','operation': 'CREATE', 'notification-id': '1'}");
+
+        System.out.println("try to search entry 1");
+        readinput = new ReadCmlogListInputBuilder()
+            .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                new FilterBuilder().setProperty("node-id").setFiltervalue("test").build()))
+            .setPagination(getPagination(20, 1)).build();
+
+        //== VERIFY UPDATE ================================
+        readResult = dbProvider.readCMLogList(readinput);
+        data = readResult.getData();
+
+        assertNotNull(data);
+        System.out.println(data);
+        assertEquals(0, data.size());
+
+        System.out.println("try to search entry 2");
+        readinput = new ReadCmlogListInputBuilder()
+            .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                new FilterBuilder().setProperty("node-id").setFiltervalue("test*").build()))
+            .setPagination(getPagination(20, 1)).build();
+
+        readResult = dbProvider.readCMLogList(readinput);
+        data = readResult.getData();
+
+        assertEquals(1, data.size());
+        assertEquals("test4657-78", data.get(0).getNodeId());
+        assertEquals("CREATE", data.get(0).getOperation().toString());
+        assertEquals("1", data.get(0).getNotificationId());
+
+        //== DELETE ================================
+
+        System.out.println("try to clear entry");
+        try {
+            dbRawProvider.doRemove(Entity.Cmlog.getName(), dbId);
+        } catch (Exception e) {
+            fail("problem deleting entry: " + e.getMessage());
+        }
+
+        //== VERIFY DELETE ===========================
+        System.out.println("verify entries deleted");
+        readResult = dbProvider
+            .readCMLogList(new ReadFaultlogListInputBuilder().setPagination(getPagination(20, 1)).build());
         data = readResult.getData();
         assertEquals(0, data.size());
     }
@@ -1458,6 +1552,45 @@ public class TestCRUDforDatabase {
 
         return dbId;
     }
+
+    private String clearAndCreateCMEntity(String initialDbId, String entityType, String implementedInterface) {
+        // ==CLEAR BEFORE TEST============================
+        System.out.println("try to clear entry");
+        try {
+            dbRawProvider.doRemove(entityType, QueryBuilders.matchAllQuery());
+        } catch (Exception e) {
+            fail("problem deleting: " + e.getMessage());
+        }
+        return createCMEntity(initialDbId, entityType, implementedInterface);
+    }
+
+    private String createCMEntity(String initialDbId, String entityType, String implementedInterface) {
+        // ==CREATE============================
+            System.out.println("try to create entry");
+            String dbId = null;
+
+        try {
+            dbId = dbRawProvider.doUpdateOrCreate(entityType, initialDbId,
+                "{\n" + "\"timestamp\": \"2019-10-28T11:55:58.3Z\",\n"
+                    + "\" object-id\": \"LP-MWPS-RADIO\",\n"
+                    + "\"node-id\": \"node-1\",\n"
+                    + "\"counter\": 1,\n"
+                    + "\"notification-type\": \"" + CmNotificationType.NotifyMOIChanges.toString() + "\",\n"
+                    + "\"notification-id\": 123,\n"
+                    + "\"source-indicator\": \"" + CmSourceIndicator.MANAGEMENTOPERATION.toString() + "\",\n"
+                    + "\" path\": \"https://samsung.com/3GPP/simulation/network-function/ves=1\",\n"
+                    + "\"operation\": \"" + CmOperation.REPLACE.toString() + "\",\n"
+                    + "\"value\": \"pnf-registration:true\",\n"
+                    + "\"implemented-interface\": \"" + implementedInterface + "\"\n"
+                    + "}");
+
+        } catch (Exception e) {
+            fail("Problem creating CM log entry" + e.getMessage());
+        }
+
+        return dbId;
+    }
+
 
     private String createPerformanceData(String initialDbId, GranularityPeriodType timeInterval, String scannerId,
             String uuidInterface, String nodename) {
