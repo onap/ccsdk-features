@@ -5,6 +5,8 @@
  * Copyright (C) 2021 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,6 +36,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper.UnableToMapClassException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
@@ -127,6 +130,7 @@ public class MariaDBTestBase {
         createTable(dbService, EventlogEntity.class, Entity.Eventlog, true);
         createTable(dbService, FaultcurrentEntity.class, Entity.Faultcurrent, false);
         createTable(dbService, FaultlogEntity.class, Entity.Faultlog, true);
+        createTable(dbService, CmlogEntity.class, Entity.Cmlog, true);
         createTable(dbService, GuicutthroughEntity.class, Entity.Guicutthrough, true);
         createTable(dbService, Pmdata15mEntity.class, Entity.Historicalperformance15min, false);
         createTable(dbService, Pmdata24hEntity.class, Entity.Historicalperformance24h, false);

@@ -5,6 +5,8 @@
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,6 +45,10 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test.util.MariaDBTestB
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.opendaylight.netconf.shaded.sshd.common.util.io.IoUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmNotificationType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmSourceIndicator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
@@ -70,6 +76,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListInputBuilder;
@@ -113,6 +120,7 @@ public class TestMariaDataProvider {
     private static final String URI1 = "http://localhost:8181";
     private static final String URI2 = "http://localhost:8181";
     private static final String URI3 = "http://localhost:8181";
+    private static final String PATH = "https://samsung.com/3GPP/simulation/network-function/ves";
     private static MariaDBTestBase testBase;
     private static SqlDBDataProvider dbProvider;
     private static SqlDBClient dbClient;
@@ -196,6 +204,40 @@ public class TestMariaDataProvider {
         dbProvider.writeFaultLog(fault2);
         faultlogs = dbProvider.readFaultLogList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(2, faultlogs.getData().size());
+    }
+
+    @Test
+    public void testCMlog() {
+        ReadCmlogListOutputBuilder cmlogs = dbProvider.readCMLogList(createInput(1, 20));
+        assertEquals(0, cmlogs.getData().size());
+
+        CmlogEntity cm1 = new CmlogBuilder()
+            .setNodeId(NODEID2)
+            .setCounter(1)
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME1))
+            .setObjectId("obj")
+            .setNotificationType(CmNotificationType.NotifyMOIChanges)
+            .setNotificationId("1")
+            .setSourceIndicator(CmSourceIndicator.MANAGEMENTOPERATION)
+            .setPath(PATH)
+            .setValue("pnf-registration: true")
+            .build();
+        CmlogEntity cm2 = new CmlogBuilder()
+            .setNodeId(NODEID2)
+            .setCounter(2)
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME2))
+            .setObjectId("obj")
+            .setNotificationType(CmNotificationType.NotifyMOIChanges)
+            .setNotificationId("2")
+            .setSourceIndicator(CmSourceIndicator.UNKNOWN)
+            .setPath(PATH)
+            .setValue("pnf-registration: false")
+            .build();
+
+        dbProvider.writeCMLog(cm1);
+        dbProvider.writeCMLog(cm2);
+        cmlogs = dbProvider.readCMLogList(createInput("node-id", NODEID2, 1, 20));
+        assertEquals(2, cmlogs.getData().size());
     }
 
     @Test
