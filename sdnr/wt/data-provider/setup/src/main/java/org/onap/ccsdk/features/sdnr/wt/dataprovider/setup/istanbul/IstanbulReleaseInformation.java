@@ -21,9 +21,12 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.istanbul;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.onap.ccsdk.features.sdnr.wt.common.database.requests.ClusterSettingsRequest;
+import org.onap.ccsdk.features.sdnr.wt.common.database.responses.ClusterSettingsResponse;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
@@ -35,13 +38,17 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.honolulu.HonoluluReleaseInformation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IstanbulReleaseInformation extends ReleaseInformation {
 
-    private static final String TIMEZONE_TYPE_FORMAT =
+    private final Logger LOG = LoggerFactory.getLogger(IstanbulReleaseInformation.class);
+
+    public static final String TIMEZONE_TYPE_FORMAT =
             "CHAR(6) DEFAULT NULL CHECK (`%s` regexp '^[+-]\\\\d\\\\d:\\\\d\\\\d$')";
-    private static final String TABLENAME_CONTROLLER_FORMAT = "controller%s";
-    private static final String TABLEMAPPING_CONTROLLER =
+    public static final String TABLENAME_CONTROLLER_FORMAT = "controller%s";
+    public static final String TABLEMAPPING_CONTROLLER =
             "`id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,`desc` VARCHAR(255) CHARACTER SET utf8 ,primary key(id)";
     private static final String TABLEMAPPING_CONNECTIONLOG_FORMAT = "`id` int(11) NOT NULL AUTO_INCREMENT,\n"
             + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n" + "`timestamp` DATETIME(3) ,\n"
@@ -93,7 +100,7 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
     private static final String TABLEMAPPING_INVENTORY_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
             + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n"
             + "`version` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`type-name` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`date` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`description` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            + "`date` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`description` VARCHAR(1024) CHARACTER SET utf8 ,\n"
             + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`uuid` VARCHAR(255) CHARACTER SET utf8 ,\n"
             + "`part-type-id` VARCHAR(255) CHARACTER SET utf8 ,\n"
             + "`model-identifier` VARCHAR(255) CHARACTER SET utf8 ,\n"
@@ -103,7 +110,7 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
             + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
     private static final String TABLEMAPPING_MAINTENANCE_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
             + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n" + "`active` BOOLEAN ,\n"
-            + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`description` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`description` VARCHAR(1024) CHARACTER SET utf8 ,\n"
             + "`problem` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`start` DATETIME(3) ,\n" + "`start-tz` "
             + String.format(TIMEZONE_TYPE_FORMAT, "start-tz") + " ,\n" + "`end` DATETIME(3) ,\n" + "`end-tz` "
             + String.format(TIMEZONE_TYPE_FORMAT, "end-tz") + " ,\n"
@@ -132,7 +139,7 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
         super(Release.ISTANBUL_R1, createDBMap(), createMariaDBMap(Release.ISTANBUL_R1.getDBSuffix()));
     }
 
-    private static Map<ComponentName, MariaDBTableInfo> createMariaDBMap(String suffix) {
+    public static Map<ComponentName, MariaDBTableInfo> createMariaDBMap(String suffix) {
         Map<ComponentName, MariaDBTableInfo> map = new HashMap<>();
         map.put(ComponentName.CONNECTIONLOG,
                 new MariaDBTableInfo(Entity.Connectionlog.getName(), TABLEMAPPING_CONNECTIONLOG_FORMAT));
@@ -158,7 +165,7 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
         return map;
     }
 
-    private static Map<ComponentName, DatabaseInfo> createDBMap() {
+    public static Map<ComponentName, DatabaseInfo> createDBMap() {
         Map<ComponentName, DatabaseInfo> map = HonoluluReleaseInformation.createDBMap();
         map.put(ComponentName.USERDATA, new DatabaseInfo7("userdata", "userdata", "{}"));
         map.put(ComponentName.REQUIRED_NETWORKELEMENT, new DatabaseInfo7("networkelement-connection",
@@ -168,7 +175,10 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
                         + "\"core-model-capability\": {\"type\": \"keyword\"},\"device-type\": {\"type\": \"keyword\"},"
                         + "\"device-function\": {\"type\": \"keyword\"},\"is-required\": {\"type\": \"boolean\"},"
                         + "\"status\": {\"type\": \"keyword\"},\"tls-key\": {\"type\": \"keyword\"},"
-                        + "\"mount-method\": {\"type\":\"keyword\"}}"));
+                        + "\"mount-method\": {\"type\":\"keyword\"}}",
+                        "{\"index\":{\"max_result_window\": 20000,\"number_of_shards\":%d,\"number_of_replicas\":%d},"
+                        +"\"analysis\":{\"analyzer\":{\"content\":{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}}"
+                        ));
         return map;
     }
 
@@ -182,7 +192,13 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
 
     @Override
     public boolean runPreInitCommands(HtDatabaseClient dbClient) {
-        return true;
+        ClusterSettingsResponse response = null;
+        try {
+            response = dbClient.setupClusterSettings(new ClusterSettingsRequest(false).maxCompilationsPerMinute(400));
+        } catch (IOException e) {
+            LOG.warn("problem setting up cluster: {}", e);
+        }
+        return response == null ? false : response.isAcknowledged();
     }
 
     @Override

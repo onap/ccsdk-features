@@ -30,7 +30,9 @@ public class DatabaseInfo7 extends DatabaseInfo {
     public DatabaseInfo7(String alias, String doctype, String mapping) {
         super(alias, alias, doctype, mapping);
     }
-
+    public DatabaseInfo7(String alias, String doctype, String mapping, String settingsformat) {
+        super(alias, alias, doctype, mapping, settingsformat);
+    }
     public DatabaseInfo7(String index, String alias, String doctype, String mapping, String settingsformat) {
         super(index, alias, doctype, mapping, settingsformat);
     }

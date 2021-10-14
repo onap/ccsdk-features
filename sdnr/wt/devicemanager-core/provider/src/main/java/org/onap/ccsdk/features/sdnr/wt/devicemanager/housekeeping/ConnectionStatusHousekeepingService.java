@@ -192,15 +192,20 @@ public class ConnectionStatusHousekeepingService
 
     private ConnectionLogStatus getMDSalConnectionStatus(String nodeId) {
 
-        @SuppressWarnings("null")
         @NonNull
         InstanceIdentifier<Node> instanceIdentifier =
                 NETCONF_TOPO_IID.child(Node.class, new NodeKey(new NodeId(nodeId)));
+        //Implicit close of try with resource is not handled correctly by underlying opendaylight NETCONF service
         ReadTransaction trans = this.dataBroker.newReadOnlyTransaction();
-        FluentFuture<Optional<Node>> optionalNode = trans.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
         try {
-            //Node node = optionalNode.get(5, TimeUnit.SECONDS).get();
-            Node node = optionalNode.get().get();
+            FluentFuture<Optional<Node>> optionalNode =
+                    trans.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
+            Optional<Node> nodeOpt = optionalNode.get();
+            if (nodeOpt.isEmpty()) {
+                LOG.warn("unable to get node info");
+                return null;
+            }
+            Node node = nodeOpt.get();
             LOG.debug("node is {}", node);
             NetconfNode nNode = node.augmentation(NetconfNode.class);
             LOG.debug("nnode is {}", nNode);
@@ -209,8 +214,11 @@ public class ConnectionStatusHousekeepingService
             }
         } catch (NoSuchElementException e) {
             return ConnectionLogStatus.Disconnected;
-        } catch (ExecutionException | InterruptedException e) {// | TimeoutException e) {
-            LOG.warn("unable to get node info: {}", e);
+        } catch (InterruptedException e) {
+            LOG.warn("InterruptedException unable to get node info: ", e);
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {// | TimeoutException e) {
+            LOG.warn("ExecutionException unable to get node info: ", e);
         } finally {
             trans.close();
         }

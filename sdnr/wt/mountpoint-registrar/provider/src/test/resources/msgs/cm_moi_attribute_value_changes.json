@@ -1,0 +1,45 @@
+{
+  "event": {
+    "commonEventHeader": {
+      "version": "4.1",
+      "vesEventListenerVersion": "7.2",
+      "domain": "stndDefined",
+      "stndDefinedNamespace": "3GPP-Provisioning",
+      "eventId": "cm0004012",
+      "eventName": "ves_stdnDefined_3GPP-Provisioning",
+      "nfNamingCode": "NFNC",
+      "nfVendorName": "POC",
+      "nfcNamingCode": "NFC",
+      "priority": "Medium",
+      "reportingEntityId": "device_id_1732f1ad-53fd-4fd1-8b73-a677987d4e8f",
+      "reportingEntityName": "samsung-O-DU-1122",
+      "sequence": 0,
+      "sourceId": "src_device_id_1732f1ad-53fd-4fd1-8b73-a677987d4e8f",
+      "sourceName": "samsung-O-DU-1122",
+      "startEpochMicrosec": 1547037007722752,
+      "lastEpochMicrosec": 1547037028498530,
+      "timeZoneOffset": "UTC-05:30"
+    },
+    "stndDefinedFields": {
+      "schemaReference": "https://forge.3gpp.org/rep/sa5/MnS/blob/Rel16/OpenAPI/provMnS.yaml#/components/schemas/NotifyMoiAttributeValueChanges",
+      "data": {
+        "href": "href1",
+        "notificationId": 1,
+        "notificationType": "notifyMOIAttributeValueChanges",
+        "eventTime": "2021-08-23T11:52:10.6Z",
+        "systemDN": "xyz",
+        "correlatedNotifications": [],
+        "additionalText": "AdditionalTextDetails",
+        "sourceIndicator": "UNKNOWN",
+        "attributeListValueChanges": [
+          {
+            "attributeNameValuePairSet": {
+              "faults-enabled": "true"
+            }
+          }
+        ]
+      },
+      "stndDefinedFieldsVersion": "1.0"
+    }
+  }
+}

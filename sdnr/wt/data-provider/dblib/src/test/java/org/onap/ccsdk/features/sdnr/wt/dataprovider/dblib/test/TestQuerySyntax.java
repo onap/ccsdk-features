@@ -21,16 +21,22 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.SelectQuery;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.PaginationBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class TestQuerySyntax {
 
@@ -153,5 +159,38 @@ public class TestQuerySyntax {
         SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
         final String sql = query.toSql();
         assertTrue(sql.contains("`timestamp`<='2022-01-01 00:00:00.000'"));
+    }
+
+    @Test
+    public void testSelectForFilterValues() {
+        EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
+                .setFilter(Arrays.asList(
+                        new FilterBuilder().setProperty("id").setFiltervalues(Arrays.asList("das", "das2")).build()))
+                .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
+                .build();
+        SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
+        System.out.println(query.toSql());
+    }
+    @Test
+    public void testSelectForFilterValues2() {
+        EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
+                .setFilter(Arrays.asList(
+                        new FilterBuilder().setProperty("id").setFiltervalue("*").build()))
+                .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
+                .build();
+        SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
+        System.out.println(query.toSql());
+        assertFalse(query.toSql().contains("RLIKE"));
+    }
+    @Test
+    public void testSelectForFilterValues3() {
+        EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
+                .setFilter(Arrays.asList(
+                        new FilterBuilder().setProperty("id").setFiltervalues(Arrays.asList("*","abc")).build()))
+                .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
+                .build();
+        SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
+        System.out.println(query.toSql());
+        assertFalse(query.toSql().contains("RLIKE"));
     }
 }

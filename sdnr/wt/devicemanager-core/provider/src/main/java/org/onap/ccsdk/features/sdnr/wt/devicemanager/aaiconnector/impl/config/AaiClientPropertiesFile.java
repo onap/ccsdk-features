@@ -19,10 +19,15 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AaiClientPropertiesFile {
+
+    private static final Logger log = LoggerFactory.getLogger(AaiClientPropertiesFile.class);
 
     private final File mFile;
     private String mPCKS12CertFilename;
@@ -73,19 +78,21 @@ public class AaiClientPropertiesFile {
         this.mFile = new File(filename);
     }
 
-    public void load() throws IOException, NumberFormatException {
+    public void load() throws IOException {
         Properties defaultProps = new Properties();
-        FileInputStream in = new FileInputStream(this.mFile);
-        defaultProps.load(in);
-        this.mPCKS12CertFilename = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.ssl.key", null);
-        this.mPCKS12Passphrase = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.ssl.key.psswd", null);
-        this.mTrustInsecureSSL = defaultProps
-                .getProperty("org.onap.ccsdk.sli.adaptors.aai.host.certificate.ignore", "false").equals("true");
-        this.mApplicationIdentifier = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.application", null);
-        this.mRemoteUrl = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.uri", null);
-        this.mConnectionTimeout = Integer.parseInt(defaultProps.getProperty("connection.timeout", "60000"));
-        this.mReadTimeout = Integer.parseInt(defaultProps.getProperty("read.timeout", "60000"));
-        in.close();
-    }
 
+        try (FileInputStream in = new FileInputStream(this.mFile)) {
+            defaultProps.load(in);
+            this.mPCKS12CertFilename = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.ssl.key", null);
+            this.mPCKS12Passphrase = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.ssl.key.psswd", null);
+            this.mTrustInsecureSSL = defaultProps
+                .getProperty("org.onap.ccsdk.sli.adaptors.aai.host.certificate.ignore", "false").equals("true");
+            this.mApplicationIdentifier = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.application", null);
+            this.mRemoteUrl = defaultProps.getProperty("org.onap.ccsdk.sli.adaptors.aai.uri", null);
+            this.mConnectionTimeout = Integer.parseInt(defaultProps.getProperty("connection.timeout", "60000"));
+            this.mReadTimeout = Integer.parseInt(defaultProps.getProperty("read.timeout", "60000"));
+        } catch (FileNotFoundException fnfe) {
+            log.error("File - {} not found",getFilename());
+        }
+    }
 }

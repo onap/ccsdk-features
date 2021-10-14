@@ -5,6 +5,8 @@
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,6 +41,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMediatorserver;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
@@ -56,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MediatorServerEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutputBuilder;
@@ -92,6 +96,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
     private final HtDatabaseClient dbClient;
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data> eventRWFaultCurrent;
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data> eventRWFaultLog;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data> eventRWCMLog;
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data> mediatorserverRW;
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> maintenanceRW;
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> guicutthroughRW;
@@ -105,6 +110,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
     private final DataObjectAcessorStatus readStatus;
     private final HtDatabaseEventsService databaseService;
     private final HtDatabaseMaintenanceService databaseMaintenanceService;
+    private final HtUserdataManager usermanager;
 
     private final HtDatabaseMediatorserver dbMediatorServerService = new HtDatabaseMediatorserver() {
 
@@ -113,6 +119,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
             return new ArrayList<>(ElasticSearchDataProvider.this.mediatorserverRW.doReadAll().getHits());
         }
     };
+
 
     @Override
     public HtDatabaseClient getRawClient() {
@@ -163,6 +170,10 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data.class,
                 doFullsizeRequests);
 
+        this.eventRWCMLog = new DataObjectAcessorWithId<>(dbClient, Entity.Cmlog,
+                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data.class,
+                doFullsizeRequests);
+
         this.connnectionlogRW = new DataObjectAcessorWithId<>(dbClient, Entity.Connectionlog,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data.class,
                 doFullsizeRequests);
@@ -188,6 +199,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
 
         this.databaseService = new HtDatabaseEventsService(dbClient, this);
         this.databaseMaintenanceService = new HtDatabaseMaintenanceService(dbClient);
+        this.usermanager = new HtUserdataManagerImpl(this.dbClient);
     }
 
     /*-------------------------
@@ -220,6 +232,19 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
                         result.getPagination()).build());
         return outputBuilder;
     }
+
+    @Override
+    public ReadCmlogListOutputBuilder readCMLogList(EntityInput input) {
+        ReadCmlogListOutputBuilder outputBuilder = new ReadCmlogListOutputBuilder();
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data> result =
+                this.eventRWCMLog.getData(input);
+        outputBuilder.setData(result.getResult().getHits());
+        outputBuilder.setPagination(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.PaginationBuilder(
+                        result.getPagination()).build());
+        return outputBuilder;
+    }
+
 
     @Override
     public ReadMaintenanceListOutputBuilder readMaintenanceList(EntityInput input) {
@@ -393,7 +418,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
         }
         CreateNetworkElementConnectionOutputBuilder builder = new CreateNetworkElementConnectionOutputBuilder();
         builder.setId(id).setNodeId(input.getNodeId()).setHost(input.getHost()).setPort(input.getPort())
-                .setUsername(input.getUsername()).setPassword(input.getPassword()).setIsRequired(input.isIsRequired())
+                .setUsername(input.getUsername()).setPassword(input.getPassword()).setIsRequired(input.getIsRequired())
                 .setCoreModelCapability(input.getCoreModelCapability()).setDeviceType(input.getDeviceType());
         return builder;
     }
@@ -514,6 +539,11 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
     @Override
     public HtDatabaseMediatorserver getHtDatabaseMediatorServer() {
         return dbMediatorServerService;
+    }
+
+    @Override
+    public HtUserdataManager getUserManager() {
+        return this.usermanager;
     }
 
 

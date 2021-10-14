@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
@@ -33,6 +34,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificatio
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EventHandlingService;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
@@ -158,12 +160,16 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
                     .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
                     .child(Node.class, new NodeKey(nodeId)).augmentation(NetconfNode.class);
 
+            //Implicit close of try with resource is not handled correctly by underlying opendaylight NETCONF service
+            @NonNull
+            ReadTransaction readTransaction = this.dataBroker.newReadOnlyTransaction();
             try {
-                Optional<NetconfNode> onode =
-                        this.dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, iif).get();
-                return onode;
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.warn("problem requesting netconfnode again:", e);
+                return readTransaction.read(LogicalDatastoreType.CONFIGURATION, iif).get();
+            } catch (InterruptedException e) {
+                LOG.warn("InterruptedException occurred - problem requesting netconfnode again:", e);
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException e) {
+                LOG.warn("ExecutionException occurred - problem requesting netconfnode again:", e);
             }
         }
         return Optional.empty();
