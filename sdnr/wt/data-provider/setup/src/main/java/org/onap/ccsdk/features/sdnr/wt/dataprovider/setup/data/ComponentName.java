@@ -5,6 +5,8 @@
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,7 +31,7 @@ public enum ComponentName {
                             "inventorytoplevel"), MAINTENANCE("maintenance"), MEDIATOR_SERVER(
                                     "mediator-server"), REQUIRED_NETWORKELEMENT(
                                             "required-networkelement"), GUICUTTHROUGH(
-                                                    "guicutthrough"), USERDATA("userdata");
+                                                    "guicutthrough"), USERDATA("userdata"),CMLOG("cmlog");
 
     private final String value;
 

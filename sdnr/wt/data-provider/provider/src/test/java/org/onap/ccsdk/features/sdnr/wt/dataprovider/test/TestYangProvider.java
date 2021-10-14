@@ -54,6 +54,8 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangSchemaHt
 public class TestYangProvider {
 
     private static final String TESTPATH = "cache/schema/";
+    private static final String TESTPATH_BASE = "cache/";
+    private static final String TESTPATH_SEPERATE_1 = TESTPATH_BASE+"abc1/";
 
 
     @BeforeClass
@@ -76,7 +78,9 @@ public class TestYangProvider {
             new File(TESTPATH + new YangFilename("module4", "2010-05-01").getFilename()).createNewFile();
             new File(TESTPATH + new YangFilename("module5", "2010-01-11").getFilename()).createNewFile();
             new File(TESTPATH + new YangFilename("module6", "2010-01-01").getFilename()).createNewFile();
-        } catch (IOException | ParseException e) {
+            Files.createDirectories(new File(TESTPATH_SEPERATE_1).toPath(), attr);
+            new File(TESTPATH_SEPERATE_1 + new YangFilename("module7", "2011-01-01").getFilename()).createNewFile();
+            } catch (IOException | ParseException e) {
 
         }
     }
@@ -93,17 +97,18 @@ public class TestYangProvider {
 
     @Test
     public void testExisting() {
-        YangFileProvider provider = new YangFileProvider(TESTPATH);
+        YangFileProvider provider = new YangFileProvider(TESTPATH_BASE, TESTPATH);
         assertTrue(provider.hasFileForModule("module1", "2010-01-01"));
         assertTrue(provider.hasFileForModule("module2"));
         assertTrue(provider.hasFileForModule("module3"));
         assertFalse(provider.hasFileForModule("module5", "2010-01-01"));
+        assertTrue(provider.hasFileForModule("module7"));
     }
 
     @Test
     public void testRevision() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        YangFileProvider provider = new YangFileProvider(TESTPATH);
+        YangFileProvider provider = new YangFileProvider(TESTPATH_BASE, TESTPATH);
         YangFilename f1 = provider.getFileForModule("module1", "2010-01-01");
         assertEquals("module1", f1.getModule());
         assertEquals(sdf.parse("2010-01-01"), f1.getRevision());

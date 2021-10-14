@@ -27,6 +27,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -53,10 +55,12 @@ public class YangFileProvider {
     private static final int BUFFER_SIZE = 1024;
 
     private final Path mainSourcePath;
+    private final Path basePath;
     private final List<Path> additionalSources;
 
-    public YangFileProvider(String path) {
-        this.mainSourcePath = new File(path).toPath();
+    public YangFileProvider(String path, String primaryPath) {
+        this.mainSourcePath = new File(primaryPath).toPath();
+        this.basePath = new File(path).toPath();
         this.additionalSources = new ArrayList<>();
     }
 
@@ -83,7 +87,17 @@ public class YangFileProvider {
                 LOG.warn("unable to handle yangfile {}: {}", fn, e);
             }
         }
-
+        List<String> filesInSeperateSubfolders = this.getSubFolderYangfiles();
+        for (String file : filesInSeperateSubfolders) {
+            try {
+                yangfile = new YangFilename(file);
+                if (yangfile.getModule().equals(module)) {
+                    list.add(yangfile);
+                }
+            } catch (ParseException e) {
+                LOG.warn("unable to handle yangfile {}: {}", file, e);
+            }
+        }
         for (Path addPath : this.additionalSources) {
             files = addPath.toFile().list(yangFilenameFilter);
             for (String file : files) {
@@ -96,6 +110,30 @@ public class YangFileProvider {
                     LOG.warn("unable to handle yangfile {}: {}", file, e);
                 }
             }
+        }
+        return list;
+    }
+
+    private List<String> getSubFolderYangfiles() {
+
+        return this.getSubFolderYangfiles(new ArrayList<>(), this.basePath);
+    }
+
+    private List<String> getSubFolderYangfiles(List<String> list, Path root) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
+            for (Path path : stream) {
+                if (path.toFile().isDirectory()) {
+                    this.getSubFolderYangfiles(list, path);
+                } else {
+
+                    if (yangFilenameFilter.accept(root.toFile(), path.toString())) {
+                        list.add(path.toAbsolutePath().toString());
+                    }
+
+                }
+            }
+        } catch (IOException e) {
+            LOG.warn("unable to scan directory {} for yang files", root);
         }
         return list;
     }
@@ -201,5 +239,4 @@ public class YangFileProvider {
     public boolean hasFileOrNewerForModule(String module, String version) throws ParseException {
         return this.getYangFile(module, version) != null;
     }
-
 }

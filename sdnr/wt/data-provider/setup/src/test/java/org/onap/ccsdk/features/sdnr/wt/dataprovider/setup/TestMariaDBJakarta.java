@@ -34,7 +34,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
 import ch.vorburger.exec.ManagedProcessException;
 
-public class TestMariaDBIstanbul {
+public class TestMariaDBJakarta {
 
     private static final String MARIADB_USERNAME = "sdnrdb";
     private static final String MARIADB_PASSWORD = "sdnrdb";
@@ -78,7 +78,7 @@ public class TestMariaDBIstanbul {
             e.printStackTrace();
             fail(e.getMessage());
         }
-        boolean success = provider.initDatabase(Release.ISTANBUL_R1, 1, 1, "", false, 1000);
+        boolean success = provider.initDatabase(Release.JAKARTA_R1, 1, 1, "", false, 1000);
         assertTrue("init database failed",success);
         try {
             dbProvider.setControllerId();
