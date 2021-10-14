@@ -5,6 +5,8 @@
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -126,7 +128,15 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
     private static final String TABLEMAPPING_USERDATA_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
             + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n" + "`value` JSON ,\n"
             + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
-
+    private static final String TABLEMAPPING_CMLOG_FORMAT = "`id` int(11) NOT NULL AUTO_INCREMENT,\n"
+            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n"
+            + "`source-type` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`object-id` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            + "`timestamp` DATETIME(3) ,\n" + "`timestamp-tz` " + String.format(TIMEZONE_TYPE_FORMAT, "timestamp-tz")
+            + " ,\n" + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`counter` INTEGER ,\n"
+            + "`notification-type` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`notification-id` VARCHAR(40) CHARACTER SET utf8 ,\n"
+            + "`source-indicator` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`path` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            + "`operation` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`value` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            + "primary key(id)";
 
     public IstanbulReleaseInformation() {
         super(Release.ISTANBUL_R1, createDBMap(), createMariaDBMap(Release.ISTANBUL_R1.getDBSuffix()));
@@ -155,6 +165,8 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
         map.put(ComponentName.REQUIRED_NETWORKELEMENT,
                 new MariaDBTableInfo(Entity.NetworkelementConnection.getName(), TABLEMAPPING_NETWORKELEMENT_FORMAT));
         map.put(ComponentName.USERDATA, new MariaDBTableInfo(Entity.Userdata.getName(), TABLEMAPPING_USERDATA_FORMAT));
+        map.put(ComponentName.CMLOG,
+            new MariaDBTableInfo(Entity.Cmlog.getName(), TABLEMAPPING_CMLOG_FORMAT));
         return map;
     }
 
@@ -169,6 +181,13 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
                         + "\"device-function\": {\"type\": \"keyword\"},\"is-required\": {\"type\": \"boolean\"},"
                         + "\"status\": {\"type\": \"keyword\"},\"tls-key\": {\"type\": \"keyword\"},"
                         + "\"mount-method\": {\"type\":\"keyword\"}}"));
+        map.put(ComponentName.CMLOG, new DatabaseInfo7("cmlog", "cmlog",
+                "{\"node-id\": {\"type\": \"keyword\"},\"counter\": {\"type\": \"long\"},"
+                        + "\"notification-id\": {\"type\": \"date\"},\"notification-type\": {\"type\": \"keyword\"},"
+                        + "\"object-id\": {\"type\": \"long\"},\"operation\":{\"type\": \"keyword\"},"
+                        + "\"path\": {\"type\": \"long\"},\"source-indicator\":{\"type\": \"keyword\"},"
+                        + "\"source-type\": {\"type\": \"long\"},\"timestamp\":{\"type\": \"keyword\"},"
+                        + "\"value\":{\"type\": \"keyword\"}}"));
         return map;
     }
 

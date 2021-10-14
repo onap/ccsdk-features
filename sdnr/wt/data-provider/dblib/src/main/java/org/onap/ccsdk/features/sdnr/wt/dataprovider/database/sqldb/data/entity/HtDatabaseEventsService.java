@@ -5,6 +5,8 @@
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,6 +39,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlD
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
@@ -73,6 +76,7 @@ public class HtDatabaseEventsService implements DataProvider {
     protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data> networkelementConnectionRW;
     protected final SqlDBReaderWriterPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> pm15mRW;
     protected final SqlDBReaderWriterPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data> pm24hRW;
+    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data> eventRWCMLog;
     protected final String controllerTableName;
 
     public HtDatabaseEventsService(SqlDBConfig config) {
@@ -114,8 +118,12 @@ public class HtDatabaseEventsService implements DataProvider {
                 this.dbClient.getDatabaseName(), this.controllerId);
 
         this.pm24hRW = new SqlDBReaderWriterPm<>(dbClient, Entity.Historicalperformance24h, config.getDbSuffix(),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
+
+        this.eventRWCMLog = new SqlDBReaderWriter<>(dbClient, Entity.Cmlog, config.getDbSuffix(),
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
 
     }
 
@@ -133,6 +141,11 @@ public class HtDatabaseEventsService implements DataProvider {
     @Override
     public void writeFaultLog(FaultlogEntity fault) {
         this.eventRWFaultLog.write(fault, fault.getId());
+    }
+
+    @Override
+    public void writeCMLog(CmlogEntity cm) {
+        this.eventRWCMLog.write(cm, cm.getId());
     }
 
     @Override
@@ -220,6 +233,7 @@ public class HtDatabaseEventsService implements DataProvider {
 
         removed += this.eventlogRW.remove(filter);
         removed += this.eventRWFaultLog.remove(filter);
+        removed += this.eventRWCMLog.remove(filter);
         return removed;
     }
 
