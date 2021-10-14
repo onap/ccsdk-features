@@ -22,8 +22,10 @@ module devicemanager {
 
      Copyright 2019 highstreet technologies GmbH Intellectual Property.
      All rights reserved.
+     Update Copyright 2021 Samsung Electronics Intellectual Property.
+     All rights reserved.
 
-     Licensed under the Apache License, Version 2.0 (the 'License');
+     Licensed under the Apache License, Version 2.0 (the 'License');Ffaul
      you may not use this file except in compliance with the License.
      You may obtain a copy of the License at
 
@@ -310,6 +312,15 @@ module devicemanager {
     input {
       uses data-provider:object-change-reference;
       uses data-provider:fault;
+    }
+  }
+
+  rpc push-cm-notification {
+    description
+      "Forward CM notification";
+    input {
+      uses data-provider:object-change-reference;
+      uses data-provider:cm;
     }
   }
 

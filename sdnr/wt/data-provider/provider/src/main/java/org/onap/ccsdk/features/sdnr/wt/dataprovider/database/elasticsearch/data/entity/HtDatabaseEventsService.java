@@ -5,6 +5,8 @@
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +21,7 @@
  * ============LICENSE_END=========================================================
  *
  */
+
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity;
 
 import java.util.ArrayList;
@@ -44,6 +47,8 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
@@ -87,6 +92,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     private EsDataObjectReaderWriter2<InventoryEntity> eventRWEquipment;
     private EsDataObjectReaderWriter2<FaultcurrentEntity> eventRWFaultCurrentDB;
     private EsDataObjectReaderWriter2<FaultlogEntity> eventRWFaultLogDB;
+    private EsDataObjectReaderWriter2<CmlogEntity> eventRWFCMLogDB;
     private EsDataObjectReaderWriter2<ConnectionlogEntity> eventRWConnectionLogDB;
     private final EsDataObjectReaderWriter2<NetworkElementConnectionEntity> networkelementConnectionDB;
     private final EsDataObjectReaderWriter2<GuicutthroughEntity> guiCutThroughDB;
@@ -98,7 +104,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     // --- Construct and initialize
 
     public HtDatabaseEventsService(HtDatabaseClient client, DatabaseDataProvider elasticSearchDataProvider)
-            throws Exception {
+        throws Exception {
 
         LOG.info("Create {} start", HtDatabaseEventsService.class);
         this.dataProvider = elasticSearchDataProvider;
@@ -108,39 +114,42 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
             this.client = client;
 
             eventRWEventLogDevicemanager = new EsDataObjectReaderWriter2<>(client, Entity.Eventlog,
-                    EventlogEntity.class, EventlogBuilder.class);
+                EventlogEntity.class, EventlogBuilder.class);
 
             eventRWEquipment = new EsDataObjectReaderWriter2<>(client, Entity.Inventoryequipment, InventoryEntity.class,
-                    InventoryBuilder.class);
+                InventoryBuilder.class);
 
             eventRWFaultCurrentDB = new EsDataObjectReaderWriter2<>(client, Entity.Faultcurrent,
-                    FaultcurrentEntity.class, FaultcurrentBuilder.class);
+                FaultcurrentEntity.class, FaultcurrentBuilder.class);
 
             eventRWFaultLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Faultlog, FaultlogEntity.class,
-                    FaultlogBuilder.class);
+                FaultlogBuilder.class);
+
+            eventRWFCMLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Cmlog, CmlogEntity.class,
+                CmlogBuilder.class);
 
             eventRWConnectionLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Connectionlog,
-                    ConnectionlogEntity.class, ConnectionlogBuilder.class);
+                ConnectionlogEntity.class, ConnectionlogBuilder.class);
 
             networkelementConnectionDB = new EsDataObjectReaderWriter2<>(client, Entity.NetworkelementConnection,
-                    NetworkElementConnectionEntity.class, NetworkElementConnectionBuilder.class, true)
-                            .setEsIdAttributeName("_id");
+                NetworkElementConnectionEntity.class, NetworkElementConnectionBuilder.class, true)
+                .setEsIdAttributeName("_id");
 
             guiCutThroughDB = new EsDataObjectReaderWriter2<>(client, Entity.Guicutthrough, GuicutthroughEntity.class,
-                    GuicutthroughBuilder.class);
+                GuicutthroughBuilder.class);
 
             pmData15mDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance15min, PmdataEntity.class,
-                    PmdataEntityBuilder.class);
+                PmdataEntityBuilder.class);
 
             pmData24hDB = new EsDataObjectReaderWriter2<>(client, Entity.Historicalperformance24h, PmdataEntity.class,
-                    PmdataEntityBuilder.class);
+                PmdataEntityBuilder.class);
 
         } catch (Exception e) {
             LOG.error("Can not start database client. Exception: {}", e);
             throw new Exception("Can not start database client. Exception: {}", e);
         }
         LOG.info("Create {} finished. DB Service {} started.", HtDatabaseEventsService.class,
-                client != null ? "sucessfully" : "not");
+            client != null ? "sucessfully" : "not");
     }
 
     // --- Function
@@ -177,6 +186,18 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
         LOG.debug("Write fault to faultlog: {}", fault.toString());
         eventRWFaultLogDB.write(fault, null);
+    }
+
+    //-- CM log
+
+    @Override
+    public void writeCMLog(CmlogEntity cm) {
+        if (assertIfClientNull(cm)) {
+            return;
+        }
+
+        LOG.debug("Write CM to cmlog: {}", cm.toString());
+        eventRWFCMLogDB.write(cm, null);
     }
 
     // -- Fault current
@@ -239,7 +260,8 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
      * @return List of all mountpoint/node-names the had active alarms.
      */
     @Override
-    public @Nonnull List<String> getAllNodesWithCurrentAlarms() {
+    public @Nonnull
+    List<String> getAllNodesWithCurrentAlarms() {
         if (assertIfClientNull("No DB, can not delete for all nodes", null)) {
             return new ArrayList<>();
         }
@@ -305,7 +327,8 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         Map<String, Inventory> repairList = new HashMap<>();
         InventoryBuilder repairedItem;
         InventoryBuilder unboundItem = new InventoryBuilder().setNodeId(nodeId).setUuid(UNBOUND_INVENTORY_UUID)
-                .setTreeLevel(Uint32.valueOf(0));;
+            .setTreeLevel(Uint32.valueOf(0));
+        ;
         for (Inventory item : list) {
             repairedItem = new InventoryBuilder(item);
             // check for bad node-id
@@ -326,7 +349,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
                     // check non root elem and missing parent
                     if (item.getParentUuid() == null) {
                         failures.add(String.format("Non root level element (uuid=%s) has to have a parent element",
-                                item.getUuid()));
+                            item.getUuid()));
                         failCounter++;
                         repairedItem.setParentUuid(UNBOUND_INVENTORY_UUID);
                         repairList.put(unboundItem.getUuid(), unboundItem.build());
@@ -334,10 +357,10 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
                     // check that parent exists in list and is tree-level -1
                     else {
                         Optional<Inventory> parent =
-                                list.stream().filter(e -> item.getParentUuid().equals(e.getUuid())).findFirst();
+                            list.stream().filter(e -> item.getParentUuid().equals(e.getUuid())).findFirst();
                         if (parent.isEmpty()) {
                             failures.add(String.format("no parent found for uuid=%s with parent-uuid=%s",
-                                    item.getUuid(), item.getParentUuid()));
+                                item.getUuid(), item.getParentUuid()));
                             repairedItem.setParentUuid(UNBOUND_INVENTORY_UUID);
                             failCounter++;
                         }
@@ -345,9 +368,9 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
                 }
                 // check for duplicated uui
                 Optional<Inventory> duplicate = list
-                        .stream().filter(e -> !item.equals(e) && item.getUuid() != null
-                                && item.getUuid().equals(e.getUuid()) && repairList.containsKey(e.getUuid()))
-                        .findFirst();
+                    .stream().filter(e -> !item.equals(e) && item.getUuid() != null
+                        && item.getUuid().equals(e.getUuid()) && repairList.containsKey(e.getUuid()))
+                    .findFirst();
                 if (duplicate.isPresent()) {
                     failures.add(String.format("found duplicate uuid=%s", item.getUuid()));
                     failCounter++;
@@ -364,7 +387,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
         if (failures.size() > 0) {
             throw new DataInconsistencyException(new ArrayList<>(repairList.values()),
-                    "inventory list is not consistent;\n" + String.join("\n", failures));
+                "inventory list is not consistent;\n" + String.join("\n", failures));
         }
     }
 
@@ -373,13 +396,13 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     /**
      * join base with parameters of toJoin (only non null values)
      *
-     * @param base base object
+     * @param base   base object
      * @param toJoin object with new property values
      * @return new joined object
      */
     @SuppressWarnings("unused")
     private NetworkElementConnectionEntity joinNe(NetworkElementConnectionEntity base,
-            NetworkElementConnectionEntity toJoin) {
+                                                  NetworkElementConnectionEntity toJoin) {
         if (base == null) {
             return toJoin;
         }
@@ -417,13 +440,12 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     }
 
     /**
-     *
      * @param networkElementConnectionEntitiy to wirte to DB
-     * @param nodeId Id for this DB element
+     * @param nodeId                          Id for this DB element
      */
     @Override
     public boolean updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy,
-            String nodeId) {
+                                                     String nodeId) {
         return this.networkelementConnectionDB.update(networkElementConnectionEntitiy, nodeId) != null;
         // NetworkElementConnectionEntity e =
         // this.networkelementConnectionDB.read(nodeId);
@@ -435,14 +457,14 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
      * Update after new mountpoint registration
      *
      * @param networkElementConnectionEntitiy data
-     * @param nodeId of device (mountpoint name)
+     * @param nodeId                          of device (mountpoint name)
      */
     @Override
     public boolean updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy,
-            String nodeId) {
+                                             String nodeId) {
         LOG.info("update networkelement-connection for {} with data {}", nodeId, networkElementConnectionEntitiy);
         return this.networkelementConnectionDB.updateOrCreate(networkElementConnectionEntitiy, nodeId,
-                Arrays.asList("is-required", "username", "password")) != null;
+            Arrays.asList("is-required", "username", "password")) != null;
         // NetworkElementConnectionEntity e =
         // this.networkelementConnectionDB.read(nodeId);
         // this.networkelementConnectionDB.write(this.joinNe(e,
@@ -467,14 +489,14 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
             if (isRequired) {
                 LOG.debug("updating connection status for {} of required ne to disconnected", nodeId);
                 this.networkelementConnectionDB.update(new UpdateNetworkElementConnectionInputBuilder()
-                        .setStatus(ConnectionLogStatus.Disconnected).build(), nodeId);
+                    .setStatus(ConnectionLogStatus.Disconnected).build(), nodeId);
             } else {
                 LOG.debug("remove networkelement-connection for {} entry because of non-required", nodeId);
                 this.networkelementConnectionDB.remove(nodeId);
             }
         } else {
             LOG.warn("Unable to update connection-status. dbentry for {} not found in networkelement-connection",
-                    nodeId);
+                nodeId);
         }
     }
 
@@ -491,6 +513,10 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
         QueryBuilder queryFaultLog = EsFaultLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
         removed += eventRWFaultLogDB.remove(queryFaultLog);
+
+        QueryBuilder queryCMLog = EsCMLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
+        removed += eventRWFCMLogDB.remove(queryCMLog);
+
         return removed;
     }
 
@@ -505,6 +531,9 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
         QueryBuilder queryFaultLog = EsFaultLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
         numberOfElements += eventRWFaultLogDB.doReadAll(queryFaultLog).getTotal();
+
+       QueryBuilder queryCMLog = EsCMLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
+        numberOfElements += eventRWFCMLogDB.doReadAll(queryCMLog).getTotal();
 
         return numberOfElements;
     }
@@ -554,6 +583,18 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     }
 
     private static class EsFaultLogDevicemanager {
+        /**
+         * Get older Elements
+         *
+         * @param netconfTimeStamp to identify query elements older than this timestamp.
+         * @return QueryBuilder for related elements
+         */
+        public static QueryBuilder getQueryForTimeStamp(String netconfTimeStamp) {
+            return new RangeQueryBuilder("timestamp").lte(netconfTimeStamp);
+        }
+    }
+
+    private static class EsCMLogDevicemanager {
         /**
          * Get older Elements
          *

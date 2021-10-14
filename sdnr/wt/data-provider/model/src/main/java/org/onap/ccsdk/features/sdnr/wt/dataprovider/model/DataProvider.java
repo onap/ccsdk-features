@@ -4,6 +4,8 @@
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
@@ -15,10 +17,12 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
+
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentEntity;
@@ -37,6 +41,8 @@ public interface DataProvider extends ArchiveCleanProvider {
     void writeEventLog(EventlogEntity event);
 
     void writeFaultLog(FaultlogEntity fault);
+
+    void writeCMLog(CmlogEntity cm);
 
     void updateFaultCurrent(FaultcurrentEntity fault);
 
@@ -66,39 +72,38 @@ public interface DataProvider extends ArchiveCleanProvider {
 
     /**
      * write internal equipment to database
+     *
      * @param nodeId
      * @param internalEquipment with mandatory fields.
      */
     void writeInventory(String nodeId, List<Inventory> list);
 
     /**
-    * write GUI Cut through data to database
-    *
-    * @param gcData
-    */
+     * write GUI Cut through data to database
+     *
+     * @param gcData
+     */
     void writeGuiCutThroughData(Guicutthrough gcData, String nodeId);
 
     /**
-     *
      * @param nodeName
      * @return number of entries
      */
     public int clearGuiCutThroughEntriesOfNode(String nodeName);
 
     /**
-     *
      * @param networkElementConnectionEntitiy to wirte to DB
-     * @param nodeId Id for this DB element
+     * @param nodeId                          Id for this DB element
      * @return if succeeded
      */
     boolean updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy,
-            String nodeId);
+                                              String nodeId);
 
     /**
      * Update after new mountpoint registration
      *
      * @param networkElementConnectionEntitiy data
-     * @param nodeId of device (mountpoint name)
+     * @param nodeId                          of device (mountpoint name)
      * @return if succeeded
      */
     boolean updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy, String nodeId);

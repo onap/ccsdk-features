@@ -7,6 +7,8 @@
  * ================================================================================
  * Update Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,6 +31,8 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.PushNotifications;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.ProblemNotificationXml;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientInternal;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentBuilder;
@@ -41,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicema
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ProblemNotificationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushAttributeChangeNotificationInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushCmNotificationInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationInput;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.slf4j.Logger;
@@ -106,4 +111,14 @@ public class RpcPushNotificationsHandler implements PushNotifications {
         webSocketService.sendViaWebsockets(new NodeId(input.getNodeId()!=null?input.getNodeId():OWNKEYNAME), notification, ProblemNotification.QNAME, input.getTimestamp());
     }
 
+    @Override
+    public void pushCMNotification(PushCmNotificationInput input) {
+        LOG.debug("Got CM event {}", input);
+
+        CmlogBuilder cmlogBuilder = new CmlogBuilder();
+        cmlogBuilder.setSourceType(SourceType.Ves);
+        cmlogBuilder.fieldsFrom(input);
+        CmlogEntity cmlogEntity = cmlogBuilder.build();
+        databaseService.writeCMLog(cmlogEntity);
+    }
 }

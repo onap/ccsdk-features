@@ -5,6 +5,8 @@
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +21,7 @@
  * ============LICENSE_END=========================================================
  *
  */
+
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.entity;
 
 import java.sql.SQLException;
@@ -37,6 +40,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlD
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
@@ -60,19 +64,31 @@ import org.slf4j.LoggerFactory;
 public class HtDatabaseEventsService implements DataProvider {
     private static final Logger LOG = LoggerFactory.getLogger(HtDatabaseEventsService.class);
 
-    private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStampImpl.getConverter();;
+    private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStampImpl.getConverter();
+    ;
 
     protected final SqlDBClient dbClient;
     protected final String controllerId;
-    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data> connectionlogRW;
-    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data> eventlogRW;
-    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data> eventRWFaultLog;
-    protected final SqlDBReaderWriterFault<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data> eventRWFaultCurrent;
-    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data> equipmentRW;
-    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> guicutthroughRW;
-    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data> networkelementConnectionRW;
-    protected final SqlDBReaderWriterPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> pm15mRW;
-    protected final SqlDBReaderWriterPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data> pm24hRW;
+    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data>
+        connectionlogRW;
+    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data>
+        eventlogRW;
+    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data>
+        eventRWFaultLog;
+    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data>
+        eventRWCMLog;
+    protected final SqlDBReaderWriterFault<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data>
+        eventRWFaultCurrent;
+    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data>
+        equipmentRW;
+    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data>
+        guicutthroughRW;
+    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data>
+        networkelementConnectionRW;
+    protected final SqlDBReaderWriterPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data>
+        pm15mRW;
+    protected final SqlDBReaderWriterPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data>
+        pm24hRW;
     protected final String controllerTableName;
 
     public HtDatabaseEventsService(SqlDBConfig config) {
@@ -84,38 +100,41 @@ public class HtDatabaseEventsService implements DataProvider {
         this.controllerTableName = SqlDBMapper.TABLENAME_CONTROLLER + config.getDbSuffix();
         this.dbClient = new SqlDBClient(config.getUrl(), config.getUsername(), config.getPassword());
         this.connectionlogRW = new SqlDBReaderWriter<>(dbClient, Entity.Connectionlog, config.getDbSuffix(),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
         this.eventlogRW = new SqlDBReaderWriter<>(dbClient, Entity.Eventlog, config.getDbSuffix(),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
         this.eventRWFaultLog = new SqlDBReaderWriter<>(dbClient, Entity.Faultlog, config.getDbSuffix(),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
+        this.eventRWCMLog = new SqlDBReaderWriter<>(dbClient, Entity.Cmlog, config.getDbSuffix(),
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
         this.eventRWFaultCurrent = new SqlDBReaderWriterFault<>(dbClient, Entity.Faultcurrent, config.getDbSuffix(),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
         this.equipmentRW = new SqlDBReaderWriter<>(dbClient, Entity.Inventoryequipment, config.getDbSuffix(),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
         this.guicutthroughRW = new SqlDBReaderWriter<>(dbClient,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity.Guicutthrough,
-                config.getDbSuffix(),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId).setWriteInterface(Guicutthrough.class);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity.Guicutthrough,
+            config.getDbSuffix(),
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId).setWriteInterface(Guicutthrough.class);
         this.networkelementConnectionRW = new SqlDBReaderWriter<>(dbClient, Entity.NetworkelementConnection,
-                config.getDbSuffix(),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+            config.getDbSuffix(),
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
         this.networkelementConnectionRW.setWriteInterface(NetworkElementConnectionEntity.class);
 
         this.pm15mRW = new SqlDBReaderWriterPm<>(dbClient, Entity.Historicalperformance15min, config.getDbSuffix(),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
 
         this.pm24hRW = new SqlDBReaderWriterPm<>(dbClient, Entity.Historicalperformance24h, config.getDbSuffix(),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data.class,
+            this.dbClient.getDatabaseName(), this.controllerId);
 
     }
 
@@ -133,6 +152,11 @@ public class HtDatabaseEventsService implements DataProvider {
     @Override
     public void writeFaultLog(FaultlogEntity fault) {
         this.eventRWFaultLog.write(fault, fault.getId());
+    }
+
+    @Override
+    public void writeCMLog(CmlogEntity cm) {
+        this.eventRWCMLog.write(cm, cm.getId());
     }
 
     @Override
@@ -154,14 +178,14 @@ public class HtDatabaseEventsService implements DataProvider {
     @Override
     public int clearFaultsCurrentOfNode(String nodeName) {
         return this.eventRWFaultCurrent
-                .remove(Arrays.asList(new FilterBuilder().setProperty("node-id").setFiltervalue(nodeName).build()));
+            .remove(Arrays.asList(new FilterBuilder().setProperty("node-id").setFiltervalue(nodeName).build()));
     }
 
     @Override
     public int clearFaultsCurrentOfNodeWithObjectId(String nodeName, String objectId) {
         return this.eventRWFaultCurrent
-                .remove(Arrays.asList(new FilterBuilder().setProperty("node-id").setFiltervalue(nodeName).build(),
-                        new FilterBuilder().setProperty("object-id").setFiltervalue(objectId).build()));
+            .remove(Arrays.asList(new FilterBuilder().setProperty("node-id").setFiltervalue(nodeName).build(),
+                new FilterBuilder().setProperty("object-id").setFiltervalue(objectId).build()));
     }
 
     @Override
@@ -173,8 +197,8 @@ public class HtDatabaseEventsService implements DataProvider {
     public void writeInventory(String nodeId, List<Inventory> list) {
         for (Inventory internalEquipment : list) {
             this.equipmentRW.updateOrInsert(internalEquipment,
-                    internalEquipment.getId() != null ? internalEquipment.getId()
-                            : DatabaseIdGenerator.getInventoryId(internalEquipment));
+                internalEquipment.getId() != null ? internalEquipment.getId()
+                    : DatabaseIdGenerator.getInventoryId(internalEquipment));
         }
     }
 
@@ -191,7 +215,7 @@ public class HtDatabaseEventsService implements DataProvider {
 
     @Override
     public boolean updateNetworkConnectionDeviceType(NetworkElementConnectionEntity networkElementConnectionEntitiy,
-            String nodeId) {
+                                                     String nodeId) {
         return this.networkelementConnectionRW.updateOrInsert(networkElementConnectionEntitiy, nodeId) != null;
     }
 
@@ -211,10 +235,10 @@ public class HtDatabaseEventsService implements DataProvider {
         String netconfTimeStamp = NETCONFTIME_CONVERTER.getTimeStampAsNetconfString(olderAreOutdated);
         List<Filter> filter = new ArrayList<>();
         filter.add(new FilterBuilder().setProperty("timestamp").setFiltervalue(String.format("<%s", netconfTimeStamp))
-                .build());
+            .build());
         if (this.controllerId != null) {
             filter.add(
-                    new FilterBuilder().setProperty(SqlDBMapper.ODLID_DBCOL).setFiltervalue(this.controllerId).build());
+                new FilterBuilder().setProperty(SqlDBMapper.ODLID_DBCOL).setFiltervalue(this.controllerId).build());
         }
         int removed = 0;
 
@@ -243,8 +267,8 @@ public class HtDatabaseEventsService implements DataProvider {
     public void doWritePerformanceData(List<PmdataEntity> list) {
         list.stream().forEach((pmData) -> {
             GranularityPeriodType granularityPeriod =
-                    pmData.getGranularityPeriod() != null ? pmData.getGranularityPeriod()
-                            : GranularityPeriodType.Unknown;
+                pmData.getGranularityPeriod() != null ? pmData.getGranularityPeriod()
+                    : GranularityPeriodType.Unknown;
             switch (granularityPeriod) {
                 case Period15Min:
                     this.pm15mRW.write(pmData);

@@ -5,6 +5,8 @@
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +21,7 @@
  * ============LICENSE_END=========================================================
  *
  */
+
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.impl;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -64,6 +67,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListInput;
@@ -126,7 +131,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     private static final long DATABASE_TIMEOUT_MS = 120 * 1000L;
     private static final @NonNull InstanceIdentifier<Keystore> KEYSTORE_IIF = InstanceIdentifier.create(Keystore.class);
     private static final Pagination EMPTY_PAGINATION = new PaginationBuilder().setSize(Uint32.valueOf(20))
-            .setTotal(Uint64.valueOf(0)).setPage(Uint64.valueOf(1)).build();
+        .setTotal(Uint64.valueOf(0)).setPage(Uint64.valueOf(1)).build();
     private static final long DEFAULT_PAGESIZE = 20;
     private static final long DEFAULT_PAGE = 1;
 
@@ -139,7 +144,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     private final MsServlet mediatorServerServlet;
 
     public DataProviderServiceImpl(final RpcProviderService rpcProviderService, MsServlet mediatorServerServlet,
-            DataBroker dataBroker) throws Exception {
+                                   DataBroker dataBroker) throws Exception {
         this.configuration = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
         this.dbConfig = new DataProviderConfig(configuration);
         this.dataBroker = dataBroker;
@@ -197,10 +202,10 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     @Override
     public ListenableFuture<RpcResult<ReadFaultcurrentListOutput>> readFaultcurrentList(
-            ReadFaultcurrentListInput input) {
+        ReadFaultcurrentListInput input) {
         LOG.debug("RPC Request: readFaultCurrentList with input {}", input);
         RpcResultBuilder<ReadFaultcurrentListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readFaultCurrentList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readFaultCurrentList(input));
         return result.buildFuture();
     }
 
@@ -208,7 +213,15 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<ReadFaultlogListOutput>> readFaultlogList(ReadFaultlogListInput input) {
         LOG.debug("RPC Request: readFaultlogList with input {}", input);
         RpcResultBuilder<ReadFaultlogListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readFaultLogList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readFaultLogList(input));
+        return result.buildFuture();
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<ReadCmlogListOutput>> readCmlogList(ReadCmlogListInput input) {
+        LOG.debug("RPC Request: readCMlogList with input {}", input);
+        RpcResultBuilder<ReadCmlogListOutput> result =
+            read(() -> DataProviderServiceImpl.this.dataProvider.readCMLogList(input));
         return result.buildFuture();
     }
 
@@ -216,25 +229,25 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<ReadMaintenanceListOutput>> readMaintenanceList(ReadMaintenanceListInput input) {
         LOG.debug("RPC Request: readMaintenanceList with input {}", input);
         RpcResultBuilder<ReadMaintenanceListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readMaintenanceList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readMaintenanceList(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<ReadMediatorServerListOutput>> readMediatorServerList(
-            ReadMediatorServerListInput input) {
+        ReadMediatorServerListInput input) {
         LOG.debug("RPC Request: readMediatorServerList with input {}", input);
         RpcResultBuilder<ReadMediatorServerListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readMediatorServerList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readMediatorServerList(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<ReadNetworkElementConnectionListOutput>> readNetworkElementConnectionList(
-            ReadNetworkElementConnectionListInput input) {
+        ReadNetworkElementConnectionListInput input) {
         LOG.debug("RPC Request: readNetworkElementConnectionList with input {}", input);
         RpcResultBuilder<ReadNetworkElementConnectionListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readNetworkElementConnectionList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readNetworkElementConnectionList(input));
         return result.buildFuture();
 
     }
@@ -243,7 +256,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<ReadPmdata15mListOutput>> readPmdata15mList(ReadPmdata15mListInput input) {
         LOG.debug("RPC Request: readPmdata15mList with input {}", input);
         RpcResultBuilder<ReadPmdata15mListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata15mList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata15mList(input));
         return result.buildFuture();
 
     }
@@ -252,7 +265,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<ReadPmdata24hListOutput>> readPmdata24hList(ReadPmdata24hListInput input) {
         LOG.debug("RPC Request: readPmdata24hList with input {}", input);
         RpcResultBuilder<ReadPmdata24hListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata24hList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata24hList(input));
         return result.buildFuture();
 
     }
@@ -269,98 +282,98 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<ReadInventoryListOutput>> readInventoryList(ReadInventoryListInput input) {
         LOG.debug("RPC Request: readInventoryList with input {}", input);
         RpcResultBuilder<ReadInventoryListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readInventoryList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readInventoryList(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<ReadPmdata15mLtpListOutput>> readPmdata15mLtpList(
-            ReadPmdata15mLtpListInput input) {
+        ReadPmdata15mLtpListInput input) {
         LOG.debug("RPC Request: readPmdata15mLtpList with input {}", input);
         RpcResultBuilder<ReadPmdata15mLtpListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata15mLtpList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata15mLtpList(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<ReadPmdata15mDeviceListOutput>> readPmdata15mDeviceList(
-            ReadPmdata15mDeviceListInput input) {
+        ReadPmdata15mDeviceListInput input) {
         LOG.debug("RPC Request: readPmdata15mDeviceList with input {}", input);
         RpcResultBuilder<ReadPmdata15mDeviceListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata15mDeviceList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata15mDeviceList(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<ReadPmdata24hLtpListOutput>> readPmdata24hLtpList(
-            ReadPmdata24hLtpListInput input) {
+        ReadPmdata24hLtpListInput input) {
         LOG.debug("RPC Request: readPmdata24hLtpList with input {}", input);
         RpcResultBuilder<ReadPmdata24hLtpListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata24hLtpList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata24hLtpList(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<ReadPmdata24hDeviceListOutput>> readPmdata24hDeviceList(
-            ReadPmdata24hDeviceListInput input) {
+        ReadPmdata24hDeviceListInput input) {
         LOG.debug("RPC Request: readPmdata24hDeviceList with input {}", input);
         RpcResultBuilder<ReadPmdata24hDeviceListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata24hDeviceList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readPmdata24hDeviceList(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<ReadConnectionlogListOutput>> readConnectionlogList(
-            ReadConnectionlogListInput input) {
+        ReadConnectionlogListInput input) {
         LOG.debug("RPC Request: readConnectionlogList with input {}", input);
         RpcResultBuilder<ReadConnectionlogListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readConnectionlogList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readConnectionlogList(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<CreateNetworkElementConnectionOutput>> createNetworkElementConnection(
-            CreateNetworkElementConnectionInput input) {
+        CreateNetworkElementConnectionInput input) {
         LOG.debug("RPC Request: createNetworkElementConnection with input {}", input);
         RpcResultBuilder<CreateNetworkElementConnectionOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.createNetworkElementConnection(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.createNetworkElementConnection(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<UpdateNetworkElementConnectionOutput>> updateNetworkElementConnection(
-            UpdateNetworkElementConnectionInput input) {
+        UpdateNetworkElementConnectionInput input) {
         LOG.debug("RPC Request: updateNetworkElementConnection with input {}", input);
         RpcResultBuilder<UpdateNetworkElementConnectionOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.updateNetworkElementConnection(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.updateNetworkElementConnection(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<DeleteNetworkElementConnectionOutput>> deleteNetworkElementConnection(
-            DeleteNetworkElementConnectionInput input) {
+        DeleteNetworkElementConnectionInput input) {
         LOG.debug("RPC Request: deleteNetworkElementConnection with input {}", input);
         RpcResultBuilder<DeleteNetworkElementConnectionOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.deleteNetworkElementConnection(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.deleteNetworkElementConnection(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<DeleteMediatorServerOutput>> deleteMediatorServer(
-            DeleteMediatorServerInput input) {
+        DeleteMediatorServerInput input) {
         LOG.debug("RPC Request: deleteMediatorServer with input {}", input);
         RpcResultBuilder<DeleteMediatorServerOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.deleteMediatorServer(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.deleteMediatorServer(input));
         this.sendResyncCallbackToApiGateway();
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<CreateMediatorServerOutput>> createMediatorServer(
-            CreateMediatorServerInput input) {
+        CreateMediatorServerInput input) {
         LOG.debug("RPC Request: createMediatorServer with input {}", input);
         RpcResultBuilder<CreateMediatorServerOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.createMediatorServer(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.createMediatorServer(input));
         this.sendResyncCallbackToApiGateway();
         return result.buildFuture();
     }
@@ -369,7 +382,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<CreateMaintenanceOutput>> createMaintenance(CreateMaintenanceInput input) {
         LOG.debug("RPC Request: createMaintenance with input {}", input);
         RpcResultBuilder<CreateMaintenanceOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.createMaintenance(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.createMaintenance(input));
         return result.buildFuture();
     }
 
@@ -377,16 +390,16 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<DeleteMaintenanceOutput>> deleteMaintenance(DeleteMaintenanceInput input) {
         LOG.debug("RPC Request: deleteMaintenance with input {}", input);
         RpcResultBuilder<DeleteMaintenanceOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.deleteMaintenance(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.deleteMaintenance(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<UpdateMediatorServerOutput>> updateMediatorServer(
-            UpdateMediatorServerInput input) {
+        UpdateMediatorServerInput input) {
         LOG.debug("RPC Request: updateMediatorServer with input {}", input);
         RpcResultBuilder<UpdateMediatorServerOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.updateMediatorServer(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.updateMediatorServer(input));
         this.sendResyncCallbackToApiGateway();
         return result.buildFuture();
     }
@@ -395,7 +408,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<UpdateMaintenanceOutput>> updateMaintenance(UpdateMaintenanceInput input) {
         LOG.debug("RPC Request: updateMaintenance with input {}", input);
         RpcResultBuilder<UpdateMaintenanceOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.updateMaintenance(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.updateMaintenance(input));
         return result.buildFuture();
     }
 
@@ -403,16 +416,16 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<ReadEventlogListOutput>> readEventlogList(ReadEventlogListInput input) {
         LOG.debug("RPC Request: readEventlogList with input {}", input);
         RpcResultBuilder<ReadEventlogListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readEventlogList(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readEventlogList(input));
         return result.buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<ReadGuiCutThroughEntryOutput>> readGuiCutThroughEntry(
-            ReadGuiCutThroughEntryInput input) {
+        ReadGuiCutThroughEntryInput input) {
         LOG.debug("RPC Request: getGuiCutThroughEntry with input {}", input);
         RpcResultBuilder<ReadGuiCutThroughEntryOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readGuiCutThroughEntry(input));
+            read(() -> DataProviderServiceImpl.this.dataProvider.readGuiCutThroughEntry(input));
         return result.buildFuture();
     }
 
@@ -445,18 +458,19 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         if (keyCredential == null) {
             return output.setData(Arrays.asList()).setPagination(EMPTY_PAGINATION);
         }
-        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Pagination pagination =
-                input.getPagination();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Pagination
+            pagination =
+            input.getPagination();
         long pageNum = pagination == null ? DEFAULT_PAGE
-                : pagination.getPage() == null ? DEFAULT_PAGE : pagination.getPage().longValue();
+            : pagination.getPage() == null ? DEFAULT_PAGE : pagination.getPage().longValue();
         long size = pagination == null ? DEFAULT_PAGESIZE
-                : pagination.getSize() == null ? DEFAULT_PAGESIZE : pagination.getSize().longValue();
+            : pagination.getSize() == null ? DEFAULT_PAGESIZE : pagination.getSize().longValue();
         long from = pageNum > 0 ? (pageNum - 1) * size : 0;
         output.setData(keyCredential.keySet().stream().skip(from).limit(size).map(e -> e.getKeyId())
-                .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
         output.setPagination(new PaginationBuilder().setPage(Uint64.valueOf(pageNum))
-                .setSize(Uint32.valueOf(output.getData().size())).setTotal(Uint64.valueOf(keyCredential.size()))
-                .build());
+            .setSize(Uint32.valueOf(output.getData().size())).setTotal(Uint64.valueOf(keyCredential.size()))
+            .build());
         return output;
     }
 
@@ -476,7 +490,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     }
 
     private static <O extends DataObject, I extends DataObject> RpcResultBuilder<O> read(
-            GetEntityInput<O> inputgetter) {
+        GetEntityInput<O> inputgetter) {
         RpcResultBuilder<O> result;
         try {
             Builder<O> outputBuilder = inputgetter.get();
@@ -492,7 +506,6 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public HtUserdataManager getHtDatabaseUserManager() {
         return this.dbUserManager;
     }
-
 
 
 }

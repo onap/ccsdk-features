@@ -5,6 +5,8 @@
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,9 +20,11 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
 import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -52,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicema
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.DevicemanagerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.GetRequiredNetworkElementKeysInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushAttributeChangeNotificationInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushCmNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ShowRequiredNetworkElementInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -82,13 +87,13 @@ public class TestDevicemanager extends Mockito {
         ListenerRegistration<NetconfNodeConnectListener> lr1 = mock(ListenerRegistration.class);
         //doNothing().when(lr1).close();
         when(netconfNodeStateService.registerNetconfNodeConnectListener(mock(NetconfNodeConnectListener.class)))
-                .thenReturn(lr1);
+            .thenReturn(lr1);
 
         @SuppressWarnings("unchecked")
         ListenerRegistration<NetconfNodeStateListener> lr2 = mock(ListenerRegistration.class);
         //doNothing().when(lr2).close();
         when(netconfNodeStateService.registerNetconfNodeStateListener(mock(NetconfNodeStateListener.class)))
-                .thenReturn(lr2);
+            .thenReturn(lr2);
 
         WebsocketManagerService websocketmanagerService = mock(WebsocketManagerService.class);
 
@@ -137,7 +142,7 @@ public class TestDevicemanager extends Mockito {
         n.creationNotification(new NodeId("NodeTest1"), 1, InternalDateAndTime.getTestpatternDateAndTime(), "ObjTest1");
 
         n.changeNotification(new NodeId("NodeTest1"), 2, InternalDateAndTime.getTestpatternDateAndTime(), "ObjTest1",
-                "AtrributeTest1", "NewTest1");
+            "AtrributeTest1", "NewTest1");
 
         n.deletionNotification(new NodeId("NodeTest1"), 3, InternalDateAndTime.getTestpatternDateAndTime(), "ObjTest1");
 
@@ -153,7 +158,7 @@ public class TestDevicemanager extends Mockito {
         FaultService n = deviceManager.getFaultService();
         FaultlogBuilder faultLogEntityBuilder = new FaultlogBuilder();
         n.faultNotification(faultLogEntityBuilder.setNodeId("node1").setSeverity(SeverityType.Critical)
-                .setTimestamp(NetconfTimeStampImpl.getTestpatternDateAndTime()).build());
+            .setTimestamp(NetconfTimeStampImpl.getTestpatternDateAndTime()).build());
 
     }
 
@@ -192,6 +197,17 @@ public class TestDevicemanager extends Mockito {
         inputBuilder.setNodeId("NodeTest23");
         inputBuilder.setTimestamp(new DateAndTime("2020-01-01T01:02:03.4Z"));
         apiService.pushFaultNotification(inputBuilder.build());
+
+    }
+
+    @Test
+    public void testPushCM() {
+        log.info("testPushCM");
+
+        PushCmNotificationInputBuilder inputBuilder = new PushCmNotificationInputBuilder();
+        inputBuilder.setNodeId("NodeTest1");
+        inputBuilder.setTimestamp(new DateAndTime("2021-01-01T01:02:03.4Z"));
+        apiService.pushCmNotification(inputBuilder.build());
 
     }
 
