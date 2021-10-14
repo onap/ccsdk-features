@@ -40,6 +40,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtRel
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin.GuilinReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.honolulu.HonoluluReleaseInformation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.istanbul.IstanbulReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.jakarta.JakartaReleaseInformation;
 
 public abstract class ReleaseInformation {
 
@@ -175,6 +176,8 @@ public abstract class ReleaseInformation {
                 return new HonoluluReleaseInformation();
             case ISTANBUL_R1:
                 return new IstanbulReleaseInformation();
+            case JAKARTA_R1:
+                return new JakartaReleaseInformation();
             default:
                 return null;
         }

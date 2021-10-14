@@ -120,7 +120,7 @@ public class AboutHttpServlet extends HttpServlet {
         final String mdsalVersion = SystemInfo.getMdSalVersion(UNKNOWN);
         this.data.put(PLACEHOLDER_ONAP_RELEASENAME, ODLVersionLUT.getONAPReleaseName(ccsdkVersion, UNKNOWN));
         this.data.put(PLACEHOLDER_ODL_RELEASENAME, ODLVersionLUT.getOdlVersion(mdsalVersion, UNKNOWN));
-        this.data.put(PLACEHOLDER_BUILD_TIMESTAMP, props != null ? props.getBuildDate().toString() : "");
+        this.data.put(PLACEHOLDER_BUILD_TIMESTAMP, props != null ? String.valueOf(props.getBuildDate()) : "");
         this.data.put(PLACEHOLDER_PACAKGE_VERSION, this.getManifestValue("Bundle-Version"));
         this.data.put(PLACEHOLDER_CCSDK_VERSION, ccsdkVersion);
         this.data.put(PLACEHOLDER_ONAP_RELEASEVERSION, SystemInfo.getOnapVersion(UNKNOWN));

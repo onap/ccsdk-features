@@ -5,6 +5,8 @@
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -64,6 +66,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListInput;
@@ -146,12 +150,12 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         this.mediatorServerServlet = mediatorServerServlet;
         if (this.dbConfig.getDbType() == SdnrDbType.ELASTICSEARCH) {
             this.dataProvider = new ElasticSearchDataProvider(this.dbConfig.getEsConfig());
-        } else {
+         } else {
             this.dataProvider = new SqlDBDataProvider(this.dbConfig.getMariadbConfig());
         }
+        this.dbUserManager = this.dataProvider.getUserManager();
         this.dataProvider.waitForYellowDatabaseStatus(DATABASE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         mediatorServerServlet.setDataProvider(this.dataProvider.getHtDatabaseMediatorServer());
-        this.dbUserManager = new HtUserdataManagerImpl(this.dataProvider.getRawClient());
         // Register ourselves as the REST API RPC implementation
         LOG.info("Register RPC Service {}", DataProviderServiceImpl.class.getSimpleName());
         this.rpcReg = rpcProviderService.registerRpcImplementation(DataProviderService.class, this);
@@ -209,6 +213,14 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         LOG.debug("RPC Request: readFaultlogList with input {}", input);
         RpcResultBuilder<ReadFaultlogListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readFaultLogList(input));
+        return result.buildFuture();
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<ReadCmlogListOutput>> readCmlogList(ReadCmlogListInput input) {
+        LOG.debug("RPC Request: readCMlogList with input {}", input);
+        RpcResultBuilder<ReadCmlogListOutput> result =
+                read(() -> DataProviderServiceImpl.this.dataProvider.readCMLogList(input));
         return result.buildFuture();
     }
 
@@ -427,7 +439,9 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     private ReadTlsKeyEntryOutputBuilder readTlsKeys(ReadTlsKeyEntryInput input) {
         Optional<Keystore> result = Optional.empty();
-        try (ReadTransaction transaction = this.dataBroker.newReadOnlyTransaction()) {
+        // The implicite close is not handled correctly by underlaying opendaylight netconf service
+        ReadTransaction transaction = this.dataBroker.newReadOnlyTransaction();
+        try {
             result = transaction.read(LogicalDatastoreType.CONFIGURATION, KEYSTORE_IIF).get();
         } catch (ExecutionException e) {
             LOG.warn("problem reading netconf-keystore: ", e);

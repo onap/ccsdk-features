@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
@@ -35,8 +36,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Pagination;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Sortorder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.SortorderKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SelectQuery implements SqlQuery {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SelectQuery.class);
 
     private static final long DEFAULT_PAGESIZE = 20;
     private static final long DEFAULT_PAGE = 1;
@@ -78,7 +83,7 @@ public class SelectQuery implements SqlQuery {
         Map<FilterKey, Filter> filter = input != null ? input.getFilter() : null;
         if (filter != null && filter.size() > 0) {
             for (Filter f : filter.values()) {
-                this.addFilter(f.getProperty(), f.getFiltervalue());
+                this.addFilter(f);
             }
         }
         if (controllerId != null) {
@@ -101,8 +106,35 @@ public class SelectQuery implements SqlQuery {
     }
 
     public void addFilter(String property, String filtervalue) {
-        this.filters.add(new FilterBuilder().setProperty(property).setFiltervalue(filtervalue).build());
+        this.addFilter(new FilterBuilder().setProperty(property).setFiltervalue(filtervalue).build());
+    }
 
+    private static Filter cleanFilter(Filter filter) {
+        if (filter.getFiltervalue() != null
+                && (filter.getFiltervalues() == null || filter.getFiltervalues().isEmpty())) {
+            return "*".equals(filter.getFiltervalue()) ? null : filter;
+        } else {
+            List<String> list = new ArrayList<>(filter.getFiltervalues());
+            if (filter.getFiltervalue() != null && !filter.getFiltervalue().isEmpty()) {
+                list.add(filter.getFiltervalue());
+            }
+            if (list.size() == 1 && "*".equals(list.get(0))) {
+                return null;
+            } ;
+            return new FilterBuilder().setProperty(filter.getProperty()).setFiltervalue(filter.getFiltervalue())
+                    .setFiltervalues(
+                            filter.getFiltervalues().stream().filter(e -> !"*".equals(e)).collect(Collectors.toList()))
+                    .build();
+        }
+    }
+
+    public void addFilter(Filter filter) {
+        Filter tmp = cleanFilter(filter);
+        if (tmp == null) {
+            LOG.debug("ignore unneccessary filter for {}", filter);
+        } else {
+            this.filters.add(tmp);
+        }
     }
 
     public void addSortOrder(String col, String order) {

@@ -17,15 +17,13 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalSeverity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Fault;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentEntity;
 
 public class FaultEntityManager {
 
-    private static final Pattern pattern = Pattern.compile(".*\\[layerProtocol=(.*)\\]");
+    private static final String FAULT_TAG = "[layerProtocol=";
 
     /**
      * The leading indication for notification or events that are not in the currentProblem data of the ONF Coremodel
@@ -34,7 +32,7 @@ public class FaultEntityManager {
 
     /**
      * Specific problems are not moving into current problem list
-     * 
+     *
      * @param problemName to be verified
      * @return true if problem is current
      */
@@ -48,7 +46,7 @@ public class FaultEntityManager {
 
     /**
      * Specific problems are not moving into current problem list
-     * 
+     *
      * @param fault to be verified
      * @return true if cleared indication
      */
@@ -59,16 +57,15 @@ public class FaultEntityManager {
 
     /**
      * Create a specific ES id for the current log.
-     * 
+     *
      * @return a string with the generated ES Id
      */
     public static String genSpecificEsId(String nodeName, String objectId, String problemName) {
 
         String uuId;
 
-        Matcher matcher = pattern.matcher(objectId);
-        if (matcher.matches() && matcher.groupCount() == 1) {
-            uuId = matcher.group(1);
+        if (objectId.endsWith("]") && objectId.contains(FAULT_TAG)) {
+            uuId = objectId.substring(objectId.indexOf(FAULT_TAG) + FAULT_TAG.length(), objectId.length()-1);
         } else {
             uuId = objectId;
         }
@@ -84,7 +81,7 @@ public class FaultEntityManager {
 
     /**
      * Create Es id
-     * 
+     *
      * @param fault used to create uuid for faultcurrent
      * @return String with Id
      */
