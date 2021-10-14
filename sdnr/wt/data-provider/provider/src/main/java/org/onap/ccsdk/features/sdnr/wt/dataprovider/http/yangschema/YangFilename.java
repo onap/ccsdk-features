@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class YangFilename {
 
-    private static final String REGEX = "([^\\/]*)@([0-9]{4}-[0-9]{2}-[0-9]{2}).yang";
+    private static final String REGEX = "([^\\/]{1,2048})@([0-9]{4}-[0-9]{2}-[0-9]{2}).yang";
     private static final Pattern pattern = Pattern.compile(REGEX, Pattern.MULTILINE);
     private final String filename;
     private final Matcher matcher;

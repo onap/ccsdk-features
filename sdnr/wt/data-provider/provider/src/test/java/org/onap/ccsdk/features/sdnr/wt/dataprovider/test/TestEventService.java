@@ -5,6 +5,8 @@
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,12 +40,18 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity.FaultEntityManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity.HtDatabaseEventsService;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmNotificationType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmOperation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmSourceIndicator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
@@ -77,6 +85,7 @@ public class TestEventService {
 
     private static final String NODEID = "node1";
     private static final String NODEID2 = "node2";
+    private static final String NODEID3 = "node3";
     private static final String OBJECTREFID1 = "objid1";
     private static final String OBJECTREFID2 = "objid2";
 
@@ -122,6 +131,19 @@ public class TestEventService {
         assertTrue(nodeIds.size() == 1);
     }
 
+
+    @Test
+    public void testGenSpecificEsId() {
+        String objectRefOld = FaultEntityManager.genSpecificEsId(createFault(NODEID, "[layerProtocol="+OBJECTREFID1+"]", "abc", SeverityType.Major));
+        assertEquals(String.format("%s/%s/%s", NODEID, OBJECTREFID1, "abc"), objectRefOld);
+        String objectRefOld2 = FaultEntityManager.genSpecificEsId(createFault(NODEID2, "[layerProtocol="+OBJECTREFID2+"]", "abcde", SeverityType.Major));
+        assertEquals(String.format("%s/%s/%s", NODEID2, OBJECTREFID2, "abcde"), objectRefOld2);
+        String objectRef = FaultEntityManager.genSpecificEsId(createFault(NODEID, OBJECTREFID1, "abc", SeverityType.Major));
+        assertEquals(String.format("%s/%s/%s", NODEID, OBJECTREFID1, "abc"), objectRef);
+        String objectRef2 = FaultEntityManager.genSpecificEsId(createFault(NODEID2, OBJECTREFID2, "abcde", SeverityType.Major));
+        assertEquals(String.format("%s/%s/%s", NODEID2, OBJECTREFID2, "abcde"), objectRef2);
+    }
+
     private static FaultcurrentEntity createFault(String nodeId, String objectRefId, String problem,
             SeverityType severity) {
         return createFault(nodeId, objectRefId, problem, severity, NetconfTimeStampImpl.getConverter().getTimeStamp());
@@ -146,6 +168,7 @@ public class TestEventService {
         service.doIndexClean(now);
         clearDbEntity(Entity.Eventlog);
         clearDbEntity(Entity.Faultlog);
+        clearDbEntity(Entity.Cmlog);
         TestCRUDforDatabase.trySleep(1000);
         service.writeEventLog(createEventLog(NODEID, OBJECTREFID1, "aaa", "abc", 1));
         service.writeEventLog(createEventLog(NODEID, OBJECTREFID1, "aaa", "avasvas", 2));
@@ -153,19 +176,27 @@ public class TestEventService {
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.Major, 1));
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.NonAlarmed, 2));
         service.writeFaultLog(createFaultLog(NODEID2, OBJECTREFID2, "problem", SeverityType.Major, 1));
+
+        service.writeCMLog(createCMLog(NODEID3, 1, CmNotificationType.NotifyMOIChanges,
+            "1", CmSourceIndicator.MANAGEMENTOPERATION, CmOperation.CREATE, "value"));
+
         TestCRUDforDatabase.trySleep(100);
         now = new Date();
         long numOlds = service.getNumberOfOldObjects(now);
-        assertEquals(5, numOlds);
+        assertEquals(6, numOlds);
         TestCRUDforDatabase.trySleep(100);
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.Major, 3));
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.NonAlarmed, 5));
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.Major, 6));
+
+        service.writeCMLog(createCMLog(NODEID3, 2, CmNotificationType.NotifyMOIChanges,
+            "2", CmSourceIndicator.SONOPERATION, CmOperation.REPLACE, "value2"));
+
         numOlds = service.getNumberOfOldObjects(now);
-        assertEquals(5, numOlds);
+        assertEquals(6, numOlds);
         now = new Date();
         numOlds = service.getNumberOfOldObjects(now);
-        assertEquals(8, numOlds);
+        assertEquals(10, numOlds);
         service.doIndexClean(now);
         numOlds = service.getNumberOfOldObjects(now);
         assertEquals(0, numOlds);
@@ -288,6 +319,31 @@ public class TestEventService {
         return new NetworkElementConnectionBuilder().setNodeId(nodeId).setHost("host")
                 .setPort(YangHelper2.getLongOrUint32(1234L)).setCoreModelCapability("123")//.setMountMethod(mountMethod)
                 .setStatus(ConnectionLogStatus.Connected).setDeviceType(devType).setIsRequired(true).build();
+    }
+
+    /**
+     * @param nodeId
+     * @param counter
+     * @param notificationType
+     * @param notificationId
+     * @param sourceIndicator
+     * @param operation
+     * @param value
+     * @return
+     */
+    private static CmlogEntity createCMLog(String nodeId, int counter, CmNotificationType notificationType,
+                                           String notificationId, CmSourceIndicator sourceIndicator,
+                                           CmOperation operation, String value) {
+        return new CmlogBuilder()
+            .setNodeId(nodeId)
+            .setCounter(counter)
+            .setNotificationType(notificationType)
+            .setNotificationId(notificationId)
+            .setSourceIndicator(sourceIndicator)
+            .setOperation(operation)
+            .setValue(value)
+            .setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp())
+            .build();
     }
 
     /**

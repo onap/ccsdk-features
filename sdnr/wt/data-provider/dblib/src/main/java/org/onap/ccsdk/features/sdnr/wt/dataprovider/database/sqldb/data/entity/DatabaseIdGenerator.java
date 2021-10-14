@@ -60,7 +60,7 @@ public class DatabaseIdGenerator {
         return UUID.randomUUID().toString();
     }
 
-    public static String getFaultcurrentId(String nodeId, String objectId, String problemName) {
+    public static String extractUuid(String objectId) {
         String uuId;
 
         Matcher matcher = FAULTPATTERN.matcher(objectId);
@@ -69,6 +69,12 @@ public class DatabaseIdGenerator {
         } else {
             uuId = objectId;
         }
+        return uuId;
+    }
+
+    public static String getFaultcurrentId(String nodeId, String objectId, String problemName) {
+        String uuId = extractUuid(objectId);
+
         return String.format(FORMAT_FAULTDATA_ID, nodeId, uuId, problemName);
     }
 
