@@ -4,6 +4,8 @@
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
@@ -15,8 +17,10 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
+
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.housekeeping.ResyncNetworkElementsListener;
@@ -35,6 +39,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicema
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.GetRequiredNetworkElementKeysOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushAttributeChangeNotificationInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushAttributeChangeNotificationOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushCmNotificationInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushCmNotificationOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SetMaintenanceModeInput;
@@ -53,20 +59,22 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
 public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DevicemanagerService.class);
 
     private final ObjectRegistration<DevicemanagerService> rpcReg;
-    private @Nullable final MaintenanceRPCServiceAPI maintenanceService;
-    private @Nullable final PushNotifications pushNotificationsListener;
-    private @Nullable final ResyncNetworkElementsListener resyncCallbackListener;
+    private @Nullable
+    final MaintenanceRPCServiceAPI maintenanceService;
+    private @Nullable
+    final PushNotifications pushNotificationsListener;
+    private @Nullable
+    final ResyncNetworkElementsListener resyncCallbackListener;
 
     public DeviceManagerApiServiceImpl(final RpcProviderService rpcProviderRegistry,
-            MaintenanceServiceImpl maintenanceService, ResyncNetworkElementsListener listener,
-            PushNotifications pushNotificationsListener) {
+                                       MaintenanceServiceImpl maintenanceService,
+                                       ResyncNetworkElementsListener listener,
+                                       PushNotifications pushNotificationsListener) {
         this.maintenanceService = maintenanceService;
         this.pushNotificationsListener = pushNotificationsListener;
         this.resyncCallbackListener = listener;
@@ -90,7 +98,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
 
     @Override
     public ListenableFuture<RpcResult<GetRequiredNetworkElementKeysOutput>> getRequiredNetworkElementKeys(
-            GetRequiredNetworkElementKeysInput input) {
+        GetRequiredNetworkElementKeysInput input) {
         return getRequiredNetworkElementKeys();
     }
 
@@ -101,7 +109,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
         RpcResultBuilder<GetRequiredNetworkElementKeysOutput> result;
         try {
             GetRequiredNetworkElementKeysOutputBuilder outputBuilder =
-                    maintenanceService.getRequiredNetworkElementKeys();
+                maintenanceService.getRequiredNetworkElementKeys();
             result = RpcResultBuilder.success(outputBuilder);
         } catch (Exception e) {
             result = RpcResultBuilder.failed();
@@ -112,14 +120,14 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
 
     @Override
     public ListenableFuture<RpcResult<ShowRequiredNetworkElementOutput>> showRequiredNetworkElement(
-            ShowRequiredNetworkElementInput input) {
+        ShowRequiredNetworkElementInput input) {
 
         LOG.info("RPC Request: showRequiredNetworkElement input: {}", input.getMountpointName());
         RpcResultBuilder<ShowRequiredNetworkElementOutput> result;
 
         try {
             ShowRequiredNetworkElementOutputBuilder outputBuilder =
-                    maintenanceService.showRequiredNetworkElement(input);
+                maintenanceService.showRequiredNetworkElement(input);
             result = RpcResultBuilder.success(outputBuilder);
         } catch (Exception e) {
             result = RpcResultBuilder.failed();
@@ -144,7 +152,6 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
         return result.buildFuture();
 
     }
-
 
 
     @Override
@@ -183,13 +190,13 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
 
     @Override
     public ListenableFuture<RpcResult<ClearCurrentFaultByNodenameOutput>> clearCurrentFaultByNodename(
-            ClearCurrentFaultByNodenameInput input) {
+        ClearCurrentFaultByNodenameInput input) {
         LOG.info("RPC Request: clearNetworkElementAlarms input: {}", input.getNodenames());
         RpcResultBuilder<ClearCurrentFaultByNodenameOutput> result;
         try {
             if (this.resyncCallbackListener != null) {
                 List<String> nodeNames =
-                        this.resyncCallbackListener.doClearCurrentFaultByNodename(input.getNodenames());
+                    this.resyncCallbackListener.doClearCurrentFaultByNodename(input.getNodenames());
                 ClearCurrentFaultByNodenameOutputBuilder outputBuilder = new ClearCurrentFaultByNodenameOutputBuilder();
                 outputBuilder.setNodenames(nodeNames);
                 result = RpcResultBuilder.success(outputBuilder);
@@ -206,7 +213,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
 
     @Override
     public ListenableFuture<RpcResult<PushFaultNotificationOutput>> pushFaultNotification(
-            PushFaultNotificationInput input) {
+        PushFaultNotificationInput input) {
         LOG.info("RPC Received fault notification {}", input);
         RpcResultBuilder<PushFaultNotificationOutput> result;
         try {
@@ -220,8 +227,22 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
     }
 
     @Override
+    public ListenableFuture<RpcResult<PushCmNotificationOutput>> pushCmNotification(PushCmNotificationInput input) {
+        LOG.info("RPC Received CM notification {}", input);
+        RpcResultBuilder<PushCmNotificationOutput> result;
+        try {
+            pushNotificationsListener.pushCMNotification(input);
+            result = RpcResultBuilder.success();
+        } catch (Exception e) {
+            result = RpcResultBuilder.failed();
+            result.withError(ErrorType.APPLICATION, "Exception", e);
+        }
+        return result.buildFuture();
+    }
+
+    @Override
     public ListenableFuture<RpcResult<PushAttributeChangeNotificationOutput>> pushAttributeChangeNotification(
-            PushAttributeChangeNotificationInput input) {
+        PushAttributeChangeNotificationInput input) {
         LOG.info("RPC Received change notification {}", input);
         RpcResultBuilder<PushAttributeChangeNotificationOutput> result;
         try {
@@ -233,7 +254,6 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
         }
         return result.buildFuture();
     }
-
 
 
 }

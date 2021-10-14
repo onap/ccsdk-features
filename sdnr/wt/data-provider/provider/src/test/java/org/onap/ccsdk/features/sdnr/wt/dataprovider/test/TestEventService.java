@@ -5,6 +5,8 @@
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,11 +21,13 @@
  * ============LICENSE_END=========================================================
  *
  */
+
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
@@ -44,6 +48,11 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStamp
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmNotificationType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmOperation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmSourceIndicator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
@@ -68,7 +77,6 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * @author Michael Dürre
- *
  */
 public class TestEventService {
     private static DatabaseDataProvider dbProvider;
@@ -77,8 +85,10 @@ public class TestEventService {
 
     private static final String NODEID = "node1";
     private static final String NODEID2 = "node2";
+    private static final String NODEID3 = "node3";
     private static final String OBJECTREFID1 = "objid1";
     private static final String OBJECTREFID2 = "objid2";
+    private static final String OBJECTREFID3 = "objid3";
 
     @BeforeClass
     public static void init() throws Exception {
@@ -123,7 +133,7 @@ public class TestEventService {
     }
 
     private static FaultcurrentEntity createFault(String nodeId, String objectRefId, String problem,
-            SeverityType severity) {
+                                                  SeverityType severity) {
         return createFault(nodeId, objectRefId, problem, severity, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
@@ -135,9 +145,9 @@ public class TestEventService {
      * @return
      */
     private static FaultcurrentEntity createFault(String nodeId, String objectRefId, String problem,
-            SeverityType severity, DateAndTime ts) {
+                                                  SeverityType severity, DateAndTime ts) {
         return new FaultcurrentBuilder().setNodeId(nodeId).setObjectId(objectRefId).setTimestamp(ts)
-                .setSeverity(severity).setProblem(problem).build();
+            .setSeverity(severity).setProblem(problem).build();
     }
 
     @Test
@@ -146,6 +156,7 @@ public class TestEventService {
         service.doIndexClean(now);
         clearDbEntity(Entity.Eventlog);
         clearDbEntity(Entity.Faultlog);
+        clearDbEntity(Entity.Cmlog);
         TestCRUDforDatabase.trySleep(1000);
         service.writeEventLog(createEventLog(NODEID, OBJECTREFID1, "aaa", "abc", 1));
         service.writeEventLog(createEventLog(NODEID, OBJECTREFID1, "aaa", "avasvas", 2));
@@ -153,23 +164,30 @@ public class TestEventService {
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.Major, 1));
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.NonAlarmed, 2));
         service.writeFaultLog(createFaultLog(NODEID2, OBJECTREFID2, "problem", SeverityType.Major, 1));
+
+        service.writeCMLog(createCMLog(NODEID3, 1, CmNotificationType.NotifyMOIChanges,
+            "1", CmSourceIndicator.MANAGEMENTOPERATION, CmOperation.CREATE, "value"));
+
         TestCRUDforDatabase.trySleep(100);
         now = new Date();
         long numOlds = service.getNumberOfOldObjects(now);
-        assertEquals(5, numOlds);
+        assertEquals(6, numOlds);
         TestCRUDforDatabase.trySleep(100);
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.Major, 3));
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.NonAlarmed, 5));
         service.writeFaultLog(createFaultLog(NODEID, OBJECTREFID2, "problem", SeverityType.Major, 6));
+
+        service.writeCMLog(createCMLog(NODEID3, 2, CmNotificationType.NotifyMOIChanges,
+            "2", CmSourceIndicator.SONOPERATION, CmOperation.REPLACE, "value2"));
+
         numOlds = service.getNumberOfOldObjects(now);
-        assertEquals(5, numOlds);
+        assertEquals(6, numOlds);
         now = new Date();
         numOlds = service.getNumberOfOldObjects(now);
-        assertEquals(8, numOlds);
+        assertEquals(10, numOlds);
         service.doIndexClean(now);
         numOlds = service.getNumberOfOldObjects(now);
         assertEquals(0, numOlds);
-
     }
 
     @Test
@@ -177,10 +195,10 @@ public class TestEventService {
         final String IFNAME1 = "if1";
         final String SCNID1 = "scn1";
         List<PmdataEntity> list =
-                Arrays.asList(createPmData(NODEID, IFNAME1, SCNID1), createPmData(NODEID, IFNAME1, SCNID1),
-                        createPmData(NODEID, IFNAME1, SCNID1), createPmData(NODEID, IFNAME1, SCNID1)
+            Arrays.asList(createPmData(NODEID, IFNAME1, SCNID1), createPmData(NODEID, IFNAME1, SCNID1),
+                createPmData(NODEID, IFNAME1, SCNID1), createPmData(NODEID, IFNAME1, SCNID1)
 
-                );
+            );
         service.doWritePerformanceData(list);
     }
 
@@ -193,9 +211,9 @@ public class TestEventService {
      */
     private static PmdataEntity createPmData(String nodeId, String ifUuid, String scannerId) {
         return new PmdataEntityBuilder().setNodeName(nodeId).setGranularityPeriod(GranularityPeriodType.Period15Min)
-                .setUuidInterface(ifUuid).setScannerId(scannerId).setLayerProtocolName("NETCONF")
-                .setPerformanceData(null).setSuspectIntervalFlag(true)
-                .setTimeStamp(NetconfTimeStampImpl.getConverter().getTimeStamp()).build();
+            .setUuidInterface(ifUuid).setScannerId(scannerId).setLayerProtocolName("NETCONF")
+            .setPerformanceData(null).setSuspectIntervalFlag(true)
+            .setTimeStamp(NetconfTimeStampImpl.getConverter().getTimeStamp()).build();
     }
 
     @Test
@@ -211,8 +229,8 @@ public class TestEventService {
         service.updateNetworkConnection22(createNeConnection(NODEID2, NetworkElementDeviceType.ORAN, "old"), NODEID2);
         nes = service.getNetworkElementConnections();
         assertEquals(2, nes.size());
-        service.updateNetworkConnectionDeviceType(createNeConnection(NODEID, NetworkElementDeviceType.Wireless,"old"),
-                NODEID);
+        service.updateNetworkConnectionDeviceType(createNeConnection(NODEID, NetworkElementDeviceType.Wireless, "old"),
+            NODEID);
         nes = service.getNetworkElementConnections();
         assertEquals(2, nes.size());
         boolean found = false;
@@ -240,15 +258,15 @@ public class TestEventService {
      */
     private static ConnectionlogEntity createConnectionLog(String nodeId, ConnectionLogStatus status) {
         return new ConnectionlogBuilder().setNodeId(nodeId)
-                .setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp()).setStatus(status).build();
+            .setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp()).setStatus(status).build();
     }
 
     @Test
     public void testInventory() {
         clearDbEntity(Entity.Inventoryequipment);
-        service.writeInventory(NODEID,Arrays.asList(createEquipment(NODEID, "uuid1"), createEquipment(NODEID, "uuid2"),
-                createEquipment(NODEID, "uuid3"), createEquipment(NODEID, "uuid4"),
-                createEquipment(NODEID, "uuid5")));
+        service.writeInventory(NODEID, Arrays.asList(createEquipment(NODEID, "uuid1"), createEquipment(NODEID, "uuid2"),
+            createEquipment(NODEID, "uuid3"), createEquipment(NODEID, "uuid4"),
+            createEquipment(NODEID, "uuid5")));
         assertEquals(5, getDbEntityEntries(Entity.Inventoryequipment).getTotal());
     }
 
@@ -274,8 +292,8 @@ public class TestEventService {
      */
     private Inventory createEquipment(String nodeId, String uuid) {
         return new InventoryBuilder().setNodeId(nodeId).setParentUuid(null).setDescription("desc")
-                .setTreeLevel(Uint32.valueOf(0)).setManufacturerName("manu")
-                .setDate(NetconfTimeStampImpl.getConverter().getTimeStampAsNetconfString()).setUuid(uuid).build();
+            .setTreeLevel(Uint32.valueOf(0)).setManufacturerName("manu")
+            .setDate(NetconfTimeStampImpl.getConverter().getTimeStampAsNetconfString()).setUuid(uuid).build();
     }
 
     /**
@@ -284,10 +302,36 @@ public class TestEventService {
      * @param nodename3
      * @return
      */
-    private static NetworkElementConnectionEntity createNeConnection(String nodeId, NetworkElementDeviceType devType, String mountMethod) {
+    private static NetworkElementConnectionEntity createNeConnection(String nodeId, NetworkElementDeviceType devType,
+                                                                     String mountMethod) {
         return new NetworkElementConnectionBuilder().setNodeId(nodeId).setHost("host")
-                .setPort(YangHelper2.getLongOrUint32(1234L)).setCoreModelCapability("123")//.setMountMethod(mountMethod)
-                .setStatus(ConnectionLogStatus.Connected).setDeviceType(devType).setIsRequired(true).build();
+            .setPort(YangHelper2.getLongOrUint32(1234L)).setCoreModelCapability("123")//.setMountMethod(mountMethod)
+            .setStatus(ConnectionLogStatus.Connected).setDeviceType(devType).setIsRequired(true).build();
+    }
+
+    /**
+     * @param nodeId
+     * @param counter
+     * @param notificationType
+     * @param notificationId
+     * @param sourceIndicator
+     * @param operation
+     * @param value
+     * @return
+     */
+    private static CmlogEntity createCMLog(String nodeId, int counter, CmNotificationType notificationType,
+                                           String notificationId, CmSourceIndicator sourceIndicator,
+                                           CmOperation operation, String value) {
+        return new CmlogBuilder()
+            .setNodeId(nodeId)
+            .setCounter(counter)
+            .setNotificationType(notificationType)
+            .setNotificationId(notificationId)
+            .setSourceIndicator(sourceIndicator)
+            .setOperation(operation)
+            .setValue(value)
+            .setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp())
+            .build();
     }
 
     /**
@@ -299,10 +343,10 @@ public class TestEventService {
      * @return
      */
     private static FaultlogEntity createFaultLog(String nodeId, String objectId, String problem, SeverityType severity,
-            int counter) {
+                                                 int counter) {
         return new FaultlogBuilder().setNodeId(nodeId).setObjectId(objectId).setProblem(problem).setSeverity(severity)
-                .setCounter(counter).setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp())
-                .setSourceType(SourceType.Netconf).build();
+            .setCounter(counter).setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp())
+            .setSourceType(SourceType.Netconf).build();
     }
 
     /**
@@ -314,10 +358,10 @@ public class TestEventService {
      * @return
      */
     private static EventlogEntity createEventLog(String nodeId, String objectId, String attributeName, String newValue,
-            int counter) {
+                                                 int counter) {
         return new EventlogBuilder().setNodeId(nodeId).setObjectId(objectId).setAttributeName(attributeName)
-                .setNewValue(newValue).setCounter(counter)
-                .setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp()).setSourceType(SourceType.Netconf)
-                .build();
+            .setNewValue(newValue).setCounter(counter)
+            .setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp()).setSourceType(SourceType.Netconf)
+            .build();
     }
 }
