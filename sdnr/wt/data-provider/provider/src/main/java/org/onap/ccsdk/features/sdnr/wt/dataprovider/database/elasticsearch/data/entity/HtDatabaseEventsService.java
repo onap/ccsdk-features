@@ -5,6 +5,8 @@
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,6 +46,8 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
@@ -87,6 +91,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     private EsDataObjectReaderWriter2<InventoryEntity> eventRWEquipment;
     private EsDataObjectReaderWriter2<FaultcurrentEntity> eventRWFaultCurrentDB;
     private EsDataObjectReaderWriter2<FaultlogEntity> eventRWFaultLogDB;
+    private EsDataObjectReaderWriter2<CmlogEntity> eventRWFCMLogDB;
     private EsDataObjectReaderWriter2<ConnectionlogEntity> eventRWConnectionLogDB;
     private final EsDataObjectReaderWriter2<NetworkElementConnectionEntity> networkelementConnectionDB;
     private final EsDataObjectReaderWriter2<GuicutthroughEntity> guiCutThroughDB;
@@ -118,6 +123,9 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
             eventRWFaultLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Faultlog, FaultlogEntity.class,
                     FaultlogBuilder.class);
+
+            eventRWFCMLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Cmlog, CmlogEntity.class,
+                CmlogBuilder.class);
 
             eventRWConnectionLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Connectionlog,
                     ConnectionlogEntity.class, ConnectionlogBuilder.class);
@@ -177,6 +185,18 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
         LOG.debug("Write fault to faultlog: {}", fault.toString());
         eventRWFaultLogDB.write(fault, null);
+    }
+
+    //-- CM log
+
+    @Override
+    public void writeCMLog(CmlogEntity cm) {
+        if (assertIfClientNull(cm)) {
+            return;
+        }
+
+        LOG.debug("Write CM to cmlog: {}", cm.toString());
+        eventRWFCMLogDB.write(cm, null);
     }
 
     // -- Fault current
@@ -491,6 +511,10 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
         QueryBuilder queryFaultLog = EsFaultLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
         removed += eventRWFaultLogDB.remove(queryFaultLog);
+
+        QueryBuilder queryCMLog = EsCMLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
+        removed += eventRWFCMLogDB.remove(queryCMLog);
+
         return removed;
     }
 
@@ -505,6 +529,9 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
 
         QueryBuilder queryFaultLog = EsFaultLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
         numberOfElements += eventRWFaultLogDB.doReadAll(queryFaultLog).getTotal();
+
+       QueryBuilder queryCMLog = EsCMLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
+        numberOfElements += eventRWFCMLogDB.doReadAll(queryCMLog).getTotal();
 
         return numberOfElements;
     }
@@ -554,6 +581,18 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     }
 
     private static class EsFaultLogDevicemanager {
+        /**
+         * Get older Elements
+         *
+         * @param netconfTimeStamp to identify query elements older than this timestamp.
+         * @return QueryBuilder for related elements
+         */
+        public static QueryBuilder getQueryForTimeStamp(String netconfTimeStamp) {
+            return new RangeQueryBuilder("timestamp").lte(netconfTimeStamp);
+        }
+    }
+
+    private static class EsCMLogDevicemanager {
         /**
          * Get older Elements
          *
