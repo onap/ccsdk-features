@@ -4,6 +4,8 @@
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
@@ -19,6 +21,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentEntity;
@@ -37,6 +40,8 @@ public interface DataProvider extends ArchiveCleanProvider {
     void writeEventLog(EventlogEntity event);
 
     void writeFaultLog(FaultlogEntity fault);
+
+    void writeCMLog(CmlogEntity cm);
 
     void updateFaultCurrent(FaultcurrentEntity fault);
 
