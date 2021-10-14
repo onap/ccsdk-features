@@ -5,6 +5,8 @@
  * Copyright (C) 2021 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -54,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MediatorServerEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutputBuilder;
@@ -165,6 +168,19 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.PaginationBuilder(
                         result.getPagination()).build());
+        return outputBuilder;
+    }
+
+    @Override
+    public ReadCmlogListOutputBuilder readCMLogList(EntityInput input) {
+        ReadCmlogListOutputBuilder outputBuilder = new ReadCmlogListOutputBuilder();
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data>
+            result =
+            this.eventRWCMLog.getData(input);
+        outputBuilder.setData(result.getResult());
+        outputBuilder.setPagination(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 

@@ -4,6 +4,8 @@
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
@@ -35,6 +37,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicema
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.GetRequiredNetworkElementKeysOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushAttributeChangeNotificationInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushAttributeChangeNotificationOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushCmNotificationInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushCmNotificationOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SetMaintenanceModeInput;
@@ -211,6 +215,20 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
         RpcResultBuilder<PushFaultNotificationOutput> result;
         try {
             pushNotificationsListener.pushFaultNotification(input);
+            result = RpcResultBuilder.success();
+        } catch (Exception e) {
+            result = RpcResultBuilder.failed();
+            result.withError(ErrorType.APPLICATION, "Exception", e);
+        }
+        return result.buildFuture();
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<PushCmNotificationOutput>> pushCmNotification(PushCmNotificationInput input) {
+        LOG.info("RPC Received CM notification {}", input);
+        RpcResultBuilder<PushCmNotificationOutput> result;
+        try {
+            pushNotificationsListener.pushCMNotification(input);
             result = RpcResultBuilder.success();
         } catch (Exception e) {
             result = RpcResultBuilder.failed();
