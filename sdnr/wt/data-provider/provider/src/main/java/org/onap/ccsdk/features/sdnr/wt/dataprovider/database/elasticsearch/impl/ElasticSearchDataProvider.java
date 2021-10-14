@@ -5,6 +5,8 @@
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +21,7 @@
  * ============LICENSE_END=========================================================
  *
  */
+
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl;
 
 import java.io.IOException;
@@ -56,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MediatorServerEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutputBuilder;
@@ -90,17 +94,30 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
     private static final String EXCEPTION_UNABLE_TO_REMOVE_FROM_DATABASE = "unable to remove data from database";
 
     private final HtDatabaseClient dbClient;
-    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data> eventRWFaultCurrent;
-    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data> eventRWFaultLog;
-    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data> mediatorserverRW;
-    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> maintenanceRW;
-    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> guicutthroughRW;
-    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data> equipmentRW;
-    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data> connnectionlogRW;
-    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data> eventlogRW;
-    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data> networkelementConnectionRW;
-    private final DataObjectAcessorPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> pm15mRW;
-    private final DataObjectAcessorPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data> pm24hRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data>
+        eventRWFaultCurrent;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data>
+        eventRWFaultLog;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data>
+        eventRWCMLog;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data>
+        mediatorserverRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data>
+        maintenanceRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data>
+        guicutthroughRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data>
+        equipmentRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data>
+        connnectionlogRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data>
+        eventlogRW;
+    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data>
+        networkelementConnectionRW;
+    private final DataObjectAcessorPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data>
+        pm15mRW;
+    private final DataObjectAcessorPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data>
+        pm24hRW;
 
     private final DataObjectAcessorStatus readStatus;
     private final HtDatabaseEventsService databaseService;
@@ -125,64 +142,68 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
 
     public ElasticSearchDataProvider(EsConfig esConfig) throws Exception {
         this(esConfig.getHosts(), esConfig.getBasicAuthUsername(), esConfig.getBasicAuthPassword(),
-                esConfig.trustAllCerts(), esConfig.doFullsizeRequests());
+            esConfig.trustAllCerts(), esConfig.doFullsizeRequests());
     }
 
     public ElasticSearchDataProvider(HostInfo[] hosts, String authUsername, String authPassword, boolean trustAllCerts,
-            boolean doFullsizeRequests) throws Exception {
+                                     boolean doFullsizeRequests) throws Exception {
         super();
         LOG.info("Start {}", this.getClass().getName());
 
 
         this.dbClient = HtDatabaseClient.getClient(hosts, authUsername, authPassword, trustAllCerts);
         this.mediatorserverRW = new DataObjectAcessorWithId<>(dbClient, Entity.MediatorServer,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data.class,
+            doFullsizeRequests);
         this.mediatorserverRW.setWriteInterface(MediatorServerEntity.class);
 
         this.maintenanceRW = new DataObjectAcessorWithId<>(dbClient, Entity.Maintenancemode,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data.class,
+            doFullsizeRequests);
         this.maintenanceRW.setWriteInterface(MaintenanceEntity.class);
 
         this.guicutthroughRW = new DataObjectAcessorWithId<>(dbClient,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity.Guicutthrough,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity.Guicutthrough,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data.class,
+            doFullsizeRequests);
         this.guicutthroughRW.setWriteInterface(Guicutthrough.class);
 
         this.equipmentRW = new DataObjectAcessorWithId<>(dbClient, Entity.Inventoryequipment,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data.class,
+            doFullsizeRequests);
 
         this.eventRWFaultCurrent = new DataObjectAcessorWithId<>(dbClient, Entity.Faultcurrent,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data.class,
+            doFullsizeRequests);
 
         this.eventRWFaultLog = new DataObjectAcessorWithId<>(dbClient, Entity.Faultlog,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data.class,
+            doFullsizeRequests);
+
+        this.eventRWCMLog = new DataObjectAcessorWithId<>(dbClient, Entity.Cmlog,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data.class,
+            doFullsizeRequests);
 
         this.connnectionlogRW = new DataObjectAcessorWithId<>(dbClient, Entity.Connectionlog,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data.class,
+            doFullsizeRequests);
 
         this.eventlogRW = new DataObjectAcessorWithId<>(dbClient, Entity.Eventlog,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data.class,
+            doFullsizeRequests);
 
         this.networkelementConnectionRW = new DataObjectAcessorWithId<>(dbClient, Entity.NetworkelementConnection,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data.class,
+            doFullsizeRequests);
         this.networkelementConnectionRW.setWriteInterface(NetworkElementConnectionEntity.class);
 
         this.pm15mRW = new DataObjectAcessorPm<>(dbClient, Intervall.PMDATA15M, Entity.Historicalperformance15min,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data.class,
+            doFullsizeRequests);
 
         this.pm24hRW = new DataObjectAcessorPm<>(dbClient, Intervall.PMDATA24H, Entity.Historicalperformance24h,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data.class,
-                doFullsizeRequests);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data.class,
+            doFullsizeRequests);
 
         this.readStatus = new DataObjectAcessorStatus(dbClient, Entity.Faultcurrent, doFullsizeRequests);
 
@@ -200,36 +221,52 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
 
         ReadFaultcurrentListOutputBuilder outputBuilder = new ReadFaultcurrentListOutputBuilder();
 
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data> result =
-                this.eventRWFaultCurrent.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data>
+            result =
+            this.eventRWFaultCurrent.getData(input);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
     @Override
     public ReadFaultlogListOutputBuilder readFaultLogList(EntityInput input) {
         ReadFaultlogListOutputBuilder outputBuilder = new ReadFaultlogListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data> result =
-                this.eventRWFaultLog.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data>
+            result =
+            this.eventRWFaultLog.getData(input);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.PaginationBuilder(
+                result.getPagination()).build());
+        return outputBuilder;
+    }
+
+    @Override
+    public ReadCmlogListOutputBuilder readCMLogList(EntityInput input) {
+        ReadCmlogListOutputBuilder outputBuilder = new ReadCmlogListOutputBuilder();
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data>
+            result =
+            this.eventRWCMLog.getData(input);
+        outputBuilder.setData(result.getResult().getHits());
+        outputBuilder.setPagination(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
     @Override
     public ReadMaintenanceListOutputBuilder readMaintenanceList(EntityInput input) {
         ReadMaintenanceListOutputBuilder outputBuilder = new ReadMaintenanceListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> result =
-                this.maintenanceRW.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data>
+            result =
+            this.maintenanceRW.getData(input);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
@@ -237,86 +274,93 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
     public ReadMediatorServerListOutputBuilder readMediatorServerList(EntityInput input) {
 
         ReadMediatorServerListOutputBuilder outputBuilder = new ReadMediatorServerListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data> result =
-                this.mediatorserverRW.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data>
+            result =
+            this.mediatorserverRW.getData(input);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
     @Override
     public ReadNetworkElementConnectionListOutputBuilder readNetworkElementConnectionList(EntityInput input) {
         ReadNetworkElementConnectionListOutputBuilder outputBuilder =
-                new ReadNetworkElementConnectionListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data> result =
-                this.networkelementConnectionRW.getData(input);
+            new ReadNetworkElementConnectionListOutputBuilder();
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data>
+            result =
+            this.networkelementConnectionRW.getData(input);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
     @Override
     public ReadInventoryListOutputBuilder readInventoryList(EntityInput input) {
         ReadInventoryListOutputBuilder outputBuilder = new ReadInventoryListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data> result =
-                this.equipmentRW.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data>
+            result =
+            this.equipmentRW.getData(input);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
     @Override
     public ReadConnectionlogListOutputBuilder readConnectionlogList(EntityInput input) {
         ReadConnectionlogListOutputBuilder outputBuilder = new ReadConnectionlogListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data> result =
-                this.connnectionlogRW.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data>
+            result =
+            this.connnectionlogRW.getData(input);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
     @Override
     public ReadEventlogListOutputBuilder readEventlogList(EntityInput input) throws IOException {
         ReadEventlogListOutputBuilder outputBuilder = new ReadEventlogListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data> result =
-                this.eventlogRW.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data>
+            result =
+            this.eventlogRW.getData(input);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
     @Override
     public ReadPmdata15mListOutputBuilder readPmdata15mList(EntityInput input) {
         ReadPmdata15mListOutputBuilder outputBuilder = new ReadPmdata15mListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> result =
-                this.pm15mRW.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data>
+            result =
+            this.pm15mRW.getData(input);
         LOG.debug("Read data: readPmdata15mList: {}", result);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
     @Override
     public ReadPmdata24hListOutputBuilder readPmdata24hList(EntityInput input) {
         ReadPmdata24hListOutputBuilder outputBuilder = new ReadPmdata24hListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data> result =
-                this.pm24hRW.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data>
+            result =
+            this.pm24hRW.getData(input);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
@@ -325,8 +369,8 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
         ReadPmdata15mLtpListOutputBuilder outputBuilder = new ReadPmdata15mLtpListOutputBuilder();
         QueryResult<String> result = pm15mRW.getDataLtpList(input);
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.ltp.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.ltp.list.output.PaginationBuilder(
+                result.getPagination()).build());
         outputBuilder.setData(result.getResult().getHits());
         return outputBuilder;
     }
@@ -336,8 +380,8 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
         ReadPmdata15mDeviceListOutputBuilder outputBuilder = new ReadPmdata15mDeviceListOutputBuilder();
         QueryResult<String> result = pm15mRW.getDataDeviceList(input);
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.device.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.device.list.output.PaginationBuilder(
+                result.getPagination()).build());
         outputBuilder.setData(result.getResult().getHits());
         return outputBuilder;
     }
@@ -350,8 +394,8 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
         ReadPmdata24hLtpListOutputBuilder outputBuilder = new ReadPmdata24hLtpListOutputBuilder();
         new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.ltp.list.output.PaginationBuilder();
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.ltp.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.ltp.list.output.PaginationBuilder(
+                result.getPagination()).build());
         outputBuilder.setData(result.getResult().getHits());
         return outputBuilder;
     }
@@ -363,16 +407,17 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
 
         ReadPmdata24hDeviceListOutputBuilder outputBuilder = new ReadPmdata24hDeviceListOutputBuilder();
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.device.list.output.PaginationBuilder(
-                        result.getPagination()).build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.device.list.output.PaginationBuilder(
+                result.getPagination()).build());
         outputBuilder.setData(result.getResult().getHits());
         return outputBuilder;
     }
 
     @Override
     public ReadStatusOutputBuilder readStatus() throws IOException {
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.Data> result =
-                readStatus.getDataStatus();
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.Data>
+            result =
+            readStatus.getDataStatus();
 
         ReadStatusOutputBuilder outputBuilder = new ReadStatusOutputBuilder();
         outputBuilder.setData(result.getResult().getHits());
@@ -386,35 +431,35 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
 
     @Override
     public CreateNetworkElementConnectionOutputBuilder createNetworkElementConnection(
-            NetworkElementConnectionEntity input) throws IOException {
+        NetworkElementConnectionEntity input) throws IOException {
         String id = this.networkelementConnectionRW.update(input, input.getNodeId());
         if (id == null) {
             throw new IOException(EXCEPTION_UNABLE_TO_WRITE_IN_DATABASE);
         }
         CreateNetworkElementConnectionOutputBuilder builder = new CreateNetworkElementConnectionOutputBuilder();
         builder.setId(id).setNodeId(input.getNodeId()).setHost(input.getHost()).setPort(input.getPort())
-                .setUsername(input.getUsername()).setPassword(input.getPassword()).setIsRequired(input.isIsRequired())
-                .setCoreModelCapability(input.getCoreModelCapability()).setDeviceType(input.getDeviceType());
+            .setUsername(input.getUsername()).setPassword(input.getPassword()).setIsRequired(input.isIsRequired())
+            .setCoreModelCapability(input.getCoreModelCapability()).setDeviceType(input.getDeviceType());
         return builder;
     }
 
     @Override
     public UpdateNetworkElementConnectionOutputBuilder updateNetworkElementConnection(
-            UpdateNetworkElementConnectionInput input) throws IOException {
+        UpdateNetworkElementConnectionInput input) throws IOException {
         String id = this.networkelementConnectionRW.update(input, input.getId());
         if (id == null) {
             throw new IOException(EXCEPTION_UNABLE_TO_UPDATE_IN_DATABASE);
         }
         UpdateNetworkElementConnectionOutputBuilder builder = new UpdateNetworkElementConnectionOutputBuilder();
         builder.setId(id).setNodeId(input.getNodeId()).setHost(input.getHost()).setPort(input.getPort())
-                .setUsername(input.getUsername()).setPassword(input.getPassword())
-                .setCoreModelCapability(input.getCoreModelCapability()).setDeviceType(input.getDeviceType());
+            .setUsername(input.getUsername()).setPassword(input.getPassword())
+            .setCoreModelCapability(input.getCoreModelCapability()).setDeviceType(input.getDeviceType());
         return builder;
     }
 
     @Override
     public DeleteNetworkElementConnectionOutputBuilder deleteNetworkElementConnection(
-            DeleteNetworkElementConnectionInput input) throws IOException {
+        DeleteNetworkElementConnectionInput input) throws IOException {
         boolean removed = this.networkelementConnectionRW.remove(input.getId());
         if (!removed) {
             throw new IOException(EXCEPTION_UNABLE_TO_REMOVE_FROM_DATABASE);
@@ -492,12 +537,13 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
     @Override
     public ReadGuiCutThroughEntryOutputBuilder readGuiCutThroughEntry(EntityInput input) {
         ReadGuiCutThroughEntryOutputBuilder outputBuilder = new ReadGuiCutThroughEntryOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> result =
-                this.guicutthroughRW.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data>
+            result =
+            this.guicutthroughRW.getData(input);
         outputBuilder.setData(result.getResult().getHits());
         outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.PaginationBuilder()
-                        .build());
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.PaginationBuilder()
+                .build());
         return outputBuilder;
     }
 

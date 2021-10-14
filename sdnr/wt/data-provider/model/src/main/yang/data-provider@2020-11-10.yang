@@ -28,6 +28,8 @@ module data-provider {
 
      Copyright 2019 highstreet technologies GmbH Intellectual Property.
      All rights reserved.
+     Update Copyright 2021 Samsung Electronics Intellectual Property.
+     All rights reserved.
 
      Licensed under the Apache License, Version 2.0 (the 'License');
      you may not use this file except in compliance with the License.
@@ -74,6 +76,10 @@ module data-provider {
       enum faultlog {
         description
           "faultlog information";
+      }
+      enum cmlog {
+        description
+          "CMlog information";
       }
       enum historicalperformance15min {
         description
@@ -267,6 +273,69 @@ module data-provider {
       "According to ITU-T M.3160";
   }
 
+ typedef cm-notification-type {
+    type enumeration {
+      enum NotifyMOICreation {
+        description
+          "notification type";
+      }
+      enum NotifyMOIDeletion {
+        description
+          "notification type";
+      }
+      enum NotifyMOIAttributeValueChanges {
+        description
+          "notification type";
+      }
+      enum NotifyMOIChanges {
+        description
+          "notification type";
+      }
+    }
+  }
+
+ typedef cm-source-indicator {
+    type enumeration {
+      enum RESOURCE_OPERATION {
+        description
+          "source indicator type";
+      }
+      enum MANAGEMENT_OPERATION {
+        description
+          "source indicator type";
+      }
+      enum SON_OPERATION {
+        description
+          "source indicator type";
+      }
+      enum UNKNOWN  {
+        description
+          "source indicator type";
+      }
+    }
+ }
+
+  typedef cm-operation {
+     type enumeration {
+       enum CREATE {
+         description
+           "source operation type";
+       }
+       enum DELETE {
+         description
+           "source operation type";
+       }
+       enum REPLACE  {
+         description
+           "source operation type";
+       }
+       enum NULL  {
+         description
+           "source operation type for other than NotifyMOIChanges notification type";
+       }
+     }
+  }
+
   typedef source-type {
     type enumeration {
       enum Ves {
@@ -409,6 +478,41 @@ module data-provider {
     }
   }
 
+  grouping cm {
+    description
+      "CM event of an object";
+    leaf notification-type {
+      type cm-notification-type;
+      description
+        "The reported CM notification type.";
+    }
+    leaf notification-id {
+      type string;
+      description
+        "CM notification id";
+    }
+    leaf source-indicator {
+      type cm-source-indicator;
+      description
+        "CM source indicator.";
+    }
+    leaf path {
+      type string;
+      description
+        "CM path.";
+    }
+    leaf operation {
+      type cm-operation;
+      description
+        "CM operation.";
+    }
+    leaf value {
+      type string;
+      description
+        "CM JSON output value";
+    }
+  }
+
   grouping attribute-change {
     description
       "update change of an attribute";
@@ -461,6 +565,21 @@ module data-provider {
     description
       "builder";
     uses faultlog-entity;
+  }
+
+  grouping cmlog-entity {
+    description
+      "Changed cm indication";
+    uses source-reference;
+    uses object-change-reference;
+    uses cm;
+    uses entity-id;
+  }
+
+  container cmlog {
+    description
+      "builder";
+    uses cmlog-entity;
   }
 
   grouping eventlog-entity {
@@ -1542,6 +1661,26 @@ module data-provider {
       }
     }
   }
+
+   rpc read-cmlog-list {
+    description
+          "Get list of CM entries according to filter";
+    input {
+        uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      list data {
+        uses cmlog-entity;
+        description
+          "The output data as list of cm entities.";
+      }
+    }
+   }
 
   rpc read-eventlog-list {
     description

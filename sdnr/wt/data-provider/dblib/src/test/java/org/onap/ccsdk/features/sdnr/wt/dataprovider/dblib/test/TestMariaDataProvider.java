@@ -5,6 +5,8 @@
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,10 +21,12 @@
  * ============LICENSE_END=========================================================
  *
  */
+
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,6 +47,10 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test.util.MariaDBTestB
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.opendaylight.netconf.shaded.sshd.common.util.io.IoUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmNotificationType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmSourceIndicator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
@@ -69,7 +77,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NotificationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListInputBuilder;
@@ -113,6 +123,7 @@ public class TestMariaDataProvider {
     private static final String URI1 = "http://localhost:8181";
     private static final String URI2 = "http://localhost:8181";
     private static final String URI3 = "http://localhost:8181";
+    private static final String PATH = "https://samsung.com/3GPP/simulation/network-function/ves";
     private static MariaDBTestBase testBase;
     private static SqlDBDataProvider dbProvider;
     private static SqlDBClient dbClient;
@@ -144,15 +155,15 @@ public class TestMariaDataProvider {
     public void testFaultcurrent() {
         dbProvider.clearFaultsCurrentOfNode(NODEID1);
         ReadFaultcurrentListOutputBuilder faultCurrents =
-                dbProvider.readFaultCurrentList(createInput("node-id", NODEID1, 1, 20));
+            dbProvider.readFaultCurrentList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(0, faultCurrents.getData().size());
         FaultcurrentEntity faultCurrent1 = new FaultcurrentBuilder().setNodeId(NODEID1).setCounter(1).setObjectId("obj")
-                .setProblem(PROBLEM1).setTimestamp(DateAndTime.getDefaultInstance(TIME1))
-                .setSeverity(SeverityType.Major).setId(String.format("%s/%s", NODEID1, PROBLEM1)).build();
+            .setProblem(PROBLEM1).setTimestamp(DateAndTime.getDefaultInstance(TIME1))
+            .setSeverity(SeverityType.Major).setId(String.format("%s/%s", NODEID1, PROBLEM1)).build();
         dbProvider.updateFaultCurrent(faultCurrent1);
         FaultcurrentEntity faultCurrent2 = new FaultcurrentBuilder().setNodeId(NODEID1).setCounter(1).setObjectId("obj")
-                .setProblem(PROBLEM2).setTimestamp(DateAndTime.getDefaultInstance(TIME1))
-                .setSeverity(SeverityType.Minor).setId(String.format("%s/%s", NODEID1, PROBLEM2)).build();
+            .setProblem(PROBLEM2).setTimestamp(DateAndTime.getDefaultInstance(TIME1))
+            .setSeverity(SeverityType.Minor).setId(String.format("%s/%s", NODEID1, PROBLEM2)).build();
         dbProvider.updateFaultCurrent(faultCurrent2);
         faultCurrents = dbProvider.readFaultCurrentList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(2, faultCurrents.getData().size());
@@ -169,8 +180,8 @@ public class TestMariaDataProvider {
         assertEquals(0, status.getData().get(0).getFaults().getWarnings().intValue());
 
         faultCurrent1 = new FaultcurrentBuilder().setNodeId(NODEID1).setCounter(1).setObjectId("obj")
-                .setProblem(PROBLEM1).setTimestamp(DateAndTime.getDefaultInstance(TIME1))
-                .setSeverity(SeverityType.NonAlarmed).setId(String.format("%s/%s", NODEID1, PROBLEM1)).build();
+            .setProblem(PROBLEM1).setTimestamp(DateAndTime.getDefaultInstance(TIME1))
+            .setSeverity(SeverityType.NonAlarmed).setId(String.format("%s/%s", NODEID1, PROBLEM1)).build();
         dbProvider.updateFaultCurrent(faultCurrent1);
         faultCurrents = dbProvider.readFaultCurrentList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(1, faultCurrents.getData().size());
@@ -187,15 +198,49 @@ public class TestMariaDataProvider {
         ReadFaultlogListOutputBuilder faultlogs = dbProvider.readFaultLogList(createInput(1, 20));
         assertEquals(0, faultlogs.getData().size());
         FaultlogEntity fault1 = new FaultlogBuilder().setCounter(1).setNodeId(NODEID1).setObjectId("obj")
-                .setProblem(PROBLEM1).setSeverity(SeverityType.Major).setSourceType(SourceType.Netconf)
-                .setTimestamp(DateAndTime.getDefaultInstance(TIME1)).build();
+            .setProblem(PROBLEM1).setSeverity(SeverityType.Major).setSourceType(SourceType.Netconf)
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME1)).build();
         dbProvider.writeFaultLog(fault1);
         FaultlogEntity fault2 = new FaultlogBuilder().setCounter(2).setNodeId(NODEID1).setObjectId("obj")
-                .setProblem(PROBLEM2).setSeverity(SeverityType.Major).setSourceType(SourceType.Netconf)
-                .setTimestamp(DateAndTime.getDefaultInstance(TIME1)).build();
+            .setProblem(PROBLEM2).setSeverity(SeverityType.Major).setSourceType(SourceType.Netconf)
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME1)).build();
         dbProvider.writeFaultLog(fault2);
         faultlogs = dbProvider.readFaultLogList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(2, faultlogs.getData().size());
+    }
+
+    @Test
+    public void testCMlog() {
+        ReadCmlogListOutputBuilder cmlogs = dbProvider.readCMLogList(createInput(1, 20));
+        assertEquals(0, cmlogs.getData().size());
+
+        CmlogEntity cm1 = new CmlogBuilder()
+            .setNodeId(NODEID2)
+            .setCounter(1)
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME1))
+            .setObjectId("obj")
+            .setNotificationType(CmNotificationType.NotifyMOIChanges)
+            .setNotificationId("1")
+            .setSourceIndicator(CmSourceIndicator.MANAGEMENTOPERATION)
+            .setPath(PATH)
+            .setValue("pnf-registration: true")
+            .build();
+        CmlogEntity cm2 = new CmlogBuilder()
+            .setNodeId(NODEID2)
+            .setCounter(2)
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME2))
+            .setObjectId("obj")
+            .setNotificationType(CmNotificationType.NotifyMOIChanges)
+            .setNotificationId("2")
+            .setSourceIndicator(CmSourceIndicator.UNKNOWN)
+            .setPath(PATH)
+            .setValue("pnf-registration: false")
+            .build();
+
+        dbProvider.writeCMLog(cm1);
+        dbProvider.writeCMLog(cm2);
+        cmlogs = dbProvider.readCMLogList(createInput("node-id", NODEID2, 1, 20));
+        assertEquals(2, cmlogs.getData().size());
     }
 
     @Test
@@ -209,13 +254,13 @@ public class TestMariaDataProvider {
         ReadConnectionlogListOutputBuilder logs = dbProvider.readConnectionlogList(createInput(1, 20));
         assertEquals(0, logs.getData().size());
         ConnectionlogEntity log1 = new ConnectionlogBuilder().setNodeId(NODEID1)
-                .setTimestamp(DateAndTime.getDefaultInstance(TIME1)).setStatus(ConnectionLogStatus.Mounted).build();
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME1)).setStatus(ConnectionLogStatus.Mounted).build();
         dbProvider.writeConnectionLog(log1);
         ConnectionlogEntity log2 = new ConnectionlogBuilder().setNodeId(NODEID1)
-                .setTimestamp(DateAndTime.getDefaultInstance(TIME2)).setStatus(ConnectionLogStatus.Connecting).build();
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME2)).setStatus(ConnectionLogStatus.Connecting).build();
         dbProvider.writeConnectionLog(log2);
         ConnectionlogEntity log3 = new ConnectionlogBuilder().setNodeId(NODEID1)
-                .setTimestamp(DateAndTime.getDefaultInstance(TIME3)).setStatus(ConnectionLogStatus.Connected).build();
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME3)).setStatus(ConnectionLogStatus.Connected).build();
         dbProvider.writeConnectionLog(log3);
         logs = dbProvider.readConnectionlogList(createInput(1, 20));
         assertEquals(3, logs.getData().size());
@@ -238,16 +283,16 @@ public class TestMariaDataProvider {
         }
         assertEquals(0, logs.getData().size());
         EventlogEntity log1 = new EventlogBuilder().setCounter(1).setNodeId(NODEID1).setObjectId("obj")
-                .setTimestamp(DateAndTime.getDefaultInstance(TIME1)).setAttributeName("attr").setNewValue("new-value")
-                .setSourceType(SourceType.Netconf).build();
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME1)).setAttributeName("attr").setNewValue("new-value")
+            .setSourceType(SourceType.Netconf).build();
         dbProvider.writeEventLog(log1);
         EventlogEntity log2 = new EventlogBuilder().setCounter(1).setNodeId(NODEID1).setObjectId("obj")
-                .setTimestamp(DateAndTime.getDefaultInstance(TIME2)).setAttributeName("attr").setNewValue("new-value2")
-                .setSourceType(SourceType.Netconf).build();
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME2)).setAttributeName("attr").setNewValue("new-value2")
+            .setSourceType(SourceType.Netconf).build();
         dbProvider.writeEventLog(log2);
         EventlogEntity log3 = new EventlogBuilder().setCounter(1).setNodeId(NODEID1).setObjectId("obj")
-                .setTimestamp(DateAndTime.getDefaultInstance(TIME3)).setAttributeName("attr").setNewValue("new-value3")
-                .setSourceType(SourceType.Netconf).build();
+            .setTimestamp(DateAndTime.getDefaultInstance(TIME3)).setAttributeName("attr").setNewValue("new-value3")
+            .setSourceType(SourceType.Netconf).build();
         dbProvider.writeEventLog(log3);
         try {
             logs = dbProvider.readEventlogList(createInput(1, 20));
@@ -315,14 +360,14 @@ public class TestMariaDataProvider {
         ReadMaintenanceListOutputBuilder data = dbProvider.readMaintenanceList(createInput(1, 20));
         assertEquals(0, data.getData().size());
         CreateMaintenanceInput maint1 = new CreateMaintenanceInputBuilder().setId(NODEID1).setNodeId(NODEID1)
-                .setActive(true).setDescription("desc").setObjectIdRef("ref").setProblem("problem")
-                .setStart(DateAndTime.getDefaultInstance(TIME1)).setEnd(DateAndTime.getDefaultInstance(TIME3)).build();
+            .setActive(true).setDescription("desc").setObjectIdRef("ref").setProblem("problem")
+            .setStart(DateAndTime.getDefaultInstance(TIME1)).setEnd(DateAndTime.getDefaultInstance(TIME3)).build();
         CreateMaintenanceInput maint2 = new CreateMaintenanceInputBuilder().setId(NODEID2).setNodeId(NODEID2)
-                .setActive(true).setDescription("desc").setObjectIdRef("ref").setProblem("problem2")
-                .setStart(DateAndTime.getDefaultInstance(TIME1)).setEnd(DateAndTime.getDefaultInstance(TIME3)).build();
+            .setActive(true).setDescription("desc").setObjectIdRef("ref").setProblem("problem2")
+            .setStart(DateAndTime.getDefaultInstance(TIME1)).setEnd(DateAndTime.getDefaultInstance(TIME3)).build();
         CreateMaintenanceInput maint3 = new CreateMaintenanceInputBuilder().setId(NODEID3).setNodeId(NODEID3)
-                .setActive(true).setDescription("desc").setObjectIdRef("ref").setProblem("problem3")
-                .setStart(DateAndTime.getDefaultInstance(TIME1)).setEnd(DateAndTime.getDefaultInstance(TIME3)).build();
+            .setActive(true).setDescription("desc").setObjectIdRef("ref").setProblem("problem3")
+            .setStart(DateAndTime.getDefaultInstance(TIME1)).setEnd(DateAndTime.getDefaultInstance(TIME3)).build();
         try {
             dbProvider.createMaintenance(maint1);
             dbProvider.createMaintenance(maint2);
@@ -347,11 +392,11 @@ public class TestMariaDataProvider {
         ReadMediatorServerListOutputBuilder data = dbProvider.readMediatorServerList(createInput(1, 20));
         assertEquals(0, data.getData().size());
         CreateMediatorServerInput mediator1 =
-                new CreateMediatorServerInputBuilder().setName("server1").setUrl("http://10.20.30.40:7070").build();
+            new CreateMediatorServerInputBuilder().setName("server1").setUrl("http://10.20.30.40:7070").build();
         CreateMediatorServerInput mediator2 =
-                new CreateMediatorServerInputBuilder().setName("server2").setUrl("http://10.20.30.42:7070").build();
+            new CreateMediatorServerInputBuilder().setName("server2").setUrl("http://10.20.30.42:7070").build();
         CreateMediatorServerInput mediator3 =
-                new CreateMediatorServerInputBuilder().setName("server3").setUrl("http://10.20.30.43:7070").build();
+            new CreateMediatorServerInputBuilder().setName("server3").setUrl("http://10.20.30.43:7070").build();
         CreateMediatorServerOutputBuilder output1 = null, output2 = null;
         try {
             output1 = dbProvider.createMediatorServer(mediator1);
@@ -364,7 +409,7 @@ public class TestMariaDataProvider {
         data = dbProvider.readMediatorServerList(createInput(1, 20));
         assertEquals(3, data.getData().size());
         UpdateMediatorServerInput update1 = new UpdateMediatorServerInputBuilder().setId(output1.getId())
-                .setName("server1").setUrl("http://10.20.30.40:7071").build();
+            .setName("server1").setUrl("http://10.20.30.40:7071").build();
         try {
             dbProvider.updateMediatorServer(update1);
         } catch (IOException e) {
@@ -399,14 +444,14 @@ public class TestMariaDataProvider {
             fail("problem clearing neconnection");
         }
         ReadNetworkElementConnectionListOutputBuilder data =
-                dbProvider.readNetworkElementConnectionList(createInput(1, 20));
+            dbProvider.readNetworkElementConnectionList(createInput(1, 20));
         assertEquals(0, data.getData().size());
         NetworkElementConnectionEntity ne1 = new NetworkElementConnectionBuilder().setNodeId(NODEID1)
-                .setHost("10.20.30.50").setPort(Uint32.valueOf(8300)).setIsRequired(true).setUsername("user")
-                .setPassword("passwd").build();
+            .setHost("10.20.30.50").setPort(Uint32.valueOf(8300)).setIsRequired(true).setUsername("user")
+            .setPassword("passwd").build();
         NetworkElementConnectionEntity ne2 = new NetworkElementConnectionBuilder().setNodeId(NODEID2)
-                .setHost("10.20.30.55").setPort(Uint32.valueOf(8300)).setIsRequired(false).setUsername("user")
-                .setPassword("passwd").setStatus(ConnectionLogStatus.Connecting).build();
+            .setHost("10.20.30.55").setPort(Uint32.valueOf(8300)).setIsRequired(false).setUsername("user")
+            .setPassword("passwd").setStatus(ConnectionLogStatus.Connecting).build();
         try {
             dbProvider.createNetworkElementConnection(ne1);
             dbProvider.createNetworkElementConnection(ne2);
@@ -417,14 +462,14 @@ public class TestMariaDataProvider {
         data = dbProvider.readNetworkElementConnectionList(createInput(1, 20));
         assertEquals(2, data.getData().size());
         NetworkElementConnectionEntity update1 = new NetworkElementConnectionBuilder()
-                .setStatus(ConnectionLogStatus.Connected).setDeviceType(NetworkElementDeviceType.ORAN).build();
+            .setStatus(ConnectionLogStatus.Connected).setDeviceType(NetworkElementDeviceType.ORAN).build();
         dbProvider.updateNetworkConnectionDeviceType(update1, NODEID1);
         data = dbProvider.readNetworkElementConnectionList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(1, data.getData().size());
         assertEquals(NetworkElementDeviceType.ORAN, data.getData().get(0).getDeviceType());
         assertEquals(true, data.getData().get(0).isIsRequired());
         UpdateNetworkElementConnectionInput update2 = new UpdateNetworkElementConnectionInputBuilder().setId(NODEID2)
-                .setHost("10.20.55.44").setIsRequired(true).build();
+            .setHost("10.20.55.44").setIsRequired(true).build();
         try {
             dbProvider.updateNetworkElementConnection(update2);
         } catch (IOException e) {
@@ -454,7 +499,7 @@ public class TestMariaDataProvider {
 
 
         DeleteNetworkElementConnectionInput delete1 =
-                new DeleteNetworkElementConnectionInputBuilder().setId(NODEID1).build();
+            new DeleteNetworkElementConnectionInputBuilder().setId(NODEID1).build();
         try {
             dbProvider.deleteNetworkElementConnection(delete1);
         } catch (IOException e) {
@@ -489,7 +534,7 @@ public class TestMariaDataProvider {
         assertEquals(10, data.getData().size());
         ReadPmdata15mLtpListOutputBuilder ltpdata = null;
         try {
-            ltpdata = dbProvider.readPmdata15mLtpList(createInput("node-name","sim12600",1, 20));
+            ltpdata = dbProvider.readPmdata15mLtpList(createInput("node-name", "sim12600", 1, 20));
         } catch (IOException e) {
             e.printStackTrace();
             fail("failed to read pmdata15m ltp list");
@@ -497,7 +542,7 @@ public class TestMariaDataProvider {
         assertEquals(3, ltpdata.getData().size());
         ReadPmdata15mDeviceListOutputBuilder devicedata = null;
         try {
-             devicedata = dbProvider.readPmdata15mDeviceList(createInput(1,20));
+            devicedata = dbProvider.readPmdata15mDeviceList(createInput(1, 20));
         } catch (IOException e) {
             e.printStackTrace();
             fail("failed to read pmdata15m devices list");
@@ -550,7 +595,7 @@ public class TestMariaDataProvider {
 
     private static EntityInput createInput(String filter, String filterValue, int page, int size) {
         ReadFaultcurrentListInputBuilder builder = new ReadFaultcurrentListInputBuilder().setPagination(
-                new PaginationBuilder().setPage(Uint64.valueOf(page)).setSize(Uint32.valueOf(size)).build());
+            new PaginationBuilder().setPage(Uint64.valueOf(page)).setSize(Uint32.valueOf(size)).build());
         if (filter != null && filterValue != null) {
             Filter f = new FilterBuilder().setProperty(filter).setFiltervalue(filterValue).build();
             Map<FilterKey, Filter> fmap = new HashMap<>();
