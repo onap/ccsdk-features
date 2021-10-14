@@ -5,6 +5,8 @@
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -64,6 +66,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListInput;
@@ -209,6 +213,14 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         LOG.debug("RPC Request: readFaultlogList with input {}", input);
         RpcResultBuilder<ReadFaultlogListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readFaultLogList(input));
+        return result.buildFuture();
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<ReadCmlogListOutput>> readCmlogList(ReadCmlogListInput input) {
+        LOG.debug("RPC Request: readCMlogList with input {}", input);
+        RpcResultBuilder<ReadCmlogListOutput> result =
+                read(() -> DataProviderServiceImpl.this.dataProvider.readCMLogList(input));
         return result.buildFuture();
     }
 
