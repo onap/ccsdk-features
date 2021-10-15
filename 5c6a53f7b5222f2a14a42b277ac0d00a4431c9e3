@@ -1,0 +1,176 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "59d95efc_6a8c652e",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/test/TestDMaaPCMVESMsgConsumer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-15T07:29:58Z",
+      "side": 1,
+      "message": "[Minor] Checkstyle: CONFIGURATIONFILE -\u003e CONFIGURATION_FILE",
+      "range": {
+        "startLine": 36,
+        "startChar": 32,
+        "endLine": 36,
+        "endChar": 50
+      },
+      "revId": "5c6a53f7b5222f2a14a42b277ac0d00a4431c9e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8651f1b0_38d547a1",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/test/TestDMaaPCMVESMsgConsumer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-15T07:29:58Z",
+      "side": 1,
+      "message": "[Major/if below commet will be address] This will be not throw.",
+      "range": {
+        "startLine": 47,
+        "startChar": 74,
+        "endLine": 47,
+        "endChar": 98
+      },
+      "revId": "5c6a53f7b5222f2a14a42b277ac0d00a4431c9e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f95faaf6_bba1f0c1",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/test/TestDMaaPCMVESMsgConsumer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-15T07:29:58Z",
+      "side": 1,
+      "message": "[Minor] Here we don\u0027t have any assesrtion, you can consider:\n        try {\n            dMaaPCMVESMsgConsumer.processMsg(cmEvent);\n        } catch (Exception e) {\n            fail(\"Test fail with message: \" + e.getMessage());\n        }",
+      "revId": "5c6a53f7b5222f2a14a42b277ac0d00a4431c9e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a2f95cc_1e973851",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/test/TestProvisioningConfig.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-15T07:29:58Z",
+      "side": 1,
+      "message": "[Minor] Whay we need this as a field value? We can convert it to local one (in test method).",
+      "range": {
+        "startLine": 53,
+        "startChar": 44,
+        "endLine": 53,
+        "endChar": 47
+      },
+      "revId": "5c6a53f7b5222f2a14a42b277ac0d00a4431c9e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b2112aca_59a72878",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/test/TestProvisioningConfig.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-15T07:29:58Z",
+      "side": 1,
+      "message": "[Major] Not the best name for the test method.",
+      "range": {
+        "startLine": 57,
+        "startChar": 16,
+        "endLine": 57,
+        "endChar": 20
+      },
+      "revId": "5c6a53f7b5222f2a14a42b277ac0d00a4431c9e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cef1121c_628554bf",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/test/TestProvisioningConfig.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-15T07:29:58Z",
+      "side": 1,
+      "message": "[Minor] maybe we should create file in the temp dir e.q:\n\npublic static final String TEMP_DIR \u003d System.getProperty(\"java.io.tmpdir\");\n...\nnew File(TEMP_DIR, configFile);",
+      "range": {
+        "startLine": 59,
+        "startChar": 38,
+        "endLine": 59,
+        "endChar": 48
+      },
+      "revId": "5c6a53f7b5222f2a14a42b277ac0d00a4431c9e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d155fecd_8d1913ac",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/test/TestProvisioningConfig.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-15T07:29:58Z",
+      "side": 1,
+      "message": "[Major/Critical] This test not will faild when the IOException will be throw please execute the faild method from junit lib.",
+      "revId": "5c6a53f7b5222f2a14a42b277ac0d00a4431c9e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26d816e6_78b33eef",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/test/TestProvisioningConfig.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-15T07:29:58Z",
+      "side": 1,
+      "message": "[Minor] We shouldn\u0027t hardcoding the file here. We should have a list where we put all create files and use this list to clean up those files in this method. But now we have only one file, so it\u0027s fine this is only valid for future uses of the tests.",
+      "range": {
+        "startLine": 89,
+        "startChar": 8,
+        "endLine": 89,
+        "endChar": 41
+      },
+      "revId": "5c6a53f7b5222f2a14a42b277ac0d00a4431c9e3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
