@@ -1,0 +1,8 @@
+Code-Review+1: Bengt Thuree <bthuree@linuxfoundation.org>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Tue, 19 Oct 2021 11:35:09 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/125099
+Project: ccsdk/features
+Branch: refs/heads/istanbul
