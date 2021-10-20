@@ -141,6 +141,30 @@
       "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "700885e6_1b672df9",
+        "filename": "sdnr/wt/netconfnode-state-service/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/netconfnodestateservice/impl/conf/odlGeo/ClusterRoleInfo.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2021-10-20T15:08:46Z",
+      "side": 1,
+      "message": "I like to describe the problem that I have: You changed a lot of places. The team here that needs to review all of this changes is small and limited. \nIf you do a syntax change that is not changing the meaning of the code I can look to it and say: Ok, this is the same like before and it is Ok. \nBut if you change the code because you think, there may be an error than we have to implicit changes .. and someone has to dive deep into it to confirm your interpretation or to say .. the change is not correct. \nI really appreciate that you care about sonarqube. But to make the review simpler, please split the change into a part that is fixing sonarqube and perhaps a second one that is doing fixes.",
+      "parentUuid": "61c2f67b_58ae22e7",
+      "range": {
+        "startLine": 28,
+        "startChar": 8,
+        "endLine": 28,
+        "endChar": 64
+      },
+      "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
