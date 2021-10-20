@@ -69,6 +69,30 @@
       "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61c2f67b_58ae22e7",
+        "filename": "sdnr/wt/netconfnode-state-service/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/netconfnodestateservice/impl/conf/odlGeo/ClusterRoleInfo.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 7700
+      },
+      "writtenOn": "2021-10-20T14:39:25Z",
+      "side": 1,
+      "message": "Yes, I\u0027m agree X* is zero or more times. \nBut in this case it was maybe a mistake. \nLook at the parsing after : \"Integer.parseInt(matcher.group(2));\"\nThat will return an exception if string is empty... so maybe {1,1024} is more secure no ?\n\nBut ok to change {1,10} with {1,1024}",
+      "parentUuid": "e5889cc9_8cfbc69e",
+      "range": {
+        "startLine": 28,
+        "startChar": 8,
+        "endLine": 28,
+        "endChar": 64
+      },
+      "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
