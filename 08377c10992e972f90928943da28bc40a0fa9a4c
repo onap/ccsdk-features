@@ -46,6 +46,29 @@
       "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5889cc9_8cfbc69e",
+        "filename": "sdnr/wt/netconfnode-state-service/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/netconfnodestateservice/impl/conf/odlGeo/ClusterRoleInfo.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2021-10-20T14:31:14Z",
+      "side": 1,
+      "message": "See at multiple places:\n\n\"*\" needs to be replaced with {0,1024}\nI think 1024 is a valid magnitude for the strings.\nBut the generic assumption for digits to have only 10 is risky .. should be also {0,1024}\n\nUsed Java 7 regex defintion;\nX*\t-\u003e X, zero or more times\nX{n,m}  -\u003e at least n but not more than m times\nhttps://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html",
+      "range": {
+        "startLine": 28,
+        "startChar": 8,
+        "endLine": 28,
+        "endChar": 64
+      },
+      "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
