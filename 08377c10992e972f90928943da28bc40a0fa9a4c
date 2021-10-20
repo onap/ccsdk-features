@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "4679cf69_60e0a72f",
+        "filename": "sdnr/wt/netconfnode-state-service/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/netconfnodestateservice/impl/access/binding/GenericTransactionUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2021-10-20T14:52:13Z",
+      "side": 1,
+      "message": "I am refering to this: https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html\n\nThe try(ressources) is always implicitely closing the transaction per java definition. \nBut the \"close\" in opendaylight netconf service is not correctly implemented and will terminate the read immediately. Because of this opendaylight problem this change can not be done. Or in other words the close of the transaction must never be called, because of wrong implementation. \n\nNot all Sonarqube errors or warnings make sense, because sonarqube is not knowing such specifics. Excuse me to say that ;-)",
+      "parentUuid": "ebfa72bb_f134873c",
+      "range": {
+        "startLine": 111,
+        "startChar": 0,
+        "endLine": 111,
+        "endChar": 89
+      },
+      "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e5889cc9_8cfbc69e",
         "filename": "sdnr/wt/netconfnode-state-service/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/netconfnodestateservice/impl/conf/odlGeo/ClusterRoleInfo.java",
         "patchSetId": 3
