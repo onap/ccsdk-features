@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "38fb0563_7de23553",
+        "filename": "sdnr/wt/netconfnode-state-service/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/netconfnodestateservice/impl/access/binding/GenericTransactionUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2021-10-20T14:12:43Z",
+      "side": 1,
+      "message": "This change is breaking the opendaylight cluster scenario. \nReason: The implicite close is not handled correctly by underlaying opendaylight netconf service.",
+      "range": {
+        "startLine": 111,
+        "startChar": 0,
+        "endLine": 111,
+        "endChar": 89
+      },
+      "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
