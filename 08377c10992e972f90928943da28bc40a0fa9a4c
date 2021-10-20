@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "9c9f1e89_828c9d4c",
+        "filename": "sdnr/wt/netconfnode-state-service/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/netconfnodestateservice/impl/access/binding/GenericTransactionUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 7700
+      },
+      "writtenOn": "2021-10-20T15:05:57Z",
+      "side": 1,
+      "message": "You are totally right :)\nNot all sonar problems have to be solved.\n\nI will rollback all my changes like this one.\n\nBut I found some case where you have already closed the transaction :\nhttps://github.com/onap/ccsdk-features/blob/c8f7e3f376992b202ba26464b9b329d6c4b2821d/sdnr/wt/data-provider/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/impl/DataProviderServiceImpl.java#L430\n\nAt least 4 times (not a lot) Should I also change them ?",
+      "parentUuid": "4679cf69_60e0a72f",
+      "range": {
+        "startLine": 111,
+        "startChar": 0,
+        "endLine": 111,
+        "endChar": 89
+      },
+      "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e5889cc9_8cfbc69e",
         "filename": "sdnr/wt/netconfnode-state-service/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/netconfnodestateservice/impl/conf/odlGeo/ClusterRoleInfo.java",
         "patchSetId": 3
