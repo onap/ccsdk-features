@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4406a69e_4f5428eb",
+        "filename": "sdnr/wt/common/src/main/java/org/onap/ccsdk/features/sdnr/wt/common/database/data/IndicesEntry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-10-21T12:21:37Z",
+      "side": 1,
+      "message": "not sure why this solution should be better than mine? Mine at least makes sure that numeric parsed values are only containing numbers",
+      "revId": "259a9b4e64724815109f68eacd845d898ba85e21",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9394a80e_6453ff28",
+        "filename": "sdnr/wt/data-provider/dblib/src/main/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/database/sqldb/data/entity/DatabaseIdGenerator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-10-21T12:21:37Z",
+      "side": 1,
+      "message": "That does not do the same as the regex. The regex has no end flag. So the objectId can contain more \"abcsdk efas [layerProtol\u003dMWPS]\", e.g. \"abcsdk efas [layerProtol\u003dMWPS] wdads\"",
+      "revId": "259a9b4e64724815109f68eacd845d898ba85e21",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bed0c8a7_f81bb0c4",
+        "filename": "sdnr/wt/data-provider/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/database/elasticsearch/data/entity/FaultEntityManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-10-21T12:21:37Z",
+      "side": 1,
+      "message": "due the fact that this is duplicated, we can replace this with a call of \nDatabaseIdGenerator.getFaultcurrentId(nodeId, objectId, problemName)",
+      "revId": "259a9b4e64724815109f68eacd845d898ba85e21",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef0cd0ce_9424024b",
+        "filename": "sdnr/wt/data-provider/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/http/yangschema/YangFilename.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-10-21T12:21:37Z",
+      "side": 1,
+      "message": "so you want to limit the path for the filename? okay for me. But 0 doesnt make any sense",
+      "revId": "259a9b4e64724815109f68eacd845d898ba85e21",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32656b87_280b6331",
+        "filename": "sdnr/wt/odlux/core/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/odlux/ResFilesServlet.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-10-21T12:21:37Z",
+      "side": 1,
+      "message": "with this I think the only effect is that the response will not contain the error. So it will still be a 500. Don\u0027t know what is better?",
+      "revId": "259a9b4e64724815109f68eacd845d898ba85e21",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1fef8ec_750759bc",
+        "filename": "sdnr/wt/odlux/core/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/odlux/ResFilesServlet.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-10-21T12:21:37Z",
+      "side": 1,
+      "message": "same as above",
+      "revId": "259a9b4e64724815109f68eacd845d898ba85e21",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
