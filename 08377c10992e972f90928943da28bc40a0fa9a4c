@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "aff3e01b_61116eb6",
+        "filename": "sdnr/wt/data-provider/dblib/src/main/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/database/sqldb/data/entity/DatabaseIdGenerator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 7700
+      },
+      "writtenOn": "2021-10-21T12:43:29Z",
+      "side": 1,
+      "message": "yes, I will rollback",
+      "parentUuid": "3ae25128_0ed2e988",
+      "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "30fb3494_1f451826",
         "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPPNFRegVESMsgConsumer.java",
         "patchSetId": 3
