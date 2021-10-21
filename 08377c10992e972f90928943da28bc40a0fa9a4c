@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "30fb3494_1f451826",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPPNFRegVESMsgConsumer.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-10-21T06:47:43Z",
+      "side": 1,
+      "message": "We should retain the null check",
+      "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b36ae35_92874a37",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPPNFRegVESMsgConsumer.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2021-10-21T06:47:43Z",
+      "side": 1,
+      "message": "We should retain the null check",
+      "revId": "08377c10992e972f90928943da28bc40a0fa9a4c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "38fb0563_7de23553",
         "filename": "sdnr/wt/netconfnode-state-service/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/netconfnodestateservice/impl/access/binding/GenericTransactionUtils.java",
         "patchSetId": 3
