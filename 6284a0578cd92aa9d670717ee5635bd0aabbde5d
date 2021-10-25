@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "58edd5ae_f6b01a6e",
+        "filename": "sdnr/wt/devicemanager-core/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/vescollectorconnector/impl/config/VESCollectorCfgImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 23
+      },
+      "writtenOn": "2021-10-25T11:41:17Z",
+      "side": 1,
+      "message": "Private not used ?",
+      "revId": "6284a0578cd92aa9d670717ee5635bd0aabbde5d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
