@@ -31,31 +31,37 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
 
     /** set to true if VES Collector is installed and configured */
     private static final String PROPERTY_KEY_VES_COLLECTOR_ENABLED = "VES_COLLECTOR_ENABLED";
-    private static final boolean DEFAULT_VALUE_VES_COLLECTOR_ENABLED = false;
+    private static final String DEFAULT_VALUE_VES_COLLECTOR_ENABLED = "${SDNR_VES_COLLECTOR_ENABLED}";
 
     private static final String PROPERTY_KEY_VES_COLLECTOR_IP = "VES_COLLECTOR_IP";
-    private static final String DEFAULT_VALUE_VES_COLLECTOR_IP = "127.0.0.1";
+    private static final String DEFAULT_VALUE_VES_COLLECTOR_IP = "${SDNR_VES_COLLECTOR_IP}";
 
     private static final String PROPERTY_KEY_VES_COLLECTOR_PORT = "VES_COLLECTOR_PORT";
-    private static final String DEFAULT_VALUE_VES_COLLECTOR_PORT = "8080";
+    private static final String DEFAULT_VALUE_VES_COLLECTOR_PORT = "${SDNR_VES_COLLECTOR_PORT}";
 
     private static final String PROPERTY_KEY_VES_COLLECTOR_TLS_ENABLED = "VES_COLLECTOR_TLS_ENABLED";
+    private static final String DEFAULT_VALUE_VES_COLLECTOR_TLS_ENABLED = "${SDNR_VES_COLLECTOR_TLS_ENABLED}";
+
     private static final String PROPERTY_KEY_VES_COLLECTOR_TRUST_ALL_CERTS = "VES_COLLECTOR_TRUST_ALL_CERTS";
+    private static final String DEFAULT_VALUE_VES_COLLECTOR_TRUST_ALL_CERTS = "${SDNR_VES_COLLECTOR_TRUST_ALL_CERTS}";
 
     private static final String PROPERTY_KEY_VES_COLLECTOR_USERNAME = "VES_COLLECTOR_USERNAME";
-    private static final String DEFAULT_VALUE_VES_COLLECTOR_USERNAME = "sample1";
+    private static final String DEFAULT_VALUE_VES_COLLECTOR_USERNAME = "${SDNR_VES_COLLECTOR_USERNAME}";
 
     private static final String PROPERTY_KEY_VES_COLLECTOR_PASSWORD = "VES_COLLECTOR_PASSWORD";
-    private static final String DEFAULT_VALUE_VES_COLLECTOR_PASSWORD = "sample1";
+    private static final String DEFAULT_VALUE_VES_COLLECTOR_PASSWORD = "${SDNR_VES_COLLECTOR_PASSWORD}";
 
     private static final String PROPERTY_KEY_VES_COLLECTOR_VERSION = "VES_COLLECTOR_VERSION";
-    private static final String DEFAULT_VALUE_VES_COLLECTOR_VERSION = "v7";
+    private static final String DEFAULT_VALUE_VES_COLLECTOR_VERSION = "${SDNR_VES_COLLECTOR_VERSION}";
+    private static final String DEFAULT_VALUE_VES_COLLECTOR_VERSION_NA = "v7";
 
     private static final String PROPERTY_KEY_REPORTING_ENTITY_NAME = "REPORTING_ENTITY_NAME";
-    private static final String DEFAULT_VALUE_REPORTING_ENTITY_NAME = "ONAP SDN-R";
+    private static final String DEFAULT_VALUE_REPORTING_ENTITY_NAME = "${SDNR_VES_COLLECTOR_REPORTING_ENTITY_NAME}";
+    private static final String DEFAULT_VALUE_REPORTING_ENTITY_NAME_NA = "ONAP SDN-R";
 
     private static final String PROPERTY_KEY_EVENTLOG_DETAIL = "EVENTLOG_MSG_DETAIL";
-    private static final String DEFAULT_VALUE_EVENTLOG_DETAIL = "SHORT"; // "SHORT", "MEDIUM", "LONG"
+    private static final String DEFAULT_VALUE_EVENTLOG_DETAIL = "${SDNR_VES_COLLECTOR_EVENTLOG_MSG_DETAIL}";
+    private static final String DEFAULT_VALUE_EVENTLOG_DETAIL_NA = "SHORT"; // "SHORT", "MEDIUM", "LONG"
 
 
     private static ConfigurationFileRepresentation configuration;
@@ -73,12 +79,14 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
 
     @Override
     public String getReportingEntityName() {
-        return configuration != null ? configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_REPORTING_ENTITY_NAME) : "ONAP SDN-R";
+        String v = configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_REPORTING_ENTITY_NAME);
+        return (v == null || v.isBlank()) ? DEFAULT_VALUE_REPORTING_ENTITY_NAME_NA : v;
     }
 
     @Override
     public String getEventLogMsgDetail() {
-        return configuration != null ?configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_EVENTLOG_DETAIL) : DEFAULT_VALUE_EVENTLOG_DETAIL;
+        String v = configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_EVENTLOG_DETAIL);
+        return (v == null || v.isBlank()) ? DEFAULT_VALUE_EVENTLOG_DETAIL_NA : v;
     }
 
     @Override
@@ -107,7 +115,8 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
     }
 
     public String getVersion() {
-        return configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_VERSION);
+        String v = configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_VERSION);
+        return (v == null || v.isBlank()) ? DEFAULT_VALUE_VES_COLLECTOR_VERSION_NA : v;
     }
 
     public boolean isTrustAllCerts() {
@@ -116,9 +125,12 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
 
     @Override
     public synchronized void defaults() {
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_ENABLED, DEFAULT_VALUE_VES_COLLECTOR_ENABLED);
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_TLS_ENABLED, Boolean.FALSE);
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_TRUST_ALL_CERTS, Boolean.FALSE);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_ENABLED,
+                DEFAULT_VALUE_VES_COLLECTOR_ENABLED);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_TLS_ENABLED,
+                DEFAULT_VALUE_VES_COLLECTOR_TLS_ENABLED);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_TRUST_ALL_CERTS,
+                DEFAULT_VALUE_VES_COLLECTOR_TRUST_ALL_CERTS);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_USERNAME,
                 DEFAULT_VALUE_VES_COLLECTOR_USERNAME);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_VES_COLLECTOR_PASSWORD,
