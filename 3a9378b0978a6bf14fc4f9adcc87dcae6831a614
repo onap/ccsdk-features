@@ -16,6 +16,24 @@
       "revId": "3a9378b0978a6bf14fc4f9adcc87dcae6831a614",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bcf58bf1_eb4a876c",
+        "filename": "sdnr/wt/devicemanager-core/provider/src/test/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/test/TestVESCollectorClient.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-10-25T12:29:26Z",
+      "side": 1,
+      "message": "yes, that\u0027s right. But accessing env vars is already tested in the common bundle. So the only new thing here was testing that when optinal env vars are not set, which is possible for SDNR_VES_COLLECTOR_VERSION, SDNR_VES_COLLECTOR_REPORTING_ENTITY_NAME and SDNR_VES_COLLECTOR_EVENTLOG_MSG_DETAIL the default values are correctly loaded",
+      "parentUuid": "a861f9e8_ed12a585",
+      "revId": "3a9378b0978a6bf14fc4f9adcc87dcae6831a614",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
