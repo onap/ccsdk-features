@@ -21,16 +21,19 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
+import static org.junit.Assert.assertEquals;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESMessage;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.VESCollectorServiceImpl;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.config.VESCollectorCfgImpl;
 
 public class TestVESCollectorClient {
 
@@ -44,6 +47,7 @@ public class TestVESCollectorClient {
 
     private static final VESMessage message = new VESMessage("Test Message");
     private static final String CONFIG_FILE = "test.properties";
+    private static final String CONFIG_FILE2 = "test2.properties";
 
     @Test
     public void testNoAuth() throws Exception {
@@ -72,10 +76,24 @@ public class TestVESCollectorClient {
         vesClient.close();
     }
 
+    @Test
+    public void testDefaultConfigValues() throws IOException {
+        Files.asCharSink(new File(CONFIG_FILE2), StandardCharsets.UTF_8).write("");
+        ConfigurationFileRepresentation cfg = new ConfigurationFileRepresentation(CONFIG_FILE2);
+        VESCollectorCfgImpl vesConfig = new VESCollectorCfgImpl(cfg);
+        assertEquals("ONAP SDN-R", vesConfig.getReportingEntityName());
+        assertEquals("SHORT", vesConfig.getEventLogMsgDetail());
+        assertEquals("v7",vesConfig.getVersion());
+
+    }
+
+
+    @Before
     @After
     public void after() throws InterruptedException, IOException {
 
         delete(new File(CONFIG_FILE));
+        delete(new File(CONFIG_FILE2));
 
     }
 
@@ -85,8 +103,10 @@ public class TestVESCollectorClient {
                 delete(c);
             }
         }
-        if (!f.delete()) {
-            throw new FileNotFoundException("Failed to delete file: " + f);
+        if(f.exists()) {
+            if (!f.delete()) {
+                throw new FileNotFoundException("Failed to delete file: " + f);
+            }
         }
     }
 }
