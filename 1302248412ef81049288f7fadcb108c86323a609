@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f70d5abf_da7e24ab",
+        "filename": "sdnr/wt/data-provider/dblib/src/test/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/dblib/test/TestMariaDataProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-29T14:34:03Z",
+      "side": 1,
+      "message": "[Minor/Refactor in future] I know this is not in the scope of this changes but this variable isn\u0027t used at all. And can be remoeved.",
+      "range": {
+        "startLine": 127,
+        "startChar": 26,
+        "endLine": 127,
+        "endChar": 38
+      },
+      "revId": "1302248412ef81049288f7fadcb108c86323a609",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7cce7565_58b41409",
+        "filename": "sdnr/wt/data-provider/dblib/src/test/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/dblib/test/TestMariaDataProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-29T14:34:03Z",
+      "side": 1,
+      "message": "[Minor/Refactor in future] L -\u003e we should use the cameCase method name convetion.",
+      "range": {
+        "startLine": 210,
+        "startChar": 22,
+        "endLine": 210,
+        "endChar": 23
+      },
+      "revId": "1302248412ef81049288f7fadcb108c86323a609",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba7b86a6_c5bd26cc",
+        "filename": "sdnr/wt/data-provider/dblib/src/test/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/dblib/test/TestMariaDataProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-29T14:34:03Z",
+      "side": 1,
+      "message": "[Minor] We can also check the content of stored CmlogEntity: \nfor example get cm1 from list and check if ObjectId is a \"obj\" e.t.c",
+      "revId": "1302248412ef81049288f7fadcb108c86323a609",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c598796e_126d465d",
+        "filename": "sdnr/wt/data-provider/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/database/elasticsearch/data/entity/HtDatabaseEventsService.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 595,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-29T14:34:03Z",
+      "side": 1,
+      "message": "[Minor/Refactor in future] Maybe use cameCase -\u003e EsCMLogDeviceManager?",
+      "range": {
+        "startLine": 595,
+        "startChar": 25,
+        "endLine": 595,
+        "endChar": 46
+      },
+      "revId": "1302248412ef81049288f7fadcb108c86323a609",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76f451b0_ea0199d8",
+        "filename": "sdnr/wt/data-provider/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/impl/DataProviderServiceImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-29T14:34:03Z",
+      "side": 1,
+      "message": "[Minor/Refactor in future] can be simply this.dataProvider ...",
+      "range": {
+        "startLine": 223,
+        "startChar": 27,
+        "endLine": 223,
+        "endChar": 51
+      },
+      "revId": "1302248412ef81049288f7fadcb108c86323a609",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98afaa8f_7228f2f5",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPCMVESMsgConsumer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-29T14:34:03Z",
+      "side": 1,
+      "message": "[Major] This method can be refactored, becouse is mostly the same like preparePayloadMapFromMoiCreationDeletion only the value in line 113. You can create one method e.g:\npreparePayloadMapFromMoi(rootNode, \"/event/stndDefinedFields/data/attributeListValueChanges\")\n\nfor preparePayloadMapFromMoiCreationDeletion we can use the same function in diffrent way:\npreparePayloadMapFromMoi(rootNode, \"/event/stndDefinedFields/data/attributeList\")\n\nso we can have one generic method for that:\npreparePayloadMapFromMoi(JsonNode rootNode, String CMValueKey)",
+      "range": {
+        "startLine": 107,
+        "startChar": 31,
+        "endLine": 107,
+        "endChar": 76
+      },
+      "revId": "1302248412ef81049288f7fadcb108c86323a609",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99c04684_da79b34c",
+        "filename": "sdnr/wt/mountpoint-registrar/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/mountpointregistrar/impl/DMaaPCMVESMsgConsumer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 5335
+      },
+      "writtenOn": "2021-10-29T14:34:03Z",
+      "side": 1,
+      "message": "[Major] Why do we return value here? Is never used.\n\nWe can add some result variable in processMsg method and log some information \"message send\" if the return value is true or simply remove this return form here.",
+      "range": {
+        "startLine": 132,
+        "startChar": 8,
+        "endLine": 132,
+        "endChar": 15
+      },
+      "revId": "1302248412ef81049288f7fadcb108c86323a609",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
