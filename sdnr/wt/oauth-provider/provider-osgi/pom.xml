@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>2.2.2</version>
+        <version>2.2.3</version>
         <relativePath/>
     </parent>
 
@@ -61,7 +61,7 @@
                     <artifactId>aaa-shiro</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.highstreet-technologies.aaa</groupId>
+                    <groupId>org.opendaylight.aaa</groupId>
                     <artifactId>aaa-shiro</artifactId>
                 </exclusion>
                 <exclusion>
@@ -87,6 +87,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>
                             org.onap.ccsdk.features.sdnr.wt.oauthprovider;version=${project.version},
+                            org.onap.ccsdk.features.sdnr.wt.oauthprovider.filters;version=${project.version},
                             org.onap.ccsdk.features.sdnr.wt.oauthprovider.http;version=${project.version},
                             org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.client;version=${project.version},
                             org.onap.ccsdk.features.sdnr.wt.oauthprovider.data;version=${project.version},
@@ -116,7 +117,7 @@
                             org.opendaylight.aaa.api,
                             org.opendaylight.aaa.api.shiro.principal,
                             org.opendaylight.aaa.shiro.realm,
-                            org.opendaylight.aaa.shiro.filters.backport,
+                            org.opendaylight.aaa.shiro.filters,
                             org.opendaylight.mdsal.binding.api,
                             org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619,
                             org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.shiro.configuration,
@@ -136,7 +137,7 @@
                         <Embed-Dependency>*;scope=compile|runtime;inline=false</Embed-Dependency>
                         <Embed-Dependency>*;scope=compile|runtime;artifactId=!shiro-core;inline=false</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
-                        <Fragment-Host>org.apache.shiro.core</Fragment-Host>
+                        <Fragment-Host>org.opendaylight.aaa.repackaged-shiro</Fragment-Host>
                     </instructions>
                 </configuration>
             </plugin>
