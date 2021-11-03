@@ -56,7 +56,7 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.MdSalAuthorizatio
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.OAuthProviderFactory;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.opendaylight.aaa.api.IdMService;
-import org.opendaylight.aaa.shiro.filters.backport.BearerToken;
+import org.apache.shiro.authc.BearerToken;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.ShiroConfiguration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.shiro.configuration.Main;

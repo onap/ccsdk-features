@@ -34,7 +34,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.opendaylight.aaa.api.shiro.principal.ODLPrincipal;
-import org.opendaylight.aaa.shiro.filters.backport.BearerToken;
+import org.apache.shiro.authc.BearerToken;
 import org.opendaylight.aaa.shiro.realm.TokenAuthRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
