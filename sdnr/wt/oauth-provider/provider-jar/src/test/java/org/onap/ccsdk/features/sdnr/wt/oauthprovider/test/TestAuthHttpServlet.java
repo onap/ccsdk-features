@@ -57,7 +57,7 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.test.helper.OdlJsonMapper;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.test.helper.OdlXmlMapper;
 import org.opendaylight.aaa.api.IdMService;
-import org.opendaylight.aaa.shiro.filters.backport.BearerToken;
+import org.apache.shiro.authc.BearerToken;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;

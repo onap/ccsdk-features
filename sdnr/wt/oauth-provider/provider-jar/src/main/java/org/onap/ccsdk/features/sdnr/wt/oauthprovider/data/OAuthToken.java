@@ -23,7 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.oauthprovider.data;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.opendaylight.aaa.shiro.filters.backport.BearerToken;
+import org.apache.shiro.authc.BearerToken;
 
 public class OAuthToken {
     private final String access_token;
