@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a986b44b_e227fcc3",
+        "filename": "sdnr/wt/devicemanager-core/provider/src/main/java/org/onap/ccsdk/features/sdnr/wt/devicemanager/performancemanager/impl/PerformanceManagerTask.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2021-11-04T16:11:04Z",
+      "side": 1,
+      "message": "Not taken over: Null pointer because actualNE is nullable.",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 140,
+        "endChar": 1
+      },
+      "revId": "c88ea6c5d0202735da9759e3c69227fae7263eb9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
