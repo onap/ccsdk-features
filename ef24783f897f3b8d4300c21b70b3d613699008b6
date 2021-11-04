@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4e0c7eb9_e60a3d70",
+        "filename": "sdnr/wt/data-provider/setup/src/main/java/org/onap/ccsdk/features/sdnr/wt/dataprovider/setup/istanbul/IstanbulReleaseInformation.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 5625
+      },
+      "writtenOn": "2021-11-04T13:51:30Z",
+      "side": 1,
+      "message": "won\u0027t happen in Istanbul. So no! not here. Move to JakartaReleaseInformation",
+      "revId": "ef24783f897f3b8d4300c21b70b3d613699008b6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
