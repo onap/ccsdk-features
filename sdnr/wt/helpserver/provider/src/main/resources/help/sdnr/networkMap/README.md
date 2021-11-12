@@ -31,7 +31,7 @@ The details panel shows information specific to the selected element.
 
 Sites offer information about itself, such as name, address and owner, and a short overview of its links and nodes data. The nodes are physical network elements, comparable to the elements of the 'connect' application, and offer an interface to other apps via buttons, such as connect, configure, and fault. Currently, those buttons are disabled. By clicking on a link, the given link is loaded into details.
 
-If a link of type 'microwave' is selected, the 'calculate link' button is available, which opens the [Link Calculator](../linkCalculator/README.md) in a new tab or page.
+If a link of type 'microwave' is selected, the 'calculate link' button is available, which opens the [Link Calculator](linkCalculator.html) in a new tab or page.
 
 Just like the map, the details panel updates the URL if data is loaded. Once again, the 'Network Map' application will try to load the element specified in the URL, if one is present. 
 

@@ -12,7 +12,7 @@ Network Elements are physical network functions (PNFs). A table view shows all c
 
 Network Elements can be marked as 'required'. If an element is required, it will stay available even if disconnected. If an element is not required, it will be deleted once disconnected.
 
-By right-clicking on an element, an action menu opens. The menu allows to mount, unmount, view the details, edit and remove the element. Additionally, it links to several applications like [Fault](../pnfFault/README.md) and [Configure](../pnfConfig/README.md), which will be filtered to display information relevant to the selected element.
+By right-clicking on an element, an action menu opens. The menu allows to mount, unmount, view the details, edit and remove the element. Additionally, it links to several applications like [Fault](pnfFault.html) and [Configure](pnfConfig.html), which will be filtered to display information relevant to the selected element.
 
 
 ### Connection Status Log
