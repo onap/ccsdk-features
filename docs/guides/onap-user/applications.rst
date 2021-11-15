@@ -13,4 +13,5 @@ Below are the UX Applications.
    pnfPerformance
    pnfInventory
    pnfMediator
-
+   networkMap
+   linkCalculator
