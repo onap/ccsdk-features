@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Code-Review+1: Jakub Dominik <j.dominik@samsung.com>
+Code-Review+1: Herbert Eiselt <herbert.eiselt@highstreet-technologies.com>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Thu, 18 Nov 2021 14:31:39 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/125007
+Project: ccsdk/features
+Branch: refs/heads/master
