@@ -5,6 +5,8 @@
  * Copyright (C) 2021 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
  * ================================================================================
+ * Update Copyright (C) 2021 Samsung Electronics Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,11 +35,13 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.entity.H
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.entity.HtDatabaseMaintenanceService;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.rpctypehelper.QueryResult;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBReaderWriter;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBReaderWriterUserdata;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBStatusReader;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.DeleteQuery;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMediatorserver;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
@@ -54,6 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MediatorServerEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutputBuilder;
@@ -95,6 +100,8 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     private final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data> mediatorserverRW;
     private final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> maintenanceRW;
     private final SqlDBStatusReader readStatus;
+    private final HtUserdataManager usermanager;
+
 
     public SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> getMaintenanceReaderWriter() {
         return this.maintenanceRW;
@@ -107,6 +114,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     public SqlDBDataProvider(SqlDBConfig config) {
         this(config, true);
     }
+
     public SqlDBDataProvider(SqlDBConfig config, boolean initControllerId) {
         super(config);
 
@@ -128,7 +136,9 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
             }
         };
         this.dbMaintenanceService = new HtDatabaseMaintenanceService(this);
-        if(initControllerId) {
+        this.usermanager = new HtUserdataManagerImpl(new SqlDBReaderWriterUserdata(this.dbClient,
+                Entity.Userdata, config.getDbSuffix(), this.dbClient.getDatabaseName(), this.controllerId));
+        if (initControllerId) {
             try {
                 this.setControllerId();
             } catch (SQLException e) {
@@ -165,6 +175,19 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.PaginationBuilder(
                         result.getPagination()).build());
+        return outputBuilder;
+    }
+
+    @Override
+    public ReadCmlogListOutputBuilder readCMLogList(EntityInput input) {
+        ReadCmlogListOutputBuilder outputBuilder = new ReadCmlogListOutputBuilder();
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data>
+            result =
+            this.eventRWCMLog.getData(input);
+        outputBuilder.setData(result.getResult());
+        outputBuilder.setPagination(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.PaginationBuilder(
+                result.getPagination()).build());
         return outputBuilder;
     }
 
@@ -480,18 +503,17 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
             return true;
         }
         LOG.info("set controllerId {}", this.controllerId);
-        String query = String.format("SELECT * FROM `%s` WHERE `id`='%s';", this.controllerTableName,
-                this.controllerId);
+        String query =
+                String.format("SELECT * FROM `%s` WHERE `id`='%s';", this.controllerTableName, this.controllerId);
         LOG.trace(query);
         ResultSet data = this.dbClient.read(query);
 
-        if (!data.next()) {
-            query = String.format("INSERT INTO `%s` (`id`,`desc`) VALUES ('%s','%s')",
-                    this.controllerTableName, this.controllerId, "");
+        if (data == null || !data.next()) {
+            query = String.format("INSERT INTO `%s` (`id`,`desc`) VALUES ('%s','%s')", this.controllerTableName,
+                    this.controllerId, "");
             LOG.trace(query);
             return this.dbClient.write(query);
-        }
-        else {
+        } else {
             LOG.trace("controllerId already set");
         }
         return true;
@@ -503,6 +525,11 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
 
     public String getControllerId() {
         return this.controllerId;
+    }
+
+    @Override
+    public HtUserdataManager getUserManager() {
+        return this.usermanager;
     }
 
 

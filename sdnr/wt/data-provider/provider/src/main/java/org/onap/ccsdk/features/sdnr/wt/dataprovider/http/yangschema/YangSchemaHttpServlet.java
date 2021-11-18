@@ -23,28 +23,26 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema;
 
 import java.io.IOException;
 import java.text.ParseException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class YangSchemaHttpServlet extends HttpServlet {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(YangSchemaHttpServlet.class);
-
-    private static final String schemaCachePath = "cache/schema/";
+    private static final String CACHEPATH = "cache/";
+    private static final String SCHEMACACHEPATH_PRIMARY = CACHEPATH+"schema/";
 
     private final YangFileProvider fileProvider;
 
     public YangSchemaHttpServlet() {
-        this.fileProvider = new YangFileProvider(schemaCachePath);
+        this.fileProvider = new YangFileProvider(CACHEPATH, SCHEMACACHEPATH_PRIMARY);
     }
 
     @Override

@@ -21,11 +21,11 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.io.IOException;
 import org.apache.sshd.common.util.io.IoUtils;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
@@ -35,7 +35,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 
 public class TestUserdata {
 
-    private static final String USERNAME = "admin";
+    private static final String USERNAME = "admin132";
     private static HtDatabaseClient dbRawProvider;
     private static HtUserdataManagerImpl userDbProvider;
 
@@ -55,17 +55,18 @@ public class TestUserdata {
         }
     }
 
-    @Ignore
     @Test
     public void test1() {
         String fullContent = "";
+        boolean success = false;
         try {
             fullContent = getFileContent("/userdata/full.json");
-            userDbProvider.setUserdata(USERNAME, fullContent);
+            success = userDbProvider.setUserdata(USERNAME, fullContent);
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
+        assertTrue("problem writing data into db",success);
 
         trySleep(2000);
 
@@ -89,6 +90,6 @@ public class TestUserdata {
     }
 
     private static String getFileContent(String filename) throws IOException {
-        return String.join("\n", IoUtils.readAllLines(TestTree.class.getResourceAsStream(filename)));
+        return String.join("\n", IoUtils.readAllLines(TestUserdata.class.getResourceAsStream(filename)));
     }
 }

@@ -39,8 +39,8 @@ public class SqlDBConfig implements Configuration {
     private static final String DEFAULT_VALUE_DBURL = "${SDNRDBURL}";
     private static final String DEFAULT_VALUE_DBUSERNAME = "${SDNRDBUSERNAME}";
     private static final String DEFAULT_VALUE_DBPASSWORD = "${SDNRDBPASSWORD}";
-    private static final String DEFAULT_VALUE_CONTROLLERID = DatabaseIdGenerator.getControllerId();
-    private static final String DEFAULT_VALUE_DBSUFFIX = "-v6";
+    private static final String DEFAULT_VALUE_CONTROLLERID = "${SDNRCONTROLLERID}";
+    private static final String DEFAULT_VALUE_DBSUFFIX = "-v7";
 
     private final ConfigurationFileRepresentation configuration;
 
@@ -98,6 +98,12 @@ public class SqlDBConfig implements Configuration {
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_MARIADB, PROPERTY_KEY_CONTROLLERID,
                 DEFAULT_VALUE_CONTROLLERID);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER_MARIADB, PROPERTY_KEY_DBSUFFIX, DEFAULT_VALUE_DBSUFFIX);
+
+        String v = this.configuration.getProperty(SECTION_MARKER_MARIADB, PROPERTY_KEY_CONTROLLERID);
+        // if is set to "null" then it is valid, otherwise if not set or env is empty generate one
+        if (!"null".equals(v) && (v == null || v.isEmpty())) {
+            this.setControllerId(DatabaseIdGenerator.getControllerId());
+        }
 
     }
 

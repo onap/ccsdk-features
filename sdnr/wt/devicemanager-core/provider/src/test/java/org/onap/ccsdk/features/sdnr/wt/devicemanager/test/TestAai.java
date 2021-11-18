@@ -115,7 +115,8 @@ public class TestAai {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("Break sleep : " + e.getMessage());
+            Thread.currentThread().interrupt();
         }
         System.out.println("unregistering device");
         provider.onDeviceUnregistered(new NodeId(mountPointName));
@@ -132,7 +133,8 @@ public class TestAai {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e1) {
-            e1.printStackTrace();
+            System.out.println("Break sleep : " + e1.getMessage());
+            Thread.currentThread().interrupt();
         }
         AaiProviderClient provider = new AaiProviderClient(globalCfg, null);
 
@@ -151,7 +153,8 @@ public class TestAai {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("Break sleep : " + e.getMessage());
+            Thread.currentThread().interrupt();
         }
         System.out.println("unregistering device");
         provider.onDeviceUnregistered(new NodeId(mountPointName));
