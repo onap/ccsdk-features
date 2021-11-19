@@ -111,7 +111,7 @@ public class NetconfBindingAccessorImpl extends NetconfAccessorImpl implements N
 
     @Override
     public ListenableFuture<RpcResult<CreateSubscriptionOutput>> registerNotificationsStream(
-            @NonNull String streamName) {
+            String streamName) {
         final CreateSubscriptionInputBuilder createSubscriptionInputBuilder = new CreateSubscriptionInputBuilder();
         if (streamName != null) {
             createSubscriptionInputBuilder.setStream(new StreamNameType(streamName));

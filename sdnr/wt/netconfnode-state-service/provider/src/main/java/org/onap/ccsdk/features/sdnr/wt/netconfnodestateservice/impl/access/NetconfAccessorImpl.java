@@ -63,7 +63,7 @@ public class NetconfAccessorImpl implements NetconfAccessor {
         this.domContext = Objects.requireNonNull(domContext);
         this.netconfNodeStateService = Objects.requireNonNull(netconfNodeStateService);
 
-        ConnectionStatus csts = netconfNode != null ? netconfNode.getConnectionStatus() : null;
+        ConnectionStatus csts = netconfNode.getConnectionStatus();
         if (csts == null) {
             throw new IllegalStateException(String.format("connection status for %s is not connected", nodeId));
         }

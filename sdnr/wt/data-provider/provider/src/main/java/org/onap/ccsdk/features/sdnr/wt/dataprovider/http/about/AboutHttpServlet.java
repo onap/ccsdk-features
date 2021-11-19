@@ -184,7 +184,7 @@ public class AboutHttpServlet extends HttpServlet {
      * collect dynamic data for about.md
      */
     private void collectData(ContentType ctype) {
-        LOG.info("collecting dynamic data");
+        LOG.info("collecting dynamic data with content-type {}", ctype);
         try {
             this.data.put(PLACEHOLDER_KARAF_INFO, SystemInfo.get());
             this.data.put(PLACEHOLDER_DEVICEMANAGER_TABLE, this.getDevicemanagerBundles(ctype));
