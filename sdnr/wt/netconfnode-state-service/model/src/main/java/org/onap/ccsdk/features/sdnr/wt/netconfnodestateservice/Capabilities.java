@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev15
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.unavailable.capabilities.UnavailableCapability;
 import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.common.Revision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -210,7 +211,10 @@ public class Capabilities {
         String namespace = qCapability.getNamespace().toString();
         for (String capability : capabilities) {
             if (capability.contains(namespace)) {
-                return QName.create(capability).getRevision().get().toString();
+                Optional<Revision> revisionOpt = QName.create(capability).getRevision();
+                if (revisionOpt.isPresent()) {
+                    return revisionOpt.get().toString();
+                }
             }
         }
         return UNSUPPORTED;
@@ -223,7 +227,7 @@ public class Capabilities {
      * @return true if namespace is supported.
      */
     static public boolean isNamespaceSupported(String revision) {
-        return revision != UNSUPPORTED;
+        return !UNSUPPORTED.equals(revision);
     }
 
     @Override

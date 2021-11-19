@@ -127,16 +127,21 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
             YangInstanceIdentifier path) {
         LOG.debug("Read to node datastore:{} path:{}", dataStoreType, path);
 
-        try (DOMDataTreeReadTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
+        // Don't use try with resource because the implicit close of this construct is not handled
+        // correctly by underlying opendaylight NETCONF service
+        DOMDataTreeReadTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction();
+        try {
             FluentFuture<Optional<NormalizedNode<?, ?>>> foData = readOnlyTransaction.read(dataStoreType, path);
-            // RAVI - Add a few debug here, like what ? Speak to Micha....
 
             Optional<NormalizedNode<?, ?>> data = foData.get(120, TimeUnit.SECONDS);
-            LOG.info("read is done - {} ", foData.isDone());
+            LOG.trace("read is done - {} ", foData.isDone());
             return data;
-
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.info("Incomplete read to node transaction {} {}", dataStoreType, path, e);
+        } catch (InterruptedException e) {
+            LOG.debug("Incomplete read to node transaction {} {}", dataStoreType, path, e);
+            Thread.currentThread().interrupt();
+            return Optional.empty();
+        } catch (ExecutionException | TimeoutException e) {
+            LOG.debug("Incomplete read to node transaction {} {}", dataStoreType, path, e);
             return Optional.empty();
         }
     }
@@ -217,9 +222,7 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
             replayIsSupported = Boolean.TRUE.equals(stream.isReplaySupport());
 
         }
-        if (filter.isPresent()) {
-            inputBuilder.setFilter(filter.get());
-        }
+        filter.ifPresent(inputBuilder::setFilter);
         if (startTime.isPresent()) {
             if (replayIsSupported) {
                 inputBuilder.setStartTime(getDateAndTime(startTime.get()));
@@ -253,8 +256,12 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
                     if (!res.get().getErrors().isEmpty()) {
                         return res;
                     }
-                } catch (InterruptedException | ExecutionException e) {
-                    LOG.warn("Exception during rpc call", e);
+                } catch (InterruptedException e) {
+                    LOG.warn("InterruptedException during rpc call", e);
+                    Thread.currentThread().interrupt();
+                    return res;
+                } catch (ExecutionException e) {
+                    LOG.warn("ExecutionException during rpc call", e);
                     return res;
                 }
             }
@@ -265,7 +272,7 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
     @Override
     public @NonNull Map<StreamKey, Stream> getNotificationStreamsAsMap() {
         Optional<Streams> oStreams = readData(LogicalDatastoreType.OPERATIONAL, STREAMS_PATH, Streams.class);
-        return oStreams.isPresent() ? oStreams.get().nonnullStream() : Collections.emptyMap();
+        return oStreams.map(Streams::nonnullStream).orElse(Collections.emptyMap());
     }
 
     @Override
