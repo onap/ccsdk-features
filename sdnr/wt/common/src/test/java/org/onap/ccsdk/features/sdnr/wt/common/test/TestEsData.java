@@ -68,9 +68,12 @@ public class TestEsData {
     public void testIndices() {
         IndicesEntryList list = new IndicesEntryList();
         IndicesEntry entry = null;
+        IndicesEntry entryOld = null;
         try {
             entry = new IndicesEntry(
                     "yellow open inventoryequipment-v1         5nNPRbJ3T9arMxqxBbJKyQ 5 1 2 3 1.2kb 2.4kb");
+            entryOld = new IndicesEntry(
+                "yellow open inventoryequipment-v1         5 1 2 3 1.2kb 2.4kb");
             list.add(entry);
             list.add(new IndicesEntry(
                     "yellow open networkelement-connection-v1         5nNPRbJ3T9arMxqxBbJKyQ 5 1 0 0 1.2kb 1.2kb"));
@@ -94,6 +97,17 @@ public class TestEsData {
         assertEquals("1.2kb", entry.getSize1());
         assertEquals("2.4kb", entry.getSize2());
 
+        assertNotNull(entryOld);
+        assertEquals("yellow", entryOld.getStatus());
+        assertEquals("open", entryOld.getStatus2());
+        assertEquals("inventoryequipment-v1", entryOld.getName());
+        assertEquals("", entryOld.getHash());
+        assertEquals(5, entryOld.getShards());
+        assertEquals(1, entryOld.getReplicas());
+        assertEquals(2, entryOld.getC1());
+        assertEquals(3, entryOld.getC2());
+        assertEquals("1.2kb", entryOld.getSize1());
+        assertEquals("2.4kb", entryOld.getSize2());
     }
 
     @Test

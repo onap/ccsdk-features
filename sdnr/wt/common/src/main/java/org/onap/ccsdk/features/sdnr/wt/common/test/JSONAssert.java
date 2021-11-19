@@ -170,7 +170,7 @@ public class JSONAssert {
     };
 
     public static void assertEquals(String def, String toTest, boolean strict) throws JSONException {
-        assertEquals(null, def, toTest, strict);
+        assertEquals("", def, toTest, strict);
     }
 
     public static void assertEquals(String message, String def, String toTest, boolean strict) throws JSONException {

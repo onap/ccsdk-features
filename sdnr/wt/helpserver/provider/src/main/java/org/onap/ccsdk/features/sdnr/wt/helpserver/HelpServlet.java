@@ -41,8 +41,6 @@ public class HelpServlet extends HttpServlet implements AutoCloseable {
 
     private static final String BASEURI = "/help";
 
-    private static final boolean REDIRECT_LINKS = true;
-
     private final Path basePath;
 
     public HelpServlet() {
@@ -113,21 +111,7 @@ public class HelpServlet extends HttpServlet implements AutoCloseable {
                     return;
                 }
                 LOG.debug("delivering file");
-                OutputStream out = resp.getOutputStream();
-                //                if (this.isTextFile(f) && REDIRECT_LINKS) {
-                //                    String line;
-                //                    try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-                //                        line = br.readLine();
-                //                        while (line != null) {
-                //                        	out.write((line + "\n").getBytes());
-                //                            line = br.readLine();
-                //                        }
-                //                        out.flush();
-                //                        out.close();
-                //                        br.close();
-                //                    }
-                //                } else
-                {
+                try (OutputStream out = resp.getOutputStream()) {
                     try (FileInputStream in = new FileInputStream(f)) {
 
                         byte[] buffer = new byte[1024];
@@ -139,6 +123,9 @@ public class HelpServlet extends HttpServlet implements AutoCloseable {
                         out.flush();
                         out.close();
                     }
+                } catch (IOException e) {
+                    LOG.warn("Can not write meta file", e);
+                    resp.setStatus(500);
                 }
             } else {
                 LOG.debug("found not file for request");
@@ -148,15 +135,15 @@ public class HelpServlet extends HttpServlet implements AutoCloseable {
     }
 
     private boolean ispdf(File f) {
-        return f != null ? this.ispdf(f.getName()) : false;
+        return f != null && this.ispdf(f.getName());
     }
 
     private boolean ispdf(String name) {
-        return name != null ? name.toLowerCase().endsWith("pdf") : false;
+        return name != null && name.toLowerCase().endsWith("pdf");
     }
 
     private boolean isImageFile(File f) {
-        return f != null ? this.isImageFile(f.getName()) : false;
+        return f != null && this.isImageFile(f.getName());
     }
 
     private boolean isImageFile(String name) {
@@ -169,7 +156,7 @@ public class HelpServlet extends HttpServlet implements AutoCloseable {
     }
 
     private boolean isTextFile(File f) {
-        return f != null ? this.isTextFile(f.getName()) : false;
+        return f != null && this.isTextFile(f.getName());
 
     }
 

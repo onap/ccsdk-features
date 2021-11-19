@@ -90,6 +90,9 @@ public class BaseHTTPClient {
     }
 
     public BaseHTTPClient(String base, boolean trustAllCerts, String certFilename, String passphrase, int sslCertType) {
+        if(base==null) {
+            throw new IllegalArgumentException("no baseUrl given");
+        }
         if (!base.endsWith("/")) {
             base += "/";
         }

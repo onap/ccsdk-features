@@ -31,22 +31,43 @@ import org.opendaylight.yangtools.yang.binding.TypeObject;
 
 public class TypeObjectSerializer extends JsonSerializer<TypeObject> {
 
+    /**
+     * serialize typeobject values
+     * prefer stringValue() method over getValue() method
+     */
     @Override
     public void serialize(TypeObject value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        //stringValue
         Method[] methods = value.getClass().getDeclaredMethods();
         String name;
+        Method getValueMethod = null;
         for (Method method : methods) {
             name = method.getName();
-            if (method.getParameterCount()==0 && (name.equals("stringValue") || name.equals("getValue"))) {
-                try {
-                    gen.writeString((String)method.invoke(value));
-                    break;
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                        | IOException e) {
-                    throw new IOException("No String getter method supported TypeObject for "+value.getClass(),e);
+            if (method.getParameterCount() == 0) {
+                if (name.equals("getValue")) {
+                    getValueMethod = method;
+                } else if (name.equals("stringValue")) {
+                    try {
+                        gen.writeString((String) method.invoke(value));
+                        break;
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                            | IOException e) {
+                        throw new IOException("No String getter method supported TypeObject for " + value.getClass(),
+                                e);
+                    }
                 }
             }
+        }
+        if (getValueMethod != null) {
+            try {
+                if (String.class.equals(getValueMethod.getReturnType())) {
+                    gen.writeString((String) getValueMethod.invoke(value));
+                } else {
+                    gen.writeObject(getValueMethod.invoke(value));
+                }
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | IOException e) {
+                throw new IOException("No String getter method supported TypeObject for " + value.getClass(), e);
+            }
+
         }
     }
 }

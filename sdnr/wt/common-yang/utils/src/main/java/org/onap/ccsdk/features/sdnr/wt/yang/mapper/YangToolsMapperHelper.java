@@ -278,6 +278,12 @@ public class YangToolsMapperHelper {
         return notification instanceof DOMEvent;
     }
 
+    /**
+     * Get time instant from notification if available or default
+     * @param notification
+     * @param defaultValue
+     * @return DateAndTime
+     */
     public static DateAndTime getTime(Notification notification, Instant defaultValue) {
         Instant time;
         if (hasTime(notification)) { // If notification class extends/implements the EventInstantAware
@@ -290,6 +296,21 @@ public class YangToolsMapperHelper {
         return DateAndTime.getDefaultInstance(ZonedDateTime.ofInstant(time, ZoneOffset.UTC).format(formatterOutput));
     }
 
+    /**
+     * Get time instant from notification if available or actual time
+     * @param notification
+     * @return DateAndTime
+     */
+    public static DateAndTime getTime(Notification notification) {
+        return getTime(notification, Instant.now());
+    }
+
+    /**
+     * Get time instant from DOM notification if available or default
+     * @param DOM notification
+     * @param defaultValue
+     * @return DateAndTime
+     */
     public static DateAndTime getTime(DOMNotification notification, Instant defaultValue) {
         Instant time;
         if (hasTime(notification)) { // If notification class extends/implements the EventInstantAware
@@ -300,5 +321,14 @@ public class YangToolsMapperHelper {
             LOG.debug("Defaulting to actual time of processing the notification - {}", time);
         }
         return DateAndTime.getDefaultInstance(ZonedDateTime.ofInstant(time, ZoneOffset.UTC).format(formatterOutput));
+    }
+
+    /**
+     * Get time instant from notification if available or actual time
+     * @param DOM notification
+     * @return DateAndTime
+     */
+    public static DateAndTime getTime(DOMNotification notification) {
+        return getTime(notification, Instant.now());
     }
 }
