@@ -180,10 +180,12 @@ public class MessageInterceptorImpl implements MessageInterceptor {
     private Event waitForNewAction(int holdTime) {
         long startTime = System.currentTimeMillis();
         long currentTime = startTime;
-        while (currentTime - startTime <= (holdTime + 1) * 1000) {
+        while (currentTime - startTime <= (holdTime + 1) * 1000L) {
             try {
                 Thread.sleep(5000);
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
+                log.info("Break sleep : " + e.getMessage());
+                Thread.currentThread().interrupt();
             }
 
             MessageAction nextAction = messageDao.getNextAction(message.getMessageId());

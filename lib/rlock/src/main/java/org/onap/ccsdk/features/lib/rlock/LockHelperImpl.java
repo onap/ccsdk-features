@@ -84,6 +84,7 @@ public class LockHelperImpl implements LockHelper {
                 try {
                     Thread.sleep(lockWait * 1000L);
                 } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
                 }
             }
         }
