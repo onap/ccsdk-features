@@ -20,7 +20,19 @@ export type AuthToken = {
   username: string;
   access_token: string;
   token_type: string;
+  /***
+   * datetime the token should expire in unix timestamp 
+   * 
+   * must be in seconds
+   */
   expires: number;
+  /***
+   * time the token was issued in unix timestamp
+   * 
+   * must be in seconds
+   * 
+   */
+  issued: number;
 }
 
 export type AuthPolicy = {
@@ -52,8 +64,22 @@ export class User {
     return this._bearerToken && this._bearerToken.token_type;
   }
 
+  /***
+   * Time the user should be logged out, in unix timestamp in seconds
+   */
+  public get logoutAt(): number{
+    return this._bearerToken && this._bearerToken.expires;
+  }
+
+   /***
+   * Time the user logged in, in unix timestamp in seconds
+   */
+  public get loginAt(): number{
+    return this._bearerToken && this._bearerToken.issued;
+  }
+
   public get isValid(): boolean {
-    return (this._bearerToken && (new Date().valueOf()) < this._bearerToken.expires) || false;
+    return (this._bearerToken && (new Date().valueOf()) < this._bearerToken.expires*1000) || false;
   }
 
   public toString() {

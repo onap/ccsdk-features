@@ -24,7 +24,7 @@ import { LocationChanged, NavigateToApplication } from "../actions/navigationAct
 import { PushAction, ReplaceAction, GoAction, GoBackAction, GoForwardeAction } from '../actions/navigationActions';
 
 import { applicationManager } from "../services/applicationManager";
-import { UpdateUser } from "../actions/authentication";
+import { loginUserAction, logoutUser } from "../actions/authentication";
 
 import { ApplicationStore } from "../store/applicationStore";
 import { Dispatch } from '../flux/store';
@@ -59,12 +59,17 @@ const routerMiddlewareCreator = (history: History) => () => (next: Dispatch): Di
       const token = tokenStr && jwt.decode(tokenStr);
       if (tokenStr && token) {
         // @ts-ignore
-        const user = new User({ username: token["name"], access_token: tokenStr, token_type: "Bearer", expires: (new Date().valueOf()) + ( (+token['exp']) * 1000) }) || undefined;
-        return next(new UpdateUser(user)) as any;
+        const user = new User({ username: token["name"], access_token: tokenStr, token_type: "Bearer", expires: token['exp'], issued: token['iat'] }) || undefined;
+        return next(loginUserAction(user)) as any;
       }
     } if (!action.pathname.startsWith("/login") && applicationStore && (!applicationStore.state.framework.authenticationState.user || !applicationStore.state.framework.authenticationState.user.isValid)) {
       history.replace(`/login?returnTo=${action.pathname}`);
-    } else {
+      return next(logoutUser()) as any;
+    
+    }else if (action.pathname.startsWith("/login") && applicationStore && (applicationStore.state.framework.authenticationState.user && applicationStore.state.framework.authenticationState.user.isValid)) {
+      history.replace(`/`);
+    }
+     else {
       return next(action);
     }
   } else {

@@ -105,6 +105,7 @@ export async function requestRestExt<TData>(path: string = '', init: RequestInit
   if (!isAbsUrl && authenticate && applicationStore) {
     const { state: { framework: { authenticationState: { user } } } } = applicationStore;
     // do not request if the user is not valid
+
     if (!user || !user.isValid) {
       return {
         ...result,

@@ -55,6 +55,12 @@ export const updateNodeIdAsyncActionCreator = (nodeId: string) => async (dispatc
   const { availableCapabilities, unavailableCapabilities, importOnlyModules } = await restService.getCapabilitiesByMountId(nodeId);
   
   if (!availableCapabilities || availableCapabilities.length <= 0) {
+    dispatch(new SetCollectingSelectionData(false));
+    dispatch(new UpdateDeviceDescription(nodeId, {}, []));
+    dispatch(new UpdatViewDescription("", [], {
+      displayMode: DisplayModeType.displayAsMessage,
+      renderMessage: `NetworkElement : "${nodeId}" has no capabilities.`
+    }));
     throw new Error(`NetworkElement : [${nodeId}] has no capabilities.`);
   }
     

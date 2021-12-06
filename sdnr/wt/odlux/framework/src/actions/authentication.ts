@@ -15,8 +15,12 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
+import { Dispatch } from '../flux/store';
 import { Action } from '../flux/action';
 import { AuthPolicy, User } from '../models/authentication';
+import { GeneralSettings } from '../models/settings';
+import { SetGeneralSettingsAction, setGeneralSettingsAction } from './settingsAction';
+import { endWebsocketSession } from '../services/notificationService';
 
 export class UpdateUser extends Action {
 
@@ -30,4 +34,54 @@ export class UpdatePolicies extends Action {
   constructor (public authPolicies?: AuthPolicy[]) {
     super();
   }
+}
+
+
+export const loginUserAction = (user?: User) => (dispatcher: Dispatch) =>{
+  
+  dispatcher(new UpdateUser(user));
+  loadUserSettings(user, dispatcher);
+
+
+}
+
+export const logoutUser = () => (dispatcher: Dispatch) =>{
+  
+  dispatcher(new UpdateUser(undefined));
+  dispatcher(new SetGeneralSettingsAction(null));
+  endWebsocketSession();
+}
+
+const loadUserSettings = (user: User | undefined, dispatcher: Dispatch) =>{
+
+
+  //fetch used, because state change for user login is not done when frameworks restRequest call is started (and is accordingly undefined -> /userdata call yields 401, unauthorized) and triggering an action from inside the handler / login event is impossible
+  //no timeout used, because it's bad practise to add a timeout to hopefully avoid a race condition
+  //hence, fetch used to simply use supplied user data for getting settings
+
+  if(user && user.isValid){
+
+    fetch("/userdata", {
+      method: 'GET', 
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `${user.tokenType} ${user.token}`
+      }
+    }).then((res: Response)=>{
+      if(res.status==200){
+        return res.json();
+      }else{
+        return null;
+      }
+    }).then((result:GeneralSettings)=>{
+      if(result?.general){
+        //will start websocket session if applicable
+        dispatcher(setGeneralSettingsAction(result.general.areNotificationsEnabled!));
+  
+      }else{
+        dispatcher(setGeneralSettingsAction(false));
+      }
+    })
+  }  
 }

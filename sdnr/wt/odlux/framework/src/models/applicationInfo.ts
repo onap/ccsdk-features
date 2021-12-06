@@ -20,6 +20,7 @@ import { IconType } from './iconDefinition';
 
 import { IActionHandler } from '../flux/action';
 import { Middleware } from '../flux/middleware';
+import { SettingsComponentProps } from './settings';
 
 /** Represents the information needed about an application to integrate. */
 export class ApplicationInfo {
@@ -47,6 +48,8 @@ export class ApplicationInfo {
   statusBarElement?: React.ComponentType;
   /** Optional: A component to be shown in the dashboardview. If undefiened the name will be used. */
   dashbaordElement?: React.ComponentType;
+  /** Optional: A component shown in the settings view */
+  settingsElement?: React.ComponentType<SettingsComponentProps>;
   /** Optional: The pasth for this application. If undefined the name will be use as path. */
   path?: string;
 }

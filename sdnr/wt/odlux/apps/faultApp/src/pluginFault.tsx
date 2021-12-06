@@ -39,10 +39,11 @@ import { AddFaultNotificationAction } from "./actions/notificationActions";
 
 import { createCurrentProblemsProperties, createCurrentProblemsActions, currentProblemsReloadAction } from "./handlers/currentProblemsHandler";
 import { FaultStatus } from "./components/faultStatus";
-import { refreshFaultStatusAsyncAction } from "./actions/statusActions";
+import { refreshFaultStatusAsyncAction, SetFaultStatusAction } from "./actions/statusActions";
 
 let currentMountId: string | undefined = undefined;
 let currentSeverity: string | undefined = undefined;
+let refreshInterval: ReturnType<typeof window.setInterval> | null = null;
 
 const mapProps = (state: IApplicationStoreState) => ({
   currentProblemsProperties: createCurrentProblemsProperties(state),
@@ -140,11 +141,30 @@ export function register() {
   applicationApi.applicationStoreInitialized.then(store => {
     store.dispatch(refreshFaultStatusAsyncAction);
   });
-  
-  window.setInterval(() => {
+
+  applicationApi.loginEvent.addHandler(e=>{
+    refreshInterval = startRefreshInterval() as any;
+  })
+
+  applicationApi.logoutEvent.addHandler(e=>{
+
     applicationApi.applicationStoreInitialized.then(store => {
-      store.dispatch(refreshFaultStatusAsyncAction);
+      store.dispatch(new SetFaultStatusAction(0, 0, 0, 0, false));
+      clearInterval(refreshInterval!);
     });
-  }, 15000);
+  })
+  
+ 
+
+  function startRefreshInterval(){
+    const refreshFaultStatus = window.setInterval(() => {
+      applicationApi.applicationStoreInitialized.then(store => {
+  
+        store.dispatch(refreshFaultStatusAsyncAction);
+      });
+    }, 15000);
+
+    return refreshFaultStatus;
+  }
 
 }

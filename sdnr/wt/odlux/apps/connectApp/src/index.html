@@ -19,7 +19,7 @@
       connectApp.register();
       faultApp.register();
       inventoryApp.register();
-      app("./app.tsx").configureApplication({ authentication:"oauth",  enablePolicy:  false, transportpceUrl:"http://test.de"});
+      app("./app.tsx").configureApplication({ authentication:"basic",  enablePolicy:  false, transportpceUrl:"http://test.de"});
       app("./app.tsx").runApplication();
     });
   </script>

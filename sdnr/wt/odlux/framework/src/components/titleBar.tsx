@@ -35,8 +35,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan } from '@fortawesome/free-solid-svg-icons';
 import { faDotCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { UpdateUser } from '../actions/authentication';
-import { ReplaceAction } from '../actions/navigationActions';
+import { logoutUser } from '../actions/authentication';
+import { PushAction, ReplaceAction } from '../actions/navigationActions';
 
 import connect, { Connect, IDispatcher } from '../flux/connect';
 import Logo from './logo';
@@ -71,8 +71,11 @@ const styles = (theme: Theme) => createStyles({
 const mapDispatch = (dispatcher: IDispatcher) => {
   return {
     logout: () => {
-      dispatcher.dispatch(new UpdateUser(undefined));
+      dispatcher.dispatch(logoutUser());
       dispatcher.dispatch(new ReplaceAction("/login"));
+    },
+    openSettings : () =>{
+      dispatcher.dispatch(new PushAction("/settings"));
     },
     toggleMainMenu: (value: boolean, value2: boolean) => {
       dispatcher.dispatch(new MenuAction(value));
@@ -172,7 +175,14 @@ class TitleBarComponent extends React.Component<TitleBarProps, { anchorEl: HTMLE
                 onClose={this.closeMenu}
               >
                 {/* <MenuItem onClick={ this.closeMenu }>Profile</MenuItem> */}
-                <MenuItem onClick={() => {
+                <MenuItem 
+                 aria-label="settings-button"
+                 onClick={ () =>{
+                    this.props.openSettings();
+                    this.closeMenu(); }}>Settings</MenuItem>
+                <MenuItem
+                aria-label="logout-button"
+                onClick={() => {
                   this.props.logout();
                   this.closeMenu();
                 }}>Logout</MenuItem>

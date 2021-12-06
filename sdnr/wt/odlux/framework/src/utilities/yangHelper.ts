@@ -20,6 +20,11 @@
 export const replaceHyphen = (name: string) => name.replace(/-([a-z])/g, (g) => (g[1].toUpperCase()));
 export const replaceUpperCase = (name: string) => name.replace(/([a-z][A-Z])/g, (g) => g[0] + '-' + g[1].toLowerCase());
 
+/***
+ * Replaces whitespace with '-' and cast everything to lowercase
+ */
+export const toAriaLabel = (value: string) => value.replace(/\s/g, "-").toLowerCase();
+
 export const convertPropertyNames = <T extends { [prop: string]: any }>(obj: T, conv: (name: string) => string): T => {
   return Object.keys(obj).reduce<{ [prop: string]: any }>((acc, cur) => {
     acc[conv(cur)] = typeof obj[cur] === "object" ? convertPropertyNames(obj[cur], conv) : obj[cur];

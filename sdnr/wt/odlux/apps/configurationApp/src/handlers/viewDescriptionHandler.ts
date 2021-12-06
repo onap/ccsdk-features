@@ -25,7 +25,8 @@ export enum DisplayModeType {
   doNotDisplay = 0,
   displayAsObject = 1,
   displayAsList = 2,
-  displayAsRPC = 3
+  displayAsRPC = 3,
+  displayAsMessage = 4
 };
 
 export type DisplaySpecification =  {
@@ -41,6 +42,9 @@ export type DisplaySpecification =  {
   inputViewSpecification?: ViewSpecification;
   outputViewSpecification?: ViewSpecification;
   dataPath?: string;
+} | {
+  displayMode: DisplayModeType.displayAsMessage;
+  renderMessage: string;
 }
 
 export interface IViewDescriptionState {

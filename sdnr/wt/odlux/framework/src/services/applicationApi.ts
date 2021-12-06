@@ -15,8 +15,13 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
+import { GeneralSettings } from '../models/settings';
+import { setGeneralSettingsAction, SetGeneralSettingsAction } from '../actions/settingsAction';
 import { Event } from '../common/event';
 import { ApplicationStore } from '../store/applicationStore';
+import { AuthMessage, getBroadcastChannel, sendMessage } from './broadcastService';
+import { endWebsocketSession } from './notificationService';
+import { getSettings } from './settingsService';
 
 let resolveApplicationStoreInitialized: (store: ApplicationStore) => void;
 let applicationStore: ApplicationStore | null = null;
@@ -24,13 +29,23 @@ const applicationStoreInitialized: Promise<ApplicationStore> = new Promise((reso
 
 const loginEvent = new Event();
 const logoutEvent = new Event();
+let channel : BroadcastChannel | undefined;
+const authChannelName = "odlux_auth";
 
 export const onLogin = () => {
+
+  const message : AuthMessage = {key: 'login', data: {}}
+  sendMessage(message, authChannelName);
   loginEvent.invoke();
+
 }
 
 export const onLogout = () => {
+  
   document.cookie = "JSESSIONID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+  const message : AuthMessage = {key: 'logout', data: {}}
+  sendMessage(message, authChannelName);
   logoutEvent.invoke();
 }
 

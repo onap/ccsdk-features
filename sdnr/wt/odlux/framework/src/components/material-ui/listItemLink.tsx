@@ -23,6 +23,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { toAriaLabel } from '../../utilities/yangHelper';
 
 const styles = (theme: Theme) => createStyles({
   active: {
@@ -45,7 +46,7 @@ export const ListItemLink = withStyles(styles)((props: IListItemLinkProps) => {
     props.external ? <a target="_blank" href={to} { ...itemProps }></a> :
   <NavLink exact={ exact } to={ to } activeClassName={ classes.active } { ...itemProps } />);
 
-  const ariaLabel = typeof Primary === 'string' ? "link-to-"+Primary.toLowerCase().replace(/\s/g, "-") : "link-to-"+Primary.displayName?.toLowerCase();
+  const ariaLabel = typeof Primary === 'string' ? toAriaLabel("link-to-"+Primary) : toAriaLabel("link-to-"+Primary.displayName);
   return (
        <>
         <ListItem button component={ renderLink } aria-label={ariaLabel}>

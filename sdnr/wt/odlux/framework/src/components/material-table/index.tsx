@@ -40,6 +40,7 @@ import { DividerTypeMap } from '@material-ui/core/Divider';
 import { MenuItemProps } from '@material-ui/core/MenuItem';
 import { flexbox } from '@material-ui/system';
 import { RowDisabled } from './utilities';
+import { toAriaLabel } from '../../utilities/yangHelper';
 export { ColumnModel, ColumnType } from './columnModel';
 
 type propType = string | number | null | undefined | (string | number)[];
@@ -100,7 +101,8 @@ const styles = (theme: Theme) => createStyles({
     flex: "1 1 100%"
   },
   pagination: {
-    overflow: "hidden"
+    overflow: "hidden",
+    minHeight: "52px"
   }
 });
 
@@ -152,6 +154,7 @@ type MaterialTableComponentBaseProps<TData> = WithStyles<typeof styles> & {
   columns: ColumnModel<TData>[];
   idProperty: keyof TData | ((data: TData) => React.Key);
   tableId?: string;
+  isPopup?: boolean;
   title?: string;
   stickyHeader?: boolean;
   defaultSortOrder?: 'asc' | 'desc';
@@ -294,7 +297,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                           col => {
                             const style = col.width ? { width: col.width } : {};
                             return (
-                              <TableCell style={ entry[RowDisabled] || false ? { ...style, color: "inherit"  } : style } aria-label={col.title? col.title.toLowerCase().replace(/\s/g, "-") : col.property.toLowerCase().replace(/\s/g, "-")} key={col.property} align={col.type === ColumnType.numeric && !col.align ? "right" : col.align} >
+                              <TableCell style={ entry[RowDisabled] || false ? { ...style, color: "inherit"  } : style } aria-label={col.title? toAriaLabel(col.title) : toAriaLabel(col.property)} key={col.property} align={col.type === ColumnType.numeric && !col.align ? "right" : col.align} >
                                 {col.type === ColumnType.custom && col.customControl
                                   ? <col.customControl className={col.className} style={col.style} rowData={entry} />
                                   : col.type === ColumnType.boolean
@@ -327,12 +330,12 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
           count={rowCount}
           rowsPerPage={rowsPerPage}
           page={page}
-          aria-label="table-pagination-footer"
+          aria-label={"table-pagination-footer" }
           backIconButtonProps={{
-            'aria-label': 'previous-page',
+            'aria-label': this.props.isPopup ? 'popup-previous-page' : 'previous-page',
           }}
           nextIconButtonProps={{
-            'aria-label': 'next-page',
+            'aria-label': this.props.isPopup ? 'popup-next-page': 'next-page',
           }}
           onChangePage={this.onHandleChangePage}
           onChangeRowsPerPage={this.onHandleChangeRowsPerPage}

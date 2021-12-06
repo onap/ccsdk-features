@@ -82,7 +82,8 @@ module.exports = (env) => {
         use: [{
           loader: "babel-loader"
         }]
-      }, {
+      }, 
+      {
         //don't minify images
         test: /\.(png|gif|jpg|svg)$/,
         use: [{
@@ -92,7 +93,8 @@ module.exports = (env) => {
             name: './images/[name].[ext]'
           }
         }]
-      }]
+      }
+      ]
     },
 
     optimization: {
@@ -202,55 +204,55 @@ module.exports = (env) => {
       proxy: {
         "/about": {
           // target: "http://10.20.6.29:48181",
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           secure: false
         }, 
         "/yang-schema/": {
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           secure: false
         },   
         "/oauth/": {
           // target: "https://10.20.35.188:30205",
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/oauth2/": {
           // target: "https://10.20.35.188:30205",
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/database/": {
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/restconf/": {
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/rests/": {
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/help/": {
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           secure: false
         },
          "/about/": {
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/tree/": {
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           secure: false
         },
         "/websocket": {
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           ws: true,
           changeOrigin: true,
           secure: false
         },
         "/apidoc": {
-          target: "http://localhost:18181",
+          target: "http://sdnr:8181",
           ws: true,
           changeOrigin: true,
           secure: false

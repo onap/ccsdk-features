@@ -16,11 +16,12 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { Action } from "../flux/action";
-
-
-export class SetWebsocketAction extends Action {
-    constructor(public isConnected: boolean|null) {
-        super();
+export type GeneralSettings = {
+    general:{
+        areNotificationsEnabled: boolean | null
     }
-}
+};
+
+export type SettingsComponentProps = {
+    onClose(): void
+};

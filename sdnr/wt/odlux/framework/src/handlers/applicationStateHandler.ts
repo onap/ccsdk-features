@@ -31,6 +31,9 @@ import { ExternalLoginProvider } from '../models/externalLoginProvider';
 import { ApplicationConfig } from '../models/applicationConfig';
 import { IConnectAppStoreState } from '../../../apps/connectApp/src/handlers/connectAppRootHandler';
 import { IFaultAppStoreState } from '../../../apps/faultApp/src/handlers/faultAppRootHandler';
+import { GeneralSettings } from '../models/settings';
+import { SetGeneralSettingsAction } from '../actions/settingsAction';
+import { startWebsocketSession, suspendWebsocketSession } from '../services/notificationService';
 
 
 declare module '../store/applicationStore' {
@@ -47,11 +50,12 @@ export interface IApplicationState {
   isMenuClosedByUser: boolean;
   errors: ErrorInfo[];
   snackBars: SnackbarItem[];
-  isWebsocketAvailable: boolean | undefined;
+  isWebsocketAvailable: boolean | null;
   externalLoginProviders: ExternalLoginProvider[] | null;
   authentication: "basic"|"oauth",  // basic 
   enablePolicy: boolean,             // false 
-  transportpceUrl : string
+  transportpceUrl : string,
+  settings: GeneralSettings
 }
 
 const applicationStateInit: IApplicationState = {
@@ -60,11 +64,12 @@ const applicationStateInit: IApplicationState = {
   snackBars: [],
   isMenuOpen: true,
   isMenuClosedByUser: false,
-  isWebsocketAvailable: undefined,
+  isWebsocketAvailable: null,
   externalLoginProviders: null,
   authentication: "basic",
   enablePolicy: false,
-  transportpceUrl: ""
+  transportpceUrl: "",
+  settings:{ general: { areNotificationsEnabled: null }}
 };
 
 export const configureApplication = (config: ApplicationConfig) => {
@@ -140,6 +145,12 @@ export const applicationStateHandler: IActionHandler<IApplicationState> = (state
     state = {
       ...state,
       externalLoginProviders: action.externalLoginProvders,
+    }
+  }else if(action instanceof SetGeneralSettingsAction){
+
+    state = {
+      ...state,
+      settings:{general:{areNotificationsEnabled: action.areNoticationsActive}}
     }
   }
   return state;

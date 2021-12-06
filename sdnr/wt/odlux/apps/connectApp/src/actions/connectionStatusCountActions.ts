@@ -26,13 +26,14 @@ export class ConnectionStatusCountBaseAction extends Action { }
 
 export class SetConnectionStatusCountAction extends ConnectionStatusCountBaseAction {
   constructor(public ConnectedCount: number, public ConnectingCount: number, public DisconnectedCount: number,
-    public MountedCount: number, public UnableToConnectCount: number, public UndefinedCount: number, public UnmountedCount: number, public totalCount: number) {
+    public MountedCount: number, public UnableToConnectCount: number, public UndefinedCount: number, public UnmountedCount: number, public totalCount: number, public isLoadingConnectionStatusChart: boolean) {
     super();
   }
 }
 
 
 export const refreshConnectionStatusCountAsyncAction = async (dispatch: Dispatch) => {
+  dispatch(new SetConnectionStatusCountAction(0, 0, 0, 0, 0, 0, 0, 0, true));
   const result = await getConnectionStatusCountStateFromDatabase().catch(_ => null);
   if (result) {
     const statusAction = new SetConnectionStatusCountAction(
@@ -43,10 +44,12 @@ export const refreshConnectionStatusCountAsyncAction = async (dispatch: Dispatch
       result["UnableToConnect"] || 0,
       result["Undefined"] || 0,
       result["Unmounted"] || 0,
-      result["total"] || 0
+      result["total"] || 0,
+      false
     );
     dispatch(statusAction);
     return;
+  } else {
+    dispatch(new SetConnectionStatusCountAction(0, 0, 0, 0, 0, 0, 0, 0, false));
   }
-  dispatch(new SetConnectionStatusCountAction(0, 0, 0, 0, 0, 0, 0, 0));
 }

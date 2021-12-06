@@ -22,14 +22,16 @@ export interface IFaultStatus {
   critical: number,
   major: number,
   minor: number,
-  warning: number
+  warning: number,
+  isLoadingAlarmStatusChart: boolean
 }
 
 const faultStatusInit: IFaultStatus = {
   critical: 0,
   major: 0,
   minor: 0,
-  warning: 0
+  warning: 0,
+  isLoadingAlarmStatusChart: false
 };
 
 export const faultStatusHandler: IActionHandler<IFaultStatus> = (state = faultStatusInit, action) => {
@@ -38,7 +40,8 @@ export const faultStatusHandler: IActionHandler<IFaultStatus> = (state = faultSt
       critical: action.criticalFaults,
       major: action.majorFaults,
       minor: action.minorFaults,
-      warning: action.warnings
+      warning: action.warnings,
+      isLoadingAlarmStatusChart: action.isLoadingAlarmStatusChart
     }
   }
 

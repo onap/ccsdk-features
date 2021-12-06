@@ -94,6 +94,17 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
 
   const [responsive, setResponsive] = React.useState(false);
 
+  //collapse menu on mount if necessary
+  React.useEffect(()=>{
+
+    if(isOpen && window.innerWidth < tabletWidthBreakpoint){
+
+      setResponsive(true);
+      dispatch(new MenuAction(false));
+    }
+
+  },[]);
+
   React.useEffect(() => {
 
     function handleResize() {

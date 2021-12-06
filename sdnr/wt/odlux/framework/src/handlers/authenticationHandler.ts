@@ -22,6 +22,8 @@ import { AuthPolicy, User } from '../models/authentication';
 
 import { onLogin, onLogout } from '../services/applicationApi';
 import { startWebsocketSession, endWebsocketSession } from '../services/notificationService';
+import { startUserSession, endUserSession } from '../services/userSessionService';
+import { getSettings } from '../services/settingsService';
 
 export interface IAuthenticationState {
   user?: User;
@@ -38,11 +40,11 @@ export const authenticationStateHandler: IActionHandler<IAuthenticationState> = 
     
     if (user) {
       localStorage.setItem("userToken", user.toString());
-      startWebsocketSession();
+      startUserSession(user);
       onLogin();
     } else {
       localStorage.removeItem("userToken");
-      endWebsocketSession();
+      endUserSession();
       onLogout();
     }
 

@@ -25,6 +25,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Input from '@material-ui/core/Input';
 import { Select, FormControl, InputLabel, MenuItem } from '@material-ui/core';
+import { toAriaLabel } from '../../utilities/yangHelper';
 
 
 const styles = (theme: Theme) => createStyles({
@@ -73,14 +74,14 @@ class EnhancedTableFilterComponent extends React.Component<IEnhancedTableFilterC
               {col.disableFilter || (col.type === ColumnType.custom)
                 ? null
                 : (col.type === ColumnType.boolean)
-                  ? <Select className={classes.input} aria-label={col.title ? (col.title as string).toLowerCase().replace(/\s/g, "-") + '-filter' : `${ind + 1}-filter`} value={filter[col.property] !== undefined ? filter[col.property] : ''} onChange={this.createFilterHandler(col.property)} inputProps={{ name: `${col.property}-bool`, id: `${col.property}-bool` }} >
+                  ? <Select className={classes.input} aria-label={col.title ? toAriaLabel(col.title as string) + '-filter' : `${ind + 1}-filter`} value={filter[col.property] !== undefined ? filter[col.property] : ''} onChange={this.createFilterHandler(col.property)} inputProps={{ name: `${col.property}-bool`, id: `${col.property}-bool` }} >
                     <MenuItem value={undefined} aria-label="none-value" >
                       <em>None</em>
                     </MenuItem>
                     <MenuItem aria-label="true-value" value={true as any as string}>{col.labels ? col.labels["true"] : "true"}</MenuItem>
                     <MenuItem aria-label="false-value" value={false as any as string}>{col.labels ? col.labels["false"] : "false"}</MenuItem>
                   </Select>
-                  : <Input className={classes.input} inputProps={{ 'aria-label': col.title ? (col.title as string).toLowerCase().replace(/\s/g, "-") + '-filter' : `${ind + 1}-filter` }} value={filter[col.property] || ''} onChange={this.createFilterHandler(col.property)} />}
+                  : <Input className={classes.input} inputProps={{ 'aria-label': col.title ? toAriaLabel(col.title as string)+ '-filter' : `${ind + 1}-filter` }} value={filter[col.property] || ''} onChange={this.createFilterHandler(col.property)} />}
             </TableCell>
           );
         }, this)}

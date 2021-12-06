@@ -16,11 +16,26 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { Action } from "../flux/action";
+import { requestRest } from "./restService";
 
 
-export class SetWebsocketAction extends Action {
-    constructor(public isConnected: boolean|null) {
-        super();
+    const settingsPath ="/userdata";
+
+
+    export function getSettings<TData>(partialPath?: string){
+       let path = settingsPath;
+        if(partialPath){
+            path+=partialPath
+        }
+
+        const result = requestRest<TData>(path, {method: "GET"})
+        return result;
     }
-}
+
+    export function putSettings<TData>(partialPath: string, data: string){
+
+        const result = requestRest<TData>(settingsPath+partialPath, {method: "PUT", body: data})
+        return result;
+    }
+
+

@@ -21,9 +21,11 @@ import { SetWebsocketAction } from '../actions/websocketAction';
 const socketUrl = [location.protocol === 'https:' ? 'wss://' : 'ws://', location.hostname, ':', location.port, '/websocket'].join('');
 const subscriptions: { [scope: string]: SubscriptionCallback[] } = {};
 let socketReady: Promise<WebSocket>;
-let userLoggedOut = false;
 let wasWebsocketConnectionEstablished: undefined | boolean;
 let applicationStore: ApplicationStore | null;
+
+let areWebsocketsStoppedViaSettings = false;
+
 
 export interface IFormatedMessage {
     "event-time": string,
@@ -166,10 +168,11 @@ const connect = (): Promise<WebSocket> => {
 
     notificationSocket.onclose = function (event) {
       console.log("socket connection closed");
-      if (applicationStore) {
-        applicationStore.dispatch(new SetWebsocketAction(false));
-      }
-      if (!userLoggedOut) {
+      dispatchSocketClose();
+
+      const isUserLoggedIn = applicationStore?.state.framework.authenticationState.user && applicationStore?.state.framework.authenticationState.user?.isValid;
+
+      if (isUserLoggedIn && !areWebsocketsStoppedViaSettings) {
         socketReady = connect();
       }
     };
@@ -179,17 +182,37 @@ const connect = (): Promise<WebSocket> => {
 
 export const startWebsocketSession = () => {
   socketReady = connect();
-  userLoggedOut = false;
+  areWebsocketsStoppedViaSettings = false;
+}
+
+export const suspendWebsocketSession = () =>{
+  areWebsocketsStoppedViaSettings = true;
+  closeSocket();
 }
 
 export const endWebsocketSession = () => {
+  closeSocket();
+}
+
+const closeSocket = () =>{
+  
   if (socketReady) {
     socketReady.then(websocket => {
       websocket.close();
-      userLoggedOut = true;
     });
+  }else{
+    dispatchSocketClose();
   }
+}
 
+const dispatchSocketClose = () =>{
+  const isUserLoggedIn = applicationStore?.state.framework.authenticationState.user && applicationStore?.state.framework.authenticationState.user?.isValid;
+
+  if(isUserLoggedIn){
+    applicationStore?.dispatch(new SetWebsocketAction(false));
+  }else{
+    applicationStore?.dispatch(new SetWebsocketAction(null));
+  }
 }
 
 

@@ -34,6 +34,16 @@ const styles = (theme: Theme) => createStyles({
 
 const scrollbar = { overflow: "auto", paddingRight: "20px" }
 
+let connectionStatusinitialLoad = true;
+let connectionStatusinitialStateChanged = false;
+let connectionStatusDataLoad: number[] = [0, 0, 0, 0];
+let connectionTotalCount = 0;
+
+let alarmStatusinitialLoad = true;
+let alarmStatusinitialStateChanged = false;
+let alarmStatusDataLoad: number[] = [0, 0, 0, 0];
+let alarmTotalCount = 0;
+
 const mapProps = (state: IApplicationStoreState) => ({
   connectionStatusCount: state.connect.connectionStatusCount,
   alarmStatus: state.fault.faultStatus
@@ -55,16 +65,34 @@ class Home extends React.Component<HomeComponentProps>  {
   render(): JSX.Element {
     const { classes } = this.props;
 
+    if (!this.props.connectionStatusCount.isLoadingConnectionStatusChart) {
+      connectionStatusDataLoad = [
+        this.props.connectionStatusCount.Connected,
+        this.props.connectionStatusCount.Connecting,
+        this.props.connectionStatusCount.Disconnected,
+        this.props.connectionStatusCount.UnableToConnect
+      ];
+      connectionTotalCount = this.props.connectionStatusCount.Connected + this.props.connectionStatusCount.Connecting
+        + this.props.connectionStatusCount.Disconnected + this.props.connectionStatusCount.UnableToConnect;
+
+    }
+
+    if (!this.props.alarmStatus.isLoadingAlarmStatusChart) {
+      alarmStatusDataLoad = [
+        this.props.alarmStatus.critical,
+        this.props.alarmStatus.major,
+        this.props.alarmStatus.minor,
+        this.props.alarmStatus.warning
+      ];
+      alarmTotalCount = this.props.alarmStatus.critical + this.props.alarmStatus.major
+        + this.props.alarmStatus.minor + this.props.alarmStatus.warning;
+    }
+
     /** Available Network Connection Status chart data */
     const connectionStatusData = {
       labels: ['Connected', 'Connecting', 'Disconnected', 'UnableToConnect'],
       datasets: [{
-        data: [
-          this.props.connectionStatusCount.Connected,
-          this.props.connectionStatusCount.Connecting,
-          this.props.connectionStatusCount.Disconnected,
-          this.props.connectionStatusCount.UnableToConnect
-        ],
+        data: connectionStatusDataLoad,
         backgroundColor: [
           'rgb(0, 153, 51)',
           'rgb(255, 102, 0)',
@@ -78,6 +106,28 @@ class Home extends React.Component<HomeComponentProps>  {
     /** No Devices available */
     const connectionStatusUnavailableData = {
       labels: ['No Devices available'],
+      datasets: [{
+        data: [1],
+        backgroundColor: [
+          'rgb(255, 255, 255)'
+        ]
+      }]
+    };
+
+    /** Loading Connection Status chart */
+    const connectionStatusisLoading = {
+      labels: ['Loading chart...'],
+      datasets: [{
+        data: [1],
+        backgroundColor: [
+          'rgb(255, 255, 255)'
+        ]
+      }]
+    };
+
+    /** Loading Alarm Status chart */
+    const alarmStatusisLoading = {
+      labels: ['Loading chart...'],
       datasets: [{
         data: [1],
         backgroundColor: [
@@ -153,12 +203,7 @@ class Home extends React.Component<HomeComponentProps>  {
         'Warning'
       ],
       datasets: [{
-        data: [
-          this.props.alarmStatus.critical,
-          this.props.alarmStatus.major,
-          this.props.alarmStatus.minor,
-          this.props.alarmStatus.warning
-        ],
+        data: alarmStatusDataLoad,
         backgroundColor: [
           'rgb(240, 25, 10)',
           'rgb(240, 133, 10)',
@@ -241,17 +286,25 @@ class Home extends React.Component<HomeComponentProps>  {
         <div style={scrollbar} >
           <h1>Welcome to ODLUX</h1>
           <div className={classes.pageWidthSettings}>
-            {this.checkConnectionStatus() ?
-              <Doughnut
-                data={connectionStatusData}
-                type={Doughnut}
-                width={500}
-                height={500}
-                options={connectionStatusOptions}
-                plugins={connectionStatusPlugins}
-              />
+            {this.checkElementsAreLoaded() ?
+              this.checkConnectionStatus() && connectionTotalCount != 0 ?
+                <Doughnut
+                  data={connectionStatusData}
+                  type={Doughnut}
+                  width={500}
+                  height={500}
+                  options={connectionStatusOptions}
+                  plugins={connectionStatusPlugins}
+                />
+                : <Doughnut
+                  data={connectionStatusUnavailableData}
+                  type={Doughnut}
+                  width={500}
+                  height={500}
+                  options={connectionStatusUnavailableOptions}
+                  plugins={connectionStatusPlugins} />
               : <Doughnut
-                data={connectionStatusUnavailableData}
+                data={connectionStatusisLoading}
                 type={Doughnut}
                 width={500}
                 height={500}
@@ -261,17 +314,26 @@ class Home extends React.Component<HomeComponentProps>  {
             }
           </div>
           <div className={classes.pageWidthSettings}>
-            {this.checkAlarmStatus() ?
-              <Doughnut
-                data={alarmStatusData}
-                type={Doughnut}
-                width={500}
-                height={500}
-                options={alarmStatusOptions}
-                plugins={alarmStatusPlugins}
-              />
+            {this.checkAlarmsAreLoaded() ?
+              this.checkAlarmStatus() && alarmTotalCount != 0 ?
+                <Doughnut
+                  data={alarmStatusData}
+                  type={Doughnut}
+                  width={500}
+                  height={500}
+                  options={alarmStatusOptions}
+                  plugins={alarmStatusPlugins}
+                />
+                : <Doughnut
+                  data={alarmStatusUnavailableData}
+                  type={Doughnut}
+                  width={500}
+                  height={500}
+                  options={alarmStatusUnavailableOptions}
+                  plugins={alarmStatusPlugins}
+                />
               : <Doughnut
-                data={alarmStatusUnavailableData}
+                data={alarmStatusisLoading}
                 type={Doughnut}
                 width={500}
                 height={500}
@@ -288,23 +350,74 @@ class Home extends React.Component<HomeComponentProps>  {
   /** Check if connection status data available */
   public checkConnectionStatus = () => {
     let statusCount = this.props.connectionStatusCount;
-    if (statusCount.Connected == 0 && statusCount.Connecting == 0 && statusCount.Disconnected == 0 && statusCount.UnableToConnect == 0) {
-      return false;
-    }
-    else
+    if (statusCount.isLoadingConnectionStatusChart) {
       return true;
+    }
+    if (statusCount.Connected == 0 && statusCount.Connecting == 0 && statusCount.Disconnected == 0
+      && statusCount.UnableToConnect == 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  /** Check if connection status chart data is loaded */
+  public checkElementsAreLoaded = () => {
+    let isLoadingCheck = this.props.connectionStatusCount;
+    if (connectionStatusinitialLoad && !isLoadingCheck.isLoadingConnectionStatusChart) {
+      if (this.checkConnectionStatus()) {
+        connectionStatusinitialLoad = false;
+        return true;
+      }
+      return false;
+    } else if (connectionStatusinitialLoad && isLoadingCheck.isLoadingConnectionStatusChart) {
+      connectionStatusinitialLoad = false;
+      connectionStatusinitialStateChanged = true;
+      return !isLoadingCheck.isLoadingConnectionStatusChart;
+    } else if (connectionStatusinitialStateChanged) {
+      if (!isLoadingCheck.isLoadingConnectionStatusChart) {
+        connectionStatusinitialStateChanged = false;
+      }
+      return !isLoadingCheck.isLoadingConnectionStatusChart;
+    }
+    return true;
   }
 
   /** Check if alarms data available */
   public checkAlarmStatus = () => {
     let alarmCount = this.props.alarmStatus;
+    if (alarmCount.isLoadingAlarmStatusChart) {
+      return true;
+    }
     if (alarmCount.critical == 0 && alarmCount.major == 0 && alarmCount.minor == 0 && alarmCount.warning == 0) {
       return false;
     }
-    else
+    else {
       return true;
+    }
   }
 
+  /** Check if alarm status chart data is loaded */
+  public checkAlarmsAreLoaded = () => {
+    let isLoadingCheck = this.props.alarmStatus;
+    if (alarmStatusinitialLoad && !isLoadingCheck.isLoadingAlarmStatusChart) {
+      if (this.checkAlarmStatus()) {
+        alarmStatusinitialLoad = false;
+        return true;
+      }
+      return false;
+    } else if (alarmStatusinitialLoad && isLoadingCheck.isLoadingAlarmStatusChart) {
+      alarmStatusinitialLoad = false;
+      alarmStatusinitialStateChanged = true;
+      return !isLoadingCheck.isLoadingAlarmStatusChart;
+    } else if (alarmStatusinitialStateChanged) {
+      if (!isLoadingCheck.isLoadingAlarmStatusChart) {
+        alarmStatusinitialStateChanged = false;
+      }
+      return !isLoadingCheck.isLoadingAlarmStatusChart;
+    }
+    return true;
+  }
 }
 
 export default withStyles(styles)(withRouter(connect(mapProps, mapDispatch)(Home)));

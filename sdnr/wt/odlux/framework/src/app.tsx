@@ -26,7 +26,7 @@ import { Frame } from './views/frame';
 import { User } from './models/authentication';
 
 import { AddErrorInfoAction } from './actions/errorActions';
-import { UpdateUser } from './actions/authentication';
+import { loginUserAction } from './actions/authentication';
 
 import { applicationStoreCreator } from './store/applicationStore';
 import { ApplicationStoreProvider } from './flux/connect';
@@ -34,11 +34,12 @@ import { ApplicationStoreProvider } from './flux/connect';
 import { startHistoryListener } from './middleware/navigation';
 import { startRestService } from './services/restService';
 
-import { startForceLogoutService } from './services/forceLogoutService';
+import { startUserSessionService } from './services/userSessionService';
 import { startNotificationService } from './services/notificationService';
 
 import theme from './design/default';
 import '!style-loader!css-loader!./app.css';
+import { startBroadcastChannel } from './services/broadcastService';
 
 declare module '@material-ui/core/styles/createMuiTheme' {
 
@@ -64,12 +65,15 @@ export { configureApplication } from "./handlers/applicationStateHandler";
 export const transportPCEUrl = "transportPCEUrl";
 
 export const runApplication = () => {
-
+  
   const initialToken = localStorage.getItem("userToken");
   const applicationStore = applicationStoreCreator();
 
+  startBroadcastChannel(applicationStore);
+  startUserSessionService(applicationStore);
+  
   if (initialToken) {
-    applicationStore.dispatch(new UpdateUser(User.fromString(initialToken) || undefined));
+    applicationStore.dispatch(loginUserAction(User.fromString(initialToken) || undefined));
   }
 
   window.onerror = function (msg: string, url: string, line: number, col: number, error: Error) {
@@ -86,10 +90,10 @@ export const runApplication = () => {
     // Internet Explorer) will be suppressed.
     return suppressErrorAlert;
   };
+  
 
   startRestService(applicationStore);
   startHistoryListener(applicationStore);
-  startForceLogoutService(applicationStore);
   startNotificationService(applicationStore);
 
   const App = (): JSX.Element => (

@@ -265,6 +265,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         viewData: nextProps.viewData || null,
         [OldProps]: nextProps,
         choises: nextProps.displaySpecification.displayMode === DisplayModeType.doNotDisplay
+          || nextProps.displaySpecification.displayMode === DisplayModeType.displayAsMessage
           ? null
           : nextProps.displaySpecification.displayMode === DisplayModeType.displayAsRPC
             ? nextProps.displaySpecification.inputViewSpecification && ConfigurationApplicationComponent.getChoisesFromElements(nextProps.displaySpecification.inputViewSpecification.elements, nextProps.viewData) || []
@@ -843,9 +844,19 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
             ? this.renderUIViewList(ds.viewSpecification, ds.dataPath!, ds.keyProperty!, ds.apidocPath!, viewData)
             : ds.displayMode === DisplayModeType.displayAsRPC
               ? this.renderUIViewRPC(ds.inputViewSpecification, ds.dataPath!, viewData!, outputData, undefined, true, false)
-              : this.renderUIViewSelector(ds.viewSpecification, ds.dataPath!, viewData!, ds.keyProperty, editMode, isNew)
+              : ds.displayMode === DisplayModeType.displayAsMessage
+                ? this.renderMessage(ds.renderMessage)
+                : this.renderUIViewSelector(ds.viewSpecification, ds.dataPath!, viewData!, ds.keyProperty, editMode, isNew)
         }
       </div >
+    );
+  }
+
+  private renderMessage(renderMessage: string) {
+    return (
+      <div className={this.props.classes.container}>
+        <h4>{renderMessage}</h4>
+      </div>
     );
   }
 

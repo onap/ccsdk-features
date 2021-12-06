@@ -113,7 +113,7 @@
        <>
          <Dialog open={this.props.mode !== InfoNetworkElementDialogMode.None}  >
            <DialogTitle id="form-dialog-title">{setting.dialogTitle + ' - ' + this.state.nodeId}</DialogTitle>
-           <InfoElementTable stickyHeader tableId="info-element-table" asynchronus columns={[
+           <InfoElementTable stickyHeader isPopup tableId="info-element-table" asynchronus columns={[
              { property: "module", title: "Module", type: ColumnType.text, width:900 },
              {
                property: "revision", title: "Revision", type: ColumnType.custom, customControl: ({ rowData }) => {

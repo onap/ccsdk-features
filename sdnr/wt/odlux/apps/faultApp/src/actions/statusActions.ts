@@ -21,23 +21,28 @@ import { Dispatch } from '../../../../framework/src/flux/store';
 
 
 export class SetFaultStatusAction extends FaultApplicationBaseAction {
-  constructor (public criticalFaults: number, public majorFaults: number, public minorFaults: number, public warnings: number) {
+  constructor (public criticalFaults: number, public majorFaults: number, public minorFaults: number, public warnings: number, public isLoadingAlarmStatusChart: boolean) {
     super();
   }
 }
 
 
-export const refreshFaultStatusAsyncAction = async (dispatch: Dispatch ) => {
-  const result = await getFaultStateFromDatabase().catch(_=>null);
+export const refreshFaultStatusAsyncAction = async (dispatch: Dispatch) => {
+  
+  dispatch(new SetFaultStatusAction(0, 0, 0, 0, true));
+  const result = await getFaultStateFromDatabase().catch(_ => null);
   if (result) {
     const statusAction = new SetFaultStatusAction(
       result["Critical"] || 0,
       result["Major"] || 0,
       result["Minor"] || 0,
-      result["Warning"] || 0
+      result["Warning"] || 0,
+      false
     );
     dispatch(statusAction);
     return;
   }
-  dispatch(new SetFaultStatusAction(0, 0, 0, 0));
+  else {
+    dispatch(new SetFaultStatusAction(0, 0, 0, 0, false));
+  }
 }

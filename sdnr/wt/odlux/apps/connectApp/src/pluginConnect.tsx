@@ -35,6 +35,8 @@ import { PanelId } from "./models/panelId";
 import { NetworkElementsList } from './components/networkElements'
 
 let currentStatus: string | undefined = undefined;
+let refreshInterval: ReturnType<typeof window.setInterval> | null = null;
+
 
 const mapProps = (state: IApplicationStoreState) => ({
   currentProblemsProperties: createNetworkElementsProperties(state),
@@ -108,9 +110,26 @@ export function register() {
   applicationApi.applicationStoreInitialized.then(store => {
     store.dispatch(refreshConnectionStatusCountAsyncAction);
   });
-  window.setInterval(() => {
+
+
+  applicationApi.loginEvent.addHandler(e=>{
+    refreshInterval = startRefreshInterval() as any;
+  })
+
+  applicationApi.logoutEvent.addHandler(e=>{
+
     applicationApi.applicationStoreInitialized.then(store => {
-      store.dispatch(refreshConnectionStatusCountAsyncAction);
+      clearInterval(refreshInterval!);
     });
-  }, 15000);
+  })
+
+  const startRefreshInterval =() =>{
+    const refresh = window.setInterval(() => {
+      applicationApi.applicationStoreInitialized.then(store => {
+        store.dispatch(refreshConnectionStatusCountAsyncAction);
+      });
+    }, 15000);
+
+    return refresh;
+  }
 }

@@ -233,8 +233,8 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
           {setting.enableUsernameEditor &&
             <RadioGroup row aria-label="password-tls-key" name="password-tls-key" value={radioSelected}
               onChange={this.handleRadioChange} >
-              <FormControlLabel value='password' control={<Radio />} label="Password" onChange={this.onRadioSelect} />
-              <FormControlLabel value='tlsKey' control={<Radio />} label="TlsKey" onChange={this.onRadioSelect} />
+              <FormControlLabel aria-label="passwordSelection" value='password' control={<Radio />} label="Password" onChange={this.onRadioSelect} />
+              <FormControlLabel aria-label="tlsKeySelection" value='tlsKey' control={<Radio />} label="TlsKey" onChange={this.onRadioSelect} />
             </RadioGroup> || null}
 
           {setting.enableUsernameEditor && showPasswordTextField &&

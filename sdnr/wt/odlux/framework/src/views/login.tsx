@@ -36,7 +36,7 @@ import connect, { Connect, IDispatcher } from '../flux/connect';
 import authenticationService from '../services/authenticationService';
 
 import { updateExternalLoginProviderAsyncActionCreator } from '../actions/loginProvider';
-import { UpdatePolicies, UpdateUser } from '../actions/authentication';
+import { loginUserAction, UpdatePolicies } from '../actions/authentication';
 
 import { IApplicationStoreState } from '../store/applicationStore';
 import { AuthPolicy, AuthToken, User } from '../models/authentication';
@@ -73,6 +73,20 @@ const styles = (theme: Theme) => createStyles({
   submit: {
     marginTop: theme.spacing(3),
   },
+  lineContainer:{
+    width: '100%',
+    height: 10,
+    borderBottom: '1px solid grey',
+    textAlign: 'center',
+    marginTop:15,
+    marginBottom:5
+  },
+  thirdPartyDivider:{
+    fontSize: 15,
+     backgroundColor: 'white',
+     padding: '0 10px',
+     color: 'grey'
+  }
 });
 
 const mapProps = (state: IApplicationStoreState) => ({
@@ -85,7 +99,7 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   updateExternalProviders: () => dispatcher.dispatch(updateExternalLoginProviderAsyncActionCreator()),
   updateAuthentication: (token: AuthToken | null) => {
     const user = token && new User(token) || undefined;
-    dispatcher.dispatch(new UpdateUser(user));
+    dispatcher.dispatch(loginUserAction(user));
   },
   updatePolicies: (policies?: AuthPolicy[]) => {
     return dispatcher.dispatch(new UpdatePolicies(policies));
@@ -138,6 +152,7 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
 
   render(): JSX.Element {
     const { classes } = this.props;
+    const areProvidersAvailable = this.props.externalLoginProviders && this.props.externalLoginProviders.length > 0;
     return (
       <>
         <CssBaseline />
@@ -148,6 +163,32 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
             </Avatar>
             <Typography variant="caption">Sign in</Typography>
             <form className={classes.form}>
+
+
+              {areProvidersAvailable &&
+                <>
+                  {
+                    this.props.externalLoginProviders!.map((provider, index) => (
+                      <Button
+                        aria-controls="externalLogin"
+                        aria-label={"external-login-identity-provider-" + (index + 1)}
+                        aria-haspopup="true"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit} onClick={() => { window.location = provider.loginUrl as any; }}>
+                        {provider.title}
+                      </Button>))
+                  }
+
+                  <div className={classes.lineContainer}>
+                    <span className={classes.thirdPartyDivider}>
+                      OR
+                    </span>
+                  </div>
+                </>
+              }
+
               <FormControl margin="normal" required fullWidth>
                 <InputLabel htmlFor="username">Username</InputLabel>
                 <Input id="username" name="username" autoComplete="username" autoFocus
@@ -178,10 +219,6 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
                   onChange={event => { this.setState({ scope: event.target.value }) }}
                 />
               </FormControl>
-              <FormControlLabel
-                control={<Checkbox value="remember" color="secondary" />}
-                label="Remember me"
-              />
               <Button
                 aria-label="login-button"
                 type="submit"
@@ -193,34 +230,8 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
                 onClick={this.onSignIn}
               >
                 Sign in
-            </Button>
-            { this.props.externalLoginProviders && this.props.externalLoginProviders.length > 0
-            ?
-              [
-                <Button 
-                  aria-controls="externalLogin" 
-                  aria-haspopup="true"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit} onClick={(ev) => { this.setExternalProviderAnchor(ev.currentTarget); }}>
-                  Use external Login
-                </Button>,
-                <Menu
-                  anchorEl={this.state.externalProviderAnchor}
-                  keepMounted
-                  open={Boolean(this.state.externalProviderAnchor)}
-                  onClose={() => { this.setExternalProviderAnchor(null); }}
-                >
-                  { 
-                    this.props.externalLoginProviders.map((provider) => (
-                      <MenuItem key={provider.id} onClick={() => { window.location = provider.loginUrl as any; } }>{ provider.title} </MenuItem>
-                    ))
-                  }
-                </Menu>
-              ]
-              : null
-            }
+              </Button>
+
             </form>
             {this.state.message && <Alert severity="error">{this.state.message}</Alert>}
           </Paper>

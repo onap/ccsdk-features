@@ -19,7 +19,7 @@ import * as React from 'react';
 import { HashRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 
 import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { faHome, faAddressBook, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faAddressBook, faSignInAlt, faCog } from '@fortawesome/free-solid-svg-icons';
 
 import { SnackbarProvider } from 'notistack';
 import { ConfirmProvider } from 'material-ui-confirm';
@@ -34,6 +34,7 @@ import Home from '../views/home';
 import Login from '../views/login';
 import About from '../views/about';
 import Test from '../views/test';
+import UserSettings from '../views/settings';
 
 import applicationService from '../services/applicationManager';
 
@@ -57,6 +58,8 @@ const styles = (theme: Theme) => createStyles({
   },
   toolbar: theme.mixins.toolbar as any
 });
+
+
 
 type FrameProps = WithStyles<typeof styles>;
 
@@ -87,6 +90,11 @@ class FrameComponent extends React.Component<FrameProps>{
                     <Route path="/about" component={() => (
                       <AppFrame title={"About"} icon={faAddressBook} >
                           <About />
+                      </AppFrame>
+                    )} />
+                    <Route path="/settings" component={() => (
+                      <AppFrame title={"Settings"} icon={faCog} >
+                          <UserSettings />
                       </AppFrame>
                     )} />
                     {process.env.NODE_ENV === "development" ? <Route path="/test" component={() => (

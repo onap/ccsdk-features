@@ -24,6 +24,7 @@ type AuthTokenResponse = {
   access_token: string;
   token_type: string;
   expires_at: number;
+  issued_at: number;
 }
 
 class AuthenticationService {
@@ -50,11 +51,14 @@ class AuthenticationService {
         scope: scope
       })
     }, false);
+
+   
     return result && {
       username: email,
       access_token: result.access_token,
       token_type: result.token_type,
-      expires: (result.expires_at * 1000)
+      expires: result.expires_at,
+      issued: result.issued_at
     } || null;
   }
 
@@ -65,12 +69,14 @@ class AuthenticationService {
         'Authorization':  "Basic " + btoa(email + ":" + password)
       },
     }, false);
+
     if (result) {
       return {
           username: email,
           access_token:  btoa(email + ":" + password),
           token_type: "Basic",
-          expires: (new Date()).valueOf() + 2678400000 // 31 days
+          expires: (new Date()).valueOf() / 1000 + 86400, // 1 day
+          issued: (new Date()).valueOf() / 1000
       }
     }
     return null;

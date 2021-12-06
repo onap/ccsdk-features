@@ -26,7 +26,8 @@ export interface IConnectionStatusCount {
    UnableToConnect: number,
    Undefined: number,
    Unmounted: number,
-   total: number
+   total: number,
+   isLoadingConnectionStatusChart: boolean
 }
 
 const connectionStatusCountInit: IConnectionStatusCount = {
@@ -37,7 +38,8 @@ const connectionStatusCountInit: IConnectionStatusCount = {
    UnableToConnect: 0,
    Undefined: 0,
    Unmounted: 0,
-   total: 0
+   total: 0,
+   isLoadingConnectionStatusChart: false
 };
 
 export const connectionStatusCountHandler: IActionHandler<IConnectionStatusCount> = (state = connectionStatusCountInit, action) => {
@@ -50,7 +52,8 @@ export const connectionStatusCountHandler: IActionHandler<IConnectionStatusCount
          UnableToConnect: action.UnableToConnectCount,
          Undefined: action.UndefinedCount,
          Unmounted: action.UnmountedCount,
-         total: action.totalCount
+         total: action.totalCount,
+         isLoadingConnectionStatusChart: action.isLoadingConnectionStatusChart
       }
    }
 
