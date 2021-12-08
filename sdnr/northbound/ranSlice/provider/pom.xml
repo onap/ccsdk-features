@@ -90,6 +90,7 @@
             <groupId>org.onap.ccsdk.sli.core</groupId>
             <artifactId>utils-provider</artifactId>
             <version>${ccsdk.sli.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
