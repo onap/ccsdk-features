@@ -1,0 +1,5 @@
+---
+distribution_type: 'maven'
+version: '1.2.7'
+project: 'ccsdk-features'
+log_dir: 'ccsdk-features-maven-stage-istanbul/5/'
