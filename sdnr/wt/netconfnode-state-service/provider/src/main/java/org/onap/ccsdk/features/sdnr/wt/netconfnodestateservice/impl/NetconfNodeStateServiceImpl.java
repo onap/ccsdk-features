@@ -58,6 +58,7 @@ import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.mdsal.dom.api.DOMMountPointService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
@@ -104,6 +105,7 @@ public class NetconfNodeStateServiceImpl
 
     // -- OSGi services, provided
     private DataBroker dataBroker;
+    private DOMDataBroker domDataBroker;
     private MountPointService mountPointService;
     private DOMMountPointService domMountPointService;
     private RpcProviderService rpcProviderRegistry;
@@ -159,6 +161,7 @@ public class NetconfNodeStateServiceImpl
         LOG.info("Creating provider for {}", APPLICATION_NAME);
 
         this.dataBroker = null;
+        this.domDataBroker = null;
         this.mountPointService = null;
         this.domMountPointService = null;
         this.rpcProviderRegistry = null;
@@ -180,6 +183,10 @@ public class NetconfNodeStateServiceImpl
 
     public void setDataBroker(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
+    }
+
+    public void setDomDataBroker(DOMDataBroker domDataBroker) {
+        this.domDataBroker = domDataBroker;
     }
 
     public void setRpcProviderRegistry(RpcProviderService rpcProviderRegistry) {
@@ -268,6 +275,10 @@ public class NetconfNodeStateServiceImpl
 
     public DataBroker getDataBroker() {
         return dataBroker;
+    }
+
+    public DOMDataBroker getDOMDataBroker() {
+        return domDataBroker;
     }
 
     public NetconfnodeStateServiceRpcApiImpl getNetconfnodeStateServiceRpcApiImpl() {

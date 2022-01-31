@@ -19,6 +19,7 @@ package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
 import java.util.Optional;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
@@ -33,6 +34,12 @@ public interface NetconfAccessor {
      * @return the Controller DataBroker
      */
     DataBroker getControllerBindingDataBroker();
+
+    /**
+     * @return the Controller DOMDataBroker
+     */
+    DOMDataBroker getControllerDOMDataBroker();
+
 
     /**
      * @return the nodeId

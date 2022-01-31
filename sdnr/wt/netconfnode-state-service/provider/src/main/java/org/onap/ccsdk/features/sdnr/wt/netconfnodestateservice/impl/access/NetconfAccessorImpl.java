@@ -26,6 +26,7 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccesso
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeStateServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContext;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -111,6 +112,11 @@ public class NetconfAccessorImpl implements NetconfAccessor {
     @Override
     public DataBroker getControllerBindingDataBroker() {
         return netconfNodeStateService.getDataBroker();
+    }
+
+    @Override
+    public DOMDataBroker getControllerDOMDataBroker() {
+        return netconfNodeStateService.getDOMDataBroker();
     }
 
     /**

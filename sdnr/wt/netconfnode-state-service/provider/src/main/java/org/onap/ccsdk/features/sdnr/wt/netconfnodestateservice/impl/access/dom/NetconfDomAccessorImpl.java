@@ -146,6 +146,28 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
         }
     }
 
+    @Override
+    public Optional<NormalizedNode<?, ?>> readControllerDataNode(LogicalDatastoreType dataStoreType,
+            YangInstanceIdentifier path) {
+        LOG.debug("Read to controller node datastore:{} path:{}", dataStoreType, path);
+
+        DOMDataTreeReadTransaction readOnlyTransaction = this.getControllerDOMDataBroker().newReadOnlyTransaction();
+        try {
+            FluentFuture<Optional<NormalizedNode<?, ?>>> foData = readOnlyTransaction.read(dataStoreType, path);
+
+            Optional<NormalizedNode<?, ?>> data = foData.get(120, TimeUnit.SECONDS);
+            LOG.trace("read is done - {} ", foData.isDone());
+            return data;
+        } catch (InterruptedException e) {
+            LOG.debug("Incomplete read to node transaction {} {}", dataStoreType, path, e);
+            Thread.currentThread().interrupt();
+            return Optional.empty();
+        } catch (ExecutionException | TimeoutException e) {
+            LOG.debug("Incomplete read to node transaction {} {}", dataStoreType, path, e);
+            return Optional.empty();
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private static <T extends DataObject> Optional<T> convertNormalizedNode(BindingNormalizedNodeSerializer serializer,
             Optional<NormalizedNode<?, ?>> oData, YangInstanceIdentifier path, Class<T> clazz)
@@ -284,4 +306,5 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
         final String formattedDate = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(dateTime);
         return new DateAndTime(formattedDate);
     }
+
 }

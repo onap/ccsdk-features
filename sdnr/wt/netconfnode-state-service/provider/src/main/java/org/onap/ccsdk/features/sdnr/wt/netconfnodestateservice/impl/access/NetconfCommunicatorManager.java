@@ -65,6 +65,7 @@ public class NetconfCommunicatorManager {
     private final DOMMountPointService domMountPointService;
     private final DomContext domContext;
 
+
     public NetconfCommunicatorManager(MountPointService mountPointService, DOMMountPointService domMountPointService,
             DomContext domContext) {
         super();

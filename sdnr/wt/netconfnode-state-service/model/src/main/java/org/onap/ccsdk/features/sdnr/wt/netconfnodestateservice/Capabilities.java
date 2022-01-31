@@ -48,8 +48,9 @@ public class Capabilities {
     private static final Logger LOG = LoggerFactory.getLogger(Capabilities.class);
 
     private static final String UNSUPPORTED = "Unsupported";
+    private static final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
     private final List<String> capabilities = new ArrayList<>();
-    private final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     private Capabilities() {}
 
@@ -151,6 +152,25 @@ public class Capabilities {
     }
 
     /**
+     * Provide namespace and its revision as String.
+     *
+     * @param qCapability capability from the model
+     * @return String
+     */
+    public static String getNamespaceAndRevisionAsString(QName qCapability) {
+        StringBuffer res = new StringBuffer();
+        res.append(qCapability.getNamespace().toString());
+
+        String revisionString = getRevisionString(qCapability);
+        if (revisionString != null) {
+            res.append("?");
+            res.append(revisionString);
+        }
+
+        return res.toString();
+    }
+
+    /**
      *
      * @param namespace requested
      * @param revision request or null for any revision
@@ -178,7 +198,7 @@ public class Capabilities {
      * @param qCapability that specifies the revision
      * @return String with revisiondate or null
      */
-    private String getRevisionString(QName qCapability) {
+    private static String getRevisionString(QName qCapability) {
         Object revisionObject = qCapability.getRevision();
         String revision = null;
         if (revisionObject instanceof Optional) {

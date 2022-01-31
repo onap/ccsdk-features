@@ -28,6 +28,8 @@
 
     <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
 
+    <reference id="domDataBroker" interface="org.opendaylight.mdsal.dom.api.DOMDataBroker"/>
+
     <reference id="notificationPublishService"
                interface="org.opendaylight.mdsal.binding.api.NotificationPublishService"/>
 
@@ -55,6 +57,7 @@
 
     <bean id="netconfNodeStateService" class="org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeStateServiceImpl" init-method="init" destroy-method="destroy" scope="singleton">
         <property name="dataBroker" ref="dataBroker"/>
+        <property name="domDataBroker" ref="domDataBroker"/>
         <property name="rpcProviderRegistry" ref="rpcProviderRegistry"/>
         <property name="notificationPublishService" ref="notificationPublishService"/>
         <property name="mountPointService" ref="mountPointService"/>
