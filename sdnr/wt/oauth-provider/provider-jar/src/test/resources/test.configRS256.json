@@ -1,5 +1,7 @@
 {
-    "tokenSecret": "secret2134",
+    "tokenSecret": "file:///src/test/resources/jwtRS256.key",
+    "tokenPubKey": "file:///src/test/resources/jwtRS256.key.pub",
+    "algorithm":"RS256",
     "tokenIssuer": "ONAP SDNC",
     "publicUrl": "http://nasp.diasf.de",
     "redirectUri": "/index.html#redirect=",

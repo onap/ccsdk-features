@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.KeycloakProviderService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
@@ -57,9 +58,9 @@ public class TestKeycloakAuthService {
     private static final String REDIRECT_URI = "/odlux/token?";
 
     @BeforeClass
-    public static void init() {
+    public static void init() throws IllegalArgumentException, Exception {
 
-        TokenCreator tokenCreator = TokenCreator.getInstance(TOKENCREATOR_SECRET, "issuer");
+        TokenCreator tokenCreator = TokenCreator.getInstance(Config.TOKENALG_HS256, TOKENCREATOR_SECRET, "issuer", 30*60);
         OAuthProviderConfig config = new OAuthProviderConfig("kc", KEYCLOAKURL, null, "odlux.app", OAUTH_SECRET,
                 "openid", "keycloak test", "onap", false);
         oauthService = new KeycloakProviderServiceToTest(config, REDIRECT_URI, tokenCreator);

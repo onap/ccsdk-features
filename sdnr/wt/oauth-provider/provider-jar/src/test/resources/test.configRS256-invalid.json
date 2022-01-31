@@ -1,5 +1,7 @@
 {
-    "tokenSecret": "secret2134",
+    "tokenSecret": "",
+    "tokenPubKey": "file:///src/test/resources/jwtRS256.key.pub",
+    "algorithm":"RS256",
     "tokenIssuer": "ONAP SDNC",
     "publicUrl": "http://nasp.diasf.de",
     "redirectUri": "/index.html#redirect=",
@@ -12,6 +14,8 @@
             "url": "http://10.20.11.160:8080",
             "clientId": "odlux.app",
             "secret": "5da4ea3d-8cc9-4669-bd7e-3ecb91d120cd",
+            "publickey": "",
+            "algorithm":"RS256",
             "scope": "openid",
             "title": "OSNL Keycloak Provider",
             "realmName":"onap"

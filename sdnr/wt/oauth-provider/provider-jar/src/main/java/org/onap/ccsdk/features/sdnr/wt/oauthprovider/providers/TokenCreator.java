@@ -27,56 +27,96 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import java.io.IOException;
+import java.security.Security;
 import java.util.Arrays;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.shiro.authc.BearerToken;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet;
-import org.apache.shiro.authc.BearerToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TokenCreator {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthHttpServlet.class.getName());
-    private static final long DEFAULT_TOKEN_LIFETIME_MS = 30 * 60 * 1000L;
     private final String issuer;
     private static TokenCreator _instance;
-    private final String secret;
+    private final long tokenLifetimeSeconds;
+    private final Algorithm algorithm;
 
     private static final String ROLES_CLAIM = "roles";
     private static final String FAMILYNAME_CLAIM = "family_name";
     private static final String NAME_CLAIM = "name";
 
-    public static TokenCreator getInstance(Config config) {
+    static {
+        Security.addProvider(
+                new BouncyCastleProvider()
+       );
+    }
+    public static TokenCreator getInstance(Config config) throws IllegalArgumentException, IOException {
         if (_instance == null) {
             _instance = new TokenCreator(config);
         }
         return _instance;
     }
-    public static TokenCreator getInstance(String secret, String issuer) {
+
+    public static TokenCreator getInstance(String alg, String secret, String issuer, long tokenLifetime)
+            throws IllegalArgumentException, IOException {
+        return getInstance(alg, secret, null, issuer, tokenLifetime);
+    }
+
+    public static TokenCreator getInstance(String alg, String secret, String pubkey, String issuer, long tokenLifetime)
+            throws IllegalArgumentException, IOException {
         if (_instance == null) {
-            _instance = new TokenCreator(secret, issuer);
+            _instance = new TokenCreator(alg, secret, pubkey, issuer, tokenLifetime);
         }
         return _instance;
     }
 
-    private TokenCreator(Config config) {
-        this(config.getTokenSecret(),config.getTokenIssuer());
+    private TokenCreator(Config config) throws IllegalArgumentException, IOException {
+        this(config.getAlgorithm(), config.getTokenSecret(), config.getPublicKey(), config.getTokenIssuer(),
+                config.getTokenLifetime());
     }
-    private TokenCreator(String secret, String issuer) {
-        this.secret = secret;
+
+    private TokenCreator(String alg, String secret, String pubkey, String issuer, long tokenLifetime)
+            throws IllegalArgumentException, IOException {
         this.issuer = issuer;
+        this.tokenLifetimeSeconds = tokenLifetime;
+        this.algorithm = this.createAlgorithm(alg, secret, pubkey);
+    }
+
+    private Algorithm createAlgorithm(String alg, String secret, String pubkey)
+            throws IllegalArgumentException, IOException {
+        if(alg==null) {
+            alg = Config.TOKENALG_HS256;
+        }
+        switch (alg) {
+            case Config.TOKENALG_HS256:
+                return Algorithm.HMAC256(secret);
+            case Config.TOKENALG_RS256:
+                return Algorithm.RSA256(RSAKeyReader.getPublicKey(pubkey), RSAKeyReader.getPrivateKey(secret));
+            case Config.TOKENALG_RS512:
+                return Algorithm.RSA512(RSAKeyReader.getPublicKey(pubkey), RSAKeyReader.getPrivateKey(secret));
+            case Config.TOKENALG_CLIENT_RS256:
+                return Algorithm.RSA256(RSAKeyReader.getPublicKey(pubkey), null);
+            case Config.TOKENALG_CLIENT_RS512:
+                return Algorithm.RSA512(RSAKeyReader.getPublicKey(pubkey), null);
+        }
+        throw new IllegalArgumentException(String.format("unable to find algorithm for %s", alg));
+
     }
 
     public BearerToken createNewJWT(UserTokenPayload data) {
-        Algorithm algorithm = Algorithm.HMAC256(secret);
         final String token = JWT.create().withIssuer(issuer).withExpiresAt(new Date(data.getExp()))
-                .withSubject(data.getPreferredUsername()).withClaim(NAME_CLAIM, data.getGivenName())
-                .withClaim(FAMILYNAME_CLAIM, data.getFamilyName())
+                .withIssuedAt(new Date(data.getIat())).withSubject(data.getPreferredUsername())
+                .withClaim(NAME_CLAIM, data.getGivenName()).withClaim(FAMILYNAME_CLAIM, data.getFamilyName())
                 .withArrayClaim(ROLES_CLAIM, data.getRoles().toArray(new String[data.getRoles().size()]))
-                .sign(algorithm);
+                .sign(this.algorithm);
+        LOG.trace("token created: {}", token);
         return new BearerToken(token);
     }
 
@@ -84,8 +124,7 @@ public class TokenCreator {
         DecodedJWT jwt = null;
         LOG.debug("try to verify token {}", token);
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build();
+            JWTVerifier verifier = JWT.require(this.algorithm).withIssuer(issuer).build();
             jwt = verifier.verify(token);
 
         } catch (JWTVerificationException e) {
@@ -95,11 +134,15 @@ public class TokenCreator {
     }
 
     public long getDefaultExp() {
-        return new Date().getTime() + DEFAULT_TOKEN_LIFETIME_MS;
+        return new Date().getTime() + (this.tokenLifetimeSeconds * 1000);
     }
 
     public long getDefaultExp(long expIn) {
         return new Date().getTime() + expIn;
+    }
+
+    public long getDefaultIat() {
+        return new Date().getTime();
     }
 
     public UserTokenPayload decode(HttpServletRequest req) throws JWTDecodeException {
@@ -117,4 +160,5 @@ public class TokenCreator {
 
         return data;
     }
+
 }

@@ -41,6 +41,7 @@ import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.shiro.authc.BearerToken;
 import org.jolokia.osgi.security.Authenticator;
 import org.json.JSONArray;
 import org.junit.BeforeClass;
@@ -49,6 +50,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
 import org.onap.ccsdk.features.sdnr.wt.common.test.ServletOutputStreamToByteArrayOutputStream;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.CustomObjectMapper;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.InvalidConfigurationException;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet;
@@ -57,7 +59,6 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.test.helper.OdlJsonMapper;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.test.helper.OdlXmlMapper;
 import org.opendaylight.aaa.api.IdMService;
-import org.apache.shiro.authc.BearerToken;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -84,14 +85,15 @@ public class TestAuthHttpServlet {
 //            Map.of("Authorization", BaseHTTPClient.getAuthorizationHeaderValue("admin@sdn", "admin")));
 
     @BeforeClass
-    public static void init() {
+    public static void init() throws IllegalArgumentException, Exception {
 
         try {
             Config config = createConfigFile();
             tokenCreator = TokenCreator.getInstance(config);
             servlet = new TestServlet();
             shiroConfiguration = loadShiroConfig(TESTSHIROCONFIGFILE);
-        } catch (IOException e) {
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
             fail(e.getMessage());
         }
         servlet.setDataBroker(dataBroker);
@@ -124,7 +126,7 @@ public class TestAuthHttpServlet {
         return mapper.readValue(new File(filename), ShiroConfigurationBuilder.class).build();
     }
 
-    private static Config createConfigFile() throws IOException {
+    private static Config createConfigFile() throws IOException, InvalidConfigurationException {
         return Config.getInstance(TESTCONFIGFILE);
 
     }
@@ -351,7 +353,7 @@ public class TestAuthHttpServlet {
 
         private static final long serialVersionUID = 1L;
 
-        public TestServlet() throws IOException {
+        public TestServlet() throws IllegalArgumentException, Exception {
             super();
         }
 

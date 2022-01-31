@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.GitlabProviderService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
@@ -57,9 +58,9 @@ public class TestGitlabAuthService {
     private static final String REDIRECT_URI = "/odlux/token?";
 
     @BeforeClass
-    public static void init() {
+    public static void init() throws IllegalArgumentException, Exception {
 
-        TokenCreator tokenCreator = TokenCreator.getInstance(TOKENCREATOR_SECRET, "issuer");
+        TokenCreator tokenCreator = TokenCreator.getInstance(Config.TOKENALG_HS256, TOKENCREATOR_SECRET, "issuer", 30*60);
         OAuthProviderConfig config = new OAuthProviderConfig("git", GITURL, null, "odlux.app", OAUTH_SECRET, "openid",
                 "gitlab test", "", false);
         oauthService = new GitlabProviderServiceToTest(config, REDIRECT_URI, tokenCreator);
@@ -160,7 +161,6 @@ public class TestGitlabAuthService {
             final String uri = t.getRequestURI().toString();
             System.out.println(String.format("req received: %s %s", method, t.getRequestURI()));
             OutputStream os = null;
-            String response = "";
             try {
                 if (method.equals("GET")) {
                     if (uri.equals(GITLAB_USER_ENDPOINT)) {
