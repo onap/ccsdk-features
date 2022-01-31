@@ -39,6 +39,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.HtUserdataManagerImpl;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.nodb.NoDbDatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
@@ -148,10 +149,15 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         this.dbConfig = new DataProviderConfig(configuration);
         this.dataBroker = dataBroker;
         this.mediatorServerServlet = mediatorServerServlet;
-        if (this.dbConfig.getDbType() == SdnrDbType.ELASTICSEARCH) {
-            this.dataProvider = new ElasticSearchDataProvider(this.dbConfig.getEsConfig());
-         } else {
-            this.dataProvider = new SqlDBDataProvider(this.dbConfig.getMariadbConfig());
+        if(this.dbConfig.isEnabled()) {
+            if (this.dbConfig.getDbType() == SdnrDbType.ELASTICSEARCH) {
+                this.dataProvider = new ElasticSearchDataProvider(this.dbConfig.getEsConfig());
+             } else {
+                this.dataProvider = new SqlDBDataProvider(this.dbConfig.getMariadbConfig());
+            }
+        }
+        else {
+            this.dataProvider = new NoDbDatabaseDataProvider();
         }
         this.dbUserManager = this.dataProvider.getUserManager();
         this.dataProvider.waitForYellowDatabaseStatus(DATABASE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -159,6 +165,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         // Register ourselves as the REST API RPC implementation
         LOG.info("Register RPC Service {}", DataProviderServiceImpl.class.getSimpleName());
         this.rpcReg = rpcProviderService.registerRpcImplementation(DataProviderService.class, this);
+        
     }
 
     private void sendResyncCallbackToApiGateway() {

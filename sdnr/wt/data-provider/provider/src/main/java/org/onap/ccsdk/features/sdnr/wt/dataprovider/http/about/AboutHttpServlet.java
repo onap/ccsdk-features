@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpHeaders;
 import org.onap.ccsdk.features.sdnr.wt.common.Resources;
 import org.onap.ccsdk.features.sdnr.wt.common.file.PomFile;
-import org.onap.ccsdk.features.sdnr.wt.common.file.PomPropertiesFile;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -115,18 +116,31 @@ public class AboutHttpServlet extends HttpServlet {
      * collect static versioning data
      */
     private void collectStaticData() {
-        PomPropertiesFile props = this.getPomProperties();
         final String ccsdkVersion = this.getPomParentVersion();
         final String mdsalVersion = SystemInfo.getMdSalVersion(UNKNOWN);
         this.data.put(PLACEHOLDER_ONAP_RELEASENAME, ODLVersionLUT.getONAPReleaseName(ccsdkVersion, UNKNOWN));
         this.data.put(PLACEHOLDER_ODL_RELEASENAME, ODLVersionLUT.getOdlVersion(mdsalVersion, UNKNOWN));
-        this.data.put(PLACEHOLDER_BUILD_TIMESTAMP, props != null ? String.valueOf(props.getBuildDate()) : "");
+        this.data.put(PLACEHOLDER_BUILD_TIMESTAMP, getDate(this.getManifestValue("Bnd-LastModified"), UNKNOWN));
         this.data.put(PLACEHOLDER_PACAKGE_VERSION, this.getManifestValue("Bundle-Version"));
         this.data.put(PLACEHOLDER_CCSDK_VERSION, ccsdkVersion);
         this.data.put(PLACEHOLDER_ONAP_RELEASEVERSION, SystemInfo.getOnapVersion(UNKNOWN));
         this.data.put(PLACEHOLDER_MDSAL_VERSION, mdsalVersion);
         this.data.put(PLACEHOLDER_YANGTOOLS_VERSION, SystemInfo.getYangToolsVersion(UNKNOWN));
         this.data.put(PLACEHOLDER_PACKAGE_GITHASH, this.getGitHash(UNKNOWN));
+    }
+
+    private String getDate(String value, String defaultValue) {
+        if(value==null) {
+            return defaultValue;
+        }
+        try {
+            long x = Long.parseLong(value);
+            return NetconfTimeStampImpl.getConverter().getTimeStampAsNetconfString(new Date(x));
+        }
+        catch(NumberFormatException e) {
+            LOG.debug("date value is not a numeric one");
+        }
+        return defaultValue;
     }
 
     @Override
@@ -214,27 +228,6 @@ public class AboutHttpServlet extends HttpServlet {
         }
         return null;
 
-    }
-
-    /**
-     * get object representation of /META-INF/maven/groupId/artifactId/pom.properties
-     *
-     * @return
-     */
-    private PomPropertiesFile getPomProperties() {
-        URL url = Resources.getUrlForRessource(AboutHttpServlet.class,
-                METAINF_MAVEN + groupId + "/" + artifactId + "/pom.properties");
-        PomPropertiesFile propfile;
-        if (url == null) {
-            return null;
-        }
-        try {
-            propfile = new PomPropertiesFile(url.openStream());
-            return propfile;
-        } catch (Exception e) {
-            LOG.warn(EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE, e);
-        }
-        return null;
     }
 
     /**
