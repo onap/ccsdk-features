@@ -26,15 +26,16 @@ import java.io.IOException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.BearerToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.InvalidConfigurationException;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.opendaylight.aaa.api.shiro.principal.ODLPrincipal;
-import org.apache.shiro.authc.BearerToken;
 import org.opendaylight.aaa.shiro.realm.TokenAuthRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,7 @@ public class OAuth2Realm extends TokenAuthRealm {
     private final TokenCreator tokenCreator;
     private final Config config;
 
-    public OAuth2Realm() throws IOException {
+    public OAuth2Realm() throws IllegalArgumentException, IOException, InvalidConfigurationException {
         super();
         super.setName(REALM_NAME);
         this.config = Config.getInstance();

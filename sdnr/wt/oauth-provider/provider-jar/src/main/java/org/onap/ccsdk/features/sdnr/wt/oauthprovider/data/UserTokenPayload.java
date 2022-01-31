@@ -30,9 +30,15 @@ public class UserTokenPayload {
     private String givenName;
     private String familyName;
     private long exp;
+    private long iat;
+
 
     public long getExp() {
         return exp;
+    }
+
+    public long getIat() {
+        return this.iat;
     }
 
     public void setPreferredUsername(String preferredUsername) {
@@ -49,6 +55,10 @@ public class UserTokenPayload {
 
     public void setExp(long exp) {
         this.exp = exp;
+    }
+
+    public void setIat(long iat) {
+        this.iat = iat;
     }
 
     public String getPreferredUsername() {

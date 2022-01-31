@@ -21,13 +21,16 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.oauthprovider.data;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -44,24 +47,39 @@ public class Config {
     private static final String DEFAULT_TOKENSECRET = generateSecret();
     private static final String DEFAULT_REDIRECTURI = "/odlux/index.html#/oauth?token=";
     private static final String DEFAULT_SUPPORTODLUSERS = "true";
-    private static Random random;
+    public static final String TOKENALG_HS256 = "HS256";
+    public static final String TOKENALG_RS256 = "RS256";
+    public static final String TOKENALG_RS512 = "RS512";
+    private static final String CLIENTALG_PRE = "Client";
+    public static final String TOKENALG_CLIENT_RS256 = CLIENTALG_PRE + TOKENALG_RS256;
+    public static final String TOKENALG_CLIENT_RS512 = CLIENTALG_PRE + TOKENALG_RS512;
+    private static final String DEFAULT_TOKEN_ALGORITHM = TOKENALG_HS256;
+
+    private static final long DEFAULT_TOKEN_LIFETIME = 30 * 60;
+    private static final List<String> VALID_ALGORITHMS =
+            Arrays.asList(TOKENALG_HS256, TOKENALG_RS256, TOKENALG_RS512, TOKENALG_CLIENT_RS256, TOKENALG_CLIENT_RS512);
+    private static final List<String> VALID_ALGORITHMS_FOR_INTERNAL_LOGIN =
+            Arrays.asList(TOKENALG_HS256, TOKENALG_RS256, TOKENALG_RS512);
+    private static SecureRandom random;
     private static Config _instance;
 
     private List<OAuthProviderConfig> providers;
     private String redirectUri;
     private String supportOdlUsers;
     private String tokenSecret;
+    private String tokenPubKey;
+    private String algorithm;
     private String tokenIssuer;
     private String publicUrl;
-
+    private long tokenLifetime;
 
     @Override
     public String toString() {
         return "Config [providers=" + providers + ", redirectUri=" + redirectUri + ", supportOdlUsers="
-                + supportOdlUsers + ", tokenSecret=" + tokenSecret + ", tokenIssuer=" + tokenIssuer + "]";
+                + supportOdlUsers + ", tokenSecret=***, tokenPubKey=" + tokenPubKey + ", algorithm=" + algorithm
+                + ", tokenIssuer=" + tokenIssuer + ", publicUrl=" + publicUrl + ", tokenLifetime=" + tokenLifetime
+                + "]";
     }
-
-
 
     public List<OAuthProviderConfig> getProviders() {
         return providers;
@@ -95,6 +113,24 @@ public class Config {
         this.tokenSecret = tokenSecret;
     }
 
+    public String getAlgorithm() {
+        return this.algorithm;
+    }
+
+    public void setAlgorithm(String alg) {
+        this.algorithm = alg;
+    }
+
+    @JsonGetter("tokenPubKey")
+    public String getPublicKey() {
+        return this.tokenPubKey;
+    }
+
+    @JsonSetter("tokenPubKey")
+    public void setPublicKey(String pubKey) {
+        this.tokenPubKey = pubKey;
+    }
+
     public String getTokenIssuer() {
         return tokenIssuer;
     }
@@ -102,7 +138,6 @@ public class Config {
     public void setTokenIssuer(String tokenIssuer) {
         this.tokenIssuer = tokenIssuer;
     }
-
 
     public String getPublicUrl() {
         return publicUrl;
@@ -112,25 +147,39 @@ public class Config {
         this.publicUrl = publicUrl;
     }
 
+    public long getTokenLifetime() {
+        return this.tokenLifetime;
+    }
+
+    public void setTokenLifetime(long lifetime) {
+        this.tokenLifetime = lifetime;
+    }
+
     @JsonIgnore
     private void handleEnvironmentVars() {
-        if (isEnvExpression(tokenIssuer)) {
-            this.tokenIssuer = getProperty(tokenIssuer, null);
+        if (isEnvExpression(this.tokenIssuer)) {
+            this.tokenIssuer = getProperty(this.tokenIssuer, null);
         }
-        if (isEnvExpression(tokenSecret)) {
-            this.tokenSecret = getProperty(tokenSecret, null);
+        if (isEnvExpression(this.tokenSecret)) {
+            this.tokenSecret = getProperty(this.tokenSecret, null);
         }
-        if (isEnvExpression(publicUrl)) {
-            this.publicUrl = getProperty(publicUrl, null);
+        if (isEnvExpression(this.tokenPubKey)) {
+            this.tokenPubKey = getProperty(this.tokenPubKey, null);
         }
-        if (isEnvExpression(redirectUri)) {
-            this.redirectUri = getProperty(redirectUri, null);
+        if (isEnvExpression(this.algorithm)) {
+            this.algorithm = getProperty(this.algorithm, null);
         }
-        if (isEnvExpression(supportOdlUsers)) {
-            this.supportOdlUsers = getProperty(supportOdlUsers, null);
+        if (isEnvExpression(this.publicUrl)) {
+            this.publicUrl = getProperty(this.publicUrl, null);
+        }
+        if (isEnvExpression(this.redirectUri)) {
+            this.redirectUri = getProperty(this.redirectUri, null);
+        }
+        if (isEnvExpression(this.supportOdlUsers)) {
+            this.supportOdlUsers = getProperty(this.supportOdlUsers, null);
         }
         if (this.providers != null && !this.providers.isEmpty()) {
-            for(OAuthProviderConfig cfg : this.providers) {
+            for (OAuthProviderConfig cfg : this.providers) {
                 cfg.handleEnvironmentVars();
             }
         }
@@ -138,20 +187,26 @@ public class Config {
 
     @JsonIgnore
     private void handleDefaultValues() {
-        if (tokenIssuer == null || tokenIssuer.isEmpty()) {
+        if (this.tokenIssuer == null || this.tokenIssuer.isEmpty()) {
             this.tokenIssuer = DEFAULT_TOKENISSUER;
         }
-        if (tokenSecret == null || tokenSecret.isEmpty()) {
+        if (this.algorithm == null || this.algorithm.isEmpty()) {
+            this.algorithm = DEFAULT_TOKEN_ALGORITHM;
+        }
+        if (TOKENALG_HS256.equals(this.algorithm) && (this.tokenSecret == null || this.tokenSecret.isEmpty())) {
             this.tokenSecret = DEFAULT_TOKENSECRET;
         }
-        if (redirectUri == null || redirectUri.isEmpty() || "null".equals(redirectUri)) {
+        if (this.redirectUri == null || this.redirectUri.isEmpty() || "null".equals(this.redirectUri)) {
             this.redirectUri = DEFAULT_REDIRECTURI;
         }
-        if (publicUrl != null && (publicUrl.isEmpty() || "null".equals(publicUrl))) {
+        if (this.publicUrl != null && (this.publicUrl.isEmpty() || "null".equals(this.publicUrl))) {
             this.publicUrl = null;
         }
-        if (supportOdlUsers == null || supportOdlUsers.isEmpty()) {
+        if (this.supportOdlUsers == null || this.supportOdlUsers.isEmpty()) {
             this.supportOdlUsers = DEFAULT_SUPPORTODLUSERS;
+        }
+        if (this.tokenLifetime <= 0) {
+            this.tokenLifetime = DEFAULT_TOKEN_LIFETIME;
         }
     }
 
@@ -166,8 +221,8 @@ public class Config {
     public static String generateSecret(int targetStringLength) {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
-        if(random==null) {
-            random = new Random();
+        if (random == null) {
+            random = new SecureRandom();
         }
         String generatedString = random.ints(leftLimit, rightLimit + 1)
                 .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(targetStringLength)
@@ -198,7 +253,7 @@ public class Config {
                         String envvar = mkey.substring(2, mkey.length() - 1);
                         String env = System.getenv(envvar);
                         tmp = tmp.replace(mkey, env == null ? "" : env);
-                        if (env != null && env.isEmpty()) {
+                        if (env != null && !env.isEmpty()) {
                             found = true;
                         }
                     } catch (SecurityException e) {
@@ -218,7 +273,7 @@ public class Config {
         return value.equals("true");
     }
 
-    public static Config load(String filename) throws IOException {
+    public static Config load(String filename) throws IOException, InvalidConfigurationException {
         CustomObjectMapper mapper = new CustomObjectMapper();
         File file = new File(filename);
         if (!file.exists()) {
@@ -228,9 +283,44 @@ public class Config {
         Config cfg = mapper.readValue(content, Config.class);
         cfg.handleEnvironmentVars();
         cfg.handleDefaultValues();
+        cfg.validate();
         return cfg;
     }
 
+
+    @JsonIgnore
+    private void validate() throws InvalidConfigurationException {
+        //verify that algorithm is supported
+        if (!VALID_ALGORITHMS.contains(this.algorithm)) {
+            throw new InvalidConfigurationException(String.format("Algorithm '%s' is not supported ", this.algorithm));
+        }
+        //verify that set values are matching the algorithm
+        //if hs256 check if secret is set
+        if (this.algorithm.startsWith("HS")) {
+            if (this.tokenSecret == null || this.tokenSecret.isBlank()) {
+                throw new InvalidConfigurationException(
+                        String.format("There is no secret set for algorithm '%s'", this.algorithm));
+            }
+        }
+        //if rs256 or rs512 check if secret(private key) and pubkey are set
+        if (this.algorithm.startsWith("RS")) {
+            if (this.tokenSecret == null || this.tokenSecret.isBlank()) {
+                throw new InvalidConfigurationException(
+                        String.format("There is no secret set for algorithm '%s'", this.algorithm));
+            }
+            if (this.tokenPubKey == null || this.tokenPubKey.isBlank()) {
+                throw new InvalidConfigurationException(
+                        String.format("There is no public key for algorithm '%s'", this.algorithm));
+            }
+        }
+        //if client rs256 or client rs512 check if pubkey are set
+        if (this.algorithm.startsWith("Client")) {
+            if (this.tokenPubKey == null || this.tokenPubKey.isBlank()) {
+                throw new InvalidConfigurationException(
+                        String.format("There is no public key for algorithm '%s'", this.algorithm));
+            }
+        }
+    }
 
     @JsonIgnore
     public boolean doSupportOdlUsers() {
@@ -238,15 +328,19 @@ public class Config {
     }
 
 
-    public static Config getInstance() throws IOException {
+    public static Config getInstance() throws IOException, InvalidConfigurationException {
         return getInstance(DEFAULT_CONFIGFILENAME);
     }
 
-    public static Config getInstance(String filename) throws IOException {
+    public static Config getInstance(String filename) throws IOException, InvalidConfigurationException {
         if (_instance == null) {
             _instance = load(filename);
         }
         return _instance;
+    }
+
+    public boolean loginActive() {
+        return VALID_ALGORITHMS_FOR_INTERNAL_LOGIN.contains(this.algorithm);
     }
 
 

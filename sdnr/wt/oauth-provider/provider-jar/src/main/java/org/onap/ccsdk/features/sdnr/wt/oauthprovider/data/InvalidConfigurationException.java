@@ -21,38 +21,12 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.oauthprovider.data;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.shiro.authc.BearerToken;
+public class InvalidConfigurationException extends Exception {
 
-
-public class OAuthToken {
-    private final String access_token;
-    private final String token_type;
-    private final long expires_at;
-    private final long issued_at;
-
-    public OAuthToken(BearerToken btoken) {
-        this.access_token = btoken.getToken();
-        this.token_type = "Bearer";
-        DecodedJWT token = JWT.decode(this.access_token);
-        this.expires_at = token.getExpiresAt().getTime() / 1000L;
-        this.issued_at = token.getIssuedAt().getTime() / 1000L;
+    public InvalidConfigurationException(String str) {
+        super(str);
     }
 
-    public String getAccess_token() {
-        return access_token;
-    }
-
-    public String getToken_type() {
-        return token_type;
-    }
-
-    public long getExpires_at() {
-        return expires_at;
-    }
-    public long getIssued_at() {
-        return issued_at;
-    }
+    private static final long serialVersionUID = 1L;
 
 }

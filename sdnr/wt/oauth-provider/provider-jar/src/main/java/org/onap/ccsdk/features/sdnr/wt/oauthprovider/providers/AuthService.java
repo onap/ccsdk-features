@@ -41,13 +41,13 @@ import java.util.stream.Collectors;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.shiro.authc.BearerToken;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthResponseData;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.client.MappedBaseHttpResponse;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.client.MappingBaseHttpClient;
-import org.apache.shiro.authc.BearerToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +74,7 @@ public abstract class AuthService {
 
     protected abstract String getLoginUrl(String callbackUrl);
 
-    protected abstract UserTokenPayload requestUserRoles(String access_token, long expires_at);
+    protected abstract UserTokenPayload requestUserRoles(String access_token, long issued_at, long expires_at);
 
     protected abstract boolean verifyState(String state);
 
@@ -128,7 +128,8 @@ public abstract class AuthService {
             if (this.doSeperateRolesRequest()) {
                 //long expiresAt = this.tokenCreator.getDefaultExp(Math.round(response.getExpires_in()));
                 long expiresAt = this.tokenCreator.getDefaultExp();
-                UserTokenPayload data = this.requestUserRoles(response.getAccess_token(), expiresAt);
+                long issuedAt = this.tokenCreator.getDefaultIat();
+                UserTokenPayload data = this.requestUserRoles(response.getAccess_token(), issuedAt, expiresAt);
                 if (data != null) {
                     this.handleUserInfoToken(data, resp, host);
                 } else {

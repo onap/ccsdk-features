@@ -95,7 +95,7 @@ public class GitlabProviderService extends AuthService {
     }
 
     @Override
-    protected UserTokenPayload requestUserRoles(String access_token, long expires_at) {
+    protected UserTokenPayload requestUserRoles(String access_token, long issued_at, long expires_at) {
         LOG.info("reqesting user roles with token={}", access_token);
         Map<String, String> authHeaders = new HashMap<>();
         authHeaders.put("Authorization", String.format("Bearer %s", access_token));
@@ -116,6 +116,7 @@ public class GitlabProviderService extends AuthService {
         data.setPreferredUsername(uInfo.getUsername());
         data.setGivenName(uInfo.getName());
         data.setFamilyName(uInfo.getName());
+        data.setIat(issued_at);
         data.setExp(expires_at);
         List<String> roles = new ArrayList<>();
         GitlabGroupInfo[] uRoles = groupInfos.get().body;
