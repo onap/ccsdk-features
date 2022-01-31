@@ -102,9 +102,14 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
 
     @Override
     public void sendNotification(Notification notification, NodeId nodeId, QName eventType) {
-        if (!assertNotificationType(notification, eventType)) {
-            return;
-        }
+//        disabled because of malfunction
+// e.g.   notification type (class org.opendaylight.yang.gen.v1.urn.o.ran.sc.params.xml.ns.yang.nts.manager.rev210608.
+//        OperationStatusChanged$$$eventInstantAware) and qname((urn:o-ran-sc:params:xml:ns:yang:nts:manager?
+//        revision=2021-06-08)operation-status-changed) do not match. won't be sent
+//        if (!assertNotificationType(notification, eventType)) {
+//            LOG.warn("notification type ({}) and qname({}) do not match. won't be sent",notification.getClass(), eventType)
+//            return;
+//        }
         this.sendNotification(notification, nodeId, eventType,
                 YangToolsMapperHelper.getTime(notification, Instant.now()));
     }

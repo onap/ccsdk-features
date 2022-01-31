@@ -32,6 +32,9 @@ public class DataProviderConfig implements Configuration {
     private static final String PROPERTY_KEY_DBTYPE = "dbType";
     private static final Object DEFAULT_DBTYPE = "${SDNRDBTYPE}";
     private static final SdnrDbType DEFAULT_DBTYPE_VALUE = SdnrDbType.ELASTICSEARCH;
+    private static final String PROPERTY_KEY_DBENABLED = "enabled";
+    private static final String DEFAULT_ISENABLED = "${SDNRDBENABLED}";
+    private static final boolean DEFAULT_ISENABLED_IFNOTSET = true;
     private final EsConfig esConfig;
     private final SqlDBConfig maridadbConfig;
     private ConfigurationFileRepresentation configuration;
@@ -51,10 +54,18 @@ public class DataProviderConfig implements Configuration {
         return this.maridadbConfig;
     }
 
+    public boolean isEnabled() {
+        final String s = this.configuration.getProperty(ConfigurationFileRepresentation.SECTIONNAME_ROOT, PROPERTY_KEY_DBENABLED);
+        if(s!= null && !s.isBlank()) {
+            return Boolean.getBoolean(s);
+        }
+        return DEFAULT_ISENABLED_IFNOTSET;
+    }
     @Override
     public void defaults() {
 
         configuration.setPropertyIfNotAvailable(this.getSectionName(), PROPERTY_KEY_DBTYPE, DEFAULT_DBTYPE);
+        configuration.setPropertyIfNotAvailable(this.getSectionName(), PROPERTY_KEY_DBENABLED, DEFAULT_ISENABLED);
     }
 
     @Override

@@ -22,7 +22,8 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
 import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.junit.After;
@@ -32,6 +33,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRep
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section.EnvGetter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.EsConfig;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,7 @@ public class TestConfig {
 
     private static final String TESTFILENAME = "testconfig.properties";
     private static String ENVSDNRDBURL = "SDNRDBURL";
+    private static String ENVSDNRDBENABLED = "SDNRDBENABLED";
     private static String SDNRDBURL = "http://sdnrdb:9200";
 
     @After
@@ -60,11 +63,17 @@ public class TestConfig {
             return envname.equals(ENVSDNRDBURL) ? SDNRDBURL : env.getenv(envname);
         });
         ConfigurationFileRepresentation configuration = new ConfigurationFileRepresentation(TESTFILENAME);
-        EsConfig esConfig = new EsConfig(configuration);
+        DataProviderConfig dbConfig = new DataProviderConfig(configuration);
+        EsConfig esConfig = dbConfig.getEsConfig();
         LOG.info("Defaultconfiguration: {}", esConfig.toString());
         assertEquals("http", esConfig.getHosts()[0].protocol.getValue());
         assertEquals(9200, esConfig.getHosts()[0].port);
         assertEquals("sdnrdb", esConfig.getHosts()[0].hostname);
-
+        assertTrue(dbConfig.isEnabled());
+        Section.setEnvGetter((envname) -> {
+            return envname.equals(ENVSDNRDBENABLED) ? "false" : env.getenv(envname);
+        });
+        assertFalse(dbConfig.isEnabled());
+        
     }
 }
