@@ -20,6 +20,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service;
 
 import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.InconsistentPMDataException;
 
 /**
  * Identify the NE as provider for performance data according to microwave model.
@@ -33,7 +34,7 @@ public interface PerformanceDataProvider extends NetworkElementService {
 
     public void next();
 
-    public Optional<PerformanceDataLtp> getLtpHistoricalPerformanceData();
+    public Optional<PerformanceDataLtp> getLtpHistoricalPerformanceData() throws InconsistentPMDataException;
 
     public String pmStatusToString();
 

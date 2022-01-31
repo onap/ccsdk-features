@@ -51,7 +51,7 @@ public class PerformanceManagerTask implements Runnable {
 
     /**
      * Constructor of PM Task
-     * 
+     *
      * @param seconds seconds to call PM Task
      * @param microwaveHistoricalPerformanceWriterService DB Service to load PM data to
      * @param netconfNetworkElementService to write into log
@@ -60,7 +60,7 @@ public class PerformanceManagerTask implements Runnable {
     public PerformanceManagerTask(long seconds, DataProvider microwaveHistoricalPerformanceWriterService,
             NetconfNetworkElementService netconfNetworkElementService) {
 
-        LOG.debug("Init task {}", PerformanceManagerTask.class.getSimpleName());
+        LOG.info("Init task {} handling time {} seconds", PerformanceManagerTask.class.getSimpleName(), seconds);
         this.seconds = seconds;
         this.databaseService = microwaveHistoricalPerformanceWriterService;
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -87,7 +87,7 @@ public class PerformanceManagerTask implements Runnable {
             try {
                 scheduler.awaitTermination(10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                LOG.debug("Schdule stopped.", e);
+                LOG.debug("Scheduler stopped.", e);
                 // Restore interrupted state...
                 Thread.currentThread().interrupt();
             }
@@ -96,7 +96,7 @@ public class PerformanceManagerTask implements Runnable {
 
     /**
      * Add NE/Mountpoint to PM Processig
-     * 
+     *
      * @param mountPointNodeName to be added
      * @param ne that is connected to the mountpoint
      */
@@ -110,7 +110,7 @@ public class PerformanceManagerTask implements Runnable {
 
     /**
      * Remove mountpoint/NE from PM process
-     * 
+     *
      * @param mountPointNodeName that has to be removed
      */
     public void deRegistration(String mountPointNodeName) {
@@ -121,7 +121,6 @@ public class PerformanceManagerTask implements Runnable {
             LOG.warn("Couldn't delete {}", mountPointNodeName);
         }
     }
-
 
     /*--------------------------------------------------------------
      * Task to read PM data from NE
@@ -140,7 +139,7 @@ public class PerformanceManagerTask implements Runnable {
         }
         LOG.debug("{} start {} Start with mountpoint {}", LOGMARKER, tickCounter, mountpointName);
 
-        //Proceed to next NE/Interface
+        // Proceed to next NE/Interface
         getNextInterface(mountpointName);
 
         LOG.debug("{} {} Next interface to handle {}", LOGMARKER, tickCounter,
@@ -155,16 +154,11 @@ public class PerformanceManagerTask implements Runnable {
                     databaseService.doWritePerformanceData(allPm.get().getList());
                 }
                 LOG.debug("{} {} PM List end.", LOGMARKER, tickCounter);
-            } catch (Exception e) {
-                StringBuffer msg = new StringBuffer();
-                msg.append(e.getMessage());
-                msg.append(" - ");
-                msg.append(e.getCause().toString());
-                msg.append(" - ");
-                msg.append(actualNE.pmStatusToString());
-                String msgString = msg.toString();
-                LOG.warn("{} {} PM read/write failed. Write log entry {}", LOGMARKER, tickCounter, msgString);
-                netconfNetworkElementService.writeToEventLog(mountpointName, "PM Problem", msgString);
+            } catch (Throwable e) {
+                LOG.debug("{} {} PM Exception", LOGMARKER, tickCounter);
+                String msg = new StringBuffer().append(e.getMessage()).toString();
+                LOG.warn("{} {} PM read/write failed. Write log entry {}", LOGMARKER, tickCounter, msg);
+                netconfNetworkElementService.writeToEventLog(mountpointName, "PM Problem", msg);
             }
         }
 
@@ -239,7 +233,7 @@ public class PerformanceManagerTask implements Runnable {
                     }
                 }
             }
-        } //while
+        } // while
 
         if (actualNE != null && !queue.containsValue(actualNE)) {
             LOG.debug("{} {} NE Removed duringprocessing B", LOGMARKER, tickCounter);
