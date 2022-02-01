@@ -36,7 +36,7 @@ public class DeviceManagerOpenroadmImpl implements AutoCloseable {
 
     // variables
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerOpenroadmImpl.class);
-    private static final String APPLICATION_NAME = "DeviceManagerOpenRoadm";
+    private static final String APPLICATION_NAME = "DeviceManagerOpenRoadm71";
     @SuppressWarnings("unused")
     private static final String CONFIGURATIONFILE = "etc/devicemanager-opeenroadm.properties";
     private NetconfNetworkElementService netconfNetworkElementService;
