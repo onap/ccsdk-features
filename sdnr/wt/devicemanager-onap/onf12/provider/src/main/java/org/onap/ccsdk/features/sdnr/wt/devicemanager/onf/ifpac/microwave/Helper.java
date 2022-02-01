@@ -19,9 +19,13 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.InconsistentPMDataException;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.PmUtil;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.LayerProtocolName;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.g._874._1.model.rev170320.GranularityPeriodType;
+import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev170324.air._interface.historical.performance.type.g.PerformanceData;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
  * @author herbert
@@ -29,25 +33,33 @@ import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.g._874._1.model.r
  */
 public class Helper {
 
-    private static final @NonNull UniversalId DEFAULT_UniversalId = new UniversalId("Default");
-    private static final @NonNull LayerProtocolName DEFAULT_LayerProtocolName = new LayerProtocolName("default");
-    private static final @NonNull GranularityPeriodType DEFAULT_GranularityPeriodType = GranularityPeriodType.Unknown;
-    private static final @NonNull String DEFAULT_String = "";
+	private static final @NonNull UniversalId DEFAULT_UniversalId = new UniversalId("Default");
+	private static final @NonNull LayerProtocolName DEFAULT_LayerProtocolName = new LayerProtocolName("default");
+	private static final @NonNull GranularityPeriodType DEFAULT_GranularityPeriodType = GranularityPeriodType.Unknown;
+	private static final @NonNull String DEFAULT_String = "";
 
-    public static @NonNull UniversalId nnGetUniversalId(@Nullable UniversalId x) {
-        return x == null ? DEFAULT_UniversalId : x;
-    }
+	public static @NonNull UniversalId nnGetUniversalId(@Nullable UniversalId x) {
+		return x == null ? DEFAULT_UniversalId : x;
+	}
 
-    public static @NonNull LayerProtocolName nnGetLayerProtocolName(@Nullable LayerProtocolName x) {
-        return x == null ? DEFAULT_LayerProtocolName : x;
-    }
+	public static @NonNull LayerProtocolName nnGetLayerProtocolName(@Nullable LayerProtocolName x) {
+		return x == null ? DEFAULT_LayerProtocolName : x;
+	}
 
-    public static @NonNull GranularityPeriodType nnGetGranularityPeriodType(@Nullable GranularityPeriodType x) {
-        return x == null ? DEFAULT_GranularityPeriodType : x;
-    }
+	public static @NonNull GranularityPeriodType nnGetGranularityPeriodType(@Nullable GranularityPeriodType x) {
+		return x == null ? DEFAULT_GranularityPeriodType : x;
+	}
 
-    public static @NonNull String nnGetString(@Nullable String x) {
-        return x == null ? DEFAULT_String : x;
-    }
+	public static @NonNull String nnGetString(@Nullable String x) {
+		return x == null ? DEFAULT_String : x;
+	}
+
+	public static @NonNull <T extends DataObject> T throwIfPerformanceDataNull(T pmRecord, String uuidInterface,
+			String lpName) throws InconsistentPMDataException {
+
+		String msg = new StringBuffer().append("Ignore record without PerformanceData. Node/Lp: ").append(uuidInterface).append("/")
+				.append(lpName).toString();
+		return PmUtil.throwIfDataObjectNull(pmRecord, msg);
+	}
 
 }

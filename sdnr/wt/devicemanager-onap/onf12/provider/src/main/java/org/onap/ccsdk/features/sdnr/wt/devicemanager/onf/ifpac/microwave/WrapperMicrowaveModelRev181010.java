@@ -33,6 +33,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.InconsistentPMDataException;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
@@ -178,7 +179,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
 
     @Override
     public @NonNull PerformanceDataLtp getLtpHistoricalPerformanceData(@NonNull ONFLayerProtocolName lpName,
-            @NonNull Lp lp) {
+            @NonNull Lp lp) throws InconsistentPMDataException {
         PerformanceDataLtp res = new PerformanceDataLtp();
         switch (lpName) {
             case MWAIRINTERFACE:
@@ -256,10 +257,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         LOG.debug("Got event of type :: {}", ProblemNotification.class.getSimpleName());
         FaultlogEntity faultAlarm = new FaultlogBuilder().setObjectId(notification.getObjectIdRef().getValue())
                 .setProblem(notification.getProblem()).setSourceType(SourceType.Netconf)
-                .setTimestamp(notification.getTimeStamp())
-                .setNodeId(this.acessor.getNodeId().getValue())
-                .setSeverity(mapSeverity(notification.getSeverity())).setCounter(notification.getCounter())
-                .build();
+                .setTimestamp(notification.getTimeStamp()).setNodeId(this.acessor.getNodeId().getValue())
+                .setSeverity(mapSeverity(notification.getSeverity())).setCounter(notification.getCounter()).build();
         // Send devicemanager specific notification for database and ODLUX
         faultService.faultNotification(faultAlarm);
         // Send model specific notification to WebSocketManager
@@ -503,8 +502,10 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
      * @param lp to read from
      * @param result Object to be filled with data
      * @return result
+     * @throws InconsistentPMDataException
      */
-    private @NonNull PerformanceDataLtp readAirInterfacePerformanceData(Lp lp, PerformanceDataLtp result) {
+    private @NonNull PerformanceDataLtp readAirInterfacePerformanceData(Lp lp, PerformanceDataLtp result)
+            throws InconsistentPMDataException {
 
         LOG.debug("DBRead Get {} MWAirInterfacePac: {}", acessor.getNodeId(), lp.getUuid());
         // ----
@@ -548,7 +549,8 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         return result;
     }
 
-    private @NonNull PerformanceDataLtp readEthernetContainerPerformanceData(Lp lp, PerformanceDataLtp result) {
+    private @NonNull PerformanceDataLtp readEthernetContainerPerformanceData(Lp lp, PerformanceDataLtp result)
+            throws InconsistentPMDataException {
         final String myName = "MWEthernetContainerPac";
 
         LOG.debug("DBRead Get {} : {}", mountpointId, myName, lp.getUuid());

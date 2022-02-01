@@ -29,6 +29,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.Wrapper
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.util.ONFLayerProtocolName;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.InconsistentPMDataException;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -281,7 +282,7 @@ public class TestWrapperMicrowaveModelRev180907 {
     }
 
     @Test
-    public void testgetLtpHistoricalPerformanceData() {
+    public void testgetLtpHistoricalPerformanceData() throws InconsistentPMDataException {
         InstanceIdentifier<AirInterfaceConfiguration> mwAirInterfaceConfigurationIID =
                 InstanceIdentifier.builder(MwAirInterfacePac.class, new MwAirInterfacePacKey(uid))
                         .child(AirInterfaceConfiguration.class).build();
