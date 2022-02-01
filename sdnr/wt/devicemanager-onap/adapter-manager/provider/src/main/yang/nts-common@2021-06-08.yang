@@ -18,6 +18,12 @@ module nts-common {
   description
     "This module contains common yang definitions YANG definitions for the Network Topology Simulator.";
 
+  revision 2021-06-08 {
+    description
+      "Moved NTS_PROTOCOL_TYPE_BASE identities from nts-manager.";
+    reference
+      "O-RAN-SC SIM project";
+  }
   revision 2021-03-26 {
     description
       "Added controller-protocol.";
@@ -60,6 +66,47 @@ module nts-common {
       "This means that the server supports reporting back the number of faults that were generated";
   }
 
+  identity NTS_PROTOCOL_TYPE_BASE {
+    description
+      "Base identity for protocol.";
+  }
+
+  identity NTS_PROTOCOL_TYPE_NETCONF_SSH {
+    base NTS_PROTOCOL_TYPE_BASE;
+    description
+      "Identity for NETCONF SSH protocol.";
+  }
+
+  identity NTS_PROTOCOL_TYPE_NETCONF_TLS {
+    base NTS_PROTOCOL_TYPE_BASE;
+    description
+      "Identity for NETCONF TLS protocol.";
+  }
+
+  identity NTS_PROTOCOL_TYPE_FTP {
+    base NTS_PROTOCOL_TYPE_BASE;
+    description
+      "Identity for FTP protocol.";
+  }
+
+  identity NTS_PROTOCOL_TYPE_SFTP {
+    base NTS_PROTOCOL_TYPE_BASE;
+    description
+      "Identity for SFTP protocol.";
+  }
+
+  identity NTS_PROTOCOL_TYPE_HTTP {
+    base NTS_PROTOCOL_TYPE_BASE;
+    description
+      "Identity for HTTP protocol.";
+  }
+
+  identity NTS_PROTOCOL_TYPE_HTTPS {
+    base NTS_PROTOCOL_TYPE_BASE;
+    description
+      "Identity for HTTPS protocol.";
+  }
+
   identity NTS_FUNCTION_TYPE_BASE {
     description
       "The reference of each identity represents the name of the associated docker image.";
@@ -67,19 +114,19 @@ module nts-common {
 
   typedef authentication-method-type {
     type enumeration {
-      enum no-auth {
+      enum "no-auth" {
         description
           "no security (http)";
       }
-      enum cert-only {
+      enum "cert-only" {
         description
           "auth by certificate (https)";
       }
-      enum basic-auth {
+      enum "basic-auth" {
         description
           "auth by basic auth username and password (https)";
       }
-      enum cert-basic-auth {
+      enum "cert-basic-auth" {
         description
           "auth by certificate and basic auth username / password (https)";
       }
@@ -130,11 +177,11 @@ module nts-common {
       "Groups details about mount point";
     leaf mount-point-addressing-method {
       type enumeration {
-        enum host-mapping {
+        enum "host-mapping" {
           description
             "Uses IP and port mapped to the host machine to address the nework function.";
         }
-        enum docker-mapping {
+        enum "docker-mapping" {
           description
             "Uses Docker IP and port to address the nework function.";
         }
@@ -158,6 +205,7 @@ module nts-common {
         description
           "The index of the list.";
       }
+
       leaf delay-period {
         type uint16;
         units "s";
@@ -180,21 +228,25 @@ module nts-common {
         description
           "Number of normal (non-alarmed) events.";
       }
+
       leaf warning {
         type uint32;
         description
           "Number of warning events.";
       }
+
       leaf minor {
         type uint32;
         description
           "Number of minor events.";
       }
+
       leaf major {
         type uint32;
         description
           "Number of major events.";
       }
+
       leaf critical {
         type uint32;
         description
@@ -211,6 +263,7 @@ module nts-common {
       description
         "Groups the fault generation configuration and status.";
       uses fault-delay-period-g;
+
       uses fault-count-g;
     }
   }
@@ -233,6 +286,7 @@ module nts-common {
       description
         "Container for describing the NETCONF details.";
       uses faults-enabled-g;
+
       leaf call-home {
         type boolean;
         description
@@ -249,11 +303,13 @@ module nts-common {
       description
         "Container for describing the VES details.";
       uses faults-enabled-g;
+
       leaf pnf-registration {
         type boolean;
         description
           "For enabling the PNF Registration messages. If set to 'true', each simulated device, when booting up, will send a PNF Registration message to the VES Collector.";
       }
+
       leaf heartbeat-period {
         type uint16;
         description
@@ -267,11 +323,11 @@ module nts-common {
       "Groups information about the SDN Controller.";
     leaf controller-protocol {
       type enumeration {
-        enum http {
+        enum "http" {
           description
             "HTTP protocol will be used to connect to the VES Collector.";
         }
-        enum https {
+        enum "https" {
           description
             "HTTPS protocol will be used to connect to the VES Collector.";
         }
@@ -280,26 +336,31 @@ module nts-common {
       description
         "The protocol used for communication with the SDN Controller.";
     }
+
     leaf controller-ip {
-      type inet:ip-address;
+      type inet:host;
       description
         "The IP address of the SDN Controller.";
     }
+
     leaf controller-port {
       type inet:port-number;
       description
         "The port exposed by the SDN Controller.";
     }
+
     leaf controller-netconf-call-home-port {
       type inet:port-number;
       description
         "The port exposed by the SDN Controller for NETCONF Call Home.";
     }
+
     leaf controller-username {
       type string;
       description
         "The username for accessing the SDN Controller.";
     }
+
     leaf controller-password {
       type string;
       description
@@ -312,11 +373,11 @@ module nts-common {
       "Groups information about the VES Collector.";
     leaf ves-endpoint-protocol {
       type enumeration {
-        enum http {
+        enum "http" {
           description
             "HTTP protocol will be used to connect to the VES Collector.";
         }
-        enum https {
+        enum "https" {
           description
             "HTTPS protocol will be used to connect to the VES Collector.";
         }
@@ -325,32 +386,38 @@ module nts-common {
       description
         "The protocol (HTTP / HTTPS) to be used to address the VES Collector.";
     }
+
     leaf ves-endpoint-ip {
-      type inet:ip-address;
+      type inet:host;
       description
         "The IP address of the VES Collector.";
     }
+
     leaf ves-endpoint-port {
       type inet:port-number;
       description
         "The port exposed by the VES Collector.";
     }
+
     leaf ves-endpoint-auth-method {
       type authentication-method-type;
       default "no-auth";
       description
         "The type of the authentication to be used with the VES Collector.";
     }
+
     leaf ves-endpoint-username {
       type string;
       description
         "The username for accessing the VES Collector.";
     }
+
     leaf ves-endpoint-password {
       type string;
       description
         "The password for accessing the VES Collector.";
     }
+
     leaf ves-endpoint-certificate {
       type string;
       description
@@ -363,11 +430,11 @@ module nts-common {
       "RPC output grouping.";
     leaf status {
       type enumeration {
-        enum SUCCESS {
+        enum "SUCCESS" {
           description
             "The RPC was successfully invoked.";
         }
-        enum ERROR {
+        enum "ERROR" {
           description
             "An error was encountered when invoking the RPC.";
         }

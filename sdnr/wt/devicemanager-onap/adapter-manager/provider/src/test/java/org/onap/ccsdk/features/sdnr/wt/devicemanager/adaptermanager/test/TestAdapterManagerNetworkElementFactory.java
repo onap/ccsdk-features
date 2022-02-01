@@ -17,10 +17,12 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
+import java.util.Optional;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,7 +30,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.impl.Adapter
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.network.topology.simulator.rev191025.SimulatorStatus;
+import org.opendaylight.yang.gen.v1.urn.o.ran.sc.params.xml.ns.yang.nts.manager.rev210608.simulation.NetworkFunctions;
 import org.opendaylight.yangtools.yang.common.QName;
 
 public class TestAdapterManagerNetworkElementFactory {
@@ -45,23 +47,22 @@ public class TestAdapterManagerNetworkElementFactory {
         serviceProvider = mock(DeviceManagerServiceProvider.class);
 
         when(accessor.getCapabilites()).thenReturn(capabilities);
+        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(accessor));
         when(serviceProvider.getDataProvider()).thenReturn(null);
-
-
     }
 
     @Test
     public void testCreateSimulator() throws Exception {
-        when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(true);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkFunctions.QNAME)).thenReturn(true);
         AdapterManagerNetworkElementFactory factory = new AdapterManagerNetworkElementFactory();
         assertTrue(factory.create(accessor, serviceProvider).isPresent());
     }
 
     @Test
     public void testCreateNone() throws Exception {
-        when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(false);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkFunctions.QNAME)).thenReturn(false);
         AdapterManagerNetworkElementFactory factory = new AdapterManagerNetworkElementFactory();
-        assertTrue(!(factory.create(accessor, serviceProvider).isPresent()));
+        assertFalse(factory.create(accessor, serviceProvider).isPresent());
     }
 
     @After

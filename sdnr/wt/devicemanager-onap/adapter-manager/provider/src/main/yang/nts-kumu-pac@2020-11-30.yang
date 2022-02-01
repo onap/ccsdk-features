@@ -1,0 +1,41 @@
+module nts-kumu-pac {
+  yang-version 1.1;
+  namespace "urn:o-ran-sc:params:xml:ns:yang:nts:kumu";
+  prefix nts-kumu;
+
+  import nts-common {
+    prefix ntsc;
+  }
+
+  organization
+    "O-RAN-SC";
+  contact
+    " Web: <https://wiki.o-ran-sc.org/display/SIM/SIM>
+        Editors:
+        Alex Stancu <mailto:alexandru.stancu@highstreet-technologies.com>
+        Adrian Lita <mailto:adrian.lita@highstreet-technologies.com>
+        Martin Skorupski <mailto:martin.skorupski@highstreet-technologies.com>";
+  description
+    "This module contains YANG definitions for the Network Topology Simulator - KUMU Networks extensions.";
+
+  revision 2020-11-30 {
+    description
+      "Cleared revision for nts-common import.";
+    reference
+      "KUMU Networks implementation";
+  }
+  revision 2020-09-28 {
+    description
+      "Initial revision for the Network Topology Simulator - Next Generation";
+    reference
+      "KUMU Networks implementation";
+  }
+
+  identity NTS_FUNCTION_TYPE_KUMU_RELAY {
+    base ntsc:NTS_FUNCTION_TYPE_BASE;
+    description
+      "The simulated network function implements a Kumu Networks YANG model.";
+    reference
+      "nts-ng-kumu";
+  }
+}

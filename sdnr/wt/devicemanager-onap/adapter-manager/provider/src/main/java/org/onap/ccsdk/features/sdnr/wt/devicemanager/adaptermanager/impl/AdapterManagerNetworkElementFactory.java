@@ -1,5 +1,5 @@
 /*
- * ============LICENSE_START========================================================================
+* ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
@@ -22,22 +22,42 @@ import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.network.topology.simulator.rev191025.SimulatorStatus;
-import org.opendaylight.yang.gen.v1.urn.o.ran.sc.params.xml.ns.yang.nts.manager.rev210326.simulation.NetworkFunctions;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.opendaylight.yang.gen.v1.urn.o.ran.sc.params.xml.ns.yang.nts.manager.rev210608.simulation.NetworkFunctions;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * YANG Specs:
+ *    urn:o-ran-sc:params:xml:ns:yang:nts:manager?revision=2021-06-08)nts-manager
+ *
+ */
 public class AdapterManagerNetworkElementFactory implements NetworkElementFactory {
 
     private static final Logger log = LoggerFactory.getLogger(AdapterManagerNetworkElementFactory.class);
 
+    private static QName ROOTKEY=NetworkFunctions.QNAME;
+
     @Override
     public Optional<NetworkElement> create(NetconfAccessor acessor, DeviceManagerServiceProvider serviceProvider) {
-        if (acessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME) || acessor.getCapabilites().isSupportingNamespace(NetworkFunctions.QNAME)) {
-            log.info("Create device {} ", NtsNetworkElement.class.getName());
-            return Optional.of(new NtsNetworkElement(acessor, serviceProvider.getDataProvider()));
+        showLogInfo();
+        Capabilities capabilities = acessor.getCapabilites();
+        if (capabilities.isSupportingNamespaceAndRevision(ROOTKEY)) {
+            Optional<NetconfBindingAccessor> bindingAccessor = acessor.getNetconfBindingAccessor();
+            if (bindingAccessor.isPresent()) {
+                log.info("Create device {} ", NtsNetworkElement.class.getName());
+                return Optional.of(new NtsNetworkElement(bindingAccessor.get(), serviceProvider));
+            }
         }
+        log.debug("No accessor for mountpoint {} {}", acessor.getNodeId(), capabilities);
         return Optional.empty();
+    }
+
+    private void showLogInfo() {
+        log.debug("{} searching for {}", AdapterManagerNetworkElementFactory.class.getSimpleName(),
+                Capabilities.getNamespaceAndRevisionAsString(ROOTKEY));
     }
 }
