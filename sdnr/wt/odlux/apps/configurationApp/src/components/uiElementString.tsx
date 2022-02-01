@@ -17,7 +17,7 @@
  */
 
 import * as React from "react"
-import { Tooltip, TextField } from "@material-ui/core";
+import { Tooltip, TextField } from "@mui/material";
 import { ViewElementString } from "../models/uiModels";
 import { BaseProps } from "./baseProps";
 import { IfWhenTextInput } from "./ifWhenTextInput";
@@ -68,7 +68,7 @@ export const UiElementString = (props: stringEntryProps) => {
     }
 
     return (
-        <Tooltip title={isTooltipVisible ? element.description || '' : ''}>
+        <Tooltip disableInteractive title={isTooltipVisible ? element.description || '' : ''}>
             <IfWhenTextInput element={element} onChangeTooltipVisuability={setTooltipVisibility}
                 spellCheck={false} autoFocus margin="dense"
                 id={element.id} label={props?.isKey ? "🔑 " + element.label : element.label} type="text" value={props.inputValue}

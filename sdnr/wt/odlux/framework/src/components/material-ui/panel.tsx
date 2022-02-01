@@ -17,12 +17,16 @@
  */
 import * as React from 'react';
 
-import { withStyles, Theme, WithStyles, createStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
 
-import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Typography, ExpansionPanelActions } from '@material-ui/core';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
+import { Accordion, AccordionSummary, AccordionDetails, Typography, AccordionActions } from '@mui/material';
+
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 
 const styles = (theme: Theme) => createStyles({
   accordion: {
@@ -33,7 +37,6 @@ const styles = (theme: Theme) => createStyles({
     // background: theme.palette.background.paper,
     // color: theme.palette.text.primary,
     position: "relative",
-    display: 'flex',
     flexDirection: 'column'
   },
   text: {
@@ -53,19 +56,19 @@ type PanalProps = WithStyles<typeof styles> & {
 const PanelComponent: React.SFC<PanalProps> = (props) => {
   const { classes, activePanel, onToggle } = props;
   return (
-    <ExpansionPanel className={classes.accordion} expanded={activePanel === props.panelId} onChange={() => onToggle(props.panelId)} >
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+    <Accordion className={classes.accordion} expanded={activePanel === props.panelId} onChange={() => onToggle(props.panelId)} >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography className={classes.text} >{props.title}</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.detail}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.detail}>
         {props.children}
-      </ExpansionPanelDetails>
+      </AccordionDetails>
       {props.customActionButtons
-        ? <ExpansionPanelActions>
+        ? <AccordionActions>
           {props.customActionButtons}
-        </ExpansionPanelActions>
+        </AccordionActions>
         : null}
-    </ExpansionPanel>
+    </Accordion>
   );
 };
 

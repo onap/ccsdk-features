@@ -17,13 +17,14 @@
  */
 
 import * as React from 'react';
-import { MenuItem, Select, FormControl, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { MenuItem, Select, FormControl, Typography, SelectChangeEvent } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { LtpIds } from 'models/availableLtps';
 import { Loader } from '../../../../framework/src/components/material-ui';
 
+import { Theme } from '@mui/material/styles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
     display: {
         display: "inline-block"
     },
@@ -47,24 +48,28 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-type LtpSelectionProps = { selectedNE: string, error?: string, finishedLoading: boolean, selectedLtp: string, availableLtps: LtpIds[], onChangeLtp(event: React.ChangeEvent<HTMLSelectElement>): void, selectedTimePeriod: string, onChangeTimePeriod(event: React.ChangeEvent<HTMLSelectElement>): void };
+type LtpSelectionProps = { selectedNE: string, error?: string, finishedLoading: boolean, selectedLtp: string, 
+    availableLtps: LtpIds[], 
+    onChangeLtp(event: SelectChangeEvent<HTMLSelectElement | string> ): void, 
+    selectedTimePeriod: string, 
+    onChangeTimePeriod(event: SelectChangeEvent<HTMLSelectElement | string> ): void };
 
 export const LtpSelection = (props: LtpSelectionProps) => {
     const classes = useStyles();
     return (
         <>
             <h3>Selected Network Element: {props.selectedNE} </h3>
-            <FormControl className={classes.display}>
+            <FormControl variant="standard" className={classes.display}>
                 <span>
                     Select LTP
                 </span>
-                <Select className={classes.selectDropdown} value={props.selectedLtp} onChange={props.onChangeLtp} aria-label="ltp-selection" >
+                <Select variant="standard" className={classes.selectDropdown} value={props.selectedLtp} onChange={props.onChangeLtp} aria-label="ltp-selection" >
                     <MenuItem value={"-1"} aria-label="none"><em>--Select--</em></MenuItem>
                     {props.availableLtps.map(ltp =>
                         (<MenuItem value={ltp.key} key={ltp.key} aria-label={ltp.key}>{ltp.key}</MenuItem>))}
                 </Select>
                 <span> Time-Period </span>
-                <Select className={classes.selectDropdown} value={props.selectedTimePeriod} onChange={props.onChangeTimePeriod} aria-label="time-period-selection">
+                <Select variant="standard" className={classes.selectDropdown} value={props.selectedTimePeriod} onChange={props.onChangeTimePeriod} aria-label="time-period-selection">
                     <MenuItem value={"15min"} aria-label="15minutes">15min</MenuItem>
                     <MenuItem value={"24hours"} aria-label="24hours">24hours</MenuItem>
                 </Select>

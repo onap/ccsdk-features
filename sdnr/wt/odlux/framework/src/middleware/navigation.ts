@@ -60,11 +60,11 @@ const routerMiddlewareCreator = (history: History) => () => (next: Dispatch): Di
       if (tokenStr && token) {
         // @ts-ignore
         const user = new User({ username: token["name"], access_token: tokenStr, token_type: "Bearer", expires: token['exp'], issued: token['iat'] }) || undefined;
-        return next(loginUserAction(user)) as any;
+        applicationStore?.dispatch(loginUserAction(user));
       }
     } if (!action.pathname.startsWith("/login") && applicationStore && (!applicationStore.state.framework.authenticationState.user || !applicationStore.state.framework.authenticationState.user.isValid)) {
       history.replace(`/login?returnTo=${action.pathname}`);
-      return next(logoutUser()) as any;
+      applicationStore.dispatch(logoutUser());
     
     }else if (action.pathname.startsWith("/login") && applicationStore && (applicationStore.state.framework.authenticationState.user && applicationStore.state.framework.authenticationState.user.isValid)) {
       history.replace(`/`);

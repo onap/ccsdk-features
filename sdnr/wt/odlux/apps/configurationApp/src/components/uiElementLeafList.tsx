@@ -17,10 +17,11 @@
  */
 
 import * as React from "react"
-import { FormControl, InputLabel, Paper, Chip, FormHelperText, Dialog, DialogTitle, DialogContentText, DialogActions, Button, DialogContent } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
+import { FormControl, InputLabel, Paper, Chip, FormHelperText, Dialog, DialogTitle, DialogContentText, DialogActions, Button, DialogContent } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import AddIcon from '@mui/icons-material/Add';
 
+import { Theme } from '@mui/material/styles';
 import { ViewElement } from "../models/uiModels";
 
 import { BaseProps } from "./baseProps";
@@ -29,8 +30,8 @@ type LeafListProps = BaseProps<any []> & {
   getEditorForViewElement:  (uiElement: ViewElement) => (null | React.ComponentType<BaseProps<any>>)  
 };
 
-const useStyles = makeStyles((theme) => {
-  const light = theme.palette.type === 'light';
+const useStyles = makeStyles((theme: Theme) => {
+  const light = theme.palette.mode === 'light';
   const bottomLineColor = light ? 'rgba(0, 0, 0, 0.42)' : 'rgba(255, 255, 255, 0.7)';
 
   return ({
@@ -64,10 +65,10 @@ const useStyles = makeStyles((theme) => {
           }),
           pointerEvents: 'none', // Transparent to the hover style.
         },
-        '&$focused:after': {
+        '&.Mui-focused:after': {
           transform: 'scaleX(1)',
         },
-        '&$error:after': {
+        '&.Mui-error:after': {
           borderBottomColor: theme.palette.error.main,
           transform: 'scaleX(1)', // error is always underlined in red
         },
@@ -91,7 +92,7 @@ const useStyles = makeStyles((theme) => {
             borderBottom: `1px solid ${bottomLineColor}`,
           },
         },
-        '&$disabled:before': {
+        '&.Mui-disabled:before': {
           borderBottomStyle: 'dotted',
         },
       },
@@ -144,7 +145,7 @@ export const UiElementLeafList = (props: LeafListProps) => {
 
   return (
     <>
-      <FormControl style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
+      <FormControl variant="standard" style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
         <InputLabel htmlFor={`list-${element.id}`} shrink={!props.readOnly || !!(inputValue && inputValue.length)} >{element.label}</InputLabel>
         <ul className={`${classes.root} ${classes.underline}`} id={`list-${element.id}`}>
         { !props.readOnly ? <li>
@@ -195,7 +196,7 @@ export const UiElementLeafList = (props: LeafListProps) => {
             /> || null }
           </DialogContent>
           <DialogActions>
-            <Button onClick={ handleClose }> Cancel </Button>
+            <Button color="inherit" onClick={ handleClose }> Cancel </Button>
             <Button disabled={editorValue == null || editorValue === "" } onClick={ onApplyButton } color="secondary"> {editorValueIndex < 0 ? "Add" : "Apply"} </Button>
           </DialogActions>
         </Dialog>

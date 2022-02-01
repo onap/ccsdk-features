@@ -16,17 +16,21 @@
 * ============LICENSE_END==========================================================================
 */
 import * as React from 'react';
-import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
 
-import AddIcon from '@material-ui/icons/Add';
-import Refresh from '@material-ui/icons/Refresh';
-import LinkIcon from '@material-ui/icons/Link';
-import LinkOffIcon from '@material-ui/icons/LinkOff';
-import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
-import EditIcon from '@material-ui/icons/Edit';
-import Info from '@material-ui/icons/Info';
-import ComputerIcon from '@material-ui/icons/Computer';
-import { MenuItem, Divider, Typography } from '@material-ui/core';
+import { WithStyles } from '@mui/styles';
+import createStyles from '@mui/styles/createStyles';
+import withStyles from '@mui/styles/withStyles';
+
+import AddIcon from '@mui/icons-material/Add';
+import Refresh from '@mui/icons-material/Refresh';
+import LinkIcon from '@mui/icons-material/Link';
+import LinkOffIcon from '@mui/icons-material/LinkOff';
+import RemoveIcon from '@mui/icons-material/RemoveCircleOutline';
+import EditIcon from '@mui/icons-material/Edit';
+import Info from '@mui/icons-material/Info';
+import ComputerIcon from '@mui/icons-material/Computer';
+import { MenuItem, Divider, Typography } from '@mui/material';
 
 import { MaterialTable, ColumnType, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
@@ -189,39 +193,37 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       }
     };
 
-    return (
-      <>
-        <NetworkElementTable stickyHeader tableId="network-element-table" customActionButtons={[refreshNetworkElementsAction, ...canAdd ? [addRequireNetworkElementAction] : []]} columns={[
-          { property: "nodeId", title: "Node Name", type: ColumnType.text },
-          { property: "isRequired", title: "Required", type: ColumnType.boolean },
-          { property: "status", title: "Connection Status", type: ColumnType.text, width:'15%' },
-          { property: "host", title: "Host", type: ColumnType.text },
-          { property: "port", title: "Port", type: ColumnType.numeric },
-          { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
-          { property: "deviceType", title: "Device Type", type: ColumnType.text },
-          { property: "deviceFunction", title: "Device Function", type: ColumnType.text, width: '15%' }
-        ]} idProperty="id" {...this.props.networkElementsActions} {...this.props.networkElementsProperties} asynchronus createContextMenu={rowData => {
+    return <>
+      <NetworkElementTable stickyHeader tableId="network-element-table" customActionButtons={[refreshNetworkElementsAction, ...(canAdd ? [addRequireNetworkElementAction] : [])]} columns={[
+        { property: "nodeId", title: "Node Name", type: ColumnType.text },
+        { property: "isRequired", title: "Required", type: ColumnType.boolean },
+        { property: "status", title: "Connection Status", type: ColumnType.text, width:'15%' },
+        { property: "host", title: "Host", type: ColumnType.text },
+        { property: "port", title: "Port", type: ColumnType.numeric },
+        { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
+        { property: "deviceType", title: "Device Type", type: ColumnType.text },
+        { property: "deviceFunction", title: "Device Function", type: ColumnType.text, width: '15%' }
+      ]} idProperty="id" {...this.props.networkElementsActions} {...this.props.networkElementsProperties} asynchronus createContextMenu={rowData => {
 
-          return this.getContextMenu(rowData);
-        }} >
-        </NetworkElementTable>
-        <EditNetworkElementDialog
-          initialNetworkElement={networkElementToEdit}
-          mode={this.state.networkElementEditorMode}
-          onClose={this.onCloseEditNetworkElementDialog}
-          radioChecked={savedRadio}
-        />
-        <RefreshNetworkElementsDialog
-          mode={this.state.refreshNetworkElementsEditorMode}
-          onClose={this.onCloseRefreshNetworkElementsDialog}
-        />
-        <InfoNetworkElementDialog
-          initialNetworkElement={networkElementToEdit}
-          mode={this.state.infoNetworkElementEditorMode}
-          onClose={this.onCloseInfoNetworkElementDialog}
-        />
-      </>
-    );
+        return this.getContextMenu(rowData);
+      }} >
+      </NetworkElementTable>
+      <EditNetworkElementDialog
+        initialNetworkElement={networkElementToEdit}
+        mode={this.state.networkElementEditorMode}
+        onClose={this.onCloseEditNetworkElementDialog}
+        radioChecked={savedRadio}
+      />
+      <RefreshNetworkElementsDialog
+        mode={this.state.refreshNetworkElementsEditorMode}
+        onClose={this.onCloseRefreshNetworkElementsDialog}
+      />
+      <InfoNetworkElementDialog
+        initialNetworkElement={networkElementToEdit}
+        mode={this.state.infoNetworkElementEditorMode}
+        onClose={this.onCloseInfoNetworkElementDialog}
+      />
+    </>;
   };
 
   public componentDidMount() {

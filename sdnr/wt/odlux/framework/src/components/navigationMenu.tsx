@@ -16,14 +16,18 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from 'react';
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
 import { faHome, faAddressBook } from '@fortawesome/free-solid-svg-icons';
 
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
 
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';

@@ -34,7 +34,12 @@
 import * as React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-import { WithStyles, withStyles, createStyles, Theme } from '@material-ui/core/styles'; // infra for styling
+import { Theme } from '@mui/material/styles'; // infra for styling
+
+
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
 
 import defaultLogo from '../assets/images/defaultLogo.svg';

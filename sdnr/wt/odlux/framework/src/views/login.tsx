@@ -18,19 +18,23 @@
 import * as React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-import Alert from '@material-ui/lab/Alert';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import LockIcon from '@material-ui/icons/LockOutlined';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import Alert from '@mui/material/Alert';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import LockIcon from '@mui/icons-material/LockOutlined';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles';
+
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
 import connect, { Connect, IDispatcher } from '../flux/connect';
 import authenticationService from '../services/authenticationService';
@@ -40,8 +44,8 @@ import { loginUserAction, UpdatePolicies } from '../actions/authentication';
 
 import { IApplicationStoreState } from '../store/applicationStore';
 import { AuthPolicy, AuthToken, User } from '../models/authentication';
-import Menu from '@material-ui/core/Menu';
-import { MenuItem } from '@material-ui/core';
+import Menu from '@mui/material/Menu';
+import { MenuItem } from '@mui/material';
 
 const styles = (theme: Theme) => createStyles({
   layout: {
@@ -49,7 +53,7 @@ const styles = (theme: Theme) => createStyles({
     display: 'block', // Fix IE11 issue.
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
-    [theme.breakpoints.up(400 + theme.spacing(3) * 2)]: {
+    [theme.breakpoints.up(400 + Number(theme.spacing(3).replace('px','')) * 2)]: {
       width: 400,
       marginLeft: 'auto',
       marginRight: 'auto',
@@ -60,7 +64,7 @@ const styles = (theme: Theme) => createStyles({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`,
+    padding: `${theme.spacing(2)} ${theme.spacing(3)} ${theme.spacing(3)}`,
   },
   avatar: {
     margin: theme.spacing(1),
@@ -175,7 +179,7 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
                         aria-haspopup="true"
                         fullWidth
                         variant="contained"
-                        color="primary"
+                        color="inherit"
                         className={classes.submit} onClick={() => { window.location = provider.loginUrl as any; }}>
                         {provider.title}
                       </Button>))
@@ -189,14 +193,14 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
                 </>
               }
 
-              <FormControl margin="normal" required fullWidth>
+              <FormControl variant="standard" margin="normal" required fullWidth>
                 <InputLabel htmlFor="username">Username</InputLabel>
                 <Input id="username" name="username" autoComplete="username" autoFocus
                   disabled={this.state.busy}
                   value={this.state.username}
                   onChange={event => { this.setState({ username: event.target.value }) }} />
               </FormControl>
-              <FormControl margin="normal" required fullWidth>
+              <FormControl variant="standard" margin="normal" required fullWidth>
                 <InputLabel htmlFor="password">Password</InputLabel>
                 <Input
                   name="password"
@@ -208,7 +212,7 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
                   onChange={event => { this.setState({ password: event.target.value }) }}
                 />
               </FormControl>
-              <FormControl margin="normal" required fullWidth>
+              <FormControl variant="standard" margin="normal" required fullWidth>
                 <InputLabel htmlFor="password">Domain</InputLabel>
                 <Input
                   name="scope"
@@ -224,7 +228,7 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
                 type="submit"
                 fullWidth
                 variant="contained"
-                color="primary"
+                color="inherit"
                 disabled={this.state.busy}
                 className={classes.submit}
                 onClick={this.onSignIn}

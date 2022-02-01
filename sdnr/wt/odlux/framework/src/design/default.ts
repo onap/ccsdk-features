@@ -31,10 +31,10 @@
  * limitations under the License.
  *****************************************************************************/
 
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme, adaptV4Theme } from '@mui/material/styles';
 import onapLogo from '../assets/images/onapLogo.gif'
 
-const theme = createMuiTheme({
+const theme = createTheme(adaptV4Theme({
   design: {
     id: "onap",
     name: "Open Networking Automation Plattform (ONAP)",
@@ -60,7 +60,7 @@ const theme = createMuiTheme({
   overrides: { //temp fix for labels turning white after material new version (palette primary color)
     MuiFormLabel: {
       root: {
-        "&$focused": {
+        "&.Mui-focused": {
           color: "rgba(143,143,143,1)"
         }
       },
@@ -76,6 +76,6 @@ const theme = createMuiTheme({
       }
     }
   },
-});
+}));
 
 export default theme;

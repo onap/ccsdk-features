@@ -16,15 +16,27 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from 'react';
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
 
-import { List, ListItem, TextField, ListItemText, ListItemIcon, WithTheme, withTheme, Omit, Typography } from '@material-ui/core';
+import { makeStyles, WithStyles, WithTheme } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
-import FileIcon from '@material-ui/icons/InsertDriveFile';
-import CloseIcon from '@material-ui/icons/ExpandLess';
-import OpenIcon from '@material-ui/icons/ExpandMore';
-import FolderIcon from '@material-ui/icons/Folder';
+import { List, ListItem, TextField, ListItemText, ListItemIcon, Typography } from '@mui/material';
+import { DistributiveOmit } from '@mui/types';
+
+import withTheme from '@mui/styles/withTheme';
+
+import { SvgIconProps } from '@mui/material/SvgIcon';
+import FileIcon from '@mui/icons-material/InsertDriveFile';
+import CloseIcon from '@mui/icons-material/ExpandLess';
+import OpenIcon from '@mui/icons-material/ExpandMore';
+import FolderIcon from '@mui/icons-material/Folder';
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface (remove this line if you don't have the rule enabled)
+  interface DefaultTheme extends Theme {}
+}
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -33,7 +45,7 @@ const styles = (theme: Theme) => createStyles({
     paddingTop: 8,
   },
   search: {
-    padding: `0px ${theme.spacing(1)}px`
+    padding: `0px ${theme.spacing(1)}`
   }
 });
 
@@ -153,7 +165,7 @@ class TreeViewComponent<TData = { }> extends React.Component<TreeViewComponentPr
     return (
       <div className={this.props.className ? `${this.props.classes.root} ${this.props.className}` : this.props.classes.root} style={this.props.style}>
         {children}
-        {enableSearchBar && <TextField label={"Search"} inputProps={{'aria-label': 'treeview-searchfield'}} fullWidth={true} className={this.props.classes.search} value={searchTermValue} onKeyDown={this.onSearchKeyDown} onChange={this.onChangeSearchText} /> || null}
+        {enableSearchBar && <TextField variant="standard" label={"Search"} inputProps={{'aria-label': 'treeview-searchfield'}} fullWidth={true} className={this.props.classes.search} value={searchTermValue} onKeyDown={this.onSearchKeyDown} onChange={this.onChangeSearchText} /> || null}
         {enableSearchBar && (searchTerm === undefined || searchTerm.length===0 )&& <Typography style={{marginTop:'10px'}}>Please search for an inventory identifier or use *.</Typography>}
         <List>
           {this.renderItems(items, searchTerm && searchTerm.toLowerCase())}
@@ -187,10 +199,10 @@ class TreeViewComponent<TData = { }> extends React.Component<TreeViewComponentPr
 
     }, [] as JSX.Element[]);
   }
-  private renderItem = (item: ExternalTreeItem<TData>, searchTerm: string | undefined, depth: number, isFolder: boolean, expanded: boolean, forceRender: boolean): JSX.Element | null => {
+  private renderItem = (item: ExternalTreeItem<TData> , searchTerm: string | undefined, depth: number, isFolder: boolean, expanded: boolean, forceRender: boolean): JSX.Element | null => {  
     const styles = {
       item: {
-        paddingLeft: (((this.props.depthOffset || 0) + depth) * this.props.theme.spacing(3)),
+        paddingLeft: (((this.props.depthOffset || 0) + depth) * Number(this.props.theme.spacing(3).replace("px", ''))),
         backgroundColor: this.state.activeItem === item ? this.props.theme.palette.action.selected : undefined,
         height: this.props.itemHeight || undefined,
         cursor: item.disabled ? 'not-allowed' : 'pointer',
@@ -201,8 +213,17 @@ class TreeViewComponent<TData = { }> extends React.Component<TreeViewComponentPr
     };
 
     const text = item.content || ''; // need to keep track of search
-    const matchIndex = searchTerm ? text.toLowerCase().indexOf(searchTerm) : -1;
-    const searchTermLength = searchTerm && searchTerm.length || 0;
+    const search_array = searchTerm?.split("*");
+    const index = search_array?.findIndex(function (_str: String) {
+      return _str.length > 0;
+    }) || 0;
+    const firstSearchSubString = search_array ? search_array[index] : "";
+    const matchIndex = firstSearchSubString ? text.toLowerCase().indexOf(firstSearchSubString) : -1;
+
+    const hasStarInSearch = search_array ? search_array.length > 1 : false;
+    const isSearchStringWithStar = hasStarInSearch && firstSearchSubString?.length > 0 || false;
+
+    const searchTermLength = firstSearchSubString && firstSearchSubString.length || 0;
 
     const handleClickCreator = (isIcon: boolean) => (event: React.SyntheticEvent) => {
       if (item.disabled) return;
@@ -225,9 +246,8 @@ class TreeViewComponent<TData = { }> extends React.Component<TreeViewComponentPr
 
 
           { // highlight search result
-            matchIndex > -1
-              ? <ListItemText className={item.contentClass} primary={(<span>
-                {text.substring(0, matchIndex)}
+            isSearchStringWithStar && matchIndex > -1
+              ? <ListItemText className={item.contentClass} primary={(
                 <span
                   style={{
                     display: 'inline-block',
@@ -235,18 +255,29 @@ class TreeViewComponent<TData = { }> extends React.Component<TreeViewComponentPr
                     padding: '3px',
                   }}
                 >
-                  {text.substring(matchIndex, matchIndex + searchTermLength)}
-                </span>
-                {text.substring(matchIndex + searchTermLength)}
-              </span>)} />
-              : <ListItemText className={item.contentClass} primary={(
-                <span style={item.isMatch ? {
-                  display: 'inline-block',
-                  backgroundColor: 'rgba(255,235,59,0.5)',
-                  padding: '3px',
-                } : undefined}>
-                  {text} </span>
-              )} />
+                  {text}
+                </span>)} />
+              : matchIndex > -1
+                ? <ListItemText className={item.contentClass} primary={(<span>
+                  {text.substring(0, matchIndex)}
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      backgroundColor: 'rgba(255,235,59,0.5)',
+                      padding: '3px',
+                    }}
+                  >
+                    {text.substring(matchIndex, matchIndex + searchTermLength)}
+                  </span>
+                  {text.substring(matchIndex + searchTermLength)}
+                </span>)} />
+                : <ListItemText className={item.contentClass} primary={(
+                  <span style={item.isMatch ? {
+                    display: 'inline-block',
+                    padding: '3px',
+                  } : undefined}>
+                    {text} </span>
+                )} />
           }
 
           { // display the right icon, depending on the state
@@ -343,7 +374,7 @@ class TreeViewComponent<TData = { }> extends React.Component<TreeViewComponentPr
   }
 }
 
-export type TreeViewCtorType<TData = { }> = new () => React.Component<Omit<TreeViewComponentProps<TData>, 'theme'|'classes'>>;
+export type TreeViewCtorType<TData = { }> = new () => React.Component<DistributiveOmit<TreeViewComponentProps<TData>, 'theme'|'classes'>>;
 
 export const TreeView = withTheme(withStyles(styles)(TreeViewComponent));
 export default TreeView;

@@ -35,7 +35,7 @@ module.exports = (env) => {
         "react",
         "react-dom",
         "react-router-dom",
-        "@material-ui/core"
+        "@mui/material"
       ]
     },
 
@@ -105,7 +105,7 @@ module.exports = (env) => {
         name: "[name]",
         path: path.resolve(distPath, "[name]-manifest.json")
       }),
-      ...(env === "release") ? [
+      ...(env === "release" ? [
         new webpack.DefinePlugin({
           "process.env": {
             NODE_ENV: "'production'",
@@ -124,7 +124,7 @@ module.exports = (env) => {
             /s?css\.d\.ts$/,
             /less\.d\.ts$/
           ])
-        ]
+        ])
     ]
   }];
 }

@@ -19,7 +19,11 @@
 import React, { useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-import { WithStyles, withStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
 import connect, { IDispatcher, Connect } from "../../../../framework/src/flux/connect";
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
@@ -33,28 +37,28 @@ import { ViewSpecification, isViewElementString, isViewElementNumber, isViewElem
 
 import { getAccessPolicyByUrl } from "../../../../framework/src/services/restService";
 
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-import PostAdd from '@material-ui/icons/PostAdd';
-import ArrowBack from '@material-ui/icons/ArrowBack';
-import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
-import SaveIcon from '@material-ui/icons/Save';
-import EditIcon from '@material-ui/icons/Edit';
-import Tooltip from "@material-ui/core/Tooltip";
-import FormControl from "@material-ui/core/FormControl";
-import IconButton from "@material-ui/core/IconButton";
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import PostAdd from '@mui/icons-material/PostAdd';
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import RemoveIcon from '@mui/icons-material/RemoveCircleOutline';
+import SaveIcon from '@mui/icons-material/Save';
+import EditIcon from '@mui/icons-material/Edit';
+import Tooltip from "@mui/material/Tooltip";
+import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
 
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import Button from '@material-ui/core/Button';
-import Link from "@material-ui/core/Link";
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Button from '@mui/material/Button';
+import Link from "@mui/material/Link";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 
 import { BaseProps } from '../components/baseProps';
@@ -425,9 +429,9 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       const subElements = currentCase?.elements;
       return (
         <>
-          <FormControl key={uiElement.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
+          <FormControl variant="standard" key={uiElement.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
             <InputLabel htmlFor={`select-${uiElement.id}`} >{uiElement.label}</InputLabel>
-            <Select
+            <Select variant="standard"
               aria-label={uiElement.label + '-selection'}
               required={!!uiElement.mandatory}
               onChange={(e) => {
@@ -615,15 +619,19 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       const confirm = useConfirm();
 
       return (
-        <Tooltip title={"Remove"} >
-          <IconButton disabled={props.disabled} className={classes.button} aria-label="remove-element-button"
+        <Tooltip disableInteractive title={"Remove"} >
+          <IconButton
+            disabled={props.disabled}
+            className={classes.button}
+            aria-label="remove-element-button"
             onClick={async (e) => {
               e.stopPropagation();
               e.preventDefault();
-              confirm({ title: "Do you really want to delete this element ?", description: "This action is permanent!", confirmationButtonProps: { color: "secondary" } })
+              confirm({ title: "Do you really want to delete this element ?", description: "This action is permanent!", confirmationButtonProps: { color: "secondary" }, cancellationButtonProps: { color:"inherit" } })
                 .then(() => removeElement(`${this.props.vPath}[${props.rowData[listKeyProperty]}]`))
                 .then(props.onReload);
-            }} >
+            }}
+            size="large">
             <RemoveIcon />
           </IconButton>
         </Tooltip>
@@ -714,7 +722,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
             </div>
           ) : null
         }
-        <Button onClick={() => {
+        <Button color="inherit" onClick={() => {
           const resultingViewData = inputViewSpecification && this.collectData(inputViewSpecification.elements);
           this.props.executeRpc(this.props.vPath!, resultingViewData);
         }} >Exec</Button>
@@ -738,12 +746,12 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       <div className={this.props.classes.header}>
         <div>
           <Breadcrumbs aria-label="breadcrumbs">
-            <Link color="inherit" href="#" aria-label="back-breadcrumb"
+            <Link underline="hover" color="inherit" href="#" aria-label="back-breadcrumb"
               onClick={(ev: React.MouseEvent<HTMLElement>) => {
                 ev.preventDefault();
                 this.props.history.push(lastPath);
               }}>Back</Link>
-            <Link color="inherit" href="#"
+            <Link underline="hover" color="inherit" href="#"
               aria-label={nodeId + '-breadcrumb'}
               onClick={(ev: React.MouseEvent<HTMLElement>) => {
                 ev.preventDefault();
@@ -756,14 +764,14 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
                 const propTitle = prop.replace(/^[^:]+:/, "");
                 const ret = (
                   <span key={ind}>
-                    <Link color="inherit" href="#"
+                    <Link underline="hover" color="inherit" href="#"
                       aria-label={propTitle + '-breadcrumb'}
                       onClick={(ev: React.MouseEvent<HTMLElement>) => {
                         ev.preventDefault();
                         this.props.history.push(path);
                       }}><span>{propTitle}</span></Link>
                     {
-                      keyPath && <Link color="inherit" href="#"
+                      keyPath && <Link underline="hover" color="inherit" href="#"
                         aria-label={key + '-breadcrumb'}
                         onClick={(ev: React.MouseEvent<HTMLElement>) => {
                           ev.preventDefault();
@@ -781,7 +789,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         </div>
         {this.state.editMode && (
           <Fab color="secondary" aria-label="back-button" className={this.props.classes.fab} onClick={async () => {
-            this.props.vPath && await this.props.reloadView(this.props.vPath);
+            this.props.vPath && (await this.props.reloadView(this.props.vPath));
             this.setState({ editMode: false });
           }} ><ArrowBack /></Fab>
         ) || null}

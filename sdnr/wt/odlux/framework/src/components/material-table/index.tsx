@@ -16,29 +16,36 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from 'react';
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
 
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import Checkbox from '@material-ui/core/Checkbox';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
+
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Checkbox from '@mui/material/Checkbox';
 
 import { TableToolbar } from './tableToolbar';
 import { EnhancedTableHead } from './tableHead';
 import { EnhancedTableFilter } from './tableFilter';
 
 import { ColumnModel, ColumnType } from './columnModel';
-import { Omit, Menu, makeStyles } from '@material-ui/core';
+import { Menu } from '@mui/material';
+import { DistributiveOmit } from '@mui/types';
 
-import { SvgIconProps } from '@material-ui/core/SvgIcon/SvgIcon';
+import makeStyles from '@mui/styles/makeStyles';
 
-import { DividerTypeMap } from '@material-ui/core/Divider';
-import { MenuItemProps } from '@material-ui/core/MenuItem';
-import { flexbox } from '@material-ui/system';
+import { SvgIconProps } from '@mui/material/SvgIcon';
+
+import { DividerTypeMap } from '@mui/material/Divider';
+import { MenuItemProps } from '@mui/material/MenuItem';
+import { flexbox } from '@mui/system';
 import { RowDisabled } from './utilities';
 import { toAriaLabel } from '../../utilities/yangHelper';
 export { ColumnModel, ColumnType } from './columnModel';
@@ -51,7 +58,7 @@ export type DataCallback<TData = dataType> = (page?: number, rowsPerPage?: numbe
 
 function regExpEscape(s: string) {
   return s.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-};
+}
 
 function wildcardCheck(input: string, pattern: string) {
    if (!pattern) return true; 
@@ -61,7 +68,7 @@ function wildcardCheck(input: string, pattern: string) {
      (!pattern.endsWith('*') ? '$' : '')
    );
    return input.match(regex) !== null && input.match(regex)!.length >= 1;
-};
+}
 
 function desc(a: dataType, b: dataType, orderBy: string) {
   if ((b[orderBy] || "") < (a[orderBy] || "")) {
@@ -240,7 +247,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
         <TableContainer className={classes.container}>
           <TableToolbar tableId={this.props.tableId} numSelected={selected && selected.length} title={this.props.title} customActionButtons={this.props.customActionButtons} onExportToCsv={this.exportToCsv}
             onToggleFilter={toggleFilter} />
-          <Table aria-label={this.props.tableId ? this.props.tableId : 'tableTitle'} stickyHeader={this.props.stickyHeader || false} >
+          <Table padding="normal" aria-label={this.props.tableId ? this.props.tableId : 'tableTitle'} stickyHeader={this.props.stickyHeader || false} >
             <EnhancedTableHead
               columns={columns}
               numSelected={selected && selected.length}
@@ -330,15 +337,15 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
           count={rowCount}
           rowsPerPage={rowsPerPage}
           page={page}
-          aria-label={"table-pagination-footer" }
+          aria-label={this.props.isPopup ? "popup-table-pagination-footer" : "table-pagination-footer" }
           backIconButtonProps={{
             'aria-label': this.props.isPopup ? 'popup-previous-page' : 'previous-page',
           }}
           nextIconButtonProps={{
             'aria-label': this.props.isPopup ? 'popup-next-page': 'next-page',
           }}
-          onChangePage={this.onHandleChangePage}
-          onChangeRowsPerPage={this.onHandleChangeRowsPerPage}
+          onPageChange={this.onHandleChangePage}
+          onRowsPerPageChange={this.onHandleChangeRowsPerPage}
         />
       </Paper>
     );
@@ -371,7 +378,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
 
   private static updateRows(props: MaterialTableComponentPropsWithRows, state: MaterialTableComponentState): { rows: {}[], total: number, page: number } {
 
-    let data = [...props.rows as dataType[] || []];
+    let data = [...(props.rows as dataType[] || [])];
     const columns = props.columns;
 
     const { page, rowsPerPage, order, orderBy, filter } = state;
@@ -661,7 +668,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
   }
 }
 
-export type MaterialTableCtorType<TData extends {} = {}> = new () => React.Component<Omit<MaterialTableComponentProps<TData>, 'classes'>>;
+export type MaterialTableCtorType<TData extends {} = {}> = new () => React.Component<DistributiveOmit<MaterialTableComponentProps<TData>, 'classes'>>;
 
 export const MaterialTable = withStyles(styles)(MaterialTableComponent);
 export default MaterialTable;

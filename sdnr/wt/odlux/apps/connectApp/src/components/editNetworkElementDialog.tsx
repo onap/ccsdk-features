@@ -17,14 +17,14 @@
  */
 import * as React from 'react';
 
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { FormControl, InputLabel, Select, MenuItem, Typography, Radio, RadioGroup, Options, FormLabel, FormControlLabel } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { FormControl, InputLabel, Select, MenuItem, Typography, Radio, RadioGroup, Options, FormLabel, FormControlLabel } from '@mui/material';
 import { loadAllTlsKeyListAsync } from '../actions/tlsKeyActions';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
@@ -222,32 +222,32 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
           <DialogContentText>
             {setting.dialogDescription}
           </DialogContentText>
-          <TextField disabled={!setting.enableMountIdEditor} spellCheck={false} autoFocus margin="dense" id="name" label="Name" aria-label="name" type="text" fullWidth value={this.state.nodeId} onChange={(event) => { this.setState({ nodeId: event.target.value }); }} />
+          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} autoFocus margin="dense" id="name" label="Name" aria-label="name" type="text" fullWidth value={this.state.nodeId} onChange={(event) => { this.setState({ nodeId: event.target.value }); }} />
           {!this.state.isNameValid && <Typography variant="body1" color="error">Name cannot be empty.</Typography>}
-          <TextField disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="ipaddress" label="IP address" aria-label="ip adress" type="text" fullWidth value={this.state.host} onChange={(event) => { this.setState({ host: event.target.value }); }} />
+          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="ipaddress" label="IP address" aria-label="ip adress" type="text" fullWidth value={this.state.host} onChange={(event) => { this.setState({ host: event.target.value }); }} />
           {!this.state.isHostSet && <Typography variant="body1" color="error">IP Adress cannot be empty.</Typography>}
 
-          <TextField disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="netconfport" label="NetConf port" aria-label="netconf port" type="number" fullWidth value={this.state.port.toString()} onChange={(event) => { this.setState({ port: +event.target.value }); }} />
-          {setting.enableUsernameEditor && <TextField disabled={!setting.enableUsernameEditor} spellCheck={false} margin="dense" id="username" label="Username" aria-label="username" type="text" fullWidth value={this.state.username} onChange={(event) => { this.setState({ username: event.target.value }); }} /> || null}
+          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="netconfport" label="NetConf port" aria-label="netconf port" type="number" fullWidth value={this.state.port.toString()} onChange={(event) => { this.setState({ port: +event.target.value }); }} />
+          {setting.enableUsernameEditor && <TextField variant="standard" disabled={!setting.enableUsernameEditor} spellCheck={false} margin="dense" id="username" label="Username" aria-label="username" type="text" fullWidth value={this.state.username} onChange={(event) => { this.setState({ username: event.target.value }); }} /> || null}
 
           {setting.enableUsernameEditor &&
             <RadioGroup row aria-label="password-tls-key" name="password-tls-key" value={radioSelected}
               onChange={this.handleRadioChange} >
-              <FormControlLabel aria-label="passwordSelection" value='password' control={<Radio />} label="Password" onChange={this.onRadioSelect} />
-              <FormControlLabel aria-label="tlsKeySelection" value='tlsKey' control={<Radio />} label="TlsKey" onChange={this.onRadioSelect} />
+              <FormControlLabel aria-label="passwordSelection" value='password' control={<Radio color="secondary" />} label="Password" onChange={this.onRadioSelect} />
+              <FormControlLabel aria-label="tlsKeySelection" value='tlsKey' control={<Radio color="secondary" />} label="TlsKey" onChange={this.onRadioSelect} />
             </RadioGroup> || null}
 
           {setting.enableUsernameEditor && showPasswordTextField &&
-            <TextField disabled={!setting.enableUsernameEditor || !showPasswordTextField} spellCheck={false} margin="dense"
+            <TextField variant="standard" disabled={!setting.enableUsernameEditor || !showPasswordTextField} spellCheck={false} margin="dense"
               id="password" aria-label="password" type="password" fullWidth value={this.state.password}
               onChange={(event) => { this.setState({ password: event.target.value }); }}
             /> || null}
 
-          <FormControl fullWidth disabled={!setting.enableUsernameEditor}>
+          <FormControl variant="standard" fullWidth disabled={!setting.enableUsernameEditor}>
             {setting.enableUsernameEditor && showTlsDropdown &&
               <div>
                 <InputLabel htmlFor="pass">--Select tls-key--</InputLabel>
-                <Select disabled={!setting.enableUsernameEditor || !showTlsDropdown}
+                <Select variant="standard" disabled={!setting.enableUsernameEditor || !showTlsDropdown}
                   id="tlsKey" aria-label="tlsKey" value={this.state.tlsKey} fullWidth // displayEmpty
                   onChange={(event) => { this.setState({ tlsKey: event.target.value as any }); }}
                   inputProps={{ name: 'tlsKey', id: 'tlsKey' }}  >
@@ -259,9 +259,9 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
             }
           </FormControl>
 
-          <FormControl fullWidth disabled={!setting.enableUsernameEditor}>
+          <FormControl variant="standard" fullWidth disabled={!setting.enableUsernameEditor}>
             <InputLabel htmlFor="active">Required</InputLabel>
-            <Select aria-label="required-selection" value={this.state.isRequired || false} onChange={(event) => {
+            <Select variant="standard" aria-label="required-selection" value={this.state.isRequired || false} onChange={(event) => {
               this.setState({ isRequired: event.target.value as any as boolean });
             }} inputProps={{ name: 'required', id: 'required' }} fullWidth >
               <MenuItem value={true as any as string} aria-label="true">True</MenuItem>
@@ -286,7 +286,7 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
             }
             event.preventDefault();
             event.stopPropagation();
-          }} > {setting.applyButtonText} </Button>
+          }} color="inherit" > {setting.applyButtonText} </Button>
           <Button aria-label="dialog-cancel-button" onClick={(event) => {
             this.onCancel();
             event.preventDefault();
@@ -294,7 +294,7 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
           }} color="secondary"> {setting.cancelButtonText} </Button>
         </DialogActions>
       </Dialog>
-    )
+    );
   }
 
   public renderTlsKeys = () => {
@@ -333,7 +333,8 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
       case EditNetworkElementDialogMode.AddNewNetworkElement:
         element && this.props.addNewNetworkElement(element);
         this.setState({
-          radioSelected: ''
+          radioSelected: '',
+          isPasswordSelected: true,
         });
         break;
       case EditNetworkElementDialogMode.MountNetworkElement:

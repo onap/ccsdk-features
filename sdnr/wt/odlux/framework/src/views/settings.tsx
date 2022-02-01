@@ -21,8 +21,8 @@ import { IApplicationStoreState } from "../store/applicationStore";
 import connect, { Connect, IDispatcher } from "../flux/connect";
 
 import applicationService from '../services/applicationManager';
-import { makeStyles } from '@material-ui/styles';
-import { Divider, List, ListItem, ListItemText, Paper } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Divider, List, ListItem, ListItemText, Paper } from '@mui/material';
 
 import { GeneralUserSettings } from '../components/settings/general'
 import { GoBackAction } from '../actions/navigationActions';

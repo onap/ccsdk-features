@@ -18,8 +18,12 @@
 import * as React from "react";
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-import Button from '@material-ui/core/Button';
-import { WithStyles, withStyles, createStyles, Theme } from '@material-ui/core/styles'; // infra for styling
+import Button from '@mui/material/Button';
+import { Theme } from '@mui/material/styles'; // infra for styling
+
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
 const styles = (theme: Theme) => createStyles({
   warnButton: {
@@ -34,7 +38,7 @@ export const Detail = withStyles( styles )( withRouter( (props: DetailProps) => 
     <h1>Detail {props.match.params.id}</h1>
     <p>This are the information about {props.staticContext}.</p>
     <Button color={"secondary"} variant={"contained"}>Start</Button>
-    <Button className={ props.classes.warnButton } variant={"contained"}>Stop</Button>
+    <Button color="inherit" className={ props.classes.warnButton } variant={"contained"}>Stop</Button>
   </div>
 )));
 

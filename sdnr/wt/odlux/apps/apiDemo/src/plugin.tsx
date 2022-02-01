@@ -32,7 +32,7 @@ type AppProps = RouteComponentProps & Connect & { modules: Module[], requestModu
 
 const App = (props: AppProps ) => (
   <>
-    <button onClick={ props.requestModules }>Load Modules</button>
+    <button color="inherit" onClick={ props.requestModules }>Load Modules</button>
     <ul>{ props.modules.map((mod, ind) => (<li key={ ind }>{ mod.name }</li>)) }</ul>
   </>
 );

@@ -17,16 +17,20 @@
  */
 import * as React from 'react';
 
-import { Theme, createStyles, WithStyles, withStyles, Tooltip } from '@material-ui/core';
+import { Theme, Tooltip } from '@mui/material';
+
+import { WithStyles } from '@mui/styles';
+import createStyles from '@mui/styles/createStyles';
+import withStyles from '@mui/styles/withStyles';
 
 import { faBan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
-import RemoveIcon from '@material-ui/icons/RemoveCircleOutline';
-import Refresh from '@material-ui/icons/Refresh';
-import { MenuItem, Divider, Typography } from '@material-ui/core';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import RemoveIcon from '@mui/icons-material/RemoveCircleOutline';
+import Refresh from '@mui/icons-material/Refresh';
+import { MenuItem, Divider, Typography } from '@mui/material';
 
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
 import MaterialTable, { MaterialTableCtorType, ColumnType } from '../../../../framework/src/components/material-table';
@@ -212,9 +216,7 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     this.setState({
       maintenenceEntryToEdit: {
         ...entry,
-        ...(entry.start && endTime)
-          ? { start: convertToLocaleString(entry.start), end: convertToLocaleString(entry.end) }
-          : { start: convertToLocaleString(startTime), end: convertToLocaleString(endTime) }
+        ...(entry.start && endTime ? { start: convertToLocaleString(entry.start), end: convertToLocaleString(entry.end) } : { start: convertToLocaleString(startTime), end: convertToLocaleString(endTime) })
       },
       maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.EditMaintenenceEntry
     });
@@ -228,9 +230,7 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     this.setState({
       maintenenceEntryToEdit: {
         ...entry,
-        ...(entry.start && endTime)
-          ? { start: convertToLocaleString(entry.start), end: convertToLocaleString(entry.end) }
-          : { start: convertToLocaleString(startTime), end: convertToLocaleString(endTime) }
+        ...(entry.start && endTime ? { start: convertToLocaleString(entry.start), end: convertToLocaleString(entry.end) } : { start: convertToLocaleString(startTime), end: convertToLocaleString(endTime) })
       },
       maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.RemoveMaintenenceEntry
     });

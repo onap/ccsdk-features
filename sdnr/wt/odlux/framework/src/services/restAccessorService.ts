@@ -55,7 +55,7 @@ export const createRestApiAccessor = <TResult extends PlainObject>(urlOrPath: st
         $.ajax({
           url: uri,
           method: (action.settings && action.settings.method) || "GET",
-          headers: { ...authHeader, ...action.settings && action.settings.headers ? action.settings.headers : { } },
+          headers: { ...authHeader, ...(action.settings && action.settings.headers ? action.settings.headers : { }) },
         }).then((data: TResult) => {
            next(new RestResponseAction(data));
         }).catch((err: any) => {

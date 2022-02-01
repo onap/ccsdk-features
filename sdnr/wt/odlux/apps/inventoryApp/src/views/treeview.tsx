@@ -16,7 +16,11 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from "react";
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
 import { renderObject } from '../../../../framework/src/components/objectDump';
 import { Connect, connect, IDispatcher } from '../../../../framework/src/flux/connect';
@@ -24,8 +28,8 @@ import { TreeView, TreeViewCtorType, SearchMode } from '../../../../framework/sr
 
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Link from '@material-ui/core/Link';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
 
 import { updateInventoryTreeAsyncAction, selectInventoryNodeAsyncAction, UpdateSelectedNodeAction, UpdateExpandedNodesAction, setSearchTermAction } from "../actions/inventoryTreeActions";
 import { TreeDemoItem } from "../models/inventory";
@@ -41,11 +45,11 @@ const styles = (theme: Theme) => createStyles({
   tree: {
     flex: "1 0 0%",
     minWidth: "250px",
-    padding: `0px ${theme.spacing(1)}px`
+    padding: `0px ${theme.spacing(1)}`
   },
   details: {
     flex: "5 0 0%",
-    padding: `0px ${theme.spacing(1)}px`
+    padding: `0px ${theme.spacing(1)}`
   }
 });
 
@@ -108,12 +112,12 @@ class DashboardComponent extends React.Component<TreeviewComponentProps, Treevie
       <div style={scrollbar} >
         <div >
           <Breadcrumbs aria-label="breadcrumbs">
-            <Link color="inherit" href="#" aria-label="back-breadcrumb"
+            <Link underline="hover" color="inherit" href="#" aria-label="back-breadcrumb"
               onClick={(event: React.MouseEvent<HTMLElement>) => {
                 event.preventDefault();
                 this.props.history.push(filteredDashboardPath);
               }}>Back</Link>
-            <Link color="inherit" href="#"
+            <Link underline="hover" color="inherit" href="#"
               aria-label={this.props.match.params.mountId + '-breadcrumb'}
               onClick={(event: React.MouseEvent<HTMLElement>) => {
                 event.preventDefault();

@@ -18,16 +18,31 @@
 
 import * as React from 'react';
 import { ColumnModel, ColumnType } from './columnModel';
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
 
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
-import Tooltip from '@material-ui/core/Tooltip';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
-interface IEnhancedTableHeadComponentProps {
+import TableSortLabel from '@mui/material/TableSortLabel';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
+import Tooltip from '@mui/material/Tooltip';
+
+const styles = (theme: Theme) => createStyles({
+  header: {
+    backgroundColor: "#fafafa",
+    position: "sticky",
+    top: 0
+  }
+});
+
+
+type styles_header = WithStyles<typeof styles>;
+
+interface IEnhancedTableHeadComponentProps extends styles_header {
   numSelected: number | null;
   onRequestSort: (event: React.SyntheticEvent, property: string) => void;
   onSelectAllClick: () => void;
@@ -45,12 +60,13 @@ class EnhancedTableHeadComponent extends React.Component<IEnhancedTableHeadCompo
 
   render() {
     const { onSelectAllClick, order, orderBy, numSelected, rowCount, columns } = this.props;
+    const {classes} = this.props;
 
     return (
       <TableHead>
         <TableRow>
           { this.props.enableSelection 
-           ? <TableCell padding="checkbox" style={ { width: "50px" } }>
+           ? <TableCell padding="checkbox" style={ { width: "50px" } } className= {classes.header} >
               <Checkbox
                  indeterminate={ numSelected && numSelected > 0 && numSelected < rowCount || undefined }
                  checked={ numSelected === rowCount }
@@ -62,10 +78,10 @@ class EnhancedTableHeadComponent extends React.Component<IEnhancedTableHeadCompo
           { columns.map(col => {
             const style = col.width ? { width: col.width } : {};
             return (
-              <TableCell
+              <TableCell className= {classes.header}
                 key={ col.property }
                 align={ col.type === ColumnType.numeric ? 'right' : 'left' } 
-                padding={ col.disablePadding ? 'none' : 'default' }
+                padding={ col.disablePadding ? 'none' : 'normal' }
                 sortDirection={ orderBy === (col.property) ? order : false }
                 style={ style }
               >
@@ -76,7 +92,7 @@ class EnhancedTableHeadComponent extends React.Component<IEnhancedTableHeadCompo
                   >
                     { col.title || col.property }
                   </TableSortLabel>
-                  : <Tooltip
+                  : <Tooltip disableInteractive
                     title="Sort"
                     placement={ col.type === ColumnType.numeric ? 'bottom-end' : 'bottom-start' }
                     enterDelay={ 300 }
@@ -98,4 +114,4 @@ class EnhancedTableHeadComponent extends React.Component<IEnhancedTableHeadCompo
   }
 }
 
-export const EnhancedTableHead = EnhancedTableHeadComponent;
+export const EnhancedTableHead = withStyles(styles)(EnhancedTableHeadComponent);

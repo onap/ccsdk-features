@@ -17,13 +17,16 @@
  */
 import * as React from 'react';
 
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';  // select app icon
 
 import connect, { Connect } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import { withRouter, RouteComponentProps } from 'react-router';

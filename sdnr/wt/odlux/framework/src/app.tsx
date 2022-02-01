@@ -19,7 +19,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
 
 import { Frame } from './views/frame';
 
@@ -41,7 +41,7 @@ import theme from './design/default';
 import '!style-loader!css-loader!./app.css';
 import { startBroadcastChannel } from './services/broadcastService';
 
-declare module '@material-ui/core/styles/createMuiTheme' {
+declare module '@mui/material/styles' {
 
   interface IDesign {
     id: string,
@@ -55,9 +55,15 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
     design?: IDesign
   }
-  interface ThemeOptions {
+  interface DeprecatedThemeOptions {
     design?: IDesign
   }
+}
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface (remove this line if you don't have the rule enabled)
+  interface DefaultTheme extends Theme {}
 }
 
 export { configureApplication } from "./handlers/applicationStateHandler";
@@ -98,9 +104,11 @@ export const runApplication = () => {
 
   const App = (): JSX.Element => (
     <ApplicationStoreProvider applicationStore={applicationStore} >
-      <MuiThemeProvider theme={theme}>
-        <Frame />
-      </MuiThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <Frame />
+        </ThemeProvider>
+      </StyledEngineProvider>
     </ApplicationStoreProvider>
   );
 

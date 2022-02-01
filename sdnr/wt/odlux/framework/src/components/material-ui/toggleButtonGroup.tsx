@@ -17,7 +17,11 @@
  */
 import * as React from 'react';
 import classNames from 'classnames';
-import { withStyles, WithStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
 export const styles = (theme: Theme) => createStyles({
   /* Styles applied to the root element. */

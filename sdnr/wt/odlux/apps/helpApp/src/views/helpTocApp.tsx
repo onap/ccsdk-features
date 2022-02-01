@@ -23,7 +23,7 @@ import * as React from 'react'
 import { FunctionComponent } from "react";
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 import TocEntry from "../components/tocEntry";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 
 const mapProps = (state: IApplicationStoreState) => ({
     helpToc: state.help.toc,

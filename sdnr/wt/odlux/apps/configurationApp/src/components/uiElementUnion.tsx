@@ -18,7 +18,7 @@
 
 import * as React from 'react'
 import { BaseProps } from './baseProps';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip } from '@mui/material';
 import { IfWhenTextInput } from './ifWhenTextInput';
 import { ViewElementUnion, isViewElementString, isViewElementNumber, isViewElementObject, ViewElementNumber } from '../models/uiModels';
 import { checkRange, checkPattern } from './verifyer';
@@ -76,7 +76,7 @@ export const UIElementUnion = (props: UiElementUnionProps) => {
     }
   };
 
-  return <Tooltip title={isTooltipVisible ? element.description || '' : ''}>
+  return <Tooltip disableInteractive title={isTooltipVisible ? element.description || '' : ''}>
     <IfWhenTextInput element={element} onChangeTooltipVisuability={setTooltipVisibility}
       spellCheck={false} autoFocus margin="dense"
       id={element.id} label={props.isKey ? "🔑 " + element.label : element.label} type="text" value={props.inputValue}

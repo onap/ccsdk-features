@@ -17,7 +17,7 @@
  */
 
 import * as React from "react";
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 export const getTypeName = (obj: any): string => {
   if (obj == null) {

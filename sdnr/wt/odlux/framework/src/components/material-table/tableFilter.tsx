@@ -18,13 +18,18 @@
 
 import * as React from 'react';
 import { ColumnModel, ColumnType } from './columnModel';
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
 
 
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Input from '@material-ui/core/Input';
-import { Select, FormControl, InputLabel, MenuItem } from '@material-ui/core';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
+
+
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Input from '@mui/material/Input';
+import { Select, FormControl, InputLabel, MenuItem, SelectChangeEvent } from '@mui/material';
 import { toAriaLabel } from '../../utilities/yangHelper';
 
 
@@ -49,9 +54,13 @@ interface IEnhancedTableFilterComponentProps extends WithStyles<typeof styles> {
 }
 
 class EnhancedTableFilterComponent extends React.Component<IEnhancedTableFilterComponentProps> {
-  createFilterHandler = (property: string) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    this.props.onFilterChanged && this.props.onFilterChanged(property, event.target.value);
+  createSelectFilterHandler = (property: string) => (event: SelectChangeEvent<HTMLSelectElement | string>) => {
+    this.props.onFilterChanged && this.props.onFilterChanged(property, event.target.value as string);
   };
+  createInputFilterHandler = (property: string) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    this.props.onFilterChanged && this.props.onFilterChanged(property, event.currentTarget.value);
+  };
+
 
   render() {
     const { columns, filter, classes } = this.props;
@@ -68,20 +77,26 @@ class EnhancedTableFilterComponent extends React.Component<IEnhancedTableFilterC
             <TableCell
               className={col.type === ColumnType.numeric ? classes.numberInput : ''}
               key={col.property}
-              padding={col.disablePadding ? 'none' : 'default'}
+              padding={col.disablePadding ? 'none' : 'normal'}
               style={style}
             >
               {col.disableFilter || (col.type === ColumnType.custom)
                 ? null
                 : (col.type === ColumnType.boolean)
-                  ? <Select className={classes.input} aria-label={col.title ? toAriaLabel(col.title as string) + '-filter' : `${ind + 1}-filter`} value={filter[col.property] !== undefined ? filter[col.property] : ''} onChange={this.createFilterHandler(col.property)} inputProps={{ name: `${col.property}-bool`, id: `${col.property}-bool` }} >
+                  ? <Select variant="standard" className={classes.input} aria-label={col.title ? toAriaLabel(col.title as string) + '-filter' : `${ind + 1}-filter`}
+                    value={filter[col.property] !== undefined ? filter[col.property] : ''}
+                    onChange={this.createSelectFilterHandler(col.property)}
+                    inputProps={{ name: `${col.property}-bool`, id: `${col.property}-bool` }} >
                     <MenuItem value={undefined} aria-label="none-value" >
                       <em>None</em>
                     </MenuItem>
                     <MenuItem aria-label="true-value" value={true as any as string}>{col.labels ? col.labels["true"] : "true"}</MenuItem>
                     <MenuItem aria-label="false-value" value={false as any as string}>{col.labels ? col.labels["false"] : "false"}</MenuItem>
                   </Select>
-                  : <Input className={classes.input} inputProps={{ 'aria-label': col.title ? toAriaLabel(col.title as string)+ '-filter' : `${ind + 1}-filter` }} value={filter[col.property] || ''} onChange={this.createFilterHandler(col.property)} />}
+                  : <Input className={classes.input}
+                    inputProps={{ 'aria-label': col.title ? toAriaLabel(col.title as string) + '-filter' : `${ind + 1}-filter` }}
+                    value={filter[col.property] || ''}
+                    onChange={this.createInputFilterHandler(col.property)} />}
             </TableCell>
           );
         }, this)}

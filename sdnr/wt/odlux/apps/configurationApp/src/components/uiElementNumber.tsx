@@ -17,7 +17,7 @@
  */
 
 import { ViewElementNumber } from "models/uiModels";
-import { Tooltip, InputAdornment } from "@material-ui/core";
+import { Tooltip, InputAdornment } from "@mui/material";
 import * as React from 'react';
 import { BaseProps } from "./baseProps";
 import { IfWhenTextInput } from "./ifWhenTextInput";
@@ -53,7 +53,7 @@ export const UiElementNumber = (props: numberInputProps) => {
   }
 
   return (
-    <Tooltip title={isTooltipVisible ? element.description || '' : ''}>
+    <Tooltip disableInteractive title={isTooltipVisible ? element.description || '' : ''}>
       <IfWhenTextInput element={element} onChangeTooltipVisuability={setTooltipVisibility}
         spellCheck={false} autoFocus margin="dense"
         id={element.id} label={element.label} type="text" value={props.inputValue}

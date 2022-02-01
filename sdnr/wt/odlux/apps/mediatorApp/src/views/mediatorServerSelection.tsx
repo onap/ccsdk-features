@@ -16,13 +16,17 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from 'react';
-import { WithStyles, withStyles, createStyles, Theme, Tooltip } from '@material-ui/core';
+import { Theme, Tooltip } from '@mui/material';
 
-import AddIcon from '@material-ui/icons/Add';
-import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Refresh from '@material-ui/icons/Refresh';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
+
+import AddIcon from '@mui/icons-material/Add';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Refresh from '@mui/icons-material/Refresh';
 
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
@@ -105,31 +109,35 @@ class MediatorServerSelectionComponent extends React.Component<MediatorServerSel
         });
       }
     };
-    return (
-      <>
-        <MediatorServersTable stickyHeader title={"Mediator"} customActionButtons={[refreshMediatorAction, addMediatorServerActionButton]} idProperty={"id"}
-          {...this.props.mediatorServersActions} {...this.props.mediatorServersProperties} columns={[
-            { property: "name", title: "Name", type: ColumnType.text },
-            { property: "url", title: "Url", type: ColumnType.text },
-            {
-              property: "actions", title: "Actions", type: ColumnType.custom, customControl: ({ rowData }) => (
-                <div className={classes.spacer}>
-                  <Tooltip title={"Edit"} ><IconButton className={classes.button} onClick={event => { this.onEditMediatorServer(event, rowData); }}><EditIcon /></IconButton></Tooltip>
-                  <Tooltip title={"Remove"} ><IconButton className={classes.button} onClick={event => { this.onRemoveMediatorServer(event, rowData); }}><DeleteIcon /></IconButton></Tooltip>
-                </div>
-              )
-            }
-          ]} onHandleClick={this.onSelectMediatorServer} />
-        <EditMediatorServerDialog
-          mediatorServer={this.state.mediatorServerToEdit}
-          mode={this.state.mediatorServerEditorMode}
-          onClose={this.onCloseEditMediatorServerDialog} />
-        <RefreshMediatorDialog
-          mode={this.state.refreshMediatorEditorMode}
-          onClose={this.onCloseRefreshMediatorDialog}
-        />
-      </>
-    );
+    return <>
+      <MediatorServersTable stickyHeader title={"Mediator"} customActionButtons={[refreshMediatorAction, addMediatorServerActionButton]} idProperty={"id"}
+        {...this.props.mediatorServersActions} {...this.props.mediatorServersProperties} columns={[
+          { property: "name", title: "Name", type: ColumnType.text },
+          { property: "url", title: "Url", type: ColumnType.text },
+          {
+            property: "actions", title: "Actions", type: ColumnType.custom, customControl: ({ rowData }) => (
+              <div className={classes.spacer}>
+                <Tooltip disableInteractive title={"Edit"} ><IconButton
+                  className={classes.button}
+                  onClick={event => { this.onEditMediatorServer(event, rowData); }}
+                  size="large"><EditIcon /></IconButton></Tooltip>
+                <Tooltip disableInteractive title={"Remove"} ><IconButton
+                  className={classes.button}
+                  onClick={event => { this.onRemoveMediatorServer(event, rowData); }}
+                  size="large"><DeleteIcon /></IconButton></Tooltip>
+              </div>
+            )
+          }
+        ]} onHandleClick={this.onSelectMediatorServer} />
+      <EditMediatorServerDialog
+        mediatorServer={this.state.mediatorServerToEdit}
+        mode={this.state.mediatorServerEditorMode}
+        onClose={this.onCloseEditMediatorServerDialog} />
+      <RefreshMediatorDialog
+        mode={this.state.refreshMediatorEditorMode}
+        onClose={this.onCloseRefreshMediatorDialog}
+      />
+    </>;
   }
 
   public componentDidMount() {

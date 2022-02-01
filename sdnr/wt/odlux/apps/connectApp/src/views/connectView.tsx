@@ -28,7 +28,7 @@ import { ConnectionStatusLog } from '../components/connectionStatusLog';
 import { setPanelAction, findWebUrisForGuiCutThroughAsyncAction, SetWeburiSearchBusy } from '../actions/commonNetworkElementsActions';
 import { PanelId } from '../models/panelId';
 import { NetworkElementConnection } from 'models/networkElementConnection';
-import { AppBar, Tabs, Tab } from '@material-ui/core';
+import { AppBar, Tabs, Tab } from '@mui/material';
 
 const mapProps = (state: IApplicationStoreState) => ({
   panelId: state.connect.currentOpenPanel,
@@ -96,7 +96,7 @@ class ConnectApplicationComponent extends React.Component<ConnectApplicationComp
 
   };
 
-  private onHandleTabChange = (event: React.ChangeEvent<{}>, newValue: PanelId) => {
+  private onHandleTabChange = (event: React.SyntheticEvent, newValue: PanelId) => {
     this.props.switchActivePanel(newValue);
   }
 
@@ -105,8 +105,8 @@ class ConnectApplicationComponent extends React.Component<ConnectApplicationComp
 
     return (
       <>
-        <AppBar position="static">
-          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="connect-app-tabs">
+        <AppBar enableColorOnDark position="static">
+          <Tabs indicatorColor="secondary" textColor="inherit" value={activePanelId} onChange={this.onHandleTabChange} aria-label="connect-app-tabs">
             <Tab aria-label="network-elements-list-tab" label="Network Elements" value="NetworkElements" />
             <Tab aria-label="connection-status-log-tab" label="Connection Status Log" value="ConnectionStatusLog" />
           </Tabs>

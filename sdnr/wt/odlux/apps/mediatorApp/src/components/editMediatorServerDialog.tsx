@@ -17,19 +17,19 @@
  */
 import * as React from 'react';
 
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import { IDispatcher, connect, Connect } from '../../../../framework/src/flux/connect';
 
 import { addAvaliableMediatorServerAsyncActionCreator, removeAvaliableMediatorServerAsyncActionCreator, updateAvaliableMediatorServerAsyncActionCreator } from '../actions/avaliableMediatorServersActions';
 import { MediatorServer } from '../models/mediatorServer';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 
 export enum EditMediatorServerDialogMode {
   None = "none",
@@ -151,8 +151,8 @@ class EditMediatorServerDialogComponent extends React.Component<EditMediatorServ
             {setting.dialogDescription}
           </DialogContentText>
           {/* <TextField disabled spellCheck={false} autoFocus margin="dense" id="id" label="Id" type="text" fullWidth value={ this.state._id } onChange={(event)=>{ this.setState({_id: event.target.value}); } } /> */}
-          <TextField disabled={setting.readonly} spellCheck={false} margin="dense" id="name" label="Name" type="text" fullWidth value={this.state.name} onChange={(event) => { this.setState({ name: event.target.value }); }} />
-          <TextField disabled={setting.readonly} spellCheck={false} margin="dense" id="url" label="Url" type="text" fullWidth value={this.state.url} onChange={(event) => { this.setState({ url: event.target.value }); }} />
+          <TextField variant="standard" disabled={setting.readonly} spellCheck={false} margin="dense" id="name" label="Name" type="text" fullWidth value={this.state.name} onChange={(event) => { this.setState({ name: event.target.value }); }} />
+          <TextField variant="standard" disabled={setting.readonly} spellCheck={false} margin="dense" id="url" label="Url" type="text" fullWidth value={this.state.url} onChange={(event) => { this.setState({ url: event.target.value }); }} />
 
           <Typography id="errorMessage" component={"div"} color="error">{this.state.errorMessage.map((error, index) => <div key={index}>{error}</div>)}</Typography>
 
@@ -174,7 +174,7 @@ class EditMediatorServerDialogComponent extends React.Component<EditMediatorServ
 
             event.preventDefault();
             event.stopPropagation();
-          }} > {setting.applyButtonText} </Button>
+          }} color="inherit" > {setting.applyButtonText} </Button>
           <Button onClick={(event) => {
             this.onCancel();
             this.setState({ errorMessage: [] });

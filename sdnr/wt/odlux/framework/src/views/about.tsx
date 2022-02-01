@@ -19,8 +19,7 @@ import * as React from 'react';
 import * as marked from 'marked';
 import * as hljs from 'highlight.js';
 import { requestRestExt } from '../services/restService';
-import { Button, Typography } from '@material-ui/core';
-import createBreakpoints from '@material-ui/core/styles/createBreakpoints';
+import { Button, Typography } from '@mui/material';
 const defaultRenderer = new marked.Renderer();
 defaultRenderer.link = (href, title, text) => (
   `<a target="_blank" rel="noopener noreferrer" href="${href}" title="${title}">${text}</a>`
@@ -168,7 +167,7 @@ class AboutComponent extends React.Component<any, AboutState> {
       <div style={containerStyle}>
         { this.state.isContentLoadedSucessfully &&
         <div style={{float: "right", marginRight: "10px"}}>
-        <Button variant="contained" onClick={e => this.copyToClipboard(e)}>
+        <Button color="inherit" variant="contained" onClick={e => this.copyToClipboard(e)}>
            Copy to clipboard
         </Button>
           {

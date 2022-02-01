@@ -17,7 +17,7 @@
  */
 
 import * as React from 'react'
-import { DialogContent, DialogActions, Button, Dialog, DialogTitle, DialogContentText } from '@material-ui/core';
+import { DialogContent, DialogActions, Button, Dialog, DialogTitle, DialogContentText } from '@mui/material';
 import { currentProblemsReloadAction } from '../handlers/currentProblemsHandler';
 import { clearStuckAlarmAsyncAction } from '../actions/clearStuckAlarmsAction';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
@@ -117,13 +117,13 @@ class ClearStuckAlarmsDialogComponent extends React.Component<clearStuckAlarmsPr
                     {
                         this.state.clearAlarmsSuccessful &&
                         <>
-                            <Button onClick={this.onRefresh}>Yes</Button>
-                            <Button onClick={this.onClose}>No</Button>
+                            <Button color="inherit" onClick={this.onRefresh}>Yes</Button>
+                            <Button color="inherit" onClick={this.onClose}>No</Button>
                         </>
                     }
 
                     {
-                        !this.state.clearAlarmsSuccessful && <Button onClick={this.onOk}>Ok</Button>
+                        !this.state.clearAlarmsSuccessful && <Button color="inherit" onClick={this.onOk}>Ok</Button>
                     }
                 </DialogActions>
             </Dialog>

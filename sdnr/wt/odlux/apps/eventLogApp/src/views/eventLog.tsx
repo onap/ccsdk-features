@@ -19,7 +19,7 @@ import * as React from "react";
 
 import { Connect, connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
-import Refresh from '@material-ui/icons/Refresh';
+import Refresh from '@mui/icons-material/Refresh';
 
 import { EventLogType } from '../models/eventLogType';
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
