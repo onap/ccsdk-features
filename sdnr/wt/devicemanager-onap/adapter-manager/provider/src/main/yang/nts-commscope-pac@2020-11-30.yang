@@ -1,0 +1,57 @@
+module nts-commscope-pac {
+  yang-version 1.1;
+  namespace "urn:o-ran-sc:params:xml:ns:yang:nts:commscope";
+  prefix nts-cscp;
+
+  import nts-common {
+    prefix ntsc;
+  }
+
+  organization
+    "O-RAN-SC";
+  contact
+    " Web: <https://wiki.o-ran-sc.org/display/SIM/SIM>
+        Editors:
+        Alex Stancu <mailto:alexandru.stancu@highstreet-technologies.com>
+        Adrian Lita <mailto:adrian.lita@highstreet-technologies.com>
+        Martin Skorupski <mailto:martin.skorupski@highstreet-technologies.com>";
+  description
+    "This module contains YANG definitions for the Network Topology Simulator - CommScope extensions.";
+
+  revision 2020-11-30 {
+    description
+      "Cleared revision for nts-common import.";
+    reference
+      "CommScope OneCell implementaion.";
+  }
+  revision 2020-09-07 {
+    description
+      "Initial revision for the Network Topology Simulator - Next Generation";
+    reference
+      "CommScope OneCell implementaion.";
+  }
+
+  identity NTS_FUNCTION_TYPE_ONECELL_4_3 {
+    base ntsc:NTS_FUNCTION_TYPE_BASE;
+    description
+      "The simulated network function implements a CommScope OneCell version 4.3 YANG model.";
+    reference
+      "nts-ng-onecell-4-3";
+  }
+
+  identity NTS_FUNCTION_TYPE_ONECELL_4_5 {
+    base ntsc:NTS_FUNCTION_TYPE_BASE;
+    description
+      "The simulated network function implements a CommScope OneCell version 4.5 YANG model.";
+    reference
+      "nts-ng-onecell-4-5";
+  }
+
+  identity NTS_FUNCTION_TYPE_ONECELL_AUGMENT {
+    base ntsc:NTS_FUNCTION_TYPE_BASE;
+    description
+      "The simulated network function implements a CommScope OneCell Auugment YANG model.";
+    reference
+      "nts-ng-onecell-augment";
+  }
+}

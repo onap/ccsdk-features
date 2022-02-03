@@ -1,0 +1,497 @@
+module nts-network-function {
+  yang-version 1.1;
+  namespace "urn:o-ran-sc:params:xml:ns:yang:nts:network:function";
+  prefix ntsnf;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import nts-common {
+    prefix ntsc;
+  }
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  organization
+    "O-RAN-SC";
+  contact
+    " Web: <https://wiki.o-ran-sc.org/display/SIM/SIM>
+        Editors:
+        Alex Stancu <mailto:alexandru.stancu@highstreet-technologies.com>
+        Adrian Lita <mailto:adrian.lita@highstreet-technologies.com>
+        Martin Skorupski <mailto:martin.skorupski@highstreet-technologies.com>";
+  description
+    "This module contains YANG definitions for the Network Topology Simulator - Network Functions";
+
+  revision 2021-06-18 {
+    description
+      "Added test-list for NETCONF hardware delay emulation.";
+    reference
+      "O-RAN-SC SIM project";
+  }
+  revision 2021-06-14 {
+    description
+      "Added total loss network emulation RPC and NETCONF write-delay emulation.";
+    reference
+      "O-RAN-SC SIM project";
+  }
+  revision 2021-06-08 {
+    description
+      "Added more info and NETCONF latency emulation.";
+    reference
+      "O-RAN-SC SIM project";
+  }
+  revision 2021-05-17 {
+    description
+      "Added support for network emulation.";
+    reference
+      "O-RAN-SC SIM project";
+  }
+  revision 2021-03-26 {
+    description
+      "Added info container, and expanted feature control mechanism and status.";
+    reference
+      "O-RAN-SC SIM project";
+  }
+  revision 2021-03-17 {
+    description
+      "Renamed datastore-random-populate RPC to datastore-populate";
+    reference
+      "O-RAN-SC SIM project";
+  }
+  revision 2020-12-11 {
+    description
+      "Added function-type to simulated function.";
+    reference
+      "O-RAN-SC SIM project";
+  }
+  revision 2020-11-30 {
+    description
+      "Cleared revision for nts-common import.";
+    reference
+      "O-RAN-SC SIM project";
+  }
+  revision 2020-10-28 {
+    description
+      "Add RPC for clearing the fault counters.";
+    reference
+      "O-RAN-SC SIM project";
+  }
+  revision 2020-10-13 {
+    description
+      "Add RPC for datastore populating and feature control.";
+    reference
+      "O-RAN-SC SIM project";
+  }
+  revision 2020-09-07 {
+    description
+      "Initial revision for the Network Topology Simulator - Next Generation";
+    reference
+      "O-RAN-SC SIM project";
+  }
+
+  container info {
+    config false;
+    description
+      "Information about NTS application and modules.";
+    leaf build-time {
+      type yang:date-and-time;
+      description
+        "Build time of NTS application.";
+    }
+
+    leaf version {
+      type string;
+      description
+        "NTS version of current network-function.";
+    }
+
+    leaf started-features {
+      type ntsc:feature-type;
+      description
+        "A bit-wise list with currently started features.";
+    }
+
+    leaf ssh-connections {
+      type uint8;
+      config false;
+      description
+        "The number of SSH Endpoints the network function instance exposes.";
+    }
+
+    leaf tls-connections {
+      type uint8;
+      config false;
+      description
+        "The number of TLS Endpoints the network function instance exposes.";
+    }
+
+    leaf hostname {
+      type string;
+      description
+        "Current network function hostname.";
+    }
+
+    list docker-ports {
+      key "port";
+      description
+        "The ports which are exposed inside the docker container implementing this network function instance.";
+      leaf port {
+        type inet:port-number;
+        description
+          "Port number.";
+      }
+
+      leaf protocol {
+        type identityref {
+          base ntsc:NTS_PROTOCOL_TYPE_BASE;
+        }
+        description
+          "Protocol attached to current port.";
+      }
+    }
+  }
+
+  container simulation {
+    description
+      "Root level container which controls the Network Function.";
+    container network-function {
+      description
+        "Container which encompasses the details of the network function.";
+      leaf function-type {
+        type string;
+        description
+          "Type of network function that is simulated.";
+      }
+
+      uses ntsc:mount-point-details-g;
+
+      uses ntsc:faults-g;
+
+      uses ntsc:netconf-config-g;
+
+      uses ntsc:ves-config-g;
+    }
+
+    container network-emulation {
+      description
+        "Container which encompasses the details of the network emulation.";
+      leaf limit {
+        type uint16 {
+          range "16 .. max";
+        }
+        units "packets";
+        default "1000";
+        description
+          "Maximum number of packets the qdisc may hold queued at a time.";
+      }
+
+      container delay {
+        description
+          "Adds the chosen delay to the packets outgoing to chosen network interface.";
+        leaf time {
+          type uint16;
+          units "miliseconds (ms)";
+          description
+            "Delay time between packets.";
+        }
+
+        leaf jitter {
+          type uint16;
+          units "miliseconds (ms)";
+          description
+            "Delay jitter.";
+        }
+
+        leaf correlation {
+          type uint8 {
+            range "0 .. 100";
+          }
+          units "percentage";
+          description
+            "Delay correlation.";
+        }
+
+        leaf distribution {
+          type enumeration {
+            enum "uniform" {
+              description
+                "Uniform delay distribution.";
+            }
+            enum "normal" {
+              description
+                "Normal delay distribution.";
+            }
+            enum "pareto" {
+              description
+                "Pareto delay distribution.";
+            }
+            enum "paretonormal" {
+              description
+                "Paretonormal delay distribution.";
+            }
+          }
+          description
+            "Delay distribution.";
+        }
+      }
+
+      leaf loss {
+        type uint8 {
+          range "0 .. 100";
+        }
+        units "percentage";
+        description
+          "Adds an independent loss probability to the packets outgoing from the chosen network interface.";
+      }
+
+      container corruption {
+        description
+          "Allows the emulation of random noise introducing an error in a random position for a chosen percent of packets.";
+        leaf percentage {
+          type uint8 {
+            range "0 .. 100";
+          }
+          units "percentage";
+          description
+            "Corruption percentage.";
+        }
+
+        leaf correlation {
+          type uint8 {
+            range "0 .. 100";
+          }
+          units "percentage";
+          description
+            "Corruption correlation.";
+        }
+      }
+
+      container duplication {
+        description
+          "Using this option the chosen percent of packets is duplicated before queuing them.";
+        leaf percentage {
+          type uint8 {
+            range "0 .. 100";
+          }
+          units "percentage";
+          description
+            "Duplication percentage.";
+        }
+
+        leaf correlation {
+          type uint8 {
+            range "0 .. 100";
+          }
+          units "percentage";
+          description
+            "Duplication correlation.";
+        }
+      }
+
+      container reordering {
+        description
+          "Used together with delay; a percentage of packets are sent immediately (with defined correlation) while the others are delayed (by specified delay).";
+        leaf percentage {
+          type uint8 {
+            range "0 .. 100";
+          }
+          units "percentage";
+          description
+            "Reordering percentage.";
+        }
+
+        leaf correlation {
+          type uint8 {
+            range "0 .. 100";
+          }
+          units "percentage";
+          description
+            "Reordering correlation.";
+        }
+      }
+
+      leaf rate {
+        type uint16;
+        units "kbits";
+        description
+          "Delay packets based on packet size.";
+      }
+    }
+
+    container hardware-emulation {
+      description
+        "Container which encompasses the details of hardware emulation.";
+      container netconf-delay {
+        description
+          "Emulates delay on an operational leaf.";
+        leaf delay {
+          type uint32;
+          units "miliseconds (ms)";
+          default "0";
+          description
+            "Delay time to be set for get operation on test leaf.";
+        }
+
+        leaf get-test {
+          type uint32;
+          units "miliseconds (ms)";
+          config false;
+          description
+            "Read to test. Value represents emulated delay.";
+        }
+
+        leaf edit-test {
+          type uint32;
+          units "miliseconds (ms)";
+          description
+            "Writing non-null value will emulate a write-delay.";
+        }
+
+        list get-test-list {
+          config false;
+          description
+            "Read to test. Returned values are saved from edit-test-list.";
+          leaf value {
+            type string;
+            description
+              "Values from edit-test-list.";
+          }
+        }
+
+        list edit-test-list {
+          key "value";
+          description
+            "Write to test.";
+          leaf value {
+            type string;
+            description
+              "Unique values for testing.";
+          }
+        }
+      }
+    }
+
+    container sdn-controller {
+      description
+        "Groups details about the SDN Controller.";
+      uses ntsc:controller-g;
+    }
+
+    container ves-endpoint {
+      description
+        "Groups details about the VES Collector endpoint.";
+      uses ntsc:ves-endpoint-g;
+    }
+  }
+
+  rpc datastore-populate {
+    description
+      "Operation to populate the datastore with data for all the containing YANG models, based on settings in config.json";
+
+    output {
+      uses ntsc:rpc-status-g;
+    }
+  }
+
+  rpc feature-control {
+    description
+      "Operation to control the features in a Network Function.";
+    input {
+      leaf start-features {
+        type ntsc:feature-type;
+        description
+          "A bit-wise list with features to be activated.";
+      }
+
+      leaf stop-features {
+        type ntsc:feature-type;
+        description
+          "A bit-wise list with features to be deactivated.";
+      }
+    }
+
+    output {
+      uses ntsc:rpc-status-g;
+    }
+  }
+
+  rpc invoke-notification {
+    description
+      "Operation to control the features in a Network Function.";
+    input {
+      leaf notification-format {
+        type enumeration {
+          enum "xml" {
+            description
+              "The notification string is formatted as XML.";
+          }
+          enum "json" {
+            description
+              "The notification string is formatted as JSON.";
+          }
+        }
+        mandatory true;
+        description
+          "The format of the notification string.";
+      }
+
+      leaf notification-object {
+        type string;
+        mandatory true;
+        description
+          "A JSON string containing the notification object to be sent by the device.";
+      }
+    }
+
+    output {
+      uses ntsc:rpc-status-g;
+    }
+  }
+
+  rpc invoke-ves-pm-file-ready {
+    description
+      "Operation to generate a VES  notification from a Network Function.";
+    input {
+      leaf file-location {
+        type string;
+        mandatory true;
+        description
+          "A string containing the location of the file on the server.";
+      }
+    }
+
+    output {
+      uses ntsc:rpc-status-g;
+    }
+  }
+
+  rpc clear-fault-counters {
+    description
+      "Operation to clear the fault counters.";
+
+    output {
+      uses ntsc:rpc-status-g;
+    }
+  }
+
+  rpc emulate-total-loss {
+    description
+      "Operation to emulate 100% loss in network packets. Operation will resume after specified timeout.";
+    input {
+      leaf timeout {
+        type uint32;
+        units "miliseconds (ms)";
+        description
+          "Period after which loss will stop being 100%.";
+      }
+    }
+
+    output {
+      uses ntsc:rpc-status-g;
+    }
+  }
+}

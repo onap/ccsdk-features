@@ -1,0 +1,49 @@
+module nts-openroadm-pac {
+  yang-version 1.1;
+  namespace "urn:o-ran-sc:params:xml:ns:yang:nts:openroadm";
+  prefix nts-openroadm;
+
+  import nts-common {
+    prefix ntsc;
+  }
+
+  organization
+    "O-RAN-SC";
+  contact
+    " Web: <https://wiki.o-ran-sc.org/display/SIM/SIM>
+        Editors:
+        Alex Stancu <mailto:alexandru.stancu@highstreet-technologies.com>
+        Adrian Lita <mailto:adrian.lita@highstreet-technologies.com>
+        Martin Skorupski <mailto:martin.skorupski@highstreet-technologies.com>";
+  description
+    "This module contains YANG definitions for the Network Topology Simulator - OpenROADM extensions.";
+
+  revision 2020-11-30 {
+    description
+      "Cleared revision for nts-common import.";
+    reference
+      "OpenROADM implementation";
+  }
+  revision 2020-10-26 {
+    description
+      "Initial revision for the Network Topology Simulator - Next Generation";
+    reference
+      "OpenROADM implementation";
+  }
+
+  identity NTS_FUNCTION_TYPE_OPENROADM_2_2_1 {
+    base ntsc:NTS_FUNCTION_TYPE_BASE;
+    description
+      "The simulated device implements OpenROADM version 2.2.1 YANG models.";
+    reference
+      "nts-ng-openroadm-2.2.1";
+  }
+
+  identity NTS_FUNCTION_TYPE_OPENROADM_6_1_0 {
+    base ntsc:NTS_FUNCTION_TYPE_BASE;
+    description
+      "The simulated device implements OpenROADM version 6.1.0 YANG models.";
+    reference
+      "nts-ng-openroadm-6.1.0";
+  }
+}

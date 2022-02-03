@@ -33,7 +33,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServic
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.network.topology.simulator.rev191025.SimulatorStatus;
+import org.opendaylight.yang.gen.v1.urn.o.ran.sc.params.xml.ns.yang.nts.manager.rev210608.simulation.NetworkFunctions;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.common.QName;
 
@@ -55,6 +55,7 @@ public class TestAdapterManagerNetworkElement {
         when(accessor.getCapabilites()).thenReturn(capabilities);
         when(accessor.getNodeId()).thenReturn(nNodeId);
         when(accessor.getTransactionUtils()).thenReturn(mock(TransactionUtils.class));
+        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(accessor));
 
         DataProvider dataProvider = mock(DataProvider.class);
         when(serviceProvider.getDataProvider()).thenReturn(dataProvider);
@@ -63,10 +64,10 @@ public class TestAdapterManagerNetworkElement {
     @Test
     public void test() {
         Optional<NetworkElement> adapterManagerNe;
-        when(accessor.getCapabilites().isSupportingNamespace(SimulatorStatus.QNAME)).thenReturn(true);
+        when(accessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkFunctions.QNAME)).thenReturn(true);
         AdapterManagerNetworkElementFactory factory = new AdapterManagerNetworkElementFactory();
         adapterManagerNe = factory.create(accessor, serviceProvider);
-        assertTrue(factory.create(accessor, serviceProvider).isPresent());
+        assertTrue(adapterManagerNe.isPresent());
         adapterManagerNe.get().register();
         adapterManagerNe.get().deregister();
         adapterManagerNe.get().getAcessor();

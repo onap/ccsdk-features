@@ -18,12 +18,17 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.impl;
 
 import java.util.Optional;
+import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,19 +40,28 @@ public class NtsNetworkElement implements NetworkElement {
 
     private static final Logger LOG = LoggerFactory.getLogger(NtsNetworkElement.class);
 
-    private final NetconfAccessor netconfAccessor;
+    private final NetconfBindingAccessor netconfAccessor;
 
     @SuppressWarnings("unused")
     private final DataProvider databaseService;
+    private final NotificationListenerImpl notificationListener;
 
-    NtsNetworkElement(NetconfAccessor netconfAccess, DataProvider databaseService) {
+    private @NonNull ListenerRegistration<NotificationListener> listenerRegistrationresult;
+
+    NtsNetworkElement(NetconfBindingAccessor netconfAccess, DeviceManagerServiceProvider serviceProvider) {
         LOG.info("Create {}", NtsNetworkElement.class.getSimpleName());
         this.netconfAccessor = netconfAccess;
-        this.databaseService = databaseService;
+        this.databaseService = serviceProvider.getDataProvider();
+        this.notificationListener = new NotificationListenerImpl(netconfAccess,serviceProvider);
+        this.listenerRegistrationresult = null;
     }
 
     @Override
-    public void deregister() {}
+    public void deregister() {
+        if(this.listenerRegistrationresult!=null) {
+            this.listenerRegistrationresult.close();
+        }
+    }
 
     @Override
     public NodeId getNodeId() {
@@ -60,10 +74,20 @@ public class NtsNetworkElement implements NetworkElement {
     }
 
     @Override
-    public void warmstart() {}
+    public void warmstart() {
+    }
 
     @Override
-    public void register() {}
+    public void register() {
+        if (netconfAccessor.isNotificationsRFC5277Supported()) {
+            listenerRegistrationresult = netconfAccessor.doRegisterNotificationListener(this.notificationListener);
+            // Register default (NETCONF) stream
+            netconfAccessor.registerNotificationsStream();
+            LOG.debug("registered for notifications");
+        } else {
+            LOG.warn("unable to register for notifications. RFC5277 not supported");
+        }
+    }
 
     @Override
     public NetworkElementDeviceType getDeviceType() {
