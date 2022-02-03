@@ -38,6 +38,8 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServic
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationDcae;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.InconsistentPMDataException;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -103,10 +105,11 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
      * Constructor
      */
 
-    protected ONFCoreNetworkElement12Base(@NonNull NetconfBindingAccessor acessor, @NonNull DeviceManagerServiceProvider serviceProvider) {
+    protected ONFCoreNetworkElement12Base(@NonNull NetconfBindingAccessor acessor,
+            @NonNull DeviceManagerServiceProvider serviceProvider) {
         super(acessor);
         this.optionalNe = Optional.empty();
-        this.nodeId = getAcessor().get().getNodeId();
+        this.nodeId = acessor.getNodeId();
         this.isNetworkElementCurrentProblemsSupporting12 =
                 acessor.getCapabilites().isSupportingNamespaceAndRevision(NetworkElementPac.QNAME);
         this.equipment = new ONFCoreNetworkElement12Equipment(acessor, this);
@@ -158,7 +161,7 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
         synchronized (pmLock) {
             boolean change = false;
 
-            if (!optionalNe.isPresent()) {
+            if (optionalNe.isEmpty()) {
                 LOG.debug("Unable to read NE data for mountpoint {}", getMountpoint());
                 if (!interfaceList.isEmpty()) {
                     interfaceList.clear();
@@ -169,8 +172,10 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
             } else {
                 NetworkElement ne = optionalNe.get();
                 Optional<Guicutthrough> oGuicutthrough = getGuicutthrough(ne);
-                if (oGuicutthrough.isPresent()) {
-                    databaseService.writeGuiCutThroughData(oGuicutthrough.get(), getAcessor().get().getNodeId().getValue());
+                Optional<NetconfAccessor> netconfAccessorOpt = getAcessor();
+                if (oGuicutthrough.isPresent() && netconfAccessorOpt.isPresent()) {
+                    databaseService.writeGuiCutThroughData(oGuicutthrough.get(),
+                            netconfAccessorOpt.get().getNodeId().getValue());
                 }
                 LOG.debug("Mountpoint '{}' NE-Name '{}'", getMountpoint(), ne.getName());
                 List<Lp> actualInterfaceList = getLtpList(ne);
@@ -361,13 +366,11 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
         List<String> uuids = new ArrayList<>();
 
         LOG.debug("request inventory information. filter: {}" + layerProtocolFilter);
-        if (optionalNe != null) {
-            // uuids
-            for (Lp lp : this.interfaceList) {
-                if (layerProtocolFilter == null || layerProtocolFilter.isEmpty() || layerProtocolFilter
-                        .equals(Helper.nnGetLayerProtocolName(lp.getLayerProtocolName()).getValue())) {
-                    uuids.add(Helper.nnGetUniversalId(lp.getUuid()).getValue());
-                }
+        // uuids
+        for (Lp lp : this.interfaceList) {
+            if (layerProtocolFilter == null || layerProtocolFilter.isEmpty() || layerProtocolFilter
+                    .equals(Helper.nnGetLayerProtocolName(lp.getLayerProtocolName()).getValue())) {
+                uuids.add(Helper.nnGetUniversalId(lp.getUuid()).getValue());
             }
         }
         LOG.debug("uuids found: {}", uuids);
@@ -387,7 +390,6 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
         LOG.debug("PM reset iterator");
     }
 
-    @SuppressWarnings("null")
     @Override
     public boolean hasNext() {
         boolean res;
@@ -398,7 +400,6 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
         return res;
     }
 
-    @SuppressWarnings("null")
     @Override
     public void next() {
         synchronized (pmLock) {
@@ -412,15 +413,22 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public String pmStatusToString() {
         StringBuilder res = new StringBuilder();
         synchronized (pmLock) {
-            res.append(pmLp == null ? "no interface"
-                    : Helper.nnGetLayerProtocolName(pmLp.getLayerProtocolName()).getValue());
+        	if (pmLp == null) {
+                res.append("no interface");	
+        	} else {
+        		res.append("ActualLP=");
+        		res.append(Helper.nnGetLayerProtocolName(pmLp.getLayerProtocolName()).getValue());
+        	}
+            res.append(" IFList=");
+            int no=0;
             for (Lp lp : getInterfaceList()) {
-                res.append("IF:");
+            	res.append("[");
+            	res.append(no++);
+            	res.append("]=");
                 res.append(Helper.nnGetLayerProtocolName(lp.getLayerProtocolName()).getValue());
                 res.append(" ");
             }
@@ -440,16 +448,17 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
     }
 
     @Override
-    public Optional<PerformanceDataLtp> getLtpHistoricalPerformanceData() {
+    public Optional<PerformanceDataLtp> getLtpHistoricalPerformanceData() throws InconsistentPMDataException {
         return Optional.empty();
     }
 
     //Guicutthrough
-    public Optional<Guicutthrough> getGuicutthrough(NetworkElement ne) {
+    private Optional<Guicutthrough> getGuicutthrough(NetworkElement ne) {
         Extension extension = ne.nonnullExtension().get(new ExtensionKey("webUri"));
-        if (extension != null) {
+        Optional<NetconfAccessor> netconfAccessorOpt = getAcessor();
+        if (extension != null && netconfAccessorOpt.isPresent()) {
             GuicutthroughBuilder gcBuilder = new GuicutthroughBuilder();
-            gcBuilder.setName(getAcessor().get().getNodeId().getValue());
+            gcBuilder.setName(netconfAccessorOpt.get().getNodeId().getValue());
             gcBuilder.setWeburi(extension.getValue());
             return Optional.of(gcBuilder.build());
         } else {

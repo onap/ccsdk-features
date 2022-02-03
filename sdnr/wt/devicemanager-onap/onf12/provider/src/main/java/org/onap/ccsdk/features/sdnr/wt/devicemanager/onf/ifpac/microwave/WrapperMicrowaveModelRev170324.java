@@ -33,6 +33,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.InconsistentPMDataException;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
@@ -174,7 +175,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
 
     @Override
     public @NonNull PerformanceDataLtp getLtpHistoricalPerformanceData(@NonNull ONFLayerProtocolName lpName,
-            @NonNull Lp lp) {
+            @NonNull Lp lp) throws InconsistentPMDataException {
         PerformanceDataLtp res = new PerformanceDataLtp();
         readAirInterfacePerformanceData(lp, res);
         readEthernetContainerPerformanceData(lp, res);
@@ -491,8 +492,9 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
      * @param lp to read from
      * @param result Object to be filled with data
      * @return result
+     * @throws InconsistentPMDataException
      */
-    private @NonNull PerformanceDataLtp readAirInterfacePerformanceData(Lp lp, PerformanceDataLtp result) {
+    private @NonNull PerformanceDataLtp readAirInterfacePerformanceData(Lp lp, PerformanceDataLtp result) throws InconsistentPMDataException {
 
         LOG.debug("DBRead Get {} MWAirInterfacePac: {}", acessor.getNodeId(), lp.getUuid());
         // ----
@@ -537,7 +539,7 @@ public class WrapperMicrowaveModelRev170324 implements OnfMicrowaveModel, Microw
     }
 
 
-    private @NonNull PerformanceDataLtp readEthernetContainerPerformanceData(Lp lp, PerformanceDataLtp result) {
+    private @NonNull PerformanceDataLtp readEthernetContainerPerformanceData(Lp lp, PerformanceDataLtp result) throws InconsistentPMDataException {
         final String myName = "MWEthernetContainerPac";
 
         String mountpointId = acessor.getNodeId().getValue();

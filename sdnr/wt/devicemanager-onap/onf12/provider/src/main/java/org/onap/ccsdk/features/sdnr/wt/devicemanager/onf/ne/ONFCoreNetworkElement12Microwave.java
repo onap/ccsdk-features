@@ -33,6 +33,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.EquipmentService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.InconsistentPMDataException;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.binding.api.NotificationService;
@@ -350,11 +351,10 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
     }
 
     @Override
-    public Optional<PerformanceDataLtp> getLtpHistoricalPerformanceData() {
+    public Optional<PerformanceDataLtp> getLtpHistoricalPerformanceData() throws InconsistentPMDataException {
         synchronized (getPmLock()) {
             if (pmLp != null) {
                 LOG.debug("Enter query PM");
-                @SuppressWarnings("null")
                 @NonNull
                 Lp lp = pmLp;
                 ONFLayerProtocolName lpName = ONFLayerProtocolName.valueOf(lp.getLayerProtocolName());
