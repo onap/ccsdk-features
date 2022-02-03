@@ -34,6 +34,7 @@ import java.util.List;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.BearerToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.subject.PrincipalCollection;
@@ -44,7 +45,6 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.opendaylight.aaa.api.shiro.principal.ODLPrincipal;
-import org.apache.shiro.authc.BearerToken;
 import org.opendaylight.aaa.shiro.tokenauthrealm.auth.AuthenticationManager;
 import org.opendaylight.aaa.shiro.tokenauthrealm.auth.TokenAuthenticators;
 import org.opendaylight.aaa.shiro.web.env.ThreadLocals;
@@ -55,7 +55,7 @@ public class TestRealm {
     private static TokenCreator tokenCreator;
 
     @BeforeClass
-    public static void init() {
+    public static void init() throws IllegalArgumentException, Exception {
         ThreadLocals.AUTH_SETVICE_TL.set(new AuthenticationManager());
         ThreadLocals.TOKEN_AUTHENICATORS_TL.set(new TokenAuthenticators());
         try {
@@ -135,6 +135,7 @@ public class TestRealm {
             fail(e.getMessage());
         }
         //odl token use case
+        ai=null;
         atoken = new UsernamePasswordToken("admin", "admin");
         try {
             ai = realm.doGetAuthenticationInfo(atoken);
@@ -155,7 +156,7 @@ public class TestRealm {
 
     public static class OAuth2RealmToTest extends OAuth2Realm {
 
-        public OAuth2RealmToTest() throws IOException {
+        public OAuth2RealmToTest() throws IllegalArgumentException, Exception {
             super();
         }
 

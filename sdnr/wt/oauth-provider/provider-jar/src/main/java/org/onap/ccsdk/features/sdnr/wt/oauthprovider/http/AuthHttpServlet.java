@@ -39,12 +39,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
+import org.apache.shiro.authc.BearerToken;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.jolokia.osgi.security.Authenticator;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.InvalidConfigurationException;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.NoDefinitionFoundException;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthToken;
@@ -56,7 +58,6 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.MdSalAuthorizatio
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.OAuthProviderFactory;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.opendaylight.aaa.api.IdMService;
-import org.apache.shiro.authc.BearerToken;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.ShiroConfiguration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.shiro.configuration.Main;
@@ -101,7 +102,7 @@ public class AuthHttpServlet extends HttpServlet {
     private static ShiroConfiguration shiroConfiguration;
     private static MdSalAuthorizationStore mdsalAuthStore;
 
-    public AuthHttpServlet() throws IOException {
+    public AuthHttpServlet() throws IllegalArgumentException, IOException, InvalidConfigurationException {
         this.config = Config.getInstance();
         this.tokenCreator = TokenCreator.getInstance(this.config);
         this.mapper = new ObjectMapper();
@@ -300,7 +301,7 @@ public class AuthHttpServlet extends HttpServlet {
 
     private UserTokenPayload getUserInfo(HttpServletRequest req) {
         if (isBearer(req)) {
-            UserTokenPayload data = TokenCreator.getInstance(this.config).decode(req);
+            UserTokenPayload data = this.tokenCreator.decode(req);
             if (data != null) {
                 return data;
             }
@@ -414,7 +415,7 @@ public class AuthHttpServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         LOG.debug("POST request for {}", req.getRequestURI());
-        if (this.config.doSupportOdlUsers() && LOGINURI.equals(req.getRequestURI())) {
+        if (this.config.loginActive() &&  this.config.doSupportOdlUsers() && LOGINURI.equals(req.getRequestURI())) {
             final String username = req.getParameter("username");
             final String domain = req.getParameter("domain");
             BearerToken token =
@@ -443,6 +444,7 @@ public class AuthHttpServlet extends HttpServlet {
             data.setPreferredUsername(username);
             data.setFamilyName("");
             data.setGivenName(username);
+            data.setIat(this.tokenCreator.getDefaultIat());
             data.setExp(this.tokenCreator.getDefaultExp());
             data.setRoles(roles);
             return this.tokenCreator.createNewJWT(data);

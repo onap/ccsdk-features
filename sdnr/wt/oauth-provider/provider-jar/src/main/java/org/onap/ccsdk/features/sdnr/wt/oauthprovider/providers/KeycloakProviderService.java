@@ -84,6 +84,7 @@ public class KeycloakProviderService extends AuthService {
     protected UserTokenPayload mapAccessToken(String spayload) throws JsonMappingException, JsonProcessingException {
         KeycloakUserTokenPayload payload = mapper.readValue(spayload, KeycloakUserTokenPayload.class);
         UserTokenPayload data = new UserTokenPayload();
+        data.setIat(payload.getIat() * 1000L);
         data.setExp(payload.getExp() * 1000L);
         data.setFamilyName(payload.getFamilyName());
         data.setGivenName(payload.getGivenName());
@@ -93,7 +94,7 @@ public class KeycloakProviderService extends AuthService {
     }
 
     @Override
-    protected UserTokenPayload requestUserRoles(String access_token, long expires_at) {
+    protected UserTokenPayload requestUserRoles(String access_token, long issued_at, long expires_at) {
         return null;
     }
 
