@@ -18,18 +18,21 @@
 import * as React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Block from '@material-ui/icons/Block';
-import Adjust from '@material-ui/icons/Adjust';
-import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import { Theme } from '@mui/material/styles';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Block from '@mui/icons-material/Block';
+import Adjust from '@mui/icons-material/Adjust';
+import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan } from '@fortawesome/free-solid-svg-icons';
@@ -129,9 +132,14 @@ class TitleBarComponent extends React.Component<TitleBarProps, { anchorEl: HTMLE
     }
 
     return (
-      <AppBar position="absolute" className={classes.appBar}>
+      <AppBar enableColorOnDark position="absolute" className={classes.appBar}>
         <Toolbar>
-          <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={this.toggleMainMenu}>
+          <IconButton
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="Menu"
+            onClick={this.toggleMainMenu}
+            size="large">
             <MenuIcon />
           </IconButton>
           <Logo />

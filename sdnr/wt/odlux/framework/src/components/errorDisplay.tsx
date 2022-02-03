@@ -16,14 +16,18 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from 'react';
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
 
-import Modal from '@material-ui/core/Modal';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
+
+import Modal from '@mui/material/Modal';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 
 import { ClearErrorInfoAction, RemoveErrorInfoAction } from '../actions/errorActions';
 
@@ -113,7 +117,7 @@ class ErrorDisplayComponent extends React.Component<ErrorDisplayProps> {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" onClick={() => this.props.dispatch(new RemoveErrorInfoAction(errorInfo))} >Close</Button>
+                <Button color="inherit" size="small" onClick={() => this.props.dispatch(new RemoveErrorInfoAction(errorInfo))} >Close</Button>
               </CardActions>
             </Card>
           </div> || <div></div>

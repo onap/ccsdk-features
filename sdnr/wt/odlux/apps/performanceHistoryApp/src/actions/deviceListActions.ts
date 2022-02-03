@@ -51,8 +51,8 @@ export class AllDeviceListLoadedAction extends BaseAction {
  */
 export const loadAllDeviceListAsync = async (dispatch: Dispatch) => {
   dispatch(new LoadAllDeviceListAction());
-  const deviceListFromPerfHistory: DeviceListType[] = await PerformanceHistoryService.getDeviceListfromPerf15minHistory().then(ne => (ne)) || [];
-  const deviceListFromPerf24History: DeviceListType[] = await PerformanceHistoryService.getDeviceListfromPerf24hHistory().then(ne => (ne)) || [];
+  const deviceListFromPerfHistory: DeviceListType[] = (await PerformanceHistoryService.getDeviceListfromPerf15minHistory().then(ne => (ne))) || [];
+  const deviceListFromPerf24History: DeviceListType[] = (await PerformanceHistoryService.getDeviceListfromPerf24hHistory().then(ne => (ne))) || [];
   deviceListFromPerf24History.forEach(deviceList24h => {
     if (deviceListFromPerfHistory.findIndex(deviceList15min => deviceList15min.nodeId === deviceList24h.nodeId) < 0) {
       deviceListFromPerfHistory.push(deviceList24h);

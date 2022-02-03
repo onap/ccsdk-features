@@ -17,10 +17,13 @@
  */
 import * as React from 'react';
 
-import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import { Theme } from '@mui/material/styles';
+import { WithStyles } from '@mui/styles';
+import createStyles from '@mui/styles/createStyles';
+import withStyles from '@mui/styles/withStyles';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
 import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
@@ -50,7 +53,7 @@ import { createSignalToInterferencePreActions, signalToInterferenceReloadAction,
 import { createCrossPolarDiscriminationPreActions, crossPolarDiscriminationReloadAction, createCrossPolarDiscriminationActions } from '../handlers/crossPolarDiscriminationHandler';
 
 import { MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
-import { AppBar, Tabs, Tab } from '@material-ui/core';
+import { AppBar, Tabs, Tab, SelectChangeEvent } from '@mui/material';
 import LtpSelection from '../components/ltpSelection';
 import { ResetAllSubViewsAction } from '../actions/toggleActions';
 import { ReloadAction } from '../actions/reloadAction';
@@ -152,7 +155,7 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
     };
   }
 
-  onChangeTabs = (event: React.ChangeEvent<{}>, newValue: PanelId) => {
+  onChangeTabs = (event: React.SyntheticEvent, newValue: PanelId) => {
     const nextActivePanel = newValue;
     this.changeTabs(nextActivePanel);
   }
@@ -244,8 +247,8 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
           {this.state.showPanels &&
             <>
 
-              <AppBar position="static" >
-                <Tabs value={activePanel} onChange={this.onChangeTabs} variant="scrollable" scrollButtons="auto" aria-label="performance-data-tabs">
+              <AppBar enableColorOnDark position="static" >
+                <Tabs indicatorColor="secondary" textColor="inherit" value={activePanel} onChange={this.onChangeTabs} variant="scrollable" scrollButtons="auto" aria-label="performance-data-tabs">
                   <Tab label="Performance Data" value="PerformanceData" aria-label="performance-data" />
                   <Tab label="Receive Level" value="ReceiveLevel" aria-label="receive-level" />
                   <Tab label="Transmission Power" value="TransmissionPower" aria-label="transmission-power" />
@@ -411,25 +414,25 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
   /**
   * Function which handles the time period changes.
   */
-  private handleTimePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  private handleTimePeriodChange = (event: SelectChangeEvent<HTMLSelectElement>) => {
 
     const selectedTimeInterval = event.target.value === "15min"
       ? PmDataInterval.pmInterval15Min
       : PmDataInterval.pmInterval24Hours;
 
     this.setState({
-      selectedTimePeriod: event.target.value,
+      selectedTimePeriod: event.target.value as string,
     });
 
     this.props.timeIntervalChange(selectedTimeInterval);
-    this.props.getDistinctLtpsIds(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp, undefined, this.resetLtpDropdown);
-    this.preFilterChangeAndReload(this.state.selectedNetworkElement, event.target.value, this.state.selectedLtp);
+    this.props.getDistinctLtpsIds(this.state.selectedNetworkElement, event.target.value as string, this.state.selectedLtp, undefined, this.resetLtpDropdown);
+    this.preFilterChangeAndReload(this.state.selectedNetworkElement, event.target.value as string, this.state.selectedLtp);
   }
 
   /**
   * Function which handles the ltp changes.
   */
-  private handleLtpChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  private handleLtpChange = (event:SelectChangeEvent<HTMLSelectElement> ) => {
 
     if (event.target.value === "-1") {
       this.setState({
@@ -440,9 +443,9 @@ class PerformanceHistoryComponent extends React.Component<PerformanceHistoryComp
     } else if (event.target.value !== this.state.selectedLtp) {
       this.setState({
         showPanels: true,
-        selectedLtp: event.target.value
+        selectedLtp: event.target.value as string
       });
-      this.preFilterChangeAndReload(this.state.selectedNetworkElement, this.state.selectedTimePeriod, event.target.value);
+      this.preFilterChangeAndReload(this.state.selectedNetworkElement, this.state.selectedTimePeriod, event.target.value as string);
 
     }
   }

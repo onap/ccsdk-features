@@ -16,27 +16,30 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from 'react';
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme, lighten } from '@mui/material/styles';
 
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import { lighten } from '@material-ui/core/styles/colorManipulator';
-import { SvgIconProps } from '@material-ui/core/SvgIcon/SvgIcon';
-import { Button } from '@material-ui/core';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
+
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import DeleteIcon from '@mui/icons-material/Delete';
+import MoreIcon from '@mui/icons-material/MoreVert';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import { SvgIconProps } from '@mui/material/SvgIcon';
+import { Button } from '@mui/material';
 
 const styles = (theme: Theme) => createStyles({
   root: {
     paddingRight: theme.spacing(1),
   },
   highlight:
-    theme.palette.type === 'light'
+    theme.palette.mode === 'light'
       ? {
         color: theme.palette.secondary.main,
         backgroundColor: lighten(theme.palette.secondary.light, 0.85),
@@ -109,32 +112,41 @@ class TableToolbarComponent extends React.Component<ITableToolbarComponentProps,
         <div className={classes.actions}>
           {this.props.customActionButtons
             ? this.props.customActionButtons.map((action, ind) => (
-              <Tooltip key={`custom-action-${ind}`} title={action.tooltip || ''}>
-                <IconButton disabled={action.disabled} aria-label={`${buttonPrefix}-${action.ariaLabel}-button`} onClick={() => action.onClick()}>
+              <Tooltip disableInteractive key={`custom-action-${ind}`} title={action.tooltip || ''}>
+                <IconButton
+                  disabled={action.disabled}
+                  aria-label={`${buttonPrefix}-${action.ariaLabel}-button`}
+                  onClick={() => action.onClick()}
+                  size="large">
                   <action.icon />
                 </IconButton>
               </Tooltip>
             ))
             : null}
           {numSelected && numSelected > 0 ? (
-            <Tooltip title="Delete">
-              <IconButton aria-label={`${buttonPrefix}-delete-button`}>
+            <Tooltip disableInteractive title="Delete">
+              <IconButton aria-label={`${buttonPrefix}-delete-button`} size="large">
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
           ) : (
-              <Tooltip title="Filter list">
-                <IconButton aria-label={`${buttonPrefix}-filter-list-button`} onClick={() => { this.props.onToggleFilter && this.props.onToggleFilter() }}>
+              <Tooltip disableInteractive title="Filter list">
+                <IconButton
+                  aria-label={`${buttonPrefix}-filter-list-button`}
+                  onClick={() => { this.props.onToggleFilter && this.props.onToggleFilter() }}
+                  size="large">
                   <FilterListIcon />
                 </IconButton>
               </Tooltip>
             )}
-          <Tooltip title="Actions">
-            <IconButton color="inherit"
-            aria-label={`${buttonPrefix}-additional-actions-button`}
+          <Tooltip disableInteractive title="Actions">
+            <IconButton
+              color="inherit"
+              aria-label={`${buttonPrefix}-additional-actions-button`}
               aria-owns={open ? 'menu-appbar' : undefined}
               aria-haspopup="true"
-              onClick={this.handleMenu} >
+              onClick={this.handleMenu}
+              size="large">
               <MoreIcon />
             </IconButton>
           </Tooltip>
@@ -146,6 +158,6 @@ class TableToolbarComponent extends React.Component<ITableToolbarComponentProps,
       </Toolbar>
     );
   }
-};
+}
 
 export const TableToolbar = withStyles(styles)(TableToolbarComponent);

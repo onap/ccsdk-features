@@ -31,7 +31,7 @@ class YangService {
     if (cacheHit) return cacheHit;
 
     const res = await fetch(url);
-    const yangFile = res.ok && await res.text();
+    const yangFile = res.ok && (await res.text());
     if (yangFile !== false && yangFile !== null) {
       cache[url] = yangFile;
     }

@@ -22,8 +22,8 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import connect, { IDispatcher, Connect } from "../../../../framework/src/flux/connect";
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 import { MaterialTable, MaterialTableCtorType, ColumnType } from "../../../../framework/src/components/material-table";
-import { AppBar, Tabs, Tab, MenuItem, Typography } from "@material-ui/core";
-import Refresh from '@material-ui/icons/Refresh';
+import { AppBar, Tabs, Tab, MenuItem, Typography } from "@mui/material";
+import Refresh from '@mui/icons-material/Refresh';
 import { PanelId } from "../models/panelId";
 import { setPanelAction } from "../actions/panelActions";
 
@@ -77,7 +77,7 @@ class DashboardSelectorComponent extends React.Component<DashboardComponentProps
     };
   }
 
-  private onHandleTabChange = (event: React.ChangeEvent<{}>, newValue: PanelId) => {
+  private onHandleTabChange = (event: React.SyntheticEvent, newValue: PanelId) => {
     this.onTogglePanel(newValue);
   }
 
@@ -133,8 +133,8 @@ class DashboardSelectorComponent extends React.Component<DashboardComponentProps
     const { panelId: activePanelId } = this.props;
     return (
       <>
-        <AppBar position="static">
-          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="inventory-app-tabs">
+        <AppBar enableColorOnDark position="static">
+          <Tabs indicatorColor="secondary" textColor="inherit" value={activePanelId} onChange={this.onHandleTabChange} aria-label="inventory-app-tabs">
             <Tab label="Table View" value="InventoryElementsTable" aria-label="table-tab" />
             <Tab label="Tree view" value="TreeviewTable" aria-label="treeview-tab" />
           </Tabs>

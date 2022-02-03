@@ -17,7 +17,7 @@
  */
 
 import * as React from 'react'
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, DialogContentText, Checkbox, Button, FormControlLabel, FormGroup } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, DialogContentText, Checkbox, Button, FormControlLabel, FormGroup } from '@mui/material';
 import { IApplicationState } from '../../../../framework/src/handlers/applicationStateHandler';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { Connect } from '../../../../framework/src/flux/connect';
@@ -73,11 +73,11 @@ class ShowMediatorInfoDialogComponent extends React.Component<ShowMediatorInfoDi
             <Dialog open={this.props.mode !== MediatorInfoDialogMode.None} onBackdropClick={this.props.onClose} >
                 <DialogTitle>{this.props.config.Name}</DialogTitle>
                 <DialogContent>
-                    <TextField disabled margin="dense" id="deviceIp" label="Device IP" fullWidth defaultValue={this.props.config.DeviceIp} />
-                    <TextField disabled margin="dense" id="deviceport" label="Device Port" fullWidth defaultValue={this.props.config.DevicePort} />
-                    <TextField disabled margin="dense" id="status" label="Status" fullWidth defaultValue={this.state.status} />
-                    <TextField disabled margin="dense" id="deviceType" label="Device Type" fullWidth defaultValue={this.state.devicetype} />
-                    <TextField disabled margin="dense" id="ncPort" label="Netconf Port" fullWidth defaultValue={this.props.config.NcPort} />
+                    <TextField variant="standard" disabled margin="dense" id="deviceIp" label="Device IP" fullWidth defaultValue={this.props.config.DeviceIp} />
+                    <TextField variant="standard" disabled margin="dense" id="deviceport" label="Device Port" fullWidth defaultValue={this.props.config.DevicePort} />
+                    <TextField variant="standard" disabled margin="dense" id="status" label="Status" fullWidth defaultValue={this.state.status} />
+                    <TextField variant="standard" disabled margin="dense" id="deviceType" label="Device Type" fullWidth defaultValue={this.state.devicetype} />
+                    <TextField variant="standard" disabled margin="dense" id="ncPort" label="Netconf Port" fullWidth defaultValue={this.props.config.NcPort} />
                     <FormGroup>
                         <FormControlLabel control={<Checkbox disabled defaultChecked={this.props.config.IsNCConnected}></Checkbox>} label="Netconf Connection" />
                         <FormControlLabel control={<Checkbox disabled defaultChecked={this.props.config.IsNeConnected}></Checkbox>} label="Network Element Connection" />
@@ -86,8 +86,8 @@ class ShowMediatorInfoDialogComponent extends React.Component<ShowMediatorInfoDi
                     {
                         this.props.config.ODLConfig.map((element, index) =>
                             <Panel title={"ODL config " + (this.props.config.ODLConfig.length > 1 ? index + 1 : '')} key={index} panelId={'panel-' + index} activePanel={this.state.activeOdlConfig} onToggle={(id: string) => { this.setState({ activeOdlConfig: (this.state.activeOdlConfig === id) ? "" : (id || "") }); }}>
-                                <TextField disabled margin="dense" defaultValue={element.Protocol + '://' + element.Server} label="Server" />
-                                <TextField disabled margin="dense" defaultValue={element.Port} label="Port" />
+                                <TextField variant="standard" disabled margin="dense" defaultValue={element.Protocol + '://' + element.Server} label="Server" />
+                                <TextField variant="standard" disabled margin="dense" defaultValue={element.Port} label="Port" />
                                 <FormControlLabel control={<Checkbox disabled checked={element.Trustall} />} label="Trustall" />
                             </Panel>
                         )
@@ -95,7 +95,7 @@ class ShowMediatorInfoDialogComponent extends React.Component<ShowMediatorInfoDi
 
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.onClose}>Close</Button>
+                    <Button onClick={this.onClose} color="inherit">Close</Button>
                 </DialogActions>
             </Dialog>
         )

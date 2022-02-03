@@ -86,7 +86,7 @@ module.exports = (env) => {
         manifest: require(path.resolve(frameworkPath, "app-manifest.json")),
         sourceType: "umd2"
       }),
-      ...(env === "release") ? [
+      ...(env === "release" ? [
         new webpack.DefinePlugin({
           "process.env": {
             NODE_ENV: "'production'",
@@ -104,7 +104,7 @@ module.exports = (env) => {
             from: 'index.html',
             to: distPath
           }]),
-        ]
+        ])
     ],
 
     devServer: {

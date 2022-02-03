@@ -37,7 +37,7 @@ export const addNewNetworkElementAsyncActionCreator = (element: NetworkElementCo
 
 /** Represents an async thunk action creator to edit network element. */
 export const editNetworkElementAsyncActionCreator = (element: UpdateNetworkElement) => async (dispatch: Dispatch) => {
-  const connectionStatus: ConnectionStatus[] = await connectService.getNetworkElementConnectionStatus(element.id).then(ne => (ne)) || [];
+  const connectionStatus: ConnectionStatus[] = (await connectService.getNetworkElementConnectionStatus(element.id).then(ne => (ne))) || [];
   const currentConnectionStatus = connectionStatus[0].status;
   if (currentConnectionStatus === "Disconnected") {
     const res = await connectService.deleteNetworkElement(element);

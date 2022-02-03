@@ -19,7 +19,11 @@
 
 import * as React from "react";
 
-import { WithStyles, withStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 
 const styles = (theme: Theme) => createStyles({
   "@keyframes spin": {

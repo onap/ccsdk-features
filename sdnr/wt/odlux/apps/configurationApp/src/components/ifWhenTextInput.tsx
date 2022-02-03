@@ -17,11 +17,26 @@
  */
 
 import { ViewElementBase } from "models/uiModels";
-import { TextField, InputAdornment, Input, Tooltip, Divider, IconButton, InputBase, Paper, makeStyles, Theme, createStyles, FormControl, InputLabel, FormHelperText } from "@material-ui/core";
+import {
+  TextField,
+  InputAdornment,
+  Input,
+  Tooltip,
+  Divider,
+  IconButton,
+  InputBase,
+  Paper,
+  Theme,
+  FormControl,
+  InputLabel,
+  FormHelperText,
+} from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import * as React from 'react';
 import { faAdjust } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { InputProps } from "@material-ui/core/Input";
+import { InputProps } from "@mui/material/Input";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,7 +69,7 @@ export const IfWhenTextInput = (props: IfwhenProps) => {
 
   const ifFeature = element.ifFeature
     ? (
-        <Tooltip onMouseMove={e => props.onChangeTooltipVisuability(false)} onMouseOut={e => props.onChangeTooltipVisuability(true)} title={element.ifFeature}>
+        <Tooltip disableInteractive onMouseMove={e => props.onChangeTooltipVisuability(false)} onMouseOut={e => props.onChangeTooltipVisuability(true)} title={element.ifFeature}>
           <InputAdornment position="start">
             <FontAwesomeIcon icon={faAdjust} className={classes.iconDark} />
           </InputAdornment>
@@ -64,7 +79,7 @@ export const IfWhenTextInput = (props: IfwhenProps) => {
 
   const whenFeature = element.when
     ? (
-        <Tooltip className={classes.padding} onMouseMove={() => props.onChangeTooltipVisuability(false)} onMouseOut={() => props.onChangeTooltipVisuability(true)} title={element.when}>
+        <Tooltip disableInteractive className={classes.padding} onMouseMove={() => props.onChangeTooltipVisuability(false)} onMouseOut={() => props.onChangeTooltipVisuability(true)} title={element.when}>
           <InputAdornment className={classes.padding} position="end">
             <FontAwesomeIcon icon={faAdjust} className={classes.iconLight}/>
           </InputAdornment>
@@ -73,7 +88,7 @@ export const IfWhenTextInput = (props: IfwhenProps) => {
     : null;
 
   return (
-    <FormControl error={error} style={style}>
+    <FormControl variant="standard" error={error} style={style}>
       <InputLabel htmlFor={id} >{label}</InputLabel>
       <Input id={id} inputProps={{'aria-label': label+'-input'}} endAdornment={<div>{ifFeature}{whenFeature}</div>} {...otherProps}  />
       <FormHelperText>{errorText}</FormHelperText>

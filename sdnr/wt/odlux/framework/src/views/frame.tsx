@@ -18,7 +18,10 @@
 import * as React from 'react';
 import { HashRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
 import { faHome, faAddressBook, faSignInAlt, faCog } from '@fortawesome/free-solid-svg-icons';
 
 import { SnackbarProvider } from 'notistack';
@@ -52,7 +55,7 @@ const styles = (theme: Theme) => createStyles({
     flexGrow: 1,
     display: "flex",
     flexDirection: "column",
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: '#fafafa',
     padding: theme.spacing(3),
     minWidth: 0, // So the Typography noWrap works
   },

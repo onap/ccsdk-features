@@ -17,11 +17,11 @@
  */
 import { Action } from '../flux/action';
 import { SnackbarItem } from '../models/snackbarItem';
-import { Omit } from '@material-ui/core';
+import { DistributiveOmit } from '@mui/types';
 
 export class AddSnackbarNotification extends Action {
 
-  constructor(notification: Omit<SnackbarItem, 'key' >) {
+  constructor(notification: DistributiveOmit<SnackbarItem, 'key' >) {
     super();
 
     this.notification = { ...notification, key: (new Date().getTime() + Math.random()) }

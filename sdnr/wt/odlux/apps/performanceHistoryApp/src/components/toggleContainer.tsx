@@ -17,14 +17,14 @@
  */
 
 import * as React from 'react';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import BarChartIcon from '@material-ui/icons/BarChart';
-import TableChartIcon from '@material-ui/icons/TableChart';
-import { makeStyles } from '@material-ui/core';
-import Tooltip from '@material-ui/core/Tooltip';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import makeStyles from '@mui/styles/makeStyles';
+import Tooltip from '@mui/material/Tooltip';
 import ChartFilter from './chartFilter'
-import FilterListIcon from '@material-ui/icons/FilterList';
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 const styles = makeStyles({
     toggleButtonContainer: {
@@ -67,20 +67,20 @@ const ToggleContainer: React.FunctionComponent<toggleProps> = (props) => {
             <div className={classes.toggleButtonContainer} >
                 <ToggleButtonGroup className={classes.subViewGroup} size="medium" value={props.selectedValue} exclusive onChange={handleChange}>
                     <ToggleButton aria-label="display-chart" key={1} value="chart">
-                        <Tooltip title="Chart">
+                        <Tooltip disableInteractive title="Chart">
                             <BarChartIcon />
                         </Tooltip>
                     </ToggleButton>
                     <ToggleButton aria-label="display-table" key={2} value="table">
-                        <Tooltip title="Table">
+                        <Tooltip disableInteractive title="Table">
                             <TableChartIcon />
                         </Tooltip>
                     </ToggleButton>
                 </ToggleButtonGroup>
 
                 <ToggleButtonGroup className={classes.filterGroup} onChange={handleFilterChange} >
-                    <ToggleButton aria-label="show-filter" selected={props.showFilter as boolean} disabled={props.selectedValue !== "chart"}>
-                        <Tooltip title={props.showFilter ? 'Hide filter' : 'Show available filter'}>
+                    <ToggleButton value="" aria-label="show-filter" selected={props.showFilter as boolean} disabled={props.selectedValue !== "chart"}>
+                        <Tooltip disableInteractive title={props.showFilter ? 'Hide filter' : 'Show available filter'}>
                             <FilterListIcon />
                         </Tooltip>
                     </ToggleButton>

@@ -18,7 +18,9 @@
 
 
 import * as React from 'react';
-import { makeStyles, TextField, Typography, Select, MenuItem, FormControl, InputLabel } from '@material-ui/core';
+import { TextField, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 const styles = makeStyles({
     filterInput: {
@@ -44,19 +46,19 @@ const ChartFilter: React.FunctionComponent<filterProps> = (props) => {
             {
                 props.isVisible &&
                 <div className={classes.filterContainer}>
-                    <TextField inputProps={{'aria-label': 'radio-signal-filter'}} className={classes.filterInput} label="Radio Signal" value={props.filters.radioSignalId || ''} onChange={(event) => props.onFilterChanged("radioSignalId", event.target.value)} InputLabelProps={{
+                    <TextField variant="standard" inputProps={{'aria-label': 'radio-signal-filter'}} className={classes.filterInput} label="Radio Signal" value={props.filters.radioSignalId || ''} onChange={(event) => props.onFilterChanged("radioSignalId", event.target.value)} InputLabelProps={{
                         shrink: true,
                     }} />
-                    <TextField inputProps={{'aria-label': 'scanner-id-filter'}} className={classes.filterInput} label="Scanner ID" value={props.filters.scannerId || ''} onChange={(event) => props.onFilterChanged("scannerId", event.target.value)} InputLabelProps={{
+                    <TextField variant="standard" inputProps={{'aria-label': 'scanner-id-filter'}} className={classes.filterInput} label="Scanner ID" value={props.filters.scannerId || ''} onChange={(event) => props.onFilterChanged("scannerId", event.target.value)} InputLabelProps={{
                         shrink: true,
                     }} />
-                    <TextField inputProps={{'aria-label': 'end-time-filter'}} className={classes.filterInput} label="End Time" value={props.filters.timeStamp || ''} onChange={(event) => props.onFilterChanged("timeStamp", event.target.value)} InputLabelProps={{
+                    <TextField variant="standard" inputProps={{'aria-label': 'end-time-filter'}} className={classes.filterInput} label="End Time" value={props.filters.timeStamp || ''} onChange={(event) => props.onFilterChanged("timeStamp", event.target.value)} InputLabelProps={{
                         shrink: true,
                     }} />
-                    <FormControl>
+                    <FormControl variant="standard">
                         <InputLabel id="suspect-interval-label" shrink>Suspect Interval</InputLabel>
 
-                        <Select aria-label="suspect-interval-selection" labelId="suspect-interval-label" value={suspectIntervalFlag || ''} onChange={(event) => props.onFilterChanged("suspectIntervalFlag", event.target.value as string)}>
+                        <Select variant="standard" aria-label="suspect-interval-selection" labelId="suspect-interval-label" value={suspectIntervalFlag || ''} onChange={(event) => props.onFilterChanged("suspectIntervalFlag", event.target.value as string)}>
                             <MenuItem value={undefined} aria-label="none">None</MenuItem>
                             <MenuItem value={"true"} aria-label="true">true</MenuItem>
                             <MenuItem value={"false"} aria-label="false">false</MenuItem>

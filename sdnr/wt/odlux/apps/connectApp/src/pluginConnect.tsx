@@ -32,18 +32,19 @@ import { createNetworkElementsActions, createNetworkElementsProperties, networkE
 import connectAppRootHandler from './handlers/connectAppRootHandler';
 import ConnectApplication from './views/connectView';
 import { PanelId } from "./models/panelId";
-import { NetworkElementsList } from './components/networkElements'
+import { NetworkElementsList } from './components/networkElements';
+import DashboardHome from "./components/dashboardHome";
 
 let currentStatus: string | undefined = undefined;
 let refreshInterval: ReturnType<typeof window.setInterval> | null = null;
 
 
 const mapProps = (state: IApplicationStoreState) => ({
-  currentProblemsProperties: createNetworkElementsProperties(state),
+  networkElementDashboardProperties: createNetworkElementsProperties(state),
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
-  currentProblemsActions: createNetworkElementsActions(dispatcher.dispatch, true),
+  networkElementsDashboardActions: createNetworkElementsActions(dispatcher.dispatch, true),
   setCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new SetPanelAction(panelId)),
 });
 
@@ -53,13 +54,13 @@ const ConnectApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteC
     window.setTimeout(() => {
       if (currentStatus) {
         props.setCurrentPanel("NetworkElements");
-        props.currentProblemsActions.onFilterChanged("status", currentStatus);
-        if (!props.currentProblemsProperties.showFilter) {
-          props.currentProblemsActions.onToggleFilter(false);
-          props.currentProblemsActions.onRefresh();
+        props.networkElementsDashboardActions.onFilterChanged("status", currentStatus);
+        if (!props.networkElementDashboardProperties.showFilter) {
+          props.networkElementsDashboardActions.onToggleFilter(false);
+          props.networkElementsDashboardActions.onRefresh();
         }
         else
-          props.currentProblemsActions.onRefresh();
+          props.networkElementsDashboardActions.onRefresh();
       }
     });
   }
@@ -83,6 +84,7 @@ export function register() {
     icon: faPlug,
     rootComponent: App,
     rootActionHandler: connectAppRootHandler,
+    dashbaordElement: DashboardHome,
     menuEntry: "Connect"
   });
 

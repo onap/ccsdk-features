@@ -19,7 +19,9 @@
   ~ ============LICENSE_END=======================================================
   ~
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -139,41 +141,17 @@
                                     <overWrite>false</overWrite>
                                 </artifactItem>
                                 <!-- demoApp -->
-                                  <!--<artifactItem>
+                                <!--<artifactItem>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>sdnr-wt-odlux-app-demoApp</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                  </artifactItem>-->
+                                </artifactItem>-->
                                 <!-- faultApp -->
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>sdnr-wt-odlux-app-faultApp</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                </artifactItem>
-                                 <!-- networkMapApp-->
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>sdnr-wt-odlux-app-networkMapApp</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                </artifactItem>
-                                 <!-- linkCalculationApp-->
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>sdnr-wt-odlux-app-linkCalculationApp</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                </artifactItem>
-                                <!-- line of sight app-->
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>sdnr-wt-odlux-app-lineOfSightApp</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>

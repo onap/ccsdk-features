@@ -157,7 +157,7 @@ module.exports = (env) => {
         name: "[name]",
         path: path.resolve(distPath, "[name]-manifest.json")
       }),
-      ...(env === "release") ? [
+      ...(env === "release" ? [
         new webpack.DefinePlugin({
           "process.env": {
             NODE_ENV: "'production'",
@@ -180,7 +180,7 @@ module.exports = (env) => {
             from: './assets/version.json',
             to: './version.json'
           }])
-        ]
+        ])
     ],
 
     devServer: {

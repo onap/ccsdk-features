@@ -34,9 +34,9 @@ import { PanelId } from '../models/panelId';
 import { createCurrentProblemsProperties, createCurrentProblemsActions, currentProblemsReloadAction } from '../handlers/currentProblemsHandler';
 import { createAlarmLogEntriesProperties, createAlarmLogEntriesActions, alarmLogEntriesReloadAction } from '../handlers/alarmLogEntriesHandler';
 import { setPanelAction } from '../actions/panelChangeActions';
-import { Tooltip, IconButton, AppBar, Tabs, Tab } from '@material-ui/core';
-import Sync from '@material-ui/icons/Sync';
-import Refresh from '@material-ui/icons/Refresh';
+import { Tooltip, IconButton, AppBar, Tabs, Tab } from '@mui/material';
+import Sync from '@mui/icons-material/Sync';
+import Refresh from '@mui/icons-material/Refresh';
 
 import ClearStuckAlarmsDialog, { ClearStuckAlarmsDialogMode } from '../components/clearStuckAlarmsDialog';
 import RefreshAlarmLogDialog, { RefreshAlarmLogDialogMode } from '../components/refreshAlarmLogDialog';
@@ -99,7 +99,7 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
     this.setState({ clearAlarmDialogMode: ClearStuckAlarmsDialogMode.Show, stuckAlarms: stuckAlarms })
   }
 
-  private onHandleTabChange = (event: React.ChangeEvent<{}>, newValue: PanelId) => {
+  private onHandleTabChange = (event: React.SyntheticEvent, newValue: PanelId) => {
     this.onToggleTabs(newValue);
   }
 
@@ -162,8 +162,8 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
 
     return (
       <>
-        <AppBar position="static" >
-          <Tabs value={activePanelId} onChange={this.onHandleTabChange} aria-label="fault-tabs">
+        <AppBar enableColorOnDark position="static" >
+          <Tabs indicatorColor="secondary" textColor="inherit" value={activePanelId} onChange={this.onHandleTabChange} aria-label="fault-tabs">
             <Tab aria-label="current-problem-list-tab" label="Current Problem List" value="CurrentProblem" />
             <Tab aria-label="alarm-notifications-list-tab" label={`Alarm Notifications (${this.props.faultNotifications.faults.length})`} value="AlarmNotifications" />
             <Tab aria-label="alarm-log-tab" label="Alarm Log" value="AlarmLog" />

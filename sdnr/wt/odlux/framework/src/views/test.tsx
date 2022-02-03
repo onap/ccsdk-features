@@ -18,17 +18,21 @@
 import * as React from 'react';
 
 import { withComponents, WithComponents } from '../utilities/withComponents';
-import { withStyles, WithStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
 
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
+
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { MaterialTable, MaterialTableCtorType, ColumnType } from '../components/material-table';
 import { TreeView, TreeItem, TreeViewCtorType } from '../components/material-ui/treeView';
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -839,11 +843,11 @@ const TestComponent = (props: WithComponents<typeof components> & WithStyles<typ
   return (
     <div>
       <h2>About</h2>
-      <ExpansionPanel>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={props.classes.heading}>Client Side Table Demo</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        </AccordionSummary>
+        <AccordionDetails>
           <SampleDataMaterialTable rows={tableData} columns={
             [
               { property: "index", type: ColumnType.text, title: "Index", width: "80px", disableFilter: true, disableSorting: true },
@@ -855,16 +859,16 @@ const TestComponent = (props: WithComponents<typeof components> & WithStyles<typ
             ]
           } idProperty={"_id"} title={"Customers 2018"} >
           </SampleDataMaterialTable>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={props.classes.heading}>Tree Demo</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        </AccordionSummary>
+        <AccordionDetails>
           <SampleTree items={treeData} useFolderIcons enableSearchBar />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     </div>
   );
 };

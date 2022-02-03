@@ -17,13 +17,13 @@
  */
 import * as React from 'react';
 
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import { IDispatcher, connect, Connect } from '../../../../framework/src/flux/connect';
 
@@ -33,7 +33,7 @@ import {
 } from '../actions/maintenenceActions';
 
 import { MaintenenceEntry } from '../models/maintenenceEntryType';
-import { FormControl, InputLabel, Select, MenuItem, Typography } from '@material-ui/core';
+import { FormControl, InputLabel, Select, MenuItem, Typography } from '@mui/material';
 
 export enum EditMaintenenceEntryDialogMode {
   None = "none",
@@ -122,13 +122,13 @@ class EditMaintenenceEntryDIalogComponent extends React.Component<EditMaintenenc
           <DialogContentText>
             {setting.dialogDescription}
           </DialogContentText>
-          <TextField disabled={!setting.enableMountIdEditor} spellCheck={false} autoFocus margin="dense" id="name" label="Name" type="text" fullWidth value={this.state.nodeId} onChange={(event) => { this.setState({ nodeId: event.target.value }); }} />
+          <TextField variant="standard"  disabled={!setting.enableMountIdEditor} spellCheck={false} autoFocus margin="dense" id="name" label="Name" type="text" fullWidth value={this.state.nodeId} onChange={(event) => { this.setState({ nodeId: event.target.value }); }} />
           {this.state.isErrorVisible && <Typography variant="body1" color="error" >Name must not be empty.</Typography>}
-          <TextField disabled={!setting.enableTimeEditor} spellCheck={false} autoFocus margin="dense" id="start" label="Start (Local DateTime)" type="datetime-local" fullWidth value={this.state.start} onChange={(event) => { this.setState({ start: event.target.value }); }} />
-          <TextField disabled={!setting.enableTimeEditor} spellCheck={false} autoFocus margin="dense" id="end" label="End (Local DateTime)" type="datetime-local" fullWidth value={this.state.end} onChange={(event) => { this.setState({ end: event.target.value }); }} />
-          <FormControl fullWidth disabled={!setting.enableTimeEditor}>
+          <TextField variant="standard"  disabled={!setting.enableTimeEditor} spellCheck={false} autoFocus margin="dense" id="start" label="Start (Local DateTime)" type="datetime-local" fullWidth value={this.state.start} onChange={(event) => { this.setState({ start: event.target.value }); }} />
+          <TextField variant="standard"  disabled={!setting.enableTimeEditor} spellCheck={false} autoFocus margin="dense" id="end" label="End (Local DateTime)" type="datetime-local" fullWidth value={this.state.end} onChange={(event) => { this.setState({ end: event.target.value }); }} />
+          <FormControl variant="standard" fullWidth disabled={!setting.enableTimeEditor}>
             <InputLabel htmlFor="active">Active</InputLabel>
-            <Select value={this.state.active || false} onChange={(event) => {
+            <Select variant="standard" value={this.state.active || false} onChange={(event) => {
               this.setState({ active: event.target.value as any as boolean });
             }} inputProps={{ name: 'active', id: 'active' }} fullWidth >
               <MenuItem value={true as any as string}>active</MenuItem>
@@ -155,7 +155,7 @@ class EditMaintenenceEntryDIalogComponent extends React.Component<EditMaintenenc
 
             event.preventDefault();
             event.stopPropagation();
-          }} > {setting.applyButtonText} </Button>
+          }} color="inherit" > {setting.applyButtonText} </Button>
           <Button onClick={(event) => {
             this.onCancel();
             event.preventDefault();

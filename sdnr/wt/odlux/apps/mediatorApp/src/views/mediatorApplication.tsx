@@ -16,17 +16,21 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from 'react';
-import { Theme, createStyles, WithStyles, withStyles, Tooltip } from '@material-ui/core';
+import { Theme, Tooltip } from '@mui/material';
 
-import AddIcon from '@material-ui/icons/Add';
-import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import InfoIcon from '@material-ui/icons/Info';
-import StartIcon from '@material-ui/icons/PlayArrow';
-import StopIcon from '@material-ui/icons/Stop';
+import { WithStyles } from '@mui/styles';
+import createStyles from '@mui/styles/createStyles';
+import withStyles from '@mui/styles/withStyles';
 
-import CircularProgress from '@material-ui/core/CircularProgress'
+import AddIcon from '@mui/icons-material/Add';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import InfoIcon from '@mui/icons-material/Info';
+import StartIcon from '@mui/icons-material/PlayArrow';
+import StopIcon from '@mui/icons-material/Stop';
+
+import CircularProgress from '@mui/material/CircularProgress'
 
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
@@ -130,23 +134,34 @@ class MediatorApplicationComponent extends React.Component<MediatorApplicationCo
     const renderActions = (rowData: MediatorConfigResponse) => (
       <>
         <div className={classes.spacer}>
-          <Tooltip title={"Start"} >
-            <IconButton disabled={rowData[BusySymbol]} className={classes.button}>
+          <Tooltip disableInteractive title={"Start"} >
+            <IconButton disabled={rowData[BusySymbol]} className={classes.button} size="large">
               <StartIcon onClick={(event) => { event.preventDefault(); event.stopPropagation(); this.props.startMediator(rowData.Name); }} />
             </IconButton>
           </Tooltip>
-          <Tooltip title={"Stop"} >
-            <IconButton disabled={rowData[BusySymbol]} className={classes.button}>
+          <Tooltip disableInteractive title={"Stop"} >
+            <IconButton disabled={rowData[BusySymbol]} className={classes.button} size="large">
               <StopIcon onClick={(event) => { event.preventDefault(); event.stopPropagation(); this.props.stopMediator(rowData.Name); }} />
             </IconButton>
           </Tooltip>
         </div>
         <div className={classes.spacer}>
-          <Tooltip title={"Info"} ><IconButton className={classes.button} onClick={(event) => { this.onOpenInfoDialog(event, rowData) }}><InfoIcon /></IconButton></Tooltip>
+          <Tooltip disableInteractive title={"Info"} ><IconButton
+            className={classes.button}
+            onClick={(event) => { this.onOpenInfoDialog(event, rowData) }}
+            size="large"><InfoIcon /></IconButton></Tooltip>
         </div>
         <div className={classes.spacer}>
-          {process.env.NODE_ENV === "development" ? <Tooltip title={"Edit"} ><IconButton disabled={rowData[BusySymbol]} className={classes.button} onClick={event => this.onOpenEditConfigurationDialog(event, rowData)}><EditIcon /></IconButton></Tooltip> : null}
-          <Tooltip title={"Remove"} ><IconButton disabled={rowData[BusySymbol]} className={classes.button} onClick={event => this.onOpenRemoveConfigutationDialog(event, rowData)}><DeleteIcon /></IconButton></Tooltip>
+          {process.env.NODE_ENV === "development" ? <Tooltip disableInteractive title={"Edit"} ><IconButton
+            disabled={rowData[BusySymbol]}
+            className={classes.button}
+            onClick={event => this.onOpenEditConfigurationDialog(event, rowData)}
+            size="large"><EditIcon /></IconButton></Tooltip> : null}
+          <Tooltip disableInteractive title={"Remove"} ><IconButton
+            disabled={rowData[BusySymbol]}
+            className={classes.button}
+            onClick={event => this.onOpenRemoveConfigutationDialog(event, rowData)}
+            size="large"><DeleteIcon /></IconButton></Tooltip>
         </div>
       </>
     );

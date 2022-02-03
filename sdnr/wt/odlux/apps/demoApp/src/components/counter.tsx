@@ -28,7 +28,7 @@ export class Counter extends React.Component<{}, { counter: number }> {
   
   render() {
     return (
-      <button onClick={ () => this.setState({ counter: this.state.counter + 1 }) }>{ this.state.counter }</button>
+      <button onClick={ () => this.setState({ counter: this.state.counter + 1 }) } color="inherit">{ this.state.counter }</button>
     )
   }
 }

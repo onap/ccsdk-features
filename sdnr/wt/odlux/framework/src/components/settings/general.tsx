@@ -16,7 +16,8 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { Button, FormControlLabel, makeStyles, Switch, Typography } from '@material-ui/core';
+import { Button, FormControlLabel, Switch, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { SettingsComponentProps } from '../../models/settings';
 import * as React from 'react';
 import connect, { Connect, IDispatcher } from '../../flux/connect';
@@ -94,13 +95,13 @@ const onCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>{
         </Typography>
         <FormControlLabel style={{ padding:5}}
         value="end"
-        control={<Switch color="secondary" checked={areWebsocketsEnabled} onChange={onWebsocketsChange} />}
+        control={<Switch color="secondary" aria-label="enable-notifications-button" aria-checked={areWebsocketsEnabled} checked={areWebsocketsEnabled} onChange={onWebsocketsChange} />}
         label="Enable Notifications"
         labelPlacement="end"
       />
       <div className={classes.buttonPosition}>
-       <Button className={classes.elementMargin} variant="contained" color="primary" onClick={onCancel}>Cancel</Button>
-       <Button className={classes.elementMargin} variant="contained" color="secondary" onClick={onSave}>Save</Button>
+       <Button aria-label="cancel-button" className={classes.elementMargin} variant="contained" color="primary" onClick={onCancel}>Cancel</Button>
+       <Button aria-label="save-button" className={classes.elementMargin} variant="contained" color="secondary" onClick={onSave}>Save</Button>
     </div>
     </div>
 }

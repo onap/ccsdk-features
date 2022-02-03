@@ -63,7 +63,7 @@ const ConfigurationApplicationRouteAdapter = connect(undefined, mapDisp)((props:
           currentNodeId = currentNodeId.replace(/\|dump$/i, '');
         }
         currentVirtualPath = null;
-        currentNodeId && await props.updateNodeId(currentNodeId);
+        currentNodeId && (await props.updateNodeId(currentNodeId));
       }
 
       if (currentVirtualPath !== props.match.params[0]) {

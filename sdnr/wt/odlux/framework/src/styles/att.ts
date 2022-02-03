@@ -16,9 +16,9 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme, adaptV4Theme } from '@mui/material/styles';
 
-const theme = createMuiTheme({
+const theme = createTheme(adaptV4Theme({
   design: {
     id: "att",
     name: "AT&T",
@@ -41,6 +41,6 @@ const theme = createMuiTheme({
       contrastText: "#0094d3"
     }
   },
-});
+}));
 
 export default theme;

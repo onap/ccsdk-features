@@ -16,30 +16,34 @@
  * ============LICENSE_END==========================================================================
  */
 import * as React from 'react';
-import { Theme, createStyles, WithStyles, withStyles, Typography, FormControlLabel, Checkbox } from '@material-ui/core';
+import { Theme, Typography, FormControlLabel, Checkbox } from '@mui/material';
 
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import { WithStyles } from '@mui/styles';
+import createStyles from '@mui/styles/createStyles';
+import withStyles from '@mui/styles/withStyles';
 
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 
 import { addMediatorConfigAsyncActionCreator, updateMediatorConfigAsyncActionCreator, removeMediatorConfigAsyncActionCreator } from '../actions/mediatorConfigActions';
 import { MediatorConfig, ODLConfig } from '../models/mediatorServer';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
 
 import { Panel } from '../../../../framework/src/components/material-ui/panel';
 
@@ -202,10 +206,10 @@ class EditMediatorConfigDialogComponent extends React.Component<EditMediatorConf
             <Tab label="ODL AutoConnect" />
           </Tabs>
           {this.state.activeTab === 0 ? <TabContainer >
-            <TextField disabled={setting.readonly || setting.readonlyName} spellCheck={false} autoFocus margin="dense" id="name" label="Name" type="text" fullWidth value={this.state.Name} onChange={(event) => { this.setState({ Name: event.target.value }); }} />
-            <FormControl fullWidth disabled={setting.readonly}>
+            <TextField variant="standard" disabled={setting.readonly || setting.readonlyName} spellCheck={false} autoFocus margin="dense" id="name" label="Name" type="text" fullWidth value={this.state.Name} onChange={(event) => { this.setState({ Name: event.target.value }); }} />
+            <FormControl variant="standard" fullWidth disabled={setting.readonly}>
               <InputLabel htmlFor="deviceType">Device</InputLabel>
-              <Select value={this.state.DeviceType} onChange={(event, value) => {
+              <Select variant="standard" value={this.state.DeviceType} onChange={(event, value) => {
                 const device = this.props.supportedDevices.find(device => device.id === event.target.value);
                 if (device) {
                   this.setState({
@@ -223,46 +227,48 @@ class EditMediatorConfigDialogComponent extends React.Component<EditMediatorConf
                 {this.props.supportedDevices.map(device => (<MenuItem key={device.id} value={device.id} >{`${device.vendor} - ${device.device} (${device.version || '0.0.0'}) `}</MenuItem>))}
               </Select>
             </FormControl>
-            <TextField disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="ipAddress" label="Device IP" type="text" fullWidth value={this.state.DeviceIp} onChange={(event) => { this.setState({ DeviceIp: event.target.value }); }} />
-            <TextField disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="devicePort" label="Device SNMP Port" type="number" fullWidth value={this.state.DevicePort || ""} onChange={(event) => { this.setState({ DevicePort: +event.target.value }); }} />
-            <TextField disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="trapsPort" label="TrapsPort" type="number" fullWidth value={this.state.TrapPort || ""} onChange={(event) => { this.setState({ TrapPort: +event.target.value }); }} />
-            <TextField disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="ncUser" label="Netconf User" type="text" fullWidth value={this.state.NcUsername} onChange={(event) => { this.setState({ NcUsername: event.target.value }); }} />
-            <TextField disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="ncPassword" label="Netconf Password" type="password" fullWidth value={this.state.NcPassword} onChange={(event) => { this.setState({ NcPassword: event.target.value }); }} />
-            <TextField disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="ncPort" label="Netconf Port" type="number" fullWidth value={this.state.NcPort || ""} onChange={(event) => { this.setState({ NcPort: +event.target.value }); }} />
+            <TextField variant="standard" disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="ipAddress" label="Device IP" type="text" fullWidth value={this.state.DeviceIp} onChange={(event) => { this.setState({ DeviceIp: event.target.value }); }} />
+            <TextField variant="standard" disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="devicePort" label="Device SNMP Port" type="number" fullWidth value={this.state.DevicePort || ""} onChange={(event) => { this.setState({ DevicePort: +event.target.value }); }} />
+            <TextField variant="standard" disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="trapsPort" label="TrapsPort" type="number" fullWidth value={this.state.TrapPort || ""} onChange={(event) => { this.setState({ TrapPort: +event.target.value }); }} />
+            <TextField variant="standard" disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="ncUser" label="Netconf User" type="text" fullWidth value={this.state.NcUsername} onChange={(event) => { this.setState({ NcUsername: event.target.value }); }} />
+            <TextField variant="standard" disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="ncPassword" label="Netconf Password" type="password" fullWidth value={this.state.NcPassword} onChange={(event) => { this.setState({ NcPassword: event.target.value }); }} />
+            <TextField variant="standard" disabled={setting.readonly} spellCheck={false} autoFocus margin="dense" id="ncPort" label="Netconf Port" type="number" fullWidth value={this.state.NcPort || ""} onChange={(event) => { this.setState({ NcPort: +event.target.value }); }} />
           </TabContainer> : null}
           {this.state.activeTab === 1 ? <TabContainer >
             {this.state.ODLConfig && this.state.ODLConfig.length > 0
               ? this.state.ODLConfig.map((cfg, ind) => {
                 const panelId = `panel-${ind}`;
-                const deleteButton = (<IconButton onClick={() => {
-                  this.setState({
-                    ODLConfig: [
-                      ...this.state.ODLConfig.slice(0, ind),
-                      ...this.state.ODLConfig.slice(ind + 1)
-                    ]
-                  });
-                }} ><DeleteIcon /></IconButton>)
+                const deleteButton = (<IconButton
+                  onClick={() => {
+                    this.setState({
+                      ODLConfig: [
+                        ...this.state.ODLConfig.slice(0, ind),
+                        ...this.state.ODLConfig.slice(ind + 1)
+                      ]
+                    });
+                  }}
+                  size="large"><DeleteIcon /></IconButton>)
                 return (
                   <Panel title={cfg.Server && `${cfg.User ? `${cfg.User}@` : ''}${cfg.Protocol}://${cfg.Server}:${cfg.Port}` || "new odl config"} key={panelId} panelId={panelId} activePanel={this.state.activeOdlConfig} customActionButtons={[deleteButton]}
                     onToggle={(id) => { this.setState({ activeOdlConfig: (this.state.activeOdlConfig === id) ? "" : (id || "") }); console.log("activeOdlConfig " + id); this.hideHostnameErrormessage(id) }} >
                     <div className={classes.alignInOneLine}>
-                      <FormControl className={classes.left} margin={"dense"} >
+                      <FormControl variant="standard" className={classes.left} margin={"dense"} >
                         <InputLabel htmlFor={`protocol-${ind}`}>Protocoll</InputLabel>
-                        <Select value={cfg.Protocol} onChange={(e, v) => this.odlConfigValueChangeHandlerCreator(ind, "Protocol", e => v)} inputProps={{ name: `protocol-${ind}`, id: `protocol-${ind}` }} fullWidth >
+                        <Select variant="standard"  value={cfg.Protocol} onChange={(e, v) => this.odlConfigValueChangeHandlerCreator(ind, "Protocol", e => v)} inputProps={{ name: `protocol-${ind}`, id: `protocol-${ind}` }} fullWidth >
                           <MenuItem value={"http"}>http</MenuItem>
                           <MenuItem value={"https"}>https</MenuItem>
                         </Select>
                       </FormControl>
-                      <TextField className={classes.left} spellCheck={false} margin="dense" id="hostname" label="Hostname" type="text" value={cfg.Server} onChange={this.odlConfigValueChangeHandlerCreator(ind, "Server", e => e.target.value)} />
-                      <TextField className={classes.right} style={{ maxWidth: "65px" }} spellCheck={false} margin="dense" id="port" label="Port" type="number" value={cfg.Port || ""} onChange={this.odlConfigValueChangeHandlerCreator(ind, "Port", e => +e.target.value)} />
+                      <TextField variant="standard" className={classes.left} spellCheck={false} margin="dense" id="hostname" label="Hostname" type="text" value={cfg.Server} onChange={this.odlConfigValueChangeHandlerCreator(ind, "Server", e => e.target.value)} />
+                      <TextField variant="standard" className={classes.right} style={{ maxWidth: "65px" }} spellCheck={false} margin="dense" id="port" label="Port" type="number" value={cfg.Port || ""} onChange={this.odlConfigValueChangeHandlerCreator(ind, "Port", e => +e.target.value)} />
                     </div>
                     {
                       this.state.isOdlConfigHostnameEmpty &&
                       <Typography component={"div"} className={classes.left} color="error" gutterBottom>Please add a hostname.</Typography>
                     }
                     <div className={classes.alignInOneLine}>
-                      <TextField className={classes.left} spellCheck={false} margin="dense" id="username" label="Username" type="text" value={cfg.User} onChange={this.odlConfigValueChangeHandlerCreator(ind, "User", e => e.target.value)} />
-                      <TextField className={classes.right} spellCheck={false} margin="dense" id="password" label="Password" type="password" value={cfg.Password} onChange={this.odlConfigValueChangeHandlerCreator(ind, "Password", e => e.target.value)} />
+                      <TextField variant="standard" className={classes.left} spellCheck={false} margin="dense" id="username" label="Username" type="text" value={cfg.User} onChange={this.odlConfigValueChangeHandlerCreator(ind, "User", e => e.target.value)} />
+                      <TextField variant="standard" className={classes.right} spellCheck={false} margin="dense" id="password" label="Password" type="password" value={cfg.Password} onChange={this.odlConfigValueChangeHandlerCreator(ind, "Password", e => e.target.value)} />
                     </div>
                     <div className={classes.alignInOneLine}>
                       <FormControlLabel className={classes.right} control={<Checkbox checked={cfg.Trustall} onChange={this.odlConfigValueChangeHandlerCreator(ind, "Trustall", e => e.target.checked)} />} label="Trustall" />
@@ -288,7 +294,7 @@ class EditMediatorConfigDialogComponent extends React.Component<EditMediatorConf
 
         </DialogContent>
         <DialogActions>
-          <Button onClick={(event) => { this.addConfig(event) }} > {setting.applyButtonText} </Button>
+          <Button color="inherit" onClick={(event) => { this.addConfig(event) }} > {setting.applyButtonText} </Button>
           <Button onClick={(event) => {
             this.onCancel();
             event.preventDefault();
@@ -297,7 +303,7 @@ class EditMediatorConfigDialogComponent extends React.Component<EditMediatorConf
           }} color="secondary"> {setting.cancelButtonText} </Button>
         </DialogActions>
       </Dialog>
-    )
+    );
   }
 
   private addConfig = (event: any) => {

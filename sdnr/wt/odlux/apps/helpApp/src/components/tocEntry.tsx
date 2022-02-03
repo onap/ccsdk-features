@@ -18,7 +18,10 @@
 
 import * as React from "react"
 import { TocTreeNode } from "../models/tocNode"
-import { Typography, Link, makeStyles, Theme, createStyles } from "@material-ui/core"
+import { Typography, Link, Theme } from "@mui/material";
+
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -57,7 +60,7 @@ const TocEntry: React.FunctionComponent<tocEntryProps> = (props) => {
     return (<div>
         {
             areNodesEmpty ? <Typography variant="h6">
-                <Link onClick={(event: any) => navigate(event, props.overviewUri)} className={classes.link}> {props.label}</Link>
+                <Link underline="hover" onClick={(event: any) => navigate(event, props.overviewUri)} className={classes.link}> {props.label}</Link>
             </Typography> :
                 <>
                     <Typography variant="h6">
@@ -65,11 +68,11 @@ const TocEntry: React.FunctionComponent<tocEntryProps> = (props) => {
                     </Typography>
                     <div className={classes.container}>
                         <Typography variant="body1">
-                            <Link onClick={(event: any) => navigate(event, props.overviewUri)} className={classes.sublink}>Overview</Link>
+                            <Link underline="hover" onClick={(event: any) => navigate(event, props.overviewUri)} className={classes.sublink}>Overview</Link>
                         </Typography>
                         {props.nodes !== undefined && props.nodes.map((item, index) =>
                             <Typography variant="body1" key={index + 'x' + item.id}>
-                                <Link onClick={(event: any) => navigate(event, item.uri)} className={classes.sublink}>{item.label}</Link>
+                                <Link underline="hover" onClick={(event: any) => navigate(event, item.uri)} className={classes.sublink}>{item.label}</Link>
                             </Typography>
                         )}
                     </div>

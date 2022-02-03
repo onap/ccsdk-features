@@ -19,7 +19,7 @@
 import * as React from 'react';
 import { BaseProps } from './baseProps';
 import { ViewElementSelection } from '../models/uiModels'
-import { FormControl, InputLabel, Select, FormHelperText, MenuItem, Tooltip } from '@material-ui/core';
+import { FormControl, InputLabel, Select, FormHelperText, MenuItem, Tooltip } from '@mui/material';
 
 type selectionProps = BaseProps;
 
@@ -34,9 +34,9 @@ export const UiElementSelection = (props: selectionProps) => {
     }
 
     return (props.readOnly || props.inputValue != null
-        ? (<FormControl style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
+        ? (<FormControl variant="standard" style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
             <InputLabel htmlFor={`select-${element.id}`} >{element.label}</InputLabel>
-            <Select
+            <Select variant="standard"
                 required={!!element.mandatory}
                 error={!!error}
                 onChange={(e) => { props.onChange(e.target.value as string) }}
@@ -50,7 +50,7 @@ export const UiElementSelection = (props: selectionProps) => {
                 }}
             >
           {element.options.map(option => (
-            <MenuItem key={option.key} value={option.key} aria-label={option.key}><Tooltip title={option.description || '' }><div style={{width:"100%"}}>{option.key}</div></Tooltip></MenuItem>
+            <MenuItem key={option.key} value={option.key} aria-label={option.key}><Tooltip disableInteractive title={option.description || '' }><div style={{width:"100%"}}>{option.key}</div></Tooltip></MenuItem>
           ))}
             </Select>
             <FormHelperText>{error}</FormHelperText>

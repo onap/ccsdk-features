@@ -18,9 +18,11 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
-import { withStyles, WithStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import ButtonBase from '@material-ui/core/ButtonBase';
+import { Theme, alpha } from '@mui/material/styles';
+import { WithStyles } from '@mui/styles';
+import withStyles from '@mui/styles/withStyles';
+import createStyles from '@mui/styles/createStyles';
+import ButtonBase from '@mui/material/ButtonBase';
 
 
 export const styles = (theme: Theme) => createStyles({
@@ -30,18 +32,18 @@ export const styles = (theme: Theme) => createStyles({
         height: 32,
         minWidth: 48,
         margin: 0,
-        padding: `${theme.spacing(1 - 4)}px ${theme.spacing(1.5)}px`,
+        padding: `${theme.spacing(1 - 4)} ${theme.spacing(1.5)}`,
         borderRadius: 2,
         willChange: 'opacity',
-        color: fade(theme.palette.action.active, 0.38),
+        color: alpha(theme.palette.action.active, 0.38),
         '&:hover': {
             textDecoration: 'none',
             // Reset on mouse devices
-            backgroundColor: fade(theme.palette.text.primary, 0.12),
+            backgroundColor: alpha(theme.palette.text.primary, 0.12),
             '@media (hover: none)': {
                 backgroundColor: 'transparent',
             },
-            '&$disabled': {
+            '&.Mui-disabled': {
                 backgroundColor: 'transparent',
             },
         },
@@ -56,7 +58,7 @@ export const styles = (theme: Theme) => createStyles({
     },
     /* Styles applied to the root element if `disabled={true}`. */
     disabled: {
-        color: fade(theme.palette.action.disabled, 0.12),
+        color: alpha(theme.palette.action.disabled, 0.12),
     },
     /* Styles applied to the root element if `selected={true}`. */
     selected: {

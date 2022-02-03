@@ -17,7 +17,7 @@
  */
 
 import * as React from "react"
-import { MenuItem, FormHelperText, Select, FormControl, InputLabel } from "@material-ui/core";
+import { MenuItem, FormHelperText, Select, FormControl, InputLabel } from "@mui/material";
 
 import { ViewElementBoolean } from "../models/uiModels";
 import { BaseProps } from "./baseProps";
@@ -32,9 +32,9 @@ export const UiElementBoolean = (props: BooleanInputProps) => {
     const mandetoryError = element.mandatory && value !== 'true' && value !== 'false';
     
     return (!props.readOnly || element.id != null
-        ? (<FormControl style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
+        ? (<FormControl variant="standard" style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
             <InputLabel htmlFor={`select-${element.id}`} >{element.label}</InputLabel>
-            <Select
+            <Select variant="standard"
                 aria-label={element.label+'-selection'}
                 required={!!element.mandatory}
                 error={mandetoryError}

@@ -19,7 +19,7 @@ import * as React from 'react';
 import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { MaterialTable, ColumnType, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
-import  Refresh  from '@material-ui/icons/Refresh';
+import  Refresh  from '@mui/icons-material/Refresh';
 
 import { createConnectionStatusLogActions, createConnectionStatusLogProperties } from '../handlers/connectionStatusLogHandler';
 import { NetworkElementConnectionLog } from '../models/networkElementConnectionLog';
