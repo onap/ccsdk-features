@@ -68,8 +68,9 @@ public class InitialDeviceAlarmReader {
     // Mapping the alarm data with the fault data
     protected FaultData writeFaultData() {
         FaultData faultData = new FaultData();
-        if (this.getActiveAlarmList(this.netConfAccesor).getActiveAlarms() != null) {
-            Collection<ActiveAlarms> activeAlarms = YangHelper.getCollection(this.getActiveAlarmList(this.netConfAccesor).getActiveAlarms());
+        ActiveAlarmList actAlarmList = this.getActiveAlarmList(this.netConfAccesor);
+        if (actAlarmList != null) {
+            Collection<ActiveAlarms> activeAlarms = YangHelper.getCollection(actAlarmList.getActiveAlarms());
             if (!activeAlarms.isEmpty()) {
                 for (ActiveAlarms activeAlarm : activeAlarms) {
                     faultData.add(this.netConfAccesor.getNodeId(), this.count, activeAlarm.getRaiseTime(),

@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class OpenroadmChangeNotificationListener implements IetfNetconfNotificationsListener {
 
     // variables
-    private static final Logger log = LoggerFactory.getLogger(OpenroadmChangeNotificationListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenroadmChangeNotificationListener.class);
     private final NetconfAccessor netconfAccessor;
     private final DataProvider databaseService;
     private final WebsocketManagerService notificationServiceService;
@@ -67,14 +67,14 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
     // public methods
     @Override
     public void onNetconfConfirmedCommit(NetconfConfirmedCommit notification) {
-        log.info("onNetconfConfirmedCommit {} ", notification);
+        LOG.debug("onNetconfConfirmedCommit {} ", notification);
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfConfirmedCommit.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
     @Override
     public void onNetconfSessionStart(NetconfSessionStart notification) {
-        log.info("onNetconfSessionStart {} ", notification);
+        LOG.debug("onNetconfSessionStart {} ", notification);
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfSessionStart.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
 
@@ -82,44 +82,51 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
 
     @Override
     public void onNetconfSessionEnd(NetconfSessionEnd notification) {
-        log.info("onNetconfSessionEnd {}", notification);
+        LOG.debug("onNetconfSessionEnd {}", notification);
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfSessionEnd.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
     @Override
     public void onNetconfCapabilityChange(NetconfCapabilityChange notification) {
-        log.info("onNetconfCapabilityChange {}", notification);
+        LOG.debug("onNetconfCapabilityChange {}", notification);
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfCapabilityChange.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
     @Override
     public void onNetconfConfigChange(NetconfConfigChange notification) {
-        log.info("onNetconfConfigChange (1) {}", notification);
+        LOG.debug("onNetconfConfigChange (1) {}", notification);
         StringBuffer sb = new StringBuffer();
         List<Edit> editList = notification.nonnullEdit();
         for (Edit edit : editList) {
+            if(edit==null) { //should never happen
+                LOG.warn("null object in config change");
+                continue;
+            }
             if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append(edit);
-
+            try {
+                sb.append(edit);
+            } catch (Exception e) { //catch odl error
+                LOG.warn("unable to serialize edit obj", e);
+            }
             EventlogBuilder eventlogBuilder = new EventlogBuilder();
 
             InstanceIdentifier<?> target = edit.getTarget();
             if (target != null) {
                 eventlogBuilder.setObjectId(target.toString());
-                log.info("TARGET: {} {}", target.getClass(), target.getTargetType());
+                LOG.debug("TARGET: {} {}", target.getClass(), target.getTargetType());
                 for (PathArgument pa : target.getPathArguments()) {
-                    log.info("PathArgument {}", pa);
+                    LOG.debug("PathArgument {}", pa);
                 }
             }
             eventlogBuilder.setNodeId(netconfAccessor.getNodeId().getValue());
             eventlogBuilder.setNewValue(String.valueOf(edit.getOperation()));
             databaseService.writeEventLog(eventlogBuilder.build());
         }
-        log.info("onNetconfConfigChange (2) {}", sb);
+        LOG.debug("onNetconfConfigChange (2) {}", sb);
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfConfigChange.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
 

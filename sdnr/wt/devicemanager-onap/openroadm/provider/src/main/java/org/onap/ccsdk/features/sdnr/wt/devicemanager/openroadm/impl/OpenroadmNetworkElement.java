@@ -108,15 +108,17 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     public void initialReadFromNetworkElement() {
 
         OrgOpenroadmDevice device = readDevice(this.netconfAccessor);
-        this.opnRdmInventoryInput = new OpenroadmInventoryInput(this.netconfAccessor, device);
-        log.info("openroadmMapper details{}", this.opnRdmInventoryInput.getClass().getName());
-        List<Inventory> inventoryList = new ArrayList<>();
-        inventoryList.add(this.opnRdmInventoryInput.getInventoryData(Uint32.valueOf(equipmentLevel)));
-        readShelvesData(inventoryList, device);
-        readXpndrData(inventoryList, device);
-        readCircuitPacketData(inventoryList, device);
-        readInterfaceData(inventoryList, device);
-        this.databaseService.writeInventory(this.netconfAccessor.getNodeId().getValue(), inventoryList);
+        if (device != null) {
+            this.opnRdmInventoryInput = new OpenroadmInventoryInput(this.netconfAccessor, device);
+            log.info("openroadmMapper details{}", this.opnRdmInventoryInput.getClass().getName());
+            List<Inventory> inventoryList = new ArrayList<>();
+            inventoryList.add(this.opnRdmInventoryInput.getInventoryData(Uint32.valueOf(equipmentLevel)));
+            readShelvesData(inventoryList, device);
+            readXpndrData(inventoryList, device);
+            readCircuitPacketData(inventoryList, device);
+            readInterfaceData(inventoryList, device);
+            this.databaseService.writeInventory(this.netconfAccessor.getNodeId().getValue(), inventoryList);
+        }
         // Writing initial alarms at the time of device registration
         initialAlarmReader.faultService();
         //        Writing historical PM data at the time of device registration
