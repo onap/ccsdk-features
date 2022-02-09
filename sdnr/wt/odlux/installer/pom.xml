@@ -164,14 +164,6 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                 </artifactItem>
-                                <!-- mediatorApp -->
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>sdnr-wt-odlux-app-mediatorApp</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                </artifactItem>
                                 <!-- performanceHistoryApp -->
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
