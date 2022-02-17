@@ -23,11 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESFaultFieldsPOJO;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESMessage;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESNotificationFieldsPOJO;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESPNFRegistrationFieldsPOJO;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.*;
 
 /**
  * Interface used for publishing VES messages to the VES Collector
@@ -96,5 +92,15 @@ public interface VESCollectorService extends DeviceManagerService {
      * @throws JsonProcessingException
      */
     VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader, VESPNFRegistrationFieldsPOJO faultFields) throws JsonProcessingException;
+
+    /**
+     * Generates VES Event JSON containing commonEventHeader and ccvpnNotification fields
+     *
+     * @param commonEventHeader
+     * @param faultFields
+     * @return VESMessage - representing the VES Event JSON
+     * @throws JsonProcessingException
+     */
+    VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader, VESCCVPNNotificationFieldsPOJOFieldsPOJO faultFields) throws JsonProcessingException;
 
 }
