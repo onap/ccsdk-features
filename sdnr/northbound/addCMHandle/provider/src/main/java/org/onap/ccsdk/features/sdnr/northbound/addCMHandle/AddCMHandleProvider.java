@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * ONAP : CCSDK
  * ================================================================================
- * Copyright (C) 2021 Wipro Limited.
+ * Copyright (C) 2021-2022 Wipro Limited.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,48 +20,47 @@
 
 package org.onap.ccsdk.features.sdnr.northbound.addCMHandle;
 
-import static org.opendaylight.mdsal.common.api.LogicalDatastoreType.CONFIGURATION;
-
-import com.google.common.base.Preconditions;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.json.JSONObject;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateListener;
-import org.onap.ccsdk.sli.core.sli.provider.MdsalHelper;
+import org.onap.ccsdk.features.sdnr.northbound.addCMHandle.HttpRequester;
+import org.onap.ccsdk.features.sdnr.northbound.addCMHandle.models.CpsCmHandleRequestBody;
+import org.onap.ccsdk.sli.core.utils.common.EnvProperties;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.mdsal.dom.api.DOMDataBroker;
+import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.dom.api.DOMMountPointService;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.AddCMHandleInput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.AddCMHandleOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.AddCMHandleOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.CMHandleAPIService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.status.StatusBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.cps.ncmp.rev210520.DmiRegistryBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.cps.ncmp.rev210520.dmi.registry.CmHandle;
+import org.opendaylight.yang.gen.v1.org.onap.cps.ncmp.rev210520.dmi.registry.CmHandleBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.cps.ncmp.rev210520.dmi.registry.CmHandleKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -69,50 +68,60 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.model.parser.api.YangParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AddCMHandleProvider implements CMHandleAPIService, NetconfNodeStateListener, AutoCloseable {
+public class AddCMHandleProvider implements CMHandleAPIService, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(AddCMHandleProvider.class);
+    private final ObjectMapper objMapper = new ObjectMapper();
     private final String APPLICATION_NAME = "addCMHandle";
     private static final String SDNC_CONFIG_DIR = "SDNC_CONFIG_DIR";
     private static final String PROPERTIES_FILE_NAME = "cm-handle.properties";
-    private static final String PARSING_ERROR =
-            "Could not create the request message to send to the server; no message will be sent";
-    private final ExecutorService executor;
-    protected DataBroker dataBroker;
-    protected DOMDataBroker domDataBroker;
-    protected NotificationPublishService notificationService;
-    protected RpcProviderService rpcProviderRegistry;
-    private ObjectRegistration<CMHandleAPIService> rpcRegistration;
-    public static final InstanceIdentifier<Topology> NETCONF_TOPO_IID = InstanceIdentifier.create(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
     private static HashMap<String, String> config;
+    private ListenerRegistration<AddCmHandleListener> listener;
+    private static final @NonNull InstanceIdentifier<Node> NETCONF_NODE_TOPO_IID =
+            InstanceIdentifier.create(NetworkTopology.class)
+                    .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
+                    .child(Node.class);
+    private static final @NonNull DataTreeIdentifier<Node> NETCONF_NODE_TOPO_TREE_ID =
+            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, NETCONF_NODE_TOPO_IID);
+
+    private DataBroker dataBroker;
+    private MountPointService mountPointService;
+    private DOMMountPointService domMountPointService;
+    private RpcProviderService rpcProviderRegistry;
+    @SuppressWarnings("unused")
+    private NotificationPublishService notificationPublishService;
+    @SuppressWarnings("unused")
+    private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    private YangParserFactory yangParserFactory;
+    private BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer;
+    private Boolean isInitializationSuccessful = false;
+    private Long lastNotificationSentOn = Long.valueOf(0);
+    private List<String> nodeIdList = new ArrayList<>();
 
     public AddCMHandleProvider() {
 
         LOG.info("Creating provider for {}", APPLICATION_NAME);
-        executor = Executors.newFixedThreadPool(1);
         this.dataBroker = null;
-        this.domDataBroker = null;
-        this.notificationService = null;
+        this.mountPointService = null;
+        this.domMountPointService = null;
         this.rpcProviderRegistry = null;
-        this.rpcRegistration = null;
+        this.notificationPublishService = null;
+        this.clusterSingletonServiceProvider = null;
+        this.yangParserFactory = null;
+        this.bindingNormalizedNodeSerializer = null;
+
     }
 
     public void setDataBroker(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
-    }
-
-    public void setDomDataBroker(DOMDataBroker domDataBroker) {
-        this.domDataBroker = domDataBroker;
     }
 
     public void setRpcProviderRegistry(RpcProviderService rpcProviderRegistry) {
@@ -120,20 +129,36 @@ public class AddCMHandleProvider implements CMHandleAPIService, NetconfNodeState
     }
 
     public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
-        this.notificationService = notificationPublishService;
+        this.notificationPublishService = notificationPublishService;
+    }
+
+    public void setMountPointService(MountPointService mountPointService) {
+        this.mountPointService = mountPointService;
+    }
+
+    public void setDomMountPointService(DOMMountPointService domMountPointService) {
+        this.domMountPointService = domMountPointService;
+    }
+
+    public void setClusterSingletonService(ClusterSingletonServiceProvider clusterSingletonService) {
+        this.clusterSingletonServiceProvider = clusterSingletonService;
+    }
+
+    public void setYangParserFactory(YangParserFactory yangParserFactory) {
+        this.yangParserFactory = yangParserFactory;
+    }
+
+    public void setBindingNormalizedNodeSerializer(BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer) {
+        this.bindingNormalizedNodeSerializer = bindingNormalizedNodeSerializer;
+        LOG.info("Init bindingNormalizedNodeSerializer");
+    }
+
+    public Boolean isInitializationSuccessful() {
+        return isInitializationSuccessful;
     }
 
     public void init() {
         LOG.info("Initializing {} for {}", this.getClass().getName(), APPLICATION_NAME);
-
-        if (rpcRegistration == null) {
-            if (rpcProviderRegistry != null) {
-                rpcRegistration = rpcProviderRegistry.registerRpcImplementation(CMHandleAPIService.class, this);
-                LOG.info("Initialization complete for {}", APPLICATION_NAME);
-            } else {
-                LOG.warn("Error initializing {} : rpcRegistry unset", APPLICATION_NAME);
-            }
-        }
 
         String propDir = System.getenv(SDNC_CONFIG_DIR);
         if (propDir == null) {
@@ -143,76 +168,175 @@ public class AddCMHandleProvider implements CMHandleAPIService, NetconfNodeState
             propDir = propDir + "/";
         }
 
-        // GET configuration from properties file
         config = new HashMap<String, String>();
 
         try (FileInputStream fileInput = new FileInputStream(propDir + PROPERTIES_FILE_NAME)) {
-            Properties properties = new Properties();
+            EnvProperties properties = new EnvProperties();
             properties.load(fileInput);
 
-            for (String param : new String[] {"url", "user", "password",
-                    "authentication, dmi-service-name"}) {
+            for (String param : new String[] {"cpsUrl", "user", "password", "dmaapUrl", "dmiServiceName", "client",
+                    "timerThreshold"}) {
                 config.put(param, properties.getProperty(param));
             }
         } catch (IOException e) {
             LOG.error("Error while reading properties file: ", e);
         }
 
+        listener = dataBroker.registerDataTreeChangeListener(NETCONF_NODE_TOPO_TREE_ID, new AddCmHandleListener());
+        isInitializationSuccessful = true;
+        LOG.info("Initialization complete for {}", APPLICATION_NAME);
         LOG.info("addCMHandle Session Initiated");
     }
 
-    @Override
-    public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
-        LOG.info("NetConf device connected {}", nNodeId.getValue());
-        JSONObject obj = new JSONObject();
-        obj.put("cm-handle-id", nNodeId.getValue());
-        obj.put("dmi-service-name", config.get("dmi-service-name"));
-        ClientConfig dmaapClientConfig = new DefaultClientConfig();
-        dmaapClientConfig.getProperties().put(ClientConfig.PROPERTY_READ_TIMEOUT, 180000);
-        dmaapClientConfig.getProperties().put(ClientConfig.PROPERTY_CONNECT_TIMEOUT, 60000);
-        Client dmaapClient = Client.create(dmaapClientConfig);
-        String authenticationMethod = config.get("authentication");
-        ClientResponse response = null;
-        try {
-            if ("basic".equals(authenticationMethod)) {
-                LOG.debug("Sending message to dmaap-message-router: {}", obj.toString());
-                dmaapClient.addFilter(new HTTPBasicAuthFilter(config.get("user"), config.get("password")));
+    /**
+     * AddCmHandleListener
+     */
+    private class AddCmHandleListener implements DataTreeChangeListener<Node> {
 
-                response = dmaapClient.resource(config.get("url")).type(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, obj);
-            } else {
-                response = dmaapClient.resource(config.get("url")).type(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, obj);
+        @Override
+        public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Node>> changes) {
+            LOG.info("AddCmHandleListener TreeChange enter changes: {}", changes.size());
+            LOG.info("config: " + config);
+            String nodeId = getNodeId(changes);
+            if (Objects.nonNull(nodeId) && !(nodeIdList.contains(nodeId))) {
+                nodeIdList.add(nodeId);
             }
-            LOG.info("Received response from dmaap-message-router: \n {}", response.toString());
-        } catch (Exception e) {
-            LOG.error("Error while posting message to CM_HANDLE topic: ", e);
+            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+            Long difference = currentTime.getTime() - lastNotificationSentOn;
+            if (difference > Long.valueOf(config.get("timerThreshold"))) {
+                sendNotification(nodeIdList);
+                nodeIdList.clear();
+            }
+
+        }
+    }
+
+    /**
+     * Method to get nodeId.
+     */
+    private String getNodeId(@NonNull Collection<DataTreeModification<Node>> changes) {
+        String nodeIdString = null;
+        for (final DataTreeModification<Node> change : changes) {
+
+            final DataObjectModification<Node> root = change.getRootNode();
+            try {
+                ModificationType modificationTyp = root.getModificationType();
+                if ((modificationTyp != ModificationType.DELETE)) {
+
+                    Node node = root.getDataAfter();
+                    NodeId nodeId = node != null ? node.getNodeId() : null;
+                    if (nodeId == null) {
+                        LOG.info("without nodeid");
+                    } else {
+                        nodeIdString = nodeId.getValue();
+                        LOG.info("AddCmHandle for nodeId: {}", nodeIdString);
+                    }
+                }
+
+            } catch (NullPointerException | IllegalStateException e) {
+                LOG.info("Data not available at ", e);
+            }
         }
 
+        return nodeIdString;
     }
 
-    @Override
-    public void onRemoved(NodeId nNodeId) {
+    /**
+     * Method called when cm-handle notification is to be sent.
+     */
+    protected void sendNotification(List<String> nodeIdList) {
 
-        LOG.info("NetConf device removed - nNodeId = {}", nNodeId);
+        String sendNotificationTo = config.get("client");
+        lastNotificationSentOn = new Timestamp(System.currentTimeMillis()).getTime();
+        if (sendNotificationTo.equalsIgnoreCase("CPS")) {
+            sendNotificationToCps(nodeIdList);
+
+        }
+        if (sendNotificationTo.equalsIgnoreCase("DMAAP")) {
+            sendNotificationToDmaap(nodeIdList);
+        }
+
+        else {
+            sendNotificationToCps(nodeIdList);
+            sendNotificationToDmaap(nodeIdList);
+        }
+        lastNotificationSentOn = new Timestamp(System.currentTimeMillis()).getTime();
+
     }
 
-    @Override
-    public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
-        LOG.info("NetConf device state changed nNodeId = {}}", nNodeId);
+    /**
+     * Method called when cm-handle notification is to be sent to CPS.
+     */
+    protected String sendNotificationToCps(List<String> nodeIdList) {
+
+        LOG.info("Sending Notification to CPS");
+        String userCredential = config.get("user") + ":" + config.get("password");
+        String url = config.get("cpsUrl");
+        String requestBody = null;
+        CpsCmHandleRequestBody cpsCmHandleRequestBody = new CpsCmHandleRequestBody(nodeIdList);
+        LOG.info("url {}", url);
+        LOG.info("userCredential: {}", userCredential);
+        try {
+            requestBody = objMapper.writeValueAsString(cpsCmHandleRequestBody);
+            LOG.info("requestBody{} ", requestBody);
+        } catch (JsonProcessingException e) {
+            LOG.error("ERROR: {}", e);
+        }
+        String response = HttpRequester.sendPostRequest(url, userCredential, requestBody);
+        LOG.info("response from CPS: {} ", response);
+        return response;
+
+    }
+
+    /**
+     * Method called when cm-handle notification is to be sent to Dmaap.
+     */
+    protected String sendNotificationToDmaap(List<String> nodeIdList) {
+
+        LOG.info("Sending Notification to Dmaap");
+        String url = config.get("dmaapUrl");
+        Map<CmHandleKey, CmHandle> values = new HashMap<>();
+        nodeIdList.forEach(nodeId -> {
+            CmHandleBuilder cmHandleBuilder = new CmHandleBuilder();
+            cmHandleBuilder.setDmiServiceName(config.get("dmiServiceName"));
+            cmHandleBuilder.setId(nodeId);
+            CmHandleKey cmHandleKey = new CmHandleKey(nodeId);
+            values.put(cmHandleKey, cmHandleBuilder.build());
+        });
+        DmiRegistryBuilder dmiRegistryBuilder = new DmiRegistryBuilder();
+        dmiRegistryBuilder.setCmHandle(values);
+
+        String requestBody = null;
+        LOG.info("url: {}", url);
+        try {
+            requestBody = objMapper.writeValueAsString(dmiRegistryBuilder.build());
+            LOG.info("requestBody: {}", requestBody);
+        } catch (JsonProcessingException e) {
+            LOG.error("ERROR: {}", e);
+        }
+        String response = HttpRequester.sendPostRequest(url, null, requestBody);
+        LOG.info("response from Dmaap: {}", response);
+        return response;
+
     }
 
     /**
      * Method called when the blueprint container is destroyed.
      */
+    @Override
     public void close() {
-        rpcRegistration.close();
+        if (Objects.nonNull(listener)) {
+            listener.close();
+        }
         LOG.debug("AddCMHandleProvider Closed");
     }
 
     @Override
     public ListenableFuture<RpcResult<AddCMHandleOutput>> addCMHandle(AddCMHandleInput input) {
+        StatusBuilder statusBuilder = new StatusBuilder();
+        statusBuilder.setMessage("SUCCESS");
+        return RpcResultBuilder.success(new AddCMHandleOutputBuilder().setStatus(statusBuilder.build()).build())
+                .buildFuture();
 
-        return null;
     }
 }
