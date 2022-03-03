@@ -3,7 +3,7 @@
   ~ ============LICENSE_START=======================================================
   ~ ONAP : ccsdk features
   ~ ================================================================================
-  ~ Copyright (C) 2021 Wipro Limited.
+  ~ Copyright (C) 2021-2022 Wipro Limited.
   ~ ================================================================================
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -23,34 +23,38 @@
 <blueprint xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
            xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" odl:use-default-for-reference-types="true">
 
-    <reference id="svcLogicService"
-               interface="org.onap.ccsdk.sli.core.sli.provider.SvcLogicService"/>
-
-    <bean id="client" class="org.onap.ccsdk.features.sdnr.northbound.ranSlice.RANSliceClient">
-        <argument ref="svcLogicService"/>
-    </bean>
-
-    <reference id="dataBroker"
-               interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
-
-    <reference id="domDataBroker"
-               interface="org.opendaylight.mdsal.dom.api.DOMDataBroker"/>
+    <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
 
     <reference id="notificationPublishService"
-               interface="org.opendaylight.mdsal.binding.api.NotificationPublishService" />
+               interface="org.opendaylight.mdsal.binding.api.NotificationPublishService"/>
+
+    <reference id="mountPointService"
+               interface="org.opendaylight.mdsal.binding.api.MountPointService"/>
+
+    <reference id="domMountPointService"
+               interface="org.opendaylight.mdsal.dom.api.DOMMountPointService"/>
 
     <reference id="rpcProviderRegistry"
-               interface="org.opendaylight.mdsal.binding.api.RpcProviderService" />
+               interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
 
-    <bean id="provider" class="org.onap.ccsdk.features.sdnr.northbound.ranSlice.RANSliceProvider"
-        init-method="init" destroy-method="close">
-        <property name="dataBroker"  ref="dataBroker"/>
-        <property name="domDataBroker" ref="domDataBroker"/>
+    <reference id="clusterSingletonService"
+               interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+
+    <reference id="yangParserFactory"
+               interface="org.opendaylight.yangtools.yang.model.parser.api.YangParserFactory"/>
+
+    <reference id="bindingNormalizedNodeSerializer"
+               interface="org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer"/>
+
+    <bean id="addCMHandleProvider" class="org.onap.ccsdk.features.sdnr.northbound.addCMHandle.AddCMHandleProvider" init-method="init" destroy-method="close" scope="singleton">
+        <property name="dataBroker" ref="dataBroker"/>
         <property name="rpcProviderRegistry" ref="rpcProviderRegistry"/>
         <property name="notificationPublishService" ref="notificationPublishService"/>
-        <property name="client" ref="client"/>
-    </bean>
-
-    <odl:rpc-implementation ref="provider"/>
+        <property name="mountPointService" ref="mountPointService"/>
+        <property name="domMountPointService" ref="domMountPointService"/>
+        <property name="clusterSingletonService" ref="clusterSingletonService"/>
+        <property name="yangParserFactory" ref="yangParserFactory"/>
+        <property name="bindingNormalizedNodeSerializer" ref="bindingNormalizedNodeSerializer"/>
+   </bean>
 
 </blueprint>
