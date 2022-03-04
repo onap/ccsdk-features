@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "63e0d6d2_3c8c37e0",
+        "filename": "sdnr/northbound/addCMHandle/provider/src/main/java/org/onap/ccsdk/features/sdnr/northbound/addCMHandle/AddCMHandleProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2022-03-04T17:25:12Z",
+      "side": 1,
+      "message": "It would be better to use org.onap.ccsdk.sli.core.utils.EnvProperties in place of java.util.Properties.  This will let you use env variables as settings within your properties file.",
+      "range": {
+        "startLine": 167,
+        "startChar": 40,
+        "endLine": 167,
+        "endChar": 50
+      },
+      "revId": "88b59d40e7f43a1beda3e116c0407f6ff90169d5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e1e4185_2c343804",
+        "filename": "sdnr/northbound/addCMHandle/provider/src/main/resources/cm-handle.properties",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2022-03-04T17:25:12Z",
+      "side": 1,
+      "message": "Please do not include anything that looks like a real password here.  It would be better instead to use an env variable (e.g. ${CPS_PASSWORD}) here and set that in in your docker-compose.yaml and helm charts (in oom).",
+      "range": {
+        "startLine": 25,
+        "startChar": 19,
+        "endLine": 25,
+        "endChar": 28
+      },
+      "revId": "88b59d40e7f43a1beda3e116c0407f6ff90169d5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
