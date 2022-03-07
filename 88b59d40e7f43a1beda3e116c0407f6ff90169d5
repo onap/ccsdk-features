@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fcb7fd6d_dcfa4bd5",
+        "filename": "sdnr/northbound/addCMHandle/provider/src/main/java/org/onap/ccsdk/features/sdnr/northbound/addCMHandle/AddCMHandleProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 6219
+      },
+      "writtenOn": "2022-03-07T16:18:56Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "63e0d6d2_3c8c37e0",
+      "range": {
+        "startLine": 167,
+        "startChar": 40,
+        "endLine": 167,
+        "endChar": 50
+      },
+      "revId": "88b59d40e7f43a1beda3e116c0407f6ff90169d5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4e1e4185_2c343804",
         "filename": "sdnr/northbound/addCMHandle/provider/src/main/resources/cm-handle.properties",
         "patchSetId": 3
@@ -45,6 +69,30 @@
       "revId": "88b59d40e7f43a1beda3e116c0407f6ff90169d5",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a7265c2_453c7c4a",
+        "filename": "sdnr/northbound/addCMHandle/provider/src/main/resources/cm-handle.properties",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6219
+      },
+      "writtenOn": "2022-03-07T16:18:56Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4e1e4185_2c343804",
+      "range": {
+        "startLine": 25,
+        "startChar": 19,
+        "endLine": 25,
+        "endChar": 28
+      },
+      "revId": "88b59d40e7f43a1beda3e116c0407f6ff90169d5",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
