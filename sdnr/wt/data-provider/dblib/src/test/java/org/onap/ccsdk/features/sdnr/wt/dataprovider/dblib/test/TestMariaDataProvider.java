@@ -24,6 +24,8 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -34,14 +36,17 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBReaderWriter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.DeleteQuery;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test.util.MariaDBTestBase;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.opendaylight.netconf.shaded.sshd.common.util.io.IoUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
@@ -57,6 +62,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateNetworkElementConnectionOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInput;
@@ -72,6 +80,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GuicutthroughBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
@@ -90,10 +99,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mLtpListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadStatusOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
@@ -102,6 +115,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.PaginationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import ch.vorburger.exec.ManagedProcessException;
@@ -112,6 +126,8 @@ public class TestMariaDataProvider {
     private static final String NODEID1 = "node1";
     private static final String NODEID2 = "node2";
     private static final String NODEID3 = "node3";
+    private static final String NODEID4 = "node4";
+    private static final String NODEID5 = "node5";
     private static final String PROBLEM1 = "problem1";
     private static final String TIME1 = "2021-05-25T05:12:55.0Z";
     private static final String TIME2 = "2021-05-25T05:12:56.0Z";
@@ -121,6 +137,7 @@ public class TestMariaDataProvider {
     private static final String URI2 = "http://localhost:8181";
     private static final String URI3 = "http://localhost:8181";
     private static final String PATH = "https://samsung.com/3GPP/simulation/network-function/ves";
+    private static final String USERNAME = "admin";
     private static MariaDBTestBase testBase;
     private static SqlDBDataProvider dbProvider;
     private static SqlDBClient dbClient;
@@ -176,12 +193,43 @@ public class TestMariaDataProvider {
         assertEquals(1, status.getData().get(0).getFaults().getMinors().intValue());
         assertEquals(0, status.getData().get(0).getFaults().getWarnings().intValue());
 
+        List<String> nodeList = dbProvider.getAllNodesWithCurrentAlarms();
+        assertTrue(nodeList.contains(NODEID1));
+        assertEquals(1,nodeList.size());
+
         faultCurrent1 = new FaultcurrentBuilder().setNodeId(NODEID1).setCounter(1).setObjectId("obj")
                 .setProblem(PROBLEM1).setTimestamp(DateAndTime.getDefaultInstance(TIME1))
                 .setSeverity(SeverityType.NonAlarmed).setId(String.format("%s/%s", NODEID1, PROBLEM1)).build();
         dbProvider.updateFaultCurrent(faultCurrent1);
         faultCurrents = dbProvider.readFaultCurrentList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(1, faultCurrents.getData().size());
+
+
+    }
+
+    @Test
+    public void testSerializeDeserialize() {
+
+        try {
+            CreateNetworkElementConnectionOutputBuilder necon = dbProvider.createNetworkElementConnection(
+                    new NetworkElementConnectionBuilder().setNodeId(NODEID1).setIsRequired(Boolean.TRUE).build());
+            List<Data> netestList =
+                    dbProvider.readNetworkElementConnectionList(createInput("node-id", NODEID1, 1, 20)).getData();
+
+            assertNotNull(necon);
+            assertEquals(1, netestList.size());
+            assertTrue(netestList.get(0).getIsRequired());
+            SqlDBReaderWriter<Data> dbrw = new SqlDBReaderWriter<>(dbClient, Entity.NetworkelementConnection,
+                    MariaDBTestBase.SUFFIX,
+                    Data.class,
+                    CONTROLLERID);
+            Data e = dbrw.read(NODEID1);
+            assertNotNull(e);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -204,6 +252,7 @@ public class TestMariaDataProvider {
         dbProvider.writeFaultLog(fault2);
         faultlogs = dbProvider.readFaultLogList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(2, faultlogs.getData().size());
+
     }
 
     @Test
@@ -211,28 +260,16 @@ public class TestMariaDataProvider {
         ReadCmlogListOutputBuilder cmlogs = dbProvider.readCMLogList(createInput(1, 20));
         assertEquals(0, cmlogs.getData().size());
 
-        CmlogEntity cm1 = new CmlogBuilder()
-            .setNodeId(NODEID2)
-            .setCounter(1)
-            .setTimestamp(DateAndTime.getDefaultInstance(TIME1))
-            .setObjectId("obj")
-            .setNotificationType(CmNotificationType.NotifyMOIChanges)
-            .setNotificationId("1")
-            .setSourceIndicator(CmSourceIndicator.MANAGEMENTOPERATION)
-            .setPath(PATH)
-            .setValue("pnf-registration: true")
-            .build();
-        CmlogEntity cm2 = new CmlogBuilder()
-            .setNodeId(NODEID2)
-            .setCounter(2)
-            .setTimestamp(DateAndTime.getDefaultInstance(TIME2))
-            .setObjectId("obj")
-            .setNotificationType(CmNotificationType.NotifyMOIChanges)
-            .setNotificationId("2")
-            .setSourceIndicator(CmSourceIndicator.UNKNOWN)
-            .setPath(PATH)
-            .setValue("pnf-registration: false")
-            .build();
+        CmlogEntity cm1 =
+                new CmlogBuilder().setNodeId(NODEID2).setCounter(1).setTimestamp(DateAndTime.getDefaultInstance(TIME1))
+                        .setObjectId("obj").setNotificationType(CmNotificationType.NotifyMOIChanges)
+                        .setNotificationId("1").setSourceIndicator(CmSourceIndicator.MANAGEMENTOPERATION).setPath(PATH)
+                        .setValue("pnf-registration: true").build();
+        CmlogEntity cm2 =
+                new CmlogBuilder().setNodeId(NODEID2).setCounter(2).setTimestamp(DateAndTime.getDefaultInstance(TIME2))
+                        .setObjectId("obj").setNotificationType(CmNotificationType.NotifyMOIChanges)
+                        .setNotificationId("2").setSourceIndicator(CmSourceIndicator.UNKNOWN).setPath(PATH)
+                        .setValue("pnf-registration: false").build();
 
         dbProvider.writeCMLog(cm1);
         dbProvider.writeCMLog(cm2);
@@ -240,10 +277,10 @@ public class TestMariaDataProvider {
         assertEquals(2, cmlogs.getData().size());
 
         List<CmlogEntity> cmLogEntityList = List.of(cm1, cm2);
-        assertEquals("node2",cmLogEntityList.get(0).getNodeId());
-        assertEquals("obj",cmLogEntityList.get(0).getObjectId());
-        assertEquals(CmNotificationType.NotifyMOIChanges,cmLogEntityList.get(0).getNotificationType());
-        assertEquals("2",cmLogEntityList.get(1).getNotificationId());
+        assertEquals("node2", cmLogEntityList.get(0).getNodeId());
+        assertEquals("obj", cmLogEntityList.get(0).getObjectId());
+        assertEquals(CmNotificationType.NotifyMOIChanges, cmLogEntityList.get(0).getNotificationType());
+        assertEquals("2", cmLogEntityList.get(1).getNotificationId());
 
     }
 
@@ -383,6 +420,45 @@ public class TestMariaDataProvider {
         data = dbProvider.readMaintenanceList(createInput(1, 20));
         assertEquals(3, data.getData().size());
 
+        UpdateMaintenanceInput update1 =
+                new UpdateMaintenanceInputBuilder().setId(NODEID1).setNodeId(NODEID1).setActive(false).build();
+        try {
+            dbProvider.updateMaintenance(update1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("unable to update maintenance data");
+        }
+        data = dbProvider.readMaintenanceList(createInput("active","false",1, 20));
+        assertEquals(1, data.getData().size());
+        DeleteMaintenanceInput delete1 = new DeleteMaintenanceInputBuilder().setId(NODEID1).build();
+        try {
+            dbProvider.deleteMaintenance(delete1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("unable to delete maintenance data");
+        }
+        data = dbProvider.readMaintenanceList(createInput(1, 20));
+        assertEquals(2, data.getData().size());
+        try {
+            dbClient.delete(new DeleteQuery(Entity.Maintenancemode, null).toSql());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("problem clearing faultlog");
+        }
+        final String nodeId = "maint_node1";
+        HtDatabaseMaintenance maintenanceService = dbProvider.getHtDatabaseMaintenance();
+        MaintenanceEntity e = maintenanceService.createIfNotExists(nodeId);
+        assertNotNull(e);
+        assertEquals(nodeId,e.getNodeId());
+        MaintenanceEntity e2 = new CreateMaintenanceInputBuilder(e).setActive(true).build();
+        e = maintenanceService.setMaintenance(e2);
+        assertNotNull(e);
+        assertEquals(nodeId,e.getNodeId());
+        assertTrue(e.getActive());
+        maintenanceService.deleteIfNotRequired(nodeId);
+        data = dbProvider.readMaintenanceList(createInput("node-id",nodeId,1, 20));
+        assertEquals(0, data.getData().size());
+
     }
 
     @Test
@@ -456,22 +532,26 @@ public class TestMariaDataProvider {
         NetworkElementConnectionEntity ne2 = new NetworkElementConnectionBuilder().setNodeId(NODEID2)
                 .setHost("10.20.30.55").setPort(Uint32.valueOf(8300)).setIsRequired(false).setUsername("user")
                 .setPassword("passwd").setStatus(ConnectionLogStatus.Connecting).build();
+        NetworkElementConnectionEntity ne3 = new NetworkElementConnectionBuilder().setNodeId(NODEID3)
+                .setHost("10.20.30.55").setPort(Uint32.valueOf(8300)).setIsRequired(false).setUsername("user")
+                .setPassword("passwd").setStatus(ConnectionLogStatus.Connecting).build();
         try {
             dbProvider.createNetworkElementConnection(ne1);
             dbProvider.createNetworkElementConnection(ne2);
+            dbProvider.updateNetworkConnection22(ne3, NODEID3);
         } catch (IOException e) {
             e.printStackTrace();
             fail("problem creating neconnection");
         }
         data = dbProvider.readNetworkElementConnectionList(createInput(1, 20));
-        assertEquals(2, data.getData().size());
+        assertEquals(3, data.getData().size());
         NetworkElementConnectionEntity update1 = new NetworkElementConnectionBuilder()
                 .setStatus(ConnectionLogStatus.Connected).setDeviceType(NetworkElementDeviceType.ORAN).build();
         dbProvider.updateNetworkConnectionDeviceType(update1, NODEID1);
         data = dbProvider.readNetworkElementConnectionList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(1, data.getData().size());
         assertEquals(NetworkElementDeviceType.ORAN, data.getData().get(0).getDeviceType());
-        assertEquals(true, data.getData().get(0).isIsRequired());
+        assertEquals(true, data.getData().get(0).getIsRequired());
         UpdateNetworkElementConnectionInput update2 = new UpdateNetworkElementConnectionInputBuilder().setId(NODEID2)
                 .setHost("10.20.55.44").setIsRequired(true).build();
         try {
@@ -483,7 +563,7 @@ public class TestMariaDataProvider {
         data = dbProvider.readNetworkElementConnectionList(createInput("node-id", NODEID2, 1, 20));
         assertEquals(1, data.getData().size());
         assertEquals("10.20.55.44", data.getData().get(0).getHost());
-        assertEquals(true, data.getData().get(0).isIsRequired());
+        assertEquals(true, data.getData().get(0).getIsRequired());
 
         ReadStatusOutputBuilder status = null;
         try {
@@ -493,10 +573,10 @@ public class TestMariaDataProvider {
             fail("failed to read status");
         }
         assertEquals(1, status.getData().get(0).getNetworkElementConnections().getConnected().intValue());
-        assertEquals(1, status.getData().get(0).getNetworkElementConnections().getConnecting().intValue());
+        assertEquals(2, status.getData().get(0).getNetworkElementConnections().getConnecting().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getDisconnected().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getMounted().intValue());
-        assertEquals(2, status.getData().get(0).getNetworkElementConnections().getTotal().intValue());
+        assertEquals(3, status.getData().get(0).getNetworkElementConnections().getTotal().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnableToConnect().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUndefined().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnmounted().intValue());
@@ -513,9 +593,39 @@ public class TestMariaDataProvider {
         data = dbProvider.readNetworkElementConnectionList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(0, data.getData().size());
         data = dbProvider.readNetworkElementConnectionList(createInput(1, 20));
-        assertEquals(1, data.getData().size());
+        assertEquals(2, data.getData().size());
+
     }
 
+    @Test
+    public void testUserdata() {
+        HtUserdataManager mgr = dbProvider.getUserManager();
+        String userdata = mgr.getUserdata(USERNAME);
+        assertEquals("{}",userdata);
+        JSONObject o = new JSONObject();
+        o.put("key1", false);
+        o.put("key2","value2");
+        boolean result = mgr.setUserdata(USERNAME, o.toString());
+        assertTrue(result);
+        userdata = mgr.getUserdata(USERNAME);
+        o = new JSONObject(userdata);
+        assertEquals(false,o.getBoolean("key1"));
+        assertEquals("value2",o.getString("key2"));
+        o = new JSONObject();
+        o.put("enabled", true);
+        o.put("name","abcdef");
+        result = mgr.setUserdata(USERNAME,"app1",o.toString());
+        assertTrue(result);
+        userdata = mgr.getUserdata(USERNAME);
+        o = new JSONObject(userdata);
+        assertEquals(false,o.getBoolean("key1"));
+        assertEquals("value2",o.getString("key2"));
+        JSONObject app = o.getJSONObject("app1");
+        assertNotNull(app);
+        assertEquals(true, app.getBoolean("enabled"));
+        assertEquals("abcdef", app.getString("name"));
+
+    }
     @Test
     public void testpm15m() {
         try {
@@ -538,7 +648,7 @@ public class TestMariaDataProvider {
         assertEquals(10, data.getData().size());
         ReadPmdata15mLtpListOutputBuilder ltpdata = null;
         try {
-            ltpdata = dbProvider.readPmdata15mLtpList(createInput("node-name","sim12600",1, 20));
+            ltpdata = dbProvider.readPmdata15mLtpList(createInput("node-name", "sim12600", 1, 20));
         } catch (IOException e) {
             e.printStackTrace();
             fail("failed to read pmdata15m ltp list");
@@ -546,7 +656,7 @@ public class TestMariaDataProvider {
         assertEquals(3, ltpdata.getData().size());
         ReadPmdata15mDeviceListOutputBuilder devicedata = null;
         try {
-             devicedata = dbProvider.readPmdata15mDeviceList(createInput(1,20));
+            devicedata = dbProvider.readPmdata15mDeviceList(createInput(1, 20));
         } catch (IOException e) {
             e.printStackTrace();
             fail("failed to read pmdata15m devices list");
@@ -554,7 +664,6 @@ public class TestMariaDataProvider {
         assertEquals(1, devicedata.getData().size());
     }
 
-    @Ignore
     @Test
     public void testpm24h() {
         try {
@@ -573,9 +682,27 @@ public class TestMariaDataProvider {
             fail("failed to load pmdata24h");
         }
         dbProvider.doWritePerformanceData(list);
+        data = dbProvider.readPmdata24hList(createInput(1, 20));
+        assertEquals(1, data.getData().size());
+        ReadPmdata24hLtpListOutputBuilder ltpdata = null;
+        try {
+            ltpdata = dbProvider.readPmdata24hLtpList(createInput("node-name", "test", 1, 20));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("failed to read pmdata15m ltp list");
+        }
+        assertEquals(1, ltpdata.getData().size());
+        ReadPmdata24hDeviceListOutputBuilder devicedata = null;
+        try {
+            devicedata = dbProvider.readPmdata24hDeviceList(createInput(1, 20));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("failed to read pmdata15m devices list");
+        }
+        assertEquals(1, devicedata.getData().size());
     }
 
-    private static EntityInput createInput(int page, int size) {
+    static EntityInput createInput(int page, int size) {
         return createInput(null, null, page, size);
     }
 
@@ -597,7 +724,7 @@ public class TestMariaDataProvider {
         return String.join("\n", IoUtils.readAllLines(TestMariaDataProvider.class.getResourceAsStream(filename)));
     }
 
-    private static EntityInput createInput(String filter, String filterValue, int page, int size) {
+    static EntityInput createInput(String filter, String filterValue, int page, int size) {
         ReadFaultcurrentListInputBuilder builder = new ReadFaultcurrentListInputBuilder().setPagination(
                 new PaginationBuilder().setPage(Uint64.valueOf(page)).setSize(Uint32.valueOf(size)).build());
         if (filter != null && filterValue != null) {

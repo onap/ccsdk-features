@@ -53,9 +53,9 @@ public class SqlDBReaderWriterPm<T extends DataObject> extends SqlDBReaderWriter
 
     private static final FilterKey FILTERKEY = new FilterKey(KEY);
 
-    public SqlDBReaderWriterPm(SqlDBClient dbService, Entity e, String dbSuffix, Class<T> clazz, String dbName,
+    public SqlDBReaderWriterPm(SqlDBClient dbService, Entity e, String dbSuffix, Class<T> clazz,
             String controllerId) {
-        super(dbService, e, dbSuffix, clazz, dbName, controllerId);
+        super(dbService, e, dbSuffix, clazz, controllerId);
     }
 
     /**
@@ -83,6 +83,7 @@ public class SqlDBReaderWriterPm<T extends DataObject> extends SqlDBReaderWriter
         try {
             ResultSet data = this.dbService.read(query.toSql());
             List<String> mappedData = SqlDBMapper.read(data, String.class, UUID_KEY);
+            try { data.close(); } catch (SQLException ignore) { }
             Map<FilterKey, Filter> inpFilter = input.getFilter();
             long total = this.count(inpFilter != null ? new ArrayList<>(inpFilter.values()) : null, this.controllerId);
             return new QueryResult<>(mappedData, query.getPage(), query.getPageSize(), total);
@@ -114,6 +115,7 @@ public class SqlDBReaderWriterPm<T extends DataObject> extends SqlDBReaderWriter
         try {
             ResultSet data = this.dbService.read(query.toSql());
             List<String> mappedData = SqlDBMapper.read(data, String.class, NODE_KEY);
+            try { data.close(); } catch (SQLException ignore) { }
             Map<FilterKey, Filter> inpFilter = input.getFilter();
             long total = this.count(inpFilter != null ? new ArrayList<>(inpFilter.values()) : null, this.controllerId);
             return new QueryResult<>(mappedData, query.getPage(), query.getPageSize(), total);

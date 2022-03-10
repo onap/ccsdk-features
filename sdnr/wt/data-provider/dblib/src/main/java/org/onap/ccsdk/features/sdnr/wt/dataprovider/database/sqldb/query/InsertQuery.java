@@ -39,17 +39,28 @@ public class InsertQuery<T extends DataObject> implements SqlQuery {
 
     protected final Entity entity;
     private final String controllerId;
+    private final boolean ignoreControllerId;
     private final T object;
     private final boolean ignoreNull;
     private String id;
+    private final boolean ignoreIdField;
 
     public InsertQuery(Entity e, T object, String controllerId) {
+        this(e, object, controllerId, SqlQuery.DEFAULT_IGNORE_CONTROLLERID);
+    }
+
+    public InsertQuery(Entity e, T object, String controllerId, boolean ignoreControllerId) {
+        this(e, object, controllerId, ignoreControllerId, SqlQuery.DEFAULT_IGNORE_ID_FIELD);
+    }
+
+    public InsertQuery(Entity e, T object, String controllerId, boolean ignoreControllerId, boolean ignoreIdField) {
         this.entity = e;
         this.controllerId = controllerId;
         this.object = object;
         this.ignoreNull = true;
         this.id = null;
-
+        this.ignoreControllerId = ignoreControllerId;
+        this.ignoreIdField = ignoreIdField;
     }
 
     @Override
@@ -63,8 +74,8 @@ public class InsertQuery<T extends DataObject> implements SqlQuery {
         return null;
     }
 
-    protected String toSqlWithError() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            JsonProcessingException {
+    protected String toSqlWithError() throws IllegalAccessException, IllegalArgumentException,
+            InvocationTargetException, JsonProcessingException {
         Class<?> cls = this.object.getClass();
         List<DBKeyValuePair<String>> kvps = new ArrayList<>();
         List<String> cols = new ArrayList<>();
@@ -78,26 +89,37 @@ public class InsertQuery<T extends DataObject> implements SqlQuery {
             m.setAccessible(true);
             value = m.invoke(this.object);
             col = SqlDBMapper.getColumnName(m);
-            if (col.equals("id") && this.id != null) {
-                value = this.id;
+            if (col.equals("id")) {
+                if (this.ignoreIdField) {
+                    continue;
+                }
+                if (this.id != null) {
+                    value = this.id;
+                }
             }
             if (ignoreNull && value == null) {
                 continue;
             }
-            DBKeyValuePair<String> kvp = SqlDBMapper.getEscapedKeyValue(m,col, value);
+            DBKeyValuePair<String> kvp = SqlDBMapper.getEscapedKeyValue(m, col, value);
             cols.add(kvp.getKey());
             args.add(kvp.getValue());
             kvps.add(kvp);
         }
         if (this.id != null && !cols.contains("`id`")) {
             cols.add("`id`");
-            args.add("'"+this.id+"'");
+            args.add("'" + this.id + "'");
         }
-        args.add("'"+this.controllerId+"'");
-        sb.append( String.join(",", cols));
-        sb.append(",`" + SqlDBMapper.ODLID_DBCOL + "`) VALUES (");
-        sb.append( String.join(",", args)+" )");
-        this.appendAdditionalToQuery(sb,kvps);
+        if (!this.ignoreControllerId) {
+            args.add("'" + this.controllerId + "'");
+        }
+        sb.append(String.join(",", cols));
+        if (!this.ignoreControllerId) {
+            sb.append(",`" + SqlDBMapper.ODLID_DBCOL + "`) VALUES (");
+        } else {
+            sb.append(") VALUES (");
+        }
+        sb.append(String.join(",", args) + " )");
+        this.appendAdditionalToQuery(sb, kvps);
         return sb.toString();
     }
 

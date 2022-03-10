@@ -405,8 +405,8 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         }
         NetworkElementConnectionBuilder builder = new NetworkElementConnectionBuilder(base);
         if (toJoin != null) {
-            if (toJoin.isIsRequired() != null) {
-                builder.setIsRequired(toJoin.isIsRequired());
+            if (toJoin.requireIsRequired() != null) {
+                builder.setIsRequired(toJoin.requireIsRequired());
             }
             if (toJoin.getCoreModelCapability() != null) {
                 builder.setCoreModelCapability(toJoin.getCoreModelCapability());
@@ -483,7 +483,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     public void removeNetworkConnection(String nodeId) {
         Boolean isRequired;
         NetworkElementConnectionEntity e = this.networkelementConnectionDB.read(nodeId);
-        if (e != null && (isRequired = e.isIsRequired()) != null) {
+        if (e != null && (isRequired = e.requireIsRequired()) != null) {
             if (isRequired) {
                 LOG.debug("updating connection status for {} of required ne to disconnected", nodeId);
                 this.networkelementConnectionDB.update(new UpdateNetworkElementConnectionInputBuilder()

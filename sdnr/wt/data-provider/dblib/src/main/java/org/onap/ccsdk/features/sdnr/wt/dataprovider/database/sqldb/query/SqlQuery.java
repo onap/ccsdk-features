@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.DbFilter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.DBFilterKeyValuePair;
@@ -46,12 +47,15 @@ public interface SqlQuery {
     static final String MARIADB_TIMESTAMP_REPLACER_MIN = "0000-00-00 00:00:00";
     static final int MARIADB_TIMESTAMP_REPLACER_MIN_LENGTH = MARIADB_TIMESTAMP_REPLACER_MIN.length();
     static final int MARIADB_TIMESTAMP_REPLACER_MAX_LENGTH = MARIADB_TIMESTAMP_REPLACER.length();
+    static final boolean DEFAULT_IGNORE_CONTROLLERID = false;
+    static final boolean DEFAULT_IGNORE_ID_FIELD = false;
 
     public static String getWhereExpression(List<Filter> filters) {
         if (filters == null) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
+        filters = filters.stream().filter(e -> !"*".equals(e.getFiltervalue())).collect(Collectors.toList());
         if (!filters.isEmpty()) {
 
             sb.append(" WHERE (" + getFilterExpression(filters.get(0)) + ")");
@@ -64,7 +68,8 @@ public interface SqlQuery {
 
     public static String getFilterExpression(Filter filter) {
         String property = filter.getProperty();
-        List<String> values = collectValues(filter.getFiltervalue(), filter.getFiltervalues());
+        List<String> values = collectValues(filter.getFiltervalue(), filter.getFiltervalues()).stream()
+                .filter(e -> !"*".equals(e)).collect(Collectors.toList());
         if (values.size() == 1) {
             return getFilterExpression(property, values.get(0));
         } else if (values.size() > 1) {
@@ -225,7 +230,7 @@ public interface SqlQuery {
     }
 
     private static String netconfToMariaDBTimestamp(String ts) {
-        if(ts==null) {
+        if (ts == null) {
             return null;
         }
         String v = ts.replace("T", " ").replace("Z", "");

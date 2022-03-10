@@ -34,6 +34,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.Deviceman
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.NotificationDelayFilter;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.NotificationDelayedListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.EquipmentData;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.EventlogNotificationBuilder;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;

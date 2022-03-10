@@ -24,10 +24,10 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 import static org.junit.Assert.fail;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -63,12 +63,12 @@ import ch.vorburger.exec.ManagedProcessException;
 public class TestMariaDBMapper {
 
 
-    private static final String MARIADB_USERNAME = "sdnrdb";
-    private static final String MARIADB_PASSWORD = "sdnrdb";
-    //    private static final String MARIADB_HOST = "10.20.11.159";
-    private static final String MARIADB_HOST = "sdnrdb";
-    private static final int MARIADB_PORT = 3306;
-    private static final String MARIADB_DATABASENAME = "sdnrdb";
+//    private static final String MARIADB_USERNAME = "sdnrdb";
+//    private static final String MARIADB_PASSWORD = "sdnrdb";
+//    private static final String MARIADB_HOST = "10.20.11.159";
+//    private static final String MARIADB_HOST = "sdnrdb";
+//    private static final int MARIADB_PORT = 3306;
+//    private static final String MARIADB_DATABASENAME = "sdnrdb";
 
     //    private static DbLibService dbService;
 
@@ -137,7 +137,6 @@ public class TestMariaDBMapper {
             writeEntry(builder.build(), Entity.NetworkelementConnection);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -152,16 +151,19 @@ public class TestMariaDBMapper {
     private <T extends DataObject> List<T> readEntry(Entity entity, Class<T> clazz, String id) {
         final SelectQuery selectStatement = new SelectQuery(entity.getName());
         System.out.println(selectStatement);
+        List<T> list = null;
         try {
-            return SqlDBMapper.read(dbProvider.getDBService().read(selectStatement.toSql()), clazz);
+            ResultSet data = dbProvider.getDBService().read(selectStatement.toSql());
+            list = SqlDBMapper.read(data, clazz);
+            try { data.close(); } catch (SQLException ignore) { }
+
 
         } catch (SQLException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | InstantiationException | SecurityException | NoSuchMethodException | JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
 
         }
-        return null;
+        return list;
     }
 
     private <T extends DataObject> boolean writeEntry(T data, Entity entity) throws IllegalAccessException,
@@ -173,7 +175,6 @@ public class TestMariaDBMapper {
             return dbProvider.getDBService().write(insertStatement.toSql());
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
 
         }
@@ -188,41 +189,24 @@ public class TestMariaDBMapper {
         try {
             return dbService.write(createStatement);
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
 
         }
         return false;
     }
 
-    private static boolean createTable(SqlDBClient dbService, Class<?> cls, Entity entity, boolean autoIndex) {
+    public static boolean createTable(SqlDBClient dbService, Class<?> cls, Entity entity, boolean autoIndex) {
+        return createTable(dbService, cls, entity, autoIndex, true);
+    }
+    public static boolean createTable(SqlDBClient dbService, Class<?> cls, Entity entity, boolean autoIndex,
+            boolean withControllerId) {
         String createStatement = null;
         try {
-            createStatement = SqlDBMapper.createTable(cls, entity, "", autoIndex);
+            createStatement = SqlDBMapper.createTable(cls, entity, "", autoIndex,withControllerId);
         } catch (UnableToMapClassException e) {
             fail(e.getMessage());
         }
         System.out.println(createStatement);
-        try {
-            return dbService.write(createStatement);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-
-        }
-        return false;
-    }
-
-    private static Properties getConfig() {
-        Properties config = new Properties();
-        config.setProperty("org.onap.ccsdk.sli.dbtype", "jdbc");
-        config.setProperty("org.onap.ccsdk.sli.jdbc.hosts", MARIADB_HOST);
-        config.setProperty("org.onap.ccsdk.sli.jdbc.url",
-                String.format("jdbc:mysql://dbhost:%d/%s", MARIADB_PORT, MARIADB_DATABASENAME));
-        config.setProperty("org.onap.ccsdk.sli.jdbc.driver", "org.mariadb.jdbc.Driver");
-        config.setProperty("org.onap.ccsdk.sli.jdbc.database", MARIADB_DATABASENAME);
-        config.setProperty("org.onap.ccsdk.sli.jdbc.user", MARIADB_USERNAME);
-        config.setProperty("org.onap.ccsdk.sli.jdbc.password", MARIADB_PASSWORD);
-        return config;
+        return dbService.createTable(createStatement);
     }
 }

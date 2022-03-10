@@ -120,11 +120,11 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
 
         this.mediatorserverRW = new SqlDBReaderWriter<>(this.dbClient, Entity.MediatorServer, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId).setWriteInterface(MediatorServerEntity.class);
+                this.controllerId).setWriteInterface(MediatorServerEntity.class);
 
         this.maintenanceRW = new SqlDBReaderWriter<>(this.dbClient, Entity.Maintenancemode, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId).setWriteInterface(MaintenanceEntity.class);
+                this.controllerId).setWriteInterface(MaintenanceEntity.class);
 
         this.readStatus = new SqlDBStatusReader(this.dbClient, this.controllerId);
 
@@ -137,7 +137,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         };
         this.dbMaintenanceService = new HtDatabaseMaintenanceService(this);
         this.usermanager = new HtUserdataManagerImpl(new SqlDBReaderWriterUserdata(this.dbClient,
-                Entity.Userdata, config.getDbSuffix(), this.dbClient.getDatabaseName(), this.controllerId));
+                Entity.Userdata, config.getDbSuffix()));
         if (initControllerId) {
             try {
                 this.setControllerId();
@@ -512,6 +512,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
             query = String.format("INSERT INTO `%s` (`id`,`desc`) VALUES ('%s','%s')", this.controllerTableName,
                     this.controllerId, "");
             LOG.trace(query);
+            try { data.close(); } catch (SQLException ignore) { }
             return this.dbClient.write(query);
         } else {
             LOG.trace("controllerId already set");

@@ -40,7 +40,6 @@ public interface NetconfAccessor {
      */
     DOMDataBroker getControllerDOMDataBroker();
 
-
     /**
      * @return the nodeId
      */

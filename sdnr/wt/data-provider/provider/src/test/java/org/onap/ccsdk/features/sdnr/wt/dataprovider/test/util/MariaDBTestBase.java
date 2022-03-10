@@ -154,20 +154,17 @@ public class MariaDBTestBase {
     }
 
     public static boolean createTable(SqlDBClient dbService, Class<?> cls, Entity entity, boolean autoIndex) {
+        return createTable(dbService, cls, entity, autoIndex, true);
+    }
+    public static boolean createTable(SqlDBClient dbService, Class<?> cls, Entity entity, boolean autoIndex,
+            boolean withControllerId) {
         String createStatement = null;
         try {
-            createStatement = SqlDBMapper.createTable(cls, entity, "", autoIndex);
+            createStatement = SqlDBMapper.createTable(cls, entity, "", autoIndex,withControllerId);
         } catch (UnableToMapClassException e) {
             fail(e.getMessage());
         }
         System.out.println(createStatement);
-        try {
-            return dbService.write(createStatement);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-
-        }
-        return false;
+        return dbService.createTable(createStatement);
     }
 }

@@ -59,7 +59,7 @@ public class CountQuery implements SqlQuery {
         this(e);
         Map<FilterKey, Filter> filter = input != null ? input.getFilter() : null;
         if (filter != null && filter.size() > 0) {
-           this.filters.addAll(filters);
+           this.filters.addAll(filter.values());
         }
         if (controllerId != null) {
             this.addFilter(SqlDBMapper.ODLID_DBCOL, controllerId);
