@@ -81,9 +81,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.model.parser.api.YangParserException;
-import org.opendaylight.yangtools.yang.model.parser.api.YangParserFactory;
-import org.opendaylight.yangtools.yang.parser.impl.YangParserFactoryImpl;
+import org.opendaylight.yangtools.yang.parser.api.YangParserException;
+import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
+import org.opendaylight.yangtools.yang.parser.impl.DefaultYangParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,7 +143,7 @@ public class TestNetconfNodeStateService extends Mockito {
         NotificationPublishService notificationPublishService = mock(NotificationPublishService.class);
         RpcProviderService rpcProviderRegistry = mock(RpcProviderService.class);
         IEntityDataProvider entityProviderMock = mock(IEntityDataProvider.class);
-        YangParserFactory yangParserFactory = new YangParserFactoryImpl();
+        YangParserFactory yangParserFactory = new DefaultYangParserFactory();
         BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer =
                 new BindingCodecContext(BindingRuntimeHelpers.createRuntimeContext());
         // start using blueprint interface
@@ -165,7 +165,9 @@ public class TestNetconfNodeStateService extends Mockito {
     public static void after() throws InterruptedException, IOException {
         System.out.println("Start shutdown");
         // close using blueprint interface
-        netconfStateService.close();
+        if(netconfStateService!=null) {
+        	netconfStateService.close();
+        }
         delete(KARAF_ETC);
 
     }

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
@@ -78,7 +79,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
                     if (message != null) {
                         WebSocketManagerSocket.this.session.getRemote().sendStringByFuture(message)
                                 .get(SEND_MESSAGE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-                        LOG.debug("message sent");
+                        LOG.info("message sent");
                     }
                 } catch (ExecutionException | TimeoutException e) {
                     LOG.warn("problem pushing message: ", e);
@@ -150,7 +151,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     @Override
     public void onWebSocketText(String message) {
-        LOG.debug("{} has sent {}", this.getRemoteAdr(), message);
+        LOG.info("{} has sent {}", this.getRemoteAdr(), message);
         if (!this.manageClientRequest(message)) {
             this.manageClientRequest2(message);
         }

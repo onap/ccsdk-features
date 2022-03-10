@@ -44,10 +44,10 @@ public class UpdateQuery<T extends DataObject> implements SqlQuery {
     private String id;
 
     public UpdateQuery(Entity e, T object) {
-        this(e, object, null);
+        this(e, object, null, SqlQuery.DEFAULT_IGNORE_CONTROLLERID, SqlQuery.DEFAULT_IGNORE_ID_FIELD);
     }
 
-    public UpdateQuery(Entity e, T object, String controllerId) {
+    public UpdateQuery(Entity e, T object, String controllerId, boolean ignoreControllerId, boolean ignoreIdField) {
         this.entity = e;
         this.controllerId = controllerId;
         this.object = object;

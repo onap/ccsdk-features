@@ -30,9 +30,9 @@ public class SqlDBReaderWriterFault<T extends DataObject> extends SqlDBReaderWri
 
     private static final String NODE_KEY = "node-id";
 
-    public SqlDBReaderWriterFault(SqlDBClient dbService, Entity e, String dbSuffix, Class<T> clazz, String dbName,
+    public SqlDBReaderWriterFault(SqlDBClient dbService, Entity e, String dbSuffix, Class<T> clazz,
             String controllerId) {
-        super(dbService, e, dbSuffix, clazz, dbName, controllerId);
+        super(dbService, e, dbSuffix, clazz, controllerId);
     }
 
     public List<String> getAllNodes() {

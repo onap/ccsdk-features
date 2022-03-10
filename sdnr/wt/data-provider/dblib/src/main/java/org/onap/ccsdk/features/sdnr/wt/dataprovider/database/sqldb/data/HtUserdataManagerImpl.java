@@ -21,16 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data;
 
-import java.util.Arrays;
-import java.util.List;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.rpctypehelper.QueryResult;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBReaderWriterUserdata;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.PaginationBuilder;
-import org.opendaylight.yangtools.yang.common.Uint32;
-import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class HtUserdataManagerImpl extends HtUserdataManagerBase {
 
@@ -42,7 +33,9 @@ public class HtUserdataManagerImpl extends HtUserdataManagerBase {
 
     @Override
     public boolean setUserdata(String username, String data) {
-        return this.rw.write(new UserdataBuilder().setId(username).setValue(data).build(), username) != null;
+        Userdata o = new UserdataBuilder().setId(username).setValue(data).build();
+        String x = this.rw.updateOrInsert(o, username);
+        return x!=null;
     }
 
     @Override
@@ -52,17 +45,8 @@ public class HtUserdataManagerImpl extends HtUserdataManagerBase {
 
     @Override
     protected String readUserdata(String username, String defaultValue) {
-        EntityInput input = new ReadFaultcurrentListInputBuilder()
-                .setFilter(Arrays.asList(new FilterBuilder().setProperty("id").setFiltervalue(username).build()))
-                .setPagination(new PaginationBuilder().setPage(Uint64.valueOf(1)).setSize(Uint32.valueOf(1)).build())
-                .build();
-        QueryResult<Userdata> result = this.rw.getData(input);
-        if (result != null) {
-            List<Userdata> data = result.getResult();
-            Userdata user = (data != null && !data.isEmpty()) ? data.get(0) : null;
-            return user == null ? defaultValue : user.getValue();
-        }
-        return defaultValue;
+        Userdata user = this.rw.read(username);
+        return user!=null? user.getValue():defaultValue;
     }
 
 }

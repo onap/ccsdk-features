@@ -22,12 +22,16 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.CountQuery;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.SelectQuery;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryInputBuilder;
@@ -164,8 +168,8 @@ public class TestQuerySyntax {
     @Test
     public void testSelectForFilterValues() {
         EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
-                .setFilter(Arrays.asList(
-                        new FilterBuilder().setProperty("id").setFiltervalues(Arrays.asList("das", "das2")).build()))
+                .setFilter(YangToolsMapperHelper.toMap(Arrays.asList(
+                        new FilterBuilder().setProperty("id").setFiltervalues(Arrays.asList("das", "das2")).build())))
                 .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
                 .build();
         SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
@@ -174,8 +178,8 @@ public class TestQuerySyntax {
     @Test
     public void testSelectForFilterValues2() {
         EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
-                .setFilter(Arrays.asList(
-                        new FilterBuilder().setProperty("id").setFiltervalue("*").build()))
+                .setFilter(YangToolsMapperHelper.toMap(Arrays.asList(
+                        new FilterBuilder().setProperty("id").setFiltervalue("*").build())))
                 .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
                 .build();
         SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
@@ -185,12 +189,38 @@ public class TestQuerySyntax {
     @Test
     public void testSelectForFilterValues3() {
         EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
-                .setFilter(Arrays.asList(
-                        new FilterBuilder().setProperty("id").setFiltervalues(Arrays.asList("*","abc")).build()))
+                .setFilter(YangToolsMapperHelper.toMap(Arrays.asList(
+                        new FilterBuilder().setProperty("id").setFiltervalues(Arrays.asList("*","abc")).build())))
                 .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
                 .build();
         SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
         System.out.println(query.toSql());
         assertFalse(query.toSql().contains("RLIKE"));
+    }
+    @Test
+    public void testSelectForFilterValues4() {
+        EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
+                .setFilter(YangToolsMapperHelper.toMap(Arrays.asList(
+                        new FilterBuilder().setProperty("id").setFiltervalues(Arrays.asList("abc")).build(),
+                        new FilterBuilder().setProperty("node-id").setFiltervalues(Arrays.asList("*")).build())))
+                .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
+                .build();
+        SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
+        System.out.println(query.toSql());
+        assertFalse(query.toSql().contains("RLIKE"));
+    }
+    @Test
+    public void testCount() {
+        CountQuery query = new CountQuery(Entity.Eventlog, TestMariaDataProvider.createInput(1, 20));
+        String sQuery = query.toSql();
+        assertNotNull(sQuery);
+        assertTrue(sQuery.contains("*") && sQuery.contains("COUNT") && sQuery.contains(Entity.Eventlog.getName()));
+
+        query = new CountQuery(Entity.Eventlog, TestMariaDataProvider.createInput("node-id","abc",1, 20));
+        sQuery = query.toSql();
+        assertNotNull(sQuery);
+        assertTrue(sQuery.contains("node-id") && sQuery.contains("COUNT") && sQuery.contains(Entity.Eventlog.getName()));
+
+
     }
 }

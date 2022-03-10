@@ -25,7 +25,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.shiro.authc.BearerToken;
 
-
 public class OAuthToken {
     private final String access_token;
     private final String token_type;

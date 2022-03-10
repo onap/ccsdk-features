@@ -60,7 +60,7 @@ public class SqlDBMapper {
     private static final String ENUM_DBTYPE = "VARCHAR(100)";
     private static final String BIGINT_DBTYPE = "BIGINT";
     public static final String ODLID_DBCOL = "controller-id";
-    private static final String ID_DBCOL = "id";
+    public static final String ID_DBCOL = "id";
     private static List<Class<?>> numericClasses = Arrays.asList(Byte.class, Integer.class, Long.class,
             BigInteger.class, Uint8.class, Uint16.class, Uint32.class, Uint64.class);
     private static final YangToolsMapper mapper = new YangToolsMapper();
@@ -78,18 +78,19 @@ public class SqlDBMapper {
     }
 
     public static <T> String createTable(Class<T> clazz, Entity e) throws UnableToMapClassException {
-        return createTable(clazz, e, "", false);
+        return createTable(clazz, e, "", false, true);
     }
 
     public static <T> String createTable(Class<T> clazz, Entity e, String suffix) throws UnableToMapClassException {
-        return createTable(clazz, e, suffix, false);
+        return createTable(clazz, e, suffix, false, true);
     }
 
     public static <T> String createTable(Class<T> clazz, Entity e, boolean autoIndex) throws UnableToMapClassException {
-        return createTable(clazz, e, "", false);
+        return createTable(clazz, e, "", false, true);
     }
 
-    public static <T> String createTable(Class<T> clazz, Entity e, String suffix, boolean autoIndex)
+    public static <T> String createTable(Class<T> clazz, Entity e, String suffix, boolean autoIndex,
+            boolean withControllerId)
             throws UnableToMapClassException {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE IF NOT EXISTS `" + e.getName() + suffix + "` (\n");
@@ -99,7 +100,9 @@ public class SqlDBMapper {
         } else {
             sb.append("`" + ID_DBCOL + "` " + STRING_DBTYPE + " " + getColumnOptions(ID_DBCOL, STRING_DBTYPE) + ",\n");
         }
-        sb.append("`" + ODLID_DBCOL + "` " + ODLID_DBTYPE + " " + getColumnOptions(ODLID_DBCOL, ODLID_DBTYPE) + ",\n");
+        if(withControllerId) {
+            sb.append("`" + ODLID_DBCOL + "` " + ODLID_DBTYPE + " " + getColumnOptions(ODLID_DBCOL, ODLID_DBTYPE) + ",\n");
+        }
         for (Method method : getFilteredMethods(clazz, true)) {
             Class<?> valueType = method.getReturnType();
             String colName = getColumnName(method);
@@ -110,8 +113,10 @@ public class SqlDBMapper {
             String options = getColumnOptions(colName, dbType);
             sb.append("`" + colName + "` " + dbType + " " + options + ",\n");
         }
-        sb.append("primary key(" + ID_DBCOL + "),");
-        sb.append("foreign key(`" + ODLID_DBCOL + "`) references " + TABLENAME_CONTROLLER + "(" + ID_DBCOL + ")");
+        sb.append("primary key(" + ID_DBCOL + ")");
+        if(withControllerId) {
+            sb.append(",foreign key(`" + ODLID_DBCOL + "`) references " + TABLENAME_CONTROLLER + "(" + ID_DBCOL + ")");
+        }
 
         sb.append(");");
         return sb.toString();
@@ -350,11 +355,14 @@ public class SqlDBMapper {
     public static <T> List<T> read(ResultSet data, Class<T> clazz, String column)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException,
             InstantiationException, SecurityException, NoSuchMethodException, JsonProcessingException {
-
+        if(data==null) {
+            return Arrays.asList();
+        }
         Builder<T> builder = findPOJOBuilder(clazz);
         if(builder==null && column==null) {
             throw new InstantiationException("unable to find builder for class "+clazz.getName());
         }
+
         List<T> list = new ArrayList<>();
         while (data.next()) {
             if (column == null) {

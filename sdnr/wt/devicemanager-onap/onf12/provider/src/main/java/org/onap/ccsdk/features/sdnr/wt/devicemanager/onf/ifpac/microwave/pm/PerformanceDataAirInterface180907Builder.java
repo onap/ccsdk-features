@@ -46,7 +46,7 @@ public class PerformanceDataAirInterface180907Builder extends PmdataEntityBuilde
 		this.setNodeName(nodeId.getValue());
 		this.setScannerId(pmRecord.getHistoryDataId());
 		this.setTimeStamp(pmRecord.getPeriodEndTime());
-		this.setSuspectIntervalFlag(pmRecord.isSuspectIntervalFlag());
+		this.setSuspectIntervalFlag(pmRecord.requireSuspectIntervalFlag());
 	}
 
 	/**

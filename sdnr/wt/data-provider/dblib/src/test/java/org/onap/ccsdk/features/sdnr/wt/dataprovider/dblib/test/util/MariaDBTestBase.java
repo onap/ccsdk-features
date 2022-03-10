@@ -34,6 +34,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section.Env
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.Userdata;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper.UnableToMapClassException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
@@ -60,6 +61,7 @@ public class MariaDBTestBase {
     private SqlDBConfig config;
     private static final Map<String, String> envDefaultValues = initEnvDefaultValues();
     private static final String SDNRDBDATABASETEST = "test";
+    public static final String SUFFIX = "";
 
     public MariaDBTestBase() throws ManagedProcessException {
         this(new Random().nextInt(1000) + 50000);
@@ -173,6 +175,7 @@ public class MariaDBTestBase {
         createTable(dbService, MaintenanceEntity.class, Entity.Maintenancemode, false);
         createTable(dbService, MediatorServerEntity.class, Entity.MediatorServer, true);
         createTable(dbService, NetworkElementConnectionEntity.class, Entity.NetworkelementConnection, false);
+        createTable(dbService, Userdata.class, Entity.Userdata, false, false);
     }
 
     public static boolean createTableOdl(SqlDBClient dbService) {
@@ -181,11 +184,14 @@ public class MariaDBTestBase {
         System.out.println(createStatement);
         return dbService.createTable(createStatement);
     }
-
     public static boolean createTable(SqlDBClient dbService, Class<?> cls, Entity entity, boolean autoIndex) {
+        return createTable(dbService, cls, entity, autoIndex, true);
+    }
+    public static boolean createTable(SqlDBClient dbService, Class<?> cls, Entity entity, boolean autoIndex,
+            boolean withControllerId) {
         String createStatement = null;
         try {
-            createStatement = SqlDBMapper.createTable(cls, entity, "", autoIndex);
+            createStatement = SqlDBMapper.createTable(cls, entity, SUFFIX, autoIndex,withControllerId);
         } catch (UnableToMapClassException e) {
             fail(e.getMessage());
         }

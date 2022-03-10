@@ -22,6 +22,8 @@
 package org.onap.ccsdk.features.sdnr.wt.yang.mapper;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.google.common.collect.Maps;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,6 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
@@ -40,6 +43,8 @@ import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.yang.binding.EventInstantAware;
+import org.opendaylight.yangtools.yang.binding.Identifiable;
+import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -278,12 +283,6 @@ public class YangToolsMapperHelper {
         return notification instanceof DOMEvent;
     }
 
-    /**
-     * Get time instant from notification if available or default
-     * @param notification
-     * @param defaultValue
-     * @return DateAndTime
-     */
     public static DateAndTime getTime(Notification notification, Instant defaultValue) {
         Instant time;
         if (hasTime(notification)) { // If notification class extends/implements the EventInstantAware
@@ -296,21 +295,6 @@ public class YangToolsMapperHelper {
         return DateAndTime.getDefaultInstance(ZonedDateTime.ofInstant(time, ZoneOffset.UTC).format(formatterOutput));
     }
 
-    /**
-     * Get time instant from notification if available or actual time
-     * @param notification
-     * @return DateAndTime
-     */
-    public static DateAndTime getTime(Notification notification) {
-        return getTime(notification, Instant.now());
-    }
-
-    /**
-     * Get time instant from DOM notification if available or default
-     * @param DOM notification
-     * @param defaultValue
-     * @return DateAndTime
-     */
     public static DateAndTime getTime(DOMNotification notification, Instant defaultValue) {
         Instant time;
         if (hasTime(notification)) { // If notification class extends/implements the EventInstantAware
@@ -322,13 +306,9 @@ public class YangToolsMapperHelper {
         }
         return DateAndTime.getDefaultInstance(ZonedDateTime.ofInstant(time, ZoneOffset.UTC).format(formatterOutput));
     }
-
-    /**
-     * Get time instant from notification if available or actual time
-     * @param DOM notification
-     * @return DateAndTime
-     */
-    public static DateAndTime getTime(DOMNotification notification) {
-        return getTime(notification, Instant.now());
+    
+    
+    public static <K extends Identifier<V>, V extends Identifiable<K>> Map<K,V> toMap(List<V> list) {
+    	 return list == null || list.isEmpty() ? null : Maps.uniqueIndex(list, Identifiable::key);
     }
 }

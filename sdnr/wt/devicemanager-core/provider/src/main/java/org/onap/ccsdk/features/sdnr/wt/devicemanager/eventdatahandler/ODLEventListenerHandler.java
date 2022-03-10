@@ -195,7 +195,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
         DateAndTime ts = NETCONFTIME_CONVERTER.getTimeStamp();
         AttributeValueChangedNotification notification = new AttributeValueChangedNotificationBuilder()
                 .setCounter(popEvntNumber()).setTimeStamp(ts).setObjectIdRef(nNodeId.getValue())
-                .setAttributeName("deviceType").setNewValue(deviceType.name()).build();
+                .setAttributeName("deviceType").setNewValue(deviceType.getName()).build();
         webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification,
                 AttributeValueChangedNotification.QNAME, ts);
     }
@@ -231,7 +231,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
         // Write first to prevent missing entries
         databaseService.removeNetworkConnection(nodeId.getValue());
         databaseService.writeConnectionLog(log);
-        webSocketService.sendViaWebsockets(new NodeId(nodeId.getValue()), notification,
+        webSocketService.sendViaWebsockets(new NodeId(ownKeyName), notification,
                 ObjectDeletionNotification.QNAME, ts);
 
     }

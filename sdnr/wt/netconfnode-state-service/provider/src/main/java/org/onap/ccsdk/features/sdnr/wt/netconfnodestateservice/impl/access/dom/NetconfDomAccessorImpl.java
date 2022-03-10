@@ -123,7 +123,7 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
     }
 
     @Override
-    public Optional<NormalizedNode<?, ?>> readDataNode(LogicalDatastoreType dataStoreType,
+    public Optional<NormalizedNode> readDataNode(LogicalDatastoreType dataStoreType,
             YangInstanceIdentifier path) {
         LOG.debug("Read to node datastore:{} path:{}", dataStoreType, path);
 
@@ -131,9 +131,9 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
         // correctly by underlying opendaylight NETCONF service
         DOMDataTreeReadTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction();
         try {
-            FluentFuture<Optional<NormalizedNode<?, ?>>> foData = readOnlyTransaction.read(dataStoreType, path);
+            FluentFuture<Optional<NormalizedNode>> foData = readOnlyTransaction.read(dataStoreType, path);
 
-            Optional<NormalizedNode<?, ?>> data = foData.get(120, TimeUnit.SECONDS);
+            Optional<NormalizedNode> data = foData.get(120, TimeUnit.SECONDS);
             LOG.trace("read is done - {} ", foData.isDone());
             return data;
         } catch (InterruptedException e) {
@@ -147,15 +147,15 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
     }
 
     @Override
-    public Optional<NormalizedNode<?, ?>> readControllerDataNode(LogicalDatastoreType dataStoreType,
+    public Optional<NormalizedNode> readControllerDataNode(LogicalDatastoreType dataStoreType,
             YangInstanceIdentifier path) {
         LOG.debug("Read to controller node datastore:{} path:{}", dataStoreType, path);
 
         DOMDataTreeReadTransaction readOnlyTransaction = this.getControllerDOMDataBroker().newReadOnlyTransaction();
         try {
-            FluentFuture<Optional<NormalizedNode<?, ?>>> foData = readOnlyTransaction.read(dataStoreType, path);
+            FluentFuture<Optional<NormalizedNode>> foData = readOnlyTransaction.read(dataStoreType, path);
 
-            Optional<NormalizedNode<?, ?>> data = foData.get(120, TimeUnit.SECONDS);
+            Optional<NormalizedNode> data = foData.get(120, TimeUnit.SECONDS);
             LOG.trace("read is done - {} ", foData.isDone());
             return data;
         } catch (InterruptedException e) {
@@ -170,12 +170,12 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
 
     @SuppressWarnings("unchecked")
     private static <T extends DataObject> Optional<T> convertNormalizedNode(BindingNormalizedNodeSerializer serializer,
-            Optional<NormalizedNode<?, ?>> oData, YangInstanceIdentifier path, Class<T> clazz)
+            Optional<NormalizedNode> oData, YangInstanceIdentifier path, Class<T> clazz)
             throws CanNotConvertException {
         if (oData.isPresent()) {
-            NormalizedNode<?, ?> data = oData.get();
+            NormalizedNode data = oData.get();
             LOG.debug("convertNormalizedNode data identifier: {} data nodetype: {}", data.getIdentifier(),
-                    data.getNodeType());
+                    data.getIdentifier().getNodeType());
             @Nullable
             Entry<InstanceIdentifier<?>, DataObject> entry = serializer.fromNormalizedNode(path, data);
             if (entry != null) {
@@ -185,11 +185,11 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
                     return Optional.of((T) value);
                 } else {
                     throw new CanNotConvertException("Unexpected class. Expected:" + clazz.getName() + " provided:"
-                            + value.getClass().getName() + " Nodetype:" + data.getNodeType());
+                            + value.getClass().getName() + " Nodetype:" + data.getIdentifier().getNodeType());
                 }
             } else {
                 throw new CanNotConvertException(
-                        "No object created for path:" + path + " Nodetype:" + data.getNodeType());
+                        "No object created for path:" + path + " Nodetype:" + data.getIdentifier().getNodeType());
             }
         } else {
             throw new CanNotConvertException("No data received for path:" + path);
@@ -241,7 +241,7 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
             if (stream.getName() != null) {
                 inputBuilder.setStream(stream.getName());
             }
-            replayIsSupported = Boolean.TRUE.equals(stream.isReplaySupport());
+            replayIsSupported = Boolean.TRUE.equals(stream.requireReplaySupport());
 
         }
         filter.ifPresent(inputBuilder::setFilter);
@@ -297,14 +297,12 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
         return oStreams.map(Streams::nonnullStream).orElse(Collections.emptyMap());
     }
 
-    @Override
-    public BindingNormalizedNodeSerializer getBindingNormalizedNodeSerializer() {
-        return serializer;
-    }
-
+	/*
+	 * @Override public BindingNormalizedNodeSerializer
+	 * getBindingNormalizedNodeSerializer() { return serializer; }
+	 */
     private DateAndTime getDateAndTime(Instant dateTime) {
         final String formattedDate = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(dateTime);
         return new DateAndTime(formattedDate);
     }
-
 }

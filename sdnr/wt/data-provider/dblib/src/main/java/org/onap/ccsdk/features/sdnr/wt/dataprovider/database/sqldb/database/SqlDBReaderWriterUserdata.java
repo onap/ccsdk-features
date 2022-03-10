@@ -27,10 +27,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 
 public class SqlDBReaderWriterUserdata extends SqlDBReaderWriter<Userdata> {
 
-    public SqlDBReaderWriterUserdata(SqlDBClient dbService, Entity e, String dbSuffix, String dbName,
-            String controllerId) {
-        super(dbService, e, dbSuffix, Userdata.class, dbName, controllerId);
+    public SqlDBReaderWriterUserdata(SqlDBClient dbService, Entity e, String dbSuffix) {
+        super(dbService, e, dbSuffix, Userdata.class, null, true);
     }
+
 
 
 
