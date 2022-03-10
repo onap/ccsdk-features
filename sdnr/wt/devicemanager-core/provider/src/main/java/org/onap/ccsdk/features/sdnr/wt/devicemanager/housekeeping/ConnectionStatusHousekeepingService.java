@@ -163,7 +163,7 @@ public class ConnectionStatusHousekeepingService
                                 .setTimestamp(new DateAndTime(ts.getTimeStamp())).setObjectId(item.getNodeId())
                                 .setAttributeName("status").setNewValue(String.valueOf(mdsalStatus))
                                 .setCounter(popEvntNumber()).setSourceType(SourceType.Controller).build());
-                        if ((item.isIsRequired() == null || item.isIsRequired() == false)
+                        if ((item.requireIsRequired() == null || item.requireIsRequired() == false)
                                 && mdsalStatus == ConnectionLogStatus.Disconnected) {
                             LOG.info("removing entry for node {} ({}) from database due missing MD-SAL entry",
                                     item.getNodeId(), mdsalStatus);

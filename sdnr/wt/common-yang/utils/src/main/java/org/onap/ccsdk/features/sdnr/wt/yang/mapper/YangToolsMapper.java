@@ -22,11 +22,13 @@
 package org.onap.ccsdk.features.sdnr.wt.yang.mapper;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsBuilderAnnotationIntrospector;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsModule;
 import org.slf4j.Logger;
@@ -44,7 +46,7 @@ public class YangToolsMapper extends ObjectMapper {
     private final YangToolsBuilderAnnotationIntrospector annotationIntrospector;
     private final YangToolsModule module;
     private static final long serialVersionUID = 1L;
-
+    private boolean isModuleRegistered=false;
     public YangToolsMapper() {
         this(new YangToolsBuilderAnnotationIntrospector());
     }
@@ -54,13 +56,12 @@ public class YangToolsMapper extends ObjectMapper {
 
         this.annotationIntrospector = yangToolsBuilderAnnotationIntrospector;
         this.module = new YangToolsModule();
+        this.registerModule(this.module);
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
+        setPropertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE);
         setSerializationInclusion(Include.NON_NULL);
         enable(MapperFeature.USE_GETTERS_AS_SETTERS);
         setAnnotationIntrospector(yangToolsBuilderAnnotationIntrospector);
-        registerModule(this.module);
-
     }
     public void addDeserializer(Class<?> clsToDeserialize, String builderClassName) {
         this.annotationIntrospector.addDeserializer(clsToDeserialize, builderClassName);
@@ -68,6 +69,22 @@ public class YangToolsMapper extends ObjectMapper {
 
     public void addKeyDeserializer(Class<?> type, KeyDeserializer deserializer) {
         this.module.addKeyDeserializer(type, deserializer);
+    }
+    @Override
+    public <T> T readValue(String content, Class<T> valueType) throws JsonProcessingException, JsonMappingException {
+    	if(!this.isModuleRegistered) {
+    		this.registerModule(this.module);
+    		this.isModuleRegistered=true;
+    	}
+    	return super.readValue(content, valueType);
+    }
+    @Override
+    public String writeValueAsString(Object value) throws JsonProcessingException {
+    	if(!this.isModuleRegistered) {
+    		this.registerModule(this.module);
+    		this.isModuleRegistered=true;
+    	}
+    	return super.writeValueAsString(value);
     }
 
 }

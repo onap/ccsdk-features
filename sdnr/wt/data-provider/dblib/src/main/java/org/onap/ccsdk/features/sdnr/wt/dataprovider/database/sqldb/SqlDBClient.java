@@ -56,7 +56,6 @@ public class SqlDBClient {
     private static final String DBVERSION_REGEX = "^([\\d]+\\.[\\d]+\\.[\\d]+)";
     private static final Pattern DBVERSION_PATTERN = Pattern.compile(DBVERSION_REGEX);
     private static final String SELECT_VERSION_QUERY = "SELECT @@version as version";
-    private static final String LOG_PROBLEM_CLOSING_CONNECTION = "problem closing connection: ";
 
     private static final String DBNAME_DEFAULT = "sdnrdb";
     private final String dbConnectionString;
@@ -100,6 +99,7 @@ public class SqlDBClient {
         } catch (SQLException e) {
             LOG.warn("problem reading views: ", e);
         }
+        try { data.close(); } catch (SQLException ignore) { }
         return list;
     }
 
@@ -114,6 +114,7 @@ public class SqlDBClient {
         } catch (SQLException e) {
             LOG.warn("problem reading tables: ", e);
         }
+        try { data.close(); } catch (SQLException ignore) { }
         return list;
     }
 
@@ -155,22 +156,18 @@ public class SqlDBClient {
     public boolean createTable(String query) {
         boolean result = false;
         PreparedStatement stmt = null;
+        Connection connection = null;
         try {
-            Connection connection = this.getConnection();
+            connection =  this.getConnection();
             stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.execute();
-            connection.close();
+
             result = true;
         } catch (SQLException e) {
             LOG.warn("problem creating table:", e);
         } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    LOG.warn("problem closing stmt:", e);
-                }
-            }
+            if (stmt != null) try { stmt.close(); } catch (SQLException logOrIgnore) {}
+            if (connection != null) try { connection.close(); } catch (SQLException logOrIgnore) {}
         }
         return result;
     }
@@ -199,20 +196,17 @@ public class SqlDBClient {
         boolean result = false;
         SQLException innerE = null;
         Statement stmt = null;
-        try (Connection connection = this.getConnection()) {
+        Connection connection = null;
+        try {
+            connection= this.getConnection();
             stmt = connection.createStatement();
             result = stmt.execute(query);
             result = stmt.getUpdateCount() > 0 ? stmt.getUpdateCount() > 0 : result;
         } catch (SQLException e) {
             innerE = e;
         } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(LOG_PROBLEM_CLOSING_CONNECTION, e);
-            }
+                if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
+                if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
         }
         if (innerE != null) {
             throw innerE;
@@ -224,20 +218,17 @@ public class SqlDBClient {
         boolean result = false;
         SQLException innerE = null;
         PreparedStatement stmt = null;
-        try (Connection connection = this.getConnection()) {
+        Connection connection = null;
+        try {
+            connection =  this.getConnection();
             stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             result = stmt.execute();
             result = stmt.getUpdateCount() > 0 ? stmt.getUpdateCount() > 0 : result;
         } catch (SQLException e) {
             innerE = e;
         } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(LOG_PROBLEM_CLOSING_CONNECTION, e);
-            }
+            if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
+            if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
         }
         if (innerE != null) {
             throw innerE;
@@ -249,24 +240,22 @@ public class SqlDBClient {
         String result = null;
         SQLException innerE = null;
         PreparedStatement stmt = null;
-        try (Connection connection = this.getConnection()) {
+        ResultSet generatedKeys = null;
+        Connection connection = null;
+        try {
+            connection = this.getConnection();
             stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.execute();
-            ResultSet generatedKeys = stmt.getGeneratedKeys();
+            generatedKeys = stmt.getGeneratedKeys();
             if (generatedKeys.next()) {
                 result = String.valueOf(generatedKeys.getLong(1));
             }
         } catch (SQLException e) {
             innerE = e;
         } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-
-            } catch (SQLException e) {
-                LOG.warn(LOG_PROBLEM_CLOSING_CONNECTION, e);
-            }
+            if (generatedKeys != null) try { generatedKeys.close(); } catch (SQLException ignore) {}
+            if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
+            if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
         }
         if (innerE != null) {
             throw innerE;
@@ -291,19 +280,16 @@ public class SqlDBClient {
     public ResultSet read(String query) {
         ResultSet data = null;
         Statement stmt = null;
-        try (Connection connection = this.getConnection()) {
+        Connection connection = null;
+        try{
+            connection = this.getConnection();
             stmt = connection.createStatement();
             data = stmt.executeQuery(query);
         } catch (SQLException e) {
             LOG.warn("problem reading db for query '{}': ", query, e);
         } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(LOG_PROBLEM_CLOSING_CONNECTION, e);
-            }
+            if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
+            if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
         }
         return data;
     }

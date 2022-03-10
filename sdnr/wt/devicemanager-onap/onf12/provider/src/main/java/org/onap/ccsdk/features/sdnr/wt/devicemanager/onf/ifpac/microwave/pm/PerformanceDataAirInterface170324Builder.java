@@ -1,5 +1,4 @@
 /*
- * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
  * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
@@ -46,7 +45,7 @@ public class PerformanceDataAirInterface170324Builder extends PmdataEntityBuilde
 		this.setNodeName(nodeId.getValue());
 		this.setScannerId(pmRecord.getHistoryDataId());
 		this.setTimeStamp(pmRecord.getPeriodEndTime());
-		this.setSuspectIntervalFlag(pmRecord.isSuspectIntervalFlag());
+		this.setSuspectIntervalFlag(pmRecord.requireSuspectIntervalFlag());
 	}
 
 	/**

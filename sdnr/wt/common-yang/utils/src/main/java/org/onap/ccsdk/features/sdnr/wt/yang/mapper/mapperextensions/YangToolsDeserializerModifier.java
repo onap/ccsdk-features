@@ -29,6 +29,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
+import com.fasterxml.jackson.databind.type.ArrayType;
+import com.fasterxml.jackson.databind.type.MapType;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -48,80 +51,87 @@ import org.slf4j.LoggerFactory;
 
 public class YangToolsDeserializerModifier extends BeanDeserializerModifier {
 
-    private static final Logger LOG = LoggerFactory.getLogger(YangToolsDeserializerModifier.class);
-    private static final String getEnumMethodName = "valueOf";
-    private static final String getEnumMethodName2 = "forName";
+	private static final Logger LOG = LoggerFactory.getLogger(YangToolsDeserializerModifier.class);
+	private static final String getEnumMethodName = "valueOf";
+	private static final String getEnumMethodName2 = "forName";
 
-    @SuppressWarnings("unchecked")
-    public static Enum<?> parseEnum(String value, Class<?> clazz) throws IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        try {
-            Method method = clazz.getDeclaredMethod(getEnumMethodName, String.class);
-            Enum<?> result = (Enum<?>) method.invoke(null, value);
-            LOG.debug("Deserialize '{}' with class '{}' to '{}'", value, clazz.getName(), result);
-            return result;
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                | NoSuchElementException | SecurityException e) {
-            Method method = clazz.getDeclaredMethod(getEnumMethodName2, String.class);
-            Optional<Enum<?>> result = (Optional<Enum<?>>) method.invoke(null, value);
-            LOG.debug("Deserialize '{}' with class '{}' to '{}'", value, clazz.getName(), result);
-            return result.orElseThrow();
-        }
-    }
+	@SuppressWarnings("unchecked")
+	public static Enum<?> parseEnum(String value, Class<?> clazz) throws IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		try {
+			Method method = clazz.getDeclaredMethod(getEnumMethodName, String.class);
+			Enum<?> result = (Enum<?>) method.invoke(null, value);
+			LOG.debug("Deserialize '{}' with class '{}' to '{}'", value, clazz.getName(), result);
+			return result;
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+				| NoSuchElementException | SecurityException e) {
+			Method method = clazz.getDeclaredMethod(getEnumMethodName2, String.class);
+			Optional<Enum<?>> result = (Optional<Enum<?>>) method.invoke(null, value);
+			LOG.debug("Deserialize '{}' with class '{}' to '{}'", value, clazz.getName(), result);
+			return result.orElseThrow();
+		}
+	}
 
-    @Override
-    public JsonDeserializer<Enum<?>> modifyEnumDeserializer(DeserializationConfig config, final JavaType type,
-            BeanDescription beanDesc, final JsonDeserializer<?> deserializer) {
-        return new JsonDeserializer<Enum<?>>() {
+	@Override
+	public JsonDeserializer<Enum<?>> modifyEnumDeserializer(DeserializationConfig config, final JavaType type,
+			BeanDescription beanDesc, final JsonDeserializer<?> deserializer) {
+		return new JsonDeserializer<Enum<?>>() {
 
-            @Override
-            public Enum<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-                Class<?> clazz = type.getRawClass();
+			@Override
+			public Enum<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+				Class<?> clazz = type.getRawClass();
 
-                try {
-                    return parseEnum(jp.getValueAsString(), clazz);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                        | NoSuchMethodException | NoSuchElementException | SecurityException e) {
-                    LOG.warn("problem deserializing enum for {} with value {}: {}", clazz.getName(),
-                            jp.getValueAsString(), e);
-                }
-                throw new IOException(
-                        "unable to parse enum (" + type.getRawClass() + ")for value " + jp.getValueAsString());
-            }
-        };
-    }
+				try {
+					return parseEnum(jp.getValueAsString(), clazz);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+						| NoSuchMethodException | NoSuchElementException | SecurityException e) {
+					LOG.warn("problem deserializing enum for {} with value {}: {}", clazz.getName(),
+							jp.getValueAsString(), e);
+				}
+				throw new IOException(
+						"unable to parse enum (" + type.getRawClass() + ")for value " + jp.getValueAsString());
+			}
+		};
+	}
 
-    @Override
-    public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc,
-            JsonDeserializer<?> deserializer) {
-        final JavaType type = beanDesc.getType();
-        final Class<?> rawClass = type.getRawClass();
+	@Override
+	public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc,
+			JsonDeserializer<?> deserializer) {
+		final JavaType type = beanDesc.getType();
+		final Class<?> rawClass = type.getRawClass();
 
-        JsonDeserializer<?> deser = super.modifyDeserializer(config, beanDesc, deserializer);
+		JsonDeserializer<?> deser = super.modifyDeserializer(config, beanDesc, deserializer);
 
-        if (YangToolsMapperHelper.implementsInterface(rawClass, TypeObject.class)) {
-            deser = new TypeObjectDeserializer<TypeObject>(type, deser);
-        } else if (YangToolsMapperHelper.implementsInterface(rawClass, ScalarTypeObject.class)) {
-            deser = new TypeObjectDeserializer<ScalarTypeObject<?>>(type, deser);
-        } else if (YangToolsMapperHelper.implementsInterface(rawClass, BaseIdentity.class)) {
-            deser = new BaseIdentityDeserializer<BaseIdentity>(deser);
-        } else if (rawClass.equals(Class.class)) {
-            deser = new ClassDeserializer(rawClass);
-        }
+		if (YangToolsMapperHelper.implementsInterface(rawClass, TypeObject.class)) {
+			deser = new TypeObjectDeserializer<TypeObject>(type, deser);
+		} else if (YangToolsMapperHelper.implementsInterface(rawClass, ScalarTypeObject.class)) {
+			deser = new TypeObjectDeserializer<ScalarTypeObject<?>>(type, deser);
+		} else if (YangToolsMapperHelper.implementsInterface(rawClass, BaseIdentity.class)) {
+			deser = new BaseIdentityDeserializer<BaseIdentity>(deser);
+		} else if (rawClass.equals(Class.class)) {
+			deser = new ClassDeserializer(rawClass);
+		}
 
-        LOG.debug("Deserialize '{}' with deserializer '{}'", rawClass.getName(), deser.getClass().getName());
-        return deser;
-    }
+		LOG.debug("Deserialize '{}' with deserializer '{}'", rawClass.getName(), deser.getClass().getName());
+		return deser;
+	}
 
-    @Override
-    public KeyDeserializer modifyKeyDeserializer(DeserializationConfig config, JavaType type, KeyDeserializer deser) {
-        KeyDeserializer res;
-        if (YangToolsMapperHelper.implementsInterface(type.getRawClass(), Identifier.class)) {
-            res = new IdentifierDeserializer();
-        } else {
-            res = super.modifyKeyDeserializer(config, type, deser);
-        }
-        LOG.debug("Keydeserialize '{}' with deserializer '{}'", type.getRawClass().getName(), res.getClass().getName());
-        return res;
-    }
+	@Override
+	public JsonDeserializer<?> modifyMapDeserializer(DeserializationConfig config, MapType type,
+			BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+		final Class<?> rawClass = type.getBindings().getBoundType(1).getRawClass();		
+		return new YangtoolsMapDesirializer(rawClass);
+	}
+
+	@Override
+	public KeyDeserializer modifyKeyDeserializer(DeserializationConfig config, JavaType type, KeyDeserializer deser) {
+		KeyDeserializer res;
+		if (YangToolsMapperHelper.implementsInterface(type.getRawClass(), Identifier.class)) {
+			res = new IdentifierDeserializer();
+		} else {
+			res = super.modifyKeyDeserializer(config, type, deser);
+		}
+		LOG.debug("Keydeserialize '{}' with deserializer '{}'", type.getRawClass().getName(), res.getClass().getName());
+		return res;
+	}
 }

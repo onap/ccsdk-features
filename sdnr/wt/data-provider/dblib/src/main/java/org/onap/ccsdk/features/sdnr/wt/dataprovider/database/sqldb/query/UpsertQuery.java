@@ -32,6 +32,10 @@ public class UpsertQuery<T extends DataObject> extends InsertQuery<T> {
         super(e, object, controllerId);
 
     }
+    public UpsertQuery(Entity e, T object, String controllerId, boolean ignoreControllerId, boolean ignoreIdField) {
+        super(e, object, controllerId, ignoreControllerId, ignoreIdField);
+
+    }
 
     @Override
     protected void appendAdditionalToQuery(StringBuilder sb, List<DBKeyValuePair<String>> keyValues) {

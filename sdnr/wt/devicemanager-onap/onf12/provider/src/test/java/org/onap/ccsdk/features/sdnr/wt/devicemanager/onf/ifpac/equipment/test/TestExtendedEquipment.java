@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.WrapperPTPModelRev170208;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.equipment.ExtendedEquipment;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.Equipment;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.EquipmentBuilder;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
@@ -66,7 +67,7 @@ public class TestExtendedEquipment {
                 new ManufacturedThingBuilder().setManufacturerProperties(manufacturerProps).setEquipmentType(eqptType)
                         .setEquipmentInstance(eqptInstance).build();
 
-        Equipment equipment = new EquipmentBuilder().setUuid(id).setContainedHolder(holder)
+        Equipment equipment = new EquipmentBuilder().setUuid(id).setContainedHolder(YangToolsMapperHelper.toMap(holder))
                 .setManufacturedThing(manufacturedThing).build();
 
         ExtendedEquipment extEqpt = new ExtendedEquipment(NODEID, "1234567890", equipment, "/var/opt", 3);

@@ -66,6 +66,8 @@ public class ODLVersionLUT {
         }
         if(odlMdsalVersionLUT==null) {
             odlMdsalVersionLUT = new HashMap<>();
+            odlMdsalVersionLUT.put("8.0.7","phosphorus-SR1 (0.15.1)");
+            odlMdsalVersionLUT.put("8.0.5","phosphorus-SR0 (0.15.0)");
             odlMdsalVersionLUT.put("7.0.9","silicon-SR2 (0.14.2)");
             odlMdsalVersionLUT.put("7.0.7","silicon-SR1 (0.14.1)");
             odlMdsalVersionLUT.put("7.0.6","silicon-SR0 (0.14.0)");

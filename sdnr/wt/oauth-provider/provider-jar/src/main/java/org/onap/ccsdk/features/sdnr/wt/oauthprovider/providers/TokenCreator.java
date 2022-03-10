@@ -32,11 +32,11 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.shiro.authc.BearerToken;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet;
+import org.apache.shiro.authc.BearerToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

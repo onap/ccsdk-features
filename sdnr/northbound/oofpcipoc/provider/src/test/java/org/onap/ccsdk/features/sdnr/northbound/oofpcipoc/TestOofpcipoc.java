@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +71,7 @@ public class TestOofpcipoc {
 
         ConfigurationPhyCellIdInputBuilder inputBuilder = new ConfigurationPhyCellIdInputBuilder();
 
-        inputBuilder.setFapServiceNumberOfEntries(new BigInteger("1"));
+        inputBuilder.setFapServiceNumberOfEntries(Uint64.valueOf("1"));
 
         // TODO: currently initialize SvcLogicServiceClient is failing, need to fix
         ListenableFuture<RpcResult<ConfigurationPhyCellIdOutput>> future = oofpcipocProvider

@@ -73,7 +73,7 @@ public interface NetconfDomAccessor extends NetconfAccessor {
      * @param path
      * @return NormalizedNode<?, ?> with data
      */
-    Optional<NormalizedNode<?, ?>> readDataNode(LogicalDatastoreType dataStoreType, YangInstanceIdentifier path);
+    Optional<NormalizedNode> readDataNode(LogicalDatastoreType dataStoreType, YangInstanceIdentifier path);
 
     /**
      * Read data from Controller node - controller-config
@@ -82,8 +82,9 @@ public interface NetconfDomAccessor extends NetconfAccessor {
      * @param path
      * @return NormalizedNode<?, ?> with data
      */
-    Optional<NormalizedNode<?, ?>> readControllerDataNode(LogicalDatastoreType dataStoreType,
+    Optional<NormalizedNode> readControllerDataNode(LogicalDatastoreType dataStoreType,
             YangInstanceIdentifier path);
+
 
     /**
      * Register netconf notification listener for related mountpoint
@@ -162,6 +163,5 @@ public interface NetconfDomAccessor extends NetconfAccessor {
      *
      * @return serialization object.
      */
-    BindingNormalizedNodeSerializer getBindingNormalizedNodeSerializer();
-
+    //BindingNormalizedNodeSerializer getBindingNormalizedNodeSerializer();
 }
