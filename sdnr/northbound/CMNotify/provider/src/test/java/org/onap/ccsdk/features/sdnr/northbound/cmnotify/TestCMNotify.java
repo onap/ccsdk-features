@@ -28,6 +28,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,7 @@ public class TestCMNotify {
 
         NbrlistChangeNotificationInputBuilder inputBuilder = new NbrlistChangeNotificationInputBuilder();
 
-        inputBuilder.setFapServiceNumberOfEntriesChanged(new BigInteger("1"));
+        inputBuilder.setFapServiceNumberOfEntriesChanged(Uint64.valueOf("1"));
 
         // TODO: currently initialize SvcLogicServiceClient is failing, need to fix
         ListenableFuture<RpcResult<NbrlistChangeNotificationOutput>> future = cMNotifyProvider

@@ -33,8 +33,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionListInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
@@ -109,12 +107,7 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
 
     @Override
     public MaintenanceEntity getMaintenance(@Nullable String nodeId) {
-        ReadMaintenanceListOutput result = this.dbProvider
-                .readMaintenanceList(
-                        new ReadMaintenanceListInputBuilder().setFilter(getFilterInput("node-id", nodeId)).build())
-                .build();
-        final List<Data> data = result.getData();
-        return data != null ? !data.isEmpty() ? data.get(0) : null : null;
+        return this.maintenanceRw.read(DatabaseIdGenerator.getMaintenanceId(nodeId));
     }
 
     @Override

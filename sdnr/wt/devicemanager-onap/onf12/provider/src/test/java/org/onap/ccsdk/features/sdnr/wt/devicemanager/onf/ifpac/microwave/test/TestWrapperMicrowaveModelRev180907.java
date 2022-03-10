@@ -32,6 +32,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.InconsistentPMDataException;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.logical.termination.point.g.Lp;
@@ -106,7 +107,7 @@ public class TestWrapperMicrowaveModelRev180907 {
                 Arrays.asList(new CurrentProblemListBuilder().setProblemName("Loss of Signal")
                         .setProblemSeverity(SeverityType.Critical).setSequenceNumber(1).setTimeStamp(null).build());
         airInterfaceCurrentProblems =
-                new AirInterfaceCurrentProblemsBuilder().setCurrentProblemList(currentProblemList).build();
+                new AirInterfaceCurrentProblemsBuilder().setCurrentProblemList(YangToolsMapperHelper.toMap(currentProblemList)).build();
 
         mwEthInterfaceIID = InstanceIdentifier.builder(MwEthernetContainerPac.class, new MwEthernetContainerPacKey(uid))
                 .child(EthernetContainerCurrentProblems.class).build();
@@ -117,7 +118,7 @@ public class TestWrapperMicrowaveModelRev180907 {
                                 .setProblemSeverity(SeverityType.Critical).setSequenceNumber(1).setTimeStamp(null)
                                 .build());
         ethernetContainerCurrentProblems =
-                new EthernetContainerCurrentProblemsBuilder().setCurrentProblemList(ethCurrentProblemsList).build();
+                new EthernetContainerCurrentProblemsBuilder().setCurrentProblemList(YangToolsMapperHelper.toMap(ethCurrentProblemsList)).build();
 
         NodeId nNodeId = new NodeId("nSky");
         when(accessor.getNodeId()).thenReturn(nNodeId);
@@ -185,7 +186,7 @@ public class TestWrapperMicrowaveModelRev180907 {
                                 .setProblemName("Loss of Payload").setProblemSeverity(SeverityType.Major)
                                 .setSequenceNumber(2).setTimeStamp(null).build());
         TdmContainerCurrentProblems tdmInterfaceCurrentProblems =
-                new TdmContainerCurrentProblemsBuilder().setCurrentProblemList(currentProblemList).build();
+                new TdmContainerCurrentProblemsBuilder().setCurrentProblemList(YangToolsMapperHelper.toMap(currentProblemList)).build();
         when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 mwEthInterfaceIID)).thenReturn(tdmInterfaceCurrentProblems);
 
@@ -210,7 +211,7 @@ public class TestWrapperMicrowaveModelRev180907 {
                                 .setProblemName("Loss of Payload").setProblemSeverity(SeverityType.Major)
                                 .setSequenceNumber(2).setTimeStamp(null).build());
         HybridMwStructureCurrentProblems hybridMwStructureCurrentProblems =
-                new HybridMwStructureCurrentProblemsBuilder().setCurrentProblemList(currentProblemList).build();
+                new HybridMwStructureCurrentProblemsBuilder().setCurrentProblemList(YangToolsMapperHelper.toMap(currentProblemList)).build();
         when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 mwEthInterfaceIID)).thenReturn(hybridMwStructureCurrentProblems);
 
@@ -235,7 +236,7 @@ public class TestWrapperMicrowaveModelRev180907 {
                                 .setProblemName("Loss of Payload").setProblemSeverity(SeverityType.Major)
                                 .setSequenceNumber(2).setTimeStamp(null).build());
         AirInterfaceDiversityCurrentProblems hybridMwStructureCurrentProblems =
-                new AirInterfaceDiversityCurrentProblemsBuilder().setCurrentProblemList(currentProblemList).build();
+                new AirInterfaceDiversityCurrentProblemsBuilder().setCurrentProblemList(YangToolsMapperHelper.toMap(currentProblemList)).build();
         when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 mwEthInterfaceIID)).thenReturn(hybridMwStructureCurrentProblems);
 
@@ -260,7 +261,7 @@ public class TestWrapperMicrowaveModelRev180907 {
                                 .setProblemName("Loss of Payload").setProblemSeverity(SeverityType.Major)
                                 .setSequenceNumber(2).setTimeStamp(null).build());
         PureEthernetStructureCurrentProblems hybridMwStructureCurrentProblems =
-                new PureEthernetStructureCurrentProblemsBuilder().setCurrentProblemList(currentProblemList).build();
+                new PureEthernetStructureCurrentProblemsBuilder().setCurrentProblemList(YangToolsMapperHelper.toMap(currentProblemList)).build();
         when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 mwEthInterfaceIID)).thenReturn(hybridMwStructureCurrentProblems);
 
@@ -302,9 +303,10 @@ public class TestWrapperMicrowaveModelRev180907 {
                         new org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev180907.air._interface.historical.performances.g.HistoricalPerformanceDataListBuilder()
                         .setHistoryDataId("123")
                         .setGranularityPeriod(GranularityPeriodType.Period15Min)
+                        .setSuspectIntervalFlag(true)
                                 .setPerformanceData(performanceData).build());
         AirInterfaceHistoricalPerformances airHistoricalPerformanceData =
-                new AirInterfaceHistoricalPerformancesBuilder().setHistoricalPerformanceDataList(airHistPMList).build();
+                new AirInterfaceHistoricalPerformancesBuilder().setHistoricalPerformanceDataList(YangToolsMapperHelper.toMap(airHistPMList)).build();
         when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 mwAirInterfaceHistoricalPerformanceIID)).thenReturn(airHistoricalPerformanceData);
 
@@ -320,9 +322,10 @@ public class TestWrapperMicrowaveModelRev180907 {
                         new org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev180907.ethernet.container.historical.performances.g.HistoricalPerformanceDataListBuilder()
                         .setHistoryDataId("123")
                         .setGranularityPeriod(GranularityPeriodType.Period24Hours)
+                        .setSuspectIntervalFlag(true)
                                 .setPerformanceData(ethPerformanceData).build());
         EthernetContainerHistoricalPerformances ethContainerHistoricalPerformanceData =
-                new EthernetContainerHistoricalPerformancesBuilder().setHistoricalPerformanceDataList(ethHistPMList)
+                new EthernetContainerHistoricalPerformancesBuilder().setHistoricalPerformanceDataList(YangToolsMapperHelper.toMap(ethHistPMList))
                         .build();
         when(accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 ethContainerIID)).thenReturn(ethContainerHistoricalPerformanceData);

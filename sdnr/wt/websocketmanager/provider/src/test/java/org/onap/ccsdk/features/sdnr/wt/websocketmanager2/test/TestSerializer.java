@@ -56,19 +56,4 @@ public class TestSerializer {
         assertNotNull(sOutput);
         assertTrue(sOutput.contains("\"type\""));
     }
-//    @Test
-//    public void test2() {
-//        InstanceChanged notification = new InstanceChangedBuilder().setChangeStatus("stop SUCCESS").setName("NTS_FUNCTION_TYPE_OPENROADM_6_1_0-1").setFunctionType(NTS_FUNCTION_TYPE_OPENROADM_6_1_0.class)
-//        NotificationOutput output = new NotificationOutput(notification, NODEID, ObjectCreationNotification.QNAME,DateAndTime.getDefaultInstance(TIMESTAMP));
-//        String sOutput=null;
-//        try {
-//            sOutput = mapper.writeValueAsString(output);
-//            LOG.debug(sOutput);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//            fail(e.getMessage());
-//        }
-//        assertNotNull(sOutput);
-//        assertTrue(sOutput.contains("\"type\""));
-//    }
 }

@@ -44,95 +44,98 @@ import org.slf4j.LoggerFactory;
 public class IstanbulReleaseInformation extends ReleaseInformation {
 
     private final Logger LOG = LoggerFactory.getLogger(IstanbulReleaseInformation.class);
-
+    private static String NORMAL_STRING_MAX_LEN = "1024";
     public static final String TIMEZONE_TYPE_FORMAT =
             "CHAR(6) DEFAULT NULL CHECK (`%s` regexp '^[+-]\\\\d\\\\d:\\\\d\\\\d$')";
     public static final String TABLENAME_CONTROLLER_FORMAT = "controller%s";
     public static final String TABLEMAPPING_CONTROLLER =
-            "`id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,`desc` VARCHAR(255) CHARACTER SET utf8 ,primary key(id)";
+            "`id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,`desc` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,primary key(id)";
     private static final String TABLEMAPPING_CONNECTIONLOG_FORMAT = "`id` int(11) NOT NULL AUTO_INCREMENT,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n" + "`timestamp` DATETIME(3) ,\n"
-            + "`status` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n" + "`timestamp` DATETIME(3) ,\n"
+            + "`status` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`node-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
             + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
     private static final String TABLEMAPPING_EVENTLOG_FORMAT = "`id` int(11) NOT NULL AUTO_INCREMENT,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n"
-            + "`source-type` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`object-id` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`timestamp` DATETIME(3) ,\n" + "`timestamp-tz` " + String.format(TIMEZONE_TYPE_FORMAT, "timestamp-tz")
-            + " ,\n" + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`counter` INTEGER ,\n"
-            + "`attribute-name` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`new-value` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
-    private static final String TABLEMAPPING_FAULTCURRENT_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n"
-            + "`object-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`timestamp` DATETIME(3) ,\n" + "`timestamp-tz` "
+            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`source-type` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`object-id` VARCHAR(" + NORMAL_STRING_MAX_LEN
+            + ") CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`timestamp` DATETIME(3) ,\n" + "`timestamp-tz` "
             + String.format(TIMEZONE_TYPE_FORMAT, "timestamp-tz") + " ,\n"
-            + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`counter` INTEGER ,\n"
-            + "`severity` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`problem` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
-    private static final String TABLEMAPPING_FAULTLOG_FORMAT = "`id` int(11) NOT NULL AUTO_INCREMENT,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n"
-            + "`source-type` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`object-id` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            + "`node-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`counter` INTEGER ,\n" + "`attribute-name` VARCHAR("
+            + NORMAL_STRING_MAX_LEN + ") CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`new-value` VARCHAR(" + NORMAL_STRING_MAX_LEN
+            + ") CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
+    private static final String TABLEMAPPING_FAULTCURRENT_FORMAT = "`id` VARCHAR(" + NORMAL_STRING_MAX_LEN
+            + ") CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n" + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`object-id` VARCHAR(" + NORMAL_STRING_MAX_LEN + ") CHARACTER SET utf8 COLLATE utf8_bin ,\n"
             + "`timestamp` DATETIME(3) ,\n" + "`timestamp-tz` " + String.format(TIMEZONE_TYPE_FORMAT, "timestamp-tz")
-            + " ,\n" + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`counter` INTEGER ,\n"
-            + "`severity` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`problem` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            + " ,\n" + "`node-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`counter` INTEGER ,\n"
+            + "`severity` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`problem` VARCHAR(" + NORMAL_STRING_MAX_LEN
+            + ") CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
+    private static final String TABLEMAPPING_FAULTLOG_FORMAT = "`id` int(11) NOT NULL AUTO_INCREMENT,\n"
+            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n" + "`source-type` VARCHAR("
+            + NORMAL_STRING_MAX_LEN + ") CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`object-id` VARCHAR(" + NORMAL_STRING_MAX_LEN
+            + ") CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`timestamp` DATETIME(3) ,\n" + "`timestamp-tz` "
+            + String.format(TIMEZONE_TYPE_FORMAT, "timestamp-tz") + " ,\n"
+            + "`node-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`counter` INTEGER ,\n"
+            + "`severity` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`problem` VARCHAR(" + NORMAL_STRING_MAX_LEN
+            + ") CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
+    private static final String TABLEMAPPING_GUICUTTHROUGH_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`weburi` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
             + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
-    private static final String TABLEMAPPING_GUICUTTHROUGH_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n"
-            + "`name` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`weburi` VARCHAR(255) CHARACTER SET utf8 ,\n"
+    private static final String TABLEMAPPING_HISTORICALPM15M_FORMAT = "`id` VARCHAR(" + NORMAL_STRING_MAX_LEN
+            + ") CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n" + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`performance-data` JSON ,\n" + "`granularity-period` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`time-stamp` DATETIME(3) ,\n" + "`time-stamp-tz` " + String.format(TIMEZONE_TYPE_FORMAT, "time-stamp-tz")
+            + " ,\n" + "`node-name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`uuid-interface` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`layer-protocol-name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`radio-signal-id` VARCHAR("
+            + NORMAL_STRING_MAX_LEN + ") CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`suspect-interval-flag` BOOLEAN ,\n"
+            + "`scanner-id` VARCHAR(" + NORMAL_STRING_MAX_LEN + ") CHARACTER SET utf8 COLLATE utf8_bin ,\n"
             + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
-    private static final String TABLEMAPPING_HISTORICALPM15M_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n" + "`performance-data` JSON ,\n"
-            + "`granularity-period` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`time-stamp` DATETIME(3) ,\n"
+    private static final String TABLEMAPPING_HISTORICALPM24H_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n" + "`performance-data` JSON ,\n"
+            + "`granularity-period` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`time-stamp` DATETIME(3) ,\n"
             + "`time-stamp-tz` " + String.format(TIMEZONE_TYPE_FORMAT, "time-stamp-tz") + " ,\n"
-            + "`node-name` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`uuid-interface` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`layer-protocol-name` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`radio-signal-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`suspect-interval-flag` BOOLEAN ,\n"
-            + "`scanner-id` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            + "`node-name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`uuid-interface` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`layer-protocol-name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`radio-signal-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`suspect-interval-flag` BOOLEAN ,\n"
+            + "`scanner-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
             + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
-    private static final String TABLEMAPPING_HISTORICALPM24H_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n" + "`performance-data` JSON ,\n"
-            + "`granularity-period` VARCHAR(100) CHARACTER SET utf8 ,\n" + "`time-stamp` DATETIME(3) ,\n"
-            + "`time-stamp-tz` " + String.format(TIMEZONE_TYPE_FORMAT, "time-stamp-tz") + " ,\n"
-            + "`node-name` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`uuid-interface` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`layer-protocol-name` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`radio-signal-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`suspect-interval-flag` BOOLEAN ,\n"
-            + "`scanner-id` VARCHAR(255) CHARACTER SET utf8 ,\n"
+    private static final String TABLEMAPPING_INVENTORY_FORMAT = "`id` VARCHAR(" + NORMAL_STRING_MAX_LEN
+            + ") CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n" + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`version` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`type-name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`date` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`description` VARCHAR(1024) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`node-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`uuid` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`part-type-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`model-identifier` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`manufacturer-identifier` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`tree-level` BIGINT ,\n"
+            + "`parent-uuid` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`contained-holder` JSON ,\n"
+            + "`serial` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`manufacturer-name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
             + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
-    private static final String TABLEMAPPING_INVENTORY_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n"
-            + "`version` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`type-name` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`date` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`description` VARCHAR(1024) CHARACTER SET utf8 ,\n"
-            + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`uuid` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`part-type-id` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`model-identifier` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`manufacturer-identifier` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`tree-level` BIGINT ,\n"
-            + "`parent-uuid` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`contained-holder` JSON ,\n"
-            + "`serial` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`manufacturer-name` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
-    private static final String TABLEMAPPING_MAINTENANCE_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n" + "`active` BOOLEAN ,\n"
-            + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`description` VARCHAR(1024) CHARACTER SET utf8 ,\n"
-            + "`problem` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`start` DATETIME(3) ,\n" + "`start-tz` "
+    private static final String TABLEMAPPING_MAINTENANCE_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n" + "`active` BOOLEAN ,\n"
+            + "`node-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`description` VARCHAR(1024) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`problem` VARCHAR("+NORMAL_STRING_MAX_LEN+") CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`start` DATETIME(3) ,\n" + "`start-tz` "
             + String.format(TIMEZONE_TYPE_FORMAT, "start-tz") + " ,\n" + "`end` DATETIME(3) ,\n" + "`end-tz` "
             + String.format(TIMEZONE_TYPE_FORMAT, "end-tz") + " ,\n"
-            + "`object-id-ref` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            + "`object-id-ref` VARCHAR("+NORMAL_STRING_MAX_LEN+") CHARACTER SET utf8 COLLATE utf8_bin ,\n"
             + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
     private static final String TABLEMAPPING_MEDIATORSERVER_FORMAT =
-            "`id` int(11) NOT NULL AUTO_INCREMENT,\n" + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n"
-                    + "`name` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`url` VARCHAR(255) CHARACTER SET utf8 ,\n"
+            "`id` int(11) NOT NULL AUTO_INCREMENT,\n" + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+                    + "`name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`url` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
                     + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
-    private static final String TABLEMAPPING_NETWORKELEMENT_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n"
-            + "`password` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`host` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`port` BIGINT ,\n" + "`status` VARCHAR(100) CHARACTER SET utf8 ,\n"
-            + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`username` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`is-required` BOOLEAN ,\n" + "`core-model-capability` VARCHAR(255) CHARACTER SET utf8 ,\n"
-            + "`device-type` VARCHAR(100) CHARACTER SET utf8 ,\n"
-            + "`device-function` VARCHAR(512) CHARACTER SET utf8 ,\n" + "`node-details` JSON ,\n"
-            + "`tls-key` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`mount-method` VARCHAR(255) CHARACTER SET utf8 ,\n"
+    private static final String TABLEMAPPING_NETWORKELEMENT_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`password` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`host` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`port` BIGINT ,\n" + "`status` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`node-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`username` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`is-required` BOOLEAN ,\n" + "`core-model-capability` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`device-type` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`device-function` VARCHAR(512) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`node-details` JSON ,\n"
+            + "`tls-key` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`mount-method` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
             + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
-    private static final String TABLEMAPPING_USERDATA_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 NOT NULL,\n"
-            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n" + "`value` JSON ,\n"
-            + "primary key(id),foreign key(`controller-id`) references `controller%s`(id)";
+    private static final String TABLEMAPPING_USERDATA_FORMAT = "`id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`value` JSON ,\n"
+            + "primary key(id)";
 
 
     public IstanbulReleaseInformation() {
@@ -176,9 +179,8 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
                         + "\"device-function\": {\"type\": \"keyword\"},\"is-required\": {\"type\": \"boolean\"},"
                         + "\"status\": {\"type\": \"keyword\"},\"tls-key\": {\"type\": \"keyword\"},"
                         + "\"mount-method\": {\"type\":\"keyword\"}}",
-                        "{\"index\":{\"max_result_window\": 20000,\"number_of_shards\":%d,\"number_of_replicas\":%d},"
-                        +"\"analysis\":{\"analyzer\":{\"content\":{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}}"
-                        ));
+                "{\"index\":{\"max_result_window\": 20000,\"number_of_shards\":%d,\"number_of_replicas\":%d},"
+                        + "\"analysis\":{\"analyzer\":{\"content\":{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}}"));
         return map;
     }
 

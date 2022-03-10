@@ -105,6 +105,7 @@ public class TestCRUDMariaDB {
             e.printStackTrace();
             fail("unable to read size");
         }
+        try { data.close(); } catch (SQLException ignore) { }
         //create entry
         success = false;
         try {
@@ -125,6 +126,7 @@ public class TestCRUDMariaDB {
             e.printStackTrace();
             fail("unable to verify write");
         }
+        try { data.close(); } catch (SQLException ignore) { }
         //update entry
         success = false;
         try {
@@ -145,6 +147,7 @@ public class TestCRUDMariaDB {
             e.printStackTrace();
             fail("unable to verify write");
         }
+        try { data.close(); } catch (SQLException ignore) { }
         //delete entry
         success = false;
         try {
@@ -161,6 +164,7 @@ public class TestCRUDMariaDB {
             e.printStackTrace();
             fail("unable to verify delete. size>0");
         }
+        try { data.close(); } catch (SQLException ignore) { }
     }
 
     @Test

@@ -43,11 +43,11 @@ public class DomParser {
      * @param schemaContext schema context
      * @return created {@link NormalizedNode}
      */
-    public static NormalizedNode<?, ?> parseJsonFile(final String path, final EffectiveModelContext schemaContext) {
+    public static NormalizedNode parseJsonFile(final String path, final EffectiveModelContext schemaContext) {
         final JSONCodecFactory codecFactory = JSONCodecFactorySupplier.RFC7951.createSimple(schemaContext);
         final NormalizedNodeResult resultHolder = new NormalizedNodeResult();
         try (NormalizedNodeStreamWriter writer = ImmutableNormalizedNodeStreamWriter.from(resultHolder);
-             JsonParserStream jsonParser = JsonParserStream.create(writer, codecFactory, schemaContext);
+             JsonParserStream jsonParser = JsonParserStream.create(writer, codecFactory);
              InputStream inputStream = NetconfDomAccessorImpl.class.getResourceAsStream(path);
              JsonReader reader = new JsonReader(new InputStreamReader(inputStream))) {
             jsonParser.parse(reader);

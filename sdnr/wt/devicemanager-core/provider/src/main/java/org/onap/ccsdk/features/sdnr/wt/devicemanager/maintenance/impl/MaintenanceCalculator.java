@@ -56,7 +56,7 @@ public class MaintenanceCalculator {
             ZonedDateTime now) {
 
         if (maintenance != null) {
-            Boolean isActive = maintenance.isActive();
+            Boolean isActive = maintenance.getActive();
             if (isActive != null && isActive && isInMaintenance(maintenance, objectIdRef, problem, now)) {
                 return true;
             }

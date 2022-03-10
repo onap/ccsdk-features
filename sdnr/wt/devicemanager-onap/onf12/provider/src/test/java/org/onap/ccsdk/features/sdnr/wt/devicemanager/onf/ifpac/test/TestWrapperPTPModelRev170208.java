@@ -27,6 +27,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.WrapperPTPModelRe
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset.rev170208.InstanceList;
@@ -65,9 +66,9 @@ public class TestWrapperPTPModelRev170208 {
         List<PortDsList> portDsList =
                 Arrays.asList(new PortDsListBuilder().setPortNumber(portNumber).setPortIdentity(portIdentity).build());
         InstanceList instanceList =
-                new InstanceListBuilder().setInstanceNumber(Uint16.valueOf(1)).setPortDsList(portDsList).build();
+                new InstanceListBuilder().setInstanceNumber(Uint16.valueOf(1)).setPortDsList(YangToolsMapperHelper.toMap(portDsList)).build();
         InstanceIdentifier<InstanceList> PTPINSTANCES_IID =
-                InstanceIdentifier.builder(InstanceList.class, new InstanceListKey(1)).build();
+                InstanceIdentifier.builder(InstanceList.class, new InstanceListKey(Uint16.valueOf(1))).build();
         when(netconfAccessor.getTransactionUtils().readData(netconfAccessor.getDataBroker(),
                 LogicalDatastoreType.OPERATIONAL, PTPINSTANCES_IID)).thenReturn(instanceList);
     }

@@ -45,9 +45,9 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.opendaylight.aaa.api.shiro.principal.ODLPrincipal;
-import org.opendaylight.aaa.shiro.tokenauthrealm.auth.AuthenticationManager;
-import org.opendaylight.aaa.shiro.tokenauthrealm.auth.TokenAuthenticators;
 import org.opendaylight.aaa.shiro.web.env.ThreadLocals;
+import org.opendaylight.aaa.tokenauthrealm.auth.AuthenticationManager;
+import org.opendaylight.aaa.tokenauthrealm.auth.TokenAuthenticators;
 
 public class TestRealm {
 

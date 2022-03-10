@@ -74,7 +74,6 @@ public class DatabaseIdGenerator {
 
     public static String getFaultcurrentId(String nodeId, String objectId, String problemName) {
         String uuId = extractUuid(objectId);
-
         return String.format(FORMAT_FAULTDATA_ID, nodeId, uuId, problemName);
     }
 

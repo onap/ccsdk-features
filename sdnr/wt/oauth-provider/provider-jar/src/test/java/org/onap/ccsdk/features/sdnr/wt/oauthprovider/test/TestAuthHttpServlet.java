@@ -41,7 +41,6 @@ import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.shiro.authc.BearerToken;
 import org.jolokia.osgi.security.Authenticator;
 import org.json.JSONArray;
 import org.junit.BeforeClass;
@@ -59,6 +58,7 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.test.helper.OdlJsonMapper;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.test.helper.OdlXmlMapper;
 import org.opendaylight.aaa.api.IdMService;
+import org.apache.shiro.authc.BearerToken;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -93,7 +93,6 @@ public class TestAuthHttpServlet {
             servlet = new TestServlet();
             shiroConfiguration = loadShiroConfig(TESTSHIROCONFIGFILE);
         } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
             fail(e.getMessage());
         }
         servlet.setDataBroker(dataBroker);

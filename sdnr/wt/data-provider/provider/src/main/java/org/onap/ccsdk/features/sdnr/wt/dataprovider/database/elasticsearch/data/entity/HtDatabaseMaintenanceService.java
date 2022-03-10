@@ -166,8 +166,8 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
         } else {
             LOG.warn("cannot read db. no db reader writer initialized");
         }
-        if (ne != null && ne.isIsRequired() != null) {
-            return ne.isIsRequired();
+        if (ne != null && ne.requireIsRequired() != null) {
+            return ne.requireIsRequired();
         } else {
             return false;
         }

@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset.rev170208.instance.list.PortDsList;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.ptp.dataset.rev170208.port.ds.entry.PortIdentity;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,7 @@ public class WrapperPTPModelRev170208 {
     private static final Logger LOG = LoggerFactory.getLogger(WrapperPTPModelRev170208.class);
 
     protected static final InstanceIdentifier<InstanceList> PTPINSTANCES_IID =
-            InstanceIdentifier.builder(InstanceList.class, new InstanceListKey(1)).build();
+            InstanceIdentifier.builder(InstanceList.class, new InstanceListKey(Uint16.valueOf(1))).build();
 
     /**
      * Query synchronization information out of NE
