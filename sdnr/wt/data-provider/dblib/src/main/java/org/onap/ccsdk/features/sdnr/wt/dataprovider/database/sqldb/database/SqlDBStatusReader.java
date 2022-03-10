@@ -74,6 +74,7 @@ public class SqlDBStatusReader {
 
                 }
             }
+            try { data.close(); } catch (SQLException ignore) { }
         } catch (SQLException e) {
             LOG.warn("problem reading status:", e);
         }

@@ -54,9 +54,11 @@ public class SelectQuery implements SqlQuery {
     private final List<String> groups;
 
     public SelectQuery(String tableName) {
-        this(tableName, Arrays.asList("*"), null);
+        this(tableName, (String)null);
     }
-
+    public SelectQuery(String tableName, String controllerId) {
+        this(tableName, Arrays.asList("*"), controllerId);
+    }
     public SelectQuery(String tableName, List<String> fields, String controllerId) {
         this.tableName = tableName;
         this.fields = fields;
@@ -105,18 +107,21 @@ public class SelectQuery implements SqlQuery {
 
     }
 
-    public void addFilter(String property, String filtervalue) {
+    public SelectQuery addFilter(String property, String filtervalue) {
         this.addFilter(new FilterBuilder().setProperty(property).setFiltervalue(filtervalue).build());
+        return this;
     }
 
     private static Filter cleanFilter(Filter filter) {
-        if (filter.getFiltervalue() != null
-                && (filter.getFiltervalues() == null || filter.getFiltervalues().isEmpty())) {
+        final String sFilter = filter.getFiltervalue();
+        final List<String> sFilters = filter.getFiltervalues();
+        //if only single filter value is set
+        if (sFilter != null && (sFilters == null || sFilter.isEmpty())) {
             return "*".equals(filter.getFiltervalue()) ? null : filter;
         } else {
             List<String> list = new ArrayList<>(filter.getFiltervalues());
-            if (filter.getFiltervalue() != null && !filter.getFiltervalue().isEmpty()) {
-                list.add(filter.getFiltervalue());
+            if (sFilter != null && !sFilter.isEmpty()) {
+                list.add(sFilter);
             }
             if (list.size() == 1 && "*".equals(list.get(0))) {
                 return null;

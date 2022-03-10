@@ -74,7 +74,7 @@ public abstract class HtUserdataManagerBase implements HtUserdataManager {
 
     @Override
     public boolean setUserdata(String username, String key, String data) {
-        JSONObject o = new JSONObject();
+        JSONObject o = new JSONObject(this.getUserdata(username));
         o.put(key, new JSONObject(data));
         return this.setUserdata(username, o.toString());
     }

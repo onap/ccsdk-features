@@ -83,8 +83,11 @@ public class MountpointStatePublisher implements Runnable {
                 } else {
                     pauseThread();
                 }
-            } catch (Exception ex) {
-                LOG.error("Exception while publishing message, ignoring and continuing ... ", ex);
+            } catch (InterruptedException e) {
+                LOG.error("InterruptedException while publishing message, ignoring and continuing ... ", e);
+                Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                LOG.error("Exception while publishing message, ignoring and continuing ... ", e);
             }
         }
     }

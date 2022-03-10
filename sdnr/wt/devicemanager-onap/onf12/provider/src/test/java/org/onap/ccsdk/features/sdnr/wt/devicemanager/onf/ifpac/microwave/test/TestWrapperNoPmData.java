@@ -41,7 +41,7 @@ public class TestWrapperNoPmData {
         Lp lp = new LpBuilder().setUuid(new UniversalId("NodeUUID")).build();
         //Build empty, without PerformanceData
         HistoricalPerformanceDataList pmRecord =
-                new HistoricalPerformanceDataListBuilder().setHistoryDataId("1").build();
+                new HistoricalPerformanceDataListBuilder().setSuspectIntervalFlag(true).setHistoryDataId("1").build();
         AirInterfaceConfiguration airConfiguration = new AirInterfaceConfigurationBuilder().build();
 
         @SuppressWarnings("unused")

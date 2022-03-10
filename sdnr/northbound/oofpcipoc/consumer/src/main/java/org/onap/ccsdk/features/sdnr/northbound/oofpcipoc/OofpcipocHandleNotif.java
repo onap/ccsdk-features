@@ -144,7 +144,7 @@ public class OofpcipocHandleNotif implements AutoCloseable, OofpcipocListener {
 				LteRanNeighborListInUseLteCellChanged lteRanElement = lteRanEntry.getValue(); 
 				LTENeighborListInUseLTECell lTENeighborListInUseLTECellElement = new LTENeighborListInUseLTECell();
 				lTENeighborListInUseLTECellElement.setAlias(lteRanElement.getCid());
-				lTENeighborListInUseLTECellElement.setBlacklisted(lteRanElement.isBlacklisted().toString());
+				lTENeighborListInUseLTECellElement.setBlacklisted(lteRanElement.getBlacklisted().toString());
 				lTENeighborListInUseLTECellElement.setCid(lteRanElement.getCid());
 				lTENeighborListInUseLTECellElement.setEnable(TRUE);
 				lTENeighborListInUseLTECellElement.setMustInclude(TRUE);

@@ -379,7 +379,7 @@ public class TestCRUDforDatabase {
 
         // ==PARTIAL UPDATE============================
         System.out.println("Try partial update...");
-        assertEquals(false, data.get(0).isIsRequired());
+        assertEquals(false, data.get(0).requireIsRequired());
         updateInput = new UpdateNetworkElementConnectionInputBuilder().setId(dbId).setIsRequired(true).build();
         try {
             updateOutput = dbProvider.updateNetworkElementConnection(updateInput);
@@ -392,7 +392,7 @@ public class TestCRUDforDatabase {
         readOperation = dbProvider.readNetworkElementConnectionList(readInput);
         data = readOperation.getData();
 
-        assertEquals(true, data.get(0).isIsRequired());
+        assertEquals(true, data.get(0).requireIsRequired());
         assertEquals(url2, data.get(0).getHost());
         assertEquals(port2, data.get(0).getPort().longValue());
 
@@ -463,7 +463,7 @@ public class TestCRUDforDatabase {
         assertNotEquals(0, data.size());
         assertNotNull(data);
         assertEquals(nodeId, data.get(0).getNodeId());
-        assertEquals(isActive, data.get(0).isActive());
+        assertEquals(isActive, data.get(0).requireActive());
 
         // ==UPDATE============================
 
@@ -489,7 +489,7 @@ public class TestCRUDforDatabase {
 
         assertNotNull(data);
         assertEquals(nodeId2, data.get(0).getNodeId());
-        assertEquals(isActive2, data.get(0).isActive());
+        assertEquals(isActive2, data.get(0).getActive());
 
         // ==DELETE================================
         System.out.println("Trying to delete...");

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system xmlns="urn:ietf:params:xml:ns:yang:ietf-system">
+    <clock>
+        <timezone-name>UTC</timezone-name>
+    </clock>
+    <name xmlns="urn:onap:system">NTS_FUNCTION_TYPE_O_RAN_FH-0</name>
+    <web-ui xmlns="urn:onap:system">http://172.18.0.3:8181/odlux/index.html#/configuration/NTS_FUNCTION_TYPE_O_RAN_FH-0</web-ui>
+    <contact>O-RAN-SC SIM project</contact>
+    <hostname>NTS_FUNCTION_TYPE_O_RAN_FH-0</hostname>
+    <location>Open Wireless Lab</location>
+    <ntp>
+        <enabled>false</enabled>
+    </ntp>
+</system>                                                                                                                             
+         

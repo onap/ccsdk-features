@@ -49,17 +49,18 @@ public class JakartaReleaseInformation extends ReleaseInformation {
     private static final String TIMEZONE_TYPE_FORMAT = IstanbulReleaseInformation.TIMEZONE_TYPE_FORMAT;
     private final Logger LOG = LoggerFactory.getLogger(JakartaReleaseInformation.class);
 
-    private static final String TABLEMAPPING_CMLOG_FORMAT =
-            "`id` int(11) NOT NULL AUTO_INCREMENT,\n" + "`controller-id` VARCHAR(40) CHARACTER SET utf8 NOT NULL,\n"
-                    + "`source-type` VARCHAR(100) CHARACTER SET utf8 ,\n"
-                    + "`object-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`timestamp` DATETIME(3) ,\n"
-                    + "`timestamp-tz` " + String.format(TIMEZONE_TYPE_FORMAT, "timestamp-tz")
-                    + " ,\n" + "`node-id` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`counter` INTEGER ,\n"
-                    + "`notification-type` VARCHAR(100) CHARACTER SET utf8 ,\n"
-                    + "`notification-id` VARCHAR(40) CHARACTER SET utf8 ,\n"
-                    + "`source-indicator` VARCHAR(100) CHARACTER SET utf8 ,\n"
-                    + "`path` VARCHAR(255) CHARACTER SET utf8 ,\n" + "`operation` VARCHAR(100) CHARACTER SET utf8 ,\n"
-                    + "`value` VARCHAR(255) CHARACTER SET utf8 ,\n" + "primary key(id)";
+    private static final String TABLEMAPPING_CMLOG_FORMAT = "`id` int(11) NOT NULL AUTO_INCREMENT,\n"
+            + "`controller-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,\n"
+            + "`source-type` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`object-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`timestamp` DATETIME(3) ,\n" + "`timestamp-tz` "
+            + String.format(TIMEZONE_TYPE_FORMAT, "timestamp-tz") + " ,\n"
+            + "`node-id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`counter` INTEGER ,\n"
+            + "`notification-type` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`notification-id` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`source-indicator` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`path` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "`operation` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin ,\n"
+            + "`value` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ,\n" + "primary key(id),foreign key(`controller-id`) "
+            + "references `controller%s`(id) ";
 
     public JakartaReleaseInformation() {
         super(Release.JAKARTA_R1, createDBMap(), createMariaDBMap());

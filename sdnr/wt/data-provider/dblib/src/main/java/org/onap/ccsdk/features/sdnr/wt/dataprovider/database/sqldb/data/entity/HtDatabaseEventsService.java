@@ -40,6 +40,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
@@ -50,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterBuilder;
 import org.slf4j.Logger;
@@ -89,68 +91,68 @@ public class HtDatabaseEventsService implements DataProvider {
         this.dbClient = new SqlDBClient(config.getUrl(), config.getUsername(), config.getPassword());
         this.connectionlogRW = new SqlDBReaderWriter<>(dbClient, Entity.Connectionlog, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+                this.controllerId);
         this.eventlogRW = new SqlDBReaderWriter<>(dbClient, Entity.Eventlog, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+                this.controllerId);
         this.eventRWFaultLog = new SqlDBReaderWriter<>(dbClient, Entity.Faultlog, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+                this.controllerId);
         this.eventRWFaultCurrent = new SqlDBReaderWriterFault<>(dbClient, Entity.Faultcurrent, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+                this.controllerId);
         this.equipmentRW = new SqlDBReaderWriter<>(dbClient, Entity.Inventoryequipment, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+                this.controllerId);
         this.guicutthroughRW = new SqlDBReaderWriter<>(dbClient,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity.Guicutthrough,
                 config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId).setWriteInterface(Guicutthrough.class);
+                this.controllerId).setWriteInterface(Guicutthrough.class);
         this.networkelementConnectionRW = new SqlDBReaderWriter<>(dbClient, Entity.NetworkelementConnection,
                 config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+                this.controllerId);
         this.networkelementConnectionRW.setWriteInterface(NetworkElementConnectionEntity.class);
 
         this.pm15mRW = new SqlDBReaderWriterPm<>(dbClient, Entity.Historicalperformance15min, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+                this.controllerId);
 
         this.pm24hRW = new SqlDBReaderWriterPm<>(dbClient, Entity.Historicalperformance24h, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+                this.controllerId);
 
         this.eventRWCMLog = new SqlDBReaderWriter<>(dbClient, Entity.Cmlog, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data.class,
-                this.dbClient.getDatabaseName(), this.controllerId);
+                this.controllerId);
 
     }
 
     @Override
     public void writeConnectionLog(ConnectionlogEntity event) {
-        this.connectionlogRW.write(event, event.getId());
+        this.connectionlogRW.write(event, null);
     }
 
     @Override
     public void writeEventLog(EventlogEntity event) {
-        this.eventlogRW.write(event, event.getId());
+        this.eventlogRW.write(event, null);
 
     }
 
     @Override
     public void writeFaultLog(FaultlogEntity fault) {
-        this.eventRWFaultLog.write(fault, fault.getId());
+        this.eventRWFaultLog.write(fault, null);
     }
 
     @Override
     public void writeCMLog(CmlogEntity cm) {
-        this.eventRWCMLog.write(cm, cm.getId());
+        this.eventRWCMLog.write(cm, null);
     }
 
     @Override
     public void updateFaultCurrent(FaultcurrentEntity fault) {
-        final String id = fault.getId() != null ? fault.getId() : DatabaseIdGenerator.getFaultcurrentId(fault);
+        final String id = DatabaseIdGenerator.getFaultcurrentId(fault);
         if (FaultEntityManager.isManagedAsCurrentProblem(fault)) {
             if (FaultEntityManager.isNoAlarmIndication(fault)) {
                 LOG.debug("Remove from currentFaults: {}", fault.toString());
@@ -198,8 +200,7 @@ public class HtDatabaseEventsService implements DataProvider {
 
     @Override
     public int clearGuiCutThroughEntriesOfNode(String nodeName) {
-        this.guicutthroughRW.remove(nodeName);
-        return 0;
+        return this.guicutthroughRW.remove(nodeName);
     }
 
     @Override
@@ -213,9 +214,28 @@ public class HtDatabaseEventsService implements DataProvider {
         return this.networkelementConnectionRW.updateOrInsert(ne, nodeId) != null;
     }
 
+    /**
+     * Remove network element connection if not required
+     * This function is called onDisconnect event for netconf node
+     */
     @Override
     public void removeNetworkConnection(String nodeId) {
-        this.networkelementConnectionRW.remove(nodeId);
+        NetworkElementConnectionEntity e = this.networkelementConnectionRW.read(nodeId);
+        Boolean isRequired = e!=null? e.getIsRequired():null;
+        if (e != null && isRequired  != null) {
+            if (isRequired) {
+                LOG.debug("updating connection status for {} of required ne to disconnected", nodeId);
+                this.networkelementConnectionRW.update(new UpdateNetworkElementConnectionInputBuilder()
+                        .setStatus(ConnectionLogStatus.Disconnected).build(), nodeId);
+            } else {
+                LOG.debug("remove networkelement-connection for {} entry because of non-required", nodeId);
+                this.networkelementConnectionRW.remove(nodeId);
+            }
+        } else {
+            LOG.warn("Unable to update connection-status. dbentry for {} not found in networkelement-connection",
+                    nodeId);
+        }
+
 
     }
 

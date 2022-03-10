@@ -70,4 +70,7 @@ public class NetconfAccessorManager {
     public void removeAccessor(NodeId nNodeId) {
         accessorList.remove(nNodeId);
     }
+
+
+
 }

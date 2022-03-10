@@ -28,7 +28,7 @@
 
     <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
 
-    <reference id="domDataBroker" interface="org.opendaylight.mdsal.dom.api.DOMDataBroker"/>
+	<reference id="domDataBroker" interface="org.opendaylight.mdsal.dom.api.DOMDataBroker"/>
 
     <reference id="notificationPublishService"
                interface="org.opendaylight.mdsal.binding.api.NotificationPublishService"/>
@@ -49,7 +49,7 @@
                interface="org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider"/>
 
     <reference id="yangParserFactory" 
-               interface="org.opendaylight.yangtools.yang.model.parser.api.YangParserFactory"/>
+               interface="org.opendaylight.yangtools.yang.parser.api.YangParserFactory"/>
 
     <reference id="bindingNormalizedNodeSerializer"
                interface="org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer"/>

@@ -41,13 +41,13 @@ import java.util.stream.Collectors;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.shiro.authc.BearerToken;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthResponseData;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.client.MappedBaseHttpResponse;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.client.MappingBaseHttpClient;
+import org.apache.shiro.authc.BearerToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

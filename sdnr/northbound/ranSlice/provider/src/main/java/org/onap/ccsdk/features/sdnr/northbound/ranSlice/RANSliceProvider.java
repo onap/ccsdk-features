@@ -37,6 +37,9 @@ import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.common.header.Commo
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.status.StatusBuilder;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.slf4j.Logger;
+
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -403,7 +406,7 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 		if (input == null) {
 			LOG.debug("Rejecting " +rpcName+ " because of invalid input");
-			statusBuilder.setCode(RANSliceResponseCode.REJECT_INVALID_INPUT.getValue());
+			statusBuilder.setCode(Uint16.valueOf(RANSliceResponseCode.REJECT_INVALID_INPUT.getValue()));
 			statusBuilder.setMessage("REJECT - INVALID INPUT.  Missing input");
 			CommonHeaderBuilder hBuilder = new CommonHeaderBuilder();
 			hBuilder.setApiVer("1");
@@ -442,14 +445,14 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 				catch (Exception e)
 				{
 					LOG.error("Caught exception executing service logic for "+ rpcName, e);
-					statusBuilder.setCode(RANSliceResponseCode.FAILURE_DG_FAILURE.getValue());
+					statusBuilder.setCode(Uint16.valueOf(RANSliceResponseCode.FAILURE_DG_FAILURE.getValue()));
 					statusBuilder.setMessage("FAILURE - DG FAILURE ("+e.getMessage()+")");
 					throw new RANSliceRpcInvocationException(statusBuilder.build(), hBuilder.build());
 				}
 			} else {
 				LOG.error("No service logic active for RANSlice: '" + rpcName + "'");
 
-				statusBuilder.setCode(RANSliceResponseCode.REJECT_DG_NOT_FOUND.getValue());
+				statusBuilder.setCode(Uint16.valueOf(RANSliceResponseCode.REJECT_DG_NOT_FOUND.getValue()));
 				statusBuilder.setMessage("FAILURE - DG not found for action "+rpcName);
 				throw new RANSliceRpcInvocationException(statusBuilder.build(), hBuilder.build());
 			}
@@ -458,7 +461,7 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 		{
 			LOG.error("Caught exception looking for service logic", e);
 
-			statusBuilder.setCode(RANSliceResponseCode.FAILURE_DG_FAILURE.getValue());
+			statusBuilder.setCode(Uint16.valueOf(RANSliceResponseCode.FAILURE_DG_FAILURE.getValue()));
 			statusBuilder.setMessage("FAILURE - Unexpected error looking for DG ("+e.getMessage()+")");
 			throw new RANSliceRpcInvocationException(statusBuilder.build(), hBuilder.build());
 		}
