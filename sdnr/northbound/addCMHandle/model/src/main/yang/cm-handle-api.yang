@@ -1,0 +1,97 @@
+/*
+ * Yang model for the CMHandle registration with CPS
+ *
+ */
+
+module CMHandle-API {
+
+    yang-version "1.1";
+
+    namespace "org:onap:ccsdk";
+
+    prefix cmHandle-api;
+
+    description
+      "Defines the services for cm-handle registration for the mounted devices in SDN-C.";
+
+    revision "2021-06-15" {
+      description
+        "YANG Model for CM Handle API";
+    }
+
+    /**********************************************************************************
+     * Data type definitions
+     *
+     * The following data type definitions are used to define common data structures,
+     * define constraints, or to impart special meanings to data objects related to the
+     * SDN-R controller functions.
+     **********************************************************************************/
+
+    typedef action {
+        type enumeration {
+            enum "addCMHandle";
+        }
+        description "The action to be taken by SDNR";
+    }
+
+    /**********************************************************************************
+     * All requests will include this standard header
+     *
+     * The standard request header is used to define a correlation identification for
+     * the request that is returned on all responses.  This correlation identifier
+     * (called the service-request-id) is meaningful to the caller and is included on
+     * all responses from the services.
+     **********************************************************************************/
+
+    /**********************************************************************************
+     * All responses will include this standard header
+     *
+     * The standard response header includes the time of completion as well as a
+     * success|failure indication
+     **********************************************************************************/
+
+
+   grouping status {
+          description "The specific response codes are to be aligned with SDC reference doc
+                       (main table removed to avoid duplication and digression from main table).
+                       See SDC and ECOMP Distribution Consumer Interface Agreement";
+          container status {
+              description "The specific response codes are to be aligned with SDC reference doc
+                           (main table removed to avoid duplication and digression from main table).
+                           See SDC and ECOMP Distribution Consumer Interface Agreement";
+              leaf code {
+                  description "Response code";
+                  type uint16;
+                  mandatory true;
+              }
+              leaf message {
+                  description "Response message";
+                  type string;
+                  mandatory true;
+              }
+          }
+    }
+
+     typedef cmHandle-action-status {
+         type enumeration {
+                 enum "IN_PROGRESS";
+                 enum "SUCCESSFUL";
+                 enum "FAILED";
+                 enum "NOT_FOUND";
+                 enum "ABORTED";
+                 enum "MULTIPLE_REQUESTS_FOUND";
+         }
+         description "The status of the cm-handle registration";
+     }
+
+    /**********************************************************************************
+     * Define the addCMHandle service
+     **********************************************************************************/
+    rpc addCMHandle {
+        description "An operation to register the cm-handle for the mounted devices";
+
+        output {
+            uses status;
+        }
+    }
+}
