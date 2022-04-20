@@ -19,11 +19,10 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.binding;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 
 import java.time.Instant;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom.ORanDMDOMUtility;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom.ORanDeviceManagerQNames;
+
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESPNFRegistrationFieldsPOJO;
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class ORanRegistrationToVESpnfRegistrationMapper {
 
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(ORanFaultToVESFaultMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ORanRegistrationToVESpnfRegistrationMapper.class);
     //CommonEventHeader fields
     private static final String VES_EVENT_DOMAIN = "pnfRegistration";
     private static final String VES_EVENTTYPE = "NetConf Callhome Registration";

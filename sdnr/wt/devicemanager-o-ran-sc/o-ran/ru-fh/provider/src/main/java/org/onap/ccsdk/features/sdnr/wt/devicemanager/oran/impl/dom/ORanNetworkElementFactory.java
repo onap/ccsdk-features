@@ -18,13 +18,11 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.startup;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 
 import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom.ORanDOMNetworkElement;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom.ORanDeviceManagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;

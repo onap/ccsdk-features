@@ -37,7 +37,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.binding.TestORanFaultNotificationListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
@@ -59,7 +58,7 @@ import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestORanDOMFaultNotificationListener {
-    private static final Logger LOG = LoggerFactory.getLogger(TestORanFaultNotificationListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestORanDOMFaultNotificationListener.class);
     private static final String TESTFILENAME = "configFile.txt";
 
     // @formatter:off

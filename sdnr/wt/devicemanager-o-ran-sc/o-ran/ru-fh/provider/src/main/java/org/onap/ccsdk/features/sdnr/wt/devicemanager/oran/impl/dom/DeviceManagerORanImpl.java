@@ -15,11 +15,10 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.binding;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.startup.ORanNetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

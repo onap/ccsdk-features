@@ -22,7 +22,6 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 
 import java.time.Instant;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.binding.ORanFaultToVESFaultMapper;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESFaultFieldsPOJO;
@@ -74,7 +73,7 @@ import org.slf4j.LoggerFactory;
 
 public class ORanDOMFaultToVESFaultMapper {
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(ORanFaultToVESFaultMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ORanDOMFaultToVESFaultMapper.class);
     private static final String VES_EVENT_DOMAIN = "fault";
     private static final String VES_EVENTTYPE = "ORAN_Fault";
     private static final String VES_EVENT_PRIORITY = "Normal";

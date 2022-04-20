@@ -63,140 +63,140 @@ import org.xml.sax.SAXException;
 
 public class TestORanDOMToInternalDataModel {
 
-	private static final QNameModule IETF_HARDWARE_MODULE = QNameModule
-			.create(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-hardware"), Revision.of("2018-03-13"));
-	private static final QName HW_CONTAINER = QName.create(IETF_HARDWARE_MODULE, "hardware");
+    private static final QNameModule IETF_HARDWARE_MODULE =
+            QNameModule.create(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-hardware"), Revision.of("2018-03-13"));
+    private static final QName HW_CONTAINER = QName.create(IETF_HARDWARE_MODULE, "hardware");
 
-	private static final QNameModule IETF_SYSTEM_MODULE = QNameModule
-			.create(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-system"), Revision.of("2014-08-06"));
-	private static final QName IETF_CONTAINER = QName.create(IETF_SYSTEM_MODULE, "system");
+    private static final QNameModule IETF_SYSTEM_MODULE =
+            QNameModule.create(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-system"), Revision.of("2014-08-06"));
+    private static final QName IETF_CONTAINER = QName.create(IETF_SYSTEM_MODULE, "system");
 
-	private static EffectiveModelContext schemaContext;
-	private static Inference hwContainerSchema;
-	private static Inference systemSchema;
+    private static EffectiveModelContext schemaContext;
+    private static Inference hwContainerSchema;
+    private static Inference systemSchema;
 
-	private static final NodeId nodeId = new NodeId("nSky");
+    private static final NodeId nodeId = new NodeId("nSky");
 
-	@BeforeClass
-	public static void setup() throws IOException {
-		schemaContext = YangParserTestUtils.parseYangResourceDirectory("/");
-		hwContainerSchema = Inference.ofDataTreePath(schemaContext, HW_CONTAINER);
-		systemSchema = Inference.ofDataTreePath(schemaContext, IETF_CONTAINER);
-	}
+    @BeforeClass
+    public static void setup() throws IOException {
+        schemaContext = YangParserTestUtils.parseYangResourceDirectory("/");
+        hwContainerSchema = Inference.ofDataTreePath(schemaContext, HW_CONTAINER);
+        systemSchema = Inference.ofDataTreePath(schemaContext, IETF_CONTAINER);
+    }
 
-	@AfterClass
-	public static void cleanup() {
-		schemaContext = null;
-		hwContainerSchema = null;
-		systemSchema = null;
-	}
+    @AfterClass
+    public static void cleanup() {
+        schemaContext = null;
+        hwContainerSchema = null;
+        systemSchema = null;
+    }
 
-	@Test
-	public void testIetfHardwareFromXML() throws XMLStreamException, URISyntaxException, IOException, SAXException {
+    @Test
+    public void testIetfHardwareFromXML() throws XMLStreamException, URISyntaxException, IOException, SAXException {
 
-		final InputStream resourceAsStream = TestORANReadHardware.class.getResourceAsStream("/ietf-hardware.xml");
+        final InputStream resourceAsStream = TestORanDOMToInternalDataModel.class.getResourceAsStream("/ietf-hardware.xml");
 
-		/*
-		 * final XMLInputFactory factory = XMLInputFactory.newInstance();
-		 * XMLStreamReader reader = factory.createXMLStreamReader(resourceAsStream);
-		 */
-		final XMLStreamReader reader = UntrustedXML.createXMLStreamReader(resourceAsStream);
+        /*
+         * final XMLInputFactory factory = XMLInputFactory.newInstance();
+         * XMLStreamReader reader = factory.createXMLStreamReader(resourceAsStream);
+         */
+        final XMLStreamReader reader = UntrustedXML.createXMLStreamReader(resourceAsStream);
 
-		final NormalizedNodeResult result = new NormalizedNodeResult();
-		final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
+        final NormalizedNodeResult result = new NormalizedNodeResult();
+        final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
 
-		final XmlParserStream xmlParser = XmlParserStream.create(streamWriter, hwContainerSchema);
-		xmlParser.parse(reader);
+        final XmlParserStream xmlParser = XmlParserStream.create(streamWriter, hwContainerSchema);
+        xmlParser.parse(reader);
 
-		xmlParser.flush();
-		xmlParser.close();
+        xmlParser.flush();
+        xmlParser.close();
 
-		NormalizedNode transformedInput = result.getResult();
+        NormalizedNode transformedInput = result.getResult();
 
-		List<Inventory> inventoryList = ORanDOMToInternalDataModel.getInventoryList(nodeId, transformedInput);
-		assertEquals("All elements", 27, inventoryList.size());
-		assertEquals("Treelevel always there", 0,
-				inventoryList.stream().filter(inventory -> inventory.getTreeLevel() == null).count());
-	}
+        List<Inventory> inventoryList = ORanDOMToInternalDataModel.getInventoryList(nodeId, transformedInput);
+        assertEquals("All elements", 27, inventoryList.size());
+        assertEquals("Treelevel always there", 0,
+                inventoryList.stream().filter(inventory -> inventory.getTreeLevel() == null).count());
+    }
 
-	@Test
-	public void testIetfSystemFromXML() throws XMLStreamException, URISyntaxException, IOException, SAXException {
+    @Test
+    public void testIetfSystemFromXML() throws XMLStreamException, URISyntaxException, IOException, SAXException {
 
-		final InputStream resourceAsStream = TestORANReadHardware.class.getResourceAsStream("/onap-system.xml");
+        final InputStream resourceAsStream = TestORanDOMToInternalDataModel.class.getResourceAsStream("/onap-system.xml");
 
-		final XMLStreamReader reader = UntrustedXML.createXMLStreamReader(resourceAsStream);
+        final XMLStreamReader reader = UntrustedXML.createXMLStreamReader(resourceAsStream);
 
-		final NormalizedNodeResult result = new NormalizedNodeResult();
-		final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
+        final NormalizedNodeResult result = new NormalizedNodeResult();
+        final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
 
-		final XmlParserStream xmlParser = XmlParserStream.create(streamWriter, systemSchema);
-		xmlParser.parse(reader);
+        final XmlParserStream xmlParser = XmlParserStream.create(streamWriter, systemSchema);
+        xmlParser.parse(reader);
 
-		xmlParser.flush();
-		xmlParser.close();
+        xmlParser.flush();
+        xmlParser.close();
 
-		NormalizedNode transformedInput = result.getResult();
-		ContainerNode cn = (ContainerNode) transformedInput;
-		AugmentationIdentifier onapSystemIID = YangInstanceIdentifier.AugmentationIdentifier.create(
-				Sets.newHashSet(ORanDeviceManagerQNames.ONAP_SYSTEM_NAME, ORanDeviceManagerQNames.ONAP_SYSTEM_WEB_UI));
-		Optional<Guicutthrough> gc = ORanDOMToInternalDataModel.getGuicutthrough(cn.getChildByArg(onapSystemIID));
-		assertEquals(gc.isPresent(), true);
+        NormalizedNode transformedInput = result.getResult();
+        ContainerNode cn = (ContainerNode) transformedInput;
+        AugmentationIdentifier onapSystemIID = YangInstanceIdentifier.AugmentationIdentifier.create(
+                Sets.newHashSet(ORanDeviceManagerQNames.ONAP_SYSTEM_NAME, ORanDeviceManagerQNames.ONAP_SYSTEM_WEB_UI));
+        Optional<Guicutthrough> gc = ORanDOMToInternalDataModel.getGuicutthrough(cn.getChildByArg(onapSystemIID));
+        assertEquals(gc.isPresent(), true);
 
-	}
+    }
 
-	@Test
-	public void testORANFault() {
-		ContainerNode cn = createORANDOMFault();
-		NetconfDeviceNotification faultNotif = new NetconfDeviceNotification(cn, Instant.now());
-		FaultlogEntity fle = ORanDOMToInternalDataModel.getFaultLog(faultNotif, nodeId, 1);
-		assertEquals(fle.getId(), "47");
-	}
+    @Test
+    public void testORANFault() {
+        ContainerNode cn = createORANDOMFault();
+        NetconfDeviceNotification faultNotif = new NetconfDeviceNotification(cn, Instant.now());
+        FaultlogEntity fle = ORanDOMToInternalDataModel.getFaultLog(faultNotif, nodeId, 1);
+        assertEquals(fle.getId(), "47");
+    }
 
-	public static ContainerNode createORANDOMFault() {
-		final QName fault_id = QName.create(ORanDeviceManagerQNames.ORAN_FM_FAULT_ID, "fault-id");
-		final QName fault_source = QName.create(ORanDeviceManagerQNames.ORAN_FM_FAULT_SOURCE, "fault-source");
-		final QName fault_severity = QName.create(ORanDeviceManagerQNames.ORAN_FM_FAULT_SEVERITY, "fault-severity");
-		final QName is_cleared = QName.create(ORanDeviceManagerQNames.ORAN_FM_FAULT_IS_CLEARED, "is-cleared");
-		final QName fault_text = QName.create(ORanDeviceManagerQNames.ORAN_FM_FAULT_TEXT, "fault-text");
-		return Builders.containerBuilder()
-				.withNodeIdentifier(NodeIdentifier.create(ORanDeviceManagerQNames.ORAN_FM_ALARM_NOTIF))
-				.withChild(ImmutableNodes.leafNode(fault_id, "47"))
-				.withChild(ImmutableNodes.leafNode(fault_source, "Slot-2-Port-B"))
-				.withChild(ImmutableNodes.leafNode(fault_severity, "MAJOR"))
-				.withChild(ImmutableNodes.leafNode(is_cleared, "true"))
-				.withChild(ImmutableNodes.leafNode(fault_text, "CPRI Port Down")).build();
-	}
+    public static ContainerNode createORANDOMFault() {
+        final QName fault_id = QName.create(ORanDeviceManagerQNames.ORAN_FM_FAULT_ID, "fault-id");
+        final QName fault_source = QName.create(ORanDeviceManagerQNames.ORAN_FM_FAULT_SOURCE, "fault-source");
+        final QName fault_severity = QName.create(ORanDeviceManagerQNames.ORAN_FM_FAULT_SEVERITY, "fault-severity");
+        final QName is_cleared = QName.create(ORanDeviceManagerQNames.ORAN_FM_FAULT_IS_CLEARED, "is-cleared");
+        final QName fault_text = QName.create(ORanDeviceManagerQNames.ORAN_FM_FAULT_TEXT, "fault-text");
+        return Builders.containerBuilder()
+                .withNodeIdentifier(NodeIdentifier.create(ORanDeviceManagerQNames.ORAN_FM_ALARM_NOTIF))
+                .withChild(ImmutableNodes.leafNode(fault_id, "47"))
+                .withChild(ImmutableNodes.leafNode(fault_source, "Slot-2-Port-B"))
+                .withChild(ImmutableNodes.leafNode(fault_severity, "MAJOR"))
+                .withChild(ImmutableNodes.leafNode(is_cleared, "true"))
+                .withChild(ImmutableNodes.leafNode(fault_text, "CPRI Port Down")).build();
+    }
 
-	public static class NetconfDeviceNotification implements DOMNotification, DOMEvent {
-		private final ContainerNode content;
-		private final Absolute schemaPath;
-		private final Instant eventTime;
+    public static class NetconfDeviceNotification implements DOMNotification, DOMEvent {
+        private final ContainerNode content;
+        private final Absolute schemaPath;
+        private final Instant eventTime;
 
-		NetconfDeviceNotification(final ContainerNode content, final Instant eventTime) {
-			this.content = content;
-			this.eventTime = eventTime;
-			this.schemaPath = Absolute.of(content.getIdentifier().getNodeType());
-		}
+        NetconfDeviceNotification(final ContainerNode content, final Instant eventTime) {
+            this.content = content;
+            this.eventTime = eventTime;
+            this.schemaPath = Absolute.of(content.getIdentifier().getNodeType());
+        }
 
-		NetconfDeviceNotification(final ContainerNode content, final Absolute schemaPath, final Instant eventTime) {
-			this.content = content;
-			this.eventTime = eventTime;
-			this.schemaPath = schemaPath;
-		}
+        NetconfDeviceNotification(final ContainerNode content, final Absolute schemaPath, final Instant eventTime) {
+            this.content = content;
+            this.eventTime = eventTime;
+            this.schemaPath = schemaPath;
+        }
 
-		@Override
-		public Absolute getType() {
-			return schemaPath;
-		}
+        @Override
+        public Absolute getType() {
+            return schemaPath;
+        }
 
-		@Override
-		public ContainerNode getBody() {
-			return content;
-		}
+        @Override
+        public ContainerNode getBody() {
+            return content;
+        }
 
-		@Override
-		public Instant getEventInstant() {
-			return eventTime;
-		}
-	}
+        @Override
+        public Instant getEventInstant() {
+            return eventTime;
+        }
+    }
 }

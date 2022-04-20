@@ -37,9 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
-import org.opendaylight.yangtools.yang.binding.CodeHelpers;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.ChoiceNode;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.UnkeyedListNode;
 import org.opendaylight.yangtools.yang.model.api.stmt.SchemaNodeIdentifier.Absolute;
@@ -48,103 +46,103 @@ import org.slf4j.LoggerFactory;
 
 public class ORanDOMChangeNotificationListener implements DOMNotificationListener {
 
-	private static final Logger log = LoggerFactory.getLogger(ORanDOMChangeNotificationListener.class);
+    private static final Logger log = LoggerFactory.getLogger(ORanDOMChangeNotificationListener.class);
 
-	private final NetconfDomAccessor netconfDomAccessor;
-	private final DataProvider databaseService;
-	private @NonNull VESCollectorService vesCollectorService;
-	private final DOMNotificationToXPath domNotificationXPath;
-	private ORanDOMNotifToVESEventAssembly mapper = null;
-	private static int sequenceNo = 0;
+    private final NetconfDomAccessor netconfDomAccessor;
+    private final DataProvider databaseService;
+    private @NonNull VESCollectorService vesCollectorService;
+    private final DOMNotificationToXPath domNotificationXPath;
+    private ORanDOMNotifToVESEventAssembly mapper = null;
+    private static int sequenceNo = 0;
 
-	public ORanDOMChangeNotificationListener(NetconfDomAccessor netconfDomAccessor,
-			@NonNull VESCollectorService vesCollectorService, DataProvider databaseService) {
-		this.netconfDomAccessor = netconfDomAccessor;
-		this.databaseService = databaseService;
-		this.vesCollectorService = vesCollectorService;
-		domNotificationXPath = new DOMNotificationToXPath();
-	}
+    public ORanDOMChangeNotificationListener(NetconfDomAccessor netconfDomAccessor,
+            @NonNull VESCollectorService vesCollectorService, DataProvider databaseService) {
+        this.netconfDomAccessor = netconfDomAccessor;
+        this.databaseService = databaseService;
+        this.vesCollectorService = vesCollectorService;
+        domNotificationXPath = new DOMNotificationToXPath();
+    }
 
-	@Override
-	public void onNotification(@NonNull DOMNotification domNotification) {
-		if (domNotification.getType()
-				.equals(Absolute.of(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_CONFIG_CHANGE))) {
-			handleNetconfConfigChange(domNotification);
-		}
-	}
+    @Override
+    public void onNotification(@NonNull DOMNotification domNotification) {
+        if (domNotification.getType()
+                .equals(Absolute.of(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_CONFIG_CHANGE))) {
+            handleNetconfConfigChange(domNotification);
+        }
+    }
 
-	private void handleNetconfConfigChange(@NonNull DOMNotification domNotification) {
-		DateAndTime eventTime;
-		Instant notificationEventTime = null;
-		if (domNotification instanceof DOMEvent) {
-			notificationEventTime = ((DOMEvent) domNotification).getEventInstant();
-			eventTime = NetconfTimeStampImpl.getConverter().getTimeStamp(notificationEventTime.toString());
-		} else {
-			eventTime = NetconfTimeStampImpl.getConverter().getTimeStamp();
-		}
+    private void handleNetconfConfigChange(@NonNull DOMNotification domNotification) {
+        DateAndTime eventTime;
+        Instant notificationEventTime = null;
+        if (domNotification instanceof DOMEvent) {
+            notificationEventTime = ((DOMEvent) domNotification).getEventInstant();
+            eventTime = NetconfTimeStampImpl.getConverter().getTimeStamp(notificationEventTime.toString());
+        } else {
+            eventTime = NetconfTimeStampImpl.getConverter().getTimeStamp();
+        }
 
-		ContainerNode cn = domNotification.getBody();
+        ContainerNode cn = domNotification.getBody();
 
-		// Process the changed-by child
-//		ContainerNode changedByContainerNode = (ContainerNode) cn
-//				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_CHANGEDBY));
-//		ChoiceNode serverOrUserIDVal = (ChoiceNode) changedByContainerNode
-//				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_SERVERORUSER));
-//		@SuppressWarnings("unused")
-//		String userIDValue = serverOrUserIDVal
-//				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_USERNAME)).body()
-//				.toString();
-//		@SuppressWarnings("unused")
-//		Integer sessionIDVal = Integer.valueOf(serverOrUserIDVal
-//				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_SESSIONID)).body()
-//				.toString());
-//
-//		// Process the datastore child
-//		@SuppressWarnings("unused")
-//		String datastoreValue = cn
-//				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_DATASTORE)).body()
-//				.toString();
+        // Process the changed-by child
+        //		ContainerNode changedByContainerNode = (ContainerNode) cn
+        //				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_CHANGEDBY));
+        //		ChoiceNode serverOrUserIDVal = (ChoiceNode) changedByContainerNode
+        //				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_SERVERORUSER));
+        //		@SuppressWarnings("unused")
+        //		String userIDValue = serverOrUserIDVal
+        //				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_USERNAME)).body()
+        //				.toString();
+        //		@SuppressWarnings("unused")
+        //		Integer sessionIDVal = Integer.valueOf(serverOrUserIDVal
+        //				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_SESSIONID)).body()
+        //				.toString());
+        //
+        //		// Process the datastore child
+        //		@SuppressWarnings("unused")
+        //		String datastoreValue = cn
+        //				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_DATASTORE)).body()
+        //				.toString();
 
-		// Process the edit child
-		UnkeyedListNode editList = (UnkeyedListNode) cn
-				.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_EDITNODE));
-		if (editList != null) {
-			for (int listCnt = 0; listCnt < editList.size(); listCnt++) {
-				String operationValue = editList.childAt(listCnt)
-						.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_OPERATION))
-						.body().toString();
-				String targetValue = editList.childAt(listCnt)
-						.childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_TARGET))
-						.body().toString();
+        // Process the edit child
+        UnkeyedListNode editList = (UnkeyedListNode) cn
+                .childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_EDITNODE));
+        if (editList != null) {
+            for (int listCnt = 0; listCnt < editList.size(); listCnt++) {
+                String operationValue = editList.childAt(listCnt)
+                        .childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_OPERATION))
+                        .body().toString();
+                String targetValue = editList.childAt(listCnt)
+                        .childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_TARGET))
+                        .body().toString();
 
-				EventlogEntity eventLogEntity1 = new EventlogBuilder()
-						.setNodeId(netconfDomAccessor.getNodeId().getValue()).setCounter(sequenceNo++)
-						.setTimestamp(eventTime).setObjectId(targetValue).setAttributeName("N.A")
-						.setSourceType(SourceType.Netconf).setNewValue(String.valueOf(operationValue)).build();
-				databaseService.writeEventLog(eventLogEntity1);
-			}
-		}
+                EventlogEntity eventLogEntity1 = new EventlogBuilder()
+                        .setNodeId(netconfDomAccessor.getNodeId().getValue()).setCounter(sequenceNo++)
+                        .setTimestamp(eventTime).setObjectId(targetValue).setAttributeName("N.A")
+                        .setSourceType(SourceType.Netconf).setNewValue(String.valueOf(operationValue)).build();
+                databaseService.writeEventLog(eventLogEntity1);
+            }
+        }
 
-		if (vesCollectorService.getConfig().isVESCollectorEnabled()) {
-			if (mapper == null) {
-				this.mapper = new ORanDOMNotifToVESEventAssembly(netconfDomAccessor, vesCollectorService);
-			}
-			VESCommonEventHeaderPOJO header = mapper.createVESCommonEventHeader(
-					domNotificationXPath.getTime(domNotification),
-					ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_CONFIG_CHANGE.getLocalName(),
-					sequenceNo);
-			VESNotificationFieldsPOJO body = mapper.createVESNotificationFields(
-					domNotificationXPath.convertDomNotifToXPath(domNotification),
-					ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_CONFIG_CHANGE.getLocalName());
-			log.info("domNotification in XPath format = {}",
-					domNotificationXPath.convertDomNotifToXPath(domNotification));
-			try {
-				vesCollectorService.publishVESMessage(vesCollectorService.generateVESEvent(header, body));
-			} catch (JsonProcessingException e) {
-				log.warn("Exception while generating JSON object ", e);
+        if (vesCollectorService.getConfig().isVESCollectorEnabled()) {
+            if (mapper == null) {
+                this.mapper = new ORanDOMNotifToVESEventAssembly(netconfDomAccessor, vesCollectorService);
+            }
+            VESCommonEventHeaderPOJO header =
+                    mapper.createVESCommonEventHeader(domNotificationXPath.getTime(domNotification),
+                            ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_CONFIG_CHANGE.getLocalName(),
+                            sequenceNo);
+            VESNotificationFieldsPOJO body =
+                    mapper.createVESNotificationFields(domNotificationXPath.convertDomNotifToXPath(domNotification),
+                            ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_CONFIG_CHANGE.getLocalName());
+            log.info("domNotification in XPath format = {}",
+                    domNotificationXPath.convertDomNotifToXPath(domNotification));
+            try {
+                vesCollectorService.publishVESMessage(vesCollectorService.generateVESEvent(header, body));
+            } catch (JsonProcessingException e) {
+                log.warn("Exception while generating JSON object ", e);
 
-			}
-		}
+            }
+        }
 
-	}
+    }
 }

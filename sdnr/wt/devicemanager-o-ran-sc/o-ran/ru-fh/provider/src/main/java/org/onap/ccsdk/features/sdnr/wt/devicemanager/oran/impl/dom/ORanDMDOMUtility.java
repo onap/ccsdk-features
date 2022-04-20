@@ -42,49 +42,49 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.VerifyException;
 
 public class ORanDMDOMUtility {
-	public static final Logger LOG = LoggerFactory.getLogger(ORanDMDOMUtility.class);
+    public static final Logger LOG = LoggerFactory.getLogger(ORanDMDOMUtility.class);
 
-	public static String getKeyValue(MapEntryNode componentEntry) {
-		NodeIdentifierWithPredicates componentKey = componentEntry.getIdentifier(); // list key
-		return (String) componentKey.getValue(ORanDeviceManagerQNames.IETF_HW_COMPONENT_LIST_KEY);
-	}
+    public static String getKeyValue(MapEntryNode componentEntry) {
+        NodeIdentifierWithPredicates componentKey = componentEntry.getIdentifier(); // list key
+        return (String) componentKey.getValue(ORanDeviceManagerQNames.IETF_HW_COMPONENT_LIST_KEY);
+    }
 
-	public static String getLeafValue(DataContainerNode componentEntry, QName leafQName) {
-		NodeIdentifier leafNodeIdentifier = new NodeIdentifier(leafQName);
-		try {
-			LeafNode<?> optLeafNode = (LeafNode<?>) componentEntry.getChildByArg(leafNodeIdentifier);
-			if (optLeafNode.body() instanceof QName) {
-				LOG.debug("Leaf is of type QName");
-			}
-			return optLeafNode.body().toString();
-		} catch (VerifyException ve) {
-			LOG.debug("Leaf with QName {} not found", leafQName.toString());
-			return null;
-		}
-	}
+    public static String getLeafValue(DataContainerNode componentEntry, QName leafQName) {
+        NodeIdentifier leafNodeIdentifier = new NodeIdentifier(leafQName);
+        try {
+            LeafNode<?> optLeafNode = (LeafNode<?>) componentEntry.getChildByArg(leafNodeIdentifier);
+            if (optLeafNode.body() instanceof QName) {
+                LOG.debug("Leaf is of type QName");
+            }
+            return optLeafNode.body().toString();
+        } catch (VerifyException ve) {
+            LOG.debug("Leaf with QName {} not found", leafQName.toString());
+            return null;
+        }
+    }
 
-	public static List<String> getLeafListValue(DataContainerNode componentEntry, QName leafListQName) {
-		List<String> containsChildList = new ArrayList<String>();
-		try {
-			DataContainerChild childSet = componentEntry.getChildByArg(new NodeIdentifier(leafListQName));
-			Collection<?> childEntry = (Collection<?>) childSet.body();
-			Iterator<?> childEntryItr = childEntry.iterator();
-			while (childEntryItr.hasNext()) {
-				LeafSetEntryNode<?> childEntryNode = (LeafSetEntryNode<?>) childEntryItr.next();
-				containsChildList.add(childEntryNode.body().toString());
-			}
-		} catch (VerifyException ve) {
-			LOG.debug("Child for {} does not exist", leafListQName);
-		}
-		return containsChildList;
-	}
+    public static List<String> getLeafListValue(DataContainerNode componentEntry, QName leafListQName) {
+        List<String> containsChildList = new ArrayList<String>();
+        try {
+            DataContainerChild childSet = componentEntry.getChildByArg(new NodeIdentifier(leafListQName));
+            Collection<?> childEntry = (Collection<?>) childSet.body();
+            Iterator<?> childEntryItr = childEntry.iterator();
+            while (childEntryItr.hasNext()) {
+                LeafSetEntryNode<?> childEntryNode = (LeafSetEntryNode<?>) childEntryItr.next();
+                containsChildList.add(childEntryNode.body().toString());
+            }
+        } catch (VerifyException ve) {
+            LOG.debug("Child for {} does not exist", leafListQName);
+        }
+        return containsChildList;
+    }
 
-	public static Instant getNotificationInstant(DOMNotification notification) {
-		if (notification instanceof DOMEvent) {
-			return ((DOMEvent) notification).getEventInstant();
-		} else {
-			return Instant.now();
-		}
-	}
+    public static Instant getNotificationInstant(DOMNotification notification) {
+        if (notification instanceof DOMEvent) {
+            return ((DOMEvent) notification).getEventInstant();
+        } else {
+            return Instant.now();
+        }
+    }
 
 }

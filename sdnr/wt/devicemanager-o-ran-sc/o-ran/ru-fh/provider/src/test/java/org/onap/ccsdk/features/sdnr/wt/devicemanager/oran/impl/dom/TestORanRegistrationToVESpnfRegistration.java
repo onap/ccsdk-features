@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.binding.ORanRegistrationToVESpnfRegistrationMapper;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
@@ -51,69 +50,69 @@ import org.opendaylight.yangtools.yang.data.impl.schema.Builders;
 @RunWith(MockitoJUnitRunner.class)
 public class TestORanRegistrationToVESpnfRegistration {
 
-	@Mock
-	NetconfAccessor netconfAccessor;
-	@Mock
-	VESCollectorService vesCollectorService;
-	@Mock
-	VESCollectorCfgService vesCfgService;
+    @Mock
+    NetconfAccessor netconfAccessor;
+    @Mock
+    VESCollectorService vesCollectorService;
+    @Mock
+    VESCollectorCfgService vesCfgService;
 
-	private static final QNameModule IETF_HARDWARE_MODULE = QNameModule
-			.create(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-hardware"), Revision.of("2018-03-13"));
-	private static final QName HW_COMPONENT_LIST = QName.create(IETF_HARDWARE_MODULE, "component");
-	private static final QName HW_COMPONENT_LIST_KEY = QName.create(IETF_HARDWARE_MODULE, "name");
-	private static final QName HW_COMPONENT_LIST_CLASS = QName.create(IETF_HARDWARE_MODULE, "class");
-	private static final QName HW_COMPONENT_LIST_PHYSICAL_INDEX = QName.create(IETF_HARDWARE_MODULE, "physical-index"); // leaf:int32
-	private static final QName HW_COMPONENT_LIST_DESC = QName.create(IETF_HARDWARE_MODULE, "description"); // leaf:String
-	private static final QName HW_COMPONENT_LIST_SW_REV = QName.create(IETF_HARDWARE_MODULE, "software-rev"); // leaf:String
-	private static final QName HW_COMPONENT_LIST_SER_NUM = QName.create(IETF_HARDWARE_MODULE, "serial-num"); // leaf:String
-	private static final QName HW_COMPONENT_LIST_MFG_NAME = QName.create(IETF_HARDWARE_MODULE, "mfg-name"); // leaf:String
-	private static final QName HW_COMPONENT_LIST_MODEL_NAME = QName.create(IETF_HARDWARE_MODULE, "model-name"); // leaf:String
-	private static final QName HW_COMPONENT_LIST_ALIAS = QName.create(IETF_HARDWARE_MODULE, "alias"); // leaf:String
+    private static final QNameModule IETF_HARDWARE_MODULE =
+            QNameModule.create(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-hardware"), Revision.of("2018-03-13"));
+    private static final QName HW_COMPONENT_LIST = QName.create(IETF_HARDWARE_MODULE, "component");
+    private static final QName HW_COMPONENT_LIST_KEY = QName.create(IETF_HARDWARE_MODULE, "name");
+    private static final QName HW_COMPONENT_LIST_CLASS = QName.create(IETF_HARDWARE_MODULE, "class");
+    private static final QName HW_COMPONENT_LIST_PHYSICAL_INDEX = QName.create(IETF_HARDWARE_MODULE, "physical-index"); // leaf:int32
+    private static final QName HW_COMPONENT_LIST_DESC = QName.create(IETF_HARDWARE_MODULE, "description"); // leaf:String
+    private static final QName HW_COMPONENT_LIST_SW_REV = QName.create(IETF_HARDWARE_MODULE, "software-rev"); // leaf:String
+    private static final QName HW_COMPONENT_LIST_SER_NUM = QName.create(IETF_HARDWARE_MODULE, "serial-num"); // leaf:String
+    private static final QName HW_COMPONENT_LIST_MFG_NAME = QName.create(IETF_HARDWARE_MODULE, "mfg-name"); // leaf:String
+    private static final QName HW_COMPONENT_LIST_MODEL_NAME = QName.create(IETF_HARDWARE_MODULE, "model-name"); // leaf:String
+    private static final QName HW_COMPONENT_LIST_ALIAS = QName.create(IETF_HARDWARE_MODULE, "alias"); // leaf:String
 
-	@Test
-	public void test() {
-		NetconfNode testNetconfNode = mock(NetconfNode.class);
-		when(testNetconfNode.getHost()).thenReturn(new Host(new IpAddress(new Ipv4Address("10.10.10.10"))));
+    @Test
+    public void test() {
+        NetconfNode testNetconfNode = mock(NetconfNode.class);
+        when(testNetconfNode.getHost()).thenReturn(new Host(new IpAddress(new Ipv4Address("10.10.10.10"))));
 
-		when(netconfAccessor.getNodeId()).thenReturn(new NodeId("nSky"));
-		when(netconfAccessor.getNetconfNode()).thenReturn(testNetconfNode);
-		when(vesCollectorService.getConfig()).thenReturn(vesCfgService);
-		when(vesCfgService.getReportingEntityName()).thenReturn("SDN-R");
+        when(netconfAccessor.getNodeId()).thenReturn(new NodeId("nSky"));
+        when(netconfAccessor.getNetconfNode()).thenReturn(testNetconfNode);
+        when(vesCollectorService.getConfig()).thenReturn(vesCfgService);
+        when(vesCfgService.getReportingEntityName()).thenReturn("SDN-R");
 
-		ORanRegistrationToVESpnfRegistrationMapper mapper = new ORanRegistrationToVESpnfRegistrationMapper(
-				netconfAccessor, vesCollectorService);
-		VESCommonEventHeaderPOJO commonHeader = mapper.mapCommonEventHeader(buildComponentEntry());
-		VESPNFRegistrationFieldsPOJO pnfFields = mapper.mapPNFRegistrationFields(buildComponentEntry());
+        ORanRegistrationToVESpnfRegistrationMapper mapper =
+                new ORanRegistrationToVESpnfRegistrationMapper(netconfAccessor, vesCollectorService);
+        VESCommonEventHeaderPOJO commonHeader = mapper.mapCommonEventHeader(buildComponentEntry());
+        VESPNFRegistrationFieldsPOJO pnfFields = mapper.mapPNFRegistrationFields(buildComponentEntry());
 
-		assertEquals(commonHeader.getNfVendorName(), "ISCO");
-		assertEquals(pnfFields.getUnitType(), "chassis");
-		assertEquals(pnfFields.getSerialNumber(), "10283");
-		assertEquals(pnfFields.getSoftwareVersion(), "3.8.1 (2020-10-30 11:47:59)");
-	}
+        assertEquals(commonHeader.getNfVendorName(), "ISCO");
+        assertEquals(pnfFields.getUnitType(), "chassis");
+        assertEquals(pnfFields.getSerialNumber(), "10283");
+        assertEquals(pnfFields.getSoftwareVersion(), "3.8.1 (2020-10-30 11:47:59)");
+    }
 
-	public MapEntryNode buildComponentEntry() {
-		return Builders.mapEntryBuilder()
-				.withNodeIdentifier(
-						NodeIdentifierWithPredicates.of(HW_COMPONENT_LIST, HW_COMPONENT_LIST_KEY, "chassis"))
-				.withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_CLASS))
-						.withValue("ianahw:chassis").build())
-				.withChild(Builders.leafBuilder()
-						.withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_PHYSICAL_INDEX)).withValue(1).build())
-				.withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_MFG_NAME))
-						.withValue("ISCO").build())
-				.withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_MODEL_NAME))
-						.withValue("ProteusCPRI Compact").build())
-				.withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_ALIAS))
-						.withValue("chassis").build())
-				.withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_SER_NUM))
-						.withValue("10283").build())
-				.withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_DESC))
-						.withValue("HighStreet-ONAP40").build())
-				.withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_SW_REV))
-						.withValue("3.8.1 (2020-10-30 11:47:59)").build())
-				.build();
+    public MapEntryNode buildComponentEntry() {
+        return Builders.mapEntryBuilder()
+                .withNodeIdentifier(
+                        NodeIdentifierWithPredicates.of(HW_COMPONENT_LIST, HW_COMPONENT_LIST_KEY, "chassis"))
+                .withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_CLASS))
+                        .withValue("ianahw:chassis").build())
+                .withChild(Builders.leafBuilder()
+                        .withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_PHYSICAL_INDEX)).withValue(1).build())
+                .withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_MFG_NAME))
+                        .withValue("ISCO").build())
+                .withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_MODEL_NAME))
+                        .withValue("ProteusCPRI Compact").build())
+                .withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_ALIAS))
+                        .withValue("chassis").build())
+                .withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_SER_NUM))
+                        .withValue("10283").build())
+                .withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_DESC))
+                        .withValue("HighStreet-ONAP40").build())
+                .withChild(Builders.leafBuilder().withNodeIdentifier(new NodeIdentifier(HW_COMPONENT_LIST_SW_REV))
+                        .withValue("3.8.1 (2020-10-30 11:47:59)").build())
+                .build();
 
-	}
+    }
 
 }

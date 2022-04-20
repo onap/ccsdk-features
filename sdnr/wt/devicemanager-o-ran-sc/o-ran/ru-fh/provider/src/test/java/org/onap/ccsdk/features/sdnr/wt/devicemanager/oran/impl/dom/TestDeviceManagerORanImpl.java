@@ -2,7 +2,7 @@
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt
  * =================================================================================================
- * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * Copyright (C) 2022 highstreet technologies GmbH Intellectual Property. All rights reserved.
  * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -22,7 +22,6 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.binding.DeviceManagerORanImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 
 public class TestDeviceManagerORanImpl {
