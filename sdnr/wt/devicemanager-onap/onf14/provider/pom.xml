@@ -112,7 +112,6 @@
 	        <plugin>
           <groupId>org.opendaylight.yangtools</groupId>
           <artifactId>yang-maven-plugin</artifactId>
-          <version>7.0.9</version>
           <executions>
             <execution>
               <id>binding</id>
