@@ -38,6 +38,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom.util.TestYangParserUtil;
 import org.opendaylight.yangtools.util.xml.UntrustedXML;
 import org.opendaylight.yangtools.yang.binding.CodeHelpers;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -109,7 +110,7 @@ public class TestORANReadHardware {
 
 	@BeforeClass
 	public static void setup() throws IOException {
-		schemaContext = YangParserTestUtils.parseYangResourceDirectory("/");
+		schemaContext = TestYangParserUtil.parseYangResourceDirectory("/");
 		hwContainerSchema = Inference.ofDataTreePath(schemaContext, HW_CONTAINER);
 		System.out.println("URL is - " + TestORANReadHardware.class.getResource("/"));
 	}

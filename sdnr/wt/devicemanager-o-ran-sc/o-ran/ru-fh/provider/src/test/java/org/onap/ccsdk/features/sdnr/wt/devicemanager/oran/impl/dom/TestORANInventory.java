@@ -37,6 +37,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom.util.TestYangParserUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -85,7 +86,7 @@ public class TestORANInventory {
 
 	@BeforeClass
 	public static void setup() throws IOException {
-		schemaContext = YangParserTestUtils.parseYangResourceDirectory("/");
+		schemaContext = TestYangParserUtil.parseYangResourceDirectory("/");
 		hwContainerSchema = Inference.ofDataTreePath(schemaContext, HW_CONTAINER);
 		System.out.println("URL is - " + TestORANReadHardware.class.getResource("/"));
 	}
