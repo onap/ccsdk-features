@@ -297,7 +297,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.ltp.list.output.PaginationBuilder(
                         result.getPagination()).build());
-        outputBuilder.setData(result.getResult());
+        outputBuilder.setData(result.getResultSet());
         return outputBuilder;
     }
 
@@ -308,7 +308,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.device.list.output.PaginationBuilder(
                         result.getPagination()).build());
-        outputBuilder.setData(result.getResult());
+        outputBuilder.setData(result.getResultSet());
         return outputBuilder;
     }
 
@@ -322,7 +322,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.ltp.list.output.PaginationBuilder(
                         result.getPagination()).build());
-        outputBuilder.setData(result.getResult());
+        outputBuilder.setData(result.getResultSet());
         return outputBuilder;
     }
 
@@ -335,14 +335,14 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.device.list.output.PaginationBuilder(
                         result.getPagination()).build());
-        outputBuilder.setData(result.getResult());
+        outputBuilder.setData(result.getResultSet());
         return outputBuilder;
     }
 
     @Override
-    public ReadStatusOutputBuilder readStatus() throws IOException {
+    public ReadStatusOutputBuilder readStatus(EntityInput input) throws IOException {
         QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.Data> result =
-                readStatus.getDataStatus();
+                readStatus.getDataStatus(input);
 
         ReadStatusOutputBuilder outputBuilder = new ReadStatusOutputBuilder();
         outputBuilder.setData(result.getResult());
@@ -352,7 +352,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     @Override
     public CreateNetworkElementConnectionOutputBuilder createNetworkElementConnection(
             NetworkElementConnectionEntity input) throws IOException {
-        String id = this.networkelementConnectionRW.write(input, input.getNodeId());
+        String id = this.networkelementConnectionRW.updateOrInsert(input, input.getNodeId());
         if (id == null) {
             throw new IOException(EXCEPTION_UNABLE_TO_WRITE_IN_DATABASE);
         }

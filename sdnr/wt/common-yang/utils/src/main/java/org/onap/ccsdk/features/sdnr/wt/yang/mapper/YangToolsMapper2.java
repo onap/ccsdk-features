@@ -22,6 +22,8 @@
 package org.onap.ccsdk.features.sdnr.wt.yang.mapper;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import javax.annotation.Nullable;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsBuilderAnnotationIntrospector;
@@ -40,7 +42,7 @@ public class YangToolsMapper2<T extends DataObject> extends YangToolsMapper {
     private static final Logger LOG = LoggerFactory.getLogger(YangToolsMapper2.class);
     private static final long serialVersionUID = 1L;
 
-    private @Nullable final Class<? extends Builder<? extends T>> builderClazz;
+    private @Nullable final Class<?> builderClazz;
 
     /**
      * Generic Object creation of yangtools java class builder pattern.
@@ -52,7 +54,7 @@ public class YangToolsMapper2<T extends DataObject> extends YangToolsMapper {
      *        If null the clazz is expected to support normal jackson build pattern.
      * @throws ClassNotFoundException if builderClazz not available in bundle
      */
-    public <X extends T, B extends Builder<X>> YangToolsMapper2(@NonNull Class<T> clazz,
+    public <X extends T, B> YangToolsMapper2(@NonNull Class<T> clazz,
             @Nullable Class<B> builderClazz) throws ClassNotFoundException {
         super(new YangToolsBuilderAnnotationIntrospector(clazz, builderClazz));
 
@@ -67,10 +69,10 @@ public class YangToolsMapper2<T extends DataObject> extends YangToolsMapper {
      * @param clazz class with interface.
      * @return builder for interface or null if not existing
      */
-    public @Nullable Builder<? extends T> getBuilder(Class<T> clazz) {
+    public @Nullable<B> B getBuilder(Class<T> clazz) {
         try {
             if (builderClazz != null)
-                return builderClazz.getDeclaredConstructor().newInstance();
+                return (B) builderClazz.getDeclaredConstructor().newInstance();
             else
                 return null;
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -90,8 +92,9 @@ public class YangToolsMapper2<T extends DataObject> extends YangToolsMapper {
      * @throws ClassNotFoundException
      */
     @SuppressWarnings("unchecked")
-    private <X extends T, B extends Builder<X>> Class<B> getBuilderClass(String name) throws ClassNotFoundException {
+    private <X extends T, B> Class<B> getBuilderClass(String name) throws ClassNotFoundException {
         return (Class<B>) YangToolsMapperHelper.getBuilderClass(name);
     }
 
+   
 }

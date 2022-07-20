@@ -183,7 +183,8 @@ public class TestMariaDataProvider {
         assertEquals(2, faultCurrents.getData().size());
         ReadStatusOutputBuilder status = null;
         try {
-            status = dbProvider.readStatus();
+            EntityInput input=null;
+            status = dbProvider.readStatus(input);
         } catch (IOException e) {
             e.printStackTrace();
             fail("failed to read status");
@@ -567,7 +568,8 @@ public class TestMariaDataProvider {
 
         ReadStatusOutputBuilder status = null;
         try {
-            status = dbProvider.readStatus();
+            EntityInput input=null;
+            status = dbProvider.readStatus(input);
         } catch (IOException e) {
             e.printStackTrace();
             fail("failed to read status");

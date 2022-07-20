@@ -23,7 +23,9 @@ package org.onap.ccsdk.features.sdnr.wt.common.database;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SearchResult<T> {
 
@@ -52,6 +54,9 @@ public class SearchResult<T> {
 
     public List<T> getHits() {
         return this.hits;
+    }
+    public Set<T> getHitSets() {
+        return new HashSet<>(this.hits);
     }
 
     public long getTotal() {

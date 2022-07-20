@@ -34,7 +34,6 @@ import javax.xml.stream.XMLStreamReader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom.util.TestYangParserUtil;
 import org.opendaylight.mdsal.dom.api.DOMEvent;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
@@ -80,7 +79,7 @@ public class TestORanDOMToInternalDataModel {
 
     @BeforeClass
     public static void setup() throws IOException {
-        schemaContext = TestYangParserUtil.parseYangResourceDirectory("/");
+        schemaContext = YangParserTestUtils.parseYangResourceDirectory("/");
         hwContainerSchema = Inference.ofDataTreePath(schemaContext, HW_CONTAINER);
         systemSchema = Inference.ofDataTreePath(schemaContext, IETF_CONTAINER);
     }

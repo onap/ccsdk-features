@@ -41,9 +41,8 @@ import java.util.stream.Collectors;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthResponseData;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
+
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.*;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.client.MappedBaseHttpResponse;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.client.MappingBaseHttpClient;
@@ -60,6 +59,8 @@ public abstract class AuthService {
     protected final OAuthProviderConfig config;
     protected final TokenCreator tokenCreator;
     private final String redirectUri;
+    private final String tokenEndpoint;
+    private final String authEndpoint;
 
     protected abstract String getTokenVerifierUri();
 
@@ -78,13 +79,30 @@ public abstract class AuthService {
 
     protected abstract boolean verifyState(String state);
 
-    public AuthService(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) {
+    public AuthService(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) throws UnableToConfigureOAuthService {
         this.config = config;
         this.tokenCreator = tokenCreator;
         this.redirectUri = redirectUri;
         this.mapper = new ObjectMapper();
         this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.httpClient = new MappingBaseHttpClient(this.config.getUrlOrInternal(), this.config.trustAll());
+        if (this.config.hasToBeConfigured()){
+            Optional<MappedBaseHttpResponse<OpenIdConfigResponseData>> oresponse = this.httpClient.sendMappedRequest(
+                    this.config.getOpenIdConfigUrl(), "GET", null, null, OpenIdConfigResponseData.class);
+            if(oresponse.isEmpty()){
+                throw new UnableToConfigureOAuthService(this.config.getOpenIdConfigUrl());
+            }
+            MappedBaseHttpResponse<OpenIdConfigResponseData> response = oresponse.get();
+            if(!response.isSuccess()){
+                throw new UnableToConfigureOAuthService(this.config.getOpenIdConfigUrl(), response.code);
+            }
+            this.tokenEndpoint = response.body.getToken_endpoint();
+            this.authEndpoint = response.body.getAuthorization_endpoint();
+        }
+        else{
+            this.tokenEndpoint = null;
+            this.authEndpoint = null;
+        }
     }
 
     public PublicOAuthProviderConfig getConfig() {
@@ -110,7 +128,11 @@ public abstract class AuthService {
 
     public void sendLoginRedirectResponse(HttpServletResponse resp, String callbackUrl) {
         resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-        resp.setHeader("Location", this.getLoginUrl(callbackUrl));
+        String url = this.authEndpoint!=null?String.format(
+                "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s",
+                this.authEndpoint, urlEncode(this.config.getClientId()), this.config.getScope(),
+                urlEncode(callbackUrl)):this.getLoginUrl(callbackUrl);
+        resp.setHeader("Location", url);
     }
 
     private static void sendErrorResponse(HttpServletResponse resp, String message) throws IOException {
@@ -204,8 +226,9 @@ public abstract class AuthService {
             body.append(String.format("%s=%s&", p.getKey(), urlEncode(p.getValue())));
         }
 
+        String url = this.tokenEndpoint!=null?this.tokenEndpoint:this.getTokenVerifierUri();
         Optional<MappedBaseHttpResponse<OAuthResponseData>> response =
-                this.httpClient.sendMappedRequest(this.getTokenVerifierUri(), "POST",
+                this.httpClient.sendMappedRequest(url, "POST",
                         body.substring(0, body.length() - 1), headers, OAuthResponseData.class);
         if (response.isPresent() && response.get().isSuccess()) {
             return response.get().body;

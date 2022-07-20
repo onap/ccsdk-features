@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UnableToConfigureOAuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.client.MappedBaseHttpResponse;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class GitlabProviderService extends AuthService {
     private static final String API_USER_URI = "/api/v4/user";
     private static final String API_GROUP_URI = "/api/v4/groups?min_access_level=10";
 
-    public GitlabProviderService(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) {
+    public GitlabProviderService(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) throws UnableToConfigureOAuthService {
         super(config, redirectUri, tokenCreator);
         this.additionalTokenVerifierParams = new HashMap<>();
         this.additionalTokenVerifierParams.put("grant_type", "authorization_code");

@@ -22,13 +22,14 @@
   ~ ============LICENSE_END=======================================================
   ~
   -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
@@ -112,6 +113,7 @@
                             org.apache.shiro.authz,
                             org.apache.shiro.realm,
                             org.apache.shiro.subject,
+                            org.apache.shiro.web.filter.authz,
                             org.jolokia.osgi.security,
                             org.onap.ccsdk.features.sdnr.wt.common.http,
                             org.opendaylight.aaa.api,
@@ -132,7 +134,9 @@
                             com.fasterxml.jackson.annotation,
                             com.fasterxml.jackson.core.type,
                             com.fasterxml.jackson.core,
-                            org.apache.commons.codec.binary
+                            org.apache.commons.codec.binary,
+                            com.google.common.collect,
+                            com.google.common.util.concurrent
                         </Import-Package>
                         <Embed-Dependency>*;scope=compile|runtime;inline=false</Embed-Dependency>
                         <Embed-Dependency>*;scope=compile|runtime;artifactId=!shiro-core;inline=false</Embed-Dependency>

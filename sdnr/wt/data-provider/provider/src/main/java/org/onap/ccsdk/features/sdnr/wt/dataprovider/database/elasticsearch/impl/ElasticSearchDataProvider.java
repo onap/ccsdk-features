@@ -352,7 +352,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.ltp.list.output.PaginationBuilder(
                         result.getPagination()).build());
-        outputBuilder.setData(result.getResult().getHits());
+        outputBuilder.setData(result.getResult().getHitSets());
         return outputBuilder;
     }
 
@@ -363,7 +363,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.device.list.output.PaginationBuilder(
                         result.getPagination()).build());
-        outputBuilder.setData(result.getResult().getHits());
+        outputBuilder.setData(result.getResult().getHitSets());
         return outputBuilder;
     }
 
@@ -377,7 +377,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.ltp.list.output.PaginationBuilder(
                         result.getPagination()).build());
-        outputBuilder.setData(result.getResult().getHits());
+        outputBuilder.setData(result.getResult().getHitSets());
         return outputBuilder;
     }
 
@@ -390,14 +390,15 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._24h.device.list.output.PaginationBuilder(
                         result.getPagination()).build());
-        outputBuilder.setData(result.getResult().getHits());
+        outputBuilder.setData(result.getResult().getHitSets());
         return outputBuilder;
     }
 
+
     @Override
-    public ReadStatusOutputBuilder readStatus() throws IOException {
+    public ReadStatusOutputBuilder readStatus(EntityInput input) throws IOException {
         QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.Data> result =
-                readStatus.getDataStatus();
+                readStatus.getDataStatus(input);
 
         ReadStatusOutputBuilder outputBuilder = new ReadStatusOutputBuilder();
         outputBuilder.setData(result.getResult().getHits());

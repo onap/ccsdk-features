@@ -2018,6 +2018,9 @@ module data-provider {
   rpc read-status {
     description
       "Read status information of controller";
+    input {
+      uses entity-input;
+    }
     output {
       list data {
         uses status-entity;

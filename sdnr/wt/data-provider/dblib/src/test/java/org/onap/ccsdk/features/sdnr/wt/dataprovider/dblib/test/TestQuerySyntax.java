@@ -1,5 +1,4 @@
-/*
- * ============LICENSE_START=======================================================
+/* ============LICENSE_START=======================================================
  * ONAP : ccsdk features
  * ================================================================================
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
@@ -27,6 +26,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.CountQuery;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.SelectQuery;
@@ -169,7 +170,7 @@ public class TestQuerySyntax {
     public void testSelectForFilterValues() {
         EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
                 .setFilter(YangToolsMapperHelper.toMap(Arrays.asList(
-                        new FilterBuilder().setProperty("id").setFiltervalues(Arrays.asList("das", "das2")).build())))
+                        new FilterBuilder().setProperty("id").setFiltervalues(Set.of("das", "das2")).build())))
                 .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
                 .build();
         SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
@@ -190,7 +191,7 @@ public class TestQuerySyntax {
     public void testSelectForFilterValues3() {
         EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
                 .setFilter(YangToolsMapperHelper.toMap(Arrays.asList(
-                        new FilterBuilder().setProperty("id").setFiltervalues(Arrays.asList("*","abc")).build())))
+                        new FilterBuilder().setProperty("id").setFiltervalues(Set.of("*","abc")).build())))
                 .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
                 .build();
         SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
@@ -201,13 +202,27 @@ public class TestQuerySyntax {
     public void testSelectForFilterValues4() {
         EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
                 .setFilter(YangToolsMapperHelper.toMap(Arrays.asList(
-                        new FilterBuilder().setProperty("id").setFiltervalues(Arrays.asList("abc")).build(),
-                        new FilterBuilder().setProperty("node-id").setFiltervalues(Arrays.asList("*")).build())))
+                        new FilterBuilder().setProperty("id").setFiltervalues(Set.of("abc")).build(),
+                        new FilterBuilder().setProperty("node-id").setFiltervalues(Set.of("*")).build())))
                 .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
                 .build();
         SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
         System.out.println(query.toSql());
         assertFalse(query.toSql().contains("RLIKE"));
+    }
+    @Test
+    public void testSelectForFilterValues5() {
+        EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
+                .setFilter(YangToolsMapperHelper.toMap(Arrays.asList(
+                        new FilterBuilder().setProperty("id").setFiltervalues(Set.of("abc")).build(),
+                        new FilterBuilder().setProperty("node-id").setFiltervalues(Set.of("*ran*")).build())))
+                .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
+                .build();
+        SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
+        System.out.println(query.toSql());
+        assertTrue(query.toSql().contains("RLIKE"));
+        assertTrue(query.toSql().contains(".*"));
+
     }
     @Test
     public void testCount() {

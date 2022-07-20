@@ -24,8 +24,11 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
 import org.opendaylight.mdsal.dom.api.DOMEvent;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -63,8 +66,8 @@ public class ORanDMDOMUtility {
         }
     }
 
-    public static List<String> getLeafListValue(DataContainerNode componentEntry, QName leafListQName) {
-        List<String> containsChildList = new ArrayList<String>();
+    public static Set<String> getLeafListValue(DataContainerNode componentEntry, QName leafListQName) {
+        Set<String> containsChildList = new HashSet<String>();
         try {
             DataContainerChild childSet = componentEntry.getChildByArg(new NodeIdentifier(leafListQName));
             Collection<?> childEntry = (Collection<?>) childSet.body();

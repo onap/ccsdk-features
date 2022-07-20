@@ -2,8 +2,11 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovide
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DMDOMUtility;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
@@ -35,7 +38,7 @@ public class Onf14DomToInternalDataModel {
         inventoryBuilder.setUuid(Onf14DMDOMUtility.getUuidFromEquipment(currentEq));
         inventoryBuilder.setParentUuid(parentUuid);
 
-        List<String> containedHolderKeyList = new ArrayList<>();
+        Set<String> containedHolderKeyList = new HashSet<>();
         MapNode containedHolderMap = (MapNode) currentEq
                 .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_CONTAINED_HOLDER));
         if (containedHolderMap != null) {

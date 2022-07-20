@@ -17,6 +17,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util;
 
+import java.util.HashSet;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InternalConnectionStatus;
@@ -82,8 +83,8 @@ public class NetworkElementConnectionEntitiyUtil {
         Capabilities unAvailableCapabilities = Capabilities.getUnavailableCapabilities(nNode);
 
         NodeDetailsBuilder nodeDetails =
-                new NodeDetailsBuilder().setAvailableCapabilities(availableCapabilities.getCapabilities())
-                        .setUnavailableCapabilities(unAvailableCapabilities.getCapabilities());
+                new NodeDetailsBuilder().setAvailableCapabilities(new HashSet<>(availableCapabilities.getCapabilities()))
+                        .setUnavailableCapabilities(new HashSet<>(unAvailableCapabilities.getCapabilities()));
         eb.setNodeDetails(nodeDetails.build());
         // -- host information
         Host host = nNode.getHost();

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.KeycloakUserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UnableToConfigureOAuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 
 public class KeycloakProviderService extends AuthService {
@@ -36,7 +37,7 @@ public class KeycloakProviderService extends AuthService {
     public static final String ID = "keycloak";
     private Map<String, String> additionalTokenVerifierParams;
 
-    public KeycloakProviderService(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) {
+    public KeycloakProviderService(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) throws UnableToConfigureOAuthService {
         super(config, redirectUri, tokenCreator);
         this.additionalTokenVerifierParams = new HashMap<>();
         this.additionalTokenVerifierParams.put("grant_type", "authorization_code");

@@ -23,23 +23,27 @@ package org.onap.ccsdk.features.sdnr.wt.common.threading;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Threadpool for running n instances per key T
  *
  * @author jack
  *
- * @param <T>
- * @param <S>
+ * @param <T> type of key for the pools
+ * @param <S> type of arg to create a runner
  */
 public class KeyBasedThreadpool<T, S> implements GenericRunnableFactoryCallback<T> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(KeyBasedThreadpool.class);
     private final Queue<Entry<T, S>> queue;
     private final List<T> runningKeys;
     private final int keyPoolSize;
@@ -57,37 +61,80 @@ public class KeyBasedThreadpool<T, S> implements GenericRunnableFactoryCallback<
         this.keyPoolSize = keyPoolSize;
         this.factory = factory;
         this.executor = Executors.newFixedThreadPool(poolSize);
-        this.runningKeys = new ArrayList<>();
+        this.runningKeys = Collections.synchronizedList(new ArrayList<T>());
+        LOG.info("starting key-based threadpool with keysize={} and size={}", keyPoolSize, poolSize);
     }
 
     public void execute(T key, S arg) {
         if (this.isKeyPoolSizeReached(key)) {
+            LOG.debug("pool size for key {} reached. add to queue", key);
             queue.add(new SimpleEntry<>(key, arg));
+
         } else {
+            LOG.debug("starting executor for key {}.", key);
             this.runningKeys.add(key);
-            this.executor.execute(this.factory.create(arg, this));
+            this.executor.execute(new RunnableWrapper<T>(this.factory.create(key, arg), key, this));
         }
 
     }
 
     private void executeNext() {
         Entry<T, S> entry = this.queue.peek();
-        if (!this.isKeyPoolSizeReached(entry.getKey())) {
-            this.queue.poll();
-            this.runningKeys.add(entry.getKey());
-            this.executor.execute(this.factory.create(entry.getValue(), this));
+        if (entry != null) {
+            LOG.debug("executing next for key {} with arg {}", entry.getKey(), entry.getValue());
+            if (!this.isKeyPoolSizeReached(entry.getKey())) {
+                this.queue.poll();
+                this.runningKeys.add(entry.getKey());
+                this.executor.execute(new RunnableWrapper<T>(this.factory.create(entry.getKey(), entry.getValue()),
+                        entry.getKey(), this));
+            } else {
+                LOG.debug("key pool size reached. waiting for someone else to stop");
+            }
+        } else {
+            LOG.info("nothing to execute. queue is empty.");
         }
     }
 
     private boolean isKeyPoolSizeReached(T key) {
+        LOG.trace("running keys size={}", this.runningKeys.size());
         return this.runningKeys.stream().filter(e -> e == key).count() >= this.keyPoolSize;
     }
 
     @Override
-    public void onFinish(T key) {
+    public synchronized void onFinish(T key) {
+        LOG.debug("executor finished for key {}.", key);
         this.runningKeys.remove(key);
         this.executeNext();
     }
 
+    public void join() {
+        LOG.debug("wait for all executors to finish");
+        while (this.runningKeys.size() > 0 && this.queue.size() > 0) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
 
+    private static class RunnableWrapper<T> implements Runnable {
+
+        private final Runnable inner;
+        private final GenericRunnableFactoryCallback<T> callback;
+        private final T key;
+
+        public RunnableWrapper(Runnable inner, T key, GenericRunnableFactoryCallback<T> cb) {
+            this.inner = inner;
+            this.callback = cb;
+            this.key = key;
+        }
+
+        @Override
+        public void run() {
+            this.inner.run();
+            this.callback.onFinish(this.key);
+        }
+
+    }
 }

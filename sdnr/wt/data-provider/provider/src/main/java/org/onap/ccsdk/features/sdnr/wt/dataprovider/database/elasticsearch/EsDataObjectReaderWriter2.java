@@ -24,6 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -92,7 +93,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
      * @param syncAfterWrite
      * @throws ClassNotFoundException
      */
-    public <X extends T, @NonNull B extends Builder<X>> EsDataObjectReaderWriter2(DatabaseClient db,
+    public <X extends T, B> EsDataObjectReaderWriter2(DatabaseClient db,
             String dataTypeName, @Nonnull Class<T> clazz, @Nullable Class<B> builderClazz, boolean syncAfterWrite)
             throws ClassNotFoundException {
         LOG.info("Create {} for datatype {} class {}", this.getClass().getName(), dataTypeName, clazz.getName());
@@ -111,13 +112,13 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
     public void setFullsizeRequest(boolean fullsizeRequest) {
         this.doFullsizeRequest = fullsizeRequest;
     }
-    public <X extends T, @NonNull B extends Builder<X>> EsDataObjectReaderWriter2(DatabaseClient db,
+    public <X extends T, B> EsDataObjectReaderWriter2(DatabaseClient db,
             Entity dataTypeName, @Nonnull Class<T> clazz, @Nullable Class<B> builderClazz)
             throws ClassNotFoundException {
         this(db, dataTypeName.getName(), clazz, builderClazz, false);
     }
 
-    public <X extends T, @NonNull B extends Builder<X>> EsDataObjectReaderWriter2(DatabaseClient db,
+    public <X extends T, B> EsDataObjectReaderWriter2(DatabaseClient db,
             Entity dataTypeName, @Nonnull Class<T> clazz, @Nullable Class<B> builderClazz, boolean syncAfterWrite)
             throws ClassNotFoundException {
         this(db, dataTypeName.getName(), clazz, builderClazz, syncAfterWrite);
@@ -160,20 +161,20 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
      * @return this for further operations.
      * @throws SecurityException if no access or IllegalArgumentException if wrong type or no attribute with this name.
      */
-    public EsDataObjectReaderWriter2<T> setEsIdAttributeName(String esIdAttributeName) {
+    public <B> EsDataObjectReaderWriter2<T> setEsIdAttributeName(String esIdAttributeName) {
         LOG.debug("Set attribute '{}'", esIdAttributeName);
         this.esIdAddAtributteName = null; // Reset status
         this.field = null;
 
         Field attributeField;
         try {
-            Builder<? extends T> builder = yangtoolsMapper.getBuilder(clazz);
+            B builder = yangtoolsMapper.getBuilder(clazz);
             if (builder == null) {
                 String msg = "No builder for " + clazz;
                 LOG.debug(msg);
                 throw new IllegalArgumentException(msg);
             } else {
-                T object = builder.build();
+                T object = YangToolsMapperHelper.callBuild(builder);
                 attributeField = object.getClass().getDeclaredField(esIdAttributeName);
                 if (attributeField.getType().equals(String.class)) {
                     attributeField.setAccessible(true);
@@ -193,7 +194,19 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
         } catch (SecurityException e) {
             LOG.debug("Access problem " + esIdAttributeName, e);
             throw e;
-        }
+        } catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return this;
     }
 

@@ -24,18 +24,22 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.DbFilter;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.DBFilterKeyValuePair;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.RangeSqlDBFilter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.RegexSqlDBFilter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
+import io.netty.util.internal.StringUtil;
 
 public interface SqlQuery {
 
@@ -50,18 +54,25 @@ public interface SqlQuery {
     static final boolean DEFAULT_IGNORE_CONTROLLERID = false;
     static final boolean DEFAULT_IGNORE_ID_FIELD = false;
 
-    public static String getWhereExpression(List<Filter> filters) {
-        if (filters == null) {
+    public static String getWhereExpression(Collection<Filter> filters) {
+        return getWhereExpression(filters, null);
+    }
+    public static String getWhereExpression(Collection<Filter> filters, String controllerId) {
+        if (filters == null && controllerId == null) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        filters = filters.stream().filter(e -> !"*".equals(e.getFiltervalue())).collect(Collectors.toList());
-        if (!filters.isEmpty()) {
-
-            sb.append(" WHERE (" + getFilterExpression(filters.get(0)) + ")");
-            for (int i = 1; i < filters.size(); i++) {
-                sb.append(" AND (" + getFilterExpression(filters.get(i)) + ")");
-            }
+        List<String> filters2 =
+                filters != null
+                        ? filters.stream().filter(e -> !"*".equals(e.getFiltervalue())).map(e -> getFilterExpression(e))
+                                .collect(Collectors.toList())
+                        : new ArrayList<>();
+        if(controllerId!=null) {
+            filters2.add(getFilterExpression(SqlDBMapper.ODLID_DBCOL, controllerId));
+        }
+        if (!filters2.isEmpty() ) {
+            sb.append(" WHERE ");
+            sb.append(StringUtil.join(" AND ", filters2));
         }
         return sb.toString();
     }
@@ -107,7 +118,7 @@ public interface SqlQuery {
         return new DBFilterKeyValuePair(property, value).getFilterExpression();
     }
 
-    static List<String> collectValues(String filtervalue, List<String> filtervalues) {
+    static List<String> collectValues(String filtervalue, Set<String> filtervalues) {
         if (filtervalues == null) {
             return Arrays.asList(filtervalue);
         }

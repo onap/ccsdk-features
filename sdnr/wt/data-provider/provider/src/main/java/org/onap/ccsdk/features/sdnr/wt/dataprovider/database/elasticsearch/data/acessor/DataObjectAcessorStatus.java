@@ -26,14 +26,15 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.ExtRestClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
-import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.SearchRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.AggregationEntries;
 import org.onap.ccsdk.features.sdnr.wt.common.database.responses.SearchResponse;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.rpctypehelper.QueryByFilter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.rpctypehelper.QueryResult;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.Data;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.DataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.status.entity.FaultsBuilder;
@@ -54,9 +55,11 @@ public class DataObjectAcessorStatus extends DataObjectAcessor<Data> {
 
     }
 
-    public QueryResult<Data> getDataStatus() throws IOException {
+    public QueryResult<Data> getDataStatus(EntityInput input) throws IOException {
         SearchRequest request = getNewInstanceOfSearchRequest(Entity.Faultcurrent);
-        QueryBuilder query = QueryBuilders.matchAllQuery().aggregations(ESDATATYPE_FAULTCURRENT_SEVERITY_KEY).size(0);
+        QueryByFilter queryByFilter = new QueryByFilter(input);
+        QueryBuilder query = queryByFilter.getQueryBuilderByFilter();
+        query.aggregations(ESDATATYPE_FAULTCURRENT_SEVERITY_KEY).size(0);
         if(this.doFullsizeRequest) {
             query.doFullsizeRequest();
         }
@@ -71,7 +74,7 @@ public class DataObjectAcessorStatus extends DataObjectAcessor<Data> {
                         .setWarnings(YangHelper2.getLongOrUint32(aggs.getOrDefault("Warning", 0L))).build());
 
         request = getNewInstanceOfSearchRequest(Entity.NetworkelementConnection);
-        query = QueryBuilders.matchAllQuery().aggregations(ESDATATYPE_NECON_CONNECTIONSTATE_KEY).size(0);
+        query.aggregations(ESDATATYPE_NECON_CONNECTIONSTATE_KEY).size(0);
         if(this.doFullsizeRequest) {
             query.doFullsizeRequest();
         }

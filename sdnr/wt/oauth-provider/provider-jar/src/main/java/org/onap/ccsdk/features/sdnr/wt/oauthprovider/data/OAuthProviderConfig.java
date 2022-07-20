@@ -36,6 +36,8 @@ public class OAuthProviderConfig {
     private String title;
     private String scope;
     private String realmName;
+    private String openIdConfigUrl;
+
     private boolean trustAll;
     private OAuthProvider type;
     private Map<String, String> roleMapping;
@@ -45,7 +47,7 @@ public class OAuthProviderConfig {
     }
 
     public OAuthProviderConfig(String id, String url, String internalUrl, String clientId, String secret, String scope,
-            String title, String realmName, boolean trustAll) {
+            String title, String realmName, String openIdConfigUrl, boolean trustAll) {
         this.id = id;
         this.url = url;
         this.internalUrl = internalUrl;
@@ -55,6 +57,7 @@ public class OAuthProviderConfig {
         this.title = title;
         this.realmName = realmName;
         this.trustAll = trustAll;
+        this.openIdConfigUrl = openIdConfigUrl;
         this.roleMapping = new HashMap<>();
     }
 
@@ -70,7 +73,7 @@ public class OAuthProviderConfig {
     }
 
     public OAuthProviderConfig() {
-        this(null, null, null, null, null, null, null, null, false);
+        this(null, null, null, null, null, null, null, null, null, false);
     }
 
     public void setUrl(String url) {
@@ -153,6 +156,9 @@ public class OAuthProviderConfig {
         this.internalUrl = internalUrl;
     }
 
+    public void setOpenIdConfigUrl(String openIdConfigUrl){ this.openIdConfigUrl = openIdConfigUrl;}
+
+    public String getOpenIdConfigUrl() { return this.openIdConfigUrl;}
     @JsonIgnore
     public void handleEnvironmentVars() {
         if (Config.isEnvExpression(this.id)) {
@@ -179,6 +185,9 @@ public class OAuthProviderConfig {
         if (Config.isEnvExpression(this.realmName)) {
             this.realmName = Config.getProperty(this.realmName, null);
         }
+        if (Config.isEnvExpression(this.openIdConfigUrl)) {
+            this.openIdConfigUrl = Config.getProperty(this.openIdConfigUrl, null);
+        }
     }
 
     @JsonIgnore
@@ -186,4 +195,8 @@ public class OAuthProviderConfig {
         return this.internalUrl != null && this.internalUrl.length() > 0 ? this.internalUrl : this.url;
     }
 
+    @JsonIgnore
+    public boolean hasToBeConfigured(){
+        return this.openIdConfigUrl!=null && this.openIdConfigUrl.length()>0;
+    }
 }

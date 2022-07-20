@@ -22,12 +22,13 @@
 package org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers;
 
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UnableToConfigureOAuthService;
 
 public class OAuthProviderFactory {
 
 
     public static AuthService create(OAuthProvider key, OAuthProviderConfig config, String redirectUri,
-            TokenCreator tokenCreator) {
+            TokenCreator tokenCreator) throws UnableToConfigureOAuthService {
         switch (key) {
             case KEYCLOAK:
                 return new KeycloakProviderService(config, redirectUri, tokenCreator);

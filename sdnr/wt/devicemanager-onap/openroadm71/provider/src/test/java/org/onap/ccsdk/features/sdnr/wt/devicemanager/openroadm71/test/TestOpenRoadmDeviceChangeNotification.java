@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.CreateTe
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.CreateTechInfoNotificationBuilder;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.change.notification.Edit;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.change.notification.EditBuilder;
+import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.circuit.pack.features.circuit.pack.components.Component;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.base._1._0.rev110601.EditOperationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
@@ -65,7 +66,7 @@ public class TestOpenRoadmDeviceChangeNotification {
     public void testOnChangeNotification() {
 
         when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
-        Iterable<? extends PathArgument> pathArguments = Arrays.asList(new PathArgument() {
+        List<? extends PathArgument> pathArguments = Arrays.asList(new PathArgument() {
 
             @Override
             public int compareTo(PathArgument arg0) {
@@ -74,10 +75,10 @@ public class TestOpenRoadmDeviceChangeNotification {
 
             @Override
             public Class<? extends DataObject> getType() {
-                return DataObject.class;
+                return Component.class;
             }
         });
-        InstanceIdentifier<?> target = InstanceIdentifier.create(pathArguments);
+        InstanceIdentifier<?> target = InstanceIdentifier.unsafeOf(pathArguments);
 
         deviceChangeListener.onChangeNotification(createNotification(EditOperationType.Create, target));
         EventlogEntity event =

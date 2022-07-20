@@ -24,11 +24,16 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.rpctypehelper.QueryResult;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.SqlQuery;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.Data;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.DataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.status.entity.FaultsBuilder;
@@ -49,8 +54,8 @@ public class SqlDBStatusReader {
         this.controllerId = controllerId;
     }
 
-    public QueryResult<Data> getDataStatus() {
-        String selectQuery = createCountQuery("severity", Entity.Faultcurrent, this.controllerId);
+    public QueryResult<Data> getDataStatus(EntityInput input) {
+        String selectQuery = createCountQuery("severity", Entity.Faultcurrent, this.controllerId, input);
         long criticalCount = 0;
         long majorCount = 0;
         long minorCount = 0;
@@ -81,7 +86,7 @@ public class SqlDBStatusReader {
         DataBuilder builder = new DataBuilder().setFaults(
                 new FaultsBuilder().setCriticals(Uint32.valueOf(criticalCount)).setMajors(Uint32.valueOf(majorCount))
                         .setMinors(Uint32.valueOf(minorCount)).setWarnings(Uint32.valueOf(warningCount)).build());
-        selectQuery = createCountQuery("status", Entity.NetworkelementConnection, this.controllerId);
+        selectQuery = createCountQuery("status", Entity.NetworkelementConnection, this.controllerId, input);
         NetworkElementConnectionsBuilder neBuilder = new NetworkElementConnectionsBuilder();
         String state;
         long connectedCount = 0, connectingCount = 0, disconnectedCount = 0, mountedCount = 0, unableToConnectCount = 0,
@@ -123,10 +128,11 @@ public class SqlDBStatusReader {
         return new QueryResult<Data>(Arrays.asList(builder.build()), 1, 1, 1);
     }
 
-    private static String createCountQuery(String key, Entity e, String controllerId) {
+    private static String createCountQuery(String key, Entity e, String controllerId, EntityInput input) {
+        Map<FilterKey, Filter> filter = input != null ? input.getFilter() : null;
         return String.format("SELECT `%s`, COUNT(`%s`) " + "FROM `%s` " + "%s " + "GROUP BY `%s`;", key, key,
                 e.getName(),
-                controllerId != null ? String.format("WHERE `%s`='%s'", SqlDBMapper.ODLID_DBCOL, controllerId) : "",
+                SqlQuery.getWhereExpression(filter!=null?filter.values():null, controllerId),
                 key);
     }
 

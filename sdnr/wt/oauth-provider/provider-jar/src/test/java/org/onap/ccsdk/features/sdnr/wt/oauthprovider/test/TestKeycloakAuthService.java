@@ -43,6 +43,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UnableToConfigureOAuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.KeycloakProviderService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 
@@ -62,7 +63,7 @@ public class TestKeycloakAuthService {
 
         TokenCreator tokenCreator = TokenCreator.getInstance(Config.TOKENALG_HS256, TOKENCREATOR_SECRET, "issuer", 30*60);
         OAuthProviderConfig config = new OAuthProviderConfig("kc", KEYCLOAKURL, null, "odlux.app", OAUTH_SECRET,
-                "openid", "keycloak test", "onap", false);
+                "openid", "keycloak test", "onap",null, false);
         oauthService = new KeycloakProviderServiceToTest(config, REDIRECT_URI, tokenCreator);
         try {
             initKeycloakTestWebserver(PORT, "/");
@@ -102,7 +103,7 @@ public class TestKeycloakAuthService {
     public static class KeycloakProviderServiceToTest extends KeycloakProviderService {
 
         public KeycloakProviderServiceToTest(OAuthProviderConfig config, String redirectUri,
-                TokenCreator tokenCreator) {
+                TokenCreator tokenCreator) throws UnableToConfigureOAuthService {
             super(config, redirectUri, tokenCreator);
         }
     }

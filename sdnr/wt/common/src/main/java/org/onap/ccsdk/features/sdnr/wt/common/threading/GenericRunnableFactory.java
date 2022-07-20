@@ -26,7 +26,5 @@ public abstract class GenericRunnableFactory<T,S> {
     public GenericRunnableFactory() {
     }
 
-    public Runnable create(S arg, GenericRunnableFactoryCallback<T> callback) {
-        return null;
-    }
+    public abstract Runnable create(final T key, final S arg);
 }

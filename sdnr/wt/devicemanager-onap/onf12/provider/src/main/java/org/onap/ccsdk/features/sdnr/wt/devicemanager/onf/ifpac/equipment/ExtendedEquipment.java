@@ -19,7 +19,10 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.equipment;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.Equipment;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.equipment.g.ContainedHolder;
@@ -91,7 +94,7 @@ public class ExtendedEquipment {
         if (getEquipment() != null) {
             inventoryBuilder.setUuid(getEquipment().getUuid().getValue());
             // -- String list with ids of holders
-            List<String> containerHolderKeyList = new ArrayList<>();
+            Set<String> containerHolderKeyList = new HashSet<>();
             Collection<ContainedHolder> containerHolderList = YangHelper.getCollection(getEquipment().getContainedHolder());
             if (containerHolderList != null) {
                 for (ContainedHolder containerHolder : containerHolderList) {

@@ -43,6 +43,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UnableToConfigureOAuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.GitlabProviderService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 
@@ -62,7 +63,7 @@ public class TestGitlabAuthService {
 
         TokenCreator tokenCreator = TokenCreator.getInstance(Config.TOKENALG_HS256, TOKENCREATOR_SECRET, "issuer", 30*60);
         OAuthProviderConfig config = new OAuthProviderConfig("git", GITURL, null, "odlux.app", OAUTH_SECRET, "openid",
-                "gitlab test", "", false);
+                "gitlab test", "", null, false);
         oauthService = new GitlabProviderServiceToTest(config, REDIRECT_URI, tokenCreator);
         try {
             initGitlabTestWebserver(PORT, "/");
@@ -102,7 +103,7 @@ public class TestGitlabAuthService {
 
     public static class GitlabProviderServiceToTest extends GitlabProviderService {
 
-        public GitlabProviderServiceToTest(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) {
+        public GitlabProviderServiceToTest(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) throws UnableToConfigureOAuthService {
             super(config, redirectUri, tokenCreator);
         }
 

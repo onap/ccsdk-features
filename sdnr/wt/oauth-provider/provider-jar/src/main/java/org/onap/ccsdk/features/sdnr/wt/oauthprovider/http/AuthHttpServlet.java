@@ -44,13 +44,7 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.jolokia.osgi.security.Authenticator;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.InvalidConfigurationException;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.NoDefinitionFoundException;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthToken;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.*;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.AuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.AuthService.PublicOAuthProviderConfig;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.MdSalAuthorizationStore;
@@ -102,7 +96,8 @@ public class AuthHttpServlet extends HttpServlet {
     private static ShiroConfiguration shiroConfiguration;
     private static MdSalAuthorizationStore mdsalAuthStore;
 
-    public AuthHttpServlet() throws IllegalArgumentException, IOException, InvalidConfigurationException {
+    public AuthHttpServlet() throws IllegalArgumentException, IOException, InvalidConfigurationException,
+            UnableToConfigureOAuthService {
         this.config = Config.getInstance();
         this.tokenCreator = TokenCreator.getInstance(this.config);
         this.mapper = new ObjectMapper();
