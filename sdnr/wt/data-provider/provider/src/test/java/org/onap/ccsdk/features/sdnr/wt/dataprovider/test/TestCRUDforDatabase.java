@@ -31,8 +31,13 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -48,10 +53,12 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmNotificationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmOperation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmSourceIndicator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
@@ -68,9 +75,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Faultlog;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GranularityPeriodType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutputBuilder;
@@ -116,6 +125,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpListInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadStatusInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInputBuilder;
@@ -126,11 +136,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Pagination;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.PaginationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class TestCRUDforDatabase {
 
@@ -164,27 +176,49 @@ public class TestCRUDforDatabase {
         //== CLEAR AND CREATE ================================
         clearAndCreatefaultEntity("1", Entity.Faultcurrent.getName(),
                 "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
-                SeverityType.Critical);
+                SeverityType.Critical, "nodeA");
         createFaultEntity("Lorem Ipsum", Entity.Faultcurrent.getName(),
                 "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
-                SeverityType.Major);
+                SeverityType.Major, "nodeB");
         createFaultEntity("3", Entity.Faultcurrent.getName(),
                 "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
-                SeverityType.Minor);
+                SeverityType.Minor, "nodeC");
         createFaultEntity("4", Entity.Faultcurrent.getName(),
                 "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
-                SeverityType.Warning);
+                SeverityType.Warning, "nodeA");
 
+        createNeConnection("nodeA","10.20.30.40",30000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeB","10.20.30.40",31000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeC","10.20.30.40",32000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeAD","10.20.30.40",33000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeE","10.20.30.40",34000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeF","10.20.30.40",35000, ConnectionLogStatus.Connected);
         //== READ ================================
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.Data> readOutput =
-                dbProvider.readStatus().getData();
+                dbProvider.readStatus(null).getData();
         System.out.println(readOutput);
+
+
 
         assertEquals(1, readOutput.get(0).getFaults().getMajors().intValue());
         assertEquals(1, readOutput.get(0).getFaults().getMinors().intValue());
         assertEquals(1, readOutput.get(0).getFaults().getWarnings().intValue());
         assertEquals(1, readOutput.get(0).getFaults().getCriticals().intValue());
+        Map<FilterKey, Filter> filter = YangToolsMapperHelper
+                .toMap(Arrays.asList(new FilterBuilder().setProperty("node-id").setFiltervalue("nodeA").build()));
+        EntityInput input = new ReadStatusInputBuilder().setFilter(filter).build();
+        readOutput = dbProvider.readStatus(input).getData();
+        System.out.println(readOutput);
+        assertEquals(1, readOutput.get(0).getNetworkElementConnections().getConnected().intValue());
+        assertEquals(0, readOutput.get(0).getNetworkElementConnections().getConnecting().intValue());
+        assertEquals(0, readOutput.get(0).getNetworkElementConnections().getDisconnected().intValue());
+        assertEquals(0, readOutput.get(0).getNetworkElementConnections().getMounted().intValue());
+        assertEquals(0, readOutput.get(0).getFaults().getMajors().intValue());
+        assertEquals(0, readOutput.get(0).getFaults().getMinors().intValue());
+        assertEquals(1, readOutput.get(0).getFaults().getWarnings().intValue());
+        assertEquals(1, readOutput.get(0).getFaults().getCriticals().intValue());
+
 
         //== DELETE ================================
 
@@ -197,12 +231,14 @@ public class TestCRUDforDatabase {
 
         //== VERIFY DELETE ===========================
         System.out.println("verify entries were deleted");
-        readOutput = dbProvider.readStatus().getData();
+        readOutput = dbProvider.readStatus(null).getData();
         assertEquals(0, readOutput.get(0).getFaults().getMajors().intValue());
         assertEquals(0, readOutput.get(0).getFaults().getMinors().intValue());
         assertEquals(0, readOutput.get(0).getFaults().getWarnings().intValue());
         assertEquals(0, readOutput.get(0).getFaults().getCriticals().intValue());
     }
+
+
 
     @Test
     public void testMediatorServer() {
@@ -599,14 +635,14 @@ public class TestCRUDforDatabase {
     public void testCMLog() {
         System.out.println("Starting CM log test...");
         String dbId = clearAndCreateCMEntity("1", Entity.Cmlog.getName(),
-            "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateCmlogInput");
+                "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateCmlogInput");
         // ==READ===========================
         System.out.println("try to read entry");
 
         ReadCmlogListInput readinput = new ReadCmlogListInputBuilder()
-            .setFilter(YangHelper2.getListOrMap(FilterKey.class,
-                new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
-            .setPagination(getPagination(20, 1)).build();
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("id").setFiltervalue(dbId).build()))
+                .setPagination(getPagination(20, 1)).build();
 
         ReadCmlogListOutputBuilder readResult = null;
         try {
@@ -616,8 +652,8 @@ public class TestCRUDforDatabase {
             fail("CM log not read: " + e.getMessage());
         }
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data>
-            data = readResult.getData();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data> data =
+                readResult.getData();
 
         assertNotNull(data);
         assertEquals("1", dbId);
@@ -634,13 +670,13 @@ public class TestCRUDforDatabase {
         System.out.println("try to update entry");
 
         dbRawProvider.doUpdateOrCreate(Entity.Cmlog.getName(), "1",
-            "{'node-id': 'test4657-78','operation': 'CREATE', 'notification-id': '1'}");
+                "{'node-id': 'test4657-78','operation': 'CREATE', 'notification-id': '1'}");
 
         System.out.println("try to search entry 1");
         readinput = new ReadCmlogListInputBuilder()
-            .setFilter(YangHelper2.getListOrMap(FilterKey.class,
-                new FilterBuilder().setProperty("node-id").setFiltervalue("test").build()))
-            .setPagination(getPagination(20, 1)).build();
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("node-id").setFiltervalue("test").build()))
+                .setPagination(getPagination(20, 1)).build();
 
         //== VERIFY UPDATE ================================
         readResult = dbProvider.readCMLogList(readinput);
@@ -652,9 +688,9 @@ public class TestCRUDforDatabase {
 
         System.out.println("try to search entry 2");
         readinput = new ReadCmlogListInputBuilder()
-            .setFilter(YangHelper2.getListOrMap(FilterKey.class,
-                new FilterBuilder().setProperty("node-id").setFiltervalue("test*").build()))
-            .setPagination(getPagination(20, 1)).build();
+                .setFilter(YangHelper2.getListOrMap(FilterKey.class,
+                        new FilterBuilder().setProperty("node-id").setFiltervalue("test*").build()))
+                .setPagination(getPagination(20, 1)).build();
 
         readResult = dbProvider.readCMLogList(readinput);
         data = readResult.getData();
@@ -676,7 +712,7 @@ public class TestCRUDforDatabase {
         //== VERIFY DELETE ===========================
         System.out.println("verify entries deleted");
         readResult = dbProvider
-            .readCMLogList(new ReadFaultlogListInputBuilder().setPagination(getPagination(20, 1)).build());
+                .readCMLogList(new ReadFaultlogListInputBuilder().setPagination(getPagination(20, 1)).build());
         data = readResult.getData();
         assertEquals(0, data.size());
     }
@@ -1012,10 +1048,11 @@ public class TestCRUDforDatabase {
         assertEquals("2008-11-21T00:00:00.0Z", data.get(0).getDate());
         assertEquals("sd-dsa-eww", data.get(0).getSerial());
         assertEquals(holderArray.length, data.get(0).getContainedHolder().size());
-        assertEquals(holderArray[0], data.get(0).getContainedHolder().get(0));
-        assertEquals(holderArray[1], data.get(0).getContainedHolder().get(1));
-        assertEquals(holderArray[2], data.get(0).getContainedHolder().get(2));
-
+        Set<String> holder = data.get(0).getContainedHolder();
+        assertTrue(holder.contains(holderArray[0]));
+        assertTrue(holder.contains(holderArray[1]));
+        assertTrue(holder.contains(holderArray[2]));
+       
         // ==DELETE============================
 
         System.out.println("delete after test");
@@ -1159,7 +1196,7 @@ public class TestCRUDforDatabase {
             fail("Problem reading 15m ltp data");
         }
 
-        List<String> dataLtp = readltpResult.getData();
+        Set<String> dataLtp = readltpResult.getData();
 
         assertNotNull(dataLtp);
         assertEquals(2, dataLtp.size());
@@ -1179,7 +1216,7 @@ public class TestCRUDforDatabase {
             fail("Problem reading 15m device data");
         }
 
-        List<String> dataDevice = readDeviceResult.getData();
+        Set<String> dataDevice = readDeviceResult.getData();
 
         assertNotNull(dataDevice);
         assertEquals(2, dataDevice.size());
@@ -1278,7 +1315,7 @@ public class TestCRUDforDatabase {
             fail("Problem reading 24h ltp data");
         }
 
-        List<String> dataLtp = readltpResult.getData();
+        Set<String> dataLtp = readltpResult.getData();
 
         assertNotNull(dataLtp);
         assertEquals(3, dataLtp.size());
@@ -1300,7 +1337,7 @@ public class TestCRUDforDatabase {
             fail("Problem reading 24h device data");
         }
 
-        List<String> dataDevice = readDeviceResult.getData();
+        Set<String> dataDevice = readDeviceResult.getData();
 
         assertNotNull(dataDevice);
         assertEquals(2, dataDevice.size());
@@ -1505,8 +1542,8 @@ public class TestCRUDforDatabase {
 
         assertEquals("admin", UserdataHttpServlet.decodeJWTPayloadUsername(String.format("Bearer %s",
                 "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBzZG4iLCJyb2xlcyI6WyJ1c2VyIiwiYWRtaW4iXSwiaXN"
-                + "zIjoiT3BlbmRheWxpZ2h0IiwibmFtZSI6ImFkbWluQHNkbiIsImV4cCI6MTYxNTc5NTg1NywiZmFtaWx5X25hbWUiOiIifQ.wB"
-                + "PdB45_bryU6_kSCu3be3dq3yth24niSXi6b2_1ufc"),
+                        + "zIjoiT3BlbmRheWxpZ2h0IiwibmFtZSI6ImFkbWluQHNkbiIsImV4cCI6MTYxNTc5NTg1NywiZmFtaWx5X25hbWUiOiIifQ.wB"
+                        + "PdB45_bryU6_kSCu3be3dq3yth24niSXi6b2_1ufc"),
                 "sub"));
     }
 
@@ -1515,9 +1552,13 @@ public class TestCRUDforDatabase {
                 .setSize(YangHelper2.getLongOrUint32(pageSize)).build();
     }
 
-
     private String clearAndCreatefaultEntity(String initialDbId, String entityType, String implementedInterface,
             SeverityType severity) {
+        return clearAndCreatefaultEntity(initialDbId, entityType, implementedInterface, severity, "s1");
+    }
+
+    private String clearAndCreatefaultEntity(String initialDbId, String entityType, String implementedInterface,
+            SeverityType severity, String nodeId) {
         // ==CLEAR BEFORE TEST============================
         System.out.println("try to clear entry");
         try {
@@ -1527,11 +1568,24 @@ public class TestCRUDforDatabase {
         }
 
 
-        return createFaultEntity(initialDbId, entityType, implementedInterface, severity);
+        return createFaultEntity(initialDbId, entityType, implementedInterface, severity, nodeId);
     }
 
+    private void createNeConnection(String nodeId, String host, int port, ConnectionLogStatus connectionStatus) {
+       try {
+            dbProvider.createNetworkElementConnection(new NetworkElementConnectionBuilder().setId(nodeId)
+                    .setNodeId(nodeId).setStatus(connectionStatus).setHost(host).setPort(Uint32.valueOf(port)).build());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
     private String createFaultEntity(String initialDbId, String entityType, String implementedInterface,
             SeverityType severity) {
+        return createFaultEntity(initialDbId, entityType, implementedInterface, severity, "s1");
+    }
+    private String createFaultEntity(String initialDbId, String entityType, String implementedInterface,
+            SeverityType severity, String nodeId) {
         // ==CREATE============================
         System.out.println("try to create entry");
         String dbId = null;
@@ -1540,7 +1594,7 @@ public class TestCRUDforDatabase {
 
             dbId = dbRawProvider.doUpdateOrCreate(entityType, initialDbId,
                     "{\n" + "\"timestamp\": \"2019-10-28T11:55:58.3Z\",\n" + "\"object-id\": \"LP-MWPS-RADIO\",\n"
-                            + "\"severity\": \"" + severity.toString() + "\",\n" + "\"node-id\": \"s1\",\n"
+                            + "\"severity\": \"" + severity.toString() + "\",\n" + "\"node-id\": \""+nodeId+"\",\n"
                             + "\"implemented-interface\": \"" + implementedInterface + "\",\n" + "\"counter\": 4340,\n"
                             + "\"problem\": \"signalIsLost\",\n" + "\"type\": \"ProblemNotificationXml\"\n" + "}");
 
@@ -1566,23 +1620,19 @@ public class TestCRUDforDatabase {
 
     private String createCMEntity(String initialDbId, String entityType, String implementedInterface) {
         // ==CREATE============================
-            System.out.println("try to create entry");
-            String dbId = null;
+        System.out.println("try to create entry");
+        String dbId = null;
 
         try {
             dbId = dbRawProvider.doUpdateOrCreate(entityType, initialDbId,
-                "{\n" + "\"timestamp\": \"2019-10-28T11:55:58.3Z\",\n"
-                    + "\" object-id\": \"LP-MWPS-RADIO\",\n"
-                    + "\"node-id\": \"node-1\",\n"
-                    + "\"counter\": 1,\n"
-                    + "\"notification-type\": \"" + CmNotificationType.NotifyMOIChanges.toString() + "\",\n"
-                    + "\"notification-id\": 123,\n"
-                    + "\"source-indicator\": \"" + CmSourceIndicator.MANAGEMENTOPERATION.toString() + "\",\n"
-                    + "\" path\": \"https://samsung.com/3GPP/simulation/network-function/ves=1\",\n"
-                    + "\"operation\": \"" + CmOperation.REPLACE.toString() + "\",\n"
-                    + "\"value\": \"pnf-registration:true\",\n"
-                    + "\"implemented-interface\": \"" + implementedInterface + "\"\n"
-                    + "}");
+                    "{\n" + "\"timestamp\": \"2019-10-28T11:55:58.3Z\",\n" + "\" object-id\": \"LP-MWPS-RADIO\",\n"
+                            + "\"node-id\": \"node-1\",\n" + "\"counter\": 1,\n" + "\"notification-type\": \""
+                            + CmNotificationType.NotifyMOIChanges.toString() + "\",\n" + "\"notification-id\": 123,\n"
+                            + "\"source-indicator\": \"" + CmSourceIndicator.MANAGEMENTOPERATION.toString() + "\",\n"
+                            + "\" path\": \"https://samsung.com/3GPP/simulation/network-function/ves=1\",\n"
+                            + "\"operation\": \"" + CmOperation.REPLACE.toString() + "\",\n"
+                            + "\"value\": \"pnf-registration:true\",\n" + "\"implemented-interface\": \""
+                            + implementedInterface + "\"\n" + "}");
 
         } catch (Exception e) {
             fail("Problem creating CM log entry" + e.getMessage());

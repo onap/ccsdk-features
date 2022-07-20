@@ -21,7 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters;
 
-public class RegexSqlDBFilter extends DBKeyValuePair<String> implements SqlDBFilter{
+public class RegexSqlDBFilter extends DBKeyValuePair<String> implements SqlDBFilter {
 
 
     public RegexSqlDBFilter(String key, String value) {
@@ -32,4 +32,11 @@ public class RegexSqlDBFilter extends DBKeyValuePair<String> implements SqlDBFil
     public String getFilterExpression() {
         return String.format("`%s` RLIKE '%s'", this.getKey(), this.getValue());
     }
+
+    @Override
+    public String getValue() {
+        String value = super.getValue();
+        return value != null ? value.replace("*", ".*") : null;
+    }
 }
+

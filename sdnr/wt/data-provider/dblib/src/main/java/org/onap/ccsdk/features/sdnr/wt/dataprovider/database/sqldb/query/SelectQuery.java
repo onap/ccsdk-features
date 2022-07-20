@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
@@ -114,7 +115,7 @@ public class SelectQuery implements SqlQuery {
 
     private static Filter cleanFilter(Filter filter) {
         final String sFilter = filter.getFiltervalue();
-        final List<String> sFilters = filter.getFiltervalues();
+        final Set<String> sFilters = filter.getFiltervalues();
         //if only single filter value is set
         if (sFilter != null && (sFilters == null || sFilter.isEmpty())) {
             return "*".equals(filter.getFiltervalue()) ? null : filter;
@@ -128,7 +129,7 @@ public class SelectQuery implements SqlQuery {
             } ;
             return new FilterBuilder().setProperty(filter.getProperty()).setFiltervalue(filter.getFiltervalue())
                     .setFiltervalues(
-                            filter.getFiltervalues().stream().filter(e -> !"*".equals(e)).collect(Collectors.toList()))
+                            filter.getFiltervalues().stream().filter(e -> !"*".equals(e)).collect(Collectors.toSet()))
                     .build();
         }
     }

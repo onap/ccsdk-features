@@ -1,6 +1,6 @@
 # wt - wireless transport microservices
 
-ODL version: aluminium sr1
+ODL version: sulfur sr1
 
 ## apigateway (osgi)
 

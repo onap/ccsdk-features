@@ -21,7 +21,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl;
 
-import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
@@ -47,9 +46,7 @@ public class HtUserdataManagerImpl extends HtUserdataManagerBase {
 
     @Override
     public boolean setUserdata(String username, String data) {
-        JSONObject o = new JSONObject(this.getUserdata(username));
-        JSONObject merge = mergeData(new JSONObject(data), o);
-        return this.dbClient.doWriteRaw(Entity.Userdata.getName(), username, merge.toString()) != null;
+        return this.dbClient.doWriteRaw(Entity.Userdata.getName(), username, data) != null;
     }
 
     @Override

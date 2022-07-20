@@ -82,7 +82,7 @@ public class Onf14DomTestUtils {
 
 
     public static NormalizedNode getNormalizedNodeFromJson() throws IOException, URISyntaxException {
-        schemaContext = TestYangParserUtil.parseYangResourceDirectory("/");
+        schemaContext = YangParserTestUtils.parseYangResourceDirectory("/");
         lhotkaCodecFactory = JSONCodecFactorySupplier.DRAFT_LHOTKA_NETMOD_YANG_JSON_02.getShared(schemaContext);
         streamAsString =
                 loadTextFile(new File(Onf14DomTestUtils.class.getResource("/ControlConstruct-data-test.json").toURI()));
@@ -105,7 +105,7 @@ public class Onf14DomTestUtils {
 
     public static NormalizedNode getNormalizedNodeFromXML()
             throws XMLStreamException, URISyntaxException, IOException, SAXException {
-        schemaContext = TestYangParserUtil.parseYangResourceDirectory("/");
+        schemaContext = YangParserTestUtils.parseYangResourceDirectory("/");
         hwContainerSchema = Inference.ofDataTreePath(schemaContext, CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER);
         final InputStream resourceAsStream =
                 Onf14DomTestUtils.class.getResourceAsStream("/ControlConstruct-data-test.xml");

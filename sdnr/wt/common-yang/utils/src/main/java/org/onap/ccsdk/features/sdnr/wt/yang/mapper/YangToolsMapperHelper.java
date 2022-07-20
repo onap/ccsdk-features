@@ -311,4 +311,10 @@ public class YangToolsMapperHelper {
     public static <K extends Identifier<V>, V extends Identifiable<K>> Map<K,V> toMap(List<V> list) {
     	 return list == null || list.isEmpty() ? null : Maps.uniqueIndex(list, Identifiable::key);
     }
+    
+    @SuppressWarnings("unchecked")
+   	public static <S,T> T callBuild(S builder) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+       	Method method = builder.getClass().getMethod("build");
+   		return (T) method.invoke(builder);
+   	}
 }

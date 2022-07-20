@@ -72,7 +72,7 @@ public class NoDbDatabaseDataProvider implements DatabaseDataProvider {
     private final HtDatabaseMediatorserver mediatorserver;
     private final HtDatabaseMaintenance maintenance;
     private final DataProvider dataprovider;
-    
+
     public NoDbDatabaseDataProvider() {
         this.usermanger = new NoDbHtUserdataManager();
         this.mediatorserver = new NoDbHtDatabaseMediatorserver();
@@ -160,7 +160,7 @@ public class NoDbDatabaseDataProvider implements DatabaseDataProvider {
     }
 
     @Override
-    public ReadStatusOutputBuilder readStatus() throws IOException {
+    public ReadStatusOutputBuilder readStatus(EntityInput input) throws IOException {
         return new ReadStatusOutputBuilder();
     }
 

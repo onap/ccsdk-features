@@ -45,7 +45,6 @@ import org.junit.Before;
 import org.onap.ccsdk.features.sdnr.wt.common.test.ServletInputStreamFromByteArrayInputStream;
 import org.onap.ccsdk.features.sdnr.wt.common.test.ServletOutputStreamToStringWriter;
 
-@SuppressWarnings("restriction")
 public class HelpServletBase {
 
     public static final String RESPONSE_GET = "This is the response get";

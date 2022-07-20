@@ -24,7 +24,10 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -81,7 +84,7 @@ public class TestYangGenSalMapping {
 
         OdlHelloMessageCapabilitiesBuilder odlHelloMessageCapabilitiesBuilder =
                 new OdlHelloMessageCapabilitiesBuilder();
-        List<Uri> uriList = new ArrayList<>();
+        Set<Uri> uriList = new HashSet<>();
         uriList.add(new Uri("test.uri"));
         odlHelloMessageCapabilitiesBuilder.setCapability(uriList);
         netconfNodeBuilder.setOdlHelloMessageCapabilities(odlHelloMessageCapabilitiesBuilder.build());

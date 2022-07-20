@@ -27,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.AfterClass;
@@ -72,6 +73,7 @@ public class TestMariaDBMapper {
 
     //    private static DbLibService dbService;
 
+    private static final String SUFFIX = "";
     private static MariaDBTestBase testBase;
     private static SqlDBDataProvider dbProvider;
 
@@ -123,10 +125,10 @@ public class TestMariaDBMapper {
         builder.setDeviceType(NetworkElementDeviceType.OROADM);
         builder.setHost("10.20.30.40");
         builder.setIsRequired(true);
-        NodeDetails nodeDetails = new NodeDetailsBuilder().setAvailableCapabilities(Arrays.asList(
+        NodeDetails nodeDetails = new NodeDetailsBuilder().setAvailableCapabilities(new HashSet<>(Arrays.asList(
                 "urn:ietf:params:netconf:capability:with-defaults:1.0?basic-mode=explicit&also-supported=report-all,"
                         + "report-all-tagged,trim,explicit",
-                "urn:ietf:params:netconf:capability:validate:1.1", "urn:ietf:params:netconf:capability:url:1.0"))
+                "urn:ietf:params:netconf:capability:validate:1.1", "urn:ietf:params:netconf:capability:url:1.0")))
                 .build();
         builder.setNodeDetails(nodeDetails);
         builder.setPassword("password");
@@ -202,7 +204,7 @@ public class TestMariaDBMapper {
             boolean withControllerId) {
         String createStatement = null;
         try {
-            createStatement = SqlDBMapper.createTable(cls, entity, "", autoIndex,withControllerId);
+            createStatement = SqlDBMapper.createTable(cls, entity, SUFFIX, autoIndex,withControllerId);
         } catch (UnableToMapClassException e) {
             fail(e.getMessage());
         }

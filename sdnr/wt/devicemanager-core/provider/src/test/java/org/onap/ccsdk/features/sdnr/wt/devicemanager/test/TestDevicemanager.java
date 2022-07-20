@@ -22,6 +22,8 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
 import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
+import java.util.HashSet;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -179,7 +181,7 @@ public class TestDevicemanager extends Mockito {
         log.info("testResync");
 
         ClearCurrentFaultByNodenameInputBuilder inputBuilder = new ClearCurrentFaultByNodenameInputBuilder();
-        inputBuilder.setNodenames(Arrays.asList("test1", "test2"));
+        inputBuilder.setNodenames(new HashSet<>(Arrays.asList("test1", "test2")));
         apiService.clearCurrentFaultByNodename(inputBuilder.build());
 
     }

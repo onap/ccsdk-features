@@ -27,9 +27,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -38,7 +41,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRep
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.HtUserdataManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.nodb.NoDbDatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
@@ -47,6 +49,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
@@ -112,11 +115,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.tls.key.entry.output.Pagination;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.tls.key.entry.output.PaginationBuilder;
-import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -165,7 +167,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         // Register ourselves as the REST API RPC implementation
         LOG.info("Register RPC Service {}", DataProviderServiceImpl.class.getSimpleName());
         this.rpcReg = rpcProviderService.registerRpcImplementation(DataProviderService.class, this);
-        
+
     }
 
     private void sendResyncCallbackToApiGateway() {
@@ -279,7 +281,8 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     @Override
     public ListenableFuture<RpcResult<ReadStatusOutput>> readStatus(ReadStatusInput input) {
         LOG.debug("RPC Request: readStatusEntityList with input {}", input);
-        RpcResultBuilder<ReadStatusOutput> result = read(() -> DataProviderServiceImpl.this.dataProvider.readStatus());
+        RpcResultBuilder<ReadStatusOutput> result =
+                read(() -> DataProviderServiceImpl.this.dataProvider.readStatus(input));
         return result.buildFuture();
 
     }
@@ -460,11 +463,11 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         }
         ReadTlsKeyEntryOutputBuilder output = new ReadTlsKeyEntryOutputBuilder();
         if (result.isEmpty()) {
-            return output.setData(Arrays.asList()).setPagination(EMPTY_PAGINATION);
+            return output.setData(Set.of()).setPagination(EMPTY_PAGINATION);
         }
         Map<KeyCredentialKey, KeyCredential> keyCredential = result.get().getKeyCredential();
         if (keyCredential == null) {
-            return output.setData(Arrays.asList()).setPagination(EMPTY_PAGINATION);
+            return output.setData(Set.of()).setPagination(EMPTY_PAGINATION);
         }
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Pagination pagination =
                 input.getPagination();
@@ -474,7 +477,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
                 : pagination.getSize() == null ? DEFAULT_PAGESIZE : pagination.getSize().longValue();
         long from = pageNum > 0 ? (pageNum - 1) * size : 0;
         output.setData(keyCredential.keySet().stream().skip(from).limit(size).map(e -> e.getKeyId())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toSet()));
         output.setPagination(new PaginationBuilder().setPage(Uint64.valueOf(pageNum))
                 .setSize(Uint32.valueOf(output.getData().size())).setTotal(Uint64.valueOf(keyCredential.size()))
                 .build());
@@ -492,16 +495,16 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         return buf.toString();
     }
 
-    private interface GetEntityInput<O extends DataObject> {
-        Builder<O> get() throws IOException;
+    private interface GetEntityInput<O extends DataObject,B> {
+        B get() throws IOException;
     }
 
-    private static <O extends DataObject, I extends DataObject> RpcResultBuilder<O> read(
-            GetEntityInput<O> inputgetter) {
+    private static <O extends DataObject, B> RpcResultBuilder<O> read(
+            GetEntityInput<O,B> inputgetter) {
         RpcResultBuilder<O> result;
         try {
-            Builder<O> outputBuilder = inputgetter.get();
-            result = RpcResultBuilder.success(outputBuilder);
+            B outputBuilder = inputgetter.get();
+            result = RpcResultBuilder.success(YangToolsMapperHelper.callBuild(outputBuilder));
         } catch (Exception e) {
             LOG.info("Exception", e);
             result = RpcResultBuilder.failed();
@@ -510,6 +513,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         return result;
     }
 
+    
     public HtUserdataManager getHtDatabaseUserManager() {
         return this.dbUserManager;
     }

@@ -18,18 +18,16 @@
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
+import org.onap.ccsdk.features.sdnr.wt.common.threading.GenericRunnableFactory;
+import org.onap.ccsdk.features.sdnr.wt.common.threading.KeyBasedThreadpool;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.StatusChangedHandler.StatusKey;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
@@ -76,7 +74,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.parser.api.YangParserException;
 import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +99,7 @@ public class NetconfNodeStateServiceImpl
 
     // Name of ODL controller NETCONF instance
     private static final NodeId CONTROLLER = new NodeId("controller-config");
+    private static final int ASYNC_EXECUTION_POOLSIZE = 20;
 
     // -- OSGi services, provided
     private DataBroker dataBroker;
@@ -147,7 +145,8 @@ public class NetconfNodeStateServiceImpl
     private String clusterName;
 
     /** nodeId to threadPool (size=1) for datatreechange handling) **/
-    private final Map<String, ExecutorService> handlingPool;
+    //    private final Map<String, ExecutorService> handlingPool;
+    private KeyBasedThreadpool<NodeId, NetconfChangeDataHolder> handlingPool;
 
     private boolean handleDataTreeAsync;
 
@@ -177,10 +176,8 @@ public class NetconfNodeStateServiceImpl
         this.netconfNodeStateListenerList = new CopyOnWriteArrayList<>();
         this.vesNotificationListenerList = new CopyOnWriteArrayList<>();
         this.accessorManager = null;
-        this.handlingPool = new HashMap<>();
-
+        this.handlingPool = null;
     }
-
     public void setDataBroker(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
@@ -221,13 +218,17 @@ public class NetconfNodeStateServiceImpl
         this.bindingNormalizedNodeSerializer = bindingNormalizedNodeSerializer;
     }
 
-    /** Blueprint initialization
-     * @throws YangParserException **/
+    /**
+     * Blueprint initialization
+     *
+     * @throws YangParserException
+     **/
     public void init() {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
         this.domContext = new DomContext(this.yangParserFactory, this.bindingNormalizedNodeSerializer);
-        this.netconfCommunicatorManager = new NetconfCommunicatorManager(mountPointService, domMountPointService, domContext);
+        this.netconfCommunicatorManager =
+                new NetconfCommunicatorManager(mountPointService, domMountPointService, domContext);
         this.accessorManager = new NetconfAccessorManager(netconfCommunicatorManager, domContext, this);
         // Start RPC Service
         this.rpcApiService = new NetconfnodeStateServiceRpcApiImpl(rpcProviderRegistry, vesNotificationListenerList);
@@ -257,7 +258,19 @@ public class NetconfNodeStateServiceImpl
 
         listenerL1 = dataBroker.registerDataTreeChangeListener(NETCONF_NODE_TOPO_TREE_ID, new L1());
         listenerL2 = dataBroker.registerDataTreeChangeListener(NETCONF_NODE_TOPO_TREE_ID, new L2());
+        this.handlingPool = new KeyBasedThreadpool<NodeId, NetconfChangeDataHolder>(this.config.getAsyncHandlingPoolsize(), 1,
+                new GenericRunnableFactory<>() {
+                    public Runnable create(final NodeId key, final NetconfChangeDataHolder arg) {
+                        return new Runnable() {
 
+                            @Override
+                            public void run() {
+                                NetconfNodeStateServiceImpl.this.handleDataTreeChange(arg.root, key,
+                                        arg.modificationTyp);
+                            }
+                        };
+                    };
+                });
         this.initializationSuccessful = true;
 
         LOG.info("Session Initiated end. Initialization done {}", initializationSuccessful);
@@ -270,7 +283,7 @@ public class NetconfNodeStateServiceImpl
     }
 
     public DomContext getDomContext() {
-        return Objects.requireNonNull(domContext, "Initialization not completed for domContext" );
+        return Objects.requireNonNull(domContext, "Initialization not completed for domContext");
     }
 
     public DataBroker getDataBroker() {
@@ -282,7 +295,7 @@ public class NetconfNodeStateServiceImpl
     }
 
     public NetconfnodeStateServiceRpcApiImpl getNetconfnodeStateServiceRpcApiImpl() {
-        return Objects.requireNonNull(rpcApiService, "Initialization not completed for rpcApiService" );
+        return Objects.requireNonNull(rpcApiService, "Initialization not completed for rpcApiService");
     }
 
     @Override
@@ -418,19 +431,19 @@ public class NetconfNodeStateServiceImpl
         LOG.info("isNetconfNodeMaster indication {} for mountpoint {}", isNetconfNodeMaster, mountPointNodeName);
         if (isNetconfNodeMaster) {
             NetconfAccessor acessor = accessorManager.getAccessor(nNodeId, netconfNode);
-                /*
-                 * --> Call Listers for onConnect() Indication
-                   for (all)
-                 */
-                netconfNodeConnectListenerList.forEach(item -> {
-                    try {
-                        item.onEnterConnected(acessor);
-                    } catch (Exception e) {
-                        LOG.info("Exception during onEnterConnected listener call", e);
-                    }
-                });
+            /*
+             * --> Call Listers for onConnect() Indication
+               for (all)
+             */
+            netconfNodeConnectListenerList.forEach(item -> {
+                try {
+                    item.onEnterConnected(acessor);
+                } catch (Exception e) {
+                    LOG.info("Exception during onEnterConnected listener call", e);
+                }
+            });
 
-                LOG.info("Connect indication forwarded for {}", mountPointNodeName);
+            LOG.info("Connect indication forwarded for {}", mountPointNodeName);
         }
     }
 
@@ -565,18 +578,9 @@ public class NetconfNodeStateServiceImpl
                         if (modificationTyp == null) {
                             LOG.warn("L1 empty modification type");
                         } else {
+                            LOG.trace("handle data tree change with async={}",this.handleDataTreeAsync);
                             if (this.handleDataTreeAsync) {
-                                ExecutorService executor = this.handlingPool.getOrDefault(nodeId.getValue(), null);
-                                if (executor == null) {
-                                    executor = Executors.newFixedThreadPool(5);
-                                    this.handlingPool.put(nodeId.getValue(), executor);
-                                }
-                                executor.execute(new Thread() {
-                                    @Override
-                                    public void run() {
-                                        handleDataTreeChange(root, nodeId, modificationTyp);
-                                    }
-                                });
+                                this.handlingPool.execute(nodeId, new NetconfChangeDataHolder(root, modificationTyp));
 
                             } else {
                                 handleDataTreeChange(root, nodeId, modificationTyp);
@@ -683,7 +687,20 @@ public class NetconfNodeStateServiceImpl
     @Override
     public void onConfigChanged() {
         this.handleDataTreeAsync = this.config.handleAsync();
+        //setting poolsize is not possible atm
+        //this.handlingPool.setPoolSize(this.config.getAsyncHandlingPoolsize());
 
     }
 
+    public class NetconfChangeDataHolder {
+
+        protected final DataObjectModification<Node> root;
+        protected final ModificationType modificationTyp;
+
+        public NetconfChangeDataHolder(DataObjectModification<Node> root, ModificationType modificationTyp) {
+            this.root = root;
+            this.modificationTyp = modificationTyp;
+        }
+
+    }
 }

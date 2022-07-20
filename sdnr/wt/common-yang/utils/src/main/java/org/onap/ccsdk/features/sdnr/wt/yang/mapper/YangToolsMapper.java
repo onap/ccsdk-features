@@ -46,7 +46,8 @@ public class YangToolsMapper extends ObjectMapper {
     private final YangToolsBuilderAnnotationIntrospector annotationIntrospector;
     private final YangToolsModule module;
     private static final long serialVersionUID = 1L;
-    private boolean isModuleRegistered=false;
+    private boolean isModuleRegistered = false;
+
     public YangToolsMapper() {
         this(new YangToolsBuilderAnnotationIntrospector());
     }
@@ -63,6 +64,7 @@ public class YangToolsMapper extends ObjectMapper {
         enable(MapperFeature.USE_GETTERS_AS_SETTERS);
         setAnnotationIntrospector(yangToolsBuilderAnnotationIntrospector);
     }
+
     public void addDeserializer(Class<?> clsToDeserialize, String builderClassName) {
         this.annotationIntrospector.addDeserializer(clsToDeserialize, builderClassName);
     }
@@ -70,21 +72,23 @@ public class YangToolsMapper extends ObjectMapper {
     public void addKeyDeserializer(Class<?> type, KeyDeserializer deserializer) {
         this.module.addKeyDeserializer(type, deserializer);
     }
+
     @Override
     public <T> T readValue(String content, Class<T> valueType) throws JsonProcessingException, JsonMappingException {
-    	if(!this.isModuleRegistered) {
-    		this.registerModule(this.module);
-    		this.isModuleRegistered=true;
-    	}
-    	return super.readValue(content, valueType);
+        if (!this.isModuleRegistered) {
+            this.registerModule(this.module);
+            this.isModuleRegistered = true;
+        }
+        return super.readValue(content, valueType);
     }
+
     @Override
     public String writeValueAsString(Object value) throws JsonProcessingException {
-    	if(!this.isModuleRegistered) {
-    		this.registerModule(this.module);
-    		this.isModuleRegistered=true;
-    	}
-    	return super.writeValueAsString(value);
+        if (!this.isModuleRegistered) {
+            this.registerModule(this.module);
+            this.isModuleRegistered = true;
+        }
+        return super.writeValueAsString(value);
     }
 
 }

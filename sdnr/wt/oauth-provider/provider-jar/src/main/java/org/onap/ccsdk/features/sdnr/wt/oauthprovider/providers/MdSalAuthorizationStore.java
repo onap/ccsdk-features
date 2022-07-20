@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy.PolicyMethods;
@@ -85,7 +86,7 @@ public class MdSalAuthorizationStore {
         return Optional.of(mapPolicy(path, rolePm.get().getActions()));
     }
 
-    private OdlPolicy mapPolicy(String path, List<Actions> actions) {
+    private OdlPolicy mapPolicy(String path, Set<Actions> actions) {
         PolicyMethods methods = new PolicyMethods();
         String action;
         for (Actions a : actions) {

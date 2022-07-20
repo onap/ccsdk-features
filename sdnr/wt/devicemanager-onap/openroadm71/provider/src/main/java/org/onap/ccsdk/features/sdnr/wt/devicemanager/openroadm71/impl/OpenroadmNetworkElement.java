@@ -33,10 +33,10 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServic
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.OrgOpenroadmDevice;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.circuit.packs.CircuitPacks;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.interfaces.grp.Interface;
-import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.org.openroadm.device.container.OrgOpenroadmDevice;
-import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.org.openroadm.device.container.org.openroadm.device.Xponder;
+import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.org.openroadm.device.Xponder;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.shelf.Slots;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.shelves.Shelves;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev200529.xponder.XpdrPort;
@@ -310,7 +310,8 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     }
 
     private OrgOpenroadmDevice readDevice(NetconfBindingAccessor accessor) {
-        InstanceIdentifier<OrgOpenroadmDevice> deviceId = InstanceIdentifier.create(OrgOpenroadmDevice.class);
+    	final Class<OrgOpenroadmDevice> openRoadmDev = OrgOpenroadmDevice.class;
+        InstanceIdentifier<OrgOpenroadmDevice> deviceId = InstanceIdentifier.builder(openRoadmDev).build();
         return accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 deviceId);
     }

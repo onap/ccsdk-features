@@ -40,6 +40,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.common.alarm.pm.types.rev191129.Direction;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.common.alarm.pm.types.rev191129.Location;
+import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.circuit.pack.features.circuit.pack.components.Component;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.rev191129.HistoricalPmList;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.rev191129.historical.pm.group.HistoricalPm;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.rev191129.historical.pm.group.HistoricalPmBuilder;
@@ -142,10 +143,10 @@ public class TestOpenRoadmPMDataBuilder {
             @Override
             public @NonNull Class<? extends DataObject> getType() {
                 // TODO Auto-generated method stub
-                return Pmdata15mEntity.class;
+                return Component.class;
             }
         };
-        historicalPmEntryBuiler.setPmResourceInstance(InstanceIdentifier.create(Arrays.asList(pa)))
+        historicalPmEntryBuiler.setPmResourceInstance(InstanceIdentifier.unsafeOf(Arrays.asList(pa)))
         .setPmResourceTypeExtension("dshjdekjdewkk")
                 .setPmResourceType(ResourceTypeEnum.CircuitPack).setHistoricalPm(historicalPMCollection);
 
@@ -179,11 +180,11 @@ public class TestOpenRoadmPMDataBuilder {
             @Override
             public Class<? extends DataObject> getType() {
                 // TODO Auto-generated method stub
-                return Pmdata15mEntity.class;
+                return Component.class;
             }
         };
         historicalPMCollection.put(historicalPmBuilder.key(), historicalPmBuilder.build());
-        historicalPmEntryBuiler.setPmResourceInstance(InstanceIdentifier.create(Arrays.asList(pa)))
+        historicalPmEntryBuiler.setPmResourceInstance(InstanceIdentifier.unsafeOf(Arrays.asList(pa)))
             .setPmResourceTypeExtension("dshjdekjdewkk")
                 .setPmResourceType(ResourceTypeEnum.Device).setHistoricalPm(historicalPMCollection);
 

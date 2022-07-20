@@ -61,6 +61,7 @@ public class MariaDBTestBase {
     private static final Map<String, String> envDefaultValues = initEnvDefaultValues();
     private static final String SDNRDBDATABASETEST="test";
     private static final String TESTPROPFILE = "test.properties";
+    private static final String SUFFIX = "";
 
     public MariaDBTestBase() throws ManagedProcessException {
         this(new Random().nextInt(1000) + 50000);
@@ -169,7 +170,7 @@ public class MariaDBTestBase {
             boolean withControllerId) {
         String createStatement = null;
         try {
-            createStatement = SqlDBMapper.createTable(cls, entity, "", autoIndex,withControllerId);
+            createStatement = SqlDBMapper.createTable(cls, entity, SUFFIX, autoIndex,withControllerId);
         } catch (UnableToMapClassException e) {
             fail(e.getMessage());
         }

@@ -90,8 +90,8 @@ public class ORanDOMToInternalDataModel {
             inventoryResultList.add(oInventory.get());
         }
         //Walk through list of child keys and add to list
-        for (String childUuid : CodeHelpers.nonnull(ORanDMDOMUtility.getLeafListValue(component,
-                ORanDeviceManagerQNames.IETF_HW_COMPONENT_LIST_CONTAINS_CHILD))) {
+        for (String childUuid : CodeHelpers.nonnull(new ArrayList<>(ORanDMDOMUtility.getLeafListValue(component,
+                ORanDeviceManagerQNames.IETF_HW_COMPONENT_LIST_CONTAINS_CHILD)))) {
             for (MapEntryNode c : getComponentsByName(childUuid, componentList)) {
                 inventoryResultList = recurseGetInventory(nodeId, c, componentList, treeLevel + 1, inventoryResultList);
             }

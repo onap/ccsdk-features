@@ -25,11 +25,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UnableToConfigureOAuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 
 public class NextcloudProviderService extends AuthService {
 
-    public NextcloudProviderService(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) {
+    public NextcloudProviderService(OAuthProviderConfig config, String redirectUri, TokenCreator tokenCreator) throws UnableToConfigureOAuthService {
         super(config, redirectUri, tokenCreator);
         // TODO Auto-generated constructor stub
     }

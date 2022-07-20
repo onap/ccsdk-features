@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.DBKeyValuePair;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
@@ -40,7 +42,6 @@ import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsBui
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsDeserializerModifier;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
-import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.Enumeration;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -223,7 +224,7 @@ public class SqlDBMapper {
         String type = mariaDBTypeMap.getOrDefault(valueType, null);
         if (type == null) {
             if (implementsInterface(valueType, DataObject.class) || implementsInterface(valueType, List.class)
-                    || implementsInterface(valueType, Map.class)) {
+                    || implementsInterface(valueType, Map.class) || implementsInterface(valueType, Set.class)) {
                 return "JSON";
             }
             if (implementsInterface(valueType, Enumeration.class)) {
@@ -352,13 +353,13 @@ public class SqlDBMapper {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> List<T> read(ResultSet data, Class<T> clazz, String column)
+    public static <S,T> List<T> read(ResultSet data, Class<T> clazz, String column)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException,
             InstantiationException, SecurityException, NoSuchMethodException, JsonProcessingException {
         if(data==null) {
             return Arrays.asList();
         }
-        Builder<T> builder = findPOJOBuilder(clazz);
+        S builder = findPOJOBuilder(clazz);
         if(builder==null && column==null) {
             throw new InstantiationException("unable to find builder for class "+clazz.getName());
         }
@@ -374,7 +375,7 @@ public class SqlDBMapper {
                     m.setAccessible(true);
                     m.invoke(builder, getValueOrDefault(data, col, argType, null));
                 }
-                list.add(builder.build());
+                list.add(callBuild(builder));
             } else {
                 Object value = getValueOrDefault(data, column, clazz, null);
                 if (value != null) {
@@ -386,7 +387,13 @@ public class SqlDBMapper {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Builder<T> findPOJOBuilder(Class<T> ac) throws InstantiationException, IllegalAccessException,
+	private static <S,T> T callBuild(S builder) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    	Method method = builder.getClass().getMethod("build");
+		return (T) method.invoke(builder);
+	}
+
+	@SuppressWarnings("unchecked")
+    private static <S,T> S findPOJOBuilder(Class<T> ac) throws InstantiationException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException, SecurityException, NoSuchMethodException {
         try {
             String builder = null;
@@ -400,8 +407,8 @@ public class SqlDBMapper {
             }
             if (builder != null) {
                 Class<?> innerBuilder = YangToolsMapperHelper.findClass(builder);
-                Class<Builder<T>> builderClass = (Class<Builder<T>>) innerBuilder;
-                return builderClass.getDeclaredConstructor().newInstance();
+                //Class<Builder<T>> builderClass = (Class<Builder<T>>) innerBuilder;
+                return (S) innerBuilder.getDeclaredConstructor().newInstance();
             }
         } catch (ClassNotFoundException e) {
 

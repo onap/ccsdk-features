@@ -19,8 +19,14 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl;
 
+import com.google.common.util.concurrent.ForwardingListenableFuture;
 import com.google.common.util.concurrent.ListenableFuture;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.housekeeping.ResyncNetworkElementsListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.maintenance.MaintenanceRPCServiceAPI;
@@ -52,7 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicema
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.TestMaintenanceModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.TestMaintenanceModeOutputBuilder;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -105,7 +111,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
         try {
             GetRequiredNetworkElementKeysOutputBuilder outputBuilder =
                     maintenanceService.getRequiredNetworkElementKeys();
-            result = RpcResultBuilder.success(outputBuilder);
+            result = RpcResultBuilder.success(outputBuilder.build());
         } catch (Exception e) {
             result = RpcResultBuilder.failed();
             result.withError(ErrorType.APPLICATION, "Exception", e);
@@ -123,7 +129,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
         try {
             ShowRequiredNetworkElementOutputBuilder outputBuilder =
                     maintenanceService.showRequiredNetworkElement(input);
-            result = RpcResultBuilder.success(outputBuilder);
+            result = RpcResultBuilder.success(outputBuilder.build());
         } catch (Exception e) {
             result = RpcResultBuilder.failed();
             result.withError(ErrorType.APPLICATION, "Exception", e);
@@ -139,13 +145,12 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
 
         try {
             SetMaintenanceModeOutputBuilder outputBuilder = maintenanceService.setMaintenanceMode(input);
-            result = RpcResultBuilder.success(outputBuilder);
+            result = RpcResultBuilder.success(outputBuilder.build());
         } catch (Exception e) {
             result = RpcResultBuilder.failed();
             result.withError(ErrorType.APPLICATION, "Exception", e);
         }
         return result.buildFuture();
-
     }
 
 
@@ -154,11 +159,11 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
     public ListenableFuture<RpcResult<GetMaintenanceModeOutput>> getMaintenanceMode(GetMaintenanceModeInput input) {
 
         LOG.info("RPC Request: getMaintenanceMode input: {}", input.getMountpointName());
-        RpcResultBuilder<GetMaintenanceModeOutput> result;
+        @NonNull RpcResultBuilder<GetMaintenanceModeOutput> result;
 
         try {
             GetMaintenanceModeOutputBuilder outputBuilder = maintenanceService.getMaintenanceMode(input);
-            result = RpcResultBuilder.success(outputBuilder);
+            result = RpcResultBuilder.success(outputBuilder.build());
         } catch (Exception e) {
             result = RpcResultBuilder.failed();
             result.withError(ErrorType.APPLICATION, "Exception", e);
@@ -174,7 +179,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
 
         try {
             TestMaintenanceModeOutputBuilder outputBuilder = maintenanceService.testMaintenanceMode(input);
-            result = RpcResultBuilder.success(outputBuilder);
+            result = RpcResultBuilder.success(outputBuilder.build());
         } catch (Exception e) {
             result = RpcResultBuilder.failed();
             result.withError(ErrorType.APPLICATION, "Exception", e);
@@ -192,10 +197,10 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
         try {
             if (this.resyncCallbackListener != null) {
                 List<String> nodeNames =
-                        this.resyncCallbackListener.doClearCurrentFaultByNodename(input.getNodenames());
+                        this.resyncCallbackListener.doClearCurrentFaultByNodename(input.getNodenames().stream().collect(Collectors.toList()));
                 ClearCurrentFaultByNodenameOutputBuilder outputBuilder = new ClearCurrentFaultByNodenameOutputBuilder();
-                outputBuilder.setNodenames(nodeNames);
-                result = RpcResultBuilder.success(outputBuilder);
+                outputBuilder.setNodenames(new HashSet<>(nodeNames));
+                result = RpcResultBuilder.success(outputBuilder.build());
             } else {
                 result = RpcResultBuilder.failed();
                 result.withError(ErrorType.APPLICATION, "Startup running");
@@ -250,7 +255,5 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
         }
         return result.buildFuture();
     }
-
-
 
 }

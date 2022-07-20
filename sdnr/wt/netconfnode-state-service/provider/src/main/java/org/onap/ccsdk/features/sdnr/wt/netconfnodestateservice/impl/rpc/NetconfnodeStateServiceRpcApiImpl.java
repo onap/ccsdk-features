@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfn
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.PushFaultNotificationInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.PushFaultNotificationOutput;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -83,7 +83,7 @@ public class NetconfnodeStateServiceRpcApiImpl implements NetconfnodeStateServic
         try {
             GetStatusOutputBuilder outputBuilder = new GetStatusOutputBuilder();
             getStatusCallback.getStatus(input);
-            result = RpcResultBuilder.success(outputBuilder);
+            result = RpcResultBuilder.success(outputBuilder.build());
         } catch (Exception e) {
             result = RpcResultBuilder.failed();
             result.withError(ErrorType.APPLICATION, "Exception", e);
