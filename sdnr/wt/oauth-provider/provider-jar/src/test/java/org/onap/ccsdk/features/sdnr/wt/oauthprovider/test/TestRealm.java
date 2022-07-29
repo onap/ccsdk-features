@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.OAuth2Realm;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.AuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.opendaylight.aaa.api.shiro.principal.ODLPrincipal;
 import org.opendaylight.aaa.shiro.web.env.ThreadLocals;
@@ -103,6 +104,23 @@ public class TestRealm {
 
     }
 
+    @Test
+    public void testUrlTrimming(){
+        final String internalUrl="https://test.identity.onap:49333";
+        final String externalUrl="https://test.identity.onap:49333";
+        final String testUrl1 = "/my/token/endpoint";
+        final String testUrl2 = internalUrl+testUrl1;
+        final String testUrl3 = externalUrl+testUrl1;
+
+        assertEquals(testUrl1, AuthService.trimUrl(internalUrl, testUrl1));
+        assertEquals(testUrl1, AuthService.trimUrl(internalUrl, testUrl2));
+        assertEquals(testUrl1, AuthService.trimUrl(externalUrl, testUrl3));
+
+        assertEquals(testUrl2, AuthService.extendUrl(internalUrl, testUrl3));
+
+
+
+    }
     @Test
     public void testAssertCredentialsMatch() {
         //bearer token use case

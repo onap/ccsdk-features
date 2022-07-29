@@ -6,6 +6,8 @@ public class OpenIdConfigResponseData {
     private String authorization_endpoint;
     private String token_endpoint;
     private String userinfo_endpoint;
+
+    private String end_session_endpoint;
     private String jwks_uri;
 
     public OpenIdConfigResponseData(){
@@ -51,4 +53,13 @@ public class OpenIdConfigResponseData {
     public void setJwks_uri(String jwks_uri) {
         this.jwks_uri = jwks_uri;
     }
+
+    public String getEnd_session_endpoint() {
+        return end_session_endpoint;
+    }
+
+    public void setEnd_session_endpoint(String end_session_endpoint) {
+        this.end_session_endpoint = end_session_endpoint;
+    }
+
 }

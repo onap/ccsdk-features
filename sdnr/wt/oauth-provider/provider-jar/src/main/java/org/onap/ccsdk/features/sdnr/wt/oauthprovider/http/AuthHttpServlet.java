@@ -78,6 +78,7 @@ public class AuthHttpServlet extends HttpServlet {
     private static final String DEFAULT_DOMAIN = "sdn";
     private static final String HEAEDER_AUTHORIZATION = "Authorization";
 
+    private static final String LOGOUT_REDIRECT_URL_PARAMETER = "redirect_uri";
     private static final String CLASSNAME_ODLBASICAUTH =
             "org.opendaylight.aaa.shiro.filters.ODLHttpAuthenticationFilter";
     private static final String CLASSNAME_ODLBEARERANDBASICAUTH =
@@ -146,8 +147,21 @@ public class AuthHttpServlet extends HttpServlet {
     }
 
     private void handleLogout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        final String bearerToken = this.tokenCreator.getBearerToken(req, true);
+        UserTokenPayload userInfo = this.tokenCreator.decode(bearerToken);
+        if (bearerToken != null && userInfo!=null && !userInfo.isInternal()) {
+            AuthService provider = this.providerStore.getOrDefault(userInfo.getProviderId(), null);
+            if (provider != null) {
+                String redirectUrl = req.getParameter(LOGOUT_REDIRECT_URL_PARAMETER);
+                if (redirectUrl == null) {
+                    redirectUrl = this.config.getPublicUrl();
+                }
+                provider.sendLogoutRedirectResponse(bearerToken, resp, redirectUrl);
+                return;
+            }
+        }
         this.logout();
-        this.sendResponse(resp, HttpServletResponse.SC_OK, "");
+        this.sendResponse(resp, HttpServletResponse.SC_OK);
     }
 
     private void handleLoginRedirect(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -308,7 +322,7 @@ public class AuthHttpServlet extends HttpServlet {
                     username = String.format("%s@%s", username, domain);
                 }
                 List<String> roles = odlIdentityService.listRoles(username, domain);
-                return UserTokenPayload.create(username, roles);
+                return UserTokenPayload.createInternal(username, roles);
             }
         }
         return null;
@@ -449,7 +463,9 @@ public class AuthHttpServlet extends HttpServlet {
     }
 
 
-
+    private void sendResponse(HttpServletResponse resp, int code) throws IOException {
+        this.sendResponse(resp, code, null);
+    }
     private void sendResponse(HttpServletResponse resp, int code, Object data) throws IOException {
         byte[] output = data != null ? mapper.writeValueAsString(data).getBytes() : new byte[0];
         // output

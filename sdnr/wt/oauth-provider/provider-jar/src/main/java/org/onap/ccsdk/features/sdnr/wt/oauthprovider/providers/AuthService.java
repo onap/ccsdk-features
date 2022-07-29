@@ -59,9 +59,11 @@ public abstract class AuthService {
     protected final OAuthProviderConfig config;
     protected final TokenCreator tokenCreator;
     private final String redirectUri;
-    private final String tokenEndpoint;
-    private final String authEndpoint;
+    private final String tokenEndpointRelative;
+    private final String authEndpointAbsolute;
+    private final String logoutEndpointAbsolute;
 
+    private final Map<String, String> logoutTokenMap;
     protected abstract String getTokenVerifierUri();
 
     protected abstract Map<String, String> getAdditionalTokenVerifierParams();
@@ -74,6 +76,7 @@ public abstract class AuthService {
             throws JsonMappingException, JsonProcessingException;
 
     protected abstract String getLoginUrl(String callbackUrl);
+    protected abstract String getLogoutUrl();
 
     protected abstract UserTokenPayload requestUserRoles(String access_token, long issued_at, long expires_at);
 
@@ -86,6 +89,7 @@ public abstract class AuthService {
         this.mapper = new ObjectMapper();
         this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.httpClient = new MappingBaseHttpClient(this.config.getUrlOrInternal(), this.config.trustAll());
+        this.logoutTokenMap = new HashMap<>();
         if (this.config.hasToBeConfigured()){
             Optional<MappedBaseHttpResponse<OpenIdConfigResponseData>> oresponse = this.httpClient.sendMappedRequest(
                     this.config.getOpenIdConfigUrl(), "GET", null, null, OpenIdConfigResponseData.class);
@@ -96,13 +100,34 @@ public abstract class AuthService {
             if(!response.isSuccess()){
                 throw new UnableToConfigureOAuthService(this.config.getOpenIdConfigUrl(), response.code);
             }
-            this.tokenEndpoint = response.body.getToken_endpoint();
-            this.authEndpoint = response.body.getAuthorization_endpoint();
+            this.tokenEndpointRelative = trimUrl(this.config.getUrlOrInternal(),response.body.getToken_endpoint());
+            this.authEndpointAbsolute = extendUrl(this.config.getUrlOrInternal(),response.body.getAuthorization_endpoint());
+            this.logoutEndpointAbsolute = extendUrl(this.config.getUrlOrInternal(),response.body.getEnd_session_endpoint());
         }
         else{
-            this.tokenEndpoint = null;
-            this.authEndpoint = null;
+            this.tokenEndpointRelative = null;
+            this.authEndpointAbsolute = null;
+            this.logoutEndpointAbsolute = null;
         }
+    }
+
+    public static String trimUrl(String baseUrl, String endpoint) {
+        if(endpoint.startsWith(baseUrl)){
+            return endpoint.substring(baseUrl.length());
+        }
+        if(endpoint.startsWith("http")){
+            return endpoint.substring(endpoint.indexOf("/",8));
+        }
+        return endpoint;
+    }
+    public static String extendUrl(String baseUrl, String endpoint) {
+        if(endpoint.startsWith("http")){
+            endpoint= endpoint.substring(endpoint.indexOf("/",8));
+        }
+        if(baseUrl.endsWith("/")){
+            baseUrl=baseUrl.substring(0,baseUrl.length()-2);
+        }
+        return baseUrl+endpoint;
     }
 
     public PublicOAuthProviderConfig getConfig() {
@@ -128,12 +153,27 @@ public abstract class AuthService {
 
     public void sendLoginRedirectResponse(HttpServletResponse resp, String callbackUrl) {
         resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-        String url = this.authEndpoint!=null?String.format(
+        String url = this.authEndpointAbsolute !=null?String.format(
                 "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s",
-                this.authEndpoint, urlEncode(this.config.getClientId()), this.config.getScope(),
+                this.authEndpointAbsolute, urlEncode(this.config.getClientId()), this.config.getScope(),
                 urlEncode(callbackUrl)):this.getLoginUrl(callbackUrl);
         resp.setHeader("Location", url);
     }
+    public void sendLogoutRedirectResponse(String token, HttpServletResponse resp, String redirectUrl)
+            throws IOException {
+        String idToken = this.logoutTokenMap.getOrDefault(token, null);
+        String logoutEndpoint = this.logoutEndpointAbsolute!=null?this.logoutEndpointAbsolute:this.getLogoutUrl();
+        if(idToken==null) {
+            LOG.debug("unable to find token in map. Do unsafe logout.");
+            resp.sendRedirect(this.logoutEndpointAbsolute);
+            return;
+        }
+        LOG.debug("id token found. redirect to specific logout");
+        resp.sendRedirect(String.format("%s?id_token_hint=%s&post_logout_redirect_uri=%s",logoutEndpoint, idToken,
+                urlEncode(redirectUrl)));
+    }
+
+
 
     private static void sendErrorResponse(HttpServletResponse resp, String message) throws IOException {
         resp.sendError(HttpServletResponse.SC_NOT_FOUND, message);
@@ -148,41 +188,45 @@ public abstract class AuthService {
         }
         if (response != null) {
             if (this.doSeperateRolesRequest()) {
-                //long expiresAt = this.tokenCreator.getDefaultExp(Math.round(response.getExpires_in()));
+                LOG.debug("do a seperate role request");
                 long expiresAt = this.tokenCreator.getDefaultExp();
                 long issuedAt = this.tokenCreator.getDefaultIat();
                 UserTokenPayload data = this.requestUserRoles(response.getAccess_token(), issuedAt, expiresAt);
                 if (data != null) {
-                    this.handleUserInfoToken(data, resp, host);
+                    BearerToken createdToken = this.handleUserInfoToken(data, resp, host);
+                    this.logoutTokenMap.put(createdToken.getToken(),response.getId_token());
                 } else {
                     sendErrorResponse(resp, "unable to verify user");
                 }
             } else {
-                this.handleUserInfoToken(response.getAccess_token(), resp, host);
+                BearerToken createdToken = this.handleUserInfoToken(response.getAccess_token(), resp, host);
+                this.logoutTokenMap.put(createdToken.getToken(),response.getId_token());
             }
         } else {
             sendErrorResponse(resp, "unable to verify code");
         }
     }
 
-    private void handleUserInfoToken(UserTokenPayload data, HttpServletResponse resp, String localHostUrl)
+    private BearerToken handleUserInfoToken(UserTokenPayload data, HttpServletResponse resp, String localHostUrl)
             throws IOException {
         BearerToken onapToken = this.tokenCreator.createNewJWT(data);
         sendTokenResponse(resp, onapToken, localHostUrl);
+        return onapToken;
     }
 
-    private void handleUserInfoToken(String accessToken, HttpServletResponse resp, String localHostUrl)
+    private BearerToken handleUserInfoToken(String accessToken, HttpServletResponse resp, String localHostUrl)
             throws IOException {
         try {
             DecodedJWT jwt = JWT.decode(accessToken);
             String spayload = base64Decode(jwt.getPayload());
             LOG.debug("payload in jwt='{}'", spayload);
             UserTokenPayload data = this.mapAccessToken(spayload);
-            this.handleUserInfoToken(data, resp, localHostUrl);
+            return this.handleUserInfoToken(data, resp, localHostUrl);
         } catch (JWTDecodeException | JsonProcessingException e) {
             LOG.warn("unable to decode jwt token {}: ", accessToken, e);
             sendErrorResponse(resp, e.getMessage());
         }
+        return null;
     }
 
 
@@ -197,12 +241,14 @@ public abstract class AuthService {
             resp.setStatus(200);
             resp.setContentLength(output.length);
             resp.setContentType("application/json");
+            resp.addCookie(this.tokenCreator.createAuthCookie(data));
             ServletOutputStream os = null;
             os = resp.getOutputStream();
             os.write(output);
         } else {
             resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             resp.setHeader("Location", assembleUrl(localHostUrl, this.redirectUri, data.getToken()));
+            resp.addCookie(this.tokenCreator.createAuthCookie(data));
         }
     }
 
@@ -216,6 +262,7 @@ public abstract class AuthService {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/x-www-form-urlencoded");
+        headers.put("Accept", "application/json");
         Map<String, String> params = this.getAdditionalTokenVerifierParams();
         params.put("code", code);
         params.put("client_id", this.config.getClientId());
@@ -226,7 +273,7 @@ public abstract class AuthService {
             body.append(String.format("%s=%s&", p.getKey(), urlEncode(p.getValue())));
         }
 
-        String url = this.tokenEndpoint!=null?this.tokenEndpoint:this.getTokenVerifierUri();
+        String url = this.tokenEndpointRelative !=null?this.tokenEndpointRelative :this.getTokenVerifierUri();
         Optional<MappedBaseHttpResponse<OAuthResponseData>> response =
                 this.httpClient.sendMappedRequest(url, "POST",
                         body.substring(0, body.length() - 1), headers, OAuthResponseData.class);
@@ -258,6 +305,8 @@ public abstract class AuthService {
     public static String urlEncode(String s) {
         return URLEncoder.encode(s, StandardCharsets.UTF_8);
     }
+
+
 
     public enum ResponseType {
         CODE, TOKEN, SESSION_STATE

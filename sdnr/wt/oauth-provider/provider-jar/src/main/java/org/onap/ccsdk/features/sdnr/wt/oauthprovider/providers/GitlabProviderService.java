@@ -62,6 +62,11 @@ public class GitlabProviderService extends AuthService {
                 this.config.getUrl(), urlEncode(this.config.getClientId()), this.createRandomId(), callbackUrl);
     }
 
+    @Override
+    protected String getLogoutUrl() {
+        return String.format("%s/oauth/logout", this.config.getUrl());
+    }
+
     private String createRandomId() {
         String rnd = null;
         while(true) {

@@ -72,6 +72,11 @@ public class NextcloudProviderService extends AuthService {
     }
 
     @Override
+    protected String getLogoutUrl() {
+        return null;
+    }
+
+    @Override
     protected UserTokenPayload requestUserRoles(String access_token, long issued_at, long expires_at) {
         // TODO Auto-generated method stub
         return null;

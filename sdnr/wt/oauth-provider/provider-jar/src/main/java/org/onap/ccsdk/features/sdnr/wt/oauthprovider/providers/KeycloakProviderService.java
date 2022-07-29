@@ -57,6 +57,12 @@ public class KeycloakProviderService extends AuthService {
     }
 
     @Override
+    protected String getLogoutUrl() {
+        return String.format("%s/auth/realms/%s/protocol/openid-connect/logout", this.config.getUrl(),
+                urlEncode(this.config.getRealmName()));
+    }
+
+    @Override
     protected List<String> mapRoles(List<String> data) {
         final Map<String, String> map = this.config.getRoleMapping();
         List<String> filteredRoles =
@@ -89,6 +95,7 @@ public class KeycloakProviderService extends AuthService {
         data.setExp(payload.getExp() * 1000L);
         data.setFamilyName(payload.getFamilyName());
         data.setGivenName(payload.getGivenName());
+        data.setProviderId(this.config.getId());
         data.setPreferredUsername(payload.getPreferredUsername());
         data.setRoles(this.mapRoles(payload.getRealmAccess().getRoles()));
         return data;

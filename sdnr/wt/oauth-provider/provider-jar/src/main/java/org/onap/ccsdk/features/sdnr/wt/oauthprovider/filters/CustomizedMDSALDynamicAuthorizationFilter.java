@@ -7,12 +7,15 @@ import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import javax.servlet.Filter;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authz.AuthorizationFilter;
 import org.opendaylight.aaa.shiro.web.env.ThreadLocals;
@@ -78,6 +81,8 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
                                    final Object mappedValue) {
         checkArgument(request instanceof HttpServletRequest, "Expected HttpServletRequest, received {}", request);
 
+
+        final boolean defaultReturnValue=false;
         final Subject subject = getSubject(request, response);
         final HttpServletRequest httpServletRequest = (HttpServletRequest)request;
         final String requestURI = httpServletRequest.getRequestURI();
@@ -96,7 +101,7 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
             // The authorization container does not exist-- hence no authz rules are present
             // Allow access.
             LOG.debug("Authorization Container does not exist");
-            return true;
+            return defaultReturnValue;
         }
 
         final HttpAuthorization httpAuthorization = authorizationOptional.get();
@@ -104,8 +109,9 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
         List<Policies> policiesList = policies != null ? policies.getPolicies() : null;
         if (policiesList == null || policiesList.isEmpty()) {
             // The authorization container exists, but no rules are present.  Allow access.
-            LOG.debug("Exiting successfully early since no authorization rules exist");
-            return true;
+            LOG.debug("Exiting early since no authorization rules exist");
+            sendError(response, 403, "");
+            return defaultReturnValue;
         }
 
         // Sort the Policies list based on index
@@ -116,10 +122,11 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
             final String resource = policy.getResource();
             final boolean pathsMatch = pathsMatch(resource, requestURI);
             if (pathsMatch) {
-                LOG.debug("paths match for pattern={} and requestURI={}", resource, requestURI);
+                LOG.debug("paths match for policy {} pattern={} and requestURI={}", policy.getIndex(), resource, requestURI);
                 final String method = httpServletRequest.getMethod();
                 LOG.trace("method={}", method);
                 List<Permissions> permissions = policy.getPermissions();
+                LOG.trace("perm={}", permissions);
                 if(permissions !=null) {
                     for (Permissions permission : permissions) {
                         final String role = permission.getRole();
@@ -146,10 +153,25 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
                     LOG.trace("no permissions found");
                 }
                 LOG.debug("couldn't authorize the user for access");
+                sendError(response, 403, "");
                 return false;
             }
         }
-        LOG.debug("successfully authorized the user for access");
-        return true;
+        LOG.debug("no path found that matches {}", requestURI);
+        sendError(response, 403, "");
+        return defaultReturnValue;
+    }
+
+    private void sendError(ServletResponse response, int code, String message)  {
+        if(response instanceof HttpServletResponse){
+            try {
+                ((HttpServletResponse)response).sendError(code, message);
+            } catch (IOException e) {
+                LOG.warn("unable to send {} {} response: ", code, message, e);
+            }
+        }
+        else{
+            LOG.warn("unable to send {} {} response", code, message);
+        }
     }
 }

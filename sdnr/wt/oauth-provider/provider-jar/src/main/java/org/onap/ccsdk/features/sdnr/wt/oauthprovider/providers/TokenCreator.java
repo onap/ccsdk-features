@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
@@ -51,6 +53,8 @@ public class TokenCreator {
     private static final String ROLES_CLAIM = "roles";
     private static final String FAMILYNAME_CLAIM = "family_name";
     private static final String NAME_CLAIM = "name";
+    private static final String PROVIDERID_CLAIM = "provider_id";
+    private static final String COOKIE_NAME_AUTH = "token";
 
     static {
         Security.addProvider(
@@ -114,6 +118,7 @@ public class TokenCreator {
         final String token = JWT.create().withIssuer(issuer).withExpiresAt(new Date(data.getExp()))
                 .withIssuedAt(new Date(data.getIat())).withSubject(data.getPreferredUsername())
                 .withClaim(NAME_CLAIM, data.getGivenName()).withClaim(FAMILYNAME_CLAIM, data.getFamilyName())
+                .withClaim(PROVIDERID_CLAIM, data.getProviderId())
                 .withArrayClaim(ROLES_CLAIM, data.getRoles().toArray(new String[data.getRoles().size()]))
                 .sign(this.algorithm);
         LOG.trace("token created: {}", token);
@@ -145,20 +150,46 @@ public class TokenCreator {
         return new Date().getTime();
     }
 
-    public UserTokenPayload decode(HttpServletRequest req) throws JWTDecodeException {
+    public String getBearerToken(HttpServletRequest req) {
+        return this.getBearerToken(req, false);
+    }
+    public String getBearerToken(HttpServletRequest req, boolean checkCookie) {
         final String authHeader = req.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer")) {
+        if ((authHeader == null || !authHeader.startsWith("Bearer")) && checkCookie) {
+            Optional<Cookie> ocookie =
+                    Arrays.stream(req.getCookies()).filter(c -> COOKIE_NAME_AUTH.equals(c.getName())).findFirst();
+            if(ocookie.isEmpty()) {
+                return null;
+            }
+            return ocookie.get().getValue();
+        }
+        return authHeader.substring(7);
+    }
+    public UserTokenPayload decode(HttpServletRequest req) throws JWTDecodeException {
+        final String token = this.getBearerToken(req);
+        return token!=null?this.decode(token):null;
+    }
+    public UserTokenPayload decode(String token){
+        if(token == null){
             return null;
         }
-        DecodedJWT jwt = JWT.decode(authHeader.substring(7));
+        DecodedJWT jwt = JWT.decode(token);
         UserTokenPayload data = new UserTokenPayload();
         data.setRoles(Arrays.asList(jwt.getClaim(ROLES_CLAIM).asArray(String.class)));
         data.setExp(jwt.getExpiresAt().getTime());
         data.setFamilyName(jwt.getClaim(FAMILYNAME_CLAIM).asString());
         data.setGivenName(jwt.getClaim(NAME_CLAIM).asString());
         data.setPreferredUsername(jwt.getClaim(NAME_CLAIM).asString());
-
+        data.setProviderId(jwt.getClaim(PROVIDERID_CLAIM).asString());
         return data;
     }
 
+    public Cookie createAuthCookie(BearerToken data) {
+        Cookie cookie =  new Cookie(COOKIE_NAME_AUTH, data.getToken());
+        cookie.setMaxAge((int)this.tokenLifetimeSeconds);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        return cookie;
+    }
 }

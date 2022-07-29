@@ -28,6 +28,7 @@ public class OAuthResponseData {
     private double refresh_expires_in;
     private String refresh_token;
     private String token_type;
+    private String id_token;
 
     public OAuthResponseData() {
     }
@@ -76,6 +77,8 @@ public class OAuthResponseData {
         this.access_token = access_token;
     }
 
+    public void setId_token(String id_token){ this.id_token = id_token;}
+    public String getId_token(){ return this.id_token;}
     @Override
     public String toString() {
         return "OAuthResponseData [access_token=" + access_token + ", expires_in=" + expires_in

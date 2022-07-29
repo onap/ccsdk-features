@@ -25,6 +25,8 @@ import java.util.List;
 
 public class UserTokenPayload {
 
+    public static final String PROVIDERID_INTERNAL="Internal";
+
     private List<String> roles;
     private String preferredUsername;
     private String givenName;
@@ -32,6 +34,7 @@ public class UserTokenPayload {
     private long exp;
     private long iat;
 
+    private String providerId;
 
     public long getExp() {
         return exp;
@@ -81,12 +84,20 @@ public class UserTokenPayload {
         this.roles = roles;
     }
 
-    public static UserTokenPayload create(String username, List<String> roles) {
+    public void setProviderId(String providerId){ this.providerId = providerId;}
+
+    public  String getProviderId(){ return this.providerId;}
+
+    public static UserTokenPayload createInternal(String username, List<String> roles) {
         UserTokenPayload data = new UserTokenPayload();
         data.setPreferredUsername(username);
         data.setRoles(roles);
+        data.setProviderId(PROVIDERID_INTERNAL);
         return data;
     }
 
 
+    public boolean isInternal() {
+        return PROVIDERID_INTERNAL.equals(this.providerId);
+    }
 }
