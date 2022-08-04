@@ -36,7 +36,6 @@ import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotifi
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationOutput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationOutputBuilder;
-import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -179,7 +178,7 @@ public class CMNotifyProvider implements AutoCloseable, CMNOTIFYAPIService {
 		return Futures.immediateFuture(rpcResult);
 	}
 
-	protected Builder<?> getServiceData(String svcOperation) {
+	protected NbrlistChangeNotificationOutputBuilder getServiceData(String svcOperation) {
 		switch (svcOperation) {
 		case NBRLIST_CHANGE_NOTIFICATION:
 			return new NbrlistChangeNotificationOutputBuilder();
