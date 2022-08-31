@@ -56,9 +56,9 @@ public class NetconfAccessorManager {
 
     public NetconfAccessor getAccessor(NodeId nNodeId, NetconfNode netconfNode) {
         NetconfAccessor res = new NetconfAccessorImpl(nNodeId, netconfNode, netconfCommunicatorManager, domContext, netconfNodeStateService);
-        NetconfAccessor previouse = accessorList.put(nNodeId, res);
+        NetconfAccessor previouse = accessorList.putIfAbsent(nNodeId, res);
         if (Objects.nonNull(previouse)) {
-            LOG.warn("Accessor with name already available. Replaced with new one.");
+            LOG.warn("Accessor with name already available. Don't add {}", nNodeId);
         }
         return res;
     }
@@ -68,7 +68,11 @@ public class NetconfAccessorManager {
     }
 
     public void removeAccessor(NodeId nNodeId) {
-        accessorList.remove(nNodeId);
+        NetconfAccessor previouse = accessorList.remove(nNodeId);
+        if (Objects.nonNull(previouse)) {
+            LOG.warn("Accessor with name was not available during remove {}", nNodeId);
+        }
+
     }
 
 

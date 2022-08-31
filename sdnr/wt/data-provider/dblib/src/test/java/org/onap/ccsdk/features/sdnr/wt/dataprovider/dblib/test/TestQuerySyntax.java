@@ -225,6 +225,20 @@ public class TestQuerySyntax {
 
     }
     @Test
+    public void testSelectForFilterValues6() {
+        EntityInput input = new ReadGuiCutThroughEntryInputBuilder()
+                .setFilter(YangToolsMapperHelper.toMap(Arrays.asList(
+                        new FilterBuilder().setProperty("id").setFiltervalue("*ran*").build())))
+                .setPagination(new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1)).build())
+                .build();
+        SelectQuery query = new SelectQuery(TABLENAME1, input, CONTROLLERID);
+        System.out.println(query.toSql());
+        assertTrue(query.toSql().contains("RLIKE"));
+        assertTrue(query.toSql().contains(".*"));
+
+    }
+
+    @Test
     public void testCount() {
         CountQuery query = new CountQuery(Entity.Eventlog, TestMariaDataProvider.createInput(1, 20));
         String sQuery = query.toSql();

@@ -32,6 +32,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.DOMNotificationOutput;
@@ -120,7 +123,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
      */
     private static final HashMap<String, WebSocketManagerSocket> clientList = new HashMap<>();
 
-    private static final YangToolsMapper mapper = new YangToolsMapper();
+    private static final ObjectMapper mapper = new YangToolsMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     private final String myUniqueSessionId;
 
     private Session session = null;
@@ -133,6 +136,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
         this.myUniqueSessionId = _genSessionId();
         this.sendingSyncThread = new Thread(this.sendingRunner);
         this.messageQueue = new ArrayBlockingQueue<>(QUEUE_SIZE);
+
     }
 
     @Override

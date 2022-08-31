@@ -185,8 +185,9 @@ public class SqlDBReaderWriter<T extends DataObject> {
         }
         String insertedId = null;
         PreparedStatement stmt = null;
+        Connection connection = null;
         try {
-            Connection connection = this.dbService.getConnection();
+            connection = this.dbService.getConnection();
             stmt = connection.prepareStatement(query.toSql());
             stmt.execute();
 
@@ -208,6 +209,13 @@ public class SqlDBReaderWriter<T extends DataObject> {
                     LOG.warn("problem closing sql statement: ", e);
                 }
             }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    LOG.warn("problem closing sql connection: ", e);
+                }
+            }
         }
 
         return insertedId;
@@ -221,8 +229,9 @@ public class SqlDBReaderWriter<T extends DataObject> {
             LOG.trace("query={}", query.toSql());
         }
         PreparedStatement stmt = null;
+        Connection connection = null;
         try {
-            Connection connection = this.dbService.getConnection();
+            connection = this.dbService.getConnection();
             stmt = connection.prepareStatement(query.toSql());
             stmt.execute();
 
@@ -239,6 +248,13 @@ public class SqlDBReaderWriter<T extends DataObject> {
                     stmt.close();
                 } catch (SQLException e) {
                     LOG.warn("problem closing sql statement: ", e);
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    LOG.warn("problem closing sql connection: ", e);
                 }
             }
         }
@@ -262,8 +278,9 @@ public class SqlDBReaderWriter<T extends DataObject> {
         }
         int affectedRows = 0;
         PreparedStatement stmt = null;
+        Connection connection = null;
         try {
-            Connection connection = this.dbService.getConnection();
+            connection = this.dbService.getConnection();
             stmt = connection.prepareStatement(query.toSql());
             stmt.execute();
             affectedRows = stmt.getUpdateCount();
@@ -276,6 +293,13 @@ public class SqlDBReaderWriter<T extends DataObject> {
                     stmt.close();
                 } catch (SQLException e) {
                     LOG.warn("problem closing sql statement: ", e);
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    LOG.warn("problem closing sql connection: ", e);
                 }
             }
         }

@@ -95,7 +95,7 @@ public class TokenCreator {
 
     private Algorithm createAlgorithm(String alg, String secret, String pubkey)
             throws IllegalArgumentException, IOException {
-        if(alg==null) {
+        if (alg == null) {
             alg = Config.TOKENALG_HS256;
         }
         switch (alg) {
@@ -153,24 +153,31 @@ public class TokenCreator {
     public String getBearerToken(HttpServletRequest req) {
         return this.getBearerToken(req, false);
     }
+
     public String getBearerToken(HttpServletRequest req, boolean checkCookie) {
         final String authHeader = req.getHeader("Authorization");
         if ((authHeader == null || !authHeader.startsWith("Bearer")) && checkCookie) {
-            Optional<Cookie> ocookie =
-                    Arrays.stream(req.getCookies()).filter(c -> COOKIE_NAME_AUTH.equals(c.getName())).findFirst();
-            if(ocookie.isEmpty()) {
+            Cookie[] cookies = req.getCookies();
+            Optional<Cookie> ocookie = Optional.empty();
+            if (cookies != null) {
+                ocookie = Arrays.stream(cookies).filter(c -> c != null && COOKIE_NAME_AUTH.equals(c.getName()))
+                        .findFirst();
+            }
+            if (ocookie.isEmpty()) {
                 return null;
             }
             return ocookie.get().getValue();
         }
         return authHeader.substring(7);
     }
+
     public UserTokenPayload decode(HttpServletRequest req) throws JWTDecodeException {
         final String token = this.getBearerToken(req);
-        return token!=null?this.decode(token):null;
+        return token != null ? this.decode(token) : null;
     }
-    public UserTokenPayload decode(String token){
-        if(token == null){
+
+    public UserTokenPayload decode(String token) {
+        if (token == null) {
             return null;
         }
         DecodedJWT jwt = JWT.decode(token);
@@ -185,8 +192,8 @@ public class TokenCreator {
     }
 
     public Cookie createAuthCookie(BearerToken data) {
-        Cookie cookie =  new Cookie(COOKIE_NAME_AUTH, data.getToken());
-        cookie.setMaxAge((int)this.tokenLifetimeSeconds);
+        Cookie cookie = new Cookie(COOKIE_NAME_AUTH, data.getToken());
+        cookie.setMaxAge((int) this.tokenLifetimeSeconds);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);

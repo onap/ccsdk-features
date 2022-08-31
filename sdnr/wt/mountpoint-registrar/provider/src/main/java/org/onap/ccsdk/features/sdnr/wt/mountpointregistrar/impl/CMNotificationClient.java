@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class CMNotificationClient extends MessageClient {
 
-    private static final String CM_NOTIFICATION_URI = "restconf/operations/devicemanager:push-cm-notification";
+    private static final String CM_NOTIFICATION_URI = "rests/operations/devicemanager:push-cm-notification";
     public static final String NODE_ID = "@node-id@", COUNTER = "@counter@", TIMESTAMP = "@timestamp@",
         OBJECT_ID = "@object-id@", NOTIFICATION_TYPE = "@notification-type@", SOURCE_INDICATOR = "@source-indicator@",
         NOTIFICATION_ID = "@notification-id@", PATH = "@path@", OPERATION = "@operation@", VALUE = "@value@";
@@ -35,17 +35,17 @@ public class CMNotificationClient extends MessageClient {
             OPERATION, VALUE);
 
     private static final String CM_PAYLOAD = "{\n"
-        + "  \"devicemanager:input\": {\n"
-        + "    \"devicemanager:node-id\": \"" + NODE_ID + "\",\n"
-        + "    \"devicemanager:counter\": \"" + COUNTER + "\",\n"
-        + "    \"devicemanager:timestamp\": \"" + TIMESTAMP + "\",\n"
-        + "    \"devicemanager:object-id\": \"" + OBJECT_ID + "\",\n"
-        + "    \"devicemanager:notification-type\": \"" + NOTIFICATION_TYPE + "\",\n"
-        + "    \"devicemanager:notification-id\": \"" + NOTIFICATION_ID + "\",\n"
-        + "    \"devicemanager:source-indicator\": \"" + SOURCE_INDICATOR + "\",\n"
-        + "    \"devicemanager:path\": \"" + PATH + "\",\n"
-        + "    \"devicemanager:operation\": \"" + OPERATION + "\",\n"
-        + "    \"devicemanager:value\": \"" + VALUE + "\"\n"
+        + "  \"input\": {\n"
+        + "    \"node-id\": \"" + NODE_ID + "\",\n"
+        + "    \"counter\": \"" + COUNTER + "\",\n"
+        + "    \"timestamp\": \"" + TIMESTAMP + "\",\n"
+        + "    \"object-id\": \"" + OBJECT_ID + "\",\n"
+        + "    \"notification-type\": \"" + NOTIFICATION_TYPE + "\",\n"
+        + "    \"notification-id\": \"" + NOTIFICATION_ID + "\",\n"
+        + "    \"source-indicator\": \"" + SOURCE_INDICATOR + "\",\n"
+        + "    \"path\": \"" + PATH + "\",\n"
+        + "    \"operation\": \"" + OPERATION + "\",\n"
+        + "    \"value\": \"" + VALUE + "\"\n"
         + "  }\n"
         + "}";
 

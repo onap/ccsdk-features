@@ -30,6 +30,9 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.zaxxer.hikari.HikariDataSource;
+import org.mariadb.jdbc.MariaDbPoolDataSource;
 import org.onap.ccsdk.features.sdnr.wt.common.database.Portstatus;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntry;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntryList;
@@ -41,6 +44,8 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlD
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.sql.ConnectionPoolDataSource;
 
 public class SqlDBClient {
 
@@ -58,11 +63,13 @@ public class SqlDBClient {
     private static final String SELECT_VERSION_QUERY = "SELECT @@version as version";
 
     private static final String DBNAME_DEFAULT = "sdnrdb";
+    private static final int DEFAULT_POOLSIZE = 50;
     private final String dbConnectionString;
     private final String dbName;
     private final String dbHost;
     private final int dbPort;
 
+    private final HikariDataSource connectionPool;
     /**
      *
      * @param dbUrl e.g. jdbc:mysql://sdnrdb:3306/sdnrdb
@@ -78,6 +85,10 @@ public class SqlDBClient {
         this.dbHost = matcher.group(2);
         this.dbPort = Integer.parseInt(matcher.group(3));
         this.dbName = matcher.group(4);
+        this.connectionPool = new HikariDataSource();
+        this.connectionPool.setJdbcUrl(this.dbConnectionString);
+        this.connectionPool.setUsername(username);
+        this.connectionPool.setPassword(password);
     }
 
     public AliasesEntryList readViews() {

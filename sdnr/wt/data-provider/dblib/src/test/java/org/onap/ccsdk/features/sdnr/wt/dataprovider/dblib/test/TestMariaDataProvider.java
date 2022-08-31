@@ -125,6 +125,7 @@ public class TestMariaDataProvider {
 
     private static final String NODEID1 = "node1";
     private static final String NODEID2 = "node2";
+    private static final String NODEID22 = "node22";
     private static final String NODEID3 = "node3";
     private static final String NODEID4 = "node4";
     private static final String NODEID5 = "node5";
@@ -140,6 +141,7 @@ public class TestMariaDataProvider {
     private static final String USERNAME = "admin";
     private static MariaDBTestBase testBase;
     private static SqlDBDataProvider dbProvider;
+    private static SqlDBDataProvider dbProviderOverall;
     private static SqlDBClient dbClient;
     private static String CONTROLLERID;
 
@@ -153,6 +155,7 @@ public class TestMariaDataProvider {
         MariaDBTestBase.testCreateTableStructure(dbClient);
         dbProvider.setControllerId();
         CONTROLLERID = dbProvider.getControllerId();
+        dbProviderOverall = testBase.getOverallDbProvider();
 
     }
 
@@ -533,19 +536,23 @@ public class TestMariaDataProvider {
         NetworkElementConnectionEntity ne2 = new NetworkElementConnectionBuilder().setNodeId(NODEID2)
                 .setHost("10.20.30.55").setPort(Uint32.valueOf(8300)).setIsRequired(false).setUsername("user")
                 .setPassword("passwd").setStatus(ConnectionLogStatus.Connecting).build();
+        NetworkElementConnectionEntity ne22 = new NetworkElementConnectionBuilder().setNodeId(NODEID22)
+                .setHost("10.20.30.55").setPort(Uint32.valueOf(8300)).setIsRequired(false).setUsername("user")
+                .setPassword("passwd").setStatus(ConnectionLogStatus.Connected).build();
         NetworkElementConnectionEntity ne3 = new NetworkElementConnectionBuilder().setNodeId(NODEID3)
                 .setHost("10.20.30.55").setPort(Uint32.valueOf(8300)).setIsRequired(false).setUsername("user")
                 .setPassword("passwd").setStatus(ConnectionLogStatus.Connecting).build();
         try {
             dbProvider.createNetworkElementConnection(ne1);
             dbProvider.createNetworkElementConnection(ne2);
+            dbProvider.createNetworkElementConnection(ne22);
             dbProvider.updateNetworkConnection22(ne3, NODEID3);
         } catch (IOException e) {
             e.printStackTrace();
             fail("problem creating neconnection");
         }
         data = dbProvider.readNetworkElementConnectionList(createInput(1, 20));
-        assertEquals(3, data.getData().size());
+        assertEquals(4, data.getData().size());
         NetworkElementConnectionEntity update1 = new NetworkElementConnectionBuilder()
                 .setStatus(ConnectionLogStatus.Connected).setDeviceType(NetworkElementDeviceType.ORAN).build();
         dbProvider.updateNetworkConnectionDeviceType(update1, NODEID1);
@@ -574,15 +581,41 @@ public class TestMariaDataProvider {
             e.printStackTrace();
             fail("failed to read status");
         }
-        assertEquals(1, status.getData().get(0).getNetworkElementConnections().getConnected().intValue());
+        assertEquals(2, status.getData().get(0).getNetworkElementConnections().getConnected().intValue());
         assertEquals(2, status.getData().get(0).getNetworkElementConnections().getConnecting().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getDisconnected().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getMounted().intValue());
-        assertEquals(3, status.getData().get(0).getNetworkElementConnections().getTotal().intValue());
+        assertEquals(4, status.getData().get(0).getNetworkElementConnections().getTotal().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnableToConnect().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUndefined().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnmounted().intValue());
 
+        ReadStatusOutputBuilder status2=null;
+        try {
+            EntityInput input=createInput("node-id","node2*", 1, 20);
+            status = dbProvider.readStatus(input);
+            status2 = dbProviderOverall.readStatus(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("failed to read status");
+        }
+        assertEquals(1, status.getData().get(0).getNetworkElementConnections().getConnected().intValue());
+        assertEquals(1, status.getData().get(0).getNetworkElementConnections().getConnecting().intValue());
+        assertEquals(0, status.getData().get(0).getNetworkElementConnections().getDisconnected().intValue());
+        assertEquals(0, status.getData().get(0).getNetworkElementConnections().getMounted().intValue());
+        assertEquals(2, status.getData().get(0).getNetworkElementConnections().getTotal().intValue());
+        assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnableToConnect().intValue());
+        assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUndefined().intValue());
+        assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnmounted().intValue());
+        
+        assertEquals(1, status2.getData().get(0).getNetworkElementConnections().getConnected().intValue());
+        assertEquals(1, status2.getData().get(0).getNetworkElementConnections().getConnecting().intValue());
+        assertEquals(0, status2.getData().get(0).getNetworkElementConnections().getDisconnected().intValue());
+        assertEquals(0, status2.getData().get(0).getNetworkElementConnections().getMounted().intValue());
+        assertEquals(2, status2.getData().get(0).getNetworkElementConnections().getTotal().intValue());
+        assertEquals(0, status2.getData().get(0).getNetworkElementConnections().getUnableToConnect().intValue());
+        assertEquals(0, status2.getData().get(0).getNetworkElementConnections().getUndefined().intValue());
+        assertEquals(0, status2.getData().get(0).getNetworkElementConnections().getUnmounted().intValue());
 
         DeleteNetworkElementConnectionInput delete1 =
                 new DeleteNetworkElementConnectionInputBuilder().setId(NODEID1).build();
@@ -595,7 +628,7 @@ public class TestMariaDataProvider {
         data = dbProvider.readNetworkElementConnectionList(createInput("node-id", NODEID1, 1, 20));
         assertEquals(0, data.getData().size());
         data = dbProvider.readNetworkElementConnectionList(createInput(1, 20));
-        assertEquals(2, data.getData().size());
+        assertEquals(3, data.getData().size());
 
     }
 

@@ -54,6 +54,7 @@ public class Onf14DomAirInterfaceNotificationListener implements DOMNotification
 
     @Override
     public void onNotification(@NonNull DOMNotification domNotification) {
+        log.debug("Got event of type :: {}", domNotification.getType());
         if (domNotification.getType()
                 .equals(Absolute.of(Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_CREATE_NOTIFICATION))) {
             onObjectCreateNotification(domNotification);
@@ -140,6 +141,7 @@ public class Onf14DomAirInterfaceNotificationListener implements DOMNotification
                 Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION,
                 new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
                         Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)));
+        log.debug("onObjectProblemNotification log entry written");
     }
 
     private void onObjectDeletionNotification(@NonNull DOMNotification domNotification) {

@@ -92,7 +92,7 @@ public class Onf14DomWireInterfaceNotificationListener implements DOMNotificatio
                 Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION,
                 new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
                         Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)));
-
+        log.debug("onProblemNotification log entry written");
     }
 
     public void onAttributeValueChangedNotification(DOMNotification notification) {
