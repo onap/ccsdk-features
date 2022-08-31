@@ -50,7 +50,7 @@ public class TestDcae {
 
     private static final String ENABLEDDCAE_TESTCONFIG_FILENAME = "test2.properties";
     private static final File ENABLEDDCAE_TESTCONFIG_FILE = new File(ENABLEDDCAE_TESTCONFIG_FILENAME);
-    private static final int DCAE_SERVER_PORT = 45451;
+    private static final int DCAE_SERVER_PORT = 45452;
     private static final String URI = "/abc";
     private static final String TESTCONFIG_CONTENT = "[dcae]\n" + "dcaeUserCredentials=admin:admin\n"
             + "dcaeUrl=http://localhost:" + DCAE_SERVER_PORT + URI + "\n" + "dcaeHeartbeatPeriodSeconds=120\n"

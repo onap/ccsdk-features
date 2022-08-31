@@ -98,7 +98,7 @@ public class Onf14DomEthernetContainerNotificationListener implements DOMNotific
                         new DateAndTime(cn.childByArg(new NodeIdentifier(
                                 Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP))
                                 .body().toString()));
-
+        log.debug("onProblemNotification log entry written");
     }
 
     public void onAttributeValueChangedNotification(DOMNotification notification) {

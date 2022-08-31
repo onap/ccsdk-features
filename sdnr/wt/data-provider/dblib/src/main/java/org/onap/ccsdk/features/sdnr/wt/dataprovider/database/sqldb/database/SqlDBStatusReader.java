@@ -61,6 +61,9 @@ public class SqlDBStatusReader {
         long minorCount = 0;
         long warningCount = 0;
         ResultSet data;
+        if(LOG.isTraceEnabled()){
+            LOG.trace("query={}", selectQuery);
+        }
         try {
             data = this.dbClient.read(selectQuery);
             String severity;
@@ -92,6 +95,9 @@ public class SqlDBStatusReader {
         long connectedCount = 0, connectingCount = 0, disconnectedCount = 0, mountedCount = 0, unableToConnectCount = 0,
                 undefinedCount = 0, unmountedCount = 0;
         long cnt;
+        if(LOG.isTraceEnabled()){
+            LOG.trace("query={}", selectQuery);
+        }
         try {
             data = this.dbClient.read(selectQuery);
             while (data.next()) {

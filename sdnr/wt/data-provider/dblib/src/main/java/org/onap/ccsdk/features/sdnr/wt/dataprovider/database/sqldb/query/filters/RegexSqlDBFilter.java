@@ -30,7 +30,7 @@ public class RegexSqlDBFilter extends DBKeyValuePair<String> implements SqlDBFil
 
     @Override
     public String getFilterExpression() {
-        return String.format("`%s` RLIKE '%s'", this.getKey(), this.getValue());
+        return String.format("`%s` RLIKE '^%s$'", this.getKey(), this.getValue());
     }
 
     @Override

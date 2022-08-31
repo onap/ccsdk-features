@@ -29,19 +29,19 @@ import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageCl
 
 public class FaultNotificationClient extends MessageClient {
 
-    private static final String FAULT_NOTIFICATION_URI = "restconf/operations/devicemanager:push-fault-notification";
+    private static final String FAULT_NOTIFICATION_URI = "rests/operations/devicemanager:push-fault-notification";
     public static final String NODE_ID = "@node-id@", COUNTER = "@counter@", TIMESTAMP = "@timestamp@",
             OBJECT_ID = "@object-id@", PROBLEM = "@problem@", SEVERITY = "@severity@";
     public static final List<String> REQUIRED_FIELDS = List.of(NODE_ID, COUNTER, TIMESTAMP, OBJECT_ID, PROBLEM, SEVERITY);
 
     private static final String FAULT_PAYLOAD = "{\n"
-            + "  \"devicemanager:input\": {\n"
-            + "    \"devicemanager:node-id\": \"" + NODE_ID + "\",\n"
-            + "    \"devicemanager:counter\": \"" + COUNTER + "\",\n"
-            + "    \"devicemanager:timestamp\": \"" + TIMESTAMP + "\",\n"
-            + "    \"devicemanager:object-id\": \"" + OBJECT_ID + "\",\n"
-            + "    \"devicemanager:problem\": \"" + PROBLEM + "\",\n"
-            + "    \"devicemanager:severity\": \"" + SEVERITY + "\"\n"
+            + "  \"input\": {\n"
+            + "    \"node-id\": \"" + NODE_ID + "\",\n"
+            + "    \"counter\": \"" + COUNTER + "\",\n"
+            + "    \"timestamp\": \"" + TIMESTAMP + "\",\n"
+            + "    \"object-id\": \"" + OBJECT_ID + "\",\n"
+            + "    \"problem\": \"" + PROBLEM + "\",\n"
+            + "    \"severity\": \"" + SEVERITY + "\"\n"
             + "  }\n"
             + "}";
 

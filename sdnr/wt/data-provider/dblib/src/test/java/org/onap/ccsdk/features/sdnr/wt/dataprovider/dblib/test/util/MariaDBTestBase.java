@@ -57,6 +57,7 @@ import ch.vorburger.mariadb4j.DBConfigurationBuilder;
 public class MariaDBTestBase {
 
     private final SqlDBDataProvider dbProvider;
+    private final SqlDBDataProvider dbProviderOverall;
     private final DB db;
     private SqlDBConfig config;
     private static final Map<String, String> envDefaultValues = initEnvDefaultValues();
@@ -96,6 +97,11 @@ public class MariaDBTestBase {
         this.config.setControllerId("test123");
         this.db = null;
         this.dbProvider = new SqlDBDataProvider(config, false);
+
+        SqlDBConfig config2 = new SqlDBConfig(new ConfigurationFileRepresentation("test2.properties"));
+        config2.setDbSuffix("");
+        config2.setControllerId(null);
+        this.dbProviderOverall = new SqlDBDataProvider(config2, false);
     }
 
     public MariaDBTestBase(int port) throws ManagedProcessException {
@@ -111,6 +117,10 @@ public class MariaDBTestBase {
         this.db = startDatabase(port);
         //create db with name sdnrdb
         this.dbProvider = new SqlDBDataProvider(config, false);
+        SqlDBConfig config2 = new SqlDBConfig(new ConfigurationFileRepresentation("test2.properties"));
+        config2.setDbSuffix("");
+        config2.setControllerId(null);
+        this.dbProviderOverall = new SqlDBDataProvider(config2, false);
     }
 
     public void close() throws ManagedProcessException {
@@ -125,6 +135,9 @@ public class MariaDBTestBase {
 
     public SqlDBDataProvider getDbProvider() {
         return dbProvider;
+    }
+    public SqlDBDataProvider getOverallDbProvider() {
+        return dbProviderOverall;
     }
 
     public DB getDb() {

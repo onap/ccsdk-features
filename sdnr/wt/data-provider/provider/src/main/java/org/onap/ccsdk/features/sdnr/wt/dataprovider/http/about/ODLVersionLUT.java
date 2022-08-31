@@ -32,6 +32,9 @@ public class ODLVersionLUT {
         if (onapCCSDKVersion == null) {
             return def;
         }
+        if (onapCCSDKVersion.startsWith("2.5.")) {
+            return "ONAP London";
+        } 
         if (onapCCSDKVersion.startsWith("2.4.")) {
             return "ONAP Kohn";
         } 
@@ -69,6 +72,7 @@ public class ODLVersionLUT {
         }
         if(odlMdsalVersionLUT==null) {
             odlMdsalVersionLUT = new HashMap<>();
+            odlMdsalVersionLUT.put("9.0.4","sulfur-SR1 (0.16.1)");
             odlMdsalVersionLUT.put("9.0.2","sulfur-SR0 (0.16.0)");
             odlMdsalVersionLUT.put("8.0.11","phosphorus-SR2 (0.15.2)");
             odlMdsalVersionLUT.put("8.0.7","phosphorus-SR1 (0.15.1)");

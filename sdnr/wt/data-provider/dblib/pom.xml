@@ -102,6 +102,10 @@
             <scope>provided</scope>
         </dependency>
         <!--  MariaDB start -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
         <dependency> <!--  Not part of ODL karaf standard delivery -->
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
