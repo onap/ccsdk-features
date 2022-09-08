@@ -19,6 +19,7 @@
 
 import { ApplicationStore } from "../store/applicationStore";
 import { ReplaceAction } from "../actions/navigationActions";
+import { AddErrorInfoAction } from "../actions/errorActions";
 
 const baseUri = `${ window.location.origin }`;
 const absUrlPattern = /^https?:\/\//;
@@ -118,12 +119,22 @@ export async function requestRestExt<TData>(path: string = '', init: RequestInit
       //'Authorization': 'Basic YWRtaW46YWRtaW4='
     });
   }
+
   const fetchResult = await fetch(uri, init);
-  if (fetchResult.status === 401 || fetchResult.status === 403) {
-    applicationStore && applicationStore.dispatch(new ReplaceAction(`/login?returnTo=${applicationStore.state.framework.navigationState.pathname}`));
+
+  if(fetchResult.status === 403){
+    applicationStore && applicationStore.dispatch(new AddErrorInfoAction({title: "Forbidden", message:"Status: [403], access denied."}));
     return {
       ...result,
       status: 403,
+      message: "Forbidden."
+    };
+  }
+  else if (fetchResult.status === 401) {
+    applicationStore && applicationStore.dispatch(new ReplaceAction(`/login?returnTo=${applicationStore.state.framework.navigationState.pathname}`));
+    return {
+      ...result,
+      status: 401,
       message: "Authentication requested by server."
     };
   }

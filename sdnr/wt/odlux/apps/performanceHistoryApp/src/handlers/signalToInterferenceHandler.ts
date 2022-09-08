@@ -26,7 +26,7 @@ export interface ISignalToInterferenceState extends IExternalTableState<SignalTo
 /**
  * Creates elastic search material data fetch handler for SINR from historicalperformance database.
  */
-const signalToInterferenceSearchHandler = createSearchDataHandler<SignalToInterferenceDataType>(getFilter, null);
+const signalToInterferenceSearchHandler = createSearchDataHandler<SignalToInterferenceDataType>(getFilter, false, null);
 
 export const {
     actionHandler: signalToInterferenceActionHandler,

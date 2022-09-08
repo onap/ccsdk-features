@@ -26,7 +26,7 @@ import { FeatureTopology, Topology, TopologyNode, Module } from '../models/topol
 import { guiCutThrough } from '../models/guiCutTrough';
 
 /**
-* Represents a web api accessor service for all Network Elements actions.
+* Represents a web api accessor service for all network element/node actions.
 */
 class ConnectService {
   public getNetworkElementUri = (nodeId: string) => '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
@@ -35,7 +35,7 @@ class ConnectService {
   public getNetworkElementYangLibraryFeature = (nodeId: string) => '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId + '/yang-ext:mount/ietf-yang-library:yang-library?content=nonconfig'
 
   /**
-   * Inserts a network elements.
+   * Inserts a network element/node.
    */
   public async createNetworkElement(element: NetworkElementConnection): Promise<NetworkElementConnection | null> {
     const path = this.getNetworkElementConnectDataProviderUri("create");
@@ -46,7 +46,7 @@ class ConnectService {
   }
 
   /**
-  * Updates a network element.
+  * Updates a network element/node.
   */
   public async updateNetworkElement(element: UpdateNetworkElement): Promise<NetworkElementConnection | null> {
     const path = this.getNetworkElementConnectDataProviderUri("update");
@@ -57,7 +57,7 @@ class ConnectService {
   }
 
   /**
-    * Deletes a network element.
+    * Deletes a network element/node.
     */
   public async deleteNetworkElement(element: UpdateNetworkElement): Promise<NetworkElementConnection | null> {
     const query = {
@@ -70,7 +70,7 @@ class ConnectService {
     return result || null;
   }
 
-  /** Mounts network element. */
+  /** Mounts network element/node */
   public async mountNetworkElement(networkElement: NetworkElementConnection): Promise<boolean> {
     const path = this.getNetworkElementUri(networkElement.nodeId);
     const mountXml = [
@@ -152,7 +152,7 @@ class ConnectService {
     }
   };
 
-  /** Yang capabilities of the selected network elements. */
+  /** Yang capabilities of the selected network element/node */
   public async infoNetworkElement(nodeId: string): Promise<TopologyNode | null> {
     const path = this.getNetworkElementUri(nodeId);
     const topologyRequestPomise = requestRest<Topology>(path, { method: "GET" });
@@ -163,7 +163,7 @@ class ConnectService {
   }
 
 
-  /** Yang features of the selected network element module. */
+  /** Yang features of the selected network element/node module */
   public async infoNetworkElementFeatures(nodeId: string): Promise<Module[] | null | undefined> {
     const path = this.getNetworkElementYangLibraryFeature(nodeId);
     const topologyRequestPomise = requestRest<FeatureTopology>(path, { method: "GET" });
@@ -180,7 +180,7 @@ class ConnectService {
 
 
   /**
-   * Get the connection state of the network element.
+   * Get the connection state of the network element/ node
    */
   public async getNetworkElementConnectionStatus(element: string): Promise<(ConnectionStatus)[] | null> {
     const path = `/rests/operations/data-provider:read-network-element-connection-list`;

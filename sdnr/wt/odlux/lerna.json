@@ -1,5 +1,4 @@
 {
-  "lerna": "2.9.0",
   "version": "independent",
   "command": {
     "init": {
@@ -8,5 +7,8 @@
   },
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "packages": ["framework","apps/*"]
+  "packages": [
+    "framework",
+    "apps/*"
+  ]
 }

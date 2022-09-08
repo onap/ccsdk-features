@@ -33,7 +33,7 @@ export type SettingsMessage={key: SettingsType, enableNotifications: boolean, us
 let channels: Broadcaster[] = [];
 let store : ApplicationStore | null = null;
 
-export const subscribe = (channel: BroadcastChannel, channelName: string) => {
+export const saveChannel = (channel: BroadcastChannel, channelName: string) => {
     channels.push({channel: channel, key: channelName});
 }
 

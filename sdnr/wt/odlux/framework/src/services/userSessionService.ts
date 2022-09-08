@@ -24,7 +24,7 @@ import { User } from "../models/authentication";
 
 let currentUser: User | null;
 let applicationStore: ApplicationStore | null = null;
-let timer : NodeJS.Timeout | null = null;
+let timer : null | ReturnType<typeof setTimeout> = null;
 
 export const startUserSessionService = (store: ApplicationStore) =>{
     applicationStore=store;

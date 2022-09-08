@@ -50,7 +50,9 @@ interface IEnhancedTableHeadComponentProps extends styles_header {
   orderBy: string | null;
   rowCount: number;
   columns: ColumnModel<{}>[];
+  hiddenColumns: string[];
   enableSelection?: boolean;
+  allowHtmlHeader?: boolean;
 }
 
 class EnhancedTableHeadComponent extends React.Component<IEnhancedTableHeadComponentProps> {
@@ -77,7 +79,7 @@ class EnhancedTableHeadComponent extends React.Component<IEnhancedTableHeadCompo
           }
           { columns.map(col => {
             const style = col.width ? { width: col.width } : {};
-            return (
+            const tableCell = (
               <TableCell className= {classes.header}
                 key={ col.property }
                 align={ col.type === ColumnType.numeric ? 'right' : 'left' } 
@@ -102,11 +104,19 @@ class EnhancedTableHeadComponent extends React.Component<IEnhancedTableHeadCompo
                       direction={ order || undefined }
                       onClick={ this.createSortHandler(col.property) }
                     >
-                      { col.title || col.property }
+                      {
+                        this.props.allowHtmlHeader ? <div className="content" dangerouslySetInnerHTML={{__html: col.title || col.property}}></div>
+                       :  (col.title || col.property )
+                      }
                     </TableSortLabel>
                   </Tooltip> }
               </TableCell>
             );
+
+            //show column if...
+            const showColumn = !this.props.hiddenColumns.includes(col.property);
+
+            return showColumn && tableCell;
           }, this) }
         </TableRow>
       </TableHead>

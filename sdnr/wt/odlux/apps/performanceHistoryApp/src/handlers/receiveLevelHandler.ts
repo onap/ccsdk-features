@@ -26,7 +26,7 @@ export interface IReceiveLevelState extends IExternalTableState<ReceiveLevelData
 /**
  * Creates elastic search material data fetch handler for receiveLevel from historicalperformance database.
  */
-const receiveLevelSearchHandler = createSearchDataHandler<ReceiveLevelDataType>(getFilter, null);
+const receiveLevelSearchHandler = createSearchDataHandler<ReceiveLevelDataType>(getFilter, false, null);
 
 export const {
     actionHandler: receiveLevelActionHandler,

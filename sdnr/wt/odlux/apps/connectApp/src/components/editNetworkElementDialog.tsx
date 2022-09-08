@@ -72,10 +72,10 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
 
 
     if (values.length === 2 && values.includes(idProperty as string) && values.includes(isRequiredProperty as string)) {
-      // do not mount network element, if only isRequired is changed
+      // do not mount network element/node, if only isRequired is changed
       await dispatcher.dispatch(editNetworkElementAsyncActionCreator(element));
 
-    } else if (!(values.length === 1 && values.includes(idProperty as string))) { //do not edit or mount element, if only id was saved into object (no changes made!)
+    } else if (!(values.length === 1 && values.includes(idProperty as string))) { //do not edit or mount network element/node , if only id was saved into object (no changes made!)
       await dispatcher.dispatch(editNetworkElementAsyncActionCreator(element));
       await dispatcher.dispatch(mountNetworkElementAsyncActionCreator(mountElement));
     }
@@ -109,35 +109,35 @@ const settings: { [key: string]: DialogSettings } = {
   },
 
   [EditNetworkElementDialogMode.AddNewNetworkElement]: {
-    dialogTitle: "Add new network element",
-    dialogDescription: "Add this new network element:",
-    applyButtonText: "Add network element",
+    dialogTitle: "Add New Node",
+    dialogDescription: "Add this new node:",
+    applyButtonText: "Add node",
     cancelButtonText: "Cancel",
     enableMountIdEditor: true,
     enableUsernameEditor: true,
     enableExtendedEditor: true,
   },
   [EditNetworkElementDialogMode.MountNetworkElement]: {
-    dialogTitle: "Mount network element",
-    dialogDescription: "mount this network element:",
-    applyButtonText: "mount network element",
+    dialogTitle: "Mount Node",
+    dialogDescription: "Mount this node:",
+    applyButtonText: "Mount node",
     cancelButtonText: "Cancel",
     enableMountIdEditor: false,
     enableUsernameEditor: false,
     enableExtendedEditor: false,
   },
   [EditNetworkElementDialogMode.UnmountNetworkElement]: {
-    dialogTitle: "Unmount network element",
-    dialogDescription: "unmount this network element:",
-    applyButtonText: "Unmount network element",
+    dialogTitle: "Unmount Node",
+    dialogDescription: "Unmount this node:",
+    applyButtonText: "Unmount node",
     cancelButtonText: "Cancel",
     enableMountIdEditor: false,
     enableUsernameEditor: false,
     enableExtendedEditor: false,
   },
   [EditNetworkElementDialogMode.EditNetworkElement]: {
-    dialogTitle: "Modify the network elements",
-    dialogDescription: "Modify this network element",
+    dialogTitle: "Modify Node",
+    dialogDescription: "Modify this node",
     applyButtonText: "Modify",
     cancelButtonText: "Cancel",
     enableMountIdEditor: false,
@@ -145,9 +145,9 @@ const settings: { [key: string]: DialogSettings } = {
     enableExtendedEditor: false,
   },
   [EditNetworkElementDialogMode.RemoveNetworkElement]: {
-    dialogTitle: "Remove network element",
-    dialogDescription: "Do you really want to remove this network element:",
-    applyButtonText: "Remove network element",
+    dialogTitle: "Remove Node",
+    dialogDescription: "Do you really want to remove this node?",
+    applyButtonText: "Remove node",
     cancelButtonText: "Cancel",
     enableMountIdEditor: false,
     enableUsernameEditor: false,
@@ -176,9 +176,11 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
   constructor(props: EditNetworkElementDialogComponentProps) {
     super(props);
     this.handleRadioChange = this.handleRadioChange.bind(this);
+    // Initialization of state is partly overwritten by update via react getDerivedStateFromProps() below.
+    // Change initialization values in parent "networkElements.tsx" in "const emptyRequireNetworkElement"
     this.state = {
       nodeId: this.props.initialNetworkElement.nodeId,
-      isRequired: false,
+      isRequired: this.props.initialNetworkElement.isRequired,
       host: this.props.initialNetworkElement.host,
       port: this.props.initialNetworkElement.port,
       isNameValid: true,
@@ -222,12 +224,12 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
           <DialogContentText>
             {setting.dialogDescription}
           </DialogContentText>
-          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} autoFocus margin="dense" id="name" label="Name" aria-label="name" type="text" fullWidth value={this.state.nodeId} onChange={(event) => { this.setState({ nodeId: event.target.value }); }} />
-          {!this.state.isNameValid && <Typography variant="body1" color="error">Name cannot be empty.</Typography>}
-          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="ipaddress" label="IP address" aria-label="ip adress" type="text" fullWidth value={this.state.host} onChange={(event) => { this.setState({ host: event.target.value }); }} />
-          {!this.state.isHostSet && <Typography variant="body1" color="error">IP Adress cannot be empty.</Typography>}
+          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} autoFocus margin="dense" id="name" label="Node ID" aria-label="name" type="text" fullWidth value={this.state.nodeId} onChange={(event) => { this.setState({ nodeId: event.target.value }); }} />
+          {!this.state.isNameValid && <Typography variant="body1" color="error">Node ID cannot be empty.</Typography>}
+          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="ipaddress" label="Host/IP address" aria-label="ip adress" type="text" fullWidth value={this.state.host} onChange={(event) => { this.setState({ host: event.target.value }); }} />
+          {!this.state.isHostSet && <Typography variant="body1" color="error">Host/IP address cannot be empty.</Typography>}
 
-          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="netconfport" label="NetConf port" aria-label="netconf port" type="number" fullWidth value={this.state.port.toString()} onChange={(event) => { this.setState({ port: +event.target.value }); }} />
+          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="netconfport" label="NETCONF port" aria-label="netconf port" type="number" fullWidth value={this.state.port.toString()} onChange={(event) => { this.setState({ port: +event.target.value }); }} />
           {setting.enableUsernameEditor && <TextField variant="standard" disabled={!setting.enableUsernameEditor} spellCheck={false} margin="dense" id="username" label="Username" aria-label="username" type="text" fullWidth value={this.state.username} onChange={(event) => { this.setState({ username: event.target.value }); }} /> || null}
 
           {setting.enableUsernameEditor &&

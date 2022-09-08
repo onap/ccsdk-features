@@ -1,21 +1,3 @@
-/**
- * ============LICENSE_START========================================================================
- * ONAP : ccsdk feature sdnr wt odlux
- * =================================================================================================
- * Copyright (C) 2019 highstreet technologies GmbH Intellectual Property. All rights reserved.
- * =================================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- * ============LICENSE_END==========================================================================
- */
-
 import { Action } from '../../../../framework/src/flux/action';
 import { Dispatch } from '../../../../framework/src/flux/store';
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
@@ -65,6 +47,22 @@ export class UpdatOutputData extends Action {
   }
 }
 
+type HttpResult = {
+  status: number;
+  message?: string | undefined;
+  data: {
+      [key: string]: any;
+  } | null | undefined;
+};
+
+const checkResponseCode = (restResult: HttpResult) =>{
+  
+  //403 gets handled by the framework from now on
+
+  return restResult.status !== 403 && ( restResult.status < 200 || restResult.status > 299);
+
+}
+
 export const updateNodeIdAsyncActionCreator = (nodeId: string) => async (dispatch: Dispatch, getState: () => IApplicationStoreState ) => {
 
   dispatch(new UpdateDeviceDescription("", {}, []));
@@ -81,8 +79,8 @@ export const updateNodeIdAsyncActionCreator = (nodeId: string) => async (dispatc
     }));
     throw new Error(`NetworkElement : [${nodeId}] has no capabilities.`);
   }
-    
-  const parser = new YangParser(unavailableCapabilities || undefined, importOnlyModules || undefined);
+
+  const parser = new YangParser(unavailableCapabilities || undefined, importOnlyModules || undefined, nodeId);
 
   for (let i = 0; i < availableCapabilities.length; ++i){
     const capRaw = availableCapabilities[i];
@@ -146,7 +144,7 @@ const getReferencedDataList = async (refPath: string, dataPath: string, modules:
         for (let j = 0; j < dataUrls.length; ++j) {
           const dataUrl = dataUrls[j];
           const restResult = (await restService.getConfigData(dataUrl));
-          if (restResult.data == null || restResult.status < 200 || restResult.status > 299) {
+          if (restResult.data == null || checkResponseCode(restResult)) {
             const message = restResult.data && restResult.data.errors && restResult.data.errors.error && restResult.data.errors.error[0] && restResult.data.errors.error[0]["error-message"] || "";
             throw new Error(`Server Error. Status: [${restResult.status}]\n${message || restResult.message || ''}`);
           }
@@ -178,7 +176,7 @@ const getReferencedDataList = async (refPath: string, dataPath: string, modules:
       for (let j = 0; j < dataUrls.length; ++j) {
         const dataUrl = dataUrls[j];
         const restResult = (await restService.getConfigData(dataUrl));
-        if (restResult.data == null || restResult.status < 200 || restResult.status > 299) {
+        if (restResult.data == null || checkResponseCode(restResult)) {
           const message = restResult.data && restResult.data.errors && restResult.data.errors.error && restResult.data.errors.error[0] && restResult.data.errors.error[0]["error-message"] || "";
           throw new Error(`Server Error. Status: [${restResult.status}]\n${message || restResult.message || ''}`);
         }
@@ -426,7 +424,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
           return dispatch(new UpdatViewDescription(vPath, [], ds));
         }
         throw new Error(`Did not get response from Server. Status: [${restResult.status}]`);
-      } else if (restResult.status < 200 || restResult.status > 299) {
+      } else if (checkResponseCode(restResult)) {
         const message = restResult.data.errors && restResult.data.errors.error && restResult.data.errors.error[0] && restResult.data.errors.error[0]["error-message"] || "";
         throw new Error(`Server Error. Status: [${restResult.status}]\n${message}`);
       } else {
@@ -581,7 +579,7 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
     // do not extract root member (0)
     if (viewSpecification && viewSpecification.id !== "0") {
       const updateResult = await restService.setConfigData(dataPath, { [`${currentNS}:${dataMember!}`]: data }); // addDataMember using currentNS
-      if (updateResult.status < 200 || updateResult.status > 299) {
+      if (checkResponseCode(updateResult)) {
         const message = updateResult.data && updateResult.data.errors && updateResult.data.errors.error && updateResult.data.errors.error[0] && updateResult.data.errors.error[0]["error-message"] || "";
         throw new Error(`Server Error. Status: [${updateResult.status}]\n${message || updateResult.message || ''}`);
       }
@@ -653,7 +651,7 @@ export const removeElementActionAsyncCreator = (vPath: string) => async (dispatc
     }
 
     const updateResult = await restService.removeConfigElement(dataPath);
-    if (updateResult.status < 200 || updateResult.status > 299) {
+    if (checkResponseCode(updateResult)) {
       const message = updateResult.data && updateResult.data.errors && updateResult.data.errors.error && updateResult.data.errors.error[0] && updateResult.data.errors.error[0]["error-message"] || "";
       throw new Error(`Server Error. Status: [${updateResult.status}]\n${message || updateResult.message || ''}`);
     }
@@ -747,7 +745,7 @@ export const executeRpcActionAsyncCreator = (vPath: string, data: any) => async 
     // do not post root member (0)
     if ((viewSpecification && viewSpecification.id !== "0") || (dataMember! && !data)) {
       const updateResult = await restService.executeRpc(dataPath, { [`${defaultNS}:input`]: data || {} });
-      if (updateResult.status < 200 || updateResult.status > 299) {
+      if (checkResponseCode(updateResult)) {
         const message = updateResult.data && updateResult.data.errors && updateResult.data.errors.error && updateResult.data.errors.error[0] && updateResult.data.errors.error[0]["error-message"] || "";
         throw new Error(`Server Error. Status: [${updateResult.status}]\n${message || updateResult.message || ''}`);
       }

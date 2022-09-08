@@ -61,18 +61,35 @@ export type FaultsReturnType = {
   criticals: number,
   majors: number,
   minors: number,
-  warnings: number
+  warnings: number,
+  Connected: number,
+  Connecting: number,
+  Disconnected: number,
+  Mounted: number,
+  UnableToConnect: number,
+  Undefined: number,
+  Unmounted: number,
+  total: number
 };
 
 export type FaultType = {
   Critical: number,
   Major: number,
   Minor: number,
-  Warning: number
+  Warning: number,
+  Connected: number,
+  Connecting: number,
+  Disconnected: number,
+  Mounted: number,
+  UnableToConnect: number,
+  Undefined: number,
+  Unmounted: number,
+  total: number
 };
 
 export type Faults = {
-  faults: FaultsReturnType
+  faults: FaultsReturnType,
+  'network-element-connections': FaultsReturnType
 };
 
 export type DeletedStuckAlarms = {

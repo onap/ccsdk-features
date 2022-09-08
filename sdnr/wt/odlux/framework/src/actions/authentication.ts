@@ -18,9 +18,11 @@
 import { Dispatch } from '../flux/store';
 import { Action } from '../flux/action';
 import { AuthPolicy, User } from '../models/authentication';
-import { GeneralSettings } from '../models/settings';
-import { SetGeneralSettingsAction, setGeneralSettingsAction } from './settingsAction';
+import { GeneralSettings, Settings } from '../models/settings';
+import { saveInitialSettings, SetGeneralSettingsAction, setGeneralSettingsAction } from './settingsAction';
 import { endWebsocketSession } from '../services/notificationService';
+import { endUserSession, startUserSession } from '../services/userSessionService';
+import { IApplicationStoreState } from '../store/applicationStore';
 
 export class UpdateUser extends Action {
 
@@ -40,16 +42,30 @@ export class UpdatePolicies extends Action {
 export const loginUserAction = (user?: User) => (dispatcher: Dispatch) =>{
   
   dispatcher(new UpdateUser(user));
-  loadUserSettings(user, dispatcher);
-
-
+  if(user){
+    startUserSession(user);
+    loadUserSettings(user, dispatcher);
+    localStorage.setItem("userToken", user.toString());
+  }
 }
 
-export const logoutUser = () => (dispatcher: Dispatch) =>{
+export const logoutUser = () => (dispatcher: Dispatch, getState: () => IApplicationStoreState) =>{
+
+  const {framework:{applicationState:{ authentication }, authenticationState: {user}}} = getState();
   
   dispatcher(new UpdateUser(undefined));
   dispatcher(new SetGeneralSettingsAction(null));
   endWebsocketSession();
+  endUserSession();
+  localStorage.removeItem("userToken");
+
+
+  //only call if a user is currently logged in
+  if (authentication === "oauth" && user) {
+
+    const url = window.location.origin;
+    window.location.href=`${url}/oauth/logout`;
+  }
 }
 
 const loadUserSettings = (user: User | undefined, dispatcher: Dispatch) =>{
@@ -74,14 +90,8 @@ const loadUserSettings = (user: User | undefined, dispatcher: Dispatch) =>{
       }else{
         return null;
       }
-    }).then((result:GeneralSettings)=>{
-      if(result?.general){
-        //will start websocket session if applicable
-        dispatcher(setGeneralSettingsAction(result.general.areNotificationsEnabled!));
-  
-      }else{
-        dispatcher(setGeneralSettingsAction(false));
-      }
+    }).then((result:Settings)=>{
+        dispatcher(saveInitialSettings(result));
     })
   }  
 }

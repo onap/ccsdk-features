@@ -23,7 +23,16 @@ export interface IFaultStatus {
   major: number,
   minor: number,
   warning: number,
-  isLoadingAlarmStatusChart: boolean
+  isLoadingAlarmStatusChart: boolean,
+  Connected: number,
+  Connecting: number,
+  Disconnected: number,
+  Mounted: number,
+  UnableToConnect: number,
+  Undefined: number,
+  Unmounted: number,
+  total: number,
+  isLoadingConnectionStatusChart: boolean
 }
 
 const faultStatusInit: IFaultStatus = {
@@ -31,7 +40,16 @@ const faultStatusInit: IFaultStatus = {
   major: 0,
   minor: 0,
   warning: 0,
-  isLoadingAlarmStatusChart: false
+  isLoadingAlarmStatusChart: false,
+  Connected: 0,
+  Connecting: 0,
+  Disconnected: 0,
+  Mounted: 0,
+  UnableToConnect: 0,
+  Undefined: 0,
+  Unmounted: 0,
+  total: 0,
+  isLoadingConnectionStatusChart: false
 };
 
 export const faultStatusHandler: IActionHandler<IFaultStatus> = (state = faultStatusInit, action) => {
@@ -41,7 +59,16 @@ export const faultStatusHandler: IActionHandler<IFaultStatus> = (state = faultSt
       major: action.majorFaults,
       minor: action.minorFaults,
       warning: action.warnings,
-      isLoadingAlarmStatusChart: action.isLoadingAlarmStatusChart
+      isLoadingAlarmStatusChart: action.isLoadingAlarmStatusChart,
+      Connected: action.ConnectedCount,
+      Connecting: action.ConnectingCount,
+      Disconnected: action.DisconnectedCount,
+      Mounted: action.MountedCount,
+      UnableToConnect: action.UnableToConnectCount,
+      Undefined: action.UndefinedCount,
+      Unmounted: action.UnmountedCount,
+      total: action.totalCount,
+      isLoadingConnectionStatusChart: action.isLoadingConnectionStatusChart
     }
   }
 

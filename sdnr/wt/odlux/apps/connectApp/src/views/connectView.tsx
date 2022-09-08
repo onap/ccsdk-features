@@ -107,7 +107,7 @@ class ConnectApplicationComponent extends React.Component<ConnectApplicationComp
       <>
         <AppBar enableColorOnDark position="static">
           <Tabs indicatorColor="secondary" textColor="inherit" value={activePanelId} onChange={this.onHandleTabChange} aria-label="connect-app-tabs">
-            <Tab aria-label="network-elements-list-tab" label="Network Elements" value="NetworkElements" />
+            <Tab aria-label="network-elements-list-tab" label="NODES" value="NetworkElements" />
             <Tab aria-label="connection-status-log-tab" label="Connection Status Log" value="ConnectionStatusLog" />
           </Tabs>
         </AppBar>

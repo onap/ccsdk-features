@@ -639,7 +639,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     }
 
     return (
-      <SelectElementTable stickyHeader idProperty={listKeyProperty} rows={listData} customActionButtons={apiDocPathCreate ? [addNewElementAction, addWithApiDocElementAction] : [addNewElementAction]} columns={
+      <SelectElementTable stickyHeader idProperty={listKeyProperty} tableId={null} rows={listData} customActionButtons={apiDocPathCreate ? [addNewElementAction, addWithApiDocElementAction] : [addNewElementAction]} columns={
         Object.keys(listElements).reduce<ColumnModel<{ [key: string]: any }>[]>((acc, cur) => {
           const elm = listElements[cur];
           if (elm.uiType !== "object" && listData.every(entry => entry[elm.label] != null)) {
@@ -822,7 +822,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
     return (
       <div className={this.props.classes.container}>
-        <SelectElementTable stickyHeader idProperty={listKeyProperty} rows={listData} columns={
+        <SelectElementTable stickyHeader idProperty={listKeyProperty} tableId={null} rows={listData} columns={
           Object.keys(listSpecification.elements).reduce<ColumnModel<{ [key: string]: any }>[]>((acc, cur) => {
             const elm = listSpecification.elements[cur];
             if (elm.uiType !== "object" && listData.every(entry => entry[elm.label] != null)) {

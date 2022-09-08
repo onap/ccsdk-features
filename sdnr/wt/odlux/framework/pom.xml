@@ -237,20 +237,12 @@
                             <value>${odlux.apps.inventoryApp.buildno}</value>
                         </replacement>
                         <replacement>
-                            <token>##odlux.apps.linkCalculationApp.buildno##</token>
-                            <value>${odlux.apps.linkCalculationApp.buildno}</value>
-                        </replacement>
-                        <replacement>
                             <token>##odlux.apps.maintenanceApp.buildno##</token>
                             <value>${odlux.apps.maintenanceApp.buildno}</value>
                         </replacement>
                         <replacement>
                             <token>##odlux.apps.mediatorApp.buildno##</token>
                             <value>${odlux.apps.mediatorApp.buildno}</value>
-                        </replacement>
-                        <replacement>
-                            <token>##odlux.apps.networkMapApp.buildno##</token>
-                            <value>${odlux.apps.networkMapApp.buildno}</value>
                         </replacement>
                         <replacement>
                             <token>##odlux.apps.permanceHistoryApp.buildno##</token>

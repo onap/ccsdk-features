@@ -73,10 +73,7 @@ module.exports = (env) => {
       {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
         loader: 'url-loader?limit=100000&name=assets/[name].[ext]'
-      }, {
-        test: /\.s?css$/i,
-        loader: extractCSS.extract(['css-loader?minimize', 'sass-loader'])
-      }, {
+      },  {
         test: /\.json$/,
         loader: 'json-loader'
       },

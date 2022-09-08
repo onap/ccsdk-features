@@ -131,6 +131,10 @@ class TitleBarComponent extends React.Component<TitleBarProps, { anchorEl: HTMLE
       }
     }
 
+    const stateIcon = state.framework.applicationState.icon;
+    const icon = !stateIcon ? null :( typeof stateIcon === 'string' ? <img className={classes.icon} height={22} src={stateIcon} /> : <FontAwesomeIcon className={classes.icon} icon={stateIcon} /> )
+    
+
     return (
       <AppBar enableColorOnDark position="absolute" className={classes.appBar}>
         <Toolbar>
@@ -144,9 +148,7 @@ class TitleBarComponent extends React.Component<TitleBarProps, { anchorEl: HTMLE
           </IconButton>
           <Logo />
           <Typography variant="h6" color="inherit" >
-            {state.framework.applicationState.icon
-              ? (<FontAwesomeIcon className={classes.icon} icon={state.framework.applicationState.icon} />)
-              : null}
+            {icon}
             {state.framework.applicationState.title}
           </Typography>
           <div className={classes.grow}></div>

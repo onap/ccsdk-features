@@ -154,6 +154,14 @@ module.exports = (env) => {
           target: "http://sdnr:8181",
           secure: false
         },
+        "/userdata": {
+          target: "http://sdnr:8181",
+          secure: false
+        },
+        "/userdata/": {
+          target: "http://sdnr:8181",
+          secure: false
+        },
         "/help/": {
           target: "http://sdnr:8181",
           secure: false

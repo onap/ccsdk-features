@@ -38,10 +38,8 @@ type odluxVersion= {version:string,build:string, framework: string,
     faultApp: string,
     helpApp: string,
     inventoryApp: string,
-    linkCalculationApp: string,
     maintenanceApp: string,
     mediatorApp: string,
-    networkMapApp: string,
     permanceHistoryApp: string
   }};
 
@@ -74,8 +72,6 @@ class AboutComponent extends React.Component<any, AboutState> {
         `| InventoryApp | ${data.applications.inventoryApp}|\n `+
         `| EventLogApp | ${data.applications.eventLogApp}|\n `+
         `| MediatorApp | ${data.applications.mediatorApp}|\n `+
-        `| NetworkMapApp | ${data.applications.networkMapApp}|\n `+
-        `| LinkCalculatorApp | ${data.applications.linkCalculationApp}|\n `+
         `| HelpApp | ${data.applications.helpApp}|\n `;
       }
     
@@ -167,7 +163,7 @@ class AboutComponent extends React.Component<any, AboutState> {
       <div style={containerStyle}>
         { this.state.isContentLoadedSucessfully &&
         <div style={{float: "right", marginRight: "10px"}}>
-        <Button color="inherit" variant="contained" onClick={e => this.copyToClipboard(e)}>
+        <Button aria-label="copy-version-information-button" color="inherit" variant="contained" onClick={e => this.copyToClipboard(e)}>
            Copy to clipboard
         </Button>
           {

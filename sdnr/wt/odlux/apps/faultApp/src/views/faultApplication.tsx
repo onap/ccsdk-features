@@ -173,13 +173,13 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
           activePanelId === 'CurrentProblem' &&
           <>
             <FaultTable stickyHeader tableId="current-problems-table" idProperty="id" customActionButtons={customActions} columns={[
-              { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
+              // { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
+              { property: "severity", title: "Severity", type: ColumnType.text, width: "140px" },
               { property: "timestamp", type: ColumnType.text, title: "Timestamp" },
               { property: "nodeId", title: "Node Name", type: ColumnType.text },
               { property: "counter", title: "Count", type: ColumnType.numeric, width: "100px" },
               { property: "objectId", title: "Object Id", type: ColumnType.text },
               { property: "problem", title: "Alarm Type", type: ColumnType.text },
-              { property: "severity", title: "Severity", type: ColumnType.text, width: "140px" },
             ]} {...this.props.currentProblemsProperties} {...this.props.currentProblemsActions} />
             <RefreshCurrentProblemsDialog
               mode={this.state.refreshCurrentProblemsEditorMode}
@@ -190,13 +190,13 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
         {activePanelId === 'AlarmNotifications' &&
 
           <FaultAlarmNotificationTable stickyHeader tableId="alarm-notifications-table" idProperty="id" defaultSortColumn='timeStamp' defaultSortOrder='desc' rows={this.props.faultNotifications.faults} asynchronus columns={[
-            { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
+            // { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
+            { property: "severity", title: "Severity", width: "140px" },
             { property: "timeStamp", title: "Timestamp" },
             { property: "nodeName", title: "Node Name" },
             { property: "counter", title: "Count", width: "100px", type: ColumnType.numeric },
             { property: "objectId", title: "Object Id" },
             { property: "problem", title: "Alarm Type" },
-            { property: "severity", title: "Severity", width: "140px" },
           ]} />
         }
 
@@ -204,13 +204,13 @@ class FaultApplicationComponent extends React.Component<FaultApplicationComponen
           <>
             <FaultTable stickyHeader idProperty={'id'} tableId="alarm-log-table" customActionButtons={[refreshAlarmLogAction]}
               columns={[
-                { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
+                // { property: "icon", title: "", type: ColumnType.custom, customControl: this.renderIcon },
+                { property: "severity", title: "Severity", width: "140px" },
                 { property: "timestamp", title: "Timestamp" },
                 { property: "nodeId", title: "Node Name" },
                 { property: "counter", title: "Count", type: ColumnType.numeric, width: "100px" },
                 { property: "objectId", title: "Object Id" },
                 { property: "problem", title: "Alarm Type" },
-                { property: "severity", title: "Severity", width: "140px" },
                 { property: "sourceType", title: "Source", width: "140px" },
               ]} {...this.props.alarmLogEntriesProperties} {...this.props.alarmLogEntriesActions} />
             <RefreshAlarmLogDialog

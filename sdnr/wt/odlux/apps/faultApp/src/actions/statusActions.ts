@@ -21,15 +21,18 @@ import { Dispatch } from '../../../../framework/src/flux/store';
 
 
 export class SetFaultStatusAction extends FaultApplicationBaseAction {
-  constructor (public criticalFaults: number, public majorFaults: number, public minorFaults: number, public warnings: number, public isLoadingAlarmStatusChart: boolean) {
+  constructor(public criticalFaults: number, public majorFaults: number, public minorFaults: number, public warnings: number,
+    public isLoadingAlarmStatusChart: boolean, public ConnectedCount: number, public ConnectingCount: number, public DisconnectedCount: number,
+    public MountedCount: number, public UnableToConnectCount: number, public UndefinedCount: number, public UnmountedCount: number,
+    public totalCount: number, public isLoadingConnectionStatusChart: boolean) {
     super();
   }
 }
 
 
 export const refreshFaultStatusAsyncAction = async (dispatch: Dispatch) => {
-  
-  dispatch(new SetFaultStatusAction(0, 0, 0, 0, true));
+
+  dispatch(new SetFaultStatusAction(0, 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, true));
   const result = await getFaultStateFromDatabase().catch(_ => null);
   if (result) {
     const statusAction = new SetFaultStatusAction(
@@ -37,12 +40,21 @@ export const refreshFaultStatusAsyncAction = async (dispatch: Dispatch) => {
       result["Major"] || 0,
       result["Minor"] || 0,
       result["Warning"] || 0,
+      false,
+      result["Connected"] || 0,
+      result["Connecting"] || 0,
+      result["Disconnected"] || 0,
+      result["Mounted"] || 0,
+      result["UnableToConnect"] || 0,
+      result["Undefined"] || 0,
+      result["Unmounted"] || 0,
+      result["total"] || 0,
       false
     );
     dispatch(statusAction);
     return;
   }
   else {
-    dispatch(new SetFaultStatusAction(0, 0, 0, 0, false));
+    dispatch(new SetFaultStatusAction(0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, false));
   }
 }

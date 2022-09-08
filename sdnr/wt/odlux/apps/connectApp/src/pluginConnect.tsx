@@ -27,13 +27,12 @@ import { IApplicationStoreState } from "../../../framework/src/store/application
 import connect, { Connect, IDispatcher } from '../../../framework/src/flux/connect';
 
 import { findWebUrisForGuiCutThroughAsyncAction, updateCurrentViewAsyncAction, SetPanelAction } from './actions/commonNetworkElementsActions';
-import { refreshConnectionStatusCountAsyncAction } from './actions/connectionStatusCountActions';
 import { createNetworkElementsActions, createNetworkElementsProperties, networkElementsReloadAction } from './handlers/networkElementsHandler';
 import connectAppRootHandler from './handlers/connectAppRootHandler';
 import ConnectApplication from './views/connectView';
 import { PanelId } from "./models/panelId";
 import { NetworkElementsList } from './components/networkElements';
-import DashboardHome from "./components/dashboardHome";
+
 
 let currentStatus: string | undefined = undefined;
 let refreshInterval: ReturnType<typeof window.setInterval> | null = null;
@@ -84,7 +83,6 @@ export function register() {
     icon: faPlug,
     rootComponent: App,
     rootActionHandler: connectAppRootHandler,
-    dashbaordElement: DashboardHome,
     menuEntry: "Connect"
   });
 
@@ -92,9 +90,9 @@ export function register() {
   subscribe<IFormatedMessage>(["object-creation-notification", "object-deletion-notification", "attribute-value-changed-notification"], (msg => {
     const store = applicationApi.applicationStore;
     if (msg && msg.type.type === "object-creation-notification" && store) {
-      store.dispatch(new AddSnackbarNotification({ message: `Adding network element [${msg.data['object-id-ref']}]`, options: { variant: 'info' } }));
+      store.dispatch(new AddSnackbarNotification({ message: `Adding node [${msg.data['object-id-ref']}]`, options: { variant: 'info' } }));
     } else if (msg && (msg.type.type === "object-deletion-notification" || msg.type.type === "attribute-value-changed-notification") && store) {
-      store.dispatch(new AddSnackbarNotification({ message: `Updating network element [${msg.data['object-id-ref']}]`, options: { variant: 'info' } }));
+      store.dispatch(new AddSnackbarNotification({ message: `Updating node [${msg.data['object-id-ref']}]`, options: { variant: 'info' } }));
     }
     if (store) {
       store.dispatch(updateCurrentViewAsyncAction() as any).then(() => {
@@ -109,29 +107,4 @@ export function register() {
     store.dispatch(networkElementsReloadAction);
   });
 
-  applicationApi.applicationStoreInitialized.then(store => {
-    store.dispatch(refreshConnectionStatusCountAsyncAction);
-  });
-
-
-  applicationApi.loginEvent.addHandler(e=>{
-    refreshInterval = startRefreshInterval() as any;
-  })
-
-  applicationApi.logoutEvent.addHandler(e=>{
-
-    applicationApi.applicationStoreInitialized.then(store => {
-      clearInterval(refreshInterval!);
-    });
-  })
-
-  const startRefreshInterval =() =>{
-    const refresh = window.setInterval(() => {
-      applicationApi.applicationStoreInitialized.then(store => {
-        store.dispatch(refreshConnectionStatusCountAsyncAction);
-      });
-    }, 15000);
-
-    return refresh;
-  }
 }

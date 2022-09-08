@@ -51,7 +51,7 @@
      cancelButtonText: "",
    },
    [InfoNetworkElementDialogMode.InfoNetworkElement]: {
-     dialogTitle: "Yang capabilities of the network element",
+     dialogTitle: "YANG Capabilities of the Node",
      dialogDescription: "",
      cancelButtonText: "OK",
    }
@@ -88,7 +88,7 @@
        const indexRevision = capabilty.indexOf("revision=");
        const indexModule = capabilty.indexOf(")", indexRevision);
        if (indexRevision > 0 && indexModule > 0) {
-         let moduleName = capabilty.substr(indexModule + 1);
+         let moduleName = capabilty.substring(indexModule + 1);
          let ModuleFeaturesList;
          for(let index = 0; index < yangFeatures.length; index++) {
            if(yangFeatures[index].name == moduleName) {
@@ -101,7 +101,7 @@
  
          yangCapabilities.push({
            module: moduleName,
-           revision: capabilty.substr(indexRevision + 9, 10),
+           revision: capabilty.substring(indexRevision + 9, indexRevision + 19),
            features: featuresList 
           });
        }
@@ -112,14 +112,14 @@
      return (
        <>
          <Dialog open={this.props.mode !== InfoNetworkElementDialogMode.None}  >
-           <DialogTitle id="form-dialog-title">{setting.dialogTitle + ' - ' + this.state.nodeId}</DialogTitle>
+           <DialogTitle id="form-dialog-title">{`${setting.dialogTitle}: "${this.state.nodeId}"`}</DialogTitle>
            <InfoElementTable stickyHeader isPopup tableId="info-element-table" asynchronus columns={[
-             { property: "module", title: "Module", type: ColumnType.text, width:900 },
+             { property: "module", title: "YANG Capability", type: ColumnType.text, width:900 },
              {
                property: "revision", title: "Revision", type: ColumnType.custom, customControl: ({ rowData }) => {
                  return (
                    <div>
-                     <a href={'/yang-schema/' + rowData.module + '/' + rowData.revision} target="_blank"  > {rowData.revision} </a>
+                     <a href={`/yang-schema/${rowData.module}/${rowData.revision}`} target="_blank"  > {rowData.revision} </a>
                    </div>
                  )
                }

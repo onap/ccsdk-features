@@ -110,7 +110,7 @@ class MediatorServerSelectionComponent extends React.Component<MediatorServerSel
       }
     };
     return <>
-      <MediatorServersTable stickyHeader title={"Mediator"} customActionButtons={[refreshMediatorAction, addMediatorServerActionButton]} idProperty={"id"}
+      <MediatorServersTable stickyHeader title={"Mediator"} tableId={null} customActionButtons={[refreshMediatorAction, addMediatorServerActionButton]} idProperty={"id"}
         {...this.props.mediatorServersActions} {...this.props.mediatorServersProperties} columns={[
           { property: "name", title: "Name", type: ColumnType.text },
           { property: "url", title: "Url", type: ColumnType.text },

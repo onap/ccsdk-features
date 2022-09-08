@@ -50,6 +50,7 @@ interface IEnhancedTableFilterComponentProps extends WithStyles<typeof styles> {
   onFilterChanged: (property: string, filterTerm: string) => void;
   filter: { [property: string]: string };
   columns: ColumnModel<{}>[];
+  hiddenColumns: string[];
   enableSelection?: boolean;
 }
 
@@ -73,7 +74,7 @@ class EnhancedTableFilterComponent extends React.Component<IEnhancedTableFilterC
         }
         {columns.map((col, ind) => {
           const style = col.width ? { width: col.width } : {};
-          return (
+          const tableCell = (
             <TableCell
               className={col.type === ColumnType.numeric ? classes.numberInput : ''}
               key={col.property}
@@ -99,6 +100,10 @@ class EnhancedTableFilterComponent extends React.Component<IEnhancedTableFilterC
                     onChange={this.createInputFilterHandler(col.property)} />}
             </TableCell>
           );
+
+          const showColumn = !this.props.hiddenColumns.includes(col.property);
+
+          return showColumn && tableCell;
         }, this)}
       </TableRow>
     );

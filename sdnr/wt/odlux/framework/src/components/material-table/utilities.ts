@@ -28,6 +28,7 @@ export interface IExternalTableState<TData> {
   order: 'asc' | 'desc';
   orderBy: string | null;
   selected: any[] | null;
+  hiddenColumns: string[]
   rows: (TData & { [RowDisabled]?: boolean })[];
   total: number;
   page: number;
@@ -48,7 +49,9 @@ export type ExternalMethodes<TData> = {
     onFilterChanged: (property: string, filterTerm: string) => void;
     onHandleChangePage: (page: number) => void;
     onHandleChangeRowsPerPage: (rowsPerPage: number | null) => void;
- };
+    onHideColumns: (columnName: string[]) => void;
+    onShowColumns: (columnName: string[]) => void;
+  },
  createPreActions: (dispatch: Dispatch, skipRefresh?: boolean) => {
   onPreFilterChanged: (preFilter: {
       [key: string]: string;
@@ -128,6 +131,18 @@ export function createExternal<TData>(callback: DataCallback<TData>, selectState
     }
   }
 
+  class HideColumnsAction extends TableAction{
+    constructor(public property: string[]){
+      super();
+    }
+  }
+
+  class ShowColumnsAction extends TableAction{
+    constructor(public property: string[]){
+      super();
+    }
+  }
+
   // #endregion
 
   //#region Action Handler
@@ -135,6 +150,7 @@ export function createExternal<TData>(callback: DataCallback<TData>, selectState
     order: 'asc',
     orderBy: null,
     selected: null,
+    hiddenColumns:[],
     rows: [],
     total: 0,
     page: 0,
@@ -208,6 +224,18 @@ export function createExternal<TData>(callback: DataCallback<TData>, selectState
         rowsPerPage: action.rowsPerPage
       }
     }
+    else if (action instanceof HideColumnsAction){
+      
+      //merge arrays, remove duplicates
+      const newArray = [...new Set([...state.hiddenColumns, ...action.property])]
+      state = {...state, hiddenColumns: newArray};
+    }
+    else if(action instanceof ShowColumnsAction){
+
+      const newArray = state.hiddenColumns.filter(el=> !action.property.includes(el));
+      state = {...state, hiddenColumns: newArray};
+    }
+
     return state;
   }
 
@@ -290,6 +318,16 @@ export function createExternal<TData>(callback: DataCallback<TData>, selectState
           dispatch(new SetRowsPerPageAction(rowsPerPage || 10));
           (!skipRefresh) && dispatch(reloadAction);
         });
+      },
+      onHideColumns: (columnName: string[]) =>{
+        dispatch((dispatch: Dispatch) => {
+          dispatch(new HideColumnsAction(columnName));
+        })
+      },
+      onShowColumns: (columnName: string[]) =>{
+        dispatch((dispatch: Dispatch) => {
+          dispatch(new ShowColumnsAction(columnName));
+        })
       }
       // selected:
     };

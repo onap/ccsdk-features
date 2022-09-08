@@ -36,7 +36,7 @@ import { EnhancedTableHead } from './tableHead';
 import { EnhancedTableFilter } from './tableFilter';
 
 import { ColumnModel, ColumnType } from './columnModel';
-import { Menu } from '@mui/material';
+import { Menu, Typography } from '@mui/material';
 import { DistributiveOmit } from '@mui/types';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -151,19 +151,23 @@ export type MaterialTableComponentState<TData = {}> = {
   rowsPerPage: number;
   loading: boolean;
   showFilter: boolean;
+  hiddenColumns: string[];
   filter: { [property: string]: string };
 };
 
 export type TableApi = { forceRefresh?: () => Promise<void> };
 
-type MaterialTableComponentBaseProps<TData> = WithStyles<typeof styles> & {
+type MaterialTableComponentBaseProps<TData> = WithStyles<typeof styles>  & {
   className?: string;
   columns: ColumnModel<TData>[];
   idProperty: keyof TData | ((data: TData) => React.Key);
-  tableId?: string;
+  
+  //Note: used to save settings as well. Must be unique across apps. Null tableIds will not get saved to the settings
+  tableId: string | null;
   isPopup?: boolean;
   title?: string;
   stickyHeader?: boolean;
+  allowHtmlHeader?: boolean;
   defaultSortOrder?: 'asc' | 'desc';
   defaultSortColumn?: keyof TData;
   enableSelection?: boolean;
@@ -182,6 +186,8 @@ type MaterialTableComponentPropsWithExternalState<TData = {}> = MaterialTableCom
   onHandleChangePage: (page: number) => void;
   onHandleChangeRowsPerPage: (rowsPerPage: number | null) => void;
   onHandleRequestSort: (property: string) => void;
+  onHideColumns : (columnNames: string[]) => void
+  onShowColumns:  (columnNames: string[]) => void
 };
 
 type MaterialTableComponentProps<TData = {}> =
@@ -203,13 +209,18 @@ function isMaterialTableComponentPropsWithRowsAndRequestData(props: MaterialTabl
     propsWithExternalState.onHandleChangePage instanceof Function ||
     propsWithExternalState.onHandleChangeRowsPerPage instanceof Function ||
     propsWithExternalState.onToggleFilter instanceof Function ||
+    propsWithExternalState.onHideColumns instanceof Function ||
     propsWithExternalState.onHandleRequestSort instanceof Function
 }
+
+// get settings in here!
+
 
 class MaterialTableComponent<TData extends {} = {}> extends React.Component<MaterialTableComponentProps, MaterialTableComponentState & { contextMenuInfo: { index: number; mouseX?: number; mouseY?: number }; }> {
 
   constructor(props: MaterialTableComponentProps) {
     super(props);
+    
 
     const page = isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.page : 0;
     const rowsPerPage = isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.rowsPerPage || 10 : 10;
@@ -224,6 +235,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
       selected: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.selected : null,
       rows: isMaterialTableComponentPropsWithRows(this.props) && this.props.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) || [],
       total: isMaterialTableComponentPropsWithRows(this.props) && this.props.rows.length || 0,
+      hiddenColumns: isMaterialTableComponentPropsWithRowsAndRequestData(this.props) && this.props.hiddenColumns || [],
       page,
       rowsPerPage,
     };
@@ -237,18 +249,27 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
     }
   }
   render(): JSX.Element {
-    const { classes, columns } = this.props;
+    const { classes, columns, allowHtmlHeader } = this.props;
     const { rows, total: rowCount, order, orderBy, selected, rowsPerPage, page, showFilter, filter } = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rowCount - page * rowsPerPage);
     const getId = typeof this.props.idProperty !== "function" ? (data: TData) => ((data as { [key: string]: any })[this.props.idProperty as any as string] as string | number) : this.props.idProperty;
     const toggleFilter = isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.onToggleFilter : () => { !this.props.disableFilter && this.setState({ showFilter: !showFilter }, this.update) }
+
+    const hideColumns = isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.onHideColumns : (data: string[]) => { const newArray = [...new Set([...this.state.hiddenColumns, ...data])]; this.setState({hiddenColumns:newArray}); }
+    const showColumns = isMaterialTableComponentPropsWithRowsAndRequestData(this.props) ? this.props.onShowColumns : (data: string[]) => { const newArray = this.state.hiddenColumns.filter(el=> !data.includes(el));   this.setState({hiddenColumns:newArray}); }
+
+    const allColumnsHidden = this.props.columns.length === this.state.hiddenColumns.length;
     return (
       <Paper className={this.props.className ? `${classes.root} ${this.props.className}` : classes.root}>
         <TableContainer className={classes.container}>
           <TableToolbar tableId={this.props.tableId} numSelected={selected && selected.length} title={this.props.title} customActionButtons={this.props.customActionButtons} onExportToCsv={this.exportToCsv}
-            onToggleFilter={toggleFilter} />
+            onToggleFilter={toggleFilter}
+            columns={columns}
+            onHideColumns={hideColumns}
+            onShowColumns={showColumns} />
           <Table padding="normal" aria-label={this.props.tableId ? this.props.tableId : 'tableTitle'} stickyHeader={this.props.stickyHeader || false} >
             <EnhancedTableHead
+              allowHtmlHeader={allowHtmlHeader || false}
               columns={columns}
               numSelected={selected && selected.length}
               order={order}
@@ -257,10 +278,14 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
               onRequestSort={this.onHandleRequestSort}
               rowCount={rows.length}
               enableSelection={this.props.enableSelection}
+              hiddenColumns={this.state.hiddenColumns}
             />
             <TableBody>
-              {showFilter && <EnhancedTableFilter columns={columns} filter={filter} onFilterChanged={this.onFilterChanged} enableSelection={this.props.enableSelection} /> || null}
-              {rows // may need ordering here
+              {showFilter && <EnhancedTableFilter columns={columns} hiddenColumns={this.state.hiddenColumns} filter={filter} onFilterChanged={this.onFilterChanged} enableSelection={this.props.enableSelection} /> || null}
+              
+              {allColumnsHidden ? <Typography variant="body1" textAlign="center">All columns of this table are hidden.</Typography> :
+              
+              rows // may need ordering here
                 .map((entry: TData & { [RowDisabled]?: boolean, [kex: string]: any }, index) => {
                   const entryId = getId(entry);
                   const contextMenu = (this.props.createContextMenu && this.state.contextMenuInfo.index === index && this.props.createContextMenu(entry)) || null;
@@ -295,15 +320,17 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                     >
                       {this.props.enableSelection
                         ? <TableCell padding="checkbox" style={{ width: "50px", color:  entry[RowDisabled] || false ? "inherit" : undefined } }>
-                          <Checkbox checked={isSelected} />
+                          <Checkbox color='secondary' checked={isSelected} />
                         </TableCell>
                         : null
                       }
                       {
+                        
                         this.props.columns.map(
                           col => {
                             const style = col.width ? { width: col.width } : {};
-                            return (
+                            const tableCell = (
+
                               <TableCell style={ entry[RowDisabled] || false ? { ...style, color: "inherit"  } : style } aria-label={col.title? toAriaLabel(col.title) : toAriaLabel(col.property)} key={col.property} align={col.type === ColumnType.numeric && !col.align ? "right" : col.align} >
                                 {col.type === ColumnType.custom && col.customControl
                                   ? <col.customControl className={col.className} style={col.style} rowData={entry} />
@@ -313,6 +340,10 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                                 }
                               </TableCell>
                             );
+                            
+                            //show column if...
+                            const showColumn = !this.state.hiddenColumns.includes(col.property);
+                            return showColumn && tableCell
                           }
                         )
                       }
@@ -352,6 +383,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
   }
 
   static getDerivedStateFromProps(props: MaterialTableComponentProps, state: MaterialTableComponentState & { _rawRows: {}[] }): MaterialTableComponentState & { _rawRows: {}[] } {
+   
     if (isMaterialTableComponentPropsWithRowsAndRequestData(props)) {
       return {
         ...state,
@@ -363,6 +395,7 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
         loading: props.loading,
         showFilter: props.showFilter,
         page: props.page,
+        hiddenColumns: props.hiddenColumns,
         rowsPerPage: props.rowsPerPage
       }
     } else if (isMaterialTableComponentPropsWithRows(props) && props.asynchronus && state._rawRows !== props.rows) {

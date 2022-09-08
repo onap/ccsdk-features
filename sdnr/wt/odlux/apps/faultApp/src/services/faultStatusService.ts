@@ -28,7 +28,15 @@ export const getFaultStateFromDatabase = async (): Promise<FaultType | null> => 
     Critical: 0,
     Major: 0,
     Minor: 0,
-    Warning: 0
+    Warning: 0,
+    Connected: 0,
+    Connecting: 0,
+    Disconnected: 0,
+    Mounted: 0,
+    UnableToConnect: 0,
+    Undefined: 0,
+    Unmounted: 0,
+    total: 0
   }
   let faults: Faults[] | null = null;
 
@@ -38,7 +46,15 @@ export const getFaultStateFromDatabase = async (): Promise<FaultType | null> => 
       Critical: faults[0].faults.criticals,
       Major: faults[0].faults.majors,
       Minor: faults[0].faults.minors,
-      Warning: faults[0].faults.warnings
+      Warning: faults[0].faults.warnings,
+      Connected: faults[0]["network-element-connections"].Connected,
+      Connecting: faults[0]["network-element-connections"].Connecting,
+      Disconnected: faults[0]["network-element-connections"].Disconnected,
+      Mounted: faults[0]["network-element-connections"].Mounted,
+      UnableToConnect: faults[0]["network-element-connections"].UnableToConnect,
+      Undefined: faults[0]["network-element-connections"].Undefined,
+      Unmounted: faults[0]["network-element-connections"].Unmounted,
+      total: faults[0]["network-element-connections"].total,
     }
   }
 

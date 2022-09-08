@@ -119,6 +119,7 @@ interface ILoginState {
   password: string;
   scope: string;
   message: string;
+  isServerReady: boolean;
   providers: {
     id: string;
     title: string;
@@ -141,6 +142,7 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
       scope: 'sdn',
       message: '',
       providers: null,
+      isServerReady: false
     };
   }
 
@@ -148,6 +150,13 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
      if (this.props.authentication === "oauth" && (this.props.externalLoginProviders == null || this.props.externalLoginProviders.length === 0)){
        this.props.updateExternalProviders();
      }
+
+    authenticationService.getServerReadyState().then(result =>{
+      this.setState({isServerReady: result});
+    })
+
+
+
   }
 
   private setExternalProviderAnchor = (el: HTMLElement | null) => {
@@ -262,10 +271,21 @@ class LoginComponent extends React.Component<LoginProps, ILoginState> {
       this.props.history.replace(returnTo && returnTo[1] || "/");
     }
     else {
-      this.setState({
-        message: "Could not log in. Please check your credentials or ask your administrator for assistence.",
-        password: ""
-      })
+
+      if(!this.state.isServerReady){
+        const ready = await authenticationService.getServerReadyState();
+        if(ready){
+          this.setState({isServerReady: true});
+        }else{
+          this.setState({message: "Login is currently not possible. Please re-try in a few minutes. If the problem persits, ask your administrator for assistence."});
+        }
+  
+      }else{
+        this.setState({
+          message: "Could not log in. Please check your credentials or ask your administrator for assistence.",
+          password: ""
+        })
+      }
     }
   }
 }
