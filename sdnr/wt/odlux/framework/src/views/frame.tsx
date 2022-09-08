@@ -22,7 +22,8 @@ import { Theme } from '@mui/material/styles';
 import { WithStyles } from '@mui/styles';
 import withStyles from '@mui/styles/withStyles';
 import createStyles from '@mui/styles/createStyles';
-import { faHome, faAddressBook, faSignInAlt, faCog } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faAddressBook, faSignInAlt, faCog } from '@fortawesome/free-solid-svg-icons'
+
 
 import { SnackbarProvider } from 'notistack';
 import { ConfirmProvider } from 'material-ui-confirm';

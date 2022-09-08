@@ -47,7 +47,6 @@ let alarmStatusDataLoad: number[] = [0, 0, 0, 0];
 let alarmTotalCount = 0;
 
 const mapProps = (state: IApplicationStoreState) => ({
-  connectionStatusCount: state.connect.connectionStatusCount,
   alarmStatus: state.fault.faultStatus
 });
 
@@ -67,15 +66,16 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
   render(): JSX.Element {
     const { classes } = this.props;
 
-    if (!this.props.connectionStatusCount.isLoadingConnectionStatusChart) {
+    if (!this.props.alarmStatus.isLoadingConnectionStatusChart) {
       connectionStatusDataLoad = [
-        this.props.connectionStatusCount.Connected,
-        this.props.connectionStatusCount.Connecting,
-        this.props.connectionStatusCount.Disconnected,
-        this.props.connectionStatusCount.UnableToConnect
+        this.props.alarmStatus.Connected,
+        this.props.alarmStatus.Connecting,
+        this.props.alarmStatus.Disconnected,
+        this.props.alarmStatus.UnableToConnect,
+        this.props.alarmStatus.Undefined
       ];
-      connectionTotalCount = this.props.connectionStatusCount.Connected + this.props.connectionStatusCount.Connecting
-        + this.props.connectionStatusCount.Disconnected + this.props.connectionStatusCount.UnableToConnect;
+      connectionTotalCount = this.props.alarmStatus.Connected + this.props.alarmStatus.Connecting
+        + this.props.alarmStatus.Disconnected + this.props.alarmStatus.UnableToConnect + this.props.alarmStatus.Undefined;
 
     }
 
@@ -92,14 +92,22 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
 
     /** Available Network Connection Status chart data */
     const connectionStatusData = {
-      labels: ['Connected', 'Connecting', 'Disconnected', 'UnableToConnect'],
+      labels: [
+        'Connected: ' + this.props.alarmStatus.Connected,
+        'Connecting: ' + this.props.alarmStatus.Connecting,
+        'Disconnected: ' + this.props.alarmStatus.Disconnected,
+        'UnableToConnect: ' + this.props.alarmStatus.UnableToConnect,
+        'Undefined: ' + this.props.alarmStatus.Undefined
+      ],
       datasets: [{
+        labels: ['Connected', 'Connecting', 'Disconnected', 'UnableToConnect', 'Undefined'],
         data: connectionStatusDataLoad,
         backgroundColor: [
           'rgb(0, 153, 51)',
           'rgb(255, 102, 0)',
           'rgb(191, 191, 191)',
-          'rgb(191, 191, 191)'
+          'rgb(191, 191, 191)',
+          'rgb(242, 240, 240)'
         ]
       }]
     };
@@ -139,8 +147,29 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
     };
 
     /** Connection status options */
-    let labels: String[] = ['Connected', 'Connecting', 'Disconnected', 'UnableToConnect'];
+    let labels: String[] = ['Connected', 'Connecting', 'Disconnected', 'UnableToConnect', 'Undefined'];
     const connectionStatusOptions = {
+      tooltips: {
+        callbacks: {
+          label: (tooltipItem: any, data: any) => {
+            let label =
+              (data.datasets[tooltipItem.datasetIndex].labels &&
+                data.datasets[tooltipItem.datasetIndex].labels[
+                tooltipItem.index
+                ]) ||
+              data.labels[tooltipItem.index] ||
+              "";
+            if (label) {
+              label += ": ";
+            }
+            label +=
+              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] +
+              (data.datasets[tooltipItem.datasetIndex].labelSuffix || "");
+
+            return label;
+          }
+        }
+      },
       responsive: true,
       maintainAspectRatio: false,
       animation: {
@@ -199,12 +228,13 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
     /** Alarm status Data */
     const alarmStatusData = {
       labels: [
-        'Critical',
-        'Major',
-        'Minor',
-        'Warning'
+        'Critical : ' + this.props.alarmStatus.critical,
+        'Major : ' + this.props.alarmStatus.major,
+        'Minor : ' + this.props.alarmStatus.minor,
+        'Warning : ' + this.props.alarmStatus.warning
       ],
       datasets: [{
+        labels: ['Critical', 'Major', 'Minor', 'Warning'],
         data: alarmStatusDataLoad,
         backgroundColor: [
           'rgb(240, 25, 10)',
@@ -229,6 +259,27 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
     /** Alarm status Options */
     let alarmLabels: String[] = ['Critical', 'Major', 'Minor', 'Warning'];
     const alarmStatusOptions = {
+      tooltips: {
+        callbacks: {
+          label: (tooltipItem: any, data: any) => {
+            let label =
+              (data.datasets[tooltipItem.datasetIndex].labels &&
+                data.datasets[tooltipItem.datasetIndex].labels[
+                tooltipItem.index
+                ]) ||
+              data.labels[tooltipItem.index] ||
+              "";
+            if (label) {
+              label += ": ";
+            }
+            label +=
+              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] +
+              (data.datasets[tooltipItem.datasetIndex].labelSuffix || "");
+
+            return label;
+          }
+        }
+      },
       responsive: true,
       maintainAspectRatio: false,
       animation: {
@@ -242,7 +293,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
       },
       onClick: (event: MouseEvent, item: any) => {
         if (item[0]) {
-          let severity = alarmLabels[item[0].index] + '';
+          let severity = alarmLabels[item[0]._index] + '';
           this.props.navigateToApplication("fault", '/alarmStatus/' + severity);
         }
       },
@@ -286,7 +337,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
     return (
       <>
         <div style={scrollbar} >
-          <h1>Welcome to ODLUX</h1>
+          <h1 aria-label="welcome-to-odlux">Welcome to ODLUX</h1>
           <div style={{ width: '50%', float: 'left' }}>
             {this.checkElementsAreLoaded() ?
               this.checkConnectionStatus() && connectionTotalCount != 0 ?
@@ -351,12 +402,12 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
 
   /** Check if connection status data available */
   public checkConnectionStatus = () => {
-    let statusCount = this.props.connectionStatusCount;
+    let statusCount = this.props.alarmStatus;
     if (statusCount.isLoadingConnectionStatusChart) {
       return true;
     }
     if (statusCount.Connected == 0 && statusCount.Connecting == 0 && statusCount.Disconnected == 0
-      && statusCount.UnableToConnect == 0) {
+      && statusCount.UnableToConnect == 0 && statusCount.Undefined == 0) {
       return false;
     } else {
       return true;
@@ -365,7 +416,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
 
   /** Check if connection status chart data is loaded */
   public checkElementsAreLoaded = () => {
-    let isLoadingCheck = this.props.connectionStatusCount;
+    let isLoadingCheck = this.props.alarmStatus;
     if (connectionStatusinitialLoad && !isLoadingCheck.isLoadingConnectionStatusChart) {
       if (this.checkConnectionStatus()) {
         connectionStatusinitialLoad = false;

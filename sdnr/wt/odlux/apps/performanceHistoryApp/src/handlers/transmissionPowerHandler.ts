@@ -26,7 +26,7 @@ export interface ITransmissionPowerState extends IExternalTableState<Transmissio
 /**
  * Creates elastic search material data fetch handler for Transmission power from historicalperformance database.
  */
-const transmissionPowerSearchHandler = createSearchDataHandler<TransmissionPowerDataType>(getFilter, null)
+const transmissionPowerSearchHandler = createSearchDataHandler<TransmissionPowerDataType>(getFilter, false, null)
 
 export const {
     actionHandler: transmissionPowerActionHandler,

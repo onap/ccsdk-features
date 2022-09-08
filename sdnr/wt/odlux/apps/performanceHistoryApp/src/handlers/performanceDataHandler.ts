@@ -28,7 +28,7 @@ export interface IPerformanceDataState extends IExternalTableState<PerformanceDa
 /**
 * Creates elastic search material data fetch handler for performance data from historicalperformance15min database.
 */
-const performanceDataSearchHandler = createSearchDataHandler<PerformanceDataType>(getFilter, null);
+const performanceDataSearchHandler = createSearchDataHandler<PerformanceDataType>(getFilter, false, null);
 
 export const {
     actionHandler: performanceDataActionHandler,

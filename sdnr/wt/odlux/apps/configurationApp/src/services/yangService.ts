@@ -24,8 +24,8 @@ const cache: { [path: string]: string } = {
 
 class YangService {
 
-  public async getCapability(capability: string, version?: string) {
-    const url = `/yang-schema/${capability}${version ? `/${version}` : ""}`;
+  public async getCapability(capability: string, nodeId: string, version?: string) {
+    const url = `/yang-schema/${capability}${version ? `/${version}` : ""}?node=${nodeId}`;
 
     const cacheHit = cache[url];
     if (cacheHit) return cacheHit;

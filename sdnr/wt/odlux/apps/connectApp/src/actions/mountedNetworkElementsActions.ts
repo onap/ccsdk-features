@@ -27,7 +27,7 @@ import { updateCurrentViewAsyncAction } from './commonNetworkElementsActions';
 /** Represents the base action. */
 export class BaseAction extends Action { }
 
-/** Represents an action crator for a async thunk action to mount a network element. */
+/** Represents an action creator for a async thunk action to mount a network element/node. */
 export const mountNetworkElementAsyncActionCreator = (networkElement: NetworkElementConnection) => (dispatch: Dispatch) => {
   return connectService.mountNetworkElement(networkElement).then((success) => {
     if (success) {
@@ -42,7 +42,7 @@ export const mountNetworkElementAsyncActionCreator = (networkElement: NetworkEle
   });
 };
 
-/** Represents an action crator for a async thunk action to unmount a network element. */
+/** Represents an action creator for a async thunk action to unmount a network element/node. */
 export const unmountNetworkElementAsyncActionCreator = (nodeId: string) => (dispatch: Dispatch) => {
   return connectService.unmountNetworkElement(nodeId).then((success) => {
     if (success) {

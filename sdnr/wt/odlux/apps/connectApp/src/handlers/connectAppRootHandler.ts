@@ -24,7 +24,6 @@ import { IInfoNetworkElementsState, infoNetworkElementsActionHandler, IInfoNetwo
 import { SetPanelAction, AddWebUriList, RemoveWebUri, SetWeburiSearchBusy } from '../actions/commonNetworkElementsActions';
 import { PanelId } from '../models/panelId';
 import { guiCutThrough } from '../models/guiCutTrough';
-import { connectionStatusCountHandler, IConnectionStatusCount } from './connectionStatusCountHandler';
 import { availableTlsKeysActionHandler, IAvailableTlsKeysState } from './tlsKeyHandler';
 
 export interface IConnectAppStoreState {
@@ -34,7 +33,6 @@ export interface IConnectAppStoreState {
   elementInfo: IInfoNetworkElementsState;
   elementFeatureInfo: IInfoNetworkElementFeaturesState;
   guiCutThrough: guiCutThroughState;
-  connectionStatusCount: IConnectionStatusCount;
   availableTlsKeys: IAvailableTlsKeysState
 }
 
@@ -94,7 +92,6 @@ const actionHandlers = {
   elementInfo: infoNetworkElementsActionHandler,
   elementFeatureInfo: infoNetworkElementFeaturesActionHandler,
   guiCutThrough: guiCutThroughHandler,
-  connectionStatusCount: connectionStatusCountHandler,
   availableTlsKeys: availableTlsKeysActionHandler
 };
 

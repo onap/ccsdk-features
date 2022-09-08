@@ -286,7 +286,7 @@ export class YangParser {
 
   public static ResolveStack = Symbol("ResolveStack");
 
-  constructor(private _unavailableCapabilities: { failureReason: string; capability: string; }[] = [], private _importOnlyModules: { name: string; revision: string; }[] = []) {
+  constructor(private _unavailableCapabilities: { failureReason: string; capability: string; }[] = [], private _importOnlyModules: { name: string; revision: string; }[] = [], private nodeId: string) {
    
   }
 
@@ -310,8 +310,7 @@ export class YangParser {
     //   // console.warn(`Skipped capability: ${capability} since it is marked as unavailable.` );
     //   return;
     // }
-
-    const data = await yangService.getCapability(capability, version);
+    const data = await yangService.getCapability(capability, this.nodeId, version);
     if (!data) {
       throw new Error(`Could not load yang file for ${capability}.`);
     }
@@ -409,6 +408,8 @@ export class YangParser {
     // import all required files and set module state 
     if (imports) for (let ind = 0; ind < imports.length; ++ind) {
       const moduleName = imports[ind].arg!; 
+
+      //TODO: Fix imports getting loaded without revision
       await this.addCapability(moduleName, undefined, module.state === ModuleState.importOnly);
       const importedModule = this._modules[imports[ind].arg!];
       if (importedModule && importedModule.state > ModuleState.stable) {

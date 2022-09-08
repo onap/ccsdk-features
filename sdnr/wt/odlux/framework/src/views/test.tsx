@@ -848,7 +848,7 @@ const TestComponent = (props: WithComponents<typeof components> & WithStyles<typ
           <Typography className={props.classes.heading}>Client Side Table Demo</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <SampleDataMaterialTable rows={tableData} columns={
+          <SampleDataMaterialTable rows={tableData} tableId={null} columns={
             [
               { property: "index", type: ColumnType.text, title: "Index", width: "80px", disableFilter: true, disableSorting: true },
               { property: "firstName", type: ColumnType.text, title: "First Name" },

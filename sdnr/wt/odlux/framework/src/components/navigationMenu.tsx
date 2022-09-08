@@ -64,9 +64,9 @@ const styles = (theme: Theme) => createStyles({
       duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: 'hidden',
-    width: theme.spacing(7) + 1,
+    width: theme.spacing(7),
     [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9) + 1,
+      width: theme.spacing(9),
     },
   },
   drawer: {
@@ -101,7 +101,7 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
   //collapse menu on mount if necessary
   React.useEffect(()=>{
 
-    if(isOpen && window.innerWidth < tabletWidthBreakpoint){
+    if(isOpen && window.innerWidth <= tabletWidthBreakpoint){
 
       setResponsive(true);
       dispatch(new MenuAction(false));
@@ -116,14 +116,12 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
         if (window.innerWidth < tabletWidthBreakpoint && !responsive) {
           setResponsive(true);
           if (!closedByUser) {
-            console.log("responsive menu collapsed")
             dispatch(new MenuAction(false));
           }
 
         } else if (window.innerWidth > tabletWidthBreakpoint && responsive) {
           setResponsive(false);
           if (!closedByUser) {
-            console.log("responsive menu restored")
             dispatch(new MenuAction(true));
           }
 
@@ -145,13 +143,14 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
 
   let menuItems = state.framework.applicationRegistraion && Object.keys(state.framework.applicationRegistraion).map(key => {
     const reg = state.framework.applicationRegistraion[key];
+    const icon = !reg.icon ? null :( typeof reg.icon === 'string' ? <img height={22} src={reg.icon} /> : <FontAwesomeIcon icon={reg.icon} /> )
     return reg && (
       <ListItemLink
         key={reg.name}
         to={reg.path || `/${reg.name}`}
         primary={reg.menuEntry || reg.name}
         secondary={reg.subMenuEntry}
-        icon={reg.icon && <FontAwesomeIcon icon={reg.icon} /> || null} />
+        icon={icon} />
     ) || null;
   }) || null;
 

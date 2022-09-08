@@ -109,7 +109,7 @@ type NetworkElementsListComponentState = {
   elementInfoFeature: ModuleSet | null
 }
 
-const emptyRequireNetworkElement: NetworkElementConnection = { id: "", nodeId: "", host: "", port: 0, status: "Disconnected", isRequired: false };
+const emptyRequireNetworkElement: NetworkElementConnection = { id: "", nodeId: "", host: "", port: 830, status: "Disconnected", isRequired: true };
 let initialSorted = false;
 const NetworkElementTable = MaterialTable as MaterialTableCtorType<NetworkElementConnection>;
 
@@ -138,7 +138,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
       <MenuItemExt aria-label={"mount-button"} onClick={event => this.onOpenMountdNetworkElementsDialog(event, rowData)} disabled={!canMount} ><LinkIcon /><Typography>Mount</Typography></MenuItemExt>,
       <MenuItemExt aria-label={"unmount-button"} onClick={event => this.onOpenUnmountdNetworkElementsDialog(event, rowData)} disabled={!canMount} ><LinkOffIcon /><Typography>Unmount</Typography></MenuItemExt>,
       <Divider />,
-      <MenuItem aria-label={"info-button"} onClick={event => this.onOpenInfoNetworkElementDialog(event, rowData)} disabled={rowData.status === "Connecting" || rowData.status === "Disconnected"} ><Info /><Typography>Info</Typography></MenuItem>,
+      <MenuItem aria-label={"info-button"} onClick={event => this.onOpenInfoNetworkElementDialog(event, rowData)} disabled={rowData.status !== "Connected"} ><Info /><Typography>Info</Typography></MenuItem>,
       <MenuItem aria-label={"edit-button"} onClick={event => this.onOpenEditNetworkElementDialog(event, rowData)}><EditIcon /><Typography>Edit</Typography></MenuItem>,
       <MenuItem aria-label={"remove-button"} onClick={event => this.onOpenRemoveNetworkElementDialog(event, rowData)} ><RemoveIcon /><Typography>Remove</Typography></MenuItem>,
       <Divider />,
@@ -177,7 +177,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
     const canAdd = true;
 
     const addRequireNetworkElementAction = {
-      icon: AddIcon, tooltip: 'Add', ariaLabel: "add-element", onClick: () => {
+      icon: AddIcon, tooltip: 'Add node', ariaLabel: "add-element", onClick: () => {
         this.setState({
           networkElementEditorMode: EditNetworkElementDialogMode.AddNewNetworkElement,
           networkElementToEdit: emptyRequireNetworkElement,
@@ -186,7 +186,7 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
     };
 
     const refreshNetworkElementsAction = {
-      icon: Refresh, tooltip: 'Refresh Network Elements table', ariaLabel: 'refresh', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh table', ariaLabel: 'refresh', onClick: () => {
         this.setState({
           refreshNetworkElementsEditorMode: RefreshNetworkElementsDialogMode.RefreshNetworkElementsTable
         });
@@ -195,20 +195,20 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
 
     return <>
       <NetworkElementTable stickyHeader tableId="network-element-table" customActionButtons={[refreshNetworkElementsAction, ...(canAdd ? [addRequireNetworkElementAction] : [])]} columns={[
-        { property: "nodeId", title: "Node Name", type: ColumnType.text },
-        { property: "isRequired", title: "Required", type: ColumnType.boolean },
+        { property: "nodeId", title: "Node ID", type: ColumnType.text },
         { property: "status", title: "Connection Status", type: ColumnType.text, width:'15%' },
         { property: "host", title: "Host", type: ColumnType.text },
         { property: "port", title: "Port", type: ColumnType.numeric },
-        { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
-        { property: "deviceType", title: "Device Type", type: ColumnType.text },
-        { property: "deviceFunction", title: "Device Function", type: ColumnType.text, width: '15%' }
+        { property: "isRequired", title: "Required", type: ColumnType.boolean },
+        { property: "deviceType", title: "Type", type: ColumnType.text },
+      //  { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
+        { property: "deviceFunction", title: "Function", type: ColumnType.text, width: '25%' }
       ]} idProperty="id" {...this.props.networkElementsActions} {...this.props.networkElementsProperties} asynchronus createContextMenu={rowData => {
 
         return this.getContextMenu(rowData);
       }} >
       </NetworkElementTable>
-      <EditNetworkElementDialog
+      <EditNetworkElementDialog 
         initialNetworkElement={networkElementToEdit}
         mode={this.state.networkElementEditorMode}
         onClose={this.onCloseEditNetworkElementDialog}

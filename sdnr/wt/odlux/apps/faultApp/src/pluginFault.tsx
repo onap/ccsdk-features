@@ -41,6 +41,8 @@ import { createCurrentProblemsProperties, createCurrentProblemsActions, currentP
 import { FaultStatus } from "./components/faultStatus";
 import { refreshFaultStatusAsyncAction, SetFaultStatusAction } from "./actions/statusActions";
 
+import DashboardHome from "./components/dashboardHome";
+
 let currentMountId: string | undefined = undefined;
 let currentSeverity: string | undefined = undefined;
 let refreshInterval: ReturnType<typeof window.setInterval> | null = null;
@@ -113,6 +115,7 @@ export function register() {
     rootComponent: App,
     rootActionHandler: faultAppRootHandler,
     statusBarElement: FaultStatus,
+    dashbaordElement: DashboardHome,
     menuEntry: "Fault"
   });
 
@@ -149,14 +152,14 @@ export function register() {
   applicationApi.logoutEvent.addHandler(e=>{
 
     applicationApi.applicationStoreInitialized.then(store => {
-      store.dispatch(new SetFaultStatusAction(0, 0, 0, 0, false));
+      store.dispatch(new SetFaultStatusAction(0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, false));
       clearInterval(refreshInterval!);
     });
   })
   
  
 
-  function startRefreshInterval(){
+  function startRefreshInterval()  {
     const refreshFaultStatus = window.setInterval(() => {
       applicationApi.applicationStoreInitialized.then(store => {
   

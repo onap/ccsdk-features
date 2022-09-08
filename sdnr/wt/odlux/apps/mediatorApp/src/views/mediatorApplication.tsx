@@ -176,7 +176,7 @@ class MediatorApplicationComponent extends React.Component<MediatorApplicationCo
 
           this.props.isReachable ?
 
-            <MediatorServerConfigurationsTable defaultSortColumn={"Name"} defaultSortOrder="asc" stickyHeader title={this.props.serverName || ''} customActionButtons={[addMediatorConfigAction]} idProperty={"Name"} rows={this.props.configurations} asynchronus columns={[
+            <MediatorServerConfigurationsTable defaultSortColumn={"Name"} tableId={null} defaultSortOrder="asc" stickyHeader title={this.props.serverName || ''} customActionButtons={[addMediatorConfigAction]} idProperty={"Name"} rows={this.props.configurations} asynchronus columns={[
               { property: "Name", title: "Mediator", type: ColumnType.text },
               { property: "Status", title: "Status", type: ColumnType.custom, customControl: ({ rowData }) => rowData.pid ? (<span>Running</span>) : (<span>Stopped</span>) },
               { property: "DeviceIp", title: "IP Adress", type: ColumnType.text },
@@ -191,7 +191,7 @@ class MediatorApplicationComponent extends React.Component<MediatorApplicationCo
               { property: "actions", title: "Actions", type: ColumnType.custom, customControl: ({ rowData }) => renderActions(rowData) },
             ]} />
             :
-            <MediatorServerUnreachableTable title={this.props.serverName || ''} idProperty={"Name"} disableFilter={true} disableSorting={true} enableSelection={false} rows={[{ Name: '', status: "Mediator server not found.", ipAdress: '', device: '', actions: '' }]} columns={[
+            <MediatorServerUnreachableTable title={this.props.serverName || ''} tableId={null} idProperty={"Name"} disableFilter={true} disableSorting={true} enableSelection={false} rows={[{ Name: '', status: "Mediator server not found.", ipAdress: '', device: '', actions: '' }]} columns={[
               { property: "Name", title: "Mediator", type: ColumnType.text },
               { property: "status", title: "Status", type: ColumnType.text },
               { property: "ipAdress", title: "IP Adress", type: ColumnType.text },

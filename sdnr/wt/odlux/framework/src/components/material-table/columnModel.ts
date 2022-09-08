@@ -37,6 +37,7 @@ export type ColumnModel<TData> = {
   disablePadding?: boolean;
   width?: string | number ;
   className?: string;
+  hide?: boolean;
   style?: React.CSSProperties;
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
   disableSorting?: boolean;

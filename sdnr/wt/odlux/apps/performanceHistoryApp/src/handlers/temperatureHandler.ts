@@ -26,7 +26,7 @@ export interface ITemperatureState extends IExternalTableState<TemperatureDataTy
 /**
  * Creates elastic search material data fetch handler for Temperature from historicalperformance database.
  */
-const temperatureSearchHandler = createSearchDataHandler< TemperatureDataType>(getFilter, null);
+const temperatureSearchHandler = createSearchDataHandler< TemperatureDataType>(getFilter, false, null);
 
 export const {
     actionHandler: temperatureActionHandler,

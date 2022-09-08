@@ -31,6 +31,17 @@ export type SingeResult<TSource extends {}> = {
 }
 
 
+export type ResultTopology<TSource extends {}> = {
+  "output": {
+    pagination?: {
+      size: number;
+      page: number;
+      total: number;
+    },
+    data: TSource[];
+  }
+}
+
 export type HitEntry<TSource extends {}> = {
   _index: string;
   _type: string;

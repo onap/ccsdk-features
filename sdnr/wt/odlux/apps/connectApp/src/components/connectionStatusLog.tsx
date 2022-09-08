@@ -65,7 +65,7 @@ class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogCo
     <>
       <ConnectionStatusTable stickyHeader tableId="connection-status-table" customActionButtons={[refreshConnectionStatusLogAction]}  columns={[
         { property: "timestamp", title: "Timestamp", type: ColumnType.text },
-        { property: "nodeId", title: "Node Name", type: ColumnType.text },
+        { property: "nodeId", title: "Node ID", type: ColumnType.text },
         { property: "status", title: "Connection Status", type: ColumnType.text },
       ]} idProperty="id" {...this.props.connectionStatusLogActions} {...this.props.connectionStatusLogProperties} >
       </ConnectionStatusTable>

@@ -39,12 +39,8 @@ export const authenticationStateHandler: IActionHandler<IAuthenticationState> = 
     const {user} = action;
     
     if (user) {
-      localStorage.setItem("userToken", user.toString());
-      startUserSession(user);
       onLogin();
     } else {
-      localStorage.removeItem("userToken");
-      endUserSession();
       onLogout();
     }
 

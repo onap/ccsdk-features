@@ -16,7 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { Result } from '../models';
+import { Result, ResultTopology } from '../models';
 import { DataCallback } from '../components/material-table';
 
 import { requestRest } from '../services/restService';
@@ -31,43 +31,79 @@ type dataType = { [prop: string]: propType };
  *  @param additionalFilters Filterproperties and their values to add permanently.
  *  @returns The searchDataHandler callback to be used with the material table.
 */
-export function createSearchDataHandler<TResult>(typeName: (() => string) | string, additionalFilters?: {} | null | undefined): DataCallback<(TResult)> {
+export function createSearchDataHandler<TResult>(typeName: (() => string) | string, connectToTopologyServer?: boolean, additionalFilters?: {} | null | undefined): DataCallback<(TResult)> {
   const fetchData: DataCallback<(TResult)> = async (pageIndex, rowsPerPage, orderBy, order, filter) => {
-    const url = `/rests/operations/data-provider:read-${typeof typeName === "function" ? typeName(): typeName}-list`;
+
+    const topologyUrl = `/topology/network/read-${typeof typeName === "function" ? typeName() : typeName}-list`;
+    const dataProviderUrl = `/rests/operations/data-provider:read-${typeof typeName === "function" ? typeName() : typeName}-list`;
+
+    const url = connectToTopologyServer ? topologyUrl : dataProviderUrl;
 
     filter = { ...filter, ...additionalFilters };
 
     const filterKeys = filter && Object.keys(filter) || [];
 
-    const query = {
-      "data-provider:input": {
-        filter: filterKeys.filter(f => filter![f] != null && filter![f] !== "").map(property => ({ property, filtervalue: filter![property]})),
-        sortorder: orderBy ? [{ property: orderBy, sortorder: order === "desc" ? "descending" : "ascending" }] : [],
-        pagination: { size: rowsPerPage, page: (pageIndex != null && pageIndex > 0 && pageIndex || 0) +1 }
-      }
-    };
-    const result = await requestRest<Result<TResult>>(url, {
-      method: "POST",       // *GET, POST, PUT, DELETE, etc.
-      mode: "same-origin",  // no-cors, cors, *same-origin
-      cache: "no-cache",    // *default, no-cache, reload, force-cache, only-if-cached
-      headers: {
-        "Content-Type": "application/json",
-        // "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: JSON.stringify(convertPropertyValues(query, replaceUpperCase)), // body data type must match "Content-Type" header
-    });
+    const input = {
+      filter: filterKeys.filter(f => filter![f] != null && filter![f] !== "").map(property => ({ property, filtervalue: filter![property] })),
+      sortorder: orderBy ? [{ property: orderBy, sortorder: order === "desc" ? "descending" : "ascending" }] : [],
+      pagination: { size: rowsPerPage, page: (pageIndex != null && pageIndex > 0 && pageIndex || 0) + 1 }
+    }
 
-    if (result) {
-      let rows: TResult[] = [];
-
-      if (result && result["data-provider:output"] && result["data-provider:output"].data) {
-        rows = result["data-provider:output"].data.map(obj => convertPropertyNames(obj, replaceHyphen)) || []
-      }
-
-      const data = {
-        page: +(result["data-provider:output"].pagination && result["data-provider:output"].pagination.page != null && result["data-provider:output"].pagination.page - 1  || 0) , total: +(result["data-provider:output"].pagination && result["data-provider:output"].pagination.total || 0), rows: rows
+    if (url.includes('data-provider')) {
+      const query = {
+        "data-provider:input": input
       };
-      return data;
+
+      const result = await requestRest<Result<TResult>>(url, {
+        method: "POST",       // *GET, POST, PUT, DELETE, etc.
+        mode: "same-origin",  // no-cors, cors, *same-origin
+        cache: "no-cache",    // *default, no-cache, reload, force-cache, only-if-cached
+        headers: {
+          "Content-Type": "application/json",
+          // "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: JSON.stringify(convertPropertyValues(query, replaceUpperCase)), // body data type must match "Content-Type" header
+      });
+      if (result) {
+        let rows: TResult[] = [];
+
+        if (result && result["data-provider:output"] && result["data-provider:output"].data) {
+          rows = result["data-provider:output"].data.map(obj => convertPropertyNames(obj, replaceHyphen)) || []
+        }
+
+        const data = {
+          page: +(result["data-provider:output"].pagination && result["data-provider:output"].pagination.page != null && result["data-provider:output"].pagination.page - 1 || 0), total: +(result["data-provider:output"].pagination && result["data-provider:output"].pagination.total || 0), rows: rows
+        };
+        return data;
+      }
+    } else if (url.includes('topology')) {
+
+      const queryTopology = {
+        "input": input
+      };
+
+      const resultTopology = await requestRest<ResultTopology<TResult>>(url, {
+        method: "POST",       // *GET, POST, PUT, DELETE, etc.
+        mode: "same-origin",  // no-cors, cors, *same-origin
+        cache: "no-cache",    // *default, no-cache, reload, force-cache, only-if-cached
+        headers: {
+          "Content-Type": "application/json",
+          // "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: JSON.stringify(queryTopology), // body data type must match "Content-Type" header
+      });
+      if (resultTopology) {
+        let rows: TResult[] = [];
+
+        if (resultTopology && resultTopology.output && resultTopology.output.data) {
+          rows = resultTopology.output.data.map(obj => obj) || []
+        }
+
+        const data = {
+          page: +(resultTopology.output.pagination && resultTopology.output.pagination.page != null && resultTopology.output.pagination.page - 1 || 0), total: +(resultTopology.output.pagination && resultTopology.output.pagination.total || 0), rows: rows
+        };
+        return data;
+      }
     }
 
     return { page: 1, total: 0, rows: [] };

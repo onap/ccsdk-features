@@ -18,7 +18,7 @@
 import { AuthPolicy, AuthToken } from "../models/authentication";
 import { ExternalLoginProvider } from "../models/externalLoginProvider";
 
-import { requestRest, formEncode } from "./restService";
+import { requestRest, formEncode, requestRestExt } from "./restService";
 
 type AuthTokenResponse = {
   access_token: string;
@@ -84,6 +84,12 @@ class AuthenticationService {
 
   public async getAccessPolicies(){
     return await requestRest<AuthPolicy[]>(`oauth/policies`, { method: "GET" }, true);
+  }
+
+  public async getServerReadyState(){
+
+    const result = await fetch("/ready", {method: "GET"});
+    return result.status == (200 || 304) ? true : false;
   }
 }
 

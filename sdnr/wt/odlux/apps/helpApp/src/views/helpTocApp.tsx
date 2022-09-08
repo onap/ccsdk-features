@@ -37,7 +37,7 @@ const HelpTocComponent: FunctionComponent<Connect<typeof mapProps, typeof mapDis
 
     return (
         <div>
-            <Typography style={{ marginBottom: '30px' }} variant="h5">
+            <Typography aria-label="help" style={{ marginBottom: '30px' }} variant="h5">
                 Help &amp; FAQ
             </Typography>
             <Typography style={{ marginBottom: '30px' }} variant="body1">

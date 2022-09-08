@@ -31,8 +31,8 @@ import { ExternalLoginProvider } from '../models/externalLoginProvider';
 import { ApplicationConfig } from '../models/applicationConfig';
 import { IConnectAppStoreState } from '../../../apps/connectApp/src/handlers/connectAppRootHandler';
 import { IFaultAppStoreState } from '../../../apps/faultApp/src/handlers/faultAppRootHandler';
-import { GeneralSettings } from '../models/settings';
-import { SetGeneralSettingsAction } from '../actions/settingsAction';
+import { GeneralSettings, Settings } from '../models/settings';
+import { LoadSettingsAction, SetGeneralSettingsAction, SetTableSettings, SettingsDoneLoadingAction } from '../actions/settingsAction';
 import { startWebsocketSession, suspendWebsocketSession } from '../services/notificationService';
 
 
@@ -55,7 +55,7 @@ export interface IApplicationState {
   authentication: "basic"|"oauth",  // basic 
   enablePolicy: boolean,             // false 
   transportpceUrl : string,
-  settings: GeneralSettings
+  settings: Settings & { isInitialLoadDone: boolean }
 }
 
 const applicationStateInit: IApplicationState = {
@@ -69,7 +69,11 @@ const applicationStateInit: IApplicationState = {
   authentication: "basic",
   enablePolicy: false,
   transportpceUrl: "",
-  settings:{ general: { areNotificationsEnabled: null }}
+  settings:{ 
+    general: { areNotificationsEnabled: null },
+    tables: {},
+    isInitialLoadDone: false
+  }
 };
 
 export const configureApplication = (config: ApplicationConfig) => {
@@ -150,8 +154,23 @@ export const applicationStateHandler: IActionHandler<IApplicationState> = (state
 
     state = {
       ...state,
-      settings:{general:{areNotificationsEnabled: action.areNoticationsActive}}
+      settings:{tables: state.settings.tables, isInitialLoadDone:state.settings.isInitialLoadDone, general:{areNotificationsEnabled: action.areNoticationsActive}}
     }
   }
+  else if(action instanceof SetTableSettings){
+
+    let tableUpdate = state.settings.tables;
+    tableUpdate[action.tableName] = {columns: action.updatedColumns};
+
+    state = {...state, settings:{general: state.settings.general, isInitialLoadDone:state.settings.isInitialLoadDone, tables: tableUpdate}}
+    
+  }else if(action instanceof LoadSettingsAction){
+    
+    state = {...state, settings:action.settings}
+  }
+  else if(action instanceof SettingsDoneLoadingAction){
+    state= {...state, settings: {...state.settings, isInitialLoadDone: true}}
+  }
+
   return state;
 };

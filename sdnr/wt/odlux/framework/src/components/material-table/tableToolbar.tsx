@@ -33,6 +33,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { Button } from '@mui/material';
+import { ColumnModel } from './columnModel';
+import  ShowColumnsDialog  from './showColumnDialog'
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -69,18 +71,24 @@ const styles = (theme: Theme) => createStyles({
 interface ITableToolbarComponentProps extends WithStyles<typeof styles> {
   numSelected: number | null;
   title?: string;
-  tableId?: string;
+  tableId: string | null;
   customActionButtons?: { icon: React.ComponentType<SvgIconProps>, tooltip?: string, ariaLabel: string, onClick: () => void, disabled?: boolean }[];
+  columns: ColumnModel<{}>[];
+  onHideColumns: (columnNames: string[]) => void
+  onShowColumns: (columnNames: string[]) => void
   onToggleFilter: () => void;
   onExportToCsv: () => void;
 }
 
-class TableToolbarComponent extends React.Component<ITableToolbarComponentProps, { anchorEl: EventTarget & HTMLElement | null }> {
+class TableToolbarComponent extends React.Component<ITableToolbarComponentProps, { anchorEl: EventTarget & HTMLElement | null, anchorElDialog: HTMLElement | null }> {
+
+  
   constructor(props: ITableToolbarComponentProps) {
     super(props);
 
     this.state = {
-      anchorEl: null
+      anchorEl: null,
+      anchorElDialog: null
     };
   }
 
@@ -91,11 +99,22 @@ class TableToolbarComponent extends React.Component<ITableToolbarComponentProps,
   private handleClose = () => {
     this.setState({ anchorEl: null });
   };
+
+  private showColumnsDialog = (event: React.MouseEvent<HTMLElement>) =>{
+    this.setState({ anchorElDialog: this.state.anchorEl });
+  }
+
+  private onCloseDialog = () =>{
+    this.setState({ anchorElDialog: null });
+
+  }
+
   render() {
     const { numSelected, classes } = this.props;
     const open = !!this.state.anchorEl;
-    const buttonPrefix = this.props.tableId !== undefined ? this.props.tableId : 'table';
+    const buttonPrefix = this.props.tableId !== null ? this.props.tableId : 'table';
     return (
+      <>
       <Toolbar className={`${classes.root} ${numSelected && numSelected > 0 ? classes.highlight : ''} `} >
         <div className={classes.title}>
           {numSelected && numSelected > 0 ? (
@@ -153,9 +172,18 @@ class TableToolbarComponent extends React.Component<ITableToolbarComponentProps,
           <Menu id="menu-appbar" anchorEl={this.state.anchorEl} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }} open={open} onClose={this.handleClose} >
             <MenuItem aria-label="export-table-as-csv" onClick={(e) =>{ this.props.onExportToCsv(); this.handleClose()}}>Export as CSV</MenuItem>
+            <MenuItem aria-label="hide-show-table-columns" onClick={(e) =>{ this.showColumnsDialog(e); this.handleClose()}}>Hide/show columns</MenuItem>
           </Menu>
         </div>
       </Toolbar>
+      <ShowColumnsDialog 
+        anchorEl={this.state.anchorElDialog} 
+        onClose={this.onCloseDialog}
+        settingsName={this.props.tableId} 
+        columns={this.props.columns} 
+        hideColumns={this.props.onHideColumns} 
+        showColumns={this.props.onShowColumns} />
+      </>
     );
   }
 }

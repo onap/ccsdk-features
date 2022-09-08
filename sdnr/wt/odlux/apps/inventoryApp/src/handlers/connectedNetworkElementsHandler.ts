@@ -24,7 +24,7 @@ import { NetworkElementConnection } from '../models/networkElementConnection';
 export interface IConnectedNetworkElementsState extends IExternalTableState<NetworkElementConnection> { }
 
 // create eleactic search material data fetch handler
-const connectedNetworkElementsSearchHandler = createSearchDataHandler<NetworkElementConnection>('network-element-connection', { status: "Connected" });
+const connectedNetworkElementsSearchHandler = createSearchDataHandler<NetworkElementConnection>('network-element-connection', false, { status: "Connected" });
 
 export const {
   actionHandler: connectedNetworkElementsActionHandler,

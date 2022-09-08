@@ -28,14 +28,14 @@ import { unmountNetworkElementAsyncActionCreator } from './mountedNetworkElement
 /** Represents the base action. */
 export class BaseAction extends Action { }
 
-/** Represents an async thunk action creator to add an element to the network elements. */
+/** Represents an async thunk action creator to add an element to the network elements/nodes. */
 export const addNewNetworkElementAsyncActionCreator = (element: NetworkElementConnection) => async (dispatch: Dispatch) => {
   const res = await connectService.createNetworkElement({ ...element });
   dispatch(updateCurrentViewAsyncAction());
   dispatch(new AddSnackbarNotification({ message: `Successfully added [${element.nodeId}]`, options: { variant: 'success' } }));
 };
 
-/** Represents an async thunk action creator to edit network element. */
+/** Represents an async thunk action creator to edit network element/node. */
 export const editNetworkElementAsyncActionCreator = (element: UpdateNetworkElement) => async (dispatch: Dispatch) => {
   const connectionStatus: ConnectionStatus[] = (await connectService.getNetworkElementConnectionStatus(element.id).then(ne => (ne))) || [];
   const currentConnectionStatus = connectionStatus[0].status;
@@ -50,7 +50,7 @@ export const editNetworkElementAsyncActionCreator = (element: UpdateNetworkEleme
 };
 
 
-/** Represents an async thunk action creator to delete an element from network elements. */
+/** Represents an async thunk action creator to delete an element from network elements/nodes. */
 export const removeNetworkElementAsyncActionCreator = (element: UpdateNetworkElement) => async (dispatch: Dispatch) => {
   const res = await connectService.deleteNetworkElement(element);
   await dispatch(unmountNetworkElementAsyncActionCreator(element && element.id));

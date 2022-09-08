@@ -59,7 +59,7 @@ const settings: { [key: string]: DialogSettings } = {
     enableExtendedEditor: false,
   },
   [RefreshNetworkElementsDialogMode.RefreshNetworkElementsTable]: {
-    dialogTitle: "Do you want to refresh the Network Elements table?",
+    dialogTitle: "Do you want to refresh the nodes table?",
     dialogDescription: "",
     applyButtonText: "Yes",
     cancelButtonText: "Cancel",
