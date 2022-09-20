@@ -31,13 +31,13 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
     <artifactId>addCMHandle-provider</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.0</version>
     <packaging>bundle</packaging>
 
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
     <properties>
-        <ccsdk.sli.version>1.5.0-SNAPSHOT</ccsdk.sli.version>
+        <ccsdk.sli.version>1.5.0</ccsdk.sli.version>
     </properties>
 
     <dependencies>
