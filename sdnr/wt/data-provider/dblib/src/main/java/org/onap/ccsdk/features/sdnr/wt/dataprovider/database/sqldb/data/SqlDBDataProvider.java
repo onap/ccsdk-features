@@ -512,7 +512,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
             query = String.format("INSERT INTO `%s` (`id`,`desc`) VALUES ('%s','%s')", this.controllerTableName,
                     this.controllerId, "");
             LOG.trace(query);
-            try { data.close(); } catch (SQLException ignore) { }
+            try { if(data!=null){data.close();} } catch (SQLException ignore) { }
             return this.dbClient.write(query);
         } else {
             LOG.trace("controllerId already set");
