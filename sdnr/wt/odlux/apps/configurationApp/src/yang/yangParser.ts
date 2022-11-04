@@ -467,8 +467,23 @@ export class YangParser {
       }
     });
 
+    /**
+     * This is to fix the issue for sequential execution of modules based on their child and parent relationship
+     * We are sorting the module object based on their augment status
+     */
+      Object.keys(this.modules)
+      .map(elem => {
+          if(this.modules[elem].augments && Object.keys(this.modules[elem].augments).length > 0) {
+              const {augments, ...rest} = this.modules[elem];
+              const partsOfKeys = Object.keys(augments).map((key) => (key.split("/").length - 1))
+              this.modules[elem].executionOrder= Math.max(...partsOfKeys)
+          } else {
+            this.modules[elem].executionOrder=0;
+          }
+      })
+
     // process all augmentations / sort by namespace changes to ensure proper order 
-    Object.keys(this.modules).forEach(modKey => {
+    Object.keys(this.modules).sort((a, b) => this.modules[a].executionOrder! - this.modules[b].executionOrder!).forEach(modKey => {
       const module = this.modules[modKey];
       const augmentKeysWithCounter = Object.keys(module.augments).map((key) => {
         const pathParts = splitVPath(key, /(?:(?:([^\/\:]+):)?([^\/]+))/g);  // 1 = opt: namespace / 2 = property 

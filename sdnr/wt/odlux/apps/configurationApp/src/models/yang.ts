@@ -67,4 +67,5 @@ export type Module = {
   groupings: { [group: string]: ViewSpecification };
   views: { [view: string]: ViewSpecification };
   elements: { [view: string]: ViewElement };
+  executionOrder?: number;
 }
