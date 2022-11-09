@@ -374,8 +374,8 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
         }
         extractList = true;
       } else {
-        // normal case 
-        dataPath += `/${property}${key ? `=${key.replace(/\//ig, "%2F")}` : ""}`;
+        // replaces unicode %2C if present
+        dataPath += `/${property}${key ? `=${key.replace(/\%2C/g, ",").replace(/\//ig, "%2F")}` : ""}`;
 
         // in case of the root element the required namespace will be added later,
         // while extracting the data
@@ -518,8 +518,10 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
           dispatch(new SetCollectingSelectionData(false));
           throw new Error("No key for list [" + property + "]");
         } else if (vPath.endsWith("[]") && pathParts.length - 1 === ind) {
-          // handle new element
-          key = viewElement.key && String(data[viewElement.key]) || "";
+          // handle new element with any number of arguments
+          let keyList = viewElement.key?.split(" ");
+          let dataPathParam = keyList?.map(id => data[id]).join(",");
+          key = viewElement.key && String(dataPathParam) || "";
           isNew = key;
           if (!key) {
             dispatch(new SetCollectingSelectionData(false));
