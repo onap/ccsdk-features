@@ -23,7 +23,7 @@ import { BaseProps } from "./baseProps";
 import { IfWhenTextInput } from "./ifWhenTextInput";
 import { checkRange } from "./verifyer";
 
-type numberInputProps = BaseProps<number>;
+type numberInputProps = BaseProps<any>;
 
 export const UiElementNumber = (props: numberInputProps) => {
 
@@ -49,7 +49,7 @@ export const UiElementNumber = (props: numberInputProps) => {
       setError(true);
       setHelperText("Input is not a number.");
     }
-    props.onChange(num);
+    props.onChange(data);
   }
 
   return (
