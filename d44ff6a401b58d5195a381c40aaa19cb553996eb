@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a738d5b2_989c1287",
+        "filename": "sdnr/wt/odlux/apps/configurationApp/src/actions/deviceActions.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 377,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2022-11-16T14:06:04Z",
+      "side": 1,
+      "message": "Read the old comment here. It is related to the comment in line 380 and missing. The code replacement is self explaning and don\u0027t need a comment.",
+      "range": {
+        "startLine": 377,
+        "startChar": 8,
+        "endLine": 377,
+        "endChar": 42
+      },
+      "revId": "d44ff6a401b58d5195a381c40aaa19cb553996eb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
