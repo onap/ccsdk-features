@@ -22,6 +22,30 @@
       "revId": "d44ff6a401b58d5195a381c40aaa19cb553996eb",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf95f30c_6beb62b0",
+        "filename": "sdnr/wt/odlux/apps/configurationApp/src/actions/deviceActions.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 377,
+      "author": {
+        "id": 8187
+      },
+      "writtenOn": "2022-11-18T05:46:10Z",
+      "side": 1,
+      "message": "I have resolved your remark. Please check again. Thank you",
+      "parentUuid": "a738d5b2_989c1287",
+      "range": {
+        "startLine": 377,
+        "startChar": 8,
+        "endLine": 377,
+        "endChar": 42
+      },
+      "revId": "d44ff6a401b58d5195a381c40aaa19cb553996eb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
