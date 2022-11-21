@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "953bcce1_d15df3c1",
+        "filename": "sdnr/wt/odlux/apps/configurationApp/src/actions/deviceActions.ts",
+        "patchSetId": 3
+      },
+      "lineNbr": 380,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2022-11-21T07:25:30Z",
+      "side": 1,
+      "message": "Excuse me that I comment again, but the remark explains the \"else\" condition. So it need to be in the line 377 before the \"datapath\" modification.",
+      "range": {
+        "startLine": 377,
+        "startChar": 0,
+        "endLine": 380,
+        "endChar": 0
+      },
+      "revId": "cf84a9e2052caae207fe112a9894eb8a687d0aaa",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
