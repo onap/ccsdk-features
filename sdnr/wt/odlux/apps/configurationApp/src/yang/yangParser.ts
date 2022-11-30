@@ -1064,7 +1064,7 @@ export class YangParser {
     };
 
     const extractPattern = (): Expression<RegExp> | undefined => {
-      const pattern = this.extractNodes(this.extractNodes(cur, "type")[0]!, "pattern").map(p => p.arg!).filter(p => !!p).map(p => `^${p}$`);
+      const pattern = this.extractNodes(this.extractNodes(cur, "type")[0]!, "pattern").map(p => p.arg!).filter(p => !!p).map(p => `^${p.replace(/(?:\\(.))/g, '$1')}$`);
       return pattern && pattern.length == 1
         ? new RegExp(pattern[0])
         : pattern && pattern.length > 1
