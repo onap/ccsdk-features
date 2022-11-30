@@ -628,8 +628,15 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
               e.stopPropagation();
               e.preventDefault();
               confirm({ title: "Do you really want to delete this element ?", description: "This action is permanent!", confirmationButtonProps: { color: "secondary" }, cancellationButtonProps: { color:"inherit" } })
-                .then(() => removeElement(`${this.props.vPath}[${props.rowData[listKeyProperty]}]`))
-                .then(props.onReload);
+              .then(() => {
+                 let keyId = "";
+                 if (listKeyProperty && listKeyProperty.split(" ").length > 1) {
+                 keyId += listKeyProperty.split(" ").map(id => props.rowData[id]).join(",");
+                  } else {
+                   keyId = props.rowData[listKeyProperty];
+                    }
+                   return removeElement(`${this.props.vPath}[${keyId}]`)
+                }).then(props.onReload);
             }}
             size="large">
             <RemoveIcon />
@@ -667,7 +674,13 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         }])
       } onHandleClick={(ev, row) => {
         ev.preventDefault();
-        listKeyProperty && navigate(`[${encodeURIComponent(row[listKeyProperty])}]`); // Do not navigate without key.
+        let keyId = ""
+        if (listKeyProperty && listKeyProperty.split(" ").length > 1) {
+          keyId += listKeyProperty.split(" ").map(id => row[id]).join(",");
+        } else {
+          keyId = row[listKeyProperty];
+        }
+        listKeyProperty && navigate(`[${encodeURIComponent(keyId)}]`); // Do not navigate without key.
       }} ></SelectElementTable>
     );
   }
@@ -776,7 +789,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
                         onClick={(ev: React.MouseEvent<HTMLElement>) => {
                           ev.preventDefault();
                           this.props.history.push(keyPath);
-                        }}>{`[${key}]`}</Link> || null
+                        }}>{`[${key && key.replace(/\%2C/g, ",")}]`}</Link> || null
                     }
                   </span>
                 );
