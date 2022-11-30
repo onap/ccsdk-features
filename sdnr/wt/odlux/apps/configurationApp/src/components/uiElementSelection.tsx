@@ -28,8 +28,8 @@ export const UiElementSelection = (props: selectionProps) => {
     const element = props.value as ViewElementSelection;
 
     let error = "";
-    const value = String(props.inputValue).toLowerCase();
-    if (element.mandatory && !!value) {
+    const value = String(props.inputValue);
+    if (element.mandatory && Boolean(!value)) {
         error = "Error";
     }
 
@@ -42,7 +42,7 @@ export const UiElementSelection = (props: selectionProps) => {
                 onChange={(e) => { props.onChange(e.target.value as string) }}
                 readOnly={props.readOnly}
                 disabled={props.disabled}
-                value={value.toString().toLowerCase()}
+                value={value.toString()}
                 aria-label={element.label+'-selection'}
                 inputProps={{
                     name: element.id,
