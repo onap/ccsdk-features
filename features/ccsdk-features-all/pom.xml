@@ -33,7 +33,7 @@
 
     <groupId>org.onap.ccsdk.features</groupId>
     <artifactId>ccsdk-features-all</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.1</version>
     <packaging>feature</packaging>
 
     <name>ccsdk-features :: features :: ${project.artifactId}</name>
