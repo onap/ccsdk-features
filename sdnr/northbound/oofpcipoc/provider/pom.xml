@@ -31,7 +31,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
     <artifactId>oofpcipoc-provider</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.2</version>
     <packaging>bundle</packaging>
 
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
