@@ -32,7 +32,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>ietf-alarms</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
