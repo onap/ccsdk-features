@@ -32,7 +32,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>onap-system</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.0</version>
     <packaging>bundle</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
             <artifactId>rfc7317-ietf-system</artifactId>
-            <version>1.5.0-SNAPSHOT</version>
+            <version>1.5.0</version>
         </dependency>
     </dependencies>
 </project>
