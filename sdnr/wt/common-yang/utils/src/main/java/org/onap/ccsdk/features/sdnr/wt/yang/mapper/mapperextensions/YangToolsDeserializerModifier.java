@@ -35,16 +35,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.BaseIdentityDeserializer;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.ClassDeserializer;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.IdentifierDeserializer;
-import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.SetDeserializer;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.TypeObjectDeserializer;
+import org.opendaylight.yangtools.concepts.Identifier;
 import org.opendaylight.yangtools.yang.binding.BaseIdentity;
-import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.ScalarTypeObject;
 import org.opendaylight.yangtools.yang.binding.TypeObject;
 import org.slf4j.Logger;
@@ -67,7 +65,7 @@ public class YangToolsDeserializerModifier extends BeanDeserializerModifier {
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | NoSuchElementException | SecurityException e) {
             Method method = clazz.getDeclaredMethod(getEnumMethodName2, String.class);
-            Optional<Enum<?>> result = (Optional<Enum<?>>) method.invoke(null, value);
+            Optional<Enum<?>> result = Optional.ofNullable((Enum<?>) method.invoke(null, value));
             LOG.debug("Deserialize '{}' with class '{}' to '{}'", value, clazz.getName(), result);
             return result.orElseThrow();
         }
@@ -109,6 +107,8 @@ public class YangToolsDeserializerModifier extends BeanDeserializerModifier {
             deser = new TypeObjectDeserializer<ScalarTypeObject<?>>(type, deser);
         } else if (YangToolsMapperHelper.implementsInterface(rawClass, BaseIdentity.class)) {
             deser = new BaseIdentityDeserializer<BaseIdentity>(deser);
+        } else if (YangToolsMapperHelper.implementsInterface(rawClass, Identifier.class)) {
+            deser = new BaseIdentityDeserializer<Identifier>(deser);
         } else if (rawClass.equals(Class.class)) {
             deser = new ClassDeserializer(rawClass);
         } 

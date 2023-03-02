@@ -30,8 +30,4 @@ public class SqlDBReaderWriterUserdata extends SqlDBReaderWriter<Userdata> {
     public SqlDBReaderWriterUserdata(SqlDBClient dbService, Entity e, String dbSuffix) {
         super(dbService, e, dbSuffix, Userdata.class, null, true);
     }
-
-
-
-
 }

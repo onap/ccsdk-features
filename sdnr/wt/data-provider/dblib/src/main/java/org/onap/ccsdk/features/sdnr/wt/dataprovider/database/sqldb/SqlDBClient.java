@@ -63,7 +63,6 @@ public class SqlDBClient {
     private static final String SELECT_VERSION_QUERY = "SELECT @@version as version";
 
     private static final String DBNAME_DEFAULT = "sdnrdb";
-    private static final int DEFAULT_POOLSIZE = 50;
     private final String dbConnectionString;
     private final String dbName;
     private final String dbHost;
@@ -306,7 +305,8 @@ public class SqlDBClient {
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(this.dbConnectionString);
+        return this.connectionPool.getConnection();
+        //return DriverManager.getConnection(this.dbConnectionString);
     }
 
     public boolean delete(String query) throws SQLException {

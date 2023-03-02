@@ -51,14 +51,14 @@ public class OpenroadmNetworkElementFactory implements NetworkElementFactory {
 
         if (accessor.getCapabilites().isSupportingNamespaceAndRevision(OrgOpenroadmDevice.QNAME)) {
             log.info("Create OpenRoadm device {} ", OpenroadmNetworkElement.class.getName());
-            log.info("Node Id read by Acessor {}:", accessor.getNodeId().getValue());
+            log.debug("Node Id read by Acessor {}:", accessor.getNodeId().getValue());
             Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
             if (bindingAccessor.isPresent()) {
                 return Optional.of(new OpenroadmNetworkElement(bindingAccessor.get(), serviceProvider));
             }
         } else if (accessor.getCapabilites().isSupportingNamespaceAndRevision("http://org/openroadm/device","2018-10-19")) {
             log.info("Create OpenRoadm base device {} ", OpenroadmNetworkElementBase.class.getName());
-            log.info("Node Id read by Acessor {}:", accessor.getNodeId().getValue());
+            log.debug("Node Id read by Acessor {}:", accessor.getNodeId().getValue());
             Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
             if (bindingAccessor.isPresent()) {
                 return Optional.of(new OpenroadmNetworkElementBase(bindingAccessor.get(), serviceProvider));

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -41,9 +42,16 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStamp
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@HttpWhiteboardServletPattern("/about")
+@HttpWhiteboardServletName("AboutHttpServlet")
+@Component(service = Servlet.class)
 public class AboutHttpServlet extends HttpServlet {
 
     /**
@@ -98,7 +106,6 @@ public class AboutHttpServlet extends HttpServlet {
         this.BUNDLESTATE_LUT.put(Bundle.STARTING, "starting");
         this.BUNDLESTATE_LUT.put(Bundle.STOPPING, "stopping");
         this.BUNDLESTATE_LUT.put(Bundle.ACTIVE, "active");
-
     }
 
     protected String getGroupIdOrDefault(String def) {

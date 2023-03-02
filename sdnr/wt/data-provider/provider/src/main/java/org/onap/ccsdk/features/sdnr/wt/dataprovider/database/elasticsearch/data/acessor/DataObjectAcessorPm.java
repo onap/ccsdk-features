@@ -72,7 +72,7 @@ public class DataObjectAcessorPm<T extends DataObject> extends DataObjectAcessor
     public DataObjectAcessorPm(HtDatabaseClient dbClient, Intervall mode, Entity entity, Class<T> clazz,
             boolean doFullsizeRequest) throws ClassNotFoundException {
         super(dbClient, entity, clazz, doFullsizeRequest);
-        LOG.info("DataObjectAcessorPm");
+        LOG.info("Create DataObjectAcessorPm");
         this.dbClient = dbClient;
         this.mode = mode;
     }
@@ -113,7 +113,7 @@ public class DataObjectAcessorPm<T extends DataObject> extends DataObjectAcessor
 
         QueryByFilter queryByFilter = new QueryByFilter(input);
         SearchRequest request =
-                queryByFilter.getSearchRequestBySortOrder(NODE_KEY, UUID_KEY, mode.getIndex(), mode.getType(), this.doFullsizeRequest);
+                queryByFilter.getSearchRequestAggregated(NODE_KEY, mode.getIndex(), mode.getType(), this.doFullsizeRequest);
         try {
             SearchResponse response = this.dbClient.search(request);
             AggregationEntries aggs = response.getAggregations(KEY);

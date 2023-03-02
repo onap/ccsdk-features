@@ -1,29 +1,11 @@
 package org.onap.ccsdk.features.sdnr.wt.oauthprovider.filters;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.requireNonNull;
-
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import javax.servlet.Filter;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authz.AuthorizationFilter;
-import org.opendaylight.aaa.shiro.web.env.ThreadLocals;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
-import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.binding.api.*;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.HttpAuthorization;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.authorization.policies.Policies;
@@ -33,7 +15,18 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+import javax.servlet.Filter;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
+
 public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilter
         implements ClusteredDataTreeChangeListener<HttpAuthorization> {
 
@@ -46,9 +39,10 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
 
     private ListenerRegistration<?> reg;
     private volatile ListenableFuture<Optional<HttpAuthorization>> authContainer;
+    private static final ThreadLocal<DataBroker> DATABROKER_TL = new ThreadLocal<>();
 
     public CustomizedMDSALDynamicAuthorizationFilter() {
-        dataBroker = requireNonNull(ThreadLocals.DATABROKER_TL.get());
+        dataBroker = requireNonNull(DATABROKER_TL.get());
     }
 
     @Override

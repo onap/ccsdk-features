@@ -221,7 +221,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
         } else if (qName.equals(MwTdmContainerPac.QNAME)) {
             res = MwTdmContainerPac.class;
         }
-        LOG.info("Found QName {} mapped to {}", String.valueOf(qName), String.valueOf(res));
+        LOG.debug("Found QName {} mapped to {}", String.valueOf(qName), String.valueOf(res));
         return res;
     }
 
@@ -287,7 +287,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
 
         final Class<MwAirInterfacePac> clazzPac = MwAirInterfacePac.class;
 
-        LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
+        LOG.debug("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
         // Step 2.2: construct data and the relative iid
@@ -321,7 +321,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
 
         final Class<MwEthernetContainerPac> clazzPac = MwEthernetContainerPac.class;
 
-        LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
+        LOG.debug("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
         InstanceIdentifier<EthernetContainerCurrentProblems> mwEthInterfaceIID = InstanceIdentifier
@@ -353,7 +353,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
         final Class<MwAirInterfaceDiversityPac> clazzPac = MwAirInterfaceDiversityPac.class;
         final Class<AirInterfaceDiversityCurrentProblems> clazzProblems = AirInterfaceDiversityCurrentProblems.class;
 
-        LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
+        LOG.debug("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
         InstanceIdentifier<AirInterfaceDiversityCurrentProblems> mwEthInterfaceIID = InstanceIdentifier
@@ -384,7 +384,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
         final Class<MwPureEthernetStructurePac> clazzPac = MwPureEthernetStructurePac.class;
         final Class<PureEthernetStructureCurrentProblems> clazzProblems = PureEthernetStructureCurrentProblems.class;
 
-        LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
+        LOG.debug("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
         InstanceIdentifier<PureEthernetStructureCurrentProblems> mwEthInterfaceIID = InstanceIdentifier
@@ -415,7 +415,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
         final Class<MwHybridMwStructurePac> clazzPac = MwHybridMwStructurePac.class;
         final Class<HybridMwStructureCurrentProblems> clazzProblems = HybridMwStructureCurrentProblems.class;
 
-        LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
+        LOG.debug("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
         InstanceIdentifier<HybridMwStructureCurrentProblems> mwEthInterfaceIID = InstanceIdentifier
@@ -454,7 +454,7 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
         final Class<MwTdmContainerPacKey> clazzPacKey = MwTdmContainerPacKey.class;
         final Class<TdmContainerCurrentProblems> clazzProblems = TdmContainerCurrentProblems.class;
 
-        LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
+        LOG.debug("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 mountpointId, interfacePacUuid.getValue());
 
         try {
@@ -568,8 +568,8 @@ public class WrapperMicrowaveModelRev180907 implements OnfMicrowaveModel, Microw
             SeverityType severity) {
 
         Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType> res =
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType
-                        .forName(severity.name());
+                Optional.ofNullable(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType
+                        .forName(severity.name()));
         return res.orElse(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType.NonAlarmed);
     }

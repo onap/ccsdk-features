@@ -23,11 +23,9 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONObject;
 import org.junit.Test;

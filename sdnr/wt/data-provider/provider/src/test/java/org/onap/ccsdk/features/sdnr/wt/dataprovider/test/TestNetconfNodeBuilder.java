@@ -21,16 +21,17 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
+import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.Credentials;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPassword;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPasswordBuilder;
 
+@SuppressWarnings("deprecation")
 public class TestNetconfNodeBuilder {
 
-    @SuppressWarnings("deprecation")
-    //@Test
+    @Test
     public void test() {
 
         NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();

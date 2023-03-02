@@ -38,7 +38,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.BoolQueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.RangeQueryBuilder;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.EsDataObjectReaderWriter2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.ArchiveCleanProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataInconsistencyException;
@@ -97,16 +96,11 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     private final EsDataObjectReaderWriter2<GuicutthroughEntity> guiCutThroughDB;
     private final EsDataObjectReaderWriter2<PmdataEntity> pmData15mDB;
     private final EsDataObjectReaderWriter2<PmdataEntity> pmData24hDB;
-
-    @SuppressWarnings("unused")
-    private final DatabaseDataProvider dataProvider;
     // --- Construct and initialize
 
-    public HtDatabaseEventsService(HtDatabaseClient client, DatabaseDataProvider elasticSearchDataProvider)
-            throws Exception {
+    public HtDatabaseEventsService(HtDatabaseClient client) throws Exception {
 
         LOG.info("Create {} start", HtDatabaseEventsService.class);
-        this.dataProvider = elasticSearchDataProvider;
 
         try {
             // Create control structure
@@ -124,8 +118,8 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
             eventRWFaultLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Faultlog, FaultlogEntity.class,
                     FaultlogBuilder.class);
 
-            eventRWFCMLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Cmlog, CmlogEntity.class,
-                CmlogBuilder.class);
+            eventRWFCMLogDB =
+                    new EsDataObjectReaderWriter2<>(client, Entity.Cmlog, CmlogEntity.class, CmlogBuilder.class);
 
             eventRWConnectionLogDB = new EsDataObjectReaderWriter2<>(client, Entity.Connectionlog,
                     ConnectionlogEntity.class, ConnectionlogBuilder.class);
@@ -460,7 +454,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
     @Override
     public boolean updateNetworkConnection22(NetworkElementConnectionEntity networkElementConnectionEntitiy,
             String nodeId) {
-        LOG.info("update networkelement-connection for {} with data {}", nodeId, networkElementConnectionEntitiy);
+        LOG.debug("update networkelement-connection for {} with data {}", nodeId, networkElementConnectionEntitiy);
         return this.networkelementConnectionDB.updateOrCreate(networkElementConnectionEntitiy, nodeId,
                 Arrays.asList("is-required", "username", "password")) != null;
         // NetworkElementConnectionEntity e =
@@ -530,7 +524,7 @@ public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvid
         QueryBuilder queryFaultLog = EsFaultLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
         numberOfElements += eventRWFaultLogDB.doReadAll(queryFaultLog).getTotal();
 
-       QueryBuilder queryCMLog = EsCMLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
+        QueryBuilder queryCMLog = EsCMLogDevicemanager.getQueryForTimeStamp(netconfTimeStamp);
         numberOfElements += eventRWFCMLogDB.doReadAll(queryCMLog).getTotal();
 
         return numberOfElements;

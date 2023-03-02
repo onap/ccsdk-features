@@ -21,20 +21,29 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
-import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.PaginationBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class TestInventoryConsistency {
 
@@ -51,10 +60,11 @@ public class TestInventoryConsistency {
     @Test
     public void test1() {
         YangToolsMapper mapper = new YangToolsMapper();
+        SearchHit[] hits = null;
         try {
-            SearchHit[] hits = TestTree.loadEntries("test1.json");
+            hits = TestTree.loadEntries("test1.json");
             List<Inventory> inventoryList = new ArrayList<>();
-            for(SearchHit hit:hits) {
+            for (SearchHit hit : hits) {
                 inventoryList.add(mapper.readValue(hit.getSourceAsString(), Inventory.class));
             }
             dbProvider.getDataProvider().writeInventory(TEST1NODEID, inventoryList);
@@ -63,5 +73,14 @@ public class TestInventoryConsistency {
             e.printStackTrace();
             fail(e.getMessage());
         }
+        SearchHit sim2Hit = hits[hits.length-1];
+        dbProvider.getRawClient().doWriteRaw(Entity.Inventoryequipment.getName(),sim2Hit.getId(),sim2Hit.getSourceAsString(),true);
+        ReadInventoryDeviceListOutputBuilder deviceListWithInventory =
+                dbProvider.readInventoryDeviceList(new ReadInventoryDeviceListInputBuilder().setPagination(
+                        new PaginationBuilder().setSize(Uint32.valueOf(20)).setPage(Uint64.valueOf(1))
+                                .build()).build());
+        assertNotNull(deviceListWithInventory);
+        assertEquals(2, deviceListWithInventory.getPagination().getTotal().intValue());
+        assertEquals(Set.of("sim1", "sim2"), deviceListWithInventory.getData());
     }
 }

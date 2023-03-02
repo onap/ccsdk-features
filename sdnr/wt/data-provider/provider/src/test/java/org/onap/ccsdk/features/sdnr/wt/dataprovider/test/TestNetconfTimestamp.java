@@ -21,14 +21,13 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
@@ -64,7 +63,7 @@ public class TestNetconfTimestamp {
 
     @Test(expected = IllegalArgumentException.class)
     public void testMillisMalformed() {
-        long millis = converter.getTimeStampFromNetconfAsMilliseconds(NETCONF_DEF_MILLIS_STRING_MALFORMAED);
+        converter.getTimeStampFromNetconfAsMilliseconds(NETCONF_DEF_MILLIS_STRING_MALFORMAED);
 
     }
 

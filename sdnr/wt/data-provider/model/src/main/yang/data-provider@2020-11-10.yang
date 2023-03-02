@@ -2015,6 +2015,26 @@ module data-provider {
     }
   }
 
+ rpc read-inventory-device-list {
+    description
+      "Get list of mountpoints with inventory data";
+    input {
+      uses entity-input;
+    }
+    output {
+      container pagination {
+        uses pagination-output-g;
+        description
+          "The pagination details used by the provider to filter the data.";
+      }
+      leaf-list data {
+        type string;
+        description
+          "The list of found mountpoint names.";
+      }
+    }
+  }
+
   rpc read-status {
     description
       "Read status information of controller";

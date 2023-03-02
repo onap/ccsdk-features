@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,9 +34,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@HttpWhiteboardServletPattern({"/userdata","/userdata/*"})
+@HttpWhiteboardServletName("UserdataHttpServlet")
+@Component(service = Servlet.class)
 public class UserdataHttpServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -50,10 +57,10 @@ public class UserdataHttpServlet extends HttpServlet {
         final String uri = req.getRequestURI();
         final Matcher matcher = PATTERN.matcher(uri);
         if (matcher.find()) {
-            LOG.info("GET found match");
+            LOG.debug("GET found match");
             this.handleGetRequest(req, resp, matcher.groupCount() > 0 ? matcher.group(1) : null);
         } else {
-            LOG.info("no valid request");
+            LOG.debug("no valid request");
             super.doGet(req, resp);
         }
     }
@@ -63,11 +70,11 @@ public class UserdataHttpServlet extends HttpServlet {
         final String uri = req.getRequestURI();
         final Matcher matcher = PATTERN.matcher(uri);
         if (matcher.find()) {
-            LOG.info("PUT found match");
+            LOG.debug("PUT found match");
             final String payload = getPayload(req);
             this.handlePutRequest(req, resp, payload, matcher.groupCount() > 0 ? matcher.group(1) : null);
         } else {
-            LOG.info("no valid request");
+            LOG.debug("no valid request");
             super.doPut(req, resp);
         }
     }
@@ -81,10 +88,10 @@ public class UserdataHttpServlet extends HttpServlet {
         final String uri = req.getRequestURI();
         final Matcher matcher = PATTERN.matcher(uri);
         if (matcher.find()) {
-            LOG.info("DELETE found match");
+            LOG.debug("DELETE found match");
             this.handleDeleteRequest(req, resp, matcher.groupCount() > 0 ? matcher.group(1) : null);
         } else {
-            LOG.info("no valid request");
+            LOG.debug("no valid request");
             super.doPut(req, resp);
         }
     }

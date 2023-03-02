@@ -21,8 +21,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.entity.DatabaseIdGenerator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Fault;
@@ -38,7 +36,7 @@ public class FaultEntityManager {
 
     /**
      * Specific problems are not moving into current problem list
-     * 
+     *
      * @param problemName to be verified
      * @return true if problem is current
      */
@@ -52,7 +50,7 @@ public class FaultEntityManager {
 
     /**
      * Specific problems are not moving into current problem list
-     * 
+     *
      * @param fault to be verified
      * @return true if cleared indication
      */
@@ -62,7 +60,7 @@ public class FaultEntityManager {
 
     /**
      * Create a specific ES id for the current log.
-     * 
+     *
      * @return a string with the generated ES Id
      */
     public static String genSpecificEsId(String nodeName, String objectId, String problemName) {
@@ -80,7 +78,7 @@ public class FaultEntityManager {
 
     /**
      * Create Es id
-     * 
+     *
      * @param fault used to create uuid for faultcurrent
      * @return String with Id
      */

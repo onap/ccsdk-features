@@ -51,7 +51,7 @@ public class OpenroadmNetworkElementFactory implements NetworkElementFactory {
 
         if (accessor.getCapabilites().isSupportingNamespaceAndRevision(OrgOpenroadmDevice.QNAME)) {
             log.info("Create OpenRoadm device {} ", OpenroadmNetworkElement.class.getName());
-            log.info("Node Id read by Acessor {}:", accessor.getNodeId().getValue());
+            log.debug("Node Id read by Acessor {}:", accessor.getNodeId().getValue());
             Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
             if (bindingAccessor.isPresent()) {
                 return Optional.of(new OpenroadmNetworkElement(bindingAccessor.get(), serviceProvider));

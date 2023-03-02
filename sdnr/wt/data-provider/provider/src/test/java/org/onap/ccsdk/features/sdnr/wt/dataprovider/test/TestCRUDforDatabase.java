@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -46,10 +44,11 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.common.test.JSONAssert;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.HtUserdataManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;
@@ -187,12 +186,12 @@ public class TestCRUDforDatabase {
                 "org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateFaultcurrentInput",
                 SeverityType.Warning, "nodeA");
 
-        createNeConnection("nodeA","10.20.30.40",30000, ConnectionLogStatus.Connected);
-        createNeConnection("nodeB","10.20.30.40",31000, ConnectionLogStatus.Connected);
-        createNeConnection("nodeC","10.20.30.40",32000, ConnectionLogStatus.Connected);
-        createNeConnection("nodeAD","10.20.30.40",33000, ConnectionLogStatus.Connected);
-        createNeConnection("nodeE","10.20.30.40",34000, ConnectionLogStatus.Connected);
-        createNeConnection("nodeF","10.20.30.40",35000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeA", "10.20.30.40", 30000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeB", "10.20.30.40", 31000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeC", "10.20.30.40", 32000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeAD", "10.20.30.40", 33000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeE", "10.20.30.40", 34000, ConnectionLogStatus.Connected);
+        createNeConnection("nodeF", "10.20.30.40", 35000, ConnectionLogStatus.Connected);
         //== READ ================================
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.status.output.Data> readOutput =
@@ -1052,7 +1051,7 @@ public class TestCRUDforDatabase {
         assertTrue(holder.contains(holderArray[0]));
         assertTrue(holder.contains(holderArray[1]));
         assertTrue(holder.contains(holderArray[2]));
-       
+
         // ==DELETE============================
 
         System.out.println("delete after test");
@@ -1538,7 +1537,7 @@ public class TestCRUDforDatabase {
         boolean success = client.setUserdata(USERNAME, DATA1);
         assertTrue(success);
         String data = client.getUserdata(USERNAME);
-        //JSONAssert.assertEquals(DATA1,data,false);
+        JSONAssert.assertEquals(DATA1,data,false);
 
         assertEquals("admin", UserdataHttpServlet.decodeJWTPayloadUsername(String.format("Bearer %s",
                 "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBzZG4iLCJyb2xlcyI6WyJ1c2VyIiwiYWRtaW4iXSwiaXN"
@@ -1571,19 +1570,12 @@ public class TestCRUDforDatabase {
         return createFaultEntity(initialDbId, entityType, implementedInterface, severity, nodeId);
     }
 
-    private void createNeConnection(String nodeId, String host, int port, ConnectionLogStatus connectionStatus) {
-       try {
-            dbProvider.createNetworkElementConnection(new NetworkElementConnectionBuilder().setId(nodeId)
-                    .setNodeId(nodeId).setStatus(connectionStatus).setHost(host).setPort(Uint32.valueOf(port)).build());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    private void createNeConnection(String nodeId, String host, int port, ConnectionLogStatus connectionStatus)
+            throws IOException {
+        dbProvider.createNetworkElementConnection(new NetworkElementConnectionBuilder().setId(nodeId).setNodeId(nodeId)
+                .setStatus(connectionStatus).setHost(host).setPort(Uint32.valueOf(port)).build());
     }
-    private String createFaultEntity(String initialDbId, String entityType, String implementedInterface,
-            SeverityType severity) {
-        return createFaultEntity(initialDbId, entityType, implementedInterface, severity, "s1");
-    }
+
     private String createFaultEntity(String initialDbId, String entityType, String implementedInterface,
             SeverityType severity, String nodeId) {
         // ==CREATE============================
@@ -1594,7 +1586,7 @@ public class TestCRUDforDatabase {
 
             dbId = dbRawProvider.doUpdateOrCreate(entityType, initialDbId,
                     "{\n" + "\"timestamp\": \"2019-10-28T11:55:58.3Z\",\n" + "\"object-id\": \"LP-MWPS-RADIO\",\n"
-                            + "\"severity\": \"" + severity.toString() + "\",\n" + "\"node-id\": \""+nodeId+"\",\n"
+                            + "\"severity\": \"" + severity.toString() + "\",\n" + "\"node-id\": \"" + nodeId + "\",\n"
                             + "\"implemented-interface\": \"" + implementedInterface + "\",\n" + "\"counter\": 4340,\n"
                             + "\"problem\": \"signalIsLost\",\n" + "\"type\": \"ProblemNotificationXml\"\n" + "}");
 

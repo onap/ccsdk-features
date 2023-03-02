@@ -31,7 +31,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
-import org.opendaylight.yangtools.concepts.Builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +58,7 @@ public class TypeObjectDeserializer<T> extends JsonDeserializer<T> {
             //try get method for default instance
             if ((oRes = YangToolsMapperHelper.getDefaultInstance(clazz, arg)).isEmpty()) {
                 //try to find builder with getDefaultInstance method
-                Optional<Class<Builder<?>>> oBuilderClazz = YangToolsMapperHelper.findBuilderClassOptional(ctxt, clazz);
+                Optional<Class<?>> oBuilderClazz = YangToolsMapperHelper.findBuilderClassOptional(ctxt, clazz);
                 LOG.debug("Try builder class present:{}",oBuilderClazz.isPresent());
                 if (oBuilderClazz.isEmpty()
                         || ((oRes = YangToolsMapperHelper.getDefaultInstance(oBuilderClazz.get(), arg)).isEmpty())) {

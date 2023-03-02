@@ -57,4 +57,5 @@ public class DataObjectAcessor<T extends DataObject> extends EsDataObjectReaderW
         SearchResult<T> result = doReadAll(queryBuilder, ignoreException);
         return new QueryResult<>(queryByFilter, result);
     }
+
 }
