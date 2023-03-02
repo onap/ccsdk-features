@@ -32,14 +32,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataTreeProviderImpl;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.InventoryTreeProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.DataTreeObject;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,22 +51,22 @@ import org.slf4j.LoggerFactory;
  * @author Michael Dürre
  *
  */
+
+@HttpWhiteboardServletPattern("/tree/*")
+@HttpWhiteboardServletName("DataTreeHttpServlet")
+@Component(service = Servlet.class)
 public class DataTreeHttpServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private final DataTreeProviderImpl dataTreeProvider;
+    private InventoryTreeProvider dataTreeProvider;
     private static final Logger LOG = LoggerFactory.getLogger(DataTreeHttpServlet.class);
 
     public DataTreeHttpServlet() {
         super();
-        this.dataTreeProvider = new DataTreeProviderImpl();
     }
 
-    /**
-     * @param client
-     */
-    public void setDatabaseClient(HtDatabaseClient client) {
-        this.dataTreeProvider.setDatabaseClient(client);
+    public void setInventoryTreeProvider(InventoryTreeProvider provider) {
+        this.dataTreeProvider = provider;
 
     }
 
@@ -109,7 +113,7 @@ public class DataTreeHttpServlet extends HttpServlet {
         LOG.debug("GET request for {}", uri);
         final EntityWithTree e = getEntity(uri);
         if (e != null) {
-            LOG.info("GET request for {} to e={} with tree={}", uri, e.entity, e.tree);
+            LOG.debug("GET request for {} to e={} with tree={}", uri, e.entity, e.tree);
             switch (e.entity) {
                 case Inventoryequipment:
                     DataTreeObject o = this.dataTreeProvider.readInventoryTree(e.tree, null);
@@ -170,7 +174,7 @@ public class DataTreeHttpServlet extends HttpServlet {
         final Matcher matcher = pattern.matcher(uri);
         if (matcher.find() && matcher.groupCount() > 0) {
             try {
-                Optional<Entity> oe = Entity.forName(matcher.group(1));
+                Optional<Entity> oe = Optional.ofNullable(Entity.forName(matcher.group(1)));
                 if (oe.isPresent()) {
                     return new EntityWithTree(oe.get(), matcher.groupCount() > 1 ? matcher.group(2) : null);
                 } else {

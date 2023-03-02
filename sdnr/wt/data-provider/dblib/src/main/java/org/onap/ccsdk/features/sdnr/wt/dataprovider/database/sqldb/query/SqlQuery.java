@@ -36,6 +36,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlD
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.DBFilterKeyValuePair;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.RangeSqlDBFilter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.RegexSqlDBFilter;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.SqlDBSearchFilter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
@@ -58,26 +59,32 @@ public interface SqlQuery {
         return getWhereExpression(filters, null);
     }
     public static String getWhereExpression(Collection<Filter> filters, String controllerId) {
+        return getWhereExpression(filters, controllerId,  null);
+    }
+    public static String getWhereExpression(Collection<Filter> filters, String controllerId, SqlDBSearchFilter allPropertyFilter) {
         if (filters == null && controllerId == null) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
         List<String> filters2 =
                 filters != null
-                        ? filters.stream().filter(e -> !"*".equals(e.getFiltervalue())).map(e -> getFilterExpression(e))
+                        ? filters.stream().filter(e -> !isFilterEmpty(e)).map(e -> getFilterExpression(e))
                                 .collect(Collectors.toList())
                         : new ArrayList<>();
-        if(controllerId!=null) {
+        if (controllerId != null) {
             filters2.add(getFilterExpression(SqlDBMapper.ODLID_DBCOL, controllerId));
         }
-        if (!filters2.isEmpty() ) {
+        if(allPropertyFilter!=null){
+            filters2.add(allPropertyFilter.getFilterExpression(true));
+        }
+        if (!filters2.isEmpty()) {
             sb.append(" WHERE ");
             sb.append(StringUtil.join(" AND ", filters2));
         }
         return sb.toString();
     }
 
-    public static String getFilterExpression(Filter filter) {
+    private static String getFilterExpression(Filter filter) {
         String property = filter.getProperty();
         List<String> values = collectValues(filter.getFiltervalue(), filter.getFiltervalues()).stream()
                 .filter(e -> !"*".equals(e)).collect(Collectors.toList());
@@ -95,7 +102,7 @@ public interface SqlQuery {
         return null;
     }
 
-    public static String getFilterExpression(String property, String value) {
+    private static String getFilterExpression(String property, String value) {
         String filter = null;
         if (DbFilter.hasSearchParams(value)) {
             if (TIMESTAMPPROPERTYNAMES.contains(property.toLowerCase())) {
@@ -118,7 +125,7 @@ public interface SqlQuery {
         return new DBFilterKeyValuePair(property, value).getFilterExpression();
     }
 
-    static List<String> collectValues(String filtervalue, Set<String> filtervalues) {
+    private static List<String> collectValues(String filtervalue, Set<String> filtervalues) {
         if (filtervalues == null) {
             return Arrays.asList(filtervalue);
         }
@@ -366,5 +373,19 @@ public interface SqlQuery {
         }
         return upperEnd;
     }
+
+
+    private static boolean isFilterEmpty(Filter filter) {
+        @Nullable Set<String> filtervalues = filter.getFiltervalues();
+        @Nullable String filtervalue = filter.getFiltervalue();
+
+        List<String> allValues = filtervalues == null ? new ArrayList<>() : new ArrayList<>(filtervalues);
+        if (filtervalue != null) {
+            allValues.add(filtervalue);
+        }
+
+        return allValues.isEmpty() || allValues.contains("*");
+    }
+
 
 }

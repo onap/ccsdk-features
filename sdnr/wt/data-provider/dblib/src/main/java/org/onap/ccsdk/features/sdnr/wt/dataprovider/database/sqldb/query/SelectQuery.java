@@ -28,7 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.PropertyList;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.SqlDBSearchFilter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SortOrder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
@@ -49,10 +51,12 @@ public class SelectQuery implements SqlQuery {
     private final String tableName;
     private final List<Filter> filters;
     private final List<String> sortExpressions;
+    private final String controllerId;
     private long page;
     private long pageSize;
     private final List<String> fields;
     private final List<String> groups;
+    private SqlDBSearchFilter allPropertyFilter;
 
     public SelectQuery(String tableName) {
         this(tableName, (String)null);
@@ -68,6 +72,8 @@ public class SelectQuery implements SqlQuery {
         this.groups = new ArrayList<>();
         this.page = DEFAULT_PAGE;
         this.pageSize = DEFAULT_PAGESIZE;
+        this.controllerId = controllerId;
+        this.allPropertyFilter = null;
         if (controllerId != null) {
             this.addFilter(SqlDBMapper.ODLID_DBCOL, controllerId);
         }
@@ -146,7 +152,9 @@ public class SelectQuery implements SqlQuery {
     public void addSortOrder(String col, String order) {
         this.sortExpressions.add(String.format("`%s` %s", col, order));
     }
-
+    public void setAllPropertyFilter(String filter, PropertyList propertyList) {
+        this.allPropertyFilter = new SqlDBSearchFilter(propertyList, filter);
+    }
     public void setPagination(long page, long pageSize) {
         this.page = page;
         this.pageSize = pageSize;
@@ -175,7 +183,7 @@ public class SelectQuery implements SqlQuery {
         } else {
             sb.append(String.format("SELECT `%s` FROM `%s`", String.join("`,`", this.fields), this.tableName));
         }
-        sb.append(SqlQuery.getWhereExpression(this.filters));
+        sb.append(SqlQuery.getWhereExpression(this.filters, this.controllerId, this.allPropertyFilter));
         if (this.groups.size() > 0) {
             sb.append(String.format(" GROUP BY `%s`", String.join("`,`", this.groups)));
         }
@@ -198,5 +206,27 @@ public class SelectQuery implements SqlQuery {
         this.groups.add(group);
         return this;
     }
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SelectQuery [tableName=");
+        builder.append(tableName);
+        builder.append(", filters=");
+        builder.append(filters);
+        builder.append(", sortExpressions=");
+        builder.append(sortExpressions);
+        builder.append(", page=");
+        builder.append(page);
+        builder.append(", pageSize=");
+        builder.append(pageSize);
+        builder.append(", fields=");
+        builder.append(fields);
+        builder.append(", groups=");
+        builder.append(groups);
+        builder.append("]");
+        return builder.toString();
+    }
+
+
 
 }

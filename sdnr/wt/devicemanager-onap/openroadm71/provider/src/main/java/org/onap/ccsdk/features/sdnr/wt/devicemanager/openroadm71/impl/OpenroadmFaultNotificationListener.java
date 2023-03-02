@@ -80,7 +80,7 @@ public class OpenroadmFaultNotificationListener implements OrgOpenroadmAlarmList
 
     @Override
     public void onAlarmNotification(AlarmNotification notification) {
-        log.info("AlarmNotification is {} \t {}", notification.getId(), notification.getAdditionalDetail());
+        log.debug("AlarmNotification is {} \t {}", notification.getId(), notification.getAdditionalDetail());
         String affectedResourceName = getAffectedResourceName(notification.getResource().getResource().getResource());
         String probableCauseName = getProbableCauseName(notification.getProbableCause());
 
@@ -98,7 +98,7 @@ public class OpenroadmFaultNotificationListener implements OrgOpenroadmAlarmList
         this.notificationService.sendNotification(notification,new NodeId(netconfAccessor.getNodeId().getValue()), AlarmNotification.QNAME,
                 notification.getRaiseTime());
         count++;
-        log.info("Notification is written into the database {}", faultAlarm.getObjectId());
+        log.debug("Notification is written into the database {}", faultAlarm.getObjectId());
 
     }
 

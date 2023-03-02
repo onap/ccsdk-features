@@ -28,7 +28,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.database.DatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
@@ -36,7 +35,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper2;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
-import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +58,7 @@ public class EsDataObjectReaderWriter2<T extends DataObject> {
     private String dataTypeName;
 
     /** Elasticsearch Database client to be used **/
-    private DatabaseClient db;
+    protected DatabaseClient db;
 
     /** Mapper with configuration to use opendaylight yang-tools builder pattern for object creation **/
     private YangToolsMapper2<T> yangtoolsMapper;

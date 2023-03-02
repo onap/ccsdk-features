@@ -23,14 +23,13 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import ch.vorburger.exec.ManagedProcessException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +37,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
@@ -80,6 +83,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GuicutthroughBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
@@ -92,6 +96,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListOutputBuilder;
@@ -118,7 +123,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
-import ch.vorburger.exec.ManagedProcessException;
 
 public class TestMariaDataProvider {
 
@@ -390,8 +394,47 @@ public class TestMariaDataProvider {
         dbProvider.writeInventory(NODEID1, list);
         data = dbProvider.readInventoryList(createInput(1, 50));
         assertEquals(22, data.getData().size());
+        ReadInventoryDeviceListOutputBuilder data2 = dbProvider.readInventoryDeviceList(createInput(1, 20));
+        assertEquals(2, data2.getData().size());
+        assertTrue(data2.getData().contains("sim1") && data2.getData().contains("sim2"));
         data = dbProvider.readInventoryList(createInput("tree-level", "0", 1, 50));
         assertEquals(5, data.getData().size());
+
+        try {
+            dbProvider.writeInventory("sim3", loadListFile("/inventory2.json", Inventory.class));
+        } catch (IOException e) {
+            fail("problem loading inventory data2");
+        }
+        data2 = dbProvider.readInventoryDeviceList(createInput(1, 20));
+        assertEquals(3, data2.getData().size());
+        assertTrue(data2.getData().contains("sim1") && data2.getData().contains("sim2") &&
+                data2.getData().contains("sim3"));
+    }
+
+    @Test
+    public void testInventoryWithComplexTypes() {
+        try {
+            dbClient.delete(new DeleteQuery(Entity.Inventoryequipment, null).toSql());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("problem clearing inventoryequipment");
+        }
+        ReadInventoryListOutputBuilder data = dbProvider.readInventoryList(createInput(1, 20));
+        assertEquals(0, data.getData().size());
+        try {
+            Inventory inventory = new InventoryBuilder()
+                    .setContainedHolder(new HashSet<>(
+                            Arrays.asList("STM1-1", "Radio-2A", "LAN-3-SFP", "Radio-1A", "STM1-2", "LAN-4-SFP")))
+                    .setSerial("14209652001003620").setDescription("INDOOR UNIT ALCPlus2e")
+                    .setTreeLevel(Uint32.valueOf(0)).setNodeId("NTS_ONF14").build();
+            dbProvider.writeInventory(NODEID1, new ArrayList<Inventory>(Arrays.asList(inventory)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("problem loading inventory data");
+
+        }
+        data = dbProvider.readInventoryList(createInput(1, 50));
+        assertEquals(1, data.getData().size());
     }
 
     @Test

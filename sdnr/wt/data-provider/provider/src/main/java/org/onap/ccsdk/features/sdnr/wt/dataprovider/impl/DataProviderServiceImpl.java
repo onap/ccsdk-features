@@ -27,9 +27,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -39,15 +36,16 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.nodb.NoDbDatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.InventoryTreeProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -82,6 +80,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListInput;
@@ -141,7 +141,6 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     private final DatabaseDataProvider dataProvider;
     private final ConfigurationFileRepresentation configuration;
     private final DataProviderConfig dbConfig;
-    private final HtUserdataManager dbUserManager;
     private final DataBroker dataBroker;
     private final MsServlet mediatorServerServlet;
 
@@ -161,7 +160,6 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         else {
             this.dataProvider = new NoDbDatabaseDataProvider();
         }
-        this.dbUserManager = this.dataProvider.getUserManager();
         this.dataProvider.waitForYellowDatabaseStatus(DATABASE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         mediatorServerServlet.setDataProvider(this.dataProvider.getHtDatabaseMediatorServer());
         // Register ourselves as the REST API RPC implementation
@@ -292,6 +290,15 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         LOG.debug("RPC Request: readInventoryList with input {}", input);
         RpcResultBuilder<ReadInventoryListOutput> result =
                 read(() -> DataProviderServiceImpl.this.dataProvider.readInventoryList(input));
+        return result.buildFuture();
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<ReadInventoryDeviceListOutput>> readInventoryDeviceList(
+            ReadInventoryDeviceListInput input) {
+        LOG.debug("RPC Request: readInventoryDeviceList with input {}", input);
+        RpcResultBuilder<ReadInventoryDeviceListOutput> result =
+                read(() -> DataProviderServiceImpl.this.dataProvider.readInventoryDeviceList(input));
         return result.buildFuture();
     }
 
@@ -495,6 +502,10 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         return buf.toString();
     }
 
+    public InventoryTreeProvider getInventoryTreeProvider() {
+        return this.dataProvider.getInventoryTreeProvider();
+    }
+
     private interface GetEntityInput<O extends DataObject,B> {
         B get() throws IOException;
     }
@@ -515,7 +526,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
 
     
     public HtUserdataManager getHtDatabaseUserManager() {
-        return this.dbUserManager;
+        return this.dataProvider.getUserManager();
     }
 
 

@@ -37,6 +37,7 @@ import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper2;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev191129.PmDataType;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev191129.PmDataTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.BIPErrorCounter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.DelayTCM2Up;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.OpticalPowerInputOSCMin;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GranularityPeriodType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
@@ -57,12 +58,12 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
         out("Test: " + method());
 
         MeasurementBuilder measurementBuilder1 = new MeasurementBuilder();
-        measurementBuilder1.setPmKey(OpticalPowerInputOSCMin.class);
+        measurementBuilder1.setPmKey(OpticalPowerInputOSCMin.VALUE);
         measurementBuilder1.setPmValue(new PmDataType(Uint64.valueOf(64L)));
         Measurement measurement1 = measurementBuilder1.build();
 
         MeasurementBuilder measurementBuilder2 = new MeasurementBuilder();
-        measurementBuilder2.setPmKey(BIPErrorCounter.class);
+        measurementBuilder2.setPmKey(BIPErrorCounter.VALUE);
         measurementBuilder2.setPmValue(new PmDataType(Uint64.valueOf(65L)));
         Measurement measurement2 = measurementBuilder2.build();
 
@@ -98,7 +99,7 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
         assertNotNull("PerformanceData", performanceData);
         @Nullable Map<MeasurementKey, Measurement> measurement = performanceData.getMeasurement();
         assertNotNull("Measurement", measurement);
-        Measurement measurement1 = measurement.get(new MeasurementKey(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.OpticalPowerInputOSCMin.class));
+        Measurement measurement1 = measurement.get(new MeasurementKey(OpticalPowerInputOSCMin.VALUE));
         assertTrue("Measurement=64", measurement1.getPmValue().stringValue().equals("64"));
     }
 
@@ -144,7 +145,7 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
         assertNotNull("PerformanceData", performanceData);
         @Nullable Map<MeasurementKey, Measurement> measurement = performanceData.getMeasurement();
         assertNotNull("Measurement", measurement);
-        Measurement measurement1 = measurement.get(new MeasurementKey(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.DelayTCM2Up.class));
+        Measurement measurement1 = measurement.get(new MeasurementKey(DelayTCM2Up.VALUE));
         assertTrue("Measurement=11298624220985537708", measurement1.getPmValue().stringValue().equals("11298624220985537708"));
     }
     /*

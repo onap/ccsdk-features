@@ -112,7 +112,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
                 int problems = faultService.removeAllCurrentProblemsOfNode(nodeId);
                 FaultData resultList = readAllCurrentProblemsOfNode();
                 faultService.initCurrentProblemStatus(nodeId, resultList);
-                LOG.info("Resync mountpoint {} for device {}. Removed {}. Current problems: {}", getMountpoint(),
+                LOG.debug("Resync mountpoint {} for device {}. Removed {}. Current problems: {}", getMountpoint(),
                         getUuId(), problems, resultList.size());
             }
         }
@@ -163,7 +163,7 @@ public class ONFCoreNetworkElement12Basic extends ONFCoreNetworkElement12Base {
 
         equipmentService.writeEquipment(nodeId, equipment.getEquipmentData());
 
-        LOG.info("Found info at {} for device {} number of problems: {}", getMountpoint(), getUuId(),
+        LOG.debug("Found info at {} for device {} number of problems: {}", getMountpoint(), getUuId(),
                 resultList.size());
     }
 

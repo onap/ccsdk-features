@@ -3,52 +3,52 @@ module test-yang-utils {
   yang-version 1.1;
   namespace "urn:test:yang:utils";
   prefix tesyangutils;
-  
+
   import ietf-yang-types {
     prefix yang;
     reference
       "RFC 6991: Common YANG Data Types.";
   }
-  
+
   import ietf-inet-types {
     prefix inet;
   }
-  
+
   typedef AddressType {
      type enumeration {
        enum OFFICE {
-         description 
+         description
             "Office Address";
        }
        enum HOME {
-         description 
+         description
             "Home Address";
        }
      }
   }
-  
-  identity item-code {
+
+  identity item-code-identity {
     description
       "Base identity";
   }
 
   typedef item-code {
     type identityref {
-      base item-code;
+      base item-code-identity;
     }
     description
       "Item code - Could be bar code, QR code or any other code to uniquely identify an item";
   }
-  
+
   grouping address-location-entity {
     leaf id {
       type string;
-      description 
+      description
          "Unique ID of the address";
     }
     leaf address-type {
       type AddressType;
-      description 
+      description
           "Type of Address";
     }
     leaf delivery-date-time {
@@ -58,7 +58,7 @@ module test-yang-utils {
     }
     leaf delivery-url {
       type inet:uri;
-      description 
+      description
         "Delivery URL";
     }
     list item-list {
@@ -66,13 +66,18 @@ module test-yang-utils {
       leaf item-key {
         type item-code;
       }
-      description 
+      description
         "Unique code of the ordered item";
     }
+    leaf test-id {
+      type item-code;
+      description "test identity leaf";
+    }
+
   }
-  
+
   container address-location {
-      description 
+      description
          "builder";
       uses address-location-entity;
   }

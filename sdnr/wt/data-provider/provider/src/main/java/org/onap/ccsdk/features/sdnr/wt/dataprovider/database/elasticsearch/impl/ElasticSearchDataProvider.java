@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.EsConfig;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.acessor.DataObjectAcessorInventory;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.acessor.DataObjectAcessorPm;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.acessor.DataObjectAcessorPm.Intervall;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.acessor.DataObjectAcessorStatus;
@@ -38,10 +38,13 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity.HtDatabaseEventsService;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity.HtDatabaseMaintenanceService;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.rpctypehelper.QueryResult;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataTreeProviderImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMediatorserver;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.InventoryTreeProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
@@ -65,6 +68,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListOutputBuilder;
@@ -82,6 +86,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +105,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data> mediatorserverRW;
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> maintenanceRW;
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> guicutthroughRW;
-    private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data> equipmentRW;
+    private final DataObjectAcessorInventory<Data> equipmentRW;
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data> connnectionlogRW;
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data> eventlogRW;
     private final DataObjectAcessorWithId<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data> networkelementConnectionRW;
@@ -111,6 +116,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
     private final HtDatabaseEventsService databaseService;
     private final HtDatabaseMaintenanceService databaseMaintenanceService;
     private final HtUserdataManager usermanager;
+    private final InventoryTreeProvider inventoryTreeProvider;
 
     private final HtDatabaseMediatorserver dbMediatorServerService = new HtDatabaseMediatorserver() {
 
@@ -158,7 +164,7 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
                 doFullsizeRequests);
         this.guicutthroughRW.setWriteInterface(Guicutthrough.class);
 
-        this.equipmentRW = new DataObjectAcessorWithId<>(dbClient, Entity.Inventoryequipment,
+        this.equipmentRW = new DataObjectAcessorInventory<>(dbClient, Entity.Inventoryequipment,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data.class,
                 doFullsizeRequests);
 
@@ -197,9 +203,10 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
 
         this.readStatus = new DataObjectAcessorStatus(dbClient, Entity.Faultcurrent, doFullsizeRequests);
 
-        this.databaseService = new HtDatabaseEventsService(dbClient, this);
+        this.databaseService = new HtDatabaseEventsService(dbClient);
         this.databaseMaintenanceService = new HtDatabaseMaintenanceService(dbClient);
         this.usermanager = new HtUserdataManagerImpl(this.dbClient);
+        this.inventoryTreeProvider = new DataTreeProviderImpl(this.dbClient);
     }
 
     /*-------------------------
@@ -293,6 +300,17 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.PaginationBuilder(
                         result.getPagination()).build());
+        return outputBuilder;
+    }
+
+    @Override
+    public ReadInventoryDeviceListOutputBuilder readInventoryDeviceList(EntityInput input) {
+        ReadInventoryDeviceListOutputBuilder outputBuilder = new ReadInventoryDeviceListOutputBuilder();
+        QueryResult<String> result = equipmentRW.getDataDeviceList(input);
+        outputBuilder.setPagination(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.device.list.output.PaginationBuilder(
+                        result.getPagination()).build());
+        outputBuilder.setData(result.getResult().getHitSets());
         return outputBuilder;
     }
 
@@ -547,5 +565,9 @@ public class ElasticSearchDataProvider implements DatabaseDataProvider {
         return this.usermanager;
     }
 
+    @Override
+    public InventoryTreeProvider getInventoryTreeProvider() {
+        return this.inventoryTreeProvider;
+    }
 
 }

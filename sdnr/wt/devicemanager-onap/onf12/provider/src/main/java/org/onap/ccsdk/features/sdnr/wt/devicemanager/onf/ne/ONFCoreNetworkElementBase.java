@@ -46,7 +46,7 @@ public abstract class ONFCoreNetworkElementBase implements AutoCloseable, ONFCor
     private final NetconfBindingAccessor acessor;
 
     protected ONFCoreNetworkElementBase(NetconfBindingAccessor acessor) {
-        LOG.info("Create ONFCoreNetworkElementBase");
+        LOG.debug("Create ONFCoreNetworkElementBase");
         this.mountPointNodeName = acessor.getNodeId().getValue();
         this.nodeId = acessor.getNodeId();
         this.netconfNodeDataBroker = acessor.getDataBroker();

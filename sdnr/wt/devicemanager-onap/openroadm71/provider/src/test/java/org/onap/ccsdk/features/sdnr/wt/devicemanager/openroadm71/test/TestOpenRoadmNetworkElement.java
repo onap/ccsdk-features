@@ -85,10 +85,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.Uint16;
-import org.opendaylight.yangtools.yang.common.Uint32;
-import org.opendaylight.yangtools.yang.common.Uint64;
-import org.opendaylight.yangtools.yang.common.Uint8;
+import org.opendaylight.yangtools.yang.common.*;
 
 public class TestOpenRoadmNetworkElement {
 
@@ -268,7 +265,7 @@ public class TestOpenRoadmNetworkElement {
 
         Measurement measurement = mock(Measurement.class);
         PmDataType pmDataType = mock(PmDataType.class);
-        when(pmDataType.getUint64()).thenReturn(Uint64.valueOf(2425425));
+        when(pmDataType.getDecimal64()).thenReturn(Decimal64.valueOf(1,2425425));
         when(measurement.getBinNumber()).thenReturn(Uint16.valueOf(1452));
         when(measurement.getCompletionTime()).thenReturn(new DateAndTime("2018-10-22T15:23:43Z"));
         when(measurement.getGranularity()).thenReturn(PmGranularity._24Hour);

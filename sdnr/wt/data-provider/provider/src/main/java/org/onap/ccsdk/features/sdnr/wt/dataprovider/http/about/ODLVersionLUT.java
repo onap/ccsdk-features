@@ -72,6 +72,8 @@ public class ODLVersionLUT {
         }
         if(odlMdsalVersionLUT==null) {
             odlMdsalVersionLUT = new HashMap<>();
+            odlMdsalVersionLUT.put("10.0.2","chlorine-SR0 (0.17.0)");
+            odlMdsalVersionLUT.put("9.0.5","sulfur-SR2 (0.16.2)");
             odlMdsalVersionLUT.put("9.0.4","sulfur-SR1 (0.16.1)");
             odlMdsalVersionLUT.put("9.0.2","sulfur-SR0 (0.16.0)");
             odlMdsalVersionLUT.put("8.0.11","phosphorus-SR2 (0.15.2)");

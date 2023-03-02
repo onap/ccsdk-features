@@ -130,16 +130,16 @@ public class QueryByFilter {
         }
     }
 
-    public SearchRequest getSearchRequestBySortOrder(String nodeKey, String uuidKey, String index, String dataType,
-            boolean doFullsizeRequest) {
-        Sortorder soNode = getSortOrder(sortOrder, nodeKey);
+    public SearchRequest getSearchRequestAggregated(String aggregationKey, String index, String dataType,
+                                                    boolean doFullsizeRequest) {
+        Sortorder soNode = getSortOrder(sortOrder, aggregationKey);
         SearchRequest request = new SearchRequest(index, dataType);
         QueryBuilder query = null;
         if (soNode != null) {
             query = QueryBuilders.matchAllQuery().setFullsizeRequest(doFullsizeRequest)
-                    .aggregations(nodeKey, convert(soNode.getSortorder())).size(0);
+                    .aggregations(aggregationKey, convert(soNode.getSortorder())).size(0);
         } else {
-            query = QueryBuilders.matchAllQuery().setFullsizeRequest(doFullsizeRequest).aggregations(nodeKey).size(0);
+            query = QueryBuilders.matchAllQuery().setFullsizeRequest(doFullsizeRequest).aggregations(aggregationKey).size(0);
         }
         request.setQuery(query);
         return request;

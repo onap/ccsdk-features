@@ -35,6 +35,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBReaderWriter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBReaderWriterFault;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBReaderWriterInventory;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBReaderWriterPm;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
@@ -68,12 +69,12 @@ public class HtDatabaseEventsService implements DataProvider {
     private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStampImpl.getConverter();;
 
     protected final SqlDBClient dbClient;
-    protected final String controllerId;
+    protected String controllerId;
     protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.connectionlog.list.output.Data> connectionlogRW;
     protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.eventlog.list.output.Data> eventlogRW;
     protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultlog.list.output.Data> eventRWFaultLog;
     protected final SqlDBReaderWriterFault<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data> eventRWFaultCurrent;
-    protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data> equipmentRW;
+    protected final SqlDBReaderWriterInventory<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data> equipmentRW;
     protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> guicutthroughRW;
     protected final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.network.element.connection.list.output.Data> networkelementConnectionRW;
     protected final SqlDBReaderWriterPm<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> pm15mRW;
@@ -101,7 +102,7 @@ public class HtDatabaseEventsService implements DataProvider {
         this.eventRWFaultCurrent = new SqlDBReaderWriterFault<>(dbClient, Entity.Faultcurrent, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.faultcurrent.list.output.Data.class,
                 this.controllerId);
-        this.equipmentRW = new SqlDBReaderWriter<>(dbClient, Entity.Inventoryequipment, config.getDbSuffix(),
+        this.equipmentRW = new SqlDBReaderWriterInventory<>(dbClient, Entity.Inventoryequipment, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.Data.class,
                 this.controllerId);
         this.guicutthroughRW = new SqlDBReaderWriter<>(dbClient,

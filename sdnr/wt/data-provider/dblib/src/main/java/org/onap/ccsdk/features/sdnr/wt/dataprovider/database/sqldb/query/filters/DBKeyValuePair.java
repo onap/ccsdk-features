@@ -23,6 +23,8 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filter
 
 import java.math.BigInteger;
 
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
+
 public class DBKeyValuePair<T> implements SqlDBFilter {
 
     private final String key;
@@ -62,7 +64,7 @@ public class DBKeyValuePair<T> implements SqlDBFilter {
         } else if (this.getValue() instanceof BigInteger) {
             return String.format("`%s`=%d", this.key, (BigInteger)this.value);
         } else {
-            return String.format("`%s`='%s'", this.key, this.value);
+            return String.format("`%s`='%s'", this.key, SqlDBMapper.escape(this.value));
         }
     }
 }

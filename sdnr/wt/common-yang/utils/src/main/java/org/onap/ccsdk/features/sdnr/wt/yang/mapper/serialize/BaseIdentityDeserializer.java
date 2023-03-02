@@ -25,8 +25,16 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.common.reflect.ClassPath;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
+import org.opendaylight.yangtools.yang.binding.BaseIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,25 +47,35 @@ public class BaseIdentityDeserializer<T> extends JsonDeserializer<T> {
         this.deser = deser;
     }
 
+    private static List<Class<? extends BaseIdentity>> getTypesInNamespace(String packageName) throws IOException {
+        return ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClasses(packageName).
+                stream().map(e -> (Class<? extends BaseIdentity>)e.load()).collect(Collectors.toList());
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public T deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        LOG.debug("BaseIdentityDeserializer class for '{}'",parser.getValueAsString());
+        LOG.debug("BaseIdentityDeserializer class for '{}'", parser.getValueAsString());
         String clazzToSearch = parser.getValueAsString();
+        String simpleName;
+        Class<? extends BaseIdentity> clazz;
         // clazz from Elasticsearch is full qualified
         int lastDot = clazzToSearch.lastIndexOf(".");
         if (lastDot > -1) {
-            clazzToSearch = clazzToSearch.substring(lastDot+1);
-        } else {
-            clazzToSearch = clazzToSearch.substring(0, 1).toUpperCase() + clazzToSearch.substring(1);
-        }
-        Class<?> clazz;
-        try {
-            clazz = YangToolsMapperHelper.findClass(clazzToSearch);
+            simpleName = clazzToSearch.substring(lastDot + 1);
+            clazz = getTypesInNamespace(clazzToSearch.substring(0, lastDot)).stream()
+                    .filter(e -> e.getSimpleName().equals(simpleName)).findFirst().orElse(null);
             if (clazz != null)
-                return (T)clazz;
+                return (T) YangToolsMapperHelper.getIdentityValueFromClass(clazz);
+        } else {
+            simpleName = clazzToSearch.substring(0, 1).toUpperCase() + clazzToSearch.substring(1);
+        }
+        try {
+            clazz = (Class<? extends BaseIdentity>) YangToolsMapperHelper.findClass(simpleName);
+            if (clazz != null)
+                return (T) YangToolsMapperHelper.getIdentityValueFromClass(clazz);
         } catch (ClassNotFoundException e) {
-            LOG.warn("BaseIdentityDeserializer class not found for '"+parser.getValueAsString()+"'",e);
+            LOG.warn("BaseIdentityDeserializer class not found for '" + parser.getValueAsString() + "'", e);
         }
         return (T) deser.deserialize(parser, ctxt);
     }

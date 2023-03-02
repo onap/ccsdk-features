@@ -96,7 +96,7 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
 
     @Override
     public void onNetconfConfigChange(NetconfConfigChange notification) {
-        LOG.info("onNetconfConfigChange (1) {}", notification);
+        LOG.debug("onNetconfConfigChange (1) {}", notification);
         StringBuffer sb = new StringBuffer();
         List<Edit> editList = notification.nonnullEdit();
         for (Edit edit : editList) {

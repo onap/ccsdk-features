@@ -35,12 +35,12 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
 import org.onap.ccsdk.features.sdnr.wt.common.test.JSONAssert;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet.EntityWithTree;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeObject;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataTreeProviderImpl;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DatabaseDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.DataTreeObject;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 
@@ -56,8 +56,6 @@ public class TestTree {
         dbProvider = new ElasticSearchDataProvider(hosts);
         dbProvider.waitForYellowDatabaseStatus(30, TimeUnit.SECONDS);
         dbRawProvider = HtDatabaseClient.getClient(hosts);
-
-
     }
 
     public static void clearTestData(HtDatabaseClient dbRawProvider) throws IOException {
@@ -85,50 +83,24 @@ public class TestTree {
     }
 
     @Test
-    public void testInventoryTree() throws IOException {
-        test1();
-        //test2();
-
-    }
-
-    private void test1() throws IOException {
+    public void testInventoryTree1() throws IOException {
         clearTestData(dbRawProvider);
         fillTestData(dbRawProvider, "test1.json");
-        DataTreeProviderImpl provider = new DataTreeProviderImpl();
-        provider.setDatabaseClient(dbRawProvider);
+        DataTreeProviderImpl provider = new DataTreeProviderImpl(dbRawProvider);
 
 
         DataTreeObject tree = provider.readInventoryTree(null, null);
-        System.out.println(tree.toJSON());
         JSONObject o = new JSONObject(tree.toJSON());
+        System.out.println("Tree1.1: "+o);
         JSONAssert.assertContainsExactKeys(o, new String[]{"sim1","sim2"});
         JSONObject children = o.getJSONObject("sim1").getJSONObject("children");
         this.assertSim1(children);
 
         tree = provider.readInventoryTree(Arrays.asList("sim1"), "*");
         this.assertSim1(new JSONObject(tree.toJSON()));
-        System.out.println(tree.toJSON());
+        System.out.println("Tree1.2: "+tree.toJSON());
     }
 
-    private void test2() throws IOException {
-        clearTestData(dbRawProvider);
-        fillTestData(dbRawProvider, "test2.json");
-        DataTreeProviderImpl provider = new DataTreeProviderImpl();
-        provider.setDatabaseClient(dbRawProvider);
-
-
-        DataTreeObject tree =
-                provider.readInventoryTree(Arrays.asList("netconf_server_simulator"), "*");
-        System.out.println(tree.toJSON());
-        JSONObject o = new JSONObject(tree.toJSON());
-        JSONAssert.assertContainsOnlyKey(o, "sim1");
-        JSONObject children = o.getJSONObject("sim1").getJSONObject("children");
-        this.assertSim1(children);
-
-        tree = provider.readInventoryTree(Arrays.asList("sim1"), "*");
-        this.assertSim1(new JSONObject(tree.toJSON()));
-        System.out.println(tree.toJSON());
-    }
 
     private void assertSim1(JSONObject sim1Children) {
         JSONAssert.assertContainsExactKeys(sim1Children,

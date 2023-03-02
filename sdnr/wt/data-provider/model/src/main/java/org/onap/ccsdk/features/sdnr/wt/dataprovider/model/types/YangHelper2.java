@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.jdt.annotation.NonNull;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SortOrder;
 import org.opendaylight.yangtools.yang.binding.Identifiable;
 import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -111,6 +112,11 @@ public class YangHelper2 {
     }
     public static Class<?> getScalarTypeObjectClass() {
         return org.opendaylight.yangtools.yang.binding.ScalarTypeObject.class;
+    }
+
+    public static SortOrder getSortOrder(org.onap.ccsdk.features.sdnr.wt.common.database.queries.SortOrder sortOrder){
+        return sortOrder== org.onap.ccsdk.features.sdnr.wt.common.database.queries.SortOrder.ASCENDING?
+                SortOrder.Ascending:SortOrder.Descending;
     }
 
 }

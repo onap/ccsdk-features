@@ -24,11 +24,12 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.nodb;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMediatorserver;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.InventoryTreeProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
@@ -48,6 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListOutputBuilder;
@@ -72,12 +74,14 @@ public class NoDbDatabaseDataProvider implements DatabaseDataProvider {
     private final HtDatabaseMediatorserver mediatorserver;
     private final HtDatabaseMaintenance maintenance;
     private final DataProvider dataprovider;
+    private final InventoryTreeProvider inventoryTreeProvider;
 
     public NoDbDatabaseDataProvider() {
         this.usermanger = new NoDbHtUserdataManager();
         this.mediatorserver = new NoDbHtDatabaseMediatorserver();
         this.maintenance = new NoDbHtDatabaseMaintenance();
         this.dataprovider = new NoDbDataProvider();
+        this.inventoryTreeProvider = new NoDbInventoryTreeProvider();
     }
     @Override
     public HtDatabaseClient getRawClient() {
@@ -240,5 +244,15 @@ public class NoDbDatabaseDataProvider implements DatabaseDataProvider {
     @Override
     public HtUserdataManager getUserManager() {
         return this.usermanger;
+    }
+
+    @Override
+    public InventoryTreeProvider getInventoryTreeProvider() {
+        return this.inventoryTreeProvider;
+    }
+
+    @Override
+    public ReadInventoryDeviceListOutputBuilder readInventoryDeviceList(EntityInput input) {
+        return new ReadInventoryDeviceListOutputBuilder();
     }
 }

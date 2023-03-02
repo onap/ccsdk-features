@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Supplier;
+
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -45,20 +47,48 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.AuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
+import org.opendaylight.aaa.api.Authentication;
+import org.opendaylight.aaa.api.AuthenticationService;
+import org.opendaylight.aaa.api.TokenStore;
 import org.opendaylight.aaa.api.shiro.principal.ODLPrincipal;
-import org.opendaylight.aaa.shiro.web.env.ThreadLocals;
+import org.opendaylight.aaa.shiro.realm.TokenAuthRealm;
 import org.opendaylight.aaa.tokenauthrealm.auth.AuthenticationManager;
 import org.opendaylight.aaa.tokenauthrealm.auth.TokenAuthenticators;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 
 public class TestRealm {
 
     private static OAuth2RealmToTest realm;
     private static TokenCreator tokenCreator;
 
+    private static final AuthenticationManager authManager  = new AuthenticationManager();
+    private static final TokenAuthenticators tokenAuth = new TokenAuthenticators();
+
+    private static final TokenStore tokenStore = new TokenStore(){
+
+        @Override
+        public void put(String token, Authentication auth) {
+
+        }
+
+        @Override
+        public Authentication get(String token) {
+            return null;
+        }
+
+        @Override
+        public boolean delete(String token) {
+            return false;
+        }
+
+        @Override
+        public long tokenExpiration() {
+            return 0;
+        }
+    };
     @BeforeClass
     public static void init() throws IllegalArgumentException, Exception {
-        ThreadLocals.AUTH_SETVICE_TL.set(new AuthenticationManager());
-        ThreadLocals.TOKEN_AUTHENICATORS_TL.set(new TokenAuthenticators());
+        TokenAuthRealm.prepareForLoad(authManager,tokenAuth,tokenStore);
         try {
             Config config = Config.getInstance(TestConfig.TEST_CONFIG_FILENAME);
             tokenCreator = TokenCreator.getInstance(config);

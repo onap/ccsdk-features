@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.google.common.collect.Maps;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Instant;
@@ -38,14 +39,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
+
 import org.opendaylight.mdsal.dom.api.DOMEvent;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yangtools.concepts.Builder;
-import org.opendaylight.yangtools.yang.binding.EventInstantAware;
-import org.opendaylight.yangtools.yang.binding.Identifiable;
-import org.opendaylight.yangtools.yang.binding.Identifier;
-import org.opendaylight.yangtools.yang.binding.Notification;
+import org.opendaylight.yangtools.yang.binding.*;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -131,18 +129,27 @@ public class YangToolsMapperHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static <B extends Builder<?>> Class<B> findBuilderClass(DeserializationContext ctxt, Class<?> clazz)
+    public static Class<?> findBuilderClass(DeserializationContext ctxt, Class<?> clazz)
             throws ClassNotFoundException {
-        return (Class<B>) findClass(getBuilderClassName(clazz));
+        return findClass(getBuilderClassName(clazz));
     }
 
-    public static <B extends Builder<?>> Optional<Class<B>> findBuilderClassOptional(DeserializationContext ctxt,
+    public static Optional<Class<?>> findBuilderClassOptional(DeserializationContext ctxt,
             Class<?> clazz) {
         try {
             return Optional.of(findBuilderClass(ctxt, clazz));
         } catch (ClassNotFoundException e) {
             return Optional.empty();
         }
+    }
+
+    public static <T extends BaseIdentity, S extends T> S getIdentityValueFromClass(Class<S> clazz) {
+        try {
+            Field valueField = clazz.getDeclaredField("VALUE");
+            return (S) valueField.get(clazz);
+        } catch (NoSuchFieldException | IllegalAccessException ignore) {
+        }
+        return null;
     }
 
     public static boolean hasClassDeclaredMethod(Class<?> clazz, String name) {
@@ -238,7 +245,8 @@ public class YangToolsMapperHelper {
      * @param name with attribute name, not null or empty
      * @return converted string or null if name was empty or null
      */
-    public @Nullable static String toCamelCaseAttributeName(final String name) {
+    public @Nullable
+    static String toCamelCaseAttributeName(final String name) {
         if (name == null || name.isEmpty())
             return null;
 
@@ -306,15 +314,17 @@ public class YangToolsMapperHelper {
         }
         return DateAndTime.getDefaultInstance(ZonedDateTime.ofInstant(time, ZoneOffset.UTC).format(formatterOutput));
     }
-    
-    
-    public static <K extends Identifier<V>, V extends Identifiable<K>> Map<K,V> toMap(List<V> list) {
-    	 return list == null || list.isEmpty() ? null : Maps.uniqueIndex(list, Identifiable::key);
+
+
+    public static <K extends Identifier<V>, V extends Identifiable<K>> Map<K, V> toMap(List<V> list) {
+        return list == null || list.isEmpty() ? null : Maps.uniqueIndex(list, Identifiable::key);
     }
-    
+
     @SuppressWarnings("unchecked")
-   	public static <S,T> T callBuild(S builder) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-       	Method method = builder.getClass().getMethod("build");
-   		return (T) method.invoke(builder);
-   	}
+    public static <S, T> T callBuild(S builder)
+            throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
+            InvocationTargetException {
+        Method method = builder.getClass().getMethod("build");
+        return (T) method.invoke(builder);
+    }
 }
