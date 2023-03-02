@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.rev200529.HistoricalPmList;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.rev200529.historical.pm.group.HistoricalPm;
@@ -84,7 +85,7 @@ public class PmDataBuilderOpenRoadm {
     // Read PM data
     public HistoricalPmList getPmData(NetconfBindingAccessor accessor) {
         final Class<HistoricalPmList> pmDataClass = HistoricalPmList.class;
-        log.info("Get PM data for element {}", accessor.getNodeId().getValue());
+        log.debug("Get PM data for element {}", accessor.getNodeId().getValue());
         InstanceIdentifier<HistoricalPmList> pmDataIid = InstanceIdentifier.builder(pmDataClass).build();
         return accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 pmDataIid);
@@ -103,19 +104,19 @@ public class PmDataBuilderOpenRoadm {
             pmDataBuilder.setUuidInterface(pmDataEntry.getPmResourceType().getName());
             Collection<HistoricalPm> historicalPmList = YangHelper.getCollection(pmDataEntry.getHistoricalPm());
             for (HistoricalPm historicalPm : historicalPmList) {
-                log.info("PmName:{}", historicalPm.getType());
+                log.debug("PmName:{}", historicalPm.getType());
                 //              pmDataBuilder.setPerformanceData(value)
 
                 try {
                     writeperformanceData(historicalPm);
                 } catch (ClassNotFoundException e) {
-                    log.info("No relevant data found");
+                    log.debug("No relevant data found");
                 }
                 pmEntitiyList.add(this.pmDataBuilder.build());
 
-                log.info("PmListSize before db writing: {}", pmEntitiyList.size());
+                log.debug("PmListSize before db writing: {}", pmEntitiyList.size());
             }
-            log.info("PmListSize before db writing: {}", pmEntitiyList.size());
+            log.debug("PmListSize before db writing: {}", pmEntitiyList.size());
         }
         return pmEntitiyList;
     }
@@ -181,10 +182,10 @@ public class PmDataBuilderOpenRoadm {
         List<Class<? extends PerformanceMeasurementTypeId>> measTypeObjList = new ArrayList<>();
         URL root = Thread.currentThread().getContextClassLoader().getResource(packageName1);
 
-        log.info("path for type package: {}", root);
+        log.debug("path for type package: {}", root);
 
         Enumeration<URL> results = getFileURL(b, packageName);
-        log.info("FOund Packages {}", results);
+        log.debug("FOund Packages {}", results);
         if (results != null) {
             while (results.hasMoreElements()) {
                 URL path = results.nextElement();
@@ -197,7 +198,7 @@ public class PmDataBuilderOpenRoadm {
 
                 }
                 if (cls1 != null) {
-                    log.info("Class Added {}", cls1.getSimpleName());
+                    log.debug("Class Added {}", cls1.getSimpleName());
                 }
 
             }
@@ -208,31 +209,24 @@ public class PmDataBuilderOpenRoadm {
         return measTypeObjList;
     }
 
-    private Class<? extends PerformanceMeasurementUnitId> setMeasurementUnit(String unitName) {
-        Class<? extends PerformanceMeasurementUnitId> measurementUnitClass = null;
+    private  PerformanceMeasurementUnitId setMeasurementUnit(String unitName) {
         switch (unitName) {
             case ("celsius"):
-                measurementUnitClass = Celsius.class;
-                break;
+                return Celsius.VALUE;
             case ("dB"):
-                measurementUnitClass = DB.class;
-                break;
+                return DB.VALUE;
             case ("dBm"):
-                measurementUnitClass = DBm.class;
-                break;
+                return DBm.VALUE;
             case ("fahrenheit"):
-                measurementUnitClass = Fahrenheit.class;
-                break;
+                return Fahrenheit.VALUE;
             case ("kHz"):
-                measurementUnitClass = KHz.class;
-                break;
+                return KHz.VALUE;
             case ("mW"):
-                measurementUnitClass = MW.class;
-                break;
+                return MW.VALUE;
             default:
                 break;
         }
-        return measurementUnitClass;
+        return null;
     }
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.pmdata.grp.Measurement measurementBuilder(
@@ -240,13 +234,13 @@ public class PmDataBuilderOpenRoadm {
 
         MeasurementBuilder measBuilder = new MeasurementBuilder();
         if (pmType.getName().equals("erroredSeconds")) {
-            measBuilder.setPmKey(ErroredSecond.class);
+            measBuilder.setPmKey(ErroredSecond.VALUE);
         } else if (pmType.getName().equals("severelyErroredSeconds")) {
-            measBuilder.setPmKey(SeverelyErroredSecond.class);
+            measBuilder.setPmKey(SeverelyErroredSecond.VALUE);
         } else {
             for (Class<? extends PerformanceMeasurementTypeId> obj : setMeasurementTypeId()) {
                 if (obj.toString().contains(pmType.name())) {
-                    measBuilder.setPmKey(obj);
+                    measBuilder.setPmKey(YangToolsMapperHelper.getIdentityValueFromClass(obj));
                 }
             }
         }
@@ -262,7 +256,7 @@ public class PmDataBuilderOpenRoadm {
         try {
             return bundle.loadClass(className);
         } catch (Exception e) {
-            log.info(String.format("Class [%s] could not be loaded. Message: [%s].", className, e.getMessage()));
+            log.debug(String.format("Class [%s] could not be loaded. Message: [%s].", className, e.getMessage()));
         }
         return null;
     }
@@ -271,15 +265,15 @@ public class PmDataBuilderOpenRoadm {
 
         BundleContext context = b == null ? null : b.getBundleContext();
         if (context == null) {
-            log.info("no bundle context available");
+            log.debug("no bundle context available");
             return null;
         }
         Bundle[] bundles = context.getBundles();
         if (bundles == null || bundles.length <= 0) {
-            log.info("no bundles found");
+            log.debug("no bundles found");
             return null;
         }
-        log.info("found {} bundles", bundles.length);
+        log.debug("found {} bundles", bundles.length);
         Enumeration<URL> resultUrl = null;
 
         for (Bundle bundle : bundles) {

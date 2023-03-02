@@ -119,7 +119,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
                 int problems = microwaveEventListener.removeAllCurrentProblemsOfNode(nodeId);
                 FaultData resultList = readAllCurrentProblemsOfNode();
                 microwaveEventListener.initCurrentProblemStatus(nodeId, resultList);
-                LOG.info("Resync mountpoint {} for device {}. Removed {}. Current problems: {}", getMountpoint(),
+                LOG.debug("Resync mountpoint {} for device {}. Removed {}. Current problems: {}", getMountpoint(),
                         getUuId(), problems, resultList.size());
             }
         }
@@ -218,7 +218,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
         LOG.debug("DB write current problems completed");
         equipmentService.writeEquipment(nodeId, equipment.getEquipmentData());
 
-        LOG.info("Found info at {} for device {} number of problems: {}", getMountpoint(), getUuId(),
+        LOG.debug("Found info at {} for device {} number of problems: {}", getMountpoint(), getUuId(),
                 resultList.size());
     }
 
@@ -321,7 +321,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
         // QName qName =
         // org.opendaylight.yangtools.yang.common.QName.create("urn:onf:params:xml:ns:yang:microwave-model",
         // "2017-03-24", "mw-air-interface-pac").intern();
-        LOG.info("LpExtension capability={} revision={} conditionalPackage={}", capability, revision,
+        LOG.debug("LpExtension capability={} revision={} conditionalPackage={}", capability, revision,
                 conditionalPackage);
         if (capability != null && !capability.isEmpty() && !revision.isEmpty() && !conditionalPackage.isEmpty()) {
             try {
@@ -377,7 +377,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
      */
     @Override
     public void doRegisterEventListener(MountPoint mountPoint) {
-        LOG.info("Begin registration listener for Mountpoint");
+        LOG.debug("Begin registration listener for Mountpoint");
         final Optional<NotificationService> optionalNotificationService =
                 mountPoint.getService(NotificationService.class);
         if (optionalNotificationService.isPresent()) {
@@ -385,7 +385,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
             // notificationService.registerNotificationListener(microwaveEventListener);
             listenerRegistrationresult =
                     notificationService.registerNotificationListener(microwaveModel.getNotificationListener());
-            LOG.info("End registration listener for Mountpoint Result: {}", listenerRegistrationresult);
+            LOG.debug("End registration listener for Mountpoint Result: {}", listenerRegistrationresult);
         } else {
             LOG.error("Could not get NotificationService, hence microwave notification listener not registered");
         }

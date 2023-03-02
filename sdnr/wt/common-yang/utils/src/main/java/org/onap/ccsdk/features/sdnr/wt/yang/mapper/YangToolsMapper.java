@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsBuilderAnnotationIntrospector;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsModule;
 import org.slf4j.Logger;
@@ -58,6 +59,7 @@ public class YangToolsMapper extends ObjectMapper {
         this.annotationIntrospector = yangToolsBuilderAnnotationIntrospector;
         this.module = new YangToolsModule();
         this.registerModule(this.module);
+        this.registerModule(new JavaTimeModule());
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         setPropertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE);
         setSerializationInclusion(Include.NON_NULL);

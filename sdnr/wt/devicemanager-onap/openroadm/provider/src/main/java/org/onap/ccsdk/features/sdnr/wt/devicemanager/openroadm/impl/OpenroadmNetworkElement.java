@@ -85,7 +85,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
 
         super(netconfAccess, serviceProvider);
 
-        log.info("Create {}", OpenroadmNetworkElement.class.getSimpleName());
+        log.debug("Create {}", OpenroadmNetworkElement.class.getSimpleName());
         this.openRdmListenerRegistrationResult = null;
         this.openRdmListener = new OpenroadmChangeNotificationListener(netconfAccessor, databaseService,
                 serviceProvider.getWebsocketService());
@@ -98,7 +98,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
         this.shelfProvisionedcircuitPacks = new Hashtable<>();
         this.openRoadmPmData = new PmDataBuilderOpenRoadm(this.netconfAccessor);
         this.initialAlarmReader = new InitialDeviceAlarmReader(this.netconfAccessor, serviceProvider);
-        log.info("NodeId {}", this.netconfAccessor.getNodeId().getValue());
+        log.debug("NodeId {}", this.netconfAccessor.getNodeId().getValue());
 
 
     }
@@ -110,7 +110,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
         OrgOpenroadmDevice device = readDevice(this.netconfAccessor);
         if (device != null) {
             this.opnRdmInventoryInput = new OpenroadmInventoryInput(this.netconfAccessor, device);
-            log.info("openroadmMapper details{}", this.opnRdmInventoryInput.getClass().getName());
+            log.debug("openroadmMapper details{}", this.opnRdmInventoryInput.getClass().getName());
             List<Inventory> inventoryList = new ArrayList<>();
             inventoryList.add(this.opnRdmInventoryInput.getInventoryData(Uint32.valueOf(equipmentLevel)));
             readShelvesData(inventoryList, device);
@@ -126,12 +126,12 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
         pmDataEntity = this.openRoadmPmData.buildPmDataEntity(this.openRoadmPmData.getPmData(this.netconfAccessor));
         if (!pmDataEntity.isEmpty()) {
             this.databaseService.doWritePerformanceData(pmDataEntity);
-            log.info("PmDatEntity is written with size {}", pmDataEntity.size());
+            log.debug("PmDatEntity is written with size {}", pmDataEntity.size());
             for (PmdataEntity ent : pmDataEntity) {
-                log.info("GetNode: {}, granPeriod: {}", ent.getNodeName(), ent.getGranularityPeriod().getName());
+                log.debug("GetNode: {}, granPeriod: {}", ent.getNodeName(), ent.getGranularityPeriod().getName());
             }
         } else {
-            log.info("PmDatEntity is empty");
+            log.debug("PmDatEntity is empty");
         }
     }
 
@@ -169,7 +169,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
         Collection<Shelves> shelves = YangHelper.getCollection(device.getShelves());
         if (shelves != null) {
             for (Shelves shelf : shelves) {
-                log.info(
+                log.debug(
                         "Shelf Name: {}, \n Serial Id:{}, \n Product Code;{}, \n Position:{}, \n EquipmetState: {}, \n Hardware version: {}"
                                 + "\n ShelfType:{}, \n Vendor: {}, \n LifecycleState: {} ",
                         shelf.getShelfName(), shelf.getSerialId(), shelf.getProductCode(), shelf.getShelfPosition(),
@@ -183,13 +183,13 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
                         if (slot.getProvisionedCircuitPack() != null) {
                             this.shelfProvisionedcircuitPacks.put(slot.getProvisionedCircuitPack(), equipmentLevel + 2);
                         }
-                        log.info("Slots for the shelf: {}", shelf.getShelfName());
-                        log.info("\n Slot Name: {}, \n Status: {}, \n Slot label: {} ", slot.getSlotName(),
+                        log.debug("Slots for the shelf: {}", shelf.getShelfName());
+                        log.debug("\n Slot Name: {}, \n Status: {}, \n Slot label: {} ", slot.getSlotName(),
                                 slot.getSlotStatus(), slot.getLabel());
                     }
                 }
             }
-            log.info("size of shelfProvisionedcircuitPacks: {} ", shelfProvisionedcircuitPacks.size());
+            log.debug("size of shelfProvisionedcircuitPacks: {} ", shelfProvisionedcircuitPacks.size());
         }
 
     }
@@ -202,14 +202,14 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
 
                 inventoryList.add(
                         this.opnRdmInventoryInput.getXponderInventory(xponder, Uint32.valueOf(equipmentLevel + 1)));
-                log.info("Xponders: No.: {} , \n Port: {} ,\n Type: {}", xponder.getXpdrNumber(), xponder.getXpdrPort(),
+                log.debug("Xponders: No.: {} , \n Port: {} ,\n Type: {}", xponder.getXpdrNumber(), xponder.getXpdrPort(),
                         xponder.getXpdrType());
                 Collection<XpdrPort> xpdrportlist = YangHelper.getCollection(xponder.getXpdrPort());
                 if (xpdrportlist != null) {
                     for (XpdrPort xpdrport : xpdrportlist)
                         if (xpdrport.getCircuitPackName() != null) {
                             this.shelfProvisionedcircuitPacks.put(xpdrport.getCircuitPackName(), equipmentLevel + 2);
-                            log.info("Size of dict{}", this.shelfProvisionedcircuitPacks.size());
+                            log.debug("Size of dict{}", this.shelfProvisionedcircuitPacks.size());
                         }
                 }
 
@@ -228,11 +228,11 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
             }
 
             for (CircuitPacks cp : circuitpackCollection) {
-                log.info("CP Name:{}", cp.getCircuitPackName());
+                log.debug("CP Name:{}", cp.getCircuitPackName());
 
                 if (cp.getParentCircuitPack() == null
                         && !this.shelfProvisionedcircuitPacks.containsKey(cp.getCircuitPackName())) {
-                    log.info("cp has no parent and no shelf");
+                    log.debug("cp has no parent and no shelf");
                     this.circuitPacksRecord.put(cp.getCircuitPackName(), (equipmentLevel + 1));
                     inventoryList.add(
                             this.opnRdmInventoryInput.getCircuitPackInventory(cp, Uint32.valueOf(equipmentLevel + 1)));
@@ -241,7 +241,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
                     if (cp.getParentCircuitPack().getCpSlotName() != null
                             && cp.getParentCircuitPack().getCircuitPackName() == null) {
 
-                        log.info("Cp {} has slotname of the parent circuit pack  but no parent circuit pack name",
+                        log.debug("Cp {} has slotname of the parent circuit pack  but no parent circuit pack name",
                                 cp.getCircuitPackName());
                         this.circuitPacksRecord.put(cp.getCircuitPackName(), (equipmentLevel + 3));
                         inventoryList.add(this.opnRdmInventoryInput.getCircuitPackInventory(cp,
@@ -253,7 +253,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
                     } else if (cp.getParentCircuitPack().getCircuitPackName() != null
                             && this.shelfProvisionedcircuitPacks
                                     .containsKey(cp.getParentCircuitPack().getCircuitPackName())) {
-                        log.info("Cp {} has parent circuit pack and shelf", cp.getCircuitPackName());
+                        log.debug("Cp {} has parent circuit pack and shelf", cp.getCircuitPackName());
                         this.circuitPacksRecord.put(cp.getCircuitPackName(), (equipmentLevel + 3));
                         inventoryList.add(this.opnRdmInventoryInput.getCircuitPackInventory(cp,
                                 Uint32.valueOf(equipmentLevel + 3)));
@@ -266,7 +266,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
                                     .setId(cp.getParentCircuitPack().getCpSlotName()).build());
                         }
 
-                        log.info("Cp has parent circuit pack but no shelf or a shelf but no parent circuit pack");
+                        log.debug("Cp has parent circuit pack but no shelf or a shelf but no parent circuit pack");
                         this.circuitPacksRecord.put(cp.getCircuitPackName(), (equipmentLevel + 2));
                         inventoryList.add(this.opnRdmInventoryInput.getCircuitPackInventory(cp,
                                 Uint32.valueOf(equipmentLevel + 2)));
@@ -282,12 +282,12 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
         Collection<Interface> interfaceList = YangHelper.getCollection(device.getInterface());
         if (interfaceList != null) {
             for (Interface deviceInterface : interfaceList) {
-                log.info("\n InterfaceName: {}", deviceInterface.getName());
-                log.info("Supporting CP {}", this.circuitPacksRecord.size());
+                log.debug("\n InterfaceName: {}", deviceInterface.getName());
+                log.debug("Supporting CP {}", this.circuitPacksRecord.size());
                 for (String s : this.circuitPacksRecord.keySet()) {
-                    log.info("{} value {}", s, this.circuitPacksRecord.get(s));
+                    log.debug("{} value {}", s, this.circuitPacksRecord.get(s));
                 }
-                log.info("Interface {} and their supporting CP {}", deviceInterface.getName(),
+                log.debug("Interface {} and their supporting CP {}", deviceInterface.getName(),
                         deviceInterface.getSupportingCircuitPackName());
                 if (deviceInterface.getSupportingCircuitPackName() != null) {
                     if (this.circuitPacksRecord.containsKey(deviceInterface.getSupportingCircuitPackName())) {

@@ -34,7 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.stream.Collectors;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlPropertyInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.DBKeyValuePair;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
@@ -91,8 +92,7 @@ public class SqlDBMapper {
     }
 
     public static <T> String createTable(Class<T> clazz, Entity e, String suffix, boolean autoIndex,
-            boolean withControllerId)
-            throws UnableToMapClassException {
+            boolean withControllerId) throws UnableToMapClassException {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE IF NOT EXISTS `" + e.getName() + suffix + "` (\n");
         if (autoIndex) {
@@ -101,7 +101,7 @@ public class SqlDBMapper {
         } else {
             sb.append("`" + ID_DBCOL + "` " + STRING_DBTYPE + " " + getColumnOptions(ID_DBCOL, STRING_DBTYPE) + ",\n");
         }
-        if(withControllerId) {
+        if (withControllerId) {
             sb.append("`" + ODLID_DBCOL + "` " + ODLID_DBTYPE + " " + getColumnOptions(ODLID_DBCOL, ODLID_DBTYPE) + ",\n");
         }
         for (Method method : getFilteredMethods(clazz, true)) {
@@ -115,7 +115,7 @@ public class SqlDBMapper {
             sb.append("`" + colName + "` " + dbType + " " + options + ",\n");
         }
         sb.append("primary key(" + ID_DBCOL + ")");
-        if(withControllerId) {
+        if (withControllerId) {
             sb.append(",foreign key(`" + ODLID_DBCOL + "`) references " + TABLENAME_CONTROLLER + "(" + ID_DBCOL + ")");
         }
 
@@ -138,6 +138,12 @@ public class SqlDBMapper {
         return options.toString();
     }
 
+    /**
+     *
+     * @param clazz Class to scan for methods for their properties
+     * @param getterOrSetter true for using only getters, false using setters
+     * @return
+     */
     public static List<Method> getFilteredMethods(Class<?> clazz, boolean getterOrSetter) {
         Method[] methods = clazz.getMethods();
         List<Method> list = new ArrayList<>();
@@ -220,7 +226,7 @@ public class SqlDBMapper {
         return convertCamelToKebabCase(camelName);
     }
 
-    private static String getDBType(Class<?> valueType) throws UnableToMapClassException {
+    public static String getDBType(Class<?> valueType) throws UnableToMapClassException {
         String type = mariaDBTypeMap.getOrDefault(valueType, null);
         if (type == null) {
             if (implementsInterface(valueType, DataObject.class) || implementsInterface(valueType, List.class)
@@ -292,6 +298,16 @@ public class SqlDBMapper {
         return result.toString();
     }
 
+    public static List<SqlPropertyInfo> getProperties(Class<? extends DataObject> clazz) {
+        return getFilteredMethods(clazz, true).stream().map(e -> {
+            try {
+                return new SqlPropertyInfo(e);
+            } catch (UnableToMapClassException ex) {
+                throw new RuntimeException(ex);
+            }
+        }).collect(Collectors.toList());
+    }
+
     public static class UnableToMapClassException extends Exception {
 
         private static final long serialVersionUID = 1L;
@@ -307,11 +323,12 @@ public class SqlDBMapper {
     }
 
     public static String escape(String o) {
-        return o.replace("'", "\'");
+        return o.replace("'", "\\'");
     }
 
     public static boolean isComplex(Class<?> valueType) {
-        return DataObject.class.isAssignableFrom(valueType) || List.class.isAssignableFrom(valueType);
+        return DataObject.class.isAssignableFrom(valueType) || List.class.isAssignableFrom(valueType)
+                || Set.class.isAssignableFrom(valueType);
     }
 
     public static Object getNumericValue(Object value, Class<?> valueType) {
@@ -353,15 +370,15 @@ public class SqlDBMapper {
     }
 
     @SuppressWarnings("unchecked")
-    public static <S,T> List<T> read(ResultSet data, Class<T> clazz, String column)
+    public static <S, T> List<T> read(ResultSet data, Class<T> clazz, String column)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException,
             InstantiationException, SecurityException, NoSuchMethodException, JsonProcessingException {
-        if(data==null) {
+        if (data == null) {
             return Arrays.asList();
         }
         S builder = findPOJOBuilder(clazz);
-        if(builder==null && column==null) {
-            throw new InstantiationException("unable to find builder for class "+clazz.getName());
+        if (builder == null && column == null) {
+            throw new InstantiationException("unable to find builder for class " + clazz.getName());
         }
 
         List<T> list = new ArrayList<>();
@@ -387,13 +404,14 @@ public class SqlDBMapper {
     }
 
     @SuppressWarnings("unchecked")
-	private static <S,T> T callBuild(S builder) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-    	Method method = builder.getClass().getMethod("build");
-		return (T) method.invoke(builder);
-	}
+    private static <S, T> T callBuild(S builder) throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Method method = builder.getClass().getMethod("build");
+        return (T) method.invoke(builder);
+    }
 
-	@SuppressWarnings("unchecked")
-    private static <S,T> S findPOJOBuilder(Class<T> ac) throws InstantiationException, IllegalAccessException,
+    @SuppressWarnings("unchecked")
+    private static <S, T> S findPOJOBuilder(Class<T> ac) throws InstantiationException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException, SecurityException, NoSuchMethodException {
         try {
             String builder = null;
@@ -407,7 +425,7 @@ public class SqlDBMapper {
             }
             if (builder != null) {
                 Class<?> innerBuilder = YangToolsMapperHelper.findClass(builder);
-                //Class<Builder<T>> builderClass = (Class<Builder<T>>) innerBuilder;
+                // Class<Builder<T>> builderClass = (Class<Builder<T>>) innerBuilder;
                 return (S) innerBuilder.getDeclaredConstructor().newInstance();
             }
         } catch (ClassNotFoundException e) {
@@ -464,9 +482,9 @@ public class SqlDBMapper {
         } else if (dstType.equals(Long.class)) {
             return value;
         } else if (dstType.equals(Integer.class)) {
-            return (int)value;
+            return (int) value;
         } else if (dstType.equals(Byte.class)) {
-            return (byte)value;
+            return (byte) value;
         }
         return null;
     }

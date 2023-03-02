@@ -87,7 +87,7 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
         try {
             // Start RPC Service
             this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.mediatorServerServlet, this.dataBroker);
-            this.treeServlet.setDatabaseClient(this.rpcApiService.getRawClient());
+            this.treeServlet.setInventoryTreeProvider(this.rpcApiService.getInventoryTreeProvider());
             this.userdataServlet.setDatabaseClient(this.rpcApiService.getHtDatabaseUserManager());
             LOG.info("Session Initiated end. Initialization done");
         } catch (Exception e) {
@@ -109,7 +109,7 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     /**
      * Used to close all Services, that should support AutoCloseable Pattern
      *
-     * @param toClose
+     * @param toCloseList
      * @throws Exception
      */
     private void close(AutoCloseable... toCloseList) throws Exception {

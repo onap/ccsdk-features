@@ -25,4 +25,8 @@ public interface SqlDBFilter {
 
     public String getFilterExpression();
 
+    default String getFilterExpression(boolean enclose) {
+        return enclose ? String.format("(%s)", this.getFilterExpression()) : this.getFilterExpression();
+    }
+
 }

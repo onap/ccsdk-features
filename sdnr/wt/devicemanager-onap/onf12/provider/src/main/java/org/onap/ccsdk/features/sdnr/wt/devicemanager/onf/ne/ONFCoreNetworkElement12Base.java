@@ -288,7 +288,7 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
      */
     protected FaultData readNetworkElementCurrentProblems12(FaultData resultList) {
 
-        LOG.info("DBRead Get {} NetworkElementCurrentProblems12", getMountpoint());
+        LOG.debug("DBRead Get {} NetworkElementCurrentProblems12", getMountpoint());
 
         InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.onf.core.model.conditional.packages.rev170402.NetworkElementPac> networkElementCurrentProblemsIID =
                 InstanceIdentifier.builder(

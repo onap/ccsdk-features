@@ -69,7 +69,7 @@ public class WrapperEquipmentPacRev170402 implements OnfInterfacePac {
         final Class<EquipmentPacKey> clazzPacKey = EquipmentPacKey.class;
         final Class<EquipmentCurrentProblems> clazzProblems = EquipmentCurrentProblems.class;
 
-        LOG.info("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
+        LOG.debug("DBRead Get problems for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 acessor.getNodeId(), interfacePacUuid.getValue());
 
         try {

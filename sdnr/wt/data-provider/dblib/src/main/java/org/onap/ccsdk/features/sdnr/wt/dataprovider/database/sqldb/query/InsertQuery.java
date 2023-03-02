@@ -107,7 +107,7 @@ public class InsertQuery<T extends DataObject> implements SqlQuery {
         }
         if (this.id != null && !cols.contains("`id`")) {
             cols.add("`id`");
-            args.add("'" + this.id + "'");
+            args.add("'" + SqlDBMapper.escape(this.id) + "'");
         }
         if (!this.ignoreControllerId) {
             args.add("'" + this.controllerId + "'");

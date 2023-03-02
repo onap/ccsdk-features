@@ -31,7 +31,7 @@ public class TestMapping {
 
 
     private static Optional<SeverityType> getSeverity(String faultSeverity) {
-        return SeverityType.forName(faultSeverity); // <-- mapping provided by generated classes. Manual mapping beneficial.
+        return Optional.ofNullable(SeverityType.forName(faultSeverity)); // <-- mapping provided by generated classes. Manual mapping beneficial.
     }
 
     private String updateFaultPayload(String faultNodeId, String faultCounter, String faultOccurrenceTime,

@@ -28,7 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.entity.HtDatabaseEventsService;
@@ -39,9 +38,11 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlD
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBStatusReader;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.DeleteQuery;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMediatorserver;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.InventoryTreeProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
@@ -64,6 +65,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListOutputBuilder;
@@ -101,6 +103,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     private final SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> maintenanceRW;
     private final SqlDBStatusReader readStatus;
     private final HtUserdataManager usermanager;
+    private final InventoryTreeProvider inventoryTreeProvider;
 
 
     public SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> getMaintenanceReaderWriter() {
@@ -145,6 +148,8 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
                 LOG.warn("problem setting controllerId: ", e);
             }
         }
+        this.inventoryTreeProvider = new SqlDbInventoryTreeProvider(this.dbClient, this.getControllerId());
+
 
     }
 
@@ -238,6 +243,17 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.list.output.PaginationBuilder(
                         result.getPagination()).build());
+        return outputBuilder;
+    }
+
+    @Override
+    public ReadInventoryDeviceListOutputBuilder readInventoryDeviceList(EntityInput input) {
+        ReadInventoryDeviceListOutputBuilder outputBuilder = new ReadInventoryDeviceListOutputBuilder();
+        QueryResult<String> result = this.equipmentRW.getDataDeviceList(input);
+        outputBuilder.setPagination(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.inventory.device.list.output.PaginationBuilder(
+                        result.getPagination()).build());
+        outputBuilder.setData(result.getResultSet());
         return outputBuilder;
     }
 
@@ -504,7 +520,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         }
         LOG.info("set controllerId {}", this.controllerId);
         String query =
-                String.format("SELECT * FROM `%s` WHERE `id`='%s';", this.controllerTableName, this.controllerId);
+                String.format("SELECT * FROM `%s` WHERE `id`='%s'", this.controllerTableName, this.controllerId);
         LOG.trace(query);
         ResultSet data = this.dbClient.read(query);
 
@@ -515,6 +531,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
             try { if(data!=null){data.close();} } catch (SQLException ignore) { }
             return this.dbClient.write(query);
         } else {
+            this.controllerId = data.getString(0);
             LOG.trace("controllerId already set");
         }
         return true;
@@ -531,6 +548,11 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     @Override
     public HtUserdataManager getUserManager() {
         return this.usermanager;
+    }
+
+    @Override
+    public InventoryTreeProvider getInventoryTreeProvider() {
+        return this.inventoryTreeProvider;
     }
 
 

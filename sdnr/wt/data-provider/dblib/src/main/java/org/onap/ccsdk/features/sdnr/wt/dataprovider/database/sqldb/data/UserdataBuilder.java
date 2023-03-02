@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.processing.Generated;
-import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.yang.binding.AbstractAugmentable;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -71,7 +70,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  *
  */
 @Generated("mdsal-binding-generator")
-public class UserdataBuilder implements Builder<Userdata> {
+public class UserdataBuilder {
 
     private String _id;
     private String _value;
@@ -148,7 +147,7 @@ public class UserdataBuilder implements Builder<Userdata> {
         return this;
     }
 
-    @Override
+
     public Userdata build() {
         return new UserdataImpl(this);
     }

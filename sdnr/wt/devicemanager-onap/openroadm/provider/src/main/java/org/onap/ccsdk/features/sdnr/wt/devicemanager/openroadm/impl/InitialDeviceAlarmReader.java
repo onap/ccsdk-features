@@ -103,7 +103,7 @@ public class InitialDeviceAlarmReader {
     // Mapping Severity of AlarmNotification to SeverityType of FaultLog
     protected static SeverityType checkSeverityValue(Severity severity) {
         SeverityType severityType = null;
-        log.info("Device Severity: {}", severity.getName());
+        log.debug("Device Severity: {}", severity.getName());
 
         switch (severity.getName()) {
             case ("warning"):
@@ -139,13 +139,13 @@ public class InitialDeviceAlarmReader {
     // Read Alarm Data
     private ActiveAlarmList getActiveAlarmList(NetconfBindingAccessor accessor) {
         final Class<ActiveAlarmList> classAlarm = ActiveAlarmList.class;
-        log.info("Get Alarm data for element {}", accessor.getNodeId().getValue());
+        log.debug("Get Alarm data for element {}", accessor.getNodeId().getValue());
         InstanceIdentifier<ActiveAlarmList> alarmDataIid = InstanceIdentifier.builder(classAlarm).build();
 
         ActiveAlarmList alarmData = accessor.getTransactionUtils().readData(accessor.getDataBroker(),
                 LogicalDatastoreType.OPERATIONAL, alarmDataIid);
 
-        log.info("AlarmData {}", alarmData);
+        log.debug("AlarmData {}", alarmData);
         return alarmData;
     }
 

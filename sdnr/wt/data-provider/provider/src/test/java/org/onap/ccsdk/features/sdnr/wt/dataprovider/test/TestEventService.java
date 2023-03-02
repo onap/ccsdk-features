@@ -39,7 +39,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.SearchResult;
 import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.common.database.requests.DeleteByQueryRequest;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.DatabaseDataProvider;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity.FaultEntityManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.data.entity.HtDatabaseEventsService;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
@@ -98,7 +98,7 @@ public class TestEventService {
         dbRawProvider = HtDatabaseClient.getClient(hosts);
 
         try {
-            service = new HtDatabaseEventsService(dbRawProvider, dbProvider);
+            service = new HtDatabaseEventsService(dbRawProvider);
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());

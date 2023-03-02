@@ -271,7 +271,7 @@ public class ONFCoreNetworkElement12Equipment {
 
         final Class<?> clazzPac = Equipment.class;
 
-        LOG.info("DBRead Get equipment for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
+        LOG.debug("DBRead Get equipment for class {} from mountpoint {} for uuid {}", clazzPac.getSimpleName(),
                 coreData.getMountpoint(), interfacePacUuid.getValue());
 
         InstanceIdentifier<Equipment> equipmentIID =
@@ -292,7 +292,7 @@ public class ONFCoreNetworkElement12Equipment {
 
         final Class<?> clazzPac = Equipment.class;
 
-        LOG.info("DBRead Get all equipment for class {} from mountpoint {}", clazzPac.getSimpleName(),
+        LOG.debug("DBRead Get all equipment for class {} from mountpoint {}", clazzPac.getSimpleName(),
                 coreData.getMountpoint());
 
         InstanceIdentifier<Equipment> equipmentIID = InstanceIdentifier.builder(Equipment.class).build();

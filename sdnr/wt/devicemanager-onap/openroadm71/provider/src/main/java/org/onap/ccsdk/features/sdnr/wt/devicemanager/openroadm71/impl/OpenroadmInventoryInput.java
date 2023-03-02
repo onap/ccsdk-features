@@ -58,7 +58,7 @@ public class OpenroadmInventoryInput {
     // public methods
     public Inventory getInventoryData(Uint32 treeLevel) {
         InventoryBuilder inventoryBuilder = new InventoryBuilder();
-        log.info("Info for device {}", this.openRoadmDevice.getInfo().getNodeId().getValue());
+        log.debug("Info for device {}", this.openRoadmDevice.getInfo().getNodeId().getValue());
         Info info = this.openRoadmDevice.getInfo();
         inventoryBuilder.setNodeId(this.accessor.getNodeId().getValue())
                 .setUuid(info.getNodeId() == null ? NOT_AVAILABLE : info.getNodeId().getValue())
@@ -68,13 +68,14 @@ public class OpenroadmInventoryInput {
                 .setVersion(info.getOpenroadmVersion() != null ? info.getOpenroadmVersion().getName() : null)
                 .setDescription("org-openroadm-device").setParentUuid("None").setTypeName(info.getNodeType().getName())
                 .setPartTypeId("device");
-        log.info("Inventory data written for device {}", this.openRoadmDevice.getInfo().getNodeId().getValue());
+        log.debug("Inventory data written for device {}", this.openRoadmDevice.getInfo().getNodeId().getValue());
         return inventoryBuilder.build();
     }
 
     public Inventory getShelvesInventory(Shelves shelf, Uint32 treeLevel) {
         InventoryBuilder inventoryBuilder = new InventoryBuilder();
-        inventoryBuilder.setNodeId(this.accessor.getNodeId().getValue()).setId(shelf.getShelfName())
+        inventoryBuilder.setNodeId(this.accessor.getNodeId().getValue())
+                .setId(this.accessor.getNodeId().getValue() + "/" + shelf.getShelfName())
                 .setDescription((shelf.getUserDescription() == null)
                         ? ("Position: " + shelf.getShelfPosition() + "\nState: " + shelf.getOperationalState())
                         : (shelf.getUserDescription()) + "\nPosition: " + shelf.getShelfPosition() + "\nState: "
@@ -85,28 +86,29 @@ public class OpenroadmInventoryInput {
                 .setManufacturerIdentifier(shelf.getVendor()).setModelIdentifier(shelf.getModel())
                 .setVersion(shelf.getHardwareVersion())
                 .setDate(shelf.getManufactureDate() != null ? shelf.getManufactureDate().getValue() : NOT_AVAILABLE);
-        log.info("Inventory data written for Shelf {}", shelf.getShelfName());
+        log.debug("Inventory data written for Shelf {}", shelf.getShelfName());
         return inventoryBuilder.build();
     }
 
     public Inventory getInterfacesInventory(Interface deviceInterface, Uint32 treeLevel) {
         InventoryBuilder inventoryBuilder = new InventoryBuilder();
-        inventoryBuilder.setNodeId(this.accessor.getNodeId().getValue()).setId(deviceInterface.getName())
+        inventoryBuilder.setNodeId(this.accessor.getNodeId().getValue())
+                .setId(this.accessor.getNodeId().getValue() + "/" + deviceInterface.getName())
                 .setDescription(
                         (deviceInterface.getDescription() == null) ? NOT_AVAILABLE : deviceInterface.getDescription())
                 .setUuid(deviceInterface.getName()).setSerial(deviceInterface.getName())
                 .setParentUuid((deviceInterface.getSupportingCircuitPackName() != null)
                         ? deviceInterface.getSupportingCircuitPackName()
-                        //  : ((deviceInterface.getSupportingInterface() != null) ? deviceInterface.getSupportingInterface()
+                        // : ((deviceInterface.getSupportingInterface() != null) ?
+                        // deviceInterface.getSupportingInterface()
                         : this.openRoadmDevice.getInfo().getNodeId().getValue())
                 .setTreeLevel(treeLevel)
                 .setTypeName((deviceInterface.getType() == null) ? "Interface"
-                        : deviceInterface.getType().getName().substring(69,
-                                deviceInterface.getType().getName().length()))
+                        : deviceInterface.getType().getClass().getSimpleName())
                 .setPartTypeId("Interface").setManufacturerIdentifier(this.openRoadmDevice.getInfo().getVendor())
                 .setModelIdentifier(this.openRoadmDevice.getInfo().getModel()).setVersion("N/A")
                 .setDate(this.openRoadmDevice.getInfo().getCurrentDatetime().getValue());
-        log.info("Inventory data written for Interface {}", deviceInterface.getName());
+        log.debug("Inventory data written for Interface {}", deviceInterface.getName());
 
         return inventoryBuilder.build();
     }
@@ -116,8 +118,9 @@ public class OpenroadmInventoryInput {
         inventoryBuilder.setNodeId(this.accessor.getNodeId().getValue()).setUuid(circuitPack.getCircuitPackName())
                 .setDate((circuitPack.getManufactureDate() == null) ? NOT_AVAILABLE
                         : circuitPack.getManufactureDate().getValue().substring(0, 19))
-                .setId(circuitPack.getCircuitPackName()).setManufacturerIdentifier(circuitPack.getVendor())
-                .setModelIdentifier(circuitPack.getModel()).setSerial(circuitPack.getSerialId()).setTreeLevel(treeLevel)
+                .setId(this.accessor.getNodeId().getValue() + "/" + circuitPack.getCircuitPackName())
+                .setManufacturerIdentifier(circuitPack.getVendor()).setModelIdentifier(circuitPack.getModel())
+                .setSerial(circuitPack.getSerialId()).setTreeLevel(treeLevel)
                 .setVersion(circuitPack.getHardwareVersion())
                 .setDescription("ProductCode: " + circuitPack.getProductCode() + "  " + "Mode: "
                         + circuitPack.getCircuitPackMode())
@@ -127,14 +130,15 @@ public class OpenroadmInventoryInput {
                         ? circuitPack.getParentCircuitPack().getCircuitPackName()
                         : ((circuitPack.getShelf() != null) ? circuitPack.getShelf()
                                 : this.openRoadmDevice.getInfo().getNodeId().getValue()));
-        log.info("Inventory data written for CircuitPack {}", circuitPack.getCircuitPackName());
+        log.debug("Inventory data written for CircuitPack {}", circuitPack.getCircuitPackName());
 
         return inventoryBuilder.build();
     }
 
     public Inventory getXponderInventory(Xponder xpdr, Uint32 treeLevel) {
         InventoryBuilder inventoryBuilder = new InventoryBuilder();
-        inventoryBuilder.setNodeId(this.accessor.getNodeId().getValue()).setId(xpdr.getXpdrNumber().toString())
+        inventoryBuilder.setNodeId(this.accessor.getNodeId().getValue())
+                .setId(this.accessor.getNodeId().getValue() + "/" + xpdr.getXpdrNumber().toString())
                 .setDescription("Xponder\nLifecycleState: " + xpdr.getLifecycleState().getName())
                 .setUuid(xpdr.getXpdrNumber().toString()).setSerial(xpdr.getXpdrNumber().toString())
                 .setParentUuid(this.openRoadmDevice.getInfo().getNodeId().getValue()).setTreeLevel(treeLevel)
@@ -143,7 +147,7 @@ public class OpenroadmInventoryInput {
                 .setModelIdentifier(this.openRoadmDevice.getInfo().getModel())
                 .setVersion(this.openRoadmDevice.getInfo().getOpenroadmVersion().getName())
                 .setDate(this.openRoadmDevice.getInfo().getCurrentDatetime().getValue());
-        log.info("Inventory data written for Xponder{}", xpdr.getXpdrNumber());
+        log.debug("Inventory data written for Xponder{}", xpdr.getXpdrNumber());
 
         return inventoryBuilder.build();
     }

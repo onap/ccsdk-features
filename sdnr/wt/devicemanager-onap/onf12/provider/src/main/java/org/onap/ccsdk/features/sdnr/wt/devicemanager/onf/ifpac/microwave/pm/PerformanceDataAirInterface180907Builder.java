@@ -38,8 +38,8 @@ public class PerformanceDataAirInterface180907Builder extends PmdataEntityBuilde
 
 	private PerformanceDataAirInterface180907Builder(NodeId nodeId, Lp lp, OtnHistoryDataG pmRecord) {
 		super();
-		Optional<GranularityPeriodType> gp = GranularityPeriodType
-				.forName(Helper.nnGetGranularityPeriodType(pmRecord.getGranularityPeriod()).getName());
+		Optional<GranularityPeriodType> gp = Optional.ofNullable(GranularityPeriodType
+				.forName(Helper.nnGetGranularityPeriodType(pmRecord.getGranularityPeriod()).getName()));
 		this.setGranularityPeriod(gp.orElse(GranularityPeriodType.Unknown));
 		this.setUuidInterface(Helper.nnGetUniversalId(lp.getUuid()).getValue());
 		this.setLayerProtocolName(Helper.nnGetLayerProtocolName(lp.getLayerProtocolName()).getValue());

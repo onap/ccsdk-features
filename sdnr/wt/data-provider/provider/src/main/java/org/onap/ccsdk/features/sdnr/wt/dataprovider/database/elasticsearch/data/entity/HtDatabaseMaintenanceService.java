@@ -80,7 +80,7 @@ public class HtDatabaseMaintenanceService implements HtDatabaseMaintenance {
             if (maintenanceRW.write(m, m.getNodeId()) == null) {
                 throw new IllegalArgumentException("Problem writing to database: " + m.getId());
             }
-            LOG.info("Wrote maintenance object {}", m.toString());
+            LOG.debug("Wrote maintenance object {}", m.toString());
         }
         return m;
     }

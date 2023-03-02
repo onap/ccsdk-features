@@ -29,42 +29,20 @@
     <reference id="rpcProviderService"
                interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
     <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
- 
-    <bean id="aboutServlet"
-          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet">
-    </bean>
-    <service interface="javax.servlet.http.HttpServlet"
-             ref="aboutServlet">
-        <service-properties>
-            <entry key="alias" value="/about"/>
-        </service-properties>
-    </service>
+
+    <bean id="aboutServlet" class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet" />
 
     <bean id="msServlet"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet">
     </bean>
-    <service interface="javax.servlet.http.HttpServlet" ref="msServlet">
-        <service-properties>
-            <entry key="alias" value="/ms"/>
-        </service-properties>
-    </service>
+
     <bean id="treeServlet"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet">
     </bean>
-    <service interface="javax.servlet.http.HttpServlet" ref="treeServlet">
-        <service-properties>
-            <entry key="alias" value="/tree"/>
-        </service-properties>
-    </service>
 
     <bean id="userdataServlet"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet">
     </bean>
-    <service interface="javax.servlet.http.HttpServlet" ref="userdataServlet">
-        <service-properties>
-            <entry key="alias" value="/userdata"/>
-        </service-properties>
-    </service>
 
     <bean id="provider"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataProviderImpl"
@@ -80,12 +58,6 @@
     <bean id="yangServlet"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.yangschema.YangSchemaHttpServlet">
     </bean>
-    <service interface="javax.servlet.http.HttpServlet"
-             ref="yangServlet">
-        <service-properties>
-            <entry key="alias" value="/yang-schema"/>
-        </service-properties>
-    </service>
 
     <service ref="provider"
              interface="org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider"/>

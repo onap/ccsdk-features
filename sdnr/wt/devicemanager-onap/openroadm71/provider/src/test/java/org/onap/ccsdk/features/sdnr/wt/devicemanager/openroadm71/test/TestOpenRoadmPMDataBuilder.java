@@ -64,6 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
+import org.opendaylight.yangtools.yang.common.Decimal64;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
@@ -79,7 +80,7 @@ public class TestOpenRoadmPMDataBuilder {
     private NodeId nodeId = new NodeId("RoadmA");
     private HistoricalPmList historicalPmDatalist = mock(HistoricalPmList.class);
     private HistoricalPm historicalPm = mock(HistoricalPm.class);
-    private PmDataType pmDataType = new PmDataType(Uint64.valueOf(67508));
+    private PmDataType pmDataType = new PmDataType(Decimal64.valueOf(1,67508));
     private MeasurementBuilder measurementBuilder = new MeasurementBuilder();
     private HistoricalPmBuilder historicalPmBuilder = new HistoricalPmBuilder();
     private HistoricalPmEntryBuilder historicalPmEntryBuiler = new HistoricalPmEntryBuilder();

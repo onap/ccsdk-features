@@ -27,7 +27,6 @@ import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsBuilderAnnotationIntrospector;
-import org.opendaylight.yangtools.concepts.Builder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

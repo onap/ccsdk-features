@@ -22,15 +22,22 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.http;
 
 import java.io.IOException;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.MediatorServerDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMediatorserver;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@HttpWhiteboardServletPattern("/ms/*")
+@HttpWhiteboardServletName("MsServlet")
+@Component(service = Servlet.class)
 public class MsServlet extends BaseServlet {
 
     /**
