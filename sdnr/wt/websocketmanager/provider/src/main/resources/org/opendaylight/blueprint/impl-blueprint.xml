@@ -27,12 +27,22 @@
            xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            odl:use-default-for-reference-types="true">
 
+
+    <!-- <bean id="wsServlet"
+          class="org.onap.ccsdk.features.sdnr.wt.websocketmanager.WebSocketManager">
+    </bean> -->
+    <!-- <service interface="javax.servlet.http.HttpServlet" ref="wsServlet">
+        <service-properties>
+            <entry key="alias" value="/websocket"/>
+        </service-properties>
+    </service> -->
     <bean id="provider" class="org.onap.ccsdk.features.sdnr.wt.websocketmanager.WebSocketManagerProvider" init-method="init" destroy-method="close">
+        <!--  <property name="wsServlet" ref="wsServlet"/> -->
     </bean>
 
-    <reference id="onBindService" availability="mandatory" activation="eager" interface="org.osgi.service.http.HttpService">
+    <!-- <reference id="onBindService" availability="mandatory" activation="eager" interface="org.osgi.service.http.HttpService">
         <reference-listener ref="provider" bind-method="onBindService" unbind-method="onUnbindService"/>
-    </reference>
+    </reference> -->
 
     <service id="registerWebsocketmanagerService"
              interface="org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService"

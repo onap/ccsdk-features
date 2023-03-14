@@ -22,6 +22,7 @@
   ~ ============LICENSE_END=======================================================
   ~
   -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -32,7 +33,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+    <groupId>org.onap.ccsdk.features.sdnr.wt.chlorine.sr1</groupId>
     <artifactId>sdnr-wt-websocketmanager-feature</artifactId>
     <version>1.5.1-SNAPSHOT</version>
     <packaging>feature</packaging>
