@@ -249,10 +249,10 @@ public class DeviceMonitorImpl implements DeviceMonitor, IConfigChangedListener 
         LOG.debug("Register for monitoring {} {}", mountPointNodeName, mountPointNodeName.hashCode());
 
         if (queue.containsKey(mountPointNodeName)) {
-            LOG.info("Monitoring task exists");
+            LOG.debug("Monitoring task exists");
             task = queue.get(mountPointNodeName);
         } else {
-            LOG.info("Do start of DeviceMonitor task");
+            LOG.debug("Do start of DeviceMonitor task");
             //Runnable task = new PerformanceManagerTask(queue, databaseService);
             task = new DeviceMonitorTask(mountPointNodeName, this.odlEventListener);
             queue.put(mountPointNodeName, task);

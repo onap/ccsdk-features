@@ -34,10 +34,10 @@ public class ODLVersionLUT {
         }
         if (onapCCSDKVersion.startsWith("2.5.")) {
             return "ONAP London";
-        } 
+        }
         if (onapCCSDKVersion.startsWith("2.4.")) {
             return "ONAP Kohn";
-        } 
+        }
         if (onapCCSDKVersion.startsWith("2.3.")) {
             return "ONAP Jakarta";
         }
@@ -72,6 +72,7 @@ public class ODLVersionLUT {
         }
         if(odlMdsalVersionLUT==null) {
             odlMdsalVersionLUT = new HashMap<>();
+            odlMdsalVersionLUT.put("10.0.5","chlorine-SR1 (0.17.1)");
             odlMdsalVersionLUT.put("10.0.2","chlorine-SR0 (0.17.0)");
             odlMdsalVersionLUT.put("9.0.5","sulfur-SR2 (0.16.2)");
             odlMdsalVersionLUT.put("9.0.4","sulfur-SR1 (0.16.1)");

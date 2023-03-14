@@ -40,7 +40,7 @@ public class VESNotificationFieldsPOJO {
     private String changeContact = "";
     private String changeIdentifier = "";
     private String changeType = "";
-    @JsonIgnore
+//    @JsonIgnore
     private String newState = "";
     @JsonIgnore
     private String oldState = "";

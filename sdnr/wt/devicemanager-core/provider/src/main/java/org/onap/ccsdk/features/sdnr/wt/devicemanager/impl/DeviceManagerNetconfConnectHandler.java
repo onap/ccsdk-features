@@ -72,9 +72,9 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
         //@NonNull NodeId nNodeId, @NonNull NetconfNode netconfNode,
         //@NonNull MountPoint mountPoint, @NonNull DataBroker netconfNodeDataBroker
         String mountPointNodeName = acessor.getNodeId().getValue();
-        LOG.info("onEnterConnected - starting Event listener on Netconf for mountpoint {}", mountPointNodeName);
+        LOG.debug("onEnterConnected - starting Event listener on Netconf for mountpoint {}", mountPointNodeName);
 
-        LOG.info("Master mountpoint {}", mountPointNodeName);
+        LOG.debug("Master mountpoint {}", mountPointNodeName);
 
         // It is master for mountpoint and all data are available.
         // Make sure that specific mountPointNodeName is handled only once.
@@ -103,7 +103,7 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
     @Override
     public void onLeaveConnected(@NonNull NodeId nNodeId, @NonNull Optional<NetconfNode> optionalNetconfNode) {
 
-        LOG.info("onLeaveConnected {}", nNodeId);
+        LOG.debug("onLeaveConnected {}", nNodeId);
         String mountPointNodeName = nNodeId.getValue();
 
         if (optionalNetconfNode.isPresent()) {
@@ -156,7 +156,7 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
 
     private void handleNeStartup(NodeId nodeId, NetworkElement inNe) {
 
-        LOG.info("NE Management for {} with {}", nodeId.getValue(), inNe.getClass().getName());
+        LOG.debug("NE Management for {} with {}", nodeId.getValue(), inNe.getClass().getName());
         NetworkElement result;
         synchronized (networkelementLock) {
             result = connectedNetworkElementRepresentations.put(nodeId.getValue(), inNe);
@@ -177,7 +177,7 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
     }
 
     private void sendUpdateNotification(NodeId nodeId, ConnectionStatus csts, NetconfNode nNode) {
-        LOG.info("update ConnectedState for device :: Name : {} ConnectionStatus {}", nodeId.getValue(), csts);
+        LOG.debug("update ConnectedState for device :: Name : {} ConnectionStatus {}", nodeId.getValue(), csts);
         if (isOdlEventListenerHandlerEnabled()) {
             getOdlEventListenerHandler().updateRegistration(nodeId, ConnectionStatus.class.getSimpleName(),
                     csts != null ? csts.getName() : "null", nNode);

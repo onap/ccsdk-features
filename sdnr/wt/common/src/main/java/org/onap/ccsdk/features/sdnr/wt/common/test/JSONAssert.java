@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.test;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import org.json.JSONArray;
@@ -45,6 +46,7 @@ public class JSONAssert {
                 int x = this.test(o1.get(key), o2.get(key));
                 if (x != 0) {
                     return x;
+                } else {
                 }
             }
             return 0;
@@ -53,8 +55,8 @@ public class JSONAssert {
         private int test(Object o1, Object o2) {
             int x;
             if ((o1 instanceof Double) && (o2 instanceof Double)) {
-
-                return (((Double) o1).doubleValue() - ((Double) o2).doubleValue()) < 0 ? -1 : 1;
+                double delta = (((Double) o1).doubleValue() - ((Double) o2).doubleValue());
+                return delta == 0.0 ? 0 : delta < 0 ? -1 : 1;
             } else if ((o1 instanceof Boolean) && (o2 instanceof Boolean)) {
                 return ((Boolean) o1).booleanValue() == ((Boolean) o2).booleanValue() ? 0 : -1;
 
@@ -183,50 +185,52 @@ public class JSONAssert {
 
 
     public static void assertContainsOnlyKey(JSONObject o, String key) {
-        if(o==null) {
+        if (o == null) {
             throw new AssertionError("object is null");
         }
-        if(key==null) {
+        if (key == null) {
             throw new AssertionError("key is null");
         }
 
-        Object[] keys= o.keySet().toArray();
-        if(keys.length>1) {
-            throw new AssertionError("more than one key found");
+        Object[] keys = o.keySet().toArray();
+        if (keys.length > 1) {
+            throw new AssertionError("more than one key found: " + Arrays.toString(keys));
         }
-        if(keys.length==0) {
+        if (keys.length == 0) {
             throw new AssertionError("no key found");
         }
-        if(!key.equals(keys[0])) {
-           throw new AssertionError("different key found "+key+" <=> "+ keys[0]);
+        if (!key.equals(keys[0])) {
+            throw new AssertionError("different key found " + key + " <=> " + keys[0]);
         }
     }
 
 
     public static void assertContainsExactKeys(JSONObject o, String[] keys) {
-        if(o==null) {
+        if (o == null) {
             throw new AssertionError("object is null");
         }
-        if(keys==null) {
+        if (keys == null) {
             throw new AssertionError("keys is null");
         }
-        Object[] okeys= o.keySet().toArray();
-        if(okeys.length!=keys.length) {
-            throw new AssertionError("found different amount of keys");
+        Object[] okeys = o.keySet().toArray();
+        if (okeys.length != keys.length) {
+            throw new AssertionError(
+                    "found different amount of keys: " + Arrays.toString(okeys) + " expected:" + Arrays.toString(keys));
         }
-        for(String k:keys) {
-            if(!o.keySet().contains(k)) {
-                throw new AssertionError("key "+ k+ " not found");
+        for (String k : keys) {
+            if (!o.keySet().contains(k)) {
+                throw new AssertionError("key " + k + " not found");
             }
         }
     }
+
     public static void assertContainsNoKeys(JSONObject o) {
-        if(o==null) {
+        if (o == null) {
             throw new AssertionError("object is null");
         }
 
-        Object[] okeys= o.keySet().toArray();
-        if(okeys.length!=0) {
+        Object[] okeys = o.keySet().toArray();
+        if (okeys.length != 0) {
             throw new AssertionError("found keys");
         }
     }

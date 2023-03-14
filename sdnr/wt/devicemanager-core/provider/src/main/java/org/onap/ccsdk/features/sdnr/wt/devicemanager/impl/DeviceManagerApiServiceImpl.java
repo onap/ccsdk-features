@@ -106,7 +106,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
     // For casablanca version no input was generated.
     public ListenableFuture<RpcResult<GetRequiredNetworkElementKeysOutput>> getRequiredNetworkElementKeys() {
 
-        LOG.info("RPC Request: getRequiredNetworkElementKeys");
+        LOG.debug("RPC Request: getRequiredNetworkElementKeys");
         RpcResultBuilder<GetRequiredNetworkElementKeysOutput> result;
         try {
             GetRequiredNetworkElementKeysOutputBuilder outputBuilder =
@@ -123,7 +123,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
     public ListenableFuture<RpcResult<ShowRequiredNetworkElementOutput>> showRequiredNetworkElement(
             ShowRequiredNetworkElementInput input) {
 
-        LOG.info("RPC Request: showRequiredNetworkElement input: {}", input.getMountpointName());
+        LOG.debug("RPC Request: showRequiredNetworkElement input: {}", input.getMountpointName());
         RpcResultBuilder<ShowRequiredNetworkElementOutput> result;
 
         try {
@@ -140,7 +140,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
     @Override
     public ListenableFuture<RpcResult<SetMaintenanceModeOutput>> setMaintenanceMode(SetMaintenanceModeInput input) {
 
-        LOG.info("RPC Request: setMaintenanceMode input: {}", input.getNodeId());
+        LOG.debug("RPC Request: setMaintenanceMode input: {}", input.getNodeId());
         RpcResultBuilder<SetMaintenanceModeOutput> result;
 
         try {
@@ -158,7 +158,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
     @Override
     public ListenableFuture<RpcResult<GetMaintenanceModeOutput>> getMaintenanceMode(GetMaintenanceModeInput input) {
 
-        LOG.info("RPC Request: getMaintenanceMode input: {}", input.getMountpointName());
+        LOG.debug("RPC Request: getMaintenanceMode input: {}", input.getMountpointName());
         @NonNull RpcResultBuilder<GetMaintenanceModeOutput> result;
 
         try {
@@ -174,7 +174,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
 
     @Override
     public ListenableFuture<RpcResult<TestMaintenanceModeOutput>> testMaintenanceMode(TestMaintenanceModeInput input) {
-        LOG.info("RPC Request: getMaintenanceMode input: {}", input.getMountpointName());
+        LOG.debug("RPC Request: getMaintenanceMode input: {}", input.getMountpointName());
         RpcResultBuilder<TestMaintenanceModeOutput> result;
 
         try {
@@ -192,7 +192,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
     @Override
     public ListenableFuture<RpcResult<ClearCurrentFaultByNodenameOutput>> clearCurrentFaultByNodename(
             ClearCurrentFaultByNodenameInput input) {
-        LOG.info("RPC Request: clearNetworkElementAlarms input: {}", input.getNodenames());
+        LOG.debug("RPC Request: clearNetworkElementAlarms input: {}", input.getNodenames());
         RpcResultBuilder<ClearCurrentFaultByNodenameOutput> result;
         try {
             if (this.resyncCallbackListener != null) {
@@ -215,7 +215,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
     @Override
     public ListenableFuture<RpcResult<PushFaultNotificationOutput>> pushFaultNotification(
             PushFaultNotificationInput input) {
-        LOG.info("RPC Received fault notification {}", input);
+        LOG.debug("RPC Received fault notification {}", input);
         RpcResultBuilder<PushFaultNotificationOutput> result;
         try {
             pushNotificationsListener.pushFaultNotification(input);
@@ -229,7 +229,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
 
     @Override
     public ListenableFuture<RpcResult<PushCmNotificationOutput>> pushCmNotification(PushCmNotificationInput input) {
-        LOG.info("RPC Received CM notification {}", input);
+        LOG.debug("RPC Received CM notification {}", input);
         RpcResultBuilder<PushCmNotificationOutput> result;
         try {
             pushNotificationsListener.pushCMNotification(input);
@@ -244,7 +244,7 @@ public class DeviceManagerApiServiceImpl implements DevicemanagerService, AutoCl
     @Override
     public ListenableFuture<RpcResult<PushAttributeChangeNotificationOutput>> pushAttributeChangeNotification(
             PushAttributeChangeNotificationInput input) {
-        LOG.info("RPC Received change notification {}", input);
+        LOG.debug("RPC Received change notification {}", input);
         RpcResultBuilder<PushAttributeChangeNotificationOutput> result;
         try {
             pushNotificationsListener.pushAttributeChangeNotification(input);

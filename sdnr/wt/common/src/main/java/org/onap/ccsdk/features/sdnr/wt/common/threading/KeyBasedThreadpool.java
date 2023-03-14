@@ -91,7 +91,7 @@ public class KeyBasedThreadpool<T, S> implements GenericRunnableFactoryCallback<
                 LOG.debug("key pool size reached. waiting for someone else to stop");
             }
         } else {
-            LOG.info("nothing to execute. queue is empty.");
+            LOG.debug("nothing to execute. queue is empty.");
         }
     }
 
