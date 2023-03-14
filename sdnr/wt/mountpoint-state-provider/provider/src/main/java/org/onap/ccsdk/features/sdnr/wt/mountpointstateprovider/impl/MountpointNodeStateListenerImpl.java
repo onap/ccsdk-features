@@ -49,7 +49,7 @@ public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener
     public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
         Ipv4Address ipv4Address = netconfNode.getHost().getIpAddress().getIpv4Address();
         Ipv6Address ipv6Address = netconfNode.getHost().getIpAddress().getIpv6Address();
-        LOG.info("In onCreated of MountpointNodeStateListenerImpl - nNodeId = {}, IP Address = {}",nNodeId.getValue(),
+        LOG.debug("In onCreated of MountpointNodeStateListenerImpl - nNodeId = {}, IP Address = {}",nNodeId.getValue(),
                 ipv4Address != null?ipv4Address.getValue():ipv6Address.getValue());
         JSONObject obj = new JSONObject();
         obj.put(Constants.NODEID, nNodeId.getValue());
@@ -63,7 +63,7 @@ public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener
     public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
         Ipv4Address ipv4Address = netconfNode.getHost().getIpAddress().getIpv4Address();
         Ipv6Address ipv6Address = netconfNode.getHost().getIpAddress().getIpv6Address();
-        LOG.info("In onStateChange of MountpointNodeStateListenerImpl - nNodeId = {}, IP Address = {}",nNodeId.getValue(),
+        LOG.debug("In onStateChange of MountpointNodeStateListenerImpl - nNodeId = {}, IP Address = {}",nNodeId.getValue(),
                 ipv4Address != null?ipv4Address.getValue():ipv6Address.getValue());
         JSONObject obj = new JSONObject();
         obj.put(Constants.NODEID, nNodeId.getValue());
@@ -76,7 +76,7 @@ public class MountpointNodeStateListenerImpl implements NetconfNodeStateListener
     @Override
     public void onRemoved(NodeId nNodeId) {
 
-        LOG.info("In onRemoved of MountpointNodeStateListenerImpl - nNodeId = {}",nNodeId);
+        LOG.debug("In onRemoved of MountpointNodeStateListenerImpl - nNodeId = {}",nNodeId);
         JSONObject obj = new JSONObject();
         obj.put(Constants.NODEID, nNodeId.getValue());
         obj.put(Constants.NETCONFNODESTATE, "Removed");

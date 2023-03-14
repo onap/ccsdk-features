@@ -55,7 +55,7 @@ public class Capabilities {
     private Capabilities() {}
 
     public static Capabilities getAvailableCapabilities(@Nullable NetconfNode nnode) {
-        LOG.info("GetAvailableCapabilities for node");
+        LOG.debug("GetAvailableCapabilities for node");
         Capabilities capabilities = new Capabilities();
         if (nnode != null) {
             AvailableCapabilities availableCapabilites = nnode.getAvailableCapabilities();
@@ -71,7 +71,7 @@ public class Capabilities {
     }
 
     public static Capabilities getUnavailableCapabilities(NetconfNode nnode) {
-        LOG.info("GetUnavailableCapabilities for node");
+        LOG.debug("GetUnavailableCapabilities for node");
         Capabilities capabilities = new Capabilities();
         if (nnode != null) {
             UnavailableCapabilities availableCapabilites = nnode.getUnavailableCapabilities();
@@ -204,7 +204,7 @@ public class Capabilities {
         if (revisionObject instanceof Optional) {
             if (((Optional<?>) revisionObject).isPresent()) {
                 revisionObject = ((Optional<?>) revisionObject).get();
-                LOG.info("Unwrapp Optional: {}", revisionObject != null ? revisionObject.getClass() : null);
+                LOG.debug("Unwrapp Optional: {}", revisionObject != null ? revisionObject.getClass() : null);
             }
         }
         if (revisionObject == null) {

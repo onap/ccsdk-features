@@ -134,7 +134,7 @@ public class ORanDOMChangeNotificationListener implements DOMNotificationListene
             VESNotificationFieldsPOJO body =
                     mapper.createVESNotificationFields(domNotificationXPath.convertDomNotifToXPath(domNotification),
                             ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_CONFIG_CHANGE.getLocalName());
-            log.info("domNotification in XPath format = {}",
+            log.debug("domNotification in XPath format = {}",
                     domNotificationXPath.convertDomNotifToXPath(domNotification));
             try {
                 vesCollectorService.publishVESMessage(vesCollectorService.generateVESEvent(header, body));

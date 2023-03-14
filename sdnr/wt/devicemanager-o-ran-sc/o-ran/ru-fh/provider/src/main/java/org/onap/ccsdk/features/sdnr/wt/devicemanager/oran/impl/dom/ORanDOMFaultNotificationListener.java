@@ -115,7 +115,7 @@ public class ORanDOMFaultNotificationListener implements DOMNotificationListener
                 VESFaultFieldsPOJO body = mapper.mapFaultFields(notification);
                 VESMessage vesMsg = vesCollectorService.generateVESEvent(header, body);
                 vesCollectorService.publishVESMessage(vesMsg);
-                LOG.info("VES Message is  {}", vesMsg.getMessage());
+                LOG.debug("VES Message is  {}", vesMsg.getMessage());
                 writeToEventLog(vesMsg.getMessage(), eventTimeInstant, ORanDeviceManagerQNames.ORAN_FM_ALARM_NOTIF.getLocalName(), counter);
             }
         } catch (JsonProcessingException | DateTimeParseException e) {

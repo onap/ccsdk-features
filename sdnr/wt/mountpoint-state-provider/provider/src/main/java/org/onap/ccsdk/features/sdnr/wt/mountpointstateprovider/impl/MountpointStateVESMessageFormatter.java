@@ -66,7 +66,7 @@ public class MountpointStateVESMessageFormatter {
         VESMessage vesMsg = null;
         try {
             vesMsg = vesCollectorService.generateVESEvent(vesCommonEventHeader, vesNotificationFields);
-            LOG.info("VES Message is - {}", vesMsg.getMessage());
+            LOG.debug("VES Message is - {}", vesMsg.getMessage());
         } catch (JsonProcessingException e) {
             LOG.error("Exception while generating VES Event - ", e);
         }

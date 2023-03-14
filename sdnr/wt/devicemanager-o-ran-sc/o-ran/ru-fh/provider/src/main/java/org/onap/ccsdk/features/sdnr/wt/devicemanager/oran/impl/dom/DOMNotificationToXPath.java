@@ -224,10 +224,10 @@ public class DOMNotificationToXPath {
         Instant eventTime;
         if (domNotification instanceof DOMEvent) {
             eventTime = ((DOMEvent) domNotification).getEventInstant();
-            LOG.info("Event time {}", eventTime);
+            LOG.debug("Event time {}", eventTime);
         } else {
             eventTime = Instant.now();
-            LOG.info("Defaulting to actual time of processing the notification - {}", eventTime);
+            LOG.debug("Defaulting to actual time of processing the notification - {}", eventTime);
         }
         return eventTime;
     }

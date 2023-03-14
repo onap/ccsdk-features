@@ -77,7 +77,7 @@ public class ORanDOMNetworkElement implements NetworkElement {
 
     public ORanDOMNetworkElement(@NonNull NetconfDomAccessor netconfDomAccessor,
             @NonNull DeviceManagerServiceProvider serviceProvider) {
-        LOG.info("Create {}", ORanDOMNetworkElement.class.getSimpleName());
+        LOG.debug("Create {}", ORanDOMNetworkElement.class.getSimpleName());
         this.netconfDomAccessor = Objects.requireNonNull(netconfDomAccessor);
         Objects.requireNonNull(serviceProvider);
         this.databaseService = serviceProvider.getDataProvider();
@@ -199,7 +199,7 @@ public class ORanDOMNetworkElement implements NetworkElement {
      * @return NormalizedNode data with GUI cut through information or null if not available.
      */
     private @Nullable NormalizedNode getOnapSystemData() {
-        LOG.info("Get System1 for mountpoint {}", netconfDomAccessor.getNodeId().getValue());
+        LOG.debug("Get System1 for mountpoint {}", netconfDomAccessor.getNodeId().getValue());
         @NonNull
         InstanceIdentifierBuilder ietfSystemIID =
                 YangInstanceIdentifier.builder().node(ORanDeviceManagerQNames.IETF_SYSTEM_CONTAINER);
@@ -209,7 +209,7 @@ public class ORanDOMNetworkElement implements NetworkElement {
         InstanceIdentifierBuilder augmentedOnapSystem =
                 YangInstanceIdentifier.builder(ietfSystemIID.build()).node(onapSystemIID);
         Capabilities x = netconfDomAccessor.getCapabilites();
-        LOG.info("Capabilites: {}", x);
+        LOG.debug("Capabilites: {}", x);
         if (x.isSupportingNamespace(ORanDeviceManagerQNames.ONAP_SYSTEM_QNAME)) {
             Optional<NormalizedNode> res =
                     netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedOnapSystem.build());
@@ -268,14 +268,14 @@ public class ORanDOMNetworkElement implements NetworkElement {
                     String deviceName = ORanDMDOMUtility.getLeafValue(device,
                             ORanDeviceManagerQNames.CALLHOME_SERVER_ALLOWED_DEVICE_KEY);
                     if (deviceName != null && deviceName.equals(mountpointName)) {
-                        LOG.info("Mountpoint {} is part of allowed-devices list", mountpointName);
+                        LOG.debug("Mountpoint {} is part of allowed-devices list", mountpointName);
                         return true;
                     }
                 }
             }
         }
 
-        LOG.info("Mountpoint {} is not part of allowed-devices list", mountpointName);
+        LOG.debug("Mountpoint {} is not part of allowed-devices list", mountpointName);
         return false;
     }
 
