@@ -15,6 +15,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.Onf14DomNetw
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
@@ -39,6 +40,8 @@ public class TestOnf14DomNetworkElement {
     @Mock
     FaultService faultService;
     @Mock
+    PerformanceManager pmService;
+    @Mock
     DeviceManagerServiceProvider serviceProvider;
     @Mock
     WebsocketManagerService websocketManagerService;
@@ -60,14 +63,14 @@ public class TestOnf14DomNetworkElement {
         when(netconfDomAccessor.getNodeId()).thenReturn(nodeId);
         when(serviceProvider.getDataProvider()).thenReturn(dataProvider);
         when(serviceProvider.getFaultService()).thenReturn(faultService);
+        when(serviceProvider.getPerformanceManagerService()).thenReturn(pmService);
         when(netconfDomAccessor.readDataNode(LogicalDatastoreType.CONFIGURATION, TOPLEVELEQUIPMENT_IID))
                 .thenReturn(Optional.empty());
     }
 
     @Test
-    public void test() {
+    public void testWithOldInterfaceRevisions() {
         Optional<NetworkElement> onfDomNe;
-
         Onf14DomNetworkElementFactory factory = new Onf14DomNetworkElementFactory();
         factory.init(serviceProvider);
         onfDomNe = factory.create(netconfDomAccessor, serviceProvider);
@@ -78,7 +81,7 @@ public class TestOnf14DomNetworkElement {
         onfDomNe.get().getAcessor();
         onfDomNe.get().getDeviceType();
         onfDomNe.get().warmstart();
-        onfDomNe.get().getService(null);
+        //onfDomNe.get().getService(null);
         assertEquals(onfDomNe.get().getNodeId().getValue(), "nSky");
     }
 

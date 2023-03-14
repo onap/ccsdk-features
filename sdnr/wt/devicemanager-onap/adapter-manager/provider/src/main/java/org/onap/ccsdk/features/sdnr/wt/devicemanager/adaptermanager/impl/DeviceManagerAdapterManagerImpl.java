@@ -36,7 +36,7 @@ public class DeviceManagerAdapterManagerImpl implements AutoCloseable {
 
     // Blueprint begin
     public DeviceManagerAdapterManagerImpl() {
-        LOG.info("Creating provider for {}", APPLICATION_NAME);
+        LOG.debug("Creating provider for {}", APPLICATION_NAME);
         resAdapterManager = null;
     }
 

@@ -27,23 +27,7 @@ import org.slf4j.LoggerFactory;
 
 public class Debug {
 
-    // constants
     private static final Logger log = LoggerFactory.getLogger(Debug.class);
-    // end of constants
-
-    // variables
-    // end of variables
-
-    // constructors
-    // end of constructors
-
-    // getters and setters
-    // end of getters and setters
-
-    // private methods
-    // end of private methods
-
-    // public methods
     /**
      * LOG the newly added problems of the interface pac
      *
@@ -62,11 +46,4 @@ public class Debug {
         }
         log.debug("Found problems {} {}", uuid, sb);
     }
-    // end of public methods
-
-    // static methods
-    // end of static methods
-
-    // private classes
-    // end of private classes
 }

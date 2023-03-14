@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.notifications;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.InternalDataModelSeverity;
@@ -120,21 +120,20 @@ public class Onf14DomAirInterfaceNotificationListener implements DOMNotification
     private void onObjectProblemNotification(@NonNull DOMNotification domNotification) {
 
         ContainerNode cn = domNotification.getBody();
-        FaultlogEntity faultAlarm =
-                new FaultlogBuilder()
-                        .setObjectId(Onf14DMDOMUtility.getLeafValue(cn,
-                                Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_OBJECT_ID_REF))
-                        .setProblem(Onf14DMDOMUtility.getLeafValue(cn,
-                                Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_PROBLEM))
-                        .setSourceType(SourceType.Netconf)
-                        .setTimestamp(new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
-                                Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)))
-                        .setNodeId(this.netconfDomAccessor.getNodeId().getValue())
-                        .setSeverity(InternalDataModelSeverity.mapSeverity(Onf14DMDOMUtility.getLeafValue(cn,
-                                        Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_SEVERITY)))
-                        .setCounter(Integer.parseInt(Onf14DMDOMUtility.getLeafValue(cn,
-                                Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_COUNTER)))
-                        .build();
+        FaultlogEntity faultAlarm = new FaultlogBuilder()
+                .setObjectId(Onf14DMDOMUtility.getLeafValue(cn,
+                        Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_OBJECT_ID_REF))
+                .setProblem(Onf14DMDOMUtility.getLeafValue(cn,
+                        Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_PROBLEM))
+                .setSourceType(SourceType.Netconf)
+                .setTimestamp(new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
+                        Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)))
+                .setNodeId(this.netconfDomAccessor.getNodeId().getValue())
+                .setSeverity(InternalDataModelSeverity.mapSeverity(Onf14DMDOMUtility.getLeafValue(cn,
+                        Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_SEVERITY)))
+                .setCounter(Integer.parseInt(Onf14DMDOMUtility.getLeafValue(cn,
+                        Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_COUNTER)))
+                .build();
 
         serviceProvider.getFaultService().faultNotification(faultAlarm);
         serviceProvider.getWebsocketService().sendNotification(domNotification, netconfDomAccessor.getNodeId(),

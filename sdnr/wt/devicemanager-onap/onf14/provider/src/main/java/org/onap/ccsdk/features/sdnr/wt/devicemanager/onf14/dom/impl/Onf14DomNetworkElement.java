@@ -17,19 +17,26 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.PerformanceDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.Onf14DomToInternalDataModel;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.equipment.Onf14DomEquipmentManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.Onf14DomInterfacePacManager;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.TechnologySpecificPacKeys;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.InconsistentPMDataException;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -47,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * Representation of ONF Core model 1.4 device Top level element is "ControlConstruct" (replaces "NetworkElement" of
  * older ONF Version) NOTE:
  */
-public class Onf14DomNetworkElement implements NetworkElement {
+public class Onf14DomNetworkElement implements NetworkElement, PerformanceDataProvider {
 
     private static final Logger log = LoggerFactory.getLogger(Onf14DomNetworkElement.class);
 
@@ -55,9 +62,13 @@ public class Onf14DomNetworkElement implements NetworkElement {
             YangInstanceIdentifier.builder().node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
                     .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_TOP_LEVEL_EQPT).build();
 
+    private final @NonNull Object pmLock = new Object();
+    protected @Nullable TechnologySpecificPacKeys pmLp = null;
+    protected @Nullable Iterator<TechnologySpecificPacKeys> interfaceListIterator = null;
     private final NetconfDomAccessor netconfDomAccessor;
     private final DataProvider databaseService;
     private final @NonNull FaultService faultService;
+    private final @NonNull PerformanceManager performanceManager;
     private final @NonNull NotificationService notificationService;
 
     private final Onf14DomToInternalDataModel onf14Mapper;
@@ -73,6 +84,7 @@ public class Onf14DomNetworkElement implements NetworkElement {
         this.databaseService = serviceProvider.getDataProvider();
         this.notificationService = serviceProvider.getNotificationService();
         this.faultService = serviceProvider.getFaultService();
+        this.performanceManager = serviceProvider.getPerformanceManagerService();
         this.namespaceRevision = namespaceRevision;
         this.onf14Mapper = new Onf14DomToInternalDataModel();
         this.equipmentManager = new Onf14DomEquipmentManager(netconfDomAccessor, databaseService, onf14Mapper);
@@ -84,15 +96,15 @@ public class Onf14DomNetworkElement implements NetworkElement {
      * reading the inventory (CoreModel 1.4 Equipment Model) and adding it to the DB
      */
     public void initialReadFromNetworkElement() {
-        log.info("Calling read equipment");
+        log.debug("Calling read equipment");
         // Read complete device tree
         readEquipmentData();
 
-        // Read fault data and subscribe for notifications
-        interfacePacManager.register();
-
         int problems = faultService.removeAllCurrentProblemsOfNode(netconfDomAccessor.getNodeId());
         log.debug("Removed all {} problems from database at registration", problems);
+
+        // Read fault data and subscribe for notifications
+        interfacePacManager.register();
 
     }
 
@@ -114,23 +126,28 @@ public class Onf14DomNetworkElement implements NetworkElement {
         if (netconfDomAccessor.isNotificationsRFC5277Supported()) {
             // Output notification streams to LOG
             Map<StreamKey, Stream> streams = netconfDomAccessor.getNotificationStreamsAsMap();
-            log.info("Available notifications streams: {}", streams);
+            log.debug("Available notifications streams: {}", streams);
             // Register to default stream
             netconfDomAccessor.invokeCreateSubscription();
         }
+        // -- Register NE to performance manager
+        performanceManager.registration(netconfDomAccessor.getNodeId(), this);
     }
 
     @Override
-    public void deregister() {}
+    public void deregister() {
+        performanceManager.deRegistration(netconfDomAccessor.getNodeId());
+    }
 
     @Override
     public NodeId getNodeId() {
         return netconfDomAccessor.getNodeId();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <L extends NetworkElementService> Optional<L> getService(Class<L> clazz) {
-        return Optional.empty();
+        return clazz.isInstance(this) ? Optional.of((L) this) : Optional.empty();
     }
 
     @Override
@@ -148,7 +165,7 @@ public class Onf14DomNetworkElement implements NetworkElement {
 
     private void readEquipmentData() {
         Optional<NormalizedNode> topLevelEquipment = readTopLevelEquipment(netconfDomAccessor);
-        log.info("Top level equipment data is {}", topLevelEquipment.isPresent() ? topLevelEquipment.get() : null);
+        log.debug("Top level equipment data is {}", topLevelEquipment.isPresent() ? topLevelEquipment.get() : null);
         if (topLevelEquipment.isPresent()) {
             equipmentManager.setEquipmentData(topLevelEquipment.get());
         }
@@ -156,8 +173,78 @@ public class Onf14DomNetworkElement implements NetworkElement {
     }
 
     private Optional<NormalizedNode> readTopLevelEquipment(NetconfDomAccessor netconfDomAccessor) {
-        log.info("Reading Top level equipment data");
         return netconfDomAccessor.readDataNode(LogicalDatastoreType.CONFIGURATION, TOPLEVELEQUIPMENT_IID);
+    }
+
+    public Object getPmLock() {
+        return pmLock;
+    }
+
+    @Override
+    public void resetPMIterator() {
+        synchronized (pmLock) {
+            interfaceListIterator = interfacePacManager.getAirInterfaceList().iterator();
+        }
+        log.debug("PM reset iterator");
+    }
+
+    @Override
+    public boolean hasNext() {
+        boolean res;
+        synchronized (pmLock) {
+            res = interfaceListIterator != null ? interfaceListIterator.hasNext() : false;
+        }
+        log.debug("PM hasNext LTP {}", res);
+        return res;
+    }
+
+    @Override
+    public void next() {
+        synchronized (pmLock) {
+            if (interfaceListIterator == null) {
+                pmLp = null;
+                log.debug("PM next LTP null");
+            } else {
+                pmLp = interfaceListIterator.next();
+            }
+        }
+
+    }
+
+    @Override
+    public Optional<PerformanceDataLtp> getLtpHistoricalPerformanceData() throws InconsistentPMDataException {
+        synchronized (getPmLock()) {
+            if (pmLp != null) {
+                log.debug("Enter query PM");
+                @NonNull
+                TechnologySpecificPacKeys lp = pmLp;
+                return Optional.of(interfacePacManager.getLtpHistoricalPerformanceData(lp));
+            }
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public String pmStatusToString() {
+        StringBuilder res = new StringBuilder();
+        synchronized (pmLock) {
+            if (pmLp == null) {
+                res.append("no interface");
+            } else {
+                res.append("ActualLP=");
+                res.append(pmLp.getLocalId());
+            }
+            res.append(" IFList=");
+            int no = 0;
+            for (TechnologySpecificPacKeys lp : interfacePacManager.getAirInterfaceList()) {
+                res.append("[");
+                res.append(no++);
+                res.append("]=");
+                res.append(lp.getLocalId());
+                res.append(" ");
+            }
+        }
+        return res.toString();
     }
 
 }

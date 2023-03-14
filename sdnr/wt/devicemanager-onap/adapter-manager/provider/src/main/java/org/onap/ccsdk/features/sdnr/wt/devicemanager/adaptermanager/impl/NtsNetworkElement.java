@@ -49,7 +49,7 @@ public class NtsNetworkElement implements NetworkElement {
     private @NonNull ListenerRegistration<NotificationListener> listenerRegistrationresult;
 
     NtsNetworkElement(NetconfBindingAccessor netconfAccess, DeviceManagerServiceProvider serviceProvider) {
-        LOG.info("Create {}", NtsNetworkElement.class.getSimpleName());
+        LOG.debug("Create {}", NtsNetworkElement.class.getSimpleName());
         this.netconfAccessor = netconfAccess;
         this.databaseService = serviceProvider.getDataProvider();
         this.notificationListener = new NotificationListenerImpl(netconfAccess,serviceProvider);

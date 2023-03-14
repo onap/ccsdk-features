@@ -39,13 +39,14 @@ public class Onf14DomNetworkElementFactory implements NetworkElementFactory {
         Optional<NetworkElement> ne = Optional.empty();
         Capabilities capabilities = accessor.getCapabilites();
         if (capabilities.isSupportingNamespace(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)) {
-            String namespaceRevision = capabilities.getRevisionForNamespace(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER);
+            String namespaceRevision = capabilities
+                    .getRevisionForNamespace(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER);
 
-                Optional<NetconfDomAccessor> domAccessor = accessor.getNetconfDomAccessor();
-                if (domAccessor.isPresent()) {
-                    ne = Optional.of(new Onf14DomNetworkElement(domAccessor.get(), serviceProvider, namespaceRevision));
-                }
-         
+            Optional<NetconfDomAccessor> domAccessor = accessor.getNetconfDomAccessor();
+            if (domAccessor.isPresent()) {
+                ne = Optional.of(new Onf14DomNetworkElement(domAccessor.get(), serviceProvider, namespaceRevision));
+            }
+
             log.info("Create device:{}", ne.isPresent() ? ne.get().getClass().getSimpleName() : "not");
         }
         return ne;

@@ -28,16 +28,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.Onf14DomAirInterfaceNotificationListener;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.Onf14DomEthernetContainerNotificationListener;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.Onf14DomWireInterfaceNotificationListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.InternalDataModelSeverity;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.pm.PerformanceDataAirInterface;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Debug;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DMDOMUtility;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.notifications.Onf14DomAirInterfaceNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.notifications.Onf14DomEthernetContainerNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.notifications.Onf14DomWireInterfaceNotificationListener;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
@@ -47,6 +49,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.Augmentat
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
+import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -130,15 +133,77 @@ public class Onf14DomInterfacePacManager {
         registerForNotifications();
     }
 
+    public List<TechnologySpecificPacKeys> getAirInterfaceList() {
+        return airInterfaceList;
+    }
+
+    public PerformanceDataLtp readAirInterfaceHistoricalPerformanceData(String ltpUuid, String localId,
+            PerformanceDataLtp res) {
+        log.debug("Get historical performance data for class {} from mountpoint {} for LTP uuid {} and local-id {}",
+                Onf14DevicemanagerQNames.AIR_INTERFACE_2_0_MODULE, netconfDomAccessor.getNodeId().getValue(), ltpUuid,
+                localId);
+
+        // constructing the IID needs the augmentation exposed by the air-interface-2-0
+        // model
+
+        InstanceIdentifierBuilder layerProtocolIID =
+                YangInstanceIdentifier.builder().node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
+                        .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP)
+                        .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP,
+                                QName.create(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP, "uuid").intern(), ltpUuid)
+                        .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL)
+                        .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL, QName
+                                .create(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL, "local-id").intern(),
+                                localId);
+
+        @NonNull
+        AugmentationIdentifier airInterfacePacIID = YangInstanceIdentifier.AugmentationIdentifier
+                .create(Sets.newHashSet(Onf14DevicemanagerQNames.AIR_INTERFACE_PAC));
+
+        InstanceIdentifierBuilder augmentedAirInterfacePacIID =
+                YangInstanceIdentifier.builder(layerProtocolIID.build()).node(airInterfacePacIID);
+
+        // reading historical performance list for this specific LTP and LP
+        Optional<NormalizedNode> airInterfacePacDataOpt =
+                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedAirInterfacePacIID.build());
+        log.debug("Performance Data = {}", airInterfacePacDataOpt.get().body());
+        if (airInterfacePacDataOpt.isPresent()) {
+            AugmentationNode airInterfacePacData = (AugmentationNode) airInterfacePacDataOpt.get();
+            ContainerNode cn = (ContainerNode) airInterfacePacData
+                    .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_PAC));
+            if (cn != null) {
+                ContainerNode airIntfHistPerf = (ContainerNode) cn
+                        .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_HISTORICAL_PERFORMANCES));
+                if (airIntfHistPerf != null) {
+                    MapNode airInterfaceHistoricalPerformanceList = (MapNode) airIntfHistPerf.childByArg(
+                            new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_HISTORICAL_PERFORMANCES_LIST));
+                    if (airInterfaceHistoricalPerformanceList != null) {
+                        Collection<MapEntryNode> airInterfaceHistoricalPerfCollection =
+                                airInterfaceHistoricalPerformanceList.body();
+                        for (MapEntryNode airInterfaceHistPerf : airInterfaceHistoricalPerfCollection) {
+                            res.add(new PerformanceDataAirInterface(netconfDomAccessor.getNodeId(), ltpUuid, localId,
+                                    airInterfaceHistPerf));
+                        }
+                        return res;
+                    } else {
+                        log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private void readAndWriteInterfaceCurrentProblems() {
         // Read all fault data
         FaultData resultList = new FaultData();
-        int problems;
+        int problems = 0;
         readAllAirInterfaceCurrentProblems(resultList);
         problems = resultList.size();
         log.debug("NETCONF read air interface current problems completed. Got back {} problems.", problems);
 
-        readAllEhernetContainerCurrentProblems(resultList);
+
+        readAllEthernetContainerCurrentProblems(resultList);
         problems = resultList.size() - problems;
         log.debug("NETCONF read current problems completed. Got back {} problems.", problems);
 
@@ -146,16 +211,18 @@ public class Onf14DomInterfacePacManager {
         problems = resultList.size();
         log.debug("NETCONF read wire interface current problems completed. Got back {} problems.", problems);
 
-        faultService.initCurrentProblemStatus(netconfDomAccessor.getNodeId(), resultList);
-        log.debug("DB write current problems completed");
+
+        if (resultList.size() > 0) {
+            faultService.initCurrentProblemStatus(netconfDomAccessor.getNodeId(), resultList);
+            log.debug("DB write current problems completed");
+        }
 
     }
 
     private void readKeys() {
         Optional<NormalizedNode> ltpData = readLtpData(netconfDomAccessor);
-        log.info("LTP Data is - {}", ltpData);
+        log.debug("LTP Data is - {}", ltpData);
         if (ltpData.isPresent()) {
-            log.debug("In readKeys - ltpData = {}", ltpData.get());
 
             MapNode ccLtp = (MapNode) ltpData.get();
             if (ccLtp != null) {
@@ -194,7 +261,7 @@ public class Onf14DomInterfacePacManager {
                                         Onf14DMDOMUtility.getLeafValue(lpEntry,
                                                 Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL_LOCAL_ID));
                             }
-                            // if the LTP has an ethernetContainier technology extension, the layer protocol
+                            // if the LTP has an ethernetContainer technology extension, the layer protocol
                             // name is ethernet-container-layer
                             else if (layerProtocolName.contains("LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER")) {
                                 TechnologySpecificPacKeys ethernetContainerKey = new TechnologySpecificPacKeys(
@@ -240,7 +307,7 @@ public class Onf14DomInterfacePacManager {
         }
     }
 
-    private void readAllEhernetContainerCurrentProblems(FaultData resultList) {
+    private void readAllEthernetContainerCurrentProblems(FaultData resultList) {
 
         int idxStart; // Start index for debug messages
 
@@ -266,7 +333,7 @@ public class Onf14DomInterfacePacManager {
 
     private void readAirInterfaceCurrentProblemForLtp(String ltpUuid, String localId, FaultData resultList) {
 
-        log.info("DBRead Get current problems for class {} from mountpoint {} for LTP uuid {} and local-id {}",
+        log.debug("DBRead Get current problems for class {} from mountpoint {} for LTP uuid {} and local-id {}",
                 Onf14DevicemanagerQNames.AIR_INTERFACE_2_0_MODULE, netconfDomAccessor.getNodeId().getValue(), ltpUuid,
                 localId);
 
@@ -296,7 +363,6 @@ public class Onf14DomInterfacePacManager {
 
         if (airInterfacePacDataOpt.isPresent()) {
             AugmentationNode airInterfacePacData = (AugmentationNode) airInterfacePacDataOpt.get();
-
             MapNode airInterfaceCurrentProblemsList = (MapNode) airInterfacePacData
                     .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_CURRENT_PROBLEMS_LIST));
             if (airInterfaceCurrentProblemsList != null) {
@@ -321,7 +387,7 @@ public class Onf14DomInterfacePacManager {
 
     private void readEthernetContainerCurrentProblemForLtp(String ltpUuid, String localId, FaultData resultList) {
 
-        log.info(
+        log.debug(
                 "DBRead Get current problems for Ethernet Container from mountpoint {} for LTP uuid {} and local-id {}",
                 netconfDomAccessor.getNodeId().getValue(), ltpUuid, localId);
 
@@ -377,7 +443,7 @@ public class Onf14DomInterfacePacManager {
 
     private void readWireInterfaceCurrentProblemForLtp(String ltpUuid, String localId, FaultData resultList) {
 
-        log.info("DBRead Get current problems for Wire Interface from mountpoint {} for LTP uuid {} and local-id {}",
+        log.debug("DBRead Get current problems for Wire Interface from mountpoint {} for LTP uuid {} and local-id {}",
                 netconfDomAccessor.getNodeId().getValue(), ltpUuid, localId);
 
         // constructing the IID needs the augmentation exposed by the wire-interface-2-0
@@ -419,7 +485,7 @@ public class Onf14DomInterfacePacManager {
                             Onf14DMDOMUtility.getLeafValue(wireInterfaceProblem,
                                     Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_PROBLEM_NAME),
                             InternalDataModelSeverity.mapSeverity(Onf14DMDOMUtility.getLeafValue(wireInterfaceProblem,
-                                            Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_PROBLEM_SEVERITY)));
+                                    Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_PROBLEM_SEVERITY)));
                 }
             } else {
                 log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
@@ -429,6 +495,7 @@ public class Onf14DomInterfacePacManager {
     }
 
     private void registerForNotifications() {
+
         QName[] airInterfaceNotifications = {Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_CREATE_NOTIFICATION,
                 Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_AVC_NOTIFICATION,
                 Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_DELETE_NOTIFICATION,
@@ -454,5 +521,11 @@ public class Onf14DomInterfacePacManager {
     public Optional<NormalizedNode> readLtpData(NetconfDomAccessor netconfDomAccessor) {
         log.info("Reading Logical Termination Point data");
         return netconfDomAccessor.readDataNode(LogicalDatastoreType.CONFIGURATION, LTP_IID);
+    }
+
+    public PerformanceDataLtp getLtpHistoricalPerformanceData(@NonNull TechnologySpecificPacKeys lp) {
+        PerformanceDataLtp res = new PerformanceDataLtp();
+        readAirInterfaceHistoricalPerformanceData(lp.getLtpUuid(), lp.getLocalId(), res);
+        return res;
     }
 }

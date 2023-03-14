@@ -30,10 +30,19 @@ import org.slf4j.LoggerFactory;
 public class InternalDataModelSeverity {
 
     private static Logger log = LoggerFactory.getLogger(InternalDataModelSeverity.class);
-    private static final Map<String, SeverityType> SEVERITYMAP =
-            Map.of("SEVERITY_TYPE_MAJOR", SeverityType.Major, "SEVERITY_TYPE_CRITICAL", SeverityType.Critical,
-                    "SEVERITY_TYPE_MINOR", SeverityType.Minor, "SEVERITY_TYPE_WARNING", SeverityType.Warning);
-
+    // @formatter:off
+    private static final Map<String, SeverityType> SEVERITYMAP = Map.of(
+            "SEVERITY_TYPE_MAJOR", SeverityType.Major,
+            "SEVERITY_AND_CLEARED_TYPE_MAJOR", SeverityType.Major,
+            "SEVERITY_TYPE_CRITICAL", SeverityType.Critical,
+            "SEVERITY_AND_CLEARED_TYPE_CRITICAL", SeverityType.Critical,
+            "SEVERITY_TYPE_MINOR", SeverityType.Minor,
+            "SEVERITY_AND_CLEARED_TYPE_MINOR", SeverityType.Minor,
+            "SEVERITY_TYPE_WARNING", SeverityType.Warning,
+            "SEVERITY_AND_CLEARED_TYPE_WARNING", SeverityType.Warning,
+            "SEVERITY_AND_CLEARED_TYPE_INDETERMINATE", SeverityType.NonAlarmed,
+            "SEVERITY_AND_CLEARED_TYPE_CLEARED", SeverityType.NonAlarmed);
+    // @formatter:on
     public static SeverityType mapSeverity(String severity) {
         log.debug("Severity is - {}", severity);
         SeverityType res = null;

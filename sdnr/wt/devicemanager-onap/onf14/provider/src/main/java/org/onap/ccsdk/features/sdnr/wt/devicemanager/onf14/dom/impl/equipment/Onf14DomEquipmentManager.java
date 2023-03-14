@@ -65,8 +65,62 @@ public class Onf14DomEquipmentManager {
         this.equipmentUuidList = new ArrayList<>();
     }
 
+    // public methods
     public List<String> getEquipmentUuidList() {
         return equipmentUuidList;
+    }
+
+    /**
+     * Set all equipment data from controlConstruct into database and into this manager.
+     *
+     * @param controlConstruct with complete device data
+     */
+    public void setEquipmentData(NormalizedNode controlConstruct) {
+        Objects.requireNonNull(controlConstruct);
+
+        // the top-level-equipment list contains the root objects of the Equipment Model
+        log.debug("Iterating through the list of topLevelEquipment for mountpoint {}", netconfDomAccessor.getNodeId());
+        // adding all root Equipment objects to the DB
+        List<Inventory> inventoryList = new ArrayList<>();
+        for (String uuid : getTopLevelEquipment(controlConstruct)) {
+            Optional<NormalizedNode> equipment = readEquipmentInstance(netconfDomAccessor, uuid);
+            MapEntryNode equipmentEntry = (MapEntryNode) equipment.get();
+            if (equipmentEntry != null) {
+                collectEquipment(inventoryList, equipmentEntry, null, EQUIPMENTROOTLEVEL);
+            }
+        }
+        this.databaseService.writeInventory(netconfDomAccessor.getNodeId().getValue(), inventoryList);
+
+    }
+
+    private List<String> getTopLevelEquipment(NormalizedNode transformedInput) {
+        List<String> topLvlEqptList = new ArrayList<>();
+        Collection<?> topLevelEqptListColl = (Collection<?>) transformedInput.body();
+        Iterator<?> childEntryItr = topLevelEqptListColl.iterator();
+        while (childEntryItr.hasNext()) {
+            LeafSetEntryNode<?> childEntryNode = (LeafSetEntryNode<?>) childEntryItr.next();
+            topLvlEqptList.add((String) childEntryNode.body());
+        }
+        return topLvlEqptList;
+    }
+
+    /**
+     * @param accessData to access device
+     * @param equipmentUuid uuid of equipment to be read
+     * @return Optional Equipment
+     */
+    private Optional<NormalizedNode> readEquipmentInstance(NetconfDomAccessor accessData, String equipmentUuid) {
+
+        log.debug("DBRead Get equipment from mountpoint {} for uuid {}", accessData.getNodeId().getValue(),
+                equipmentUuid);
+
+        InstanceIdentifierBuilder equipmentIIDBuilder = YangInstanceIdentifier.builder()
+                .node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
+                .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT)
+                .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT,
+                        QName.create(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT, "uuid").intern(), equipmentUuid);
+
+        return accessData.readDataNode(LogicalDatastoreType.CONFIGURATION, equipmentIIDBuilder.build());
     }
 
     private List<Inventory> collectEquipment(List<Inventory> list, MapEntryNode currentEq, MapEntryNode parentEq,
@@ -112,60 +166,6 @@ public class Onf14DomEquipmentManager {
         }
 
         return list;
-    }
-
-    // public methods
-    /**
-     * Set all equipment data from controlConstruct into database and into this manager.
-     *
-     * @param controlConstruct with complete device data
-     */
-    public void setEquipmentData(NormalizedNode controlConstruct) {
-        Objects.requireNonNull(controlConstruct);
-
-        // the top-level-equipment list contains the root objects of the Equipment Model
-        log.debug("Getting list of topLevelEquipment for mountpoint {}", netconfDomAccessor.getNodeId());
-        // adding all root Equipment objects to the DB
-        List<Inventory> inventoryList = new ArrayList<>();
-        for (String uuid : getTopLevelEquipment(controlConstruct)) {
-            Optional<NormalizedNode> equipment = readEquipmentInstance(netconfDomAccessor, uuid);
-            MapEntryNode equipmentEntry = (MapEntryNode) equipment.get();
-            if (equipmentEntry != null) {
-                collectEquipment(inventoryList, equipmentEntry, null, EQUIPMENTROOTLEVEL);
-            }
-        }
-        this.databaseService.writeInventory(netconfDomAccessor.getNodeId().getValue(), inventoryList);
-
-    }
-
-    private List<String> getTopLevelEquipment(NormalizedNode transformedInput) {
-        List<String> topLvlEqptList = new ArrayList<>();
-        Collection<?> topLevelEqptListColl = (Collection<?>) transformedInput.body();
-        Iterator<?> childEntryItr = topLevelEqptListColl.iterator();
-        while (childEntryItr.hasNext()) {
-            LeafSetEntryNode<?> childEntryNode = (LeafSetEntryNode<?>) childEntryItr.next();
-            topLvlEqptList.add((String) childEntryNode.body());
-        }
-        return topLvlEqptList;
-    }
-
-    /**
-     * @param accessData to access device
-     * @param equipmentUuid uuid of equipment to be read
-     * @return Optional Equipment
-     */
-    private Optional<NormalizedNode> readEquipmentInstance(NetconfDomAccessor accessData, String equipmentUuid) {
-
-        log.info("DBRead Get equipment from mountpoint {} for uuid {}", accessData.getNodeId().getValue(),
-                equipmentUuid);
-
-        InstanceIdentifierBuilder equipmentIIDBuilder = YangInstanceIdentifier.builder()
-                .node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
-                .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT)
-                .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT,
-                        QName.create(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT, "uuid").intern(), equipmentUuid);
-
-        return accessData.readDataNode(LogicalDatastoreType.CONFIGURATION, equipmentIIDBuilder.build());
     }
 
 }
