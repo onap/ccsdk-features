@@ -1,5 +1,10 @@
 /*
+ * ============LICENSE_START========================================================================
+ * ONAP : ccsdk feature sdnr wt
+ * =================================================================================================
  * Copyright (C) 2021 Samsung Electronics
+ * Copyright (C) 2022 highstreet technologies GmbH Intellectual Property. All rights reserved.
+ * =================================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -9,6 +14,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License
+ * ============LICENSE_END==========================================================================
  */
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
@@ -31,11 +37,11 @@ public abstract class MessageClient extends BaseHTTPClient {
     protected final Map<String, String> headerMap;
     private String notificationUri;
 
-    protected enum SendMethod {
+	public /* protected */ enum SendMethod {
         PUT, POST
     }
 
-    protected enum MessageType {
+	public /* protected */ enum MessageType {
         xml, json
     }
 
@@ -95,7 +101,7 @@ public abstract class MessageClient extends BaseHTTPClient {
         try {
             response = sendRequest(notificationUri, method.toString(), message, headerMap);
         } catch (IOException e) {
-            LOG.warn("Problem sending fault message: {}", e.getMessage());
+            LOG.warn("Problem sending message: {}", e.getMessage());
             return false;
         }
         LOG.debug("Finished with response code {}", response.code);
