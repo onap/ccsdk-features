@@ -28,10 +28,5 @@
     <bean id="helpServlet"
           class="org.onap.ccsdk.features.sdnr.wt.helpserver.HelpServlet">
     </bean>
-
-    <service interface="javax.servlet.http.HttpServlet" ref="helpServlet">
-        <service-properties>
-            <entry key="alias" value="/help"/>
-        </service-properties>
-    </service>
+    
 </blueprint>
