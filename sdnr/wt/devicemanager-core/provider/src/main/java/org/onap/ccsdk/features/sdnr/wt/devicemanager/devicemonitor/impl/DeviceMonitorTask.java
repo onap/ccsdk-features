@@ -116,11 +116,11 @@ public class DeviceMonitorTask implements Runnable {
      * @param scheduler for all the threads.
      */
     public void start(ScheduledExecutorService scheduler) {
-        LOG.info("{} {} DeviceMonitor task to create", LOGMARKER, tickCounter);
+        LOG.debug("{} {} DeviceMonitor task to create", LOGMARKER, tickCounter);
         if (taskHandle == null) {
             startDisconnectSupervision();
             taskHandle = scheduler.scheduleAtFixedRate(this, 0, 120, TimeUnit.SECONDS);
-            LOG.info("DeviceMonitor task scheduled");
+            LOG.debug("DeviceMonitor task scheduled");
         } else {
             LOG.error("{} {} Task already running.", LOGMARKER, tickCounter);
         }
@@ -133,7 +133,7 @@ public class DeviceMonitorTask implements Runnable {
      */
 
     public void deviceConnectIndication(@Nullable DeviceMonitoredNe neParam) {
-        LOG.info("{} {} Connect {} and stop.", LOGMARKER, tickCounter, mountPointName);
+        LOG.debug("{} {} Connect {} and stop.", LOGMARKER, tickCounter, mountPointName);
         clear(DeviceMonitorProblems.connectionLossOAM);
         synchronized (lockNe) {
             this.ne = neParam;
@@ -147,7 +147,7 @@ public class DeviceMonitorTask implements Runnable {
      */
 
     public void deviceDisconnectIndication() {
-        LOG.info("{} {} Disconnect {} and start.", LOGMARKER, tickCounter, mountPointName);
+        LOG.debug("{} {} Disconnect {} and start.", LOGMARKER, tickCounter, mountPointName);
         clear(DeviceMonitorProblems.connectionLossOAM);
         synchronized (lockNe) {
             this.ne = null;
@@ -168,7 +168,7 @@ public class DeviceMonitorTask implements Runnable {
         //Cancel the task
         if (this.taskHandle != null) {
             this.taskHandle.cancel(false);
-            LOG.info("{} {} DeviceMonitor task canceled for {}", LOGMARKER, tickCounter, mountPointName);
+            LOG.debug("{} {} DeviceMonitor task canceled for {}", LOGMARKER, tickCounter, mountPointName);
         } else {
             LOG.error("{} {} Task already stopped", LOGMARKER, tickCounter);
         }

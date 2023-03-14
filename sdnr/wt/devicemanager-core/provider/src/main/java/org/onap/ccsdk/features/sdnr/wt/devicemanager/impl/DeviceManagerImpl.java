@@ -276,7 +276,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     @Override
     public @NonNull <L extends NetworkElementFactory> FactoryRegistration<L> registerBindingNetworkElementFactory(
             @NonNull final L factory) {
-        LOG.info("Factory registration {}", factory.getClass().getName());
+        LOG.debug("Factory registration {}", factory.getClass().getName());
 
         factoryList.add(factory);
         factory.init(getServiceProvider());
