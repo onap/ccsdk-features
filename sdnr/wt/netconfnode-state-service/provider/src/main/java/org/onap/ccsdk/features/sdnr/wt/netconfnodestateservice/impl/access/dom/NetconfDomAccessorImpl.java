@@ -143,6 +143,9 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
         } catch (ExecutionException | TimeoutException e) {
             LOG.debug("Incomplete read to node transaction {} {}", dataStoreType, path, e);
             return Optional.empty();
+        } catch (IllegalArgumentException e) {
+        	LOG.debug("IllegalArgumentException occurred, Incomplete read to node transaction {} {}", dataStoreType, path, e);
+        	return Optional.empty();
         }
     }
 
@@ -199,12 +202,12 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
     @Override
     public @NonNull <T extends DOMNotificationListener> ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
             @NonNull T listener, Collection<Absolute> types) {
-        LOG.info("Begin register listener for Mountpoint {}", mountpoint.getIdentifier().toString());
+        LOG.debug("Begin register listener for Mountpoint {}", mountpoint.getIdentifier().toString());
 
         final ListenerRegistration<DOMNotificationListener> ranListenerRegistration =
                 notificationService.registerNotificationListener(listener, types);
 
-        LOG.info("End registration listener for Mountpoint {} Listener: {} Result: {}",
+        LOG.debug("End registration listener for Mountpoint {} Listener: {} Result: {}",
                 mountpoint.getIdentifier().toString(), notificationService, ranListenerRegistration);
 
         return ranListenerRegistration;

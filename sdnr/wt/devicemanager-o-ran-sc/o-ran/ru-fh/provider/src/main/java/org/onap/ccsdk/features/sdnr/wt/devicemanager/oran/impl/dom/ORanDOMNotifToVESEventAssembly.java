@@ -88,7 +88,7 @@ public class ORanDOMNotifToVESEventAssembly {
             Entry<String, String> pair = it.next();
             buf.append("\n" + pair.getKey() + " = " + pair.getValue());
         }
-        log.info("Resultlist({}):{}", xPathFields.size(), buf.toString());
+        log.debug("Resultlist({}):{}", xPathFields.size(), buf.toString());
 
         ArrayList<HashMap<String, Object>> arrayOfNamedHashMap = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> namedHashMap = new HashMap<String, Object>();

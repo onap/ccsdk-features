@@ -84,14 +84,14 @@ public class NetconfCommunicatorManager {
         } else {
             final MountPoint mountPoint = optionalMountPoint.get();
 
-            LOG.info("Mountpoint with id: {} class:{}", mountPoint.getIdentifier(), mountPoint.getClass().getName());
+            LOG.debug("Mountpoint with id: {} class:{}", mountPoint.getIdentifier(), mountPoint.getClass().getName());
 
             Optional<DataBroker> optionalNetconfNodeDatabroker = mountPoint.getService(DataBroker.class);
 
             if (!optionalNetconfNodeDatabroker.isPresent()) {
-                LOG.info("Slave mountpoint {} without databroker", mountPointNodeName);
+                LOG.debug("Slave mountpoint {} without databroker", mountPointNodeName);
             } else {
-                LOG.info("Master mountpoint {}", mountPointNodeName);
+                LOG.debug("Master mountpoint {}", mountPointNodeName);
                 return Optional.of(
                         new NetconfBindingAccessorImpl(accessor, optionalNetconfNodeDatabroker.get(), mountPoint));
             }

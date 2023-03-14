@@ -306,7 +306,7 @@ public class NetconfNodeStateServiceImpl
     @Override
     public <L extends NetconfNodeConnectListener> @NonNull ListenerRegistration<L> registerNetconfNodeConnectListener(
             final @NonNull L netconfNodeConnectListener) {
-        LOG.info("Register connect listener {}", netconfNodeConnectListener.getClass().getName());
+        LOG.debug("Register connect listener {}", netconfNodeConnectListener.getClass().getName());
         netconfNodeConnectListenerList.add(netconfNodeConnectListener);
 
         return new ListenerRegistration<L>() {
@@ -317,7 +317,7 @@ public class NetconfNodeStateServiceImpl
 
             @Override
             public void close() {
-                LOG.info("Remove connect listener {}", netconfNodeConnectListener);
+                LOG.debug("Remove connect listener {}", netconfNodeConnectListener);
                 netconfNodeConnectListenerList.remove(netconfNodeConnectListener);
             }
         };
@@ -326,7 +326,7 @@ public class NetconfNodeStateServiceImpl
     @Override
     public <L extends NetconfNodeStateListener> @NonNull ListenerRegistration<L> registerNetconfNodeStateListener(
             @NonNull L netconfNodeStateListener) {
-        LOG.info("Register state listener {}", netconfNodeStateListener.getClass().getName());
+        LOG.debug("Register state listener {}", netconfNodeStateListener.getClass().getName());
         netconfNodeStateListenerList.add(netconfNodeStateListener);
 
         return new ListenerRegistration<L>() {
@@ -337,7 +337,7 @@ public class NetconfNodeStateServiceImpl
 
             @Override
             public void close() {
-                LOG.info("Remove state listener {}", netconfNodeStateListener);
+                LOG.debug("Remove state listener {}", netconfNodeStateListener);
                 netconfNodeStateListenerList.remove(netconfNodeStateListener);
             }
         };
@@ -346,7 +346,7 @@ public class NetconfNodeStateServiceImpl
     @Override
     public <L extends VesNotificationListener> @NonNull ListenerRegistration<L> registerVesNotifications(
             @NonNull L vesNotificationListener) {
-        LOG.info("Register Ves notification listener {}", vesNotificationListener.getClass().getName());
+        LOG.debug("Register Ves notification listener {}", vesNotificationListener.getClass().getName());
         vesNotificationListenerList.add(vesNotificationListener);
 
         return new ListenerRegistration<L>() {
@@ -357,7 +357,7 @@ public class NetconfNodeStateServiceImpl
 
             @Override
             public void close() {
-                LOG.info("Remove Ves notification listener {}", vesNotificationListener);
+                LOG.debug("Remove Ves notification listener {}", vesNotificationListener);
                 vesNotificationListenerList.remove(vesNotificationListener);
             }
         };
@@ -412,7 +412,7 @@ public class NetconfNodeStateServiceImpl
     private void enterConnectedState(NodeId nNodeId, NetconfNode netconfNode) {
 
         String mountPointNodeName = nNodeId.getValue();
-        LOG.info("Access connected state for mountpoint {}", mountPointNodeName);
+        LOG.debug("Access connected state for mountpoint {}", mountPointNodeName);
 
         boolean preConditionMissing = false;
         if (mountPointService == null) {
@@ -428,7 +428,7 @@ public class NetconfNodeStateServiceImpl
         }
 
         boolean isNetconfNodeMaster = isNetconfNodeMaster(netconfNode);
-        LOG.info("isNetconfNodeMaster indication {} for mountpoint {}", isNetconfNodeMaster, mountPointNodeName);
+        LOG.debug("isNetconfNodeMaster indication {} for mountpoint {}", isNetconfNodeMaster, mountPointNodeName);
         if (isNetconfNodeMaster) {
             NetconfAccessor acessor = accessorManager.getAccessor(nNodeId, netconfNode);
             /*
@@ -439,11 +439,11 @@ public class NetconfNodeStateServiceImpl
                 try {
                     item.onEnterConnected(acessor);
                 } catch (Exception e) {
-                    LOG.info("Exception during onEnterConnected listener call", e);
+                    LOG.debug("Exception during onEnterConnected listener call", e);
                 }
             });
 
-            LOG.info("Connect indication forwarded for {}", mountPointNodeName);
+            LOG.debug("Connect indication forwarded for {}", mountPointNodeName);
         }
     }
 
@@ -456,7 +456,7 @@ public class NetconfNodeStateServiceImpl
      */
     private void leaveConnectedState(NodeId nNodeId, Optional<NetconfNode> optionalNetconfNode) {
         String mountPointNodeName = nNodeId.getValue();
-        LOG.info("leaveConnectedState id {}", mountPointNodeName);
+        LOG.debug("leaveConnectedState id {}", mountPointNodeName);
 
         if (this.accessorManager.containes(nNodeId)) {
             netconfNodeConnectListenerList.forEach(item -> {
@@ -467,13 +467,13 @@ public class NetconfNodeStateServiceImpl
                         LOG.warn("Unexpeced null item during onleave");
                     }
                 } catch (Exception e) {
-                    LOG.info("Exception during onLeaveConnected listener call", e);
+                    LOG.debug("Exception during onLeaveConnected listener call", e);
                 }
             });
-            LOG.info("Remove Master mountpoint {}", mountPointNodeName);
+            LOG.debug("Remove Master mountpoint {}", mountPointNodeName);
             this.accessorManager.removeAccessor(nNodeId);
         } else {
-            LOG.info("Master mountpoint already removed {}", mountPointNodeName);
+            LOG.debug("Master mountpoint already removed {}", mountPointNodeName);
         }
     }
 
@@ -495,7 +495,7 @@ public class NetconfNodeStateServiceImpl
             connectedBefore = false;
             created = true;
         }
-        LOG.info("L1 NETCONF id:{} t:{} created {} before:{} after:{} akkaIsCluster:{} cl stat:{}", nodeId,
+        LOG.debug("L1 NETCONF id:{} t:{} created {} before:{} after:{} akkaIsCluster:{} cl stat:{}", nodeId,
                 modificationTyp, created, connectedBefore, connectedAfter, isCluster,
                 getClusteredConnectionStatus(nNodeAfter));
         switch (modificationTyp) {
@@ -589,10 +589,10 @@ public class NetconfNodeStateServiceImpl
                     }
                 }
             } catch (NullPointerException | IllegalStateException e) {
-                LOG.info("Data not available at ", e);
+                LOG.debug("Data not available at ", e);
             }
         } //for
-        LOG.info("datatreechanged handler completed");
+        LOG.debug("datatreechanged handler completed");
     }
 
     // ---- subclasses for listeners
@@ -603,10 +603,10 @@ public class NetconfNodeStateServiceImpl
     private class L1 implements ClusteredDataTreeChangeListener<Node> {
         @Override
         public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Node>> changes) {
-            LOG.info("L1 TreeChange enter changes:{}", changes.size());
+            LOG.debug("L1 TreeChange enter changes:{}", changes.size());
             //Debug AkkTimeout NetconfNodeStateServiceImpl.this.pool.execute(new Thread( () -> onDataTreeChangedHandler(changes)));
             onDataTreeChangedHandler(changes);
-            LOG.info("L1 TreeChange leave");
+            LOG.debug("L1 TreeChange leave");
         }
     }
 
@@ -617,9 +617,9 @@ public class NetconfNodeStateServiceImpl
 
         @Override
         public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Node>> changes) {
-            LOG.info("L2 TreeChange enter changes:{}", changes.size());
+            LOG.debug("L2 TreeChange enter changes:{}", changes.size());
             // Do nothing
-            LOG.info("L2 TreeChange leave");
+            LOG.debug("L2 TreeChange leave");
         }
     }
 
