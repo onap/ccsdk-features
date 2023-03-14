@@ -144,7 +144,7 @@ public class HelpInfrastructureObject extends JSONObject {
     public static void createFilesFromResources() {
 
         if (KARAFHELPDIRECTORY.exists()) {
-            LOG.info("Delete existing directory");
+            LOG.debug("Delete existing directory");
             try {
                 ExtactBundleResource.deleteRecursively(KARAFHELPDIRECTORY);
             } catch (IOException e1) {
@@ -152,17 +152,17 @@ public class HelpInfrastructureObject extends JSONObject {
             }
         }
 
-        LOG.info("Extract");
+        LOG.debug("Extract");
         try {
             Bundle b = FrameworkUtil.getBundle(HelpInfrastructureObject.class);
             if (b == null) {
-                LOG.info("No bundlereference: Use target in filesystem.");
+                LOG.debug("No bundlereference: Use target in filesystem.");
                 // URL helpRessource =
                 // JarFileUtils.stringToJarURL("target/helpserver-impl-0.4.0-SNAPSHOT.jar",KARAFBUNDLERESOURCEHELPROOT);
 
             } else {
-                LOG.info("Bundle location:{} State:{}", b.getLocation(), b.getState());
-                LOG.info("Write files from Resource");
+                LOG.debug("Bundle location:{} State:{}", b.getLocation(), b.getState());
+                LOG.debug("Write files from Resource");
                 ExtactBundleResource.copyBundleResoucesRecursively(b, "data/cache/com.highstreet.technologies.",
                         KARAFBUNDLERESOURCEHELPROOT);
             }

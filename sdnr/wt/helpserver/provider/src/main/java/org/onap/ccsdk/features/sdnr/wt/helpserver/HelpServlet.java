@@ -26,14 +26,21 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.file.Path;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.onap.ccsdk.features.sdnr.wt.helpserver.data.HelpInfrastructureObject;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@HttpWhiteboardServletPattern("/help/*")
+@HttpWhiteboardServletName("HelpServlet")
+@Component(service = Servlet.class)
 public class HelpServlet extends HttpServlet implements AutoCloseable {
 
     private static Logger LOG = LoggerFactory.getLogger(HelpServlet.class);
