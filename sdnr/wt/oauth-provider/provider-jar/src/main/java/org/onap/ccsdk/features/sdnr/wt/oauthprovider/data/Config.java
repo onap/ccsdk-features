@@ -242,14 +242,14 @@ public class Config {
         boolean found = false;
         if (isEnvExpression(key)) {
 
-            LOG.info("try to find env var(s) for {}", key);
+            LOG.debug("try to find env var(s) for {}", key);
             final Matcher matcher = pattern.matcher(key);
             String tmp = new String(key);
             while (matcher.find() && matcher.groupCount() > 0) {
                 final String mkey = matcher.group(1);
                 if (mkey != null) {
                     try {
-                        LOG.info("match found for v={} and env key={}", key, mkey);
+                        LOG.debug("match found for v={} and env key={}", key, mkey);
                         String envvar = mkey.substring(2, mkey.length() - 1);
                         String env = System.getenv(envvar);
                         tmp = tmp.replace(mkey, env == null ? "" : env);

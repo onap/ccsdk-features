@@ -102,7 +102,7 @@ public class GitlabProviderService extends AuthService {
 
     @Override
     protected UserTokenPayload requestUserRoles(String access_token, long issued_at, long expires_at) {
-        LOG.info("reqesting user roles with token={}", access_token);
+        LOG.debug("reqesting user roles with token={}", access_token);
         Map<String, String> authHeaders = new HashMap<>();
         authHeaders.put("Authorization", String.format("Bearer %s", access_token));
         Optional<MappedBaseHttpResponse<GitlabUserInfo>> userInfo =

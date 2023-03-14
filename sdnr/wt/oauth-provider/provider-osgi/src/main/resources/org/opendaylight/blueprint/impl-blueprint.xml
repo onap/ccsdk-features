@@ -31,23 +31,27 @@
     <reference id="odlIdentityService" interface="org.opendaylight.aaa.api.IdMService" />
 
     <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker" />
-    
+
+    <bean id="provider" class="org.onap.ccsdk.features.sdnr.wt.oauthprovider.Helper" init-method="init" destroy-method="close">
+        <property ref="odlAuthenticator" name="odlAuthenticator" />
+        <property ref="odlIdentityService" name="odlIdentityService" />
+        <property ref="shiroConfiguration" name="shiroConfiguration" />
+        <property ref="dataBroker" name="dataBroker" />
+    </bean>
+
+    <reference id="onBindService" availability="mandatory" activation="eager" interface="org.osgi.service.http.HttpService">
+        <reference-listener ref="provider" bind-method="onBindService" unbind-method="onUnbindService"/>
+    </reference>
+
     <odl:clustered-app-config
           binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.ShiroConfiguration"
           id="shiroConfiguration" default-config-file-name="aaa-app-config.xml" />
           
-    <bean id="authServlet"
-          class="org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet">
+    <bean id="authServlet" class="org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet">
           <property ref="odlAuthenticator" name="odlAuthenticator" />
           <property ref="odlIdentityService" name="odlIdentityService" />
           <property ref="shiroConfiguration" name="shiroConfiguration" />
           <property ref="dataBroker" name="dataBroker" />
     </bean>
-
-    <service interface="javax.servlet.http.HttpServlet" ref="authServlet">
-        <service-properties>
-            <entry key="alias" value="/oauth"/>
-        </service-properties>
-    </service>
 
 </blueprint>

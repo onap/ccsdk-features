@@ -39,19 +39,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
+import org.apache.shiro.authc.BearerToken;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.jolokia.osgi.security.Authenticator;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.*;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.InvalidConfigurationException;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.NoDefinitionFoundException;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthToken;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UnableToConfigureOAuthService;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.AuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.AuthService.PublicOAuthProviderConfig;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.MdSalAuthorizationStore;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.OAuthProviderFactory;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.opendaylight.aaa.api.IdMService;
-import org.apache.shiro.authc.BearerToken;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.ShiroConfiguration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.aaa.app.config.rev170619.shiro.configuration.Main;
@@ -63,7 +70,7 @@ public class AuthHttpServlet extends HttpServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthHttpServlet.class.getName());
     private static final long serialVersionUID = 1L;
-    private static final String BASEURI = "/oauth";
+    public static final String BASEURI = "/oauth";
     private static final String LOGINURI = BASEURI + "/login";
     private static final String LOGOUTURI = BASEURI + "/logout";
     private static final String PROVIDERSURI = BASEURI + "/providers";
@@ -107,7 +114,6 @@ public class AuthHttpServlet extends HttpServlet {
             this.providerStore.put(pc.getId(), OAuthProviderFactory.create(pc.getType(), pc,
                     this.config.getRedirectUri(), TokenCreator.getInstance(this.config)));
         }
-
     }
 
     public void setOdlAuthenticator(Authenticator odlAuthenticator2) {
@@ -148,20 +154,27 @@ public class AuthHttpServlet extends HttpServlet {
 
     private void handleLogout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         final String bearerToken = this.tokenCreator.getBearerToken(req, true);
+        String redirectUrl = req.getParameter(LOGOUT_REDIRECT_URL_PARAMETER);
+        if (redirectUrl == null) {
+            redirectUrl = this.config.getPublicUrl();
+        }
+        // if nothing configured and nothing from request
+        if(redirectUrl == null || redirectUrl.isBlank()){
+            redirectUrl="/";
+        }
         UserTokenPayload userInfo = this.tokenCreator.decode(bearerToken);
-        if (bearerToken != null && userInfo!=null && !userInfo.isInternal()) {
+        if (bearerToken != null && userInfo != null && !userInfo.isInternal()) {
             AuthService provider = this.providerStore.getOrDefault(userInfo.getProviderId(), null);
+
             if (provider != null) {
-                String redirectUrl = req.getParameter(LOGOUT_REDIRECT_URL_PARAMETER);
-                if (redirectUrl == null) {
-                    redirectUrl = this.config.getPublicUrl();
-                }
                 provider.sendLogoutRedirectResponse(bearerToken, resp, redirectUrl);
+                this.logout();
                 return;
             }
         }
         this.logout();
-        this.sendResponse(resp, HttpServletResponse.SC_OK);
+        resp.sendRedirect(redirectUrl);
+
     }
 
     private void handleLoginRedirect(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -386,7 +399,7 @@ public class AuthHttpServlet extends HttpServlet {
                 hostUrl = matcher.group(1);
             }
         }
-        LOG.info("host={}", hostUrl);
+        LOG.debug("host={}", hostUrl);
         return hostUrl;
 
     }
@@ -424,7 +437,7 @@ public class AuthHttpServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         LOG.debug("POST request for {}", req.getRequestURI());
-        if (this.config.loginActive() &&  this.config.doSupportOdlUsers() && LOGINURI.equals(req.getRequestURI())) {
+        if (this.config.loginActive() && this.config.doSupportOdlUsers() && LOGINURI.equals(req.getRequestURI())) {
             final String username = req.getParameter("username");
             final String domain = req.getParameter("domain");
             BearerToken token =
@@ -466,6 +479,7 @@ public class AuthHttpServlet extends HttpServlet {
     private void sendResponse(HttpServletResponse resp, int code) throws IOException {
         this.sendResponse(resp, code, null);
     }
+
     private void sendResponse(HttpServletResponse resp, int code, Object data) throws IOException {
         byte[] output = data != null ? mapper.writeValueAsString(data).getBytes() : new byte[0];
         // output

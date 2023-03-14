@@ -157,16 +157,18 @@ public class TokenCreator {
     public String getBearerToken(HttpServletRequest req, boolean checkCookie) {
         final String authHeader = req.getHeader("Authorization");
         if ((authHeader == null || !authHeader.startsWith("Bearer")) && checkCookie) {
-            Cookie[] cookies = req.getCookies();
-            Optional<Cookie> ocookie = Optional.empty();
-            if (cookies != null) {
-                ocookie = Arrays.stream(cookies).filter(c -> c != null && COOKIE_NAME_AUTH.equals(c.getName()))
-                        .findFirst();
+            if(req!=null) {
+                Cookie[] cookies = req.getCookies();
+                Optional<Cookie> ocookie = Optional.empty();
+                if (cookies != null) {
+                    ocookie = Arrays.stream(cookies).filter(c -> c != null && COOKIE_NAME_AUTH.equals(c.getName()))
+                            .findFirst();
+                }
+                if (ocookie.isEmpty()) {
+                    return null;
+                }
+                return ocookie.get().getValue();
             }
-            if (ocookie.isEmpty()) {
-                return null;
-            }
-            return ocookie.get().getValue();
         }
         return authHeader.substring(7);
     }
