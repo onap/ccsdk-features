@@ -3,10 +3,8 @@
   ~ ============LICENSE_START=======================================================
   ~ ONAP : ccsdk features
   ~ ================================================================================
-  ~ Copyright (C) 2018 highstreet technologies GmbH Intellectual Property.
+  ~ Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
   ~ All rights reserved.
-  ~ ================================================================================
-  ~ Update Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
   ~ ================================================================================
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -34,54 +32,16 @@
     </parent>
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>sdnr-wt-apigateway-provider</artifactId>
+    <artifactId>ietf-alarms</artifactId>
     <version>1.5.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
 
-    <properties>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
-    </properties>
-
     <dependencies>
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-common</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
+	    <dependency>
+            <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
+            <artifactId>rfc6991-ietf-yang-types</artifactId>
+    </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <!-- fixed bug for sonarcube -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <useSystemClassLoader>false</useSystemClassLoader>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

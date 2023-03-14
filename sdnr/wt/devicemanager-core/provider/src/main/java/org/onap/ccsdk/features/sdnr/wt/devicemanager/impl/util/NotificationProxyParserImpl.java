@@ -333,10 +333,10 @@ public class NotificationProxyParserImpl implements NotificationProxyParser {
             Instant time;
             if (notification instanceof EventInstantAware) { // If notification class extends/implements the EventInstantAware
                 time = ((EventInstantAware) notification).eventInstant();
-                log.info("Event time {}", time);
+                log.debug("Event time {}", time);
             } else {
                 time = Instant.now();
-                log.info("Defaulting to actual time of processing the notification - {}", time);
+                log.debug("Defaulting to actual time of processing the notification - {}", time);
             }
             return time;
         }

@@ -99,7 +99,7 @@ public class VESCollectorServiceImpl implements VESCollectorService, IConfigChan
 
     @Override
     public boolean publishVESMessage(VESMessage message) {
-        LOG.info("In VESClient - {} ", message.getMessage());
+        LOG.debug("In VESClient - {} ", message.getMessage());
         BaseHTTPResponse response;
         try {
             String uri = "eventListener" + "/" + getConfig().getVersion();
@@ -162,7 +162,7 @@ public class VESCollectorServiceImpl implements VESCollectorService, IConfigChan
 
         Map<String, Object> outerEvent = new HashMap<String, Object>();
         outerEvent.put("event", innerEvent);
-        LOG.info("in generateVESEvent - {}", objMapper.writeValueAsString(outerEvent));
+        LOG.debug("In generateVESEvent - {}", objMapper.writeValueAsString(outerEvent));
         return new VESMessage(objMapper.writeValueAsString(outerEvent));
     }
 
