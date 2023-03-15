@@ -22,7 +22,9 @@
   ~ ============LICENSE_END=======================================================
   ~
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -48,10 +50,14 @@
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-        <buildtime>${maven.build.timestamp} UTC</buildtime>
+        <buildtime>${maven.build.timestamp} UTC</buildtime> 
     </properties>
 
     <dependencies>
+      <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-mountpoint-registrar-model</artifactId>
@@ -90,6 +96,11 @@
             <artifactId>rfc6991-ietf-yang-types</artifactId>
             <scope>provided</scope>
         </dependency>
+       <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>yang-binding</artifactId>
@@ -106,14 +117,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.onap.dmaap.messagerouter.dmaapclient</groupId>
-            <artifactId>dmaapClient</artifactId>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+            <scope>provided</scope>
         </dependency>
-        <dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>annotations</artifactId>
-			<scope>provided</scope>
-		</dependency>
         <!-- begin for testing -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -121,7 +128,7 @@
             <scope>test</scope>
         </dependency>
         <!-- end for testing -->
-        
+
     </dependencies>
 
     <build>
