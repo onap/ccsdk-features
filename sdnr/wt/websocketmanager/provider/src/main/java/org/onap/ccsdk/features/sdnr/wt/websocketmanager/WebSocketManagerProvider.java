@@ -19,6 +19,13 @@ package org.onap.ccsdk.features.sdnr.wt.websocketmanager;
 
 import java.time.Instant;
 import javax.servlet.ServletException;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.websocket.server.NativeWebSocketServletContainerInitializer;
+import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
+import org.onap.ccsdk.features.sdnr.wt.websocketmanager.config.WebSocketManagerConfig;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.DOMNotificationOutput;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.NotificationOutput;
@@ -37,22 +44,71 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
 
     private static final Logger LOG = LoggerFactory.getLogger(WebSocketManagerProvider.class);
     private static final String APPLICATION_NAME = WebSocketManagerProvider.class.getName();
+    private static final String CONFIGURATIONFILE = "etc/websocketmanager.properties";
+    private WebSocketManagerConfig wsConfig;
     private static final String ALIAS = "/websocket";
+    private static final String DEFAULT_IP_ADDR = "0.0.0.0";
 
     private WebSocketManager wsServlet = null;
+    private Server server = null;
 
     public WebSocketManagerProvider() {
         LOG.info("Creating provider for {}", APPLICATION_NAME);
     }
 
-
     public void init() {
         LOG.info("Init provider for {}", APPLICATION_NAME);
+        ConfigurationFileRepresentation configFileRepresentation =
+                new ConfigurationFileRepresentation(CONFIGURATIONFILE);
+
+        wsConfig = new WebSocketManagerConfig(configFileRepresentation);
+
+        if (wsConfig.getWebsocketPort().isPresent() && !wsConfig.getWebsocketPort().isEmpty()) {
+            try {
+                startServer(DEFAULT_IP_ADDR, wsConfig.getWebsocketPort().get().intValue(), ALIAS);
+            } catch (Exception e) {
+                LOG.error("Failed in Websocker server startup {}", e);
+            }
+        } else {
+            LOG.error("WebSocket Port not configured, hence not starting WebSocket Manager");
+        }
+    }
+
+    public void startServer(String wsHost, int wsPort, String wsPath) throws Exception {
+        server = new Server();
+        ServerConnector connector = new ServerConnector(server);
+        connector.setHost(wsHost);
+        connector.setPort(wsPort);
+        server.addConnector(connector);
+
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
+        server.setHandler(context);
+
+        NativeWebSocketServletContainerInitializer.configure(context,
+                (servletContext, nativeWebSocketConfiguration) -> {
+                    // Configure default max size
+                    nativeWebSocketConfiguration.getPolicy().setMaxTextMessageBufferSize(65535);
+
+                    // Add websockets
+                    nativeWebSocketConfiguration.addMapping(wsPath, new WebSocketManagerCreator());
+                });
+
+        // Add generic filter that will accept WebSocket upgrade.
+        WebSocketUpgradeFilter.configure(context);
+
+        server.start();
+    }
+
+    public void stopServer() throws Exception {
+        if (server != null)
+            server.stop();
     }
 
     @Override
     public void close() throws Exception {
         LOG.info("Close provider for {}", APPLICATION_NAME);
+        stopServer();
     }
 
     public void onUnbindService(HttpService httpService) {
@@ -60,11 +116,14 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
         wsServlet = null;
     }
 
+    public void setAboutServlet(WebSocketManager wsServlet) {
+        this.wsServlet = wsServlet;
+    }
+
     public void onBindService(HttpService httpService) throws ServletException, NamespaceException {
         if (httpService == null) {
             LOG.warn("Unable to inject HttpService into DluxLoader. dlux modules won't work without httpService");
         } else {
-
             if (wsServlet == null) {
                 wsServlet = new WebSocketManager();
                 httpService.registerServlet(ALIAS, wsServlet, null, null);

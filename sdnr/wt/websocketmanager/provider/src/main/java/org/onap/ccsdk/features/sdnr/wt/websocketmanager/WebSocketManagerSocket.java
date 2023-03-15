@@ -18,13 +18,14 @@
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
@@ -32,9 +33,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.DOMNotificationOutput;
@@ -82,7 +80,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
                     if (message != null) {
                         WebSocketManagerSocket.this.session.getRemote().sendStringByFuture(message)
                                 .get(SEND_MESSAGE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-                        LOG.info("message sent");
+                        LOG.debug("message sent");
                     }
                 } catch (ExecutionException | TimeoutException e) {
                     LOG.warn("problem pushing message: ", e);
@@ -155,7 +153,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     @Override
     public void onWebSocketText(String message) {
-        LOG.info("{} has sent {}", this.getRemoteAdr(), message);
+        LOG.debug("{} has sent {}", this.getRemoteAdr(), message);
         if (!this.manageClientRequest(message)) {
             this.manageClientRequest2(message);
         }
@@ -185,7 +183,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
 
     @Override
     public void onWebSocketError(Throwable cause) {
-        LOG.debug("error caused on {}: ",this.getRemoteAdr(), cause);
+        LOG.debug("error caused on {}: ", this.getRemoteAdr(), cause);
     }
 
     private String getRemoteAdr() {
@@ -221,7 +219,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
             }
 
         } catch (JsonProcessingException e) {
-            LOG.warn("problem set scope: {}" ,e.getMessage());
+            LOG.warn("problem set scope: {}", e.getMessage());
             try {
                 this.send(mapper.writeValueAsString(ScopeRegistrationResponse.error(e.getMessage())));
             } catch (JsonProcessingException e1) {
@@ -241,7 +239,7 @@ public class WebSocketManagerSocket extends WebSocketAdapter {
                 this.sendToAll(notification.getNodeId(), notification.getType(), request);
             }
         } catch (Exception e) {
-            LOG.warn("handle ws request failed:",e);
+            LOG.warn("handle ws request failed:", e);
         }
     }
 
