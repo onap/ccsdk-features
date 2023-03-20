@@ -25,17 +25,41 @@ import { WithStyles } from '@mui/styles';
 import withStyles from '@mui/styles/withStyles';
 import createStyles from '@mui/styles/createStyles';
 
-import connect, { IDispatcher, Connect } from "../../../../framework/src/flux/connect";
-import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
-import MaterialTable, { ColumnModel, ColumnType, MaterialTableCtorType } from "../../../../framework/src/components/material-table";
-import { Loader } from "../../../../framework/src/components/material-ui/loader";
+import { useConfirm } from 'material-ui-confirm';
+
+import { connect, IDispatcher, Connect } from '../../../../framework/src/flux/connect';
+import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
+import MaterialTable, { ColumnModel, ColumnType, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { Loader } from '../../../../framework/src/components/material-ui/loader';
 import { renderObject } from '../../../../framework/src/components/objectDump';
 
 import { DisplayModeType } from '../handlers/viewDescriptionHandler';
-import { SetSelectedValue, splitVPath, updateDataActionAsyncCreator, updateViewActionAsyncCreator, removeElementActionAsyncCreator, executeRpcActionAsyncCreator } from "../actions/deviceActions";
-import { ViewSpecification, isViewElementString, isViewElementNumber, isViewElementBoolean, isViewElementObjectOrList, isViewElementSelection, isViewElementChoise, ViewElement, ViewElementChoise, isViewElementUnion, isViewElementRpc, ViewElementRpc, isViewElementEmpty, isViewElementDate } from "../models/uiModels";
+import {
+  SetSelectedValue,
+  updateDataActionAsyncCreator,
+  updateViewActionAsyncCreator,
+  removeElementActionAsyncCreator,
+  executeRpcActionAsyncCreator,
+} from '../actions/deviceActions';
 
-import { getAccessPolicyByUrl } from "../../../../framework/src/services/restService";
+import {
+  ViewElement,
+  ViewSpecification,
+  ViewElementChoice,
+  ViewElementRpc,
+  isViewElementString,
+  isViewElementNumber,
+  isViewElementBoolean,
+  isViewElementObjectOrList,
+  isViewElementSelection,
+  isViewElementChoice,
+  isViewElementUnion,
+  isViewElementRpc,
+  isViewElementEmpty,
+  isViewElementDate,
+} from '../models/uiModels';
+
+import { getAccessPolicyByUrl } from '../../../../framework/src/services/restService';
 
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
@@ -44,22 +68,21 @@ import ArrowBack from '@mui/icons-material/ArrowBack';
 import RemoveIcon from '@mui/icons-material/RemoveCircleOutline';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
-import Tooltip from "@mui/material/Tooltip";
-import FormControl from "@mui/material/FormControl";
-import IconButton from "@mui/material/IconButton";
+import Tooltip from '@mui/material/Tooltip';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
 
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
-import Link from "@mui/material/Link";
+import Link from '@mui/material/Link';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
 
 import { BaseProps } from '../components/baseProps';
 import { UIElementReference } from '../components/uiElementReference';
@@ -70,44 +93,43 @@ import { UiElementSelection } from '../components/uiElementSelection';
 import { UIElementUnion } from '../components/uiElementUnion';
 import { UiElementLeafList } from '../components/uiElementLeafList';
 
-import { useConfirm } from 'material-ui-confirm';
-import restService from '../services/restServices';
+import { splitVPath } from '../utilities/viewEngineHelper';
 
 const styles = (theme: Theme) => createStyles({
   header: {
-    "display": "flex",
-    "justifyContent": "space-between",
+    'display': 'flex',
+    'justifyContent': 'space-between',
   },
   leftButton: {
-    "justifyContent": "left"
+    'justifyContent': 'left',
   },
   outer: {
-    "flex": "1",
-    "height": "100%",
-    "display": "flex",
-    "alignItems": "center",
-    "justifyContent": "center",
+    'flex': '1',
+    'height': '100%',
+    'display': 'flex',
+    'alignItems': 'center',
+    'justifyContent': 'center',
   },
   inner: {
 
   },
   container: {
-    "height": "100%",
-    "display": "flex",
-    "flexDirection": "column",
+    'height': '100%',
+    'display': 'flex',
+    'flexDirection': 'column',
   },
-  "icon": {
-    "marginRight": theme.spacing(0.5),
-    "width": 20,
-    "height": 20,
+  'icon': {
+    'marginRight': theme.spacing(0.5),
+    'width': 20,
+    'height': 20,
   },
-  "fab": {
-    "margin": theme.spacing(1),
+  'fab': {
+    'margin': theme.spacing(1),
   },
   button: {
     margin: 0,
-    padding: "6px 6px",
-    minWidth: 'unset'
+    padding: '6px 6px',
+    minWidth: 'unset',
   },
   readOnly: {
     '& label.Mui-focused': {
@@ -129,29 +151,29 @@ const styles = (theme: Theme) => createStyles({
     },
   },
   uiView: {
-    overflowY: "auto",
+    overflowY: 'auto',
   },
   section: {
-    padding: "15px",
+    padding: '15px',
     borderBottom: `2px solid ${theme.palette.divider}`,
   },
   viewElements: {
-    width: 485, marginLeft: 20, marginRight: 20
+    width: 485, marginLeft: 20, marginRight: 20,
   },
   verificationElements: {
-    width: 485, marginLeft: 20, marginRight: 20
+    width: 485, marginLeft: 20, marginRight: 20,
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
   moduleCollection: {
-    marginTop: "16px",
-    overflow: "auto",
+    marginTop: '16px',
+    overflow: 'auto',
   },
   objectReult: {
-    overflow: "auto"
-  }
+    overflow: 'auto',
+  },
 });
 
 const mapProps = (state: IApplicationStoreState) => ({
@@ -183,10 +205,10 @@ type ConfigurationApplicationComponentState = {
   editMode: boolean;
   canEdit: boolean;
   viewData: { [key: string]: any } | null;
-  choises: { [path: string]: { selectedCase: string, data: { [property: string]: any } } };
-}
+  choices: { [path: string]: { selectedCase: string; data: { [property: string]: any } } };
+};
 
-type GetStatelessComponentProps<T> = T extends (props: infer P & { children?: React.ReactNode }) => any ? P : any
+type GetStatelessComponentProps<T> = T extends (props: infer P & { children?: React.ReactNode }) => any ? P : any;
 const AccordionSummaryExt: React.FC<GetStatelessComponentProps<typeof AccordionSummary>> = (props) => {
   const [disabled, setDisabled] = useState(true);
   const onMouseDown = (ev: React.MouseEvent<HTMLElement>) => {
@@ -202,7 +224,7 @@ const AccordionSummaryExt: React.FC<GetStatelessComponentProps<typeof AccordionS
   );
 };
 
-const OldProps = Symbol("OldProps");
+const OldProps = Symbol('OldProps');
 class ConfigurationApplicationComponent extends React.Component<ConfigurationApplicationComponentProps, ConfigurationApplicationComponentState> {
 
   /**
@@ -216,17 +238,17 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       canEdit: false,
       editMode: false,
       viewData: null,
-      choises: {},
-    }
+      choices: {},
+    };
   }
 
-  private static getChoisesFromElements = (elements: { [name: string]: ViewElement }, viewData: any) => {
+  private static getChoicesFromElements = (elements: { [name: string]: ViewElement }, viewData: any) => {
     return Object.keys(elements).reduce((acc, cur) => {
       const elm = elements[cur];
-      if (isViewElementChoise(elm)) {
+      if (isViewElementChoice(elm)) {
         const caseKeys = Object.keys(elm.cases);
 
-        // find the right case for this choise, use the first one with data, at least use index 0
+        // find the right case for this choice, use the first one with data, at least use index 0
         const selectedCase = caseKeys.find(key => {
           const caseElm = elm.cases[key];
           return Object.keys(caseElm.elements).some(caseElmKey => {
@@ -255,26 +277,26 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         };
       }
       return acc;
-    }, {} as { [path: string]: { selectedCase: string, data: { [property: string]: any } } }) || {}
-  }
+    }, {} as { [path: string]: { selectedCase: string; data: { [property: string]: any } } }) || {};
+  };
 
   static getDerivedStateFromProps(nextProps: ConfigurationApplicationComponentProps, prevState: ConfigurationApplicationComponentState & { [OldProps]: ConfigurationApplicationComponentProps }) {
 
     if (!prevState || !prevState[OldProps] || (prevState[OldProps].viewData !== nextProps.viewData)) {
-      const isNew: boolean = nextProps.vPath?.endsWith("[]") || false;
+      const isNew: boolean = nextProps.vPath?.endsWith('[]') || false;
       const state = {
         ...prevState,
         isNew: isNew,
         editMode: isNew,
         viewData: nextProps.viewData || null,
         [OldProps]: nextProps,
-        choises: nextProps.displaySpecification.displayMode === DisplayModeType.doNotDisplay
+        choices: nextProps.displaySpecification.displayMode === DisplayModeType.doNotDisplay
           || nextProps.displaySpecification.displayMode === DisplayModeType.displayAsMessage
           ? null
           : nextProps.displaySpecification.displayMode === DisplayModeType.displayAsRPC
-            ? nextProps.displaySpecification.inputViewSpecification && ConfigurationApplicationComponent.getChoisesFromElements(nextProps.displaySpecification.inputViewSpecification.elements, nextProps.viewData) || []
-            : ConfigurationApplicationComponent.getChoisesFromElements(nextProps.displaySpecification.viewSpecification.elements, nextProps.viewData)
-      }
+            ? nextProps.displaySpecification.inputViewSpecification && ConfigurationApplicationComponent.getChoicesFromElements(nextProps.displaySpecification.inputViewSpecification.elements, nextProps.viewData) || []
+            : ConfigurationApplicationComponent.getChoicesFromElements(nextProps.displaySpecification.viewSpecification.elements, nextProps.viewData),
+      };
       return state;
     }
     return null;
@@ -282,24 +304,24 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
   private navigate = (path: string) => {
     this.props.history.push(`${this.props.match.url}${path}`);
-  }
+  };
 
   private changeValueFor = (property: string, value: any) => {
     this.setState({
       viewData: {
         ...this.state.viewData,
-        [property]: value
-      }
+        [property]: value,
+      },
     });
-  }
+  };
 
   private collectData = (elements: { [name: string]: ViewElement }) => {
-    // ensure only active choises will be contained
+    // ensure only active choices will be contained
     const viewData: { [key: string]: any } = { ...this.state.viewData };
-    const choiseKeys = Object.keys(elements).filter(elmKey => isViewElementChoise(elements[elmKey]));
-    const elementsToRemove = choiseKeys.reduce((acc, curChoiceKey) => {
-      const currentChoice = elements[curChoiceKey] as ViewElementChoise;
-      const selectedCase = this.state.choises[curChoiceKey].selectedCase;
+    const choiceKeys = Object.keys(elements).filter(elmKey => isViewElementChoice(elements[elmKey]));
+    const elementsToRemove = choiceKeys.reduce((acc, curChoiceKey) => {
+      const currentChoice = elements[curChoiceKey] as ViewElementChoice;
+      const selectedCase = this.state.choices[curChoiceKey].selectedCase;
       Object.keys(currentChoice.cases).forEach(caseKey => {
         const caseElements = currentChoice.cases[caseKey].elements;
         if (caseKey === selectedCase) {
@@ -311,7 +333,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
             }
           });
           return;
-        };
+        }
         Object.keys(caseElements).forEach(caseElementKey => {
           acc.push(caseElements[caseElementKey]);
         });
@@ -325,17 +347,17 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       }
       return acc;
     }, {} as { [key: string]: any });
-  }
+  };
 
   private isPolicyViewElementForbidden = (element: ViewElement, dataPath: string): boolean => {
     const policy = getAccessPolicyByUrl(`${dataPath}/${element.id}`);
     return !(policy.GET && policy.POST);
-  }
+  };
 
   private isPolicyModuleForbidden = (moduleName: string, dataPath: string): boolean => {
     const policy = getAccessPolicyByUrl(`${dataPath}/${moduleName}`);
     return !(policy.GET && policy.POST);
-  }
+  };
 
   private getEditorForViewElement = (uiElement: ViewElement): (null | React.ComponentType<BaseProps<any>>) => {
     if (isViewElementEmpty(uiElement)) {
@@ -353,12 +375,12 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     } else if (isViewElementUnion(uiElement)) {
       return UIElementUnion;
     } else {
-      if (process.env.NODE_ENV !== "production") {
-        console.error(`Unknown element type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(`Unknown element type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`);
       }
       return null;
     }
-  }
+  };
 
   private renderUIElement = (uiElement: ViewElement, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
     const isKey = (uiElement.label === keyProperty);
@@ -377,7 +399,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         value={uiElement}
         readOnly={!canEdit}
         disabled={editMode && !canEdit}
-        onChange={(e) => { this.changeValueFor(uiElement.id, e) }}
+        onChange={(e) => { this.changeValueFor(uiElement.id, e); }}
         getEditorForViewElement={this.getEditorForViewElement}
       />;
     } else {
@@ -391,7 +413,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
             value={uiElement}
             readOnly={!canEdit}
             disabled={editMode && !canEdit}
-            onChange={(e) => { this.changeValueFor(uiElement.id, e) }}
+            onChange={(e) => { this.changeValueFor(uiElement.id, e); }}
           />)
         : null;
     }
@@ -418,14 +440,14 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
   //   }
   // };
 
-  private renderUIChoise = (uiElement: ViewElementChoise, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
+  private renderUIChoice = (uiElement: ViewElementChoice, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
     const isKey = (uiElement.label === keyProperty);
 
-    const currentChoise = this.state.choises[uiElement.id];
-    const currentCase = currentChoise && uiElement.cases[currentChoise.selectedCase];
+    const currentChoice = this.state.choices[uiElement.id];
+    const currentCase = currentChoice && uiElement.cases[currentChoice.selectedCase];
 
     const canEdit = editMode && (isNew || (uiElement.config && !isKey));
-    if (isViewElementChoise(uiElement)) {
+    if (isViewElementChoice(uiElement)) {
       const subElements = currentCase?.elements;
       return (
         <>
@@ -435,14 +457,14 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
               aria-label={uiElement.label + '-selection'}
               required={!!uiElement.mandatory}
               onChange={(e) => {
-                if (currentChoise.selectedCase === e.target.value) {
+                if (currentChoice.selectedCase === e.target.value) {
                   return; // nothing changed
                 }
-                this.setState({ choises: { ...this.state.choises, [uiElement.id]: { ...this.state.choises[uiElement.id], selectedCase: e.target.value as string } } });
+                this.setState({ choices: { ...this.state.choices, [uiElement.id]: { ...this.state.choices[uiElement.id], selectedCase: e.target.value as string } } });
               }}
               readOnly={!canEdit}
               disabled={editMode && !canEdit}
-              value={this.state.choises[uiElement.id].selectedCase}
+              value={this.state.choices[uiElement.id].selectedCase}
               inputProps={{
                 name: uiElement.id,
                 id: `select-${uiElement.id}`,
@@ -452,7 +474,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
                 Object.keys(uiElement.cases).map(caseKey => {
                   const caseElm = uiElement.cases[caseKey];
                   return (
-                    <MenuItem key={caseElm.id} value={caseKey} aria-label={caseKey}><Tooltip title={caseElm.description || ''}><div style={{ width: "100%" }}>{caseElm.label}</div></Tooltip></MenuItem>
+                    <MenuItem key={caseElm.id} value={caseKey} aria-label={caseKey}><Tooltip title={caseElm.description || ''}><div style={{ width: '100%' }}>{caseElm.label}</div></Tooltip></MenuItem>
                   );
                 })
               }
@@ -463,13 +485,13 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
               const elm = subElements[elmKey];
               return this.renderUIElement(elm, viewData, keyProperty, editMode, isNew);
             })
-            : <h3>Invalid Choise</h3>
+            : <h3>Invalid Choice</h3>
           }
         </>
       );
     } else {
-      if (process.env.NODE_ENV !== "production") {
-        console.error(`Unknown type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(`Unknown type - ${(uiElement as any).uiType} in ${(uiElement as any).id}.`);
       }
       return null;
     }
@@ -477,8 +499,6 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
   private renderUIView = (viewSpecification: ViewSpecification, dataPath: string, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
     const { classes } = this.props;
-
-
 
     const orderFunc = (vsA: ViewElement, vsB: ViewElement) => {
       if (keyProperty) {
@@ -497,15 +517,15 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       const elm = viewSpecification.elements[cur];
       if (isViewElementObjectOrList(elm)) {
         acc.references.push(elm);
-      } else if (isViewElementChoise(elm)) {
-        acc.choises.push(elm);
+      } else if (isViewElementChoice(elm)) {
+        acc.choices.push(elm);
       } else if (isViewElementRpc(elm)) {
         acc.rpcs.push(elm);
       } else {
         acc.elements.push(elm);
       }
       return acc;
-    }, { elements: [] as ViewElement[], references: [] as ViewElement[], choises: [] as ViewElementChoise[], rpcs: [] as ViewElementRpc[] });
+    }, { elements: [] as ViewElement[], references: [] as ViewElement[], choices: [] as ViewElementChoice[], rpcs: [] as ViewElementRpc[] });
 
     sections.elements = sections.elements.sort(orderFunc);
 
@@ -523,15 +543,15 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
           ? (
             <div className={classes.section}>
               {sections.references.map(element => (
-                <UIElementReference key={element.id} element={element} disabled={editMode || this.isPolicyViewElementForbidden(element, dataPath)} onOpenReference={(elm) => { this.navigate(`/${elm.id}`) }} />
+                <UIElementReference key={element.id} element={element} disabled={editMode || this.isPolicyViewElementForbidden(element, dataPath)} onOpenReference={(elm) => { this.navigate(`/${elm.id}`); }} />
               ))}
             </div>
           ) : null
         }
-        {sections.choises.length > 0
+        {sections.choices.length > 0
           ? (
             <div className={classes.section}>
-              {sections.choises.map(element => this.renderUIChoise(element, viewData, keyProperty, editMode, isNew))}
+              {sections.choices.map(element => this.renderUIChoice(element, viewData, keyProperty, editMode, isNew))}
             </div>
           ) : null
         }
@@ -539,7 +559,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
           ? (
             <div className={classes.section}>
               {sections.rpcs.map(element => (
-                <UIElementReference key={element.id} element={element} disabled={editMode || this.isPolicyViewElementForbidden(element, dataPath)} onOpenReference={(elm) => { this.navigate(`/${elm.id}`) }} />
+                <UIElementReference key={element.id} element={element} disabled={editMode || this.isPolicyViewElementForbidden(element, dataPath)} onOpenReference={(elm) => { this.navigate(`/${elm.id}`); }} />
               ))}
             </div>
           ) : null
@@ -550,6 +570,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
   private renderUIViewSelector = (viewSpecification: ViewSpecification, dataPath: string, viewData: { [key: string]: any }, keyProperty: string | undefined, editMode: boolean, isNew: boolean) => {
     const { classes } = this.props;
+    
     // group by module name
     const modules = Object.keys(viewSpecification.elements).reduce<{ [key: string]: ViewSpecification }>((acc, cur) => {
       const elm = viewSpecification.elements[cur];
@@ -565,6 +586,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         {
           moduleKeys.map(key => {
             const moduleView = modules[key];
+            
             return (
               <Accordion key={key} defaultExpanded={moduleKeys.length < 4} aria-label={key + '-panel'} >
                 <AccordionSummaryExt expandIcon={<ExpandMoreIcon />} aria-controls={`content-${key}`} id={`header-${key}`} disabled={this.isPolicyModuleForbidden(`${key}:`, dataPath)} >
@@ -584,8 +606,8 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
   private renderUIViewList(listSpecification: ViewSpecification, dataPath: string, listKeyProperty: string, apiDocPath: string, listData: { [key: string]: any }[]) {
     const listElements = listSpecification.elements;
     const apiDocPathCreate = apiDocPath  ? `${location.origin}${apiDocPath
-      .replace("$$$standard$$$", "topology-netconfnode%20resources%20-%20RestConf%20RFC%208040")
-      .replace("$$$action$$$", "put")}${listKeyProperty ? `_${listKeyProperty.replace(/[\/=\-\:]/g, '_')}_` : '' }` : undefined;
+      .replace('$$$standard$$$', 'topology-netconfnode%20resources%20-%20RestConf%20RFC%208040')
+      .replace('$$$action$$$', 'put')}${listKeyProperty ? `_${listKeyProperty.replace(/[\/=\-\:]/g, '_')}_` : '' }` : undefined;
 
     const config = listSpecification.config && listKeyProperty; // We can not configure a list with no key.
 
@@ -598,7 +620,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
       tooltip: 'Add',
       ariaLabel:'add-element',
       onClick: () => {
-        navigate("[]"); // empty key means new element
+        navigate('[]'); // empty key means new element
       },
       disabled: !config,
     };
@@ -615,11 +637,11 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
     const { classes, removeElement } = this.props;
 
-    const DeleteIconWithConfirmation: React.FC<{disabled?: boolean, rowData: { [key: string]: any }, onReload: () => void }> = (props) => {
+    const DeleteIconWithConfirmation: React.FC<{ disabled?: boolean; rowData: { [key: string]: any }; onReload: () => void }> = (props) => {
       const confirm = useConfirm();
 
       return (
-        <Tooltip disableInteractive title={"Remove"} >
+        <Tooltip disableInteractive title={'Remove'} >
           <IconButton
             disabled={props.disabled}
             className={classes.button}
@@ -627,15 +649,15 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
             onClick={async (e) => {
               e.stopPropagation();
               e.preventDefault();
-              confirm({ title: "Do you really want to delete this element ?", description: "This action is permanent!", confirmationButtonProps: { color: "secondary" }, cancellationButtonProps: { color:"inherit" } })
-              .then(() => {
-                 let keyId = "";
-                 if (listKeyProperty && listKeyProperty.split(" ").length > 1) {
-                 keyId += listKeyProperty.split(" ").map(id => props.rowData[id]).join(",");
+              confirm({ title: 'Do you really want to delete this element ?', description: 'This action is permanent!', confirmationButtonProps: { color: 'secondary' }, cancellationButtonProps: { color:'inherit' } })
+                .then(() => {
+                  let keyId = '';
+                  if (listKeyProperty && listKeyProperty.split(' ').length > 1) {
+                    keyId += listKeyProperty.split(' ').map(id => props.rowData[id]).join(',');
                   } else {
-                   keyId = props.rowData[listKeyProperty];
-                    }
-                   return removeElement(`${this.props.vPath}[${keyId}]`)
+                    keyId = props.rowData[listKeyProperty];
+                  }
+                  return removeElement(`${this.props.vPath}[${keyId}]`);
                 }).then(props.onReload);
             }}
             size="large">
@@ -643,44 +665,46 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
           </IconButton>
         </Tooltip>
       );
-    }
+    };
 
     return (
       <SelectElementTable stickyHeader idProperty={listKeyProperty} tableId={null} rows={listData} customActionButtons={apiDocPathCreate ? [addNewElementAction, addWithApiDocElementAction] : [addNewElementAction]} columns={
         Object.keys(listElements).reduce<ColumnModel<{ [key: string]: any }>[]>((acc, cur) => {
           const elm = listElements[cur];
-          if (elm.uiType !== "object" && listData.every(entry => entry[elm.label] != null)) {
+          if (elm.uiType !== 'object' && listData.every(entry => entry[elm.label] != null)) {
             if (elm.label !== listKeyProperty) {
-              acc.push(elm.uiType === "boolean"
+              acc.push(elm.uiType === 'boolean'
                 ? { property: elm.label, type: ColumnType.boolean }
-                : elm.uiType === "date"
+                : elm.uiType === 'date'
                   ? { property: elm.label, type: ColumnType.date }
-                  : { property: elm.label, type: elm.uiType === "number" ? ColumnType.numeric : ColumnType.text });
+                  : { property: elm.label, type: elm.uiType === 'number' ? ColumnType.numeric : ColumnType.text });
             } else {
-              acc.unshift(elm.uiType === "boolean"
+              acc.unshift(elm.uiType === 'boolean'
                 ? { property: elm.label, type: ColumnType.boolean }
-                : elm.uiType === "date"
+                : elm.uiType === 'date'
                   ? { property: elm.label, type: ColumnType.date }
-                  : { property: elm.label, type: elm.uiType === "number" ? ColumnType.numeric : ColumnType.text });
+                  : { property: elm.label, type: elm.uiType === 'number' ? ColumnType.numeric : ColumnType.text });
             }
           }
           return acc;
         }, []).concat([{
-          property: "Actions", disableFilter: true, disableSorting: true, type: ColumnType.custom, customControl: (({ rowData }) => {
+          property: 'Actions', disableFilter: true, disableSorting: true, type: ColumnType.custom, customControl: (({ rowData }) => {
             return (
               <DeleteIconWithConfirmation disabled={!config} rowData={rowData} onReload={() => this.props.vPath && this.props.reloadView(this.props.vPath)} />
             );
-          })
+          }),
         }])
       } onHandleClick={(ev, row) => {
         ev.preventDefault();
-        let keyId = ""
-        if (listKeyProperty && listKeyProperty.split(" ").length > 1) {
-          keyId += listKeyProperty.split(" ").map(id => row[id]).join(",");
+        let keyId = '';
+        if (listKeyProperty && listKeyProperty.split(' ').length > 1) {
+          keyId += listKeyProperty.split(' ').map(id => row[id]).join(',');
         } else {
           keyId = row[listKeyProperty];
         }
-        listKeyProperty && navigate(`[${encodeURIComponent(keyId)}]`); // Do not navigate without key.
+        if (listKeyProperty) {
+          navigate(`[${encodeURIComponent(keyId)}]`); // Do not navigate without key.
+        }
       }} ></SelectElementTable>
     );
   }
@@ -704,17 +728,17 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
     const sections = inputViewSpecification && Object.keys(inputViewSpecification.elements).reduce((acc, cur) => {
       const elm = inputViewSpecification.elements[cur];
       if (isViewElementObjectOrList(elm)) {
-        console.error("Object should not appear in RPC view !");
-      } else if (isViewElementChoise(elm)) {
-        acc.choises.push(elm);
+        console.error('Object should not appear in RPC view !');
+      } else if (isViewElementChoice(elm)) {
+        acc.choices.push(elm);
       } else if (isViewElementRpc(elm)) {
-        console.error("RPC should not appear in RPC view !");
+        console.error('RPC should not appear in RPC view !');
       } else {
         acc.elements.push(elm);
       }
       return acc;
-    }, { elements: [] as ViewElement[], references: [] as ViewElement[], choises: [] as ViewElementChoise[], rpcs: [] as ViewElementRpc[] })
-      || { elements: [] as ViewElement[], references: [] as ViewElement[], choises: [] as ViewElementChoise[], rpcs: [] as ViewElementRpc[] };
+    }, { elements: [] as ViewElement[], references: [] as ViewElement[], choices: [] as ViewElementChoice[], rpcs: [] as ViewElementRpc[] })
+      || { elements: [] as ViewElement[], references: [] as ViewElement[], choices: [] as ViewElementChoice[], rpcs: [] as ViewElementRpc[] };
 
     sections.elements = sections.elements.sort(orderFunc);
 
@@ -728,10 +752,10 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
             </div>
           ) : null
         }
-        { sections.choises.length > 0
+        { sections.choices.length > 0
           ? (
             <div className={classes.section}>
-              {sections.choises.map(element => this.renderUIChoise(element, inputViewData, keyProperty, editMode, isNew))}
+              {sections.choices.map(element => this.renderUIChoice(element, inputViewData, keyProperty, editMode, isNew))}
             </div>
           ) : null
         }
@@ -747,13 +771,13 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         </div>
       </>
     );
-  };
+  }
 
   private renderBreadCrumps() {
     const { editMode } = this.state;
     const { displaySpecification, vPath, nodeId } = this.props;
     const pathParts = splitVPath(vPath!, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
-    let lastPath = `/configuration`;
+    let lastPath = '/configuration';
     let basePath = `/configuration/${nodeId}`;
     return (
       <div className={this.props.classes.header}>
@@ -774,7 +798,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
               pathParts.map(([prop, key], ind) => {
                 const path = `${basePath}/${prop}`;
                 const keyPath = key && `${basePath}/${prop}[${key}]`;
-                const propTitle = prop.replace(/^[^:]+:/, "");
+                const propTitle = prop.replace(/^[^:]+:/, '');
                 const ret = (
                   <span key={ind}>
                     <Link underline="hover" color="inherit" href="#"
@@ -789,8 +813,8 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
                         onClick={(ev: React.MouseEvent<HTMLElement>) => {
                           ev.preventDefault();
                           this.props.history.push(keyPath);
-                        }}>{`[${key && key.replace(/\%2C/g, ",")}]`}</Link> || null
-                    }
+                        }}>{`[${key && key.replace(/\%2C/g, ',')}]`}</Link> || null
+                      }
                   </span>
                 );
                 lastPath = basePath;
@@ -802,7 +826,9 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         </div>
         {this.state.editMode && (
           <Fab color="secondary" aria-label="back-button" className={this.props.classes.fab} onClick={async () => {
-            this.props.vPath && (await this.props.reloadView(this.props.vPath));
+            if (this.props.vPath) {
+              await this.props.reloadView(this.props.vPath);
+            }
             this.setState({ editMode: false });
           }} ><ArrowBack /></Fab>
         ) || null}
@@ -810,7 +836,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
           displaySpecification.displayMode === DisplayModeType.displayAsObject && displaySpecification.viewSpecification.canEdit && (<div>
             <Fab color="secondary" aria-label={editMode ? 'save-button' : 'edit-button'} className={this.props.classes.fab} onClick={() => {
               if (this.state.editMode) {
-                // ensure only active choises will be contained
+                // ensure only active choices will be contained
                 const resultingViewData = this.collectData(displaySpecification.viewSpecification.elements);
                 this.props.onUpdateData(this.props.vPath!, resultingViewData);
               }
@@ -830,7 +856,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
   private renderValueSelector() {
     const { listKeyProperty, listSpecification, listData, onValueSelected } = this.props;
     if (!listKeyProperty || !listSpecification) {
-      throw new Error("ListKex ot view not specified.");
+      throw new Error('ListKex ot view not specified.');
     }
 
     return (
@@ -838,11 +864,11 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         <SelectElementTable stickyHeader idProperty={listKeyProperty} tableId={null} rows={listData} columns={
           Object.keys(listSpecification.elements).reduce<ColumnModel<{ [key: string]: any }>[]>((acc, cur) => {
             const elm = listSpecification.elements[cur];
-            if (elm.uiType !== "object" && listData.every(entry => entry[elm.label] != null)) {
+            if (elm.uiType !== 'object' && listData.every(entry => entry[elm.label] != null)) {
               if (elm.label !== listKeyProperty) {
-                acc.push({ property: elm.label, type: elm.uiType === "number" ? ColumnType.numeric : ColumnType.text });
+                acc.push({ property: elm.label, type: elm.uiType === 'number' ? ColumnType.numeric : ColumnType.text });
               } else {
-                acc.unshift({ property: elm.label, type: elm.uiType === "number" ? ColumnType.numeric : ColumnType.text });
+                acc.unshift({ property: elm.label, type: elm.uiType === 'number' ? ColumnType.numeric : ColumnType.text });
               }
             }
             return acc;

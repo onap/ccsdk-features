@@ -19,6 +19,7 @@
 
 import { combineActionHandler } from '../../../../framework/src/flux/middleware';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
 export interface IMinimumAppStoreState {
@@ -26,7 +27,7 @@ export interface IMinimumAppStoreState {
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
-    minimum: IMinimumAppStoreState
+    minimum: IMinimumAppStoreState;
   }
 }
 

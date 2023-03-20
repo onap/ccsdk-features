@@ -15,12 +15,13 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
+import React, { FC, useContext, createContext, useState, useEffect, useRef } from 'react';
 
-import { Dispatch } from '../flux/store';
+import { Dispatch } from './store';
 
 import { ApplicationStore, IApplicationStoreState } from '../store/applicationStore';
+
+const LogLevel = +(localStorage.getItem('log.odlux.framework.flux.connect') || 0);
 
 interface IApplicationStoreContext {
   applicationStore: ApplicationStore;
@@ -38,11 +39,11 @@ interface IDispatchProps {
   dispatch: Dispatch;
 }
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-
 type ComponentDecoratorInfer<TMergedProps> = {
   <TProps>(wrappedComponent: React.ComponentType<TProps & TMergedProps>): React.ComponentClass<Omit<TProps & TMergedProps, keyof TMergedProps>>;
 };
+
+const ApplicationStoreContext = createContext<IApplicationStoreContext | undefined>(undefined);
 
 export type Connect<TMapProps extends ((...args: any) => any) | undefined = undefined, TMapDispatch extends ((...args: any) => any) | undefined = undefined> =
   (TMapProps extends ((...args: any) => any) ? ReturnType<TMapProps> : IApplicationStoreProps) &
@@ -75,9 +76,7 @@ export function connect<TProps, TStateProps, TDispatchProps>(
   const injectApplicationStore = (WrappedComponent: React.ComponentType<TProps & (IApplicationStoreProps | TStateProps) & IDispatchProps>): React.ComponentType<TProps> => {
 
     class StoreAdapter extends React.Component<TProps, {}> {
-      public static contextTypes = { ...WrappedComponent.contextTypes, applicationStore: PropTypes.object.isRequired };
-      context: IApplicationStoreContext;
-
+      
       render(): JSX.Element {
 
         if (isWrappedComponentIsVersion1(WrappedComponent)) {
@@ -112,7 +111,7 @@ export function connect<TProps, TStateProps, TDispatchProps>(
         this.forceUpdate();
       }
     }
-
+    StoreAdapter.contextType = ApplicationStoreContext;
     return StoreAdapter;
   }
 
@@ -138,24 +137,77 @@ export function connect<TProps, TStateProps, TDispatchProps>(
   }
 }
 
-interface ApplicationStoreProviderProps extends React.Props<ApplicationStoreProvider> {
+type ApplicationStoreProviderProps = {
   applicationStore: ApplicationStore;
 }
 
-export class ApplicationStoreProvider extends React.Component<ApplicationStoreProviderProps>
-  implements /* React.ComponentLifecycle<ApplicationStoreProviderProps, any>, */ React.ChildContextProvider<IApplicationStoreContext> {
+export const ApplicationStoreProvider: FC<ApplicationStoreProviderProps> = (props) => {
+  const { applicationStore, children } = props;
 
-  public static childContextTypes = { applicationStore: PropTypes.object.isRequired };
+  return (
+    <ApplicationStoreContext.Provider value={{ applicationStore }}>
+      {children}
+    </ApplicationStoreContext.Provider>
+  );
+};
 
-  getChildContext(): IApplicationStoreContext {
-    return {
-      applicationStore: this.props.applicationStore
+export const useApplicationStore = (): ApplicationStore => {
+  const context = useContext(ApplicationStoreContext);
+  if (context == null || context.applicationStore == null) {
+    throw new Error("Requires application store provider!")
+  }
+  return context.applicationStore
+};
+
+export const useSelectApplicationState = <TProp extends unknown >( selector: (state: IApplicationStoreState) => TProp, eqFunc = (a: TProp, b: TProp) => a === b ): TProp => {
+  const context = useContext(ApplicationStoreContext);
+  if (context == null || context.applicationStore == null) {
+    throw new Error("Requires application store provider!")
+  }
+  
+  const [propState, setPropState] = useState<TProp>(selector(context.applicationStore.state));
+  
+  const selectorRef = useRef(selector);
+  selectorRef.current = selector;
+
+  const propStateRef = useRef({propState});
+  propStateRef.current.propState = propState;
+
+  useEffect(() => {
+    if (context == null || context.applicationStore == null) {
+      throw new Error("Requires application store provider!")
+    }
+
+    const changedHandler = () => {
+      const newState = selectorRef.current(context.applicationStore.state);
+      if (!eqFunc(newState, propStateRef.current.propState)) {
+        setPropState(newState);
+      }
     };
-  }
 
-  render(): JSX.Element {
-    return React.Children.only(this.props.children) as any; //type error, fix when possible
-  }
-}
+    if (LogLevel > 3) {
+      console.log("useSelectApplicationState: adding handler", changedHandler);
+    }
 
-export default connect;
+    context.applicationStore.changed.addHandler(changedHandler);
+
+    return () => {
+      if (LogLevel > 3) {
+        console.log("useSelectApplicationState: removing handler", changedHandler);
+      }
+
+      context.applicationStore.changed.removeHandler(changedHandler);
+    }
+  }, [context]);
+
+  return propState;
+  
+};
+
+export const useApplicationDispatch = (): Dispatch => {
+  const context = useContext(ApplicationStoreContext);
+  if (context == null || context.applicationStore == null) {
+    throw new Error("Requires application store provider!")
+  }
+  return context.applicationStore.dispatch;
+};

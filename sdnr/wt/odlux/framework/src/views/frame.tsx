@@ -15,15 +15,11 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React, { FC, memo } from 'react';
 import { HashRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 
 import { Theme } from '@mui/material/styles';
-import { WithStyles } from '@mui/styles';
-import withStyles from '@mui/styles/withStyles';
-import createStyles from '@mui/styles/createStyles';
-import { faHome, faAddressBook, faSignInAlt, faCog } from '@fortawesome/free-solid-svg-icons'
-
+import { makeStyles } from '@mui/styles';
 
 import { SnackbarProvider } from 'notistack';
 import { ConfirmProvider } from 'material-ui-confirm';
@@ -42,8 +38,14 @@ import UserSettings from '../views/settings';
 
 import applicationService from '../services/applicationManager';
 
+const aboutIcon = require('../assets/icons/About.svg');
+const homeIcon = require('../assets/icons/Home.svg');
+const loginIcon = require('../assets/icons/User.svg');
+const settingsIcon = require('../assets/icons/Tools.svg');
 
-const styles = (theme: Theme) => createStyles({
+const styles = makeStyles((theme: Theme) => {
+
+  return {
   root: {
     flexGrow: 1,
     height: '100%',
@@ -61,74 +63,69 @@ const styles = (theme: Theme) => createStyles({
     minWidth: 0, // So the Typography noWrap works
   },
   toolbar: theme.mixins.toolbar as any
+  };
 });
 
+const FrameComponent: FC = memo(() => {
 
+  const registrations = applicationService.applications;
+  const classes = styles();
+  return (
+    <ConfirmProvider>
+      <SnackbarProvider maxSnack={3}>
+        <Router>
+          <div className={classes.root}>
+            <SnackDisplay />
+            <ErrorDisplay />
+            <TitleBar />
+            <Menu />
+            <main className={classes.content}>
+              {
+                <div className={classes.toolbar} /> //needed for margins, don't remove!
+              }
+              <Switch>
+                <Route exact path="/" component={() => (
+                  <AppFrame title={"Home"} icon={homeIcon} >
+                    <Home />
+                  </AppFrame>
+                )} />
+                <Route path="/about" component={() => (
+                  <AppFrame title={"About"} icon={aboutIcon} >
+                    <About />
+                  </AppFrame>
+                )} />
+                <Route path="/settings" component={() => (
+                  <AppFrame title={"Settings"} icon={settingsIcon} >
+                    <UserSettings />
+                  </AppFrame>
+                )} />
+                {process.env.NODE_ENV === "development" ? <Route path="/test" component={() => (
+                  <AppFrame title={"Test"} icon={settingsIcon} >
+                    <Test />
+                  </AppFrame>
+                )} /> : null}
+                <Route path="/login" component={() => (
+                  <AppFrame title={"Login"} icon={loginIcon} >
+                    <Login />
+                  </AppFrame>
+                )} />
+                {Object.keys(registrations).map(p => {
+                  const application = registrations[p];
+                  return (<Route key={application.name} path={application.path || `/${application.name}`} component={() => (
+                    <AppFrame title={application.title || (typeof application.menuEntry === 'string' && application.menuEntry) || application.name} icon={application.icon} appId={application.name} >
+                      <application.rootComponent />
+                    </AppFrame>
+                  )} />)
+                })}
+                <Redirect to="/" />
+              </Switch>
+            </main>
+          </div>
+        </Router>
+      </SnackbarProvider>
+    </ConfirmProvider>
+  );
+});
 
-type FrameProps = WithStyles<typeof styles>;
-
-class FrameComponent extends React.Component<FrameProps>{
-
-  render() {
-    const registrations = applicationService.applications;
-    const { classes } = this.props;
-    return (
-      <ConfirmProvider>
-        <SnackbarProvider maxSnack={3}>
-            <Router>
-            <div className={classes.root}>
-                <SnackDisplay />
-                <ErrorDisplay />
-                <TitleBar />
-                <Menu />
-                <main className={classes.content}>
-                {
-                    <div className={classes.toolbar} /> //needed for margins, don't remove!
-                }
-                <Switch>
-                    <Route exact path="/" component={() => (
-                      <AppFrame title={"Home"} icon={faHome} >
-                          <Home />
-                      </AppFrame>
-                    )} />
-                    <Route path="/about" component={() => (
-                      <AppFrame title={"About"} icon={faAddressBook} >
-                          <About />
-                      </AppFrame>
-                    )} />
-                    <Route path="/settings" component={() => (
-                      <AppFrame title={"Settings"} icon={faCog} >
-                          <UserSettings />
-                      </AppFrame>
-                    )} />
-                    {process.env.NODE_ENV === "development" ? <Route path="/test" component={() => (
-                      <AppFrame title={"Test"} icon={faAddressBook} >
-                          <Test />
-                      </AppFrame>
-                    )} /> : null}
-                    <Route path="/login" component={() => (
-                      <AppFrame title={"Login"} icon={faSignInAlt} >
-                          <Login />
-                      </AppFrame>
-                      )} />
-                    { Object.keys(registrations).map(p => {
-                      const application = registrations[p];
-                      return (<Route key={application.name} path={application.path || `/${application.name}`} component={() => (
-                          <AppFrame title={application.title || (typeof application.menuEntry === 'string' && application.menuEntry) || application.name} icon={application.icon} appId={application.name} >
-                          <application.rootComponent />
-                          </AppFrame>
-                      )} />)
-                    })}
-                    <Redirect to="/" />
-                </Switch>
-                </main>
-            </div>
-            </Router>
-        </SnackbarProvider>
-      </ConfirmProvider>  
-    );
-  }
-}
-
-export const Frame = withStyles(styles)(FrameComponent);
+export const Frame = FrameComponent;
 export default Frame;

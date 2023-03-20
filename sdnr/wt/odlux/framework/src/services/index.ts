@@ -18,5 +18,5 @@
 export { applicationManager } from './applicationManager';
 export { subscribe, unsubscribe } from './notificationService';
 export { requestRest } from './restService';
-export { putSettings, getSettings} from './settingsService';
+export { saveUserdata, getUserdata } from './userdataService';
 

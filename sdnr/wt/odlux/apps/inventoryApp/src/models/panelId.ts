@@ -16,4 +16,4 @@
  * ============LICENSE_END==========================================================================
  */
 
-export type PanelId = null | "InventoryElementsTable" | "TreeviewTable";
+export type PanelId = null | 'Equipment' | 'TreeView';

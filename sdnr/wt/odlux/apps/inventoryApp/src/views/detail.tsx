@@ -15,20 +15,19 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from "react";
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import Button from '@mui/material/Button';
 import { Theme } from '@mui/material/styles'; // infra for styling
-
 import { WithStyles } from '@mui/styles';
-import withStyles from '@mui/styles/withStyles';
 import createStyles from '@mui/styles/createStyles';
+import withStyles from '@mui/styles/withStyles';
 
 const styles = (theme: Theme) => createStyles({
   warnButton: {
-    backgroundColor: theme.palette.primary.dark
-  }
+    backgroundColor: theme.palette.primary.dark,
+  },
 });
 
 type DetailProps = RouteComponentProps<{ id: string }> & WithStyles<typeof styles>;
@@ -37,8 +36,8 @@ export const Detail = withStyles( styles )( withRouter( (props: DetailProps) => 
   <div>
     <h1>Detail {props.match.params.id}</h1>
     <p>This are the information about {props.staticContext}.</p>
-    <Button color={"secondary"} variant={"contained"}>Start</Button>
-    <Button color="inherit" className={ props.classes.warnButton } variant={"contained"}>Stop</Button>
+    <Button color={'secondary'} variant={'contained'}>Start</Button>
+    <Button color="inherit" className={ props.classes.warnButton } variant={'contained'}>Stop</Button>
   </div>
 )));
 

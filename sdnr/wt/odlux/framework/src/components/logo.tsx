@@ -42,7 +42,7 @@ import withStyles from '@mui/styles/withStyles';
 import createStyles from '@mui/styles/createStyles';
 
 
-import defaultLogo from '../assets/images/defaultLogo.svg';
+const defaultLogo = require('../assets/icons/ht.Connect.svg');
 
 const styles = (theme: Theme) => createStyles({
   headerLogo: {
@@ -91,7 +91,7 @@ class LogoComponent extends React.Component<LogoProps, ILogoState> {
       console.info([
         "Logo hidden, because browser window width (",
         this.state.windowWidth,
-        "px) is lower thershold (",
+        "px) is lower threshold (",
         this.hideLogoWhenWindowWidthIsLower,
         "px)."].join(''));
     }

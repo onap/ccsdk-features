@@ -16,18 +16,13 @@
  * ============LICENSE_END==========================================================================
  */
 
+import { ReplaceAction } from '../actions/navigationActions';
+import { AddErrorInfoAction } from '../actions/errorActions';
 
-import { ApplicationStore } from "../store/applicationStore";
-import { ReplaceAction } from "../actions/navigationActions";
-import { AddErrorInfoAction } from "../actions/errorActions";
+import { storeService } from './storeService';
 
 const baseUri = `${ window.location.origin }`;
 const absUrlPattern = /^https?:\/\//;
-let applicationStore: ApplicationStore | null = null;
-
-export const startRestService = (store: ApplicationStore) => {
-  applicationStore = store;
-};
 
 export const formEncode = (params: { [key: string]: string | number }) => Object.keys(params).map((key) => {
   return encodeURIComponent(key) + '=' + encodeURIComponent(params[key].toString());
@@ -46,9 +41,9 @@ export const getAccessPolicyByUrl = (url: string) => {
     DELETE: false,
   };
   
-  if (!applicationStore) return result;
+  if (!storeService.applicationStore) return result;
 
-  const { state: { framework: { applicationState: { enablePolicy }, authenticationState: { policies }}} } = applicationStore!;
+  const { state: { framework: { applicationState: { enablePolicy }, authenticationState: { policies } } } } = storeService.applicationStore!;
   
   result.GET = true;
   result.POST = true;
@@ -71,7 +66,7 @@ export const getAccessPolicyByUrl = (url: string) => {
 
   return result;
 
-}
+};
 
 /** Sends a rest request to the given path. 
  * @returns The data, or null it there was any error
@@ -87,8 +82,8 @@ export async function requestRest<TData>(path: string = '', init: RequestInit = 
 /** Sends a rest request to the given path and reports the server state. 
  *  @returns An object with the server state, a message and the data or undefined in case of a json parse error.
  */
-export async function requestRestExt<TData>(path: string = '', init: RequestInit = {}, authenticate: boolean = true, isResource: boolean = false): Promise<{ status: number, message?: string, data: TData | null | undefined }> {
-  const result: { status: number, message?: string, data: TData | null } = {
+export async function requestRestExt<TData>(path: string = '', init: RequestInit = {}, authenticate: boolean = true, isResource: boolean = false): Promise<{ status: number; message?: string; data: TData | null | undefined }> {
+  const result: { status: number; message?: string; data: TData | null } = {
     status: -1,
     data: null,
   };
@@ -100,60 +95,59 @@ export async function requestRestExt<TData>(path: string = '', init: RequestInit
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      ...init.headers
-    }
+      ...init.headers,
+    },
   };
-  if (!isAbsUrl && authenticate && applicationStore) {
-    const { state: { framework: { authenticationState: { user } } } } = applicationStore;
+  if (!isAbsUrl && authenticate && storeService.applicationStore) {
+    const { state: { framework: { authenticationState: { user } } } } = storeService.applicationStore;
     // do not request if the user is not valid
 
     if (!user || !user.isValid) {
       return {
         ...result,
-        message: "User is not valid or not logged in."
+        message: 'User is not valid or not logged in.',
       };
     }
     (init.headers = {
       ...init.headers,
-      'Authorization': `${user.tokenType} ${user.token}`
+      'Authorization': `${user.tokenType} ${user.token}`,
       //'Authorization': 'Basic YWRtaW46YWRtaW4='
     });
   }
 
   const fetchResult = await fetch(uri, init);
 
-  if(fetchResult.status === 403){
-    applicationStore && applicationStore.dispatch(new AddErrorInfoAction({title: "Forbidden", message:"Status: [403], access denied."}));
+  if (fetchResult.status === 403) {
+    storeService.applicationStore && storeService.applicationStore.dispatch(new AddErrorInfoAction({ title: 'Forbidden', message:'Status: [403], access denied.' }));
     return {
       ...result,
       status: 403,
-      message: "Forbidden."
+      message: 'Forbidden.',
     };
-  }
-  else if (fetchResult.status === 401) {
-    applicationStore && applicationStore.dispatch(new ReplaceAction(`/login?returnTo=${applicationStore.state.framework.navigationState.pathname}`));
+  } else if (fetchResult.status === 401) {
+    storeService.applicationStore && storeService.applicationStore.dispatch(new ReplaceAction(`/login?returnTo=${storeService.applicationStore.state.framework.navigationState.pathname}`));
     return {
       ...result,
       status: 401,
-      message: "Authentication requested by server."
+      message: 'Authentication requested by server.',
     };
   }
-  const contentType = fetchResult.headers.get("Content-Type") || fetchResult.headers.get("content-type");
-  const isJson = contentType && (contentType.toLowerCase().startsWith("application/json") || contentType.toLowerCase().startsWith("application/yang-data+json"));
+  const contentType = fetchResult.headers.get('Content-Type') || fetchResult.headers.get('content-type');
+  const isJson = contentType && (contentType.toLowerCase().startsWith('application/json') || contentType.toLowerCase().startsWith('application/yang-data+json'));
   try {
     const data = (isJson ? await fetchResult.json() : await fetchResult.text()) as TData;
     return {
       ...result,
       status: fetchResult.status,
       message: fetchResult.statusText,
-      data: data
+      data: data,
     };
   } catch (error) {
     return {
       ...result,
       status: fetchResult.status,
       message: error && error.message || String(error),
-      data: undefined
+      data: undefined,
     };
   }
 }

@@ -16,10 +16,10 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { IActionHandler } from "../../../../framework/src/flux/action";
+import { IActionHandler } from '../../../../framework/src/flux/action';
 
-import { SetBusyAction, UpdateInventoryTreeAction, UpdateSelectedNodeAction, SetSearchTextAction, UpdateExpandedNodesAction } from "../actions/inventoryTreeActions";
-import { InventoryTreeNode, InventoryType, TreeDemoItem } from "../models/inventory";
+import { SetBusyAction, SetSearchTextAction, UpdateExpandedNodesAction, UpdateInventoryTreeAction, UpdateSelectedNodeAction } from '../actions/inventoryTreeActions';
+import { InventoryTreeNode, InventoryType, TreeDemoItem } from '../models/inventory';
 
 
 export interface IInvenroryTree {
@@ -33,10 +33,10 @@ export interface IInvenroryTree {
 const initialState: IInvenroryTree = {
   isBusy: false,
   rootNodes: [],
-  searchTerm: "",
+  searchTerm: '',
   selectedNode: undefined,
   expandedItems: [],
-}
+};
 
 
 const getTreeDataFromInvetoryTreeNode = (node: InventoryTreeNode): TreeDemoItem[] => Object.keys(node).reduce<TreeDemoItem[]>((acc, key) => {
@@ -61,8 +61,8 @@ export const inventoryTreeHandler: IActionHandler<IInvenroryTree> = (state = ini
   } else if (action instanceof UpdateSelectedNodeAction) {
     state = { ...state, selectedNode: action.selectedNode };
   } else if (action instanceof UpdateExpandedNodesAction) {
-    state = { ...state, expandedItems: action.expandedNodes || []}
+    state = { ...state, expandedItems: action.expandedNodes || [] };
   }
 
   return state;
-}
+};

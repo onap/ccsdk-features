@@ -17,92 +17,85 @@
  */
 // app configuration and main entry point for the app
 
+import React from 'react';
+import { Redirect, Route, RouteComponentProps, Switch, withRouter } from 'react-router-dom';
 
-import * as React from "react";
-import { withRouter, RouteComponentProps, Route, Switch, Redirect } from 'react-router-dom';
-
-import connect, { Connect, IDispatcher } from '../../../framework/src/flux/connect';
-
-import { faBell } from '@fortawesome/free-solid-svg-icons';  // select app icon
+import { connect, Connect, IDispatcher } from '../../../framework/src/flux/connect';
 import applicationManager from '../../../framework/src/services/applicationManager';
-import { subscribe, IFormatedMessage } from '../../../framework/src/services/notificationService';
-import { IApplicationStoreState } from "../../../framework/src/store/applicationStore";
+import { IFormatedMessage, subscribe } from '../../../framework/src/services/notificationService';
+import { IApplicationStoreState } from '../../../framework/src/store/applicationStore';
 
+import { AddFaultNotificationAction } from './actions/notificationActions';
+import { SetPanelAction } from './actions/panelChangeActions';
+import { refreshFaultStatusAsyncAction, SetFaultStatusAction } from './actions/statusActions';
+import DashboardHome from './components/dashboardHome';
+import { FaultStatus } from './components/faultStatus';
+import { createCurrentAlarmsActions, createCurrentAlarmsProperties, currentAlarmsReloadAction } from './handlers/currentAlarmsHandler';
 import { faultAppRootHandler } from './handlers/faultAppRootHandler';
-import { FaultApplication } from "./views/faultApplication";
+import { FaultAlarmNotificationWS } from './models/fault';
+import { PanelId } from './models/panelId';
+import { FaultApplication } from './views/faultApplication';
 
-import { FaultAlarmNotificationWS } from "./models/fault";
-import { PanelId } from "./models/panelId";
-
-import { SetPanelAction } from "./actions/panelChangeActions";
-import { AddFaultNotificationAction } from "./actions/notificationActions";
-
-import { createCurrentProblemsProperties, createCurrentProblemsActions, currentProblemsReloadAction } from "./handlers/currentProblemsHandler";
-import { FaultStatus } from "./components/faultStatus";
-import { refreshFaultStatusAsyncAction, SetFaultStatusAction } from "./actions/statusActions";
-
-import DashboardHome from "./components/dashboardHome";
+const appIcon = require('./assets/icons/faultAppIcon.svg');  // select app icon
 
 let currentMountId: string | undefined = undefined;
 let currentSeverity: string | undefined = undefined;
 let refreshInterval: ReturnType<typeof window.setInterval> | null = null;
 
 const mapProps = (state: IApplicationStoreState) => ({
-  currentProblemsProperties: createCurrentProblemsProperties(state),
+  currentAlarmsProperties: createCurrentAlarmsProperties(state),
 });
 
-const mapDisp = (dispatcher: IDispatcher) => ({
-  currentProblemsActions: createCurrentProblemsActions(dispatcher.dispatch, true),
+const mapDispatch = (dispatcher: IDispatcher) => ({
+  currentAlarmsActions: createCurrentAlarmsActions(dispatcher.dispatch, true),
   setCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new SetPanelAction(panelId)),
 });
 
-const FaultApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ mountId?: string }> & Connect<typeof mapProps, typeof mapDisp>) => {
+const FaultApplicationRouteAdapter = connect(mapProps, mapDispatch)((props: RouteComponentProps<{ mountId?: string }> & Connect<typeof mapProps, typeof mapDispatch>) => {
   if (currentMountId !== props.match.params.mountId) {
     // route parameter has changed
     currentMountId = props.match.params.mountId || undefined;
     // Hint: This timeout is need, since it is not recommended to change the state while rendering is in progress !
     window.setTimeout(() => {
       if (currentMountId) {
-        props.setCurrentPanel("CurrentProblem");
-        props.currentProblemsActions.onFilterChanged("nodeId", currentMountId);
-        if (!props.currentProblemsProperties.showFilter) {
-          props.currentProblemsActions.onToggleFilter(false);
-          props.currentProblemsActions.onRefresh();
-        }
-        else
-          props.currentProblemsActions.onRefresh();
+        props.setCurrentPanel('CurrentAlarms');
+        props.currentAlarmsActions.onFilterChanged('nodeId', currentMountId);
+        if (!props.currentAlarmsProperties.showFilter) {
+          props.currentAlarmsActions.onToggleFilter(false);
+          props.currentAlarmsActions.onRefresh();
+        } else
+          props.currentAlarmsActions.onRefresh();
       }
     });
   }
   return (
     <FaultApplication />
-  )
+  );
 });
 
-const FaulttApplicationAlarmStatusRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ severity?: string }> & Connect<typeof mapProps, typeof mapDisp>) => {
+const FaultApplicationAlarmStatusRouteAdapter = connect(mapProps, mapDispatch)((props: RouteComponentProps<{ severity?: string }> & Connect<typeof mapProps, typeof mapDispatch>) => {
   if (currentSeverity !== props.match.params.severity) {
     currentSeverity = props.match.params.severity || undefined;
     window.setTimeout(() => {
       if (currentSeverity) {
-        props.setCurrentPanel("CurrentProblem");
-        props.currentProblemsActions.onFilterChanged("severity", currentSeverity);
-        if (!props.currentProblemsProperties.showFilter) {
-          props.currentProblemsActions.onToggleFilter(false);
-          props.currentProblemsActions.onRefresh();
-        }
-        else
-          props.currentProblemsActions.onRefresh();
+        props.setCurrentPanel('CurrentAlarms');
+        props.currentAlarmsActions.onFilterChanged('severity', currentSeverity);
+        if (!props.currentAlarmsProperties.showFilter) {
+          props.currentAlarmsActions.onToggleFilter(false);
+          props.currentAlarmsActions.onRefresh();
+        } else
+          props.currentAlarmsActions.onRefresh();
       }
     });
   }
   return (
     <FaultApplication />
-  )
+  );
 });
 
 const App = withRouter((props: RouteComponentProps) => (
   <Switch>
-    <Route path={`${props.match.path}/alarmStatus/:severity?`} component={FaulttApplicationAlarmStatusRouteAdapter} />
+    <Route path={`${props.match.path}/alarmStatus/:severity?`} component={FaultApplicationAlarmStatusRouteAdapter} />
     <Route path={`${props.match.path}/:mountId?`} component={FaultApplicationRouteAdapter} />
     <Redirect to={`${props.match.path}`} />
   </Switch>
@@ -110,54 +103,48 @@ const App = withRouter((props: RouteComponentProps) => (
 
 export function register() {
   const applicationApi = applicationManager.registerApplication({
-    name: "fault",
-    icon: faBell,
+    name: 'fault',
+    icon: appIcon,
     rootComponent: App,
     rootActionHandler: faultAppRootHandler,
     statusBarElement: FaultStatus,
     dashbaordElement: DashboardHome,
-    menuEntry: "Fault"
+    menuEntry: 'Fault',
   });
 
   let counter = 0;
   // subscribe to the websocket notifications
-  subscribe<FaultAlarmNotificationWS & IFormatedMessage>("problem-notification", (fault => {
+  subscribe<FaultAlarmNotificationWS & IFormatedMessage>('problem-notification', (fault => {
     const store = applicationApi && applicationApi.applicationStore;
     if (fault && store) {
 
       store.dispatch(new AddFaultNotificationAction({
         id: String(counter++),
-        nodeName: fault["node-id"],
+        nodeName: fault['node-id'],
         counter: +fault.data.counter,
-        objectId: fault.data["object-id-ref"],
+        objectId: fault.data['object-id-ref'],
         problem: fault.data.problem,
         severity: fault.data.severity || '',
-        timeStamp: fault.data["time-stamp"],
+        timeStamp: fault.data['time-stamp'],
       }));
     }
   }));
 
   applicationApi.applicationStoreInitialized.then(store => {
-    store.dispatch(currentProblemsReloadAction);
+    store.dispatch(currentAlarmsReloadAction);
   });
 
   applicationApi.applicationStoreInitialized.then(store => {
     store.dispatch(refreshFaultStatusAsyncAction);
   });
 
-  applicationApi.loginEvent.addHandler(e=>{
-    refreshInterval = startRefreshInterval() as any;
-  })
-
-  applicationApi.logoutEvent.addHandler(e=>{
+  applicationApi.logoutEvent.addHandler(()=>{
 
     applicationApi.applicationStoreInitialized.then(store => {
       store.dispatch(new SetFaultStatusAction(0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, false));
       clearInterval(refreshInterval!);
     });
-  })
-  
- 
+  });
 
   function startRefreshInterval()  {
     const refreshFaultStatus = window.setInterval(() => {
@@ -170,4 +157,7 @@ export function register() {
     return refreshFaultStatus;
   }
 
+  applicationApi.loginEvent.addHandler(()=>{
+    refreshInterval = startRefreshInterval() as any;
+  });
 }

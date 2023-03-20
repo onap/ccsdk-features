@@ -16,21 +16,22 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { IActionHandler } from "../../../../framework/src/flux/action"
-import { AreStuckAlarmsCleared } from "../actions/clearStuckAlarmsAction";
+import { IActionHandler } from '../../../../framework/src/flux/action';
+
+import { AreStuckAlarmsCleared } from '../actions/clearStuckAlarmsAction';
 
 export interface IStuckAlarms {
-    areAlarmsCleared: boolean
+  areAlarmsCleared: boolean;
 }
 
 const initialState: IStuckAlarms = {
-    areAlarmsCleared: false
-}
+  areAlarmsCleared: false,
+};
 
 export const stuckAlarmHandler: IActionHandler<IStuckAlarms> = (state = initialState, action) => {
-    if (action instanceof AreStuckAlarmsCleared) {
-        state = { ...state, areAlarmsCleared: action.isBusy }
-    }
+  if (action instanceof AreStuckAlarmsCleared) {
+    state = { ...state, areAlarmsCleared: action.isBusy };
+  }
 
-    return state;
-}
+  return state;
+};

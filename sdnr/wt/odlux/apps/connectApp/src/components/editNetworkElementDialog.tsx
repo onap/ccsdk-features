@@ -15,41 +15,42 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { FormControl, InputLabel, Select, MenuItem, Typography, Radio, RadioGroup, Options, FormLabel, FormControlLabel } from '@mui/material';
-import { loadAllTlsKeyListAsync } from '../actions/tlsKeyActions';
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
-import { IDispatcher, connect, Connect } from '../../../../framework/src/flux/connect';
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 
-import {
-  editNetworkElementAsyncActionCreator,
-  addNewNetworkElementAsyncActionCreator,
-  removeNetworkElementAsyncActionCreator
-} from '../actions/networkElementsActions';
-
-import { unmountNetworkElementAsyncActionCreator, mountNetworkElementAsyncActionCreator } from '../actions/mountedNetworkElementsActions';
-import { NetworkElementConnection, UpdateNetworkElement, propertyOf } from '../models/networkElementConnection';
 import { removeWebUriAction } from '../actions/commonNetworkElementsActions';
+import { mountNetworkElementAsyncActionCreator, unmountNetworkElementAsyncActionCreator } from '../actions/mountedNetworkElementsActions';
+import {
+  addNewNetworkElementAsyncActionCreator, editNetworkElementAsyncActionCreator, removeNetworkElementAsyncActionCreator,
+} from '../actions/networkElementsActions';
+import { loadAllTlsKeyListAsync } from '../actions/tlsKeyActions';
+import { NetworkElementConnection, propertyOf, UpdateNetworkElement } from '../models/networkElementConnection';
 
 export enum EditNetworkElementDialogMode {
-  None = "none",
-  EditNetworkElement = "editNetworkElement",
-  RemoveNetworkElement = "removeNetworkElement",
-  AddNewNetworkElement = "addNewNetworkElement",
-  MountNetworkElement = "mountNetworkElement",
-  UnmountNetworkElement = "unmountNetworkElement",
+  None = 'none',
+  EditNetworkElement = 'editNetworkElement',
+  RemoveNetworkElement = 'removeNetworkElement',
+  AddNewNetworkElement = 'addNewNetworkElement',
+  MountNetworkElement = 'mountNetworkElement',
+  UnmountNetworkElement = 'unmountNetworkElement',
 }
-
-
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
   addNewNetworkElement: async (element: NetworkElementConnection) => {
@@ -63,12 +64,12 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   editNetworkElement: async (element: UpdateNetworkElement, mountElement: NetworkElementConnection) => {
 
     const values = Object.keys(element);
-    console.log("edit element");
+    console.log('edit element');
     console.log(values);
 
     //make sure properties are there in case they get renamed
-    const idProperty = propertyOf<UpdateNetworkElement>("id");
-    const isRequiredProperty = propertyOf<UpdateNetworkElement>("isRequired");
+    const idProperty = propertyOf<UpdateNetworkElement>('id');
+    const isRequiredProperty = propertyOf<UpdateNetworkElement>('isRequired');
 
 
     if (values.length === 2 && values.includes(idProperty as string) && values.includes(isRequiredProperty as string)) {
@@ -84,92 +85,92 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
     await dispatcher.dispatch(removeNetworkElementAsyncActionCreator(element));
     dispatcher.dispatch(removeWebUriAction(element.id));
   },
-  getAvailableTlsKeys: async () => await dispatcher.dispatch(loadAllTlsKeyListAsync()),
+  getAvailableTlsKeys: async () => dispatcher.dispatch(loadAllTlsKeyListAsync()),
 });
 
 type DialogSettings = {
-  dialogTitle: string,
-  dialogDescription: string,
-  applyButtonText: string,
-  cancelButtonText: string,
-  enableMountIdEditor: boolean,
-  enableUsernameEditor: boolean,
-  enableExtendedEditor: boolean,
-}
+  dialogTitle: string;
+  dialogDescription: string;
+  applyButtonText: string;
+  cancelButtonText: string;
+  enableMountIdEditor: boolean;
+  enableUsernameEditor: boolean;
+  enableExtendedEditor: boolean;
+};
 
 const settings: { [key: string]: DialogSettings } = {
   [EditNetworkElementDialogMode.None]: {
-    dialogTitle: "",
-    dialogDescription: "",
-    applyButtonText: "",
-    cancelButtonText: "",
+    dialogTitle: '',
+    dialogDescription: '',
+    applyButtonText: '',
+    cancelButtonText: '',
     enableMountIdEditor: false,
     enableUsernameEditor: false,
     enableExtendedEditor: false,
   },
 
   [EditNetworkElementDialogMode.AddNewNetworkElement]: {
-    dialogTitle: "Add New Node",
-    dialogDescription: "Add this new node:",
-    applyButtonText: "Add node",
-    cancelButtonText: "Cancel",
+    dialogTitle: 'Add New Node',
+    dialogDescription: 'Add this new node:',
+    applyButtonText: 'Add node',
+    cancelButtonText: 'Cancel',
     enableMountIdEditor: true,
     enableUsernameEditor: true,
     enableExtendedEditor: true,
   },
   [EditNetworkElementDialogMode.MountNetworkElement]: {
-    dialogTitle: "Mount Node",
-    dialogDescription: "Mount this node:",
-    applyButtonText: "Mount node",
-    cancelButtonText: "Cancel",
+    dialogTitle: 'Mount Node',
+    dialogDescription: 'Mount this node:',
+    applyButtonText: 'Mount node',
+    cancelButtonText: 'Cancel',
     enableMountIdEditor: false,
     enableUsernameEditor: false,
     enableExtendedEditor: false,
   },
   [EditNetworkElementDialogMode.UnmountNetworkElement]: {
-    dialogTitle: "Unmount Node",
-    dialogDescription: "Unmount this node:",
-    applyButtonText: "Unmount node",
-    cancelButtonText: "Cancel",
+    dialogTitle: 'Unmount Node',
+    dialogDescription: 'Unmount this node:',
+    applyButtonText: 'Unmount node',
+    cancelButtonText: 'Cancel',
     enableMountIdEditor: false,
     enableUsernameEditor: false,
     enableExtendedEditor: false,
   },
   [EditNetworkElementDialogMode.EditNetworkElement]: {
-    dialogTitle: "Modify Node",
-    dialogDescription: "Modify this node",
-    applyButtonText: "Modify",
-    cancelButtonText: "Cancel",
+    dialogTitle: 'Modify Node',
+    dialogDescription: 'Modify this node',
+    applyButtonText: 'Modify',
+    cancelButtonText: 'Cancel',
     enableMountIdEditor: false,
     enableUsernameEditor: true,
     enableExtendedEditor: false,
   },
   [EditNetworkElementDialogMode.RemoveNetworkElement]: {
-    dialogTitle: "Remove Node",
-    dialogDescription: "Do you really want to remove this node?",
-    applyButtonText: "Remove node",
-    cancelButtonText: "Cancel",
+    dialogTitle: 'Remove Node',
+    dialogDescription: 'Do you really want to remove this node?',
+    applyButtonText: 'Remove node',
+    cancelButtonText: 'Cancel',
     enableMountIdEditor: false,
     enableUsernameEditor: false,
     enableExtendedEditor: false,
-  }
-}
+  },
+};
 
 type EditNetworkElementDialogComponentProps = Connect<undefined, typeof mapDispatch> & {
   mode: EditNetworkElementDialogMode;
   initialNetworkElement: NetworkElementConnection;
   onClose: () => void;
-  radioChecked: string
+  radioChecked: string;
 };
 
 type EditNetworkElementDialogComponentState = NetworkElementConnection & {
-  isNameValid: boolean,
-  isHostSet: boolean,
-  isPasswordSelected: boolean,
-  isTlsSelected: boolean,
-  radioSelected: string,
-  showPasswordTextField: boolean,
-  showTlsDropdown: boolean
+  isNameValid: boolean;
+  isHostSet: boolean;
+  isPasswordSelected: boolean;
+  isTlsSelected: boolean;
+  radioSelected: string;
+  showPasswordTextField: boolean;
+  showTlsDropdown: boolean;
 };
 
 class EditNetworkElementDialogComponent extends React.Component<EditNetworkElementDialogComponentProps, EditNetworkElementDialogComponentState> {
@@ -189,16 +190,17 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
       isTlsSelected: false,
       radioSelected: '',
       showPasswordTextField: true,
-      showTlsDropdown: false
+      showTlsDropdown: false,
     };
   }
+
   public handleRadioChange = (event: any) => {
     this.setState({
       radioSelected: event.target.value,
       showPasswordTextField: event.target.value === 'password',
-      showTlsDropdown: event.target.value === 'tlsKey'
+      showTlsDropdown: event.target.value === 'tlsKey',
     });
-  }
+  };
 
   render(): JSX.Element {
     const setting = settings[this.props.mode];
@@ -215,22 +217,27 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
       showTlsDropdown = true;
     }
 
-    let tlsKeysList = this.props.state.connect.availableTlsKeys ? this.props.state.connect.availableTlsKeys.tlsKeysList ? this.props.state.connect.availableTlsKeys.tlsKeysList : [] : []
+    let tlsKeysList = this.props.state.connect.availableTlsKeys ? this.props.state.connect.availableTlsKeys.tlsKeysList ? this.props.state.connect.availableTlsKeys.tlsKeysList : [] : [];
 
     return (
       <Dialog open={this.props.mode !== EditNetworkElementDialogMode.None}>
-        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, "-").toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
+        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, '-').toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
         <DialogContent>
           <DialogContentText>
             {setting.dialogDescription}
           </DialogContentText>
-          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} autoFocus margin="dense" id="name" label="Node ID" aria-label="name" type="text" fullWidth value={this.state.nodeId} onChange={(event) => { this.setState({ nodeId: event.target.value }); }} />
+          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} autoFocus margin="dense"
+            id="name" label="Node ID" aria-label="name" type="text" fullWidth value={this.state.nodeId} onChange={(event) => { this.setState({ nodeId: event.target.value }); }} />
           {!this.state.isNameValid && <Typography variant="body1" color="error">Node ID cannot be empty.</Typography>}
-          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="ipaddress" label="Host/IP address" aria-label="ip adress" type="text" fullWidth value={this.state.host} onChange={(event) => { this.setState({ host: event.target.value }); }} />
+          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense"
+            id="ipaddress" label="Host/IP address" aria-label="ip adress" type="text" fullWidth value={this.state.host} onChange={(event) => { this.setState({ host: event.target.value }); }} />
           {!this.state.isHostSet && <Typography variant="body1" color="error">Host/IP address cannot be empty.</Typography>}
 
-          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense" id="netconfport" label="NETCONF port" aria-label="netconf port" type="number" fullWidth value={this.state.port.toString()} onChange={(event) => { this.setState({ port: +event.target.value }); }} />
-          {setting.enableUsernameEditor && <TextField variant="standard" disabled={!setting.enableUsernameEditor} spellCheck={false} margin="dense" id="username" label="Username" aria-label="username" type="text" fullWidth value={this.state.username} onChange={(event) => { this.setState({ username: event.target.value }); }} /> || null}
+          <TextField variant="standard" disabled={!setting.enableMountIdEditor} spellCheck={false} margin="dense"
+            id="netconfport" label="NETCONF port" aria-label="netconf port" type="number" fullWidth value={this.state.port.toString()}
+            onChange={(event) => { this.setState({ port: +event.target.value }); }} />
+          {setting.enableUsernameEditor && <TextField variant="standard" disabled={!setting.enableUsernameEditor} spellCheck={false} margin="dense"
+            id="username" label="Username" aria-label="username" type="text" fullWidth value={this.state.username} onChange={(event) => { this.setState({ username: event.target.value }); }} /> || null}
 
           {setting.enableUsernameEditor &&
             <RadioGroup row aria-label="password-tls-key" name="password-tls-key" value={radioSelected}
@@ -253,7 +260,7 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
                   id="tlsKey" aria-label="tlsKey" value={this.state.tlsKey} fullWidth // displayEmpty
                   onChange={(event) => { this.setState({ tlsKey: event.target.value as any }); }}
                   inputProps={{ name: 'tlsKey', id: 'tlsKey' }}  >
-                  <MenuItem value={""} disabled >--Select tls-key--</MenuItem>
+                  <MenuItem value={''} disabled >--Select tls-key--</MenuItem>
                   {tlsKeysList.map(tlsKey =>
                     (<MenuItem value={tlsKey.key} key={tlsKey.key} aria-label={tlsKey.key} >{tlsKey.key}</MenuItem>))}
                 </Select>
@@ -283,7 +290,7 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
                 port: this.state.port,
                 username: this.state.username,
                 password: this.state.password,
-                tlsKey: this.state.tlsKey
+                tlsKey: this.state.tlsKey,
               });
             }
             event.preventDefault();
@@ -305,7 +312,7 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   public componentDidMount() {
     this.renderTlsKeys();
@@ -313,37 +320,36 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
 
   public onRadioSelect = (e: any) => {
     if (e.target.value == 'password') {
-      this.setState({ isPasswordSelected: true, isTlsSelected: false })
+      this.setState({ isPasswordSelected: true, isTlsSelected: false });
     } else if (e.target.value == 'tlsKey') {
-      this.setState({ isPasswordSelected: false, isTlsSelected: true })
+      this.setState({ isPasswordSelected: false, isTlsSelected: true });
     }
   };
 
   private onApply = (element: NetworkElementConnection) => {
-    this.props.onClose && this.props.onClose();
+    if (this.props.onClose) this.props.onClose();
     let updateElement: UpdateNetworkElement = {
-      id: this.state.nodeId
-    }
+      id: this.state.nodeId,
+    };
     if (this.state.isPasswordSelected) {
-      element.tlsKey = ''
-    }
-    else if (this.state.isTlsSelected) { //check here
-      element.password = ''
+      element.tlsKey = '';
+    } else if (this.state.isTlsSelected) { //check here
+      element.password = '';
     }
 
     switch (this.props.mode) {
       case EditNetworkElementDialogMode.AddNewNetworkElement:
-        element && this.props.addNewNetworkElement(element);
+        if (element) this.props.addNewNetworkElement(element);
         this.setState({
           radioSelected: '',
           isPasswordSelected: true,
         });
         break;
       case EditNetworkElementDialogMode.MountNetworkElement:
-        element && this.props.mountNetworkElement(element);
+        if (element) this.props.mountNetworkElement(element);
         break;
       case EditNetworkElementDialogMode.UnmountNetworkElement:
-        element && this.props.unmountNetworkElement(element);
+        if (element) this.props.unmountNetworkElement(element);
         break;
       case EditNetworkElementDialogMode.EditNetworkElement:
         if (this.props.initialNetworkElement.isRequired !== this.state.isRequired)
@@ -358,13 +364,13 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
           updateElement.tlsKey = this.state.tlsKey;
           updateElement.password = '';
         }
-        element && this.props.editNetworkElement(updateElement, element);
+        if (element) this.props.editNetworkElement(updateElement, element);
         this.setState({
-          radioSelected: ''
+          radioSelected: '',
         });
         break;
       case EditNetworkElementDialogMode.RemoveNetworkElement:
-        element && this.props.removeNetworkElement(updateElement);
+        if (element) this.props.removeNetworkElement(updateElement);
         break;
     }
 
@@ -373,10 +379,10 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
   };
 
   private onCancel = () => {
-    this.props.onClose && this.props.onClose();
+    if (this.props.onClose) this.props.onClose();
     this.setState({ password: '', username: '', tlsKey: '', radioSelected: '' });
     this.resetRequieredFields();
-  }
+  };
 
   private resetRequieredFields() {
     this.setState({ isNameValid: true, isHostSet: true });
@@ -402,15 +408,16 @@ class EditNetworkElementDialogComponent extends React.Component<EditNetworkEleme
     return areFieldsValid;
   }
 
-  static getDerivedStateFromProps(props: EditNetworkElementDialogComponentProps, state: EditNetworkElementDialogComponentState & { _initialNetworkElement: NetworkElementConnection }): EditNetworkElementDialogComponentState & { _initialNetworkElement: NetworkElementConnection } {
-    if (props.initialNetworkElement !== state._initialNetworkElement) {
-      state = {
+  static getDerivedStateFromProps(props: EditNetworkElementDialogComponentProps, state: EditNetworkElementDialogComponentState & { initialNetworkElement: NetworkElementConnection }): EditNetworkElementDialogComponentState & { initialNetworkElement: NetworkElementConnection } {
+    let returnState = state;
+    if (props.initialNetworkElement !== state.initialNetworkElement) {
+      returnState = {
         ...state,
         ...props.initialNetworkElement,
-        _initialNetworkElement: props.initialNetworkElement,
+        initialNetworkElement: props.initialNetworkElement,
       };
     }
-    return state;
+    return returnState;
   }
 }
 
