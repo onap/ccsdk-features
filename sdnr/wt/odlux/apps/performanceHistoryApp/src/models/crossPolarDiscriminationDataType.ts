@@ -32,7 +32,7 @@ export type CrossPolarDiscriminationDatabaseDataType = {
  * Internally used type to provide table and chart data
  */
 export type CrossPolarDiscriminationDataType = {
-  performanceData: CrossPolarDiscriminationDatabaseDataType
+  performanceData: CrossPolarDiscriminationDatabaseDataType;
   radioSignalId: string;
   scannerId: string;
   timeStamp: string;

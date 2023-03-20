@@ -18,6 +18,7 @@
 
 import { combineActionHandler } from '../../../../framework/src/flux/middleware';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
 import { listAuthorsHandler, IListAuthors } from './listAuthorsHandler';
@@ -30,7 +31,7 @@ export interface IDemoAppStoreState {
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
-    demo: IDemoAppStoreState
+    demo: IDemoAppStoreState;
   }
 }
 

@@ -16,4 +16,4 @@
  * ============LICENSE_END==========================================================================
  */
 
-export type PanelId = null | "NetworkElements" | "ConnectionStatusLog";
+export type PanelId = null | 'NetworkElements' | 'ConnectionStatusLog';

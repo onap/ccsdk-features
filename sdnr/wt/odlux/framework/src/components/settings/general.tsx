@@ -16,11 +16,11 @@
  * ============LICENSE_END==========================================================================
  */
 
+import  React from 'react';
 import { Button, FormControlLabel, Switch, Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { SettingsComponentProps } from '../../models/settings';
-import * as React from 'react';
-import connect, { Connect, IDispatcher } from '../../flux/connect';
+import { connect, Connect, IDispatcher } from '../../flux/connect';
 import { IApplicationStoreState } from '../../store/applicationStore';
 import { getGeneralSettingsAction, SetGeneralSettingsAction, updateGeneralSettingsAction } from '../../actions/settingsAction';
 import { sendMessage, SettingsMessage } from '../../services/broadcastService';

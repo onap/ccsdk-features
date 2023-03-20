@@ -15,12 +15,11 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as moment from 'moment';
 
 import { createExternal, IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
 import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
 
-import {  PerformanceDataType } from '../models/performanceDataType';
+import { PerformanceDataType } from '../models/performanceDataType';
 import { getFilter } from '../utils/tableUtils';
 
 export interface IPerformanceDataState extends IExternalTableState<PerformanceDataType> { }
@@ -31,10 +30,10 @@ export interface IPerformanceDataState extends IExternalTableState<PerformanceDa
 const performanceDataSearchHandler = createSearchDataHandler<PerformanceDataType>(getFilter, false, null);
 
 export const {
-    actionHandler: performanceDataActionHandler,
-    createActions: createPerformanceDataActions,
-    createProperties: createPerformanceDataProperties,
-    createPreActions: createPerformanceDataPreActions,
-    reloadAction: performanceDataReloadAction
+  actionHandler: performanceDataActionHandler,
+  createActions: createPerformanceDataActions,
+  createProperties: createPerformanceDataProperties,
+  createPreActions: createPerformanceDataPreActions,
+  reloadAction: performanceDataReloadAction,
 } = createExternal<PerformanceDataType>(performanceDataSearchHandler, appState => appState.performanceHistory.performanceData);
 

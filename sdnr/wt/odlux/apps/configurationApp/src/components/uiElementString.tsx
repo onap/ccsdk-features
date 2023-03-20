@@ -21,7 +21,7 @@ import { Tooltip, TextField } from "@mui/material";
 import { ViewElementString } from "../models/uiModels";
 import { BaseProps } from "./baseProps";
 import { IfWhenTextInput } from "./ifWhenTextInput";
-import { checkRange, checkPattern } from "./verifyer";
+import { checkRange, checkPattern } from "../utilities/verifyer";
 
 type stringEntryProps = BaseProps ;
 
@@ -69,7 +69,7 @@ export const UiElementString = (props: stringEntryProps) => {
 
     return (
         <Tooltip disableInteractive title={isTooltipVisible ? element.description || '' : ''}>
-            <IfWhenTextInput element={element} onChangeTooltipVisuability={setTooltipVisibility}
+            <IfWhenTextInput element={element} onChangeTooltipVisibility={setTooltipVisibility}
                 spellCheck={false} autoFocus margin="dense"
                 id={element.id} label={props?.isKey ? "🔑 " + element.label : element.label} type="text" value={props.inputValue}
                 style={{ width: 485, marginLeft: 20, marginRight: 20 }}

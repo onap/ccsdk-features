@@ -32,7 +32,7 @@ export const mountNetworkElementAsyncActionCreator = (networkElement: NetworkEle
   return connectService.mountNetworkElement(networkElement).then((success) => {
     if (success) {
       dispatch(updateCurrentViewAsyncAction());
-      dispatch(new AddSnackbarNotification({ message: `Requesting mount [${networkElement.nodeId}]`, options: { variant: 'info' } }))
+      dispatch(new AddSnackbarNotification({ message: `Requesting mount [${networkElement.nodeId}]`, options: { variant: 'info' } }));
     } else {
       dispatch(new AddSnackbarNotification({ message: `Failed to mount [${networkElement.nodeId}]`, options: { variant: 'warning' } }));
     }

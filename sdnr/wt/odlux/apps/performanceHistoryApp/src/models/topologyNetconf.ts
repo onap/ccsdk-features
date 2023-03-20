@@ -17,10 +17,10 @@
  */
 
 export interface TopologyNode {
-  "node-id": string;
+  'node-id': string;
 }
 
 export interface Topology {
-  "topology-id": string;
+  'topology-id': string;
   node: TopologyNode[];
 }

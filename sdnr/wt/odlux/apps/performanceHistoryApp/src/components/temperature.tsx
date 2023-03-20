@@ -15,38 +15,37 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-
-import { MaterialTable, ColumnType, ColumnModel, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { ColumnModel, ColumnType, MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 
-import { TemperatureDataType, TemperatureDatabaseDataType } from '../models/temperatureDataType';
+import { SetFilterVisibility, SetSubViewAction } from '../actions/toggleActions';
+import { createTemperatureActions, createTemperatureProperties } from '../handlers/temperatureHandler';
 import { IDataSet, IDataSetsObject } from '../models/chartTypes';
-import { createTemperatureProperties, createTemperatureActions } from '../handlers/temperatureHandler';
+import { TemperatureDatabaseDataType, TemperatureDataType } from '../models/temperatureDataType';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
 import ToggleContainer from './toggleContainer';
-import { SetSubViewAction, SetFilterVisibility } from '../actions/toggleActions';
 
 const mapProps = (state: IApplicationStoreState) => ({
   temperatureProperties: createTemperatureProperties(state),
   currentView: state.performanceHistory.subViews.temperatur.subView,
   isFilterVisible: state.performanceHistory.subViews.temperatur.isFilterVisible,
-  existingFilter: state.performanceHistory.temperature.filter
+  existingFilter: state.performanceHistory.temperature.filter,
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   temperatureActions: createTemperatureActions(dispatcher.dispatch),
-  setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("Temp", value)),
-  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility("Temp", value)) },
+  setSubView: (value: 'chart' | 'table') => dispatcher.dispatch(new SetSubViewAction('Temp', value)),
+  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility('Temp', value)); },
 
 });
 
 type TemperatureComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
-  selectedTimePeriod: string
+  selectedTimePeriod: string;
 };
 
 const TemperatureTable = MaterialTable as MaterialTableCtorType<TemperatureDataType>;
@@ -54,22 +53,21 @@ const TemperatureTable = MaterialTable as MaterialTableCtorType<TemperatureDataT
 /**
  * The Component which gets the temperature data from the database based on the selected time period.
  */
-class TemperatureComponent extends React.Component<TemperatureComponentProps>{
-
+class TemperatureComponent extends React.Component<TemperatureComponentProps> {
   onToggleFilterButton = () => {
     this.props.toggleFilterButton(!this.props.isFilterVisible);
-  }
+  };
 
 
-  onChange = (value: "chart" | "table") => {
+  onChange = (value: 'chart' | 'table') => {
     this.props.setSubView(value);
-  }
+  };
 
   onFilterChanged = (property: string, filterTerm: string) => {
     this.props.temperatureActions.onFilterChanged(property, filterTerm);
     if (!this.props.temperatureProperties.showFilter)
       this.props.temperatureActions.onToggleFilter(false);
-  }
+  };
 
   render(): JSX.Element {
     const properties = this.props.temperatureProperties;
@@ -77,12 +75,12 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
 
     const chartPagedData = this.getChartDataValues(properties.rows);
     const temperatureColumns: ColumnModel<TemperatureDataType>[] = [
-      { property: "radioSignalId", title: "Radio signal", type: ColumnType.text },
-      { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
-      { property: "timeStamp", title: "End Time", type: ColumnType.text },
+      { property: 'radioSignalId', title: 'Radio signal', type: ColumnType.text },
+      { property: 'scannerId', title: 'Scanner ID', type: ColumnType.text },
+      { property: 'timeStamp', title: 'End Time', type: ColumnType.text },
       {
-        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.boolean
-      }
+        property: 'suspectIntervalFlag', title: 'Suspect Interval', type: ColumnType.boolean,
+      },
     ];
 
     chartPagedData.datasets.forEach(ds => {
@@ -93,11 +91,11 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
 
         <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.temperatureProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <TemperatureTable stickyHeader idProperty={"_id"} tableId="temperature-table" columns={temperatureColumns} {...properties} {...actions} />
+          <TemperatureTable stickyHeader idProperty={'_id'} tableId="temperature-table" columns={temperatureColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );
-  };
+  }
 
   /**
    * This function gets the performance values for Temperature according on the chartjs dataset structure 
@@ -105,53 +103,53 @@ class TemperatureComponent extends React.Component<TemperatureComponentProps>{
    */
 
   private getChartDataValues = (rows: TemperatureDataType[]): IDataSetsObject => {
-    const _rows = [...rows];
-    sortDataByTimeStamp(_rows);
+    const data_rows = [...rows];
+    sortDataByTimeStamp(data_rows);
 
     const datasets: IDataSet[] = [{
-      name: "rfTempMin",
-      label: "rf-temp-min",
+      name: 'rfTempMin',
+      label: 'rf-temp-min',
       borderColor: '#0e17f3de',
       bezierCurve: false,
       lineTension: 0,
       fill: false,
       data: [],
-      columnLabel: "Rf Temp Min[deg C]"
+      columnLabel: 'Rf Temp Min[deg C]',
     }, {
-      name: "rfTempAvg",
-      label: "rf-temp-avg",
+      name: 'rfTempAvg',
+      label: 'rf-temp-avg',
       borderColor: '#08edb6de',
       bezierCurve: false,
       lineTension: 0,
       fill: false,
       data: [],
-      columnLabel: "Rf Temp Avg[deg C]"
+      columnLabel: 'Rf Temp Avg[deg C]',
     }, {
-      name: "rfTempMax",
-      label: "rf-temp-max",
+      name: 'rfTempMax',
+      label: 'rf-temp-max',
       borderColor: '#b308edde',
       bezierCurve: false,
       lineTension: 0,
       fill: false,
       data: [],
-      columnLabel: "Rf Temp Max[deg C]"
+      columnLabel: 'Rf Temp Max[deg C]',
     }];
 
-    _rows.forEach(row => {
+    data_rows.forEach(row => {
       row.rfTempMin = row.performanceData.rfTempMin;
       row.rfTempAvg = row.performanceData.rfTempAvg;
       row.rfTempMax = row.performanceData.rfTempMax;
       datasets.forEach(ds => {
         ds.data.push({
-          x: row["timeStamp" as keyof TemperatureDataType] as string,
-          y: row.performanceData[ds.name as keyof TemperatureDatabaseDataType] as string
+          x: row['timeStamp' as keyof TemperatureDataType] as string,
+          y: row.performanceData[ds.name as keyof TemperatureDatabaseDataType] as string,
         });
       });
     });
     return {
-      datasets: datasets
+      datasets: datasets,
     };
-  }
+  };
 }
 
 const Temperature = withRouter(connect(mapProps, mapDisp)(TemperatureComponent));

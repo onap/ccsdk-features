@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 import { Theme, Tooltip } from '@mui/material';
 
 import { WithStyles } from '@mui/styles';
@@ -33,7 +33,7 @@ import StopIcon from '@mui/icons-material/Stop';
 import CircularProgress from '@mui/material/CircularProgress'
 
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import MaterialTable, { MaterialTableCtorType, ColumnType } from '../../../../framework/src/components/material-table';
 
 import { MediatorConfig, BusySymbol, MediatorConfigResponse } from '../models/mediatorServer';

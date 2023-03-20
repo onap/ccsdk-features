@@ -17,19 +17,19 @@
  */
 // app configuration and main entry point for the app
 
-import * as React from "react";
-import { withRouter, RouteComponentProps, Route, Switch, Redirect } from 'react-router-dom';
-
-import { faLock } from '@fortawesome/free-solid-svg-icons';  // select app icon
+import React, { FC } from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import applicationManager from '../../../framework/src/services/applicationManager';
-import connect, { Connect } from '../../../framework/src/flux/connect';
+import { connect, Connect } from '../../../framework/src/flux/connect';
 
 import { minimumAppRootHandler } from './handlers/minimumAppRootHandler';
 
+// const appIcon = require('./assets/icons/minimunAppIcon.svg');  // select app icon
+
 type AppProps = RouteComponentProps & Connect;
 
-const App = (props: AppProps) => (
+const App: FC<AppProps> = (_props) => (
   <div>Start your app here!!</div>
 );
 
@@ -37,11 +37,11 @@ const FinalApp = withRouter(connect()(App));
 
 export function register() {
   applicationManager.registerApplication({
-    name: "minimum",
-    icon: faLock,
+    name: 'minimum',
+    // icon: appIcon,
     rootComponent: FinalApp,
     rootActionHandler: minimumAppRootHandler,
-    menuEntry: "Minimum"
+    menuEntry: 'Minimum',
   });
 }
 

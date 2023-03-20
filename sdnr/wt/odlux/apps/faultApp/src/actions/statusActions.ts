@@ -15,9 +15,10 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { FaultApplicationBaseAction } from './notificationActions';
-import { getFaultStateFromDatabase } from '../services/faultStatusService';
 import { Dispatch } from '../../../../framework/src/flux/store';
+
+import { getFaultStateFromDatabase } from '../services/faultStatusService';
+import { FaultApplicationBaseAction } from './notificationActions';
 
 
 export class SetFaultStatusAction extends FaultApplicationBaseAction {
@@ -32,29 +33,28 @@ export class SetFaultStatusAction extends FaultApplicationBaseAction {
 
 export const refreshFaultStatusAsyncAction = async (dispatch: Dispatch) => {
 
-  dispatch(new SetFaultStatusAction(0, 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, true));
+  // dispatch(new SetFaultStatusAction(0, 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, true));
   const result = await getFaultStateFromDatabase().catch(_ => null);
   if (result) {
     const statusAction = new SetFaultStatusAction(
-      result["Critical"] || 0,
-      result["Major"] || 0,
-      result["Minor"] || 0,
-      result["Warning"] || 0,
+      result.Critical || 0,
+      result.Major || 0,
+      result.Minor || 0,
+      result.Warning || 0,
       false,
-      result["Connected"] || 0,
-      result["Connecting"] || 0,
-      result["Disconnected"] || 0,
-      result["Mounted"] || 0,
-      result["UnableToConnect"] || 0,
-      result["Undefined"] || 0,
-      result["Unmounted"] || 0,
-      result["total"] || 0,
-      false
+      result.Connected || 0,
+      result.Connecting || 0,
+      result.Disconnected || 0,
+      result.Mounted || 0,
+      result.UnableToConnect || 0,
+      result.Undefined || 0,
+      result.Unmounted || 0,
+      result.total || 0,
+      false,
     );
     dispatch(statusAction);
     return;
-  }
-  else {
+  } else {
     dispatch(new SetFaultStatusAction(0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, false));
   }
-}
+};

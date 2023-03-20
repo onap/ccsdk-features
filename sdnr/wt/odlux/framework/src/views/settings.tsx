@@ -16,30 +16,18 @@
  * ============LICENSE_END==========================================================================
  */
 
-import * as React from 'react';
-import { IApplicationStoreState } from "../store/applicationStore";
-import connect, { Connect, IDispatcher } from "../flux/connect";
+import React, {FC, useState } from 'react';
+import { useApplicationDispatch } from "../flux/connect";
 
-import applicationService from '../services/applicationManager';
-import { makeStyles } from '@mui/styles';
 import { Divider, List, ListItem, ListItemText, Paper } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import applicationService from '../services/applicationManager';
 
-import { GeneralUserSettings } from '../components/settings/general'
 import { GoBackAction } from '../actions/navigationActions';
+import { GeneralUserSettings } from '../components/settings/general';
 import { toAriaLabel } from '../utilities/yangHelper';
 
-type props = Connect<typeof mapProps, typeof mapDispatch>;
-
-type SettingsEntry = { name: string, element: JSX.Element }
-
-
-const mapProps = (state: IApplicationStoreState) => ({
-
-});
-
-const mapDispatch = (dispatcher: IDispatcher) => ({
-  goBack: () => dispatcher.dispatch(new GoBackAction())
-});
+type SettingsEntry = { name: string, element: JSX.Element };
 
 const styles = makeStyles({
   sectionMargin: {
@@ -47,7 +35,6 @@ const styles = makeStyles({
     marginBottom: "15px"
   },
   elementMargin: {
-
     marginLeft: "10px"
   },
   menu: {
@@ -55,22 +42,23 @@ const styles = makeStyles({
   }
 });
 
-const UserSettings: React.FunctionComponent<props> = (props) => {
+const UserSettings: FC = (props) => {
 
-  const classes = styles();
+  const dispatch = useApplicationDispatch();
+  const goBack = () => dispatch(new GoBackAction());
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   const registrations = applicationService.applications;
 
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
-
   const navigateBack = () => {
-    props.goBack();
+    goBack();
   }
 
   let settingsArray: SettingsEntry[] = [];
 
   //add all framework specific settings
   settingsArray.push({name:"General", element: <GeneralUserSettings onClose={navigateBack} />})
-
 
   //get app settings
   let settingsElements : (SettingsEntry) [] = Object.keys(registrations).map(p => {
@@ -93,6 +81,8 @@ const UserSettings: React.FunctionComponent<props> = (props) => {
     setSelectedIndex(newValue);
   }
 
+  const classes = styles();
+
   return <div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "15%" }}>
       <Paper variant="outlined" style={{ height: "70%" }}>
@@ -101,7 +91,7 @@ const UserSettings: React.FunctionComponent<props> = (props) => {
             settingsArray.map((el, index) => {
               return (
               <>
-                <ListItem selected={selectedIndex === index} button onClick={e => { onSelectElement(e, index) }} aria-label={toAriaLabel(el?.name+"-settings")}>
+                <ListItem key={"settings-key-"+index} selected={selectedIndex === index} button onClick={e => { onSelectElement(e, index) }} aria-label={toAriaLabel(el?.name+"-settings")}>
                   <ListItemText primary={el?.name} style={{ padding: 0 }} />
                 </ListItem>
                 <Divider />
@@ -110,7 +100,6 @@ const UserSettings: React.FunctionComponent<props> = (props) => {
           }
         </List>
       </Paper>
-
     </div>
     <div style={{ height: "100%", width: "80%", marginLeft: 15 }}>
       <div style={{ height: "100%" }}>
@@ -123,4 +112,4 @@ const UserSettings: React.FunctionComponent<props> = (props) => {
 }
 
 
-export default connect(mapProps, mapDispatch)(UserSettings);
+export default UserSettings;

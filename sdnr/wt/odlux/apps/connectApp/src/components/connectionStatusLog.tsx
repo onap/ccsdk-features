@@ -15,11 +15,13 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
-import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
+import React from 'react';
+
+import Refresh from '@mui/icons-material/Refresh';
+
+import { ColumnType, MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import { MaterialTable, ColumnType, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
-import  Refresh  from '@mui/icons-material/Refresh';
 
 import { createConnectionStatusLogActions, createConnectionStatusLogProperties } from '../handlers/connectionStatusLogHandler';
 import { NetworkElementConnectionLog } from '../models/networkElementConnectionLog';
@@ -37,36 +39,36 @@ const ConnectionStatusTable = MaterialTable as MaterialTableCtorType<NetworkElem
 
 type ConnectionStatusLogComponentProps = Connect<typeof mapProps, typeof mapDispatch>;
 type ConnectionStatusLogComponentState = {
-  refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode
-}
+  refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode;
+};
 
 let initialSorted = false;
 
 
-class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogComponentProps,ConnectionStatusLogComponentState > {
+class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogComponentProps, ConnectionStatusLogComponentState > {
   constructor(props: ConnectionStatusLogComponentProps) {
     super(props);
 
     this.state = {
-      refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode.None
+      refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode.None,
     };
   }
 
   render(): JSX.Element {
     const refreshConnectionStatusLogAction = {
-      icon: Refresh, tooltip: 'Refresh Connection Status Log Table',ariaLabel:'refresh', onClick: () => {
+      icon: Refresh, tooltip: 'Refresh Connection Status Log Table', ariaLabel:'refresh', onClick: () => {
         this.setState({
-          refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode.RefreshConnectionStatusLogTable
+          refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode.RefreshConnectionStatusLogTable,
         });
-      }
+      },
     };
 
     return (
     <>
       <ConnectionStatusTable stickyHeader tableId="connection-status-table" customActionButtons={[refreshConnectionStatusLogAction]}  columns={[
-        { property: "timestamp", title: "Timestamp", type: ColumnType.text },
-        { property: "nodeId", title: "Node ID", type: ColumnType.text },
-        { property: "status", title: "Connection Status", type: ColumnType.text },
+        { property: 'timestamp', title: 'Timestamp', type: ColumnType.text },
+        { property: 'nodeId', title: 'Node ID', type: ColumnType.text },
+        { property: 'status', title: 'Connection Status', type: ColumnType.text },
       ]} idProperty="id" {...this.props.connectionStatusLogActions} {...this.props.connectionStatusLogProperties} >
       </ConnectionStatusTable>
        <RefreshConnectionStatusLogDialog
@@ -75,17 +77,18 @@ class ConnectionStatusLogComponent extends React.Component<ConnectionStatusLogCo
       />
     </>
     );
-  };
+  }
 
   private onCloseRefreshConnectionStatusLogDialog = () => {
     this.setState({
-      refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode.None
+      refreshConnectionStatusLogEditorMode: RefreshConnectionStatusLogDialogMode.None,
     });
-  }
+  };
+
   componentDidMount() {
     if (!initialSorted) {
       initialSorted = true;
-      this.props.connectionStatusLogActions.onHandleExplicitRequestSort("timestamp", "desc");
+      this.props.connectionStatusLogActions.onHandleExplicitRequestSort('timestamp', 'desc');
     } else {
       this.props.connectionStatusLogActions.onRefresh();
     }

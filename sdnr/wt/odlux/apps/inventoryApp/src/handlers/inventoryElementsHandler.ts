@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { createExternal,IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
+import { createExternal, IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
 import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
 
 import { InventoryType } from '../models/inventory';
@@ -23,7 +23,7 @@ import { InventoryType } from '../models/inventory';
 export interface IInventoryElementsState extends IExternalTableState<InventoryType> { }
 
 // create eleactic search material data fetch handler
-const inventoryElementsSearchHandler = createSearchDataHandler<InventoryType>("inventory");
+const inventoryElementsSearchHandler = createSearchDataHandler<InventoryType>('inventory');
 
 export const {
   actionHandler: inventoryElementsActionHandler,
