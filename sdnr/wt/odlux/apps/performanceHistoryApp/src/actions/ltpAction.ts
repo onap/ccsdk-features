@@ -50,18 +50,23 @@ export class SetInitialLoadedAction extends BaseAction {
   }
 }
 
-export class NoLtpsFoundAction extends BaseAction {
-  constructor() {
-    super();
-  }
-}
+export class NoLtpsFoundAction extends BaseAction { }
 
-export class ResetLtpsAction extends BaseAction {
-  constructor() {
-    super();
-  }
-}
+export class ResetLtpsAction extends BaseAction { }
 
+const getDistinctLtps = (distinctLtps: LtpIds[], selectedLtp: string, selectFirstLtp?: Function, resetLtp?: Function) => {
+  let ltpNotSelected: boolean = true;
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  selectFirstLtp && selectFirstLtp(distinctLtps[0].key);
+  distinctLtps.forEach((value: LtpIds) => {
+    if (value.key === selectedLtp) {
+      ltpNotSelected = false;
+    }
+  });
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  resetLtp && resetLtp(ltpNotSelected);
+  return distinctLtps;
+};
 
 /** 
  * Represents an asynchronous thunk action to load available distinctLtps by networkElement from the database and set the returned first Ltp as default. 
@@ -87,14 +92,3 @@ export const loadDistinctLtpsbyNetworkElementAsync = (networkElement: string, se
   });
 };
 
-const getDistinctLtps = (distinctLtps: LtpIds[], selectedLtp: string, selectFirstLtp?: Function, resetLtp?: Function) => {
-  let ltpNotSelected: boolean = true;
-  selectFirstLtp && selectFirstLtp(distinctLtps[0].key);
-  distinctLtps.forEach((value: LtpIds) => {
-    if (value.key === selectedLtp) {
-      ltpNotSelected = false;
-    }
-  });
-  resetLtp && resetLtp(ltpNotSelected);
-  return distinctLtps;
-}

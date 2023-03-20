@@ -34,7 +34,7 @@ export const availableTlsKeysActionHandler: IActionHandler<IAvailableTlsKeysStat
   if (action instanceof LoadAllTlsKeyListAction) {
     state = {
       ...state,
-      busy: true
+      busy: true,
     };
 
   } else if (action instanceof AllTlsKeyListLoadedAction) {
@@ -47,7 +47,7 @@ export const availableTlsKeysActionHandler: IActionHandler<IAvailableTlsKeysStat
     } else {
       state = {
         ...state,
-        busy: false
+        busy: false,
       };
     }
   }

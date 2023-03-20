@@ -22,4 +22,4 @@
 
 export type DeviceListType = {
   nodeId: string;
-}
+};

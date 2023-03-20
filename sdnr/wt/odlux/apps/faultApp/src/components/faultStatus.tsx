@@ -15,37 +15,36 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 
-import { Theme } from '@mui/material/styles';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'; // select app icon
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Typography from '@mui/material/Typography';
 import { WithStyles } from '@mui/styles';
-import withStyles from '@mui/styles/withStyles';
 import createStyles from '@mui/styles/createStyles';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';  // select app icon
+import withStyles from '@mui/styles/withStyles';
 
-import connect, { Connect } from '../../../../framework/src/flux/connect';
+import { connect, Connect } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
-import Typography from '@mui/material/Typography';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const styles = (theme: Theme) => createStyles({
+const styles = () => createStyles({
   icon: {
     marginLeft: 8,
-    marginRight: 8
+    marginRight: 8,
   },
   critical: {
-    color: "red"
+    color: 'red',
   },
   major: {
-    color: "orange"
+    color: 'orange',
   },
   minor: {
-    color: "#f7f700"
+    color: '#f7f700',
   },
   warning: {
-    color: "#428bca"
-  }
+    color: '#428bca',
+  },
 });
 
 const mapProps = (state: IApplicationStoreState) => ({
@@ -75,7 +74,7 @@ class FaultStatusComponent extends React.Component<FaultStatusComponentProps> {
       </Typography>
       </>
     );
-  };
+  }
 }
 
 export const FaultStatus = withStyles(styles)(connect(mapProps)(FaultStatusComponent));

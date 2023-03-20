@@ -15,19 +15,11 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-/** Represents the elestic search db type for maintenence enrties */
 
+/**
+ * Represents all the distinct devices from the inventory history data.
+ */
 
-export const spoofSymbol = Symbol("Spoof");
-
-/** Represents the type for an maintenence entry. */
-export type MaintenenceEntry = {
-  _id: string;
+export type InventoryDeviceListType = {
   nodeId: string;
-  description?: string,
-  end: string,
-  start: string
-  active: boolean
-  [spoofSymbol]?: boolean;
-}
-
+};

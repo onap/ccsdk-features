@@ -15,79 +15,78 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
- import { IActionHandler } from '../../../../framework/src/flux/action';
+import { IActionHandler } from '../../../../framework/src/flux/action';
 
- import { AllElementInfoLoadedAction, AllElementInfoFeatureLoadedAction, LoadAllElementInfoAction } from '../actions/infoNetworkElementActions';
+import { AllElementInfoFeatureLoadedAction, AllElementInfoLoadedAction, LoadAllElementInfoAction } from '../actions/infoNetworkElementActions';
+import { Module, TopologyNode } from '../models/topologyNetconf';
  
- import { Module, TopologyNode } from '../models/topologyNetconf';
+export interface IInfoNetworkElementsState {
+  elementInfo: TopologyNode;
+  busy: boolean;
+}
  
- export interface IInfoNetworkElementsState {
-   elementInfo: TopologyNode;
-   busy: boolean;
- }
+export interface IInfoNetworkElementFeaturesState {
+  elementFeatureInfo: Module[];
+  busy: boolean;
+}
  
- export interface IInfoNetworkElementFeaturesState {
-   elementFeatureInfo: Module[];
-   busy: boolean;
- }
+const infoNetworkElementsStateInit: IInfoNetworkElementsState = {
+  elementInfo: {
+    'node-id': '',
+    'netconf-node-topology:available-capabilities': {
+      'available-capability': [],
+    },
+  },
+  busy: false,
+};
  
- const infoNetworkElementsStateInit: IInfoNetworkElementsState = {
-   elementInfo: {
-     "node-id": "",
-     "netconf-node-topology:available-capabilities": {
-       "available-capability": []
-     }
-   },
-   busy: false
- };
+const infoNetworkElementFeaturesStateInit: IInfoNetworkElementFeaturesState = {
+  elementFeatureInfo: [],
+  busy: false,
+};
  
- const infoNetworkElementFeaturesStateInit: IInfoNetworkElementFeaturesState = {
-   elementFeatureInfo: [],
-   busy: false
- };
+export const infoNetworkElementsActionHandler: IActionHandler<IInfoNetworkElementsState> = (state = infoNetworkElementsStateInit, action) => {
+  if (action instanceof LoadAllElementInfoAction) {
+    state = {
+      ...state,
+      busy: true,
+    };
+  } else if (action instanceof AllElementInfoLoadedAction) {
+    if (!action.error && action.elementInfo) {
+      state = {
+        ...state,
+        elementInfo: action.elementInfo,
+        busy: false,
+      };
+    } else {
+      state = {
+        ...state,
+        busy: false,
+      };
+    }
+  }
+  return state;
+};
  
- export const infoNetworkElementsActionHandler: IActionHandler<IInfoNetworkElementsState> = (state = infoNetworkElementsStateInit, action) => {
-   if (action instanceof LoadAllElementInfoAction) {
-     state = {
-       ...state,
-       busy: true
-     };
-   } else if (action instanceof AllElementInfoLoadedAction) {
-     if (!action.error && action.elementInfo) {
-       state = {
-         ...state,
-         elementInfo: action.elementInfo,
-         busy: false
-       };
-     } else {
-       state = {
-         ...state,
-         busy: false
-       };
-     }
-   }
-   return state;
- };
- 
- export const infoNetworkElementFeaturesActionHandler: IActionHandler<IInfoNetworkElementFeaturesState> = (state = infoNetworkElementFeaturesStateInit, action) => {
-   if (action instanceof LoadAllElementInfoAction) {
-     state = {
-       ...state,
-       busy: true
-     };
-   } else if (action instanceof AllElementInfoFeatureLoadedAction) {
-     if (!action.error && action.elementFeatureInfo) {
-       state = {
-         ...state,
-         elementFeatureInfo: action.elementFeatureInfo,
-         busy: false
-       };
-     } else {
-       state = {
-         ...state,
-         busy: false
-       };
-     }
-   }
-   return state;
- };
+export const infoNetworkElementFeaturesActionHandler: IActionHandler<IInfoNetworkElementFeaturesState> = (state = infoNetworkElementFeaturesStateInit, action) => {
+  if (action instanceof LoadAllElementInfoAction) {
+    state = {
+      ...state,
+      busy: true,
+    };
+  } else if (action instanceof AllElementInfoFeatureLoadedAction) {
+    if (!action.error && action.elementFeatureInfo) {
+      state = {
+        ...state,
+        elementFeatureInfo: action.elementFeatureInfo,
+        busy: false,
+      };
+    } else {
+      state = {
+        ...state,
+        busy: false,
+      };
+    }
+  }
+  return state;
+};

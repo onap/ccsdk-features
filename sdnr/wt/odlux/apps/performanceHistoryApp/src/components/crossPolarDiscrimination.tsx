@@ -15,20 +15,19 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-
-import { MaterialTable, ColumnType, MaterialTableCtorType, ColumnModel } from '../../../../framework/src/components/material-table';
+import { ColumnModel, ColumnType, MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 
-import { CrossPolarDiscriminationDataType, CrossPolarDiscriminationDatabaseDataType } from '../models/crossPolarDiscriminationDataType';
+import { SetFilterVisibility, SetSubViewAction } from '../actions/toggleActions';
+import { createCrossPolarDiscriminationActions, createCrossPolarDiscriminationProperties } from '../handlers/crossPolarDiscriminationHandler';
 import { IDataSet, IDataSetsObject } from '../models/chartTypes';
-import { createCrossPolarDiscriminationProperties, createCrossPolarDiscriminationActions } from '../handlers/crossPolarDiscriminationHandler';
+import { CrossPolarDiscriminationDatabaseDataType, CrossPolarDiscriminationDataType } from '../models/crossPolarDiscriminationDataType';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
-import { SetSubViewAction, SetFilterVisibility } from '../actions/toggleActions';
 import ToggleContainer from './toggleContainer';
 
 
@@ -36,18 +35,18 @@ const mapProps = (state: IApplicationStoreState) => ({
   crossPolarDiscriminationProperties: createCrossPolarDiscriminationProperties(state),
   currentView: state.performanceHistory.subViews.CPD.subView,
   isFilterVisible: state.performanceHistory.subViews.CPD.isFilterVisible,
-  existingFilter: state.performanceHistory.crossPolarDiscrimination.filter
+  existingFilter: state.performanceHistory.crossPolarDiscrimination.filter,
 
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   crossPolarDiscriminationActions: createCrossPolarDiscriminationActions(dispatcher.dispatch),
-  setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("CPD", value)),
-  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility("CPD", value)) },
+  setSubView: (value: 'chart' | 'table') => dispatcher.dispatch(new SetSubViewAction('CPD', value)),
+  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility('CPD', value));},
 });
 
 type CrossPolarDiscriminationComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
-  selectedTimePeriod: string
+  selectedTimePeriod: string;
 };
 
 const CrossPolarDiscriminationTable = MaterialTable as MaterialTableCtorType<CrossPolarDiscriminationDataType>;
@@ -55,21 +54,20 @@ const CrossPolarDiscriminationTable = MaterialTable as MaterialTableCtorType<Cro
 /**
  * The Component which gets the crossPolarDiscrimination data from the database based on the selected time period.
  */
-class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscriminationComponentProps>{
-
+class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscriminationComponentProps> {
   onToggleFilterButton = () => {
     this.props.toggleFilterButton(!this.props.isFilterVisible);
-  }
+  };
 
-  onChange = (value: "chart" | "table") => {
+  onChange = (value: 'chart' | 'table') => {
     this.props.setSubView(value);
-  }
+  };
 
   onFilterChanged = (property: string, filterTerm: string) => {
     this.props.crossPolarDiscriminationActions.onFilterChanged(property, filterTerm);
     if (!this.props.crossPolarDiscriminationProperties.showFilter)
       this.props.crossPolarDiscriminationActions.onToggleFilter(false);
-  }
+  };
 
   render(): JSX.Element {
     const properties = this.props.crossPolarDiscriminationProperties;
@@ -78,12 +76,12 @@ class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscri
     const chartPagedData = this.getChartDataValues(properties.rows);
 
     const cpdColumns: ColumnModel<CrossPolarDiscriminationDataType>[] = [
-      { property: "radioSignalId", title: "Radio signal", type: ColumnType.text },
-      { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
-      { property: "timeStamp", title: "End Time", type: ColumnType.text },
+      { property: 'radioSignalId', title: 'Radio signal', type: ColumnType.text },
+      { property: 'scannerId', title: 'Scanner ID', type: ColumnType.text },
+      { property: 'timeStamp', title: 'End Time', type: ColumnType.text },
       {
-        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.boolean
-      }
+        property: 'suspectIntervalFlag', title: 'Suspect Interval', type: ColumnType.boolean,
+      },
     ];
 
     chartPagedData.datasets.forEach(ds => {
@@ -91,66 +89,67 @@ class CrossPolarDiscriminationComponent extends React.Component<CrossPolarDiscri
     });
     return (
       <>
-        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.crossPolarDiscriminationProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
+        <ToggleContainer onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible}
+          existingFilter={this.props.crossPolarDiscriminationProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} onChange={this.onChange}>
           {lineChart(chartPagedData)}
-          <CrossPolarDiscriminationTable stickyHeader idProperty={"_id"} tableId="cross-polar-discrimination-table" columns={cpdColumns} {...properties} {...actions} />
+          <CrossPolarDiscriminationTable stickyHeader idProperty={'_id'} tableId="cross-polar-discrimination-table" columns={cpdColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );
-  };
+  }
 
   /**
    * This function gets the performance values for CPD according on the chartjs dataset structure 
    * which is to be sent to the chart.
    */
   private getChartDataValues = (rows: CrossPolarDiscriminationDataType[]): IDataSetsObject => {
-    const _rows = [...rows];
-    sortDataByTimeStamp(_rows);
+    const data_rows = [...rows];
+    sortDataByTimeStamp(data_rows);
 
     const datasets: IDataSet[] = [{
-      name: "xpdMin",
-      label: "xpd-min",
+      name: 'xpdMin',
+      label: 'xpd-min',
       borderColor: '#0e17f3de',
       bezierCurve: false,
       lineTension: 0,
       fill: false,
       data: [],
-      columnLabel: "CPD (min)[db]"
+      columnLabel: 'CPD (min)[db]',
     }, {
-      name: "xpdAvg",
-      label: "xpd-avg",
+      name: 'xpdAvg',
+      label: 'xpd-avg',
       borderColor: '#08edb6de',
       bezierCurve: false,
       lineTension: 0,
       fill: false,
       data: [],
-      columnLabel: "CPD (avg)[db]"
+      columnLabel: 'CPD (avg)[db]',
     }, {
-      name: "xpdMax",
-      label: "xpd-max",
+      name: 'xpdMax',
+      label: 'xpd-max',
       borderColor: '#b308edde',
       bezierCurve: false,
       lineTension: 0,
       fill: false,
       data: [],
-      columnLabel: "CPD (max)[db]"
+      columnLabel: 'CPD (max)[db]',
     }];
 
-    _rows.forEach(row => {
+    data_rows.forEach(row => {
       row.xpdMin = row.performanceData.xpdMin;
       row.xpdAvg = row.performanceData.xpdAvg;
       row.xpdMax = row.performanceData.xpdMax;
       datasets.forEach(ds => {
         ds.data.push({
-          x: row["timeStamp" as keyof CrossPolarDiscriminationDataType] as string,
-          y: row.performanceData[ds.name as keyof CrossPolarDiscriminationDatabaseDataType] as string
+          x: row['timeStamp' as keyof CrossPolarDiscriminationDataType] as string,
+          y: row.performanceData[ds.name as keyof CrossPolarDiscriminationDatabaseDataType] as string,
         });
       });
     });
     return {
-      datasets: datasets
+      datasets: datasets,
     };
-  }
+  };
 }
 const CrossPolarDiscrimination = withRouter(connect(mapProps, mapDisp)(CrossPolarDiscriminationComponent));
 export default CrossPolarDiscrimination;

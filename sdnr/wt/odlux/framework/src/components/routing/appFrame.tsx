@@ -15,9 +15,9 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 
-import connect, { Connect } from '../../flux/connect';
+import { connect, Connect } from '../../flux/connect';
 
 import { SetTitleAction } from '../../actions/titleActions';
 import { AddErrorInfoAction } from '../../actions/errorActions';

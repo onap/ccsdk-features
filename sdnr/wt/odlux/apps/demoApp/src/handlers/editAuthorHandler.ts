@@ -25,9 +25,9 @@ export interface IEditAuthor {
 
 const editAuthorInit: IEditAuthor = {
   author: null,
-  isDirty: false
+  isDirty: false,
 };
 
-export const editAuthorHandler: IActionHandler<IEditAuthor> = (state = editAuthorInit, action) => {
+export const editAuthorHandler: IActionHandler<IEditAuthor> = (state = editAuthorInit, _action) => {
   return state;
 };

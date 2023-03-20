@@ -15,14 +15,15 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { requestRest } from "../../../../framework/src/services/restService";
-import { Result, SingeResult } from "../../../../framework/src/models/elasticSearch";
-import { FaultType, Faults, DeletedStuckAlarms } from "../models/fault";
+import { Result } from '../../../../framework/src/models/elasticSearch';
+import { requestRest } from '../../../../framework/src/services/restService';
+
+import { Faults, FaultType } from '../models/fault';
 
 
 export const getFaultStateFromDatabase = async (): Promise<FaultType | null> => {
   const path = 'rests/operations/data-provider:read-status';
-  const result = await requestRest<Result<Faults>>(path, { method: "POST" });
+  const result = await requestRest<Result<Faults>>(path, { method: 'POST' });
 
   let faultType: FaultType = {
     Critical: 0,
@@ -36,34 +37,33 @@ export const getFaultStateFromDatabase = async (): Promise<FaultType | null> => 
     UnableToConnect: 0,
     Undefined: 0,
     Unmounted: 0,
-    total: 0
-  }
+    total: 0,
+  };
   let faults: Faults[] | null = null;
 
-  if (result && result["data-provider:output"] && result["data-provider:output"].data) {
-    faults = result["data-provider:output"].data;
+  if (result && result['data-provider:output'] && result['data-provider:output'].data) {
+    faults = result['data-provider:output'].data;
     faultType = {
       Critical: faults[0].faults.criticals,
       Major: faults[0].faults.majors,
       Minor: faults[0].faults.minors,
       Warning: faults[0].faults.warnings,
-      Connected: faults[0]["network-element-connections"].Connected,
-      Connecting: faults[0]["network-element-connections"].Connecting,
-      Disconnected: faults[0]["network-element-connections"].Disconnected,
-      Mounted: faults[0]["network-element-connections"].Mounted,
-      UnableToConnect: faults[0]["network-element-connections"].UnableToConnect,
-      Undefined: faults[0]["network-element-connections"].Undefined,
-      Unmounted: faults[0]["network-element-connections"].Unmounted,
-      total: faults[0]["network-element-connections"].total,
-    }
+      Connected: faults[0]['network-element-connections'].Connected,
+      Connecting: faults[0]['network-element-connections'].Connecting,
+      Disconnected: faults[0]['network-element-connections'].Disconnected,
+      Mounted: faults[0]['network-element-connections'].Mounted,
+      UnableToConnect: faults[0]['network-element-connections'].UnableToConnect,
+      Undefined: faults[0]['network-element-connections'].Undefined,
+      Unmounted: faults[0]['network-element-connections'].Unmounted,
+      total: faults[0]['network-element-connections'].total,
+    };
   }
 
   return faultType;
-}
+};
 
 export const clearStuckAlarms = async (nodeNames: string[]) => {
-  const path = 'rests/operations/devicemanager:clear-current-fault-by-nodename'
-  const result = await requestRest<any>(path, { method: 'Post', body: JSON.stringify({ input: { nodenames: nodeNames } }) })
+  const path = 'rests/operations/devicemanager:clear-current-fault-by-nodename';
+  const result = await requestRest<any>(path, { method: 'Post', body: JSON.stringify({ input: { nodenames: nodeNames } }) });
   return result;
-
-}
+};

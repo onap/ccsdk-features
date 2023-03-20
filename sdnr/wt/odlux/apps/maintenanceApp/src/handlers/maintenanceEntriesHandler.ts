@@ -15,22 +15,21 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-
 import { createExternal, IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
 import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
 
-import { NetworkElementConnection } from '../models/networkElementConnection';
+import { MaintenanceEntry } from '../models/maintenanceEntryType';
+export interface IMaintenanceEntriesState extends IExternalTableState<MaintenanceEntry> { }
 
-export interface IConnectedNetworkElementsState extends IExternalTableState<NetworkElementConnection> { }
-
-// create eleactic search material data fetch handler
-const connectedNetworkElementsSearchHandler = createSearchDataHandler<NetworkElementConnection>('network-element-connection', false, { status: "Connected" });
+// create elastic search material data fetch handler
+const maintenanceEntriesSearchHandler = createSearchDataHandler<MaintenanceEntry>('maintenance');
 
 export const {
-  actionHandler: connectedNetworkElementsActionHandler,
-  createActions: createConnectedNetworkElementsActions,
-  createProperties: createConnectedNetworkElementsProperties,
-  reloadAction: connectedNetworkElementsReloadAction,
+  actionHandler: maintenanceEntriesActionHandler,
+  createActions: createmaintenanceEntriesActions,
+  createProperties: createmaintenanceEntriesProperties,
+  reloadAction: maintenanceEntriesReloadAction,
 
   // set value action, to change a value
-} = createExternal<NetworkElementConnection>(connectedNetworkElementsSearchHandler, appState => appState.inventory.connectedNetworkElements);
+} = createExternal<MaintenanceEntry>(maintenanceEntriesSearchHandler, appState => appState.maintenance.maintenanceEntries);
+

@@ -16,6 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 import { Action } from '../../../../framework/src/flux/action';
+
 import { PmDataInterval } from '../models/performanceDataType';
 
 export class TimeChangeAction extends Action {

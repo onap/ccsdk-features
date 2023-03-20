@@ -19,9 +19,9 @@
 import { combineActionHandler } from '../../../../framework/src/flux/middleware';
 
 import { IConnectedNetworkElementsState, connectedNetworkElementsActionHandler } from './connectedNetworkElementsHandler';
-import { IDeviceDescriptionState, deviceDescriptionHandler } from "./deviceDescriptionHandler";
-import { IViewDescriptionState, viewDescriptionHandler } from "./viewDescriptionHandler";
-import { IValueSelectorState, valueSelectorHandler } from "./valueSelectorHandler";
+import { IDeviceDescriptionState, deviceDescriptionHandler } from './deviceDescriptionHandler';
+import { IViewDescriptionState, viewDescriptionHandler } from './viewDescriptionHandler';
+import { IValueSelectorState, valueSelectorHandler } from './valueSelectorHandler';
 
 interface IConfigurationAppStoreState {
   connectedNetworkElements: IConnectedNetworkElementsState; // used for ne selection
@@ -32,7 +32,7 @@ interface IConfigurationAppStoreState {
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
-    configuration: IConfigurationAppStoreState,
+    configuration: IConfigurationAppStoreState;
   }
 }
 

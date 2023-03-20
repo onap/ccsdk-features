@@ -15,21 +15,22 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { createExternal,IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
+import { createExternal, IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
 import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
 
-import { MaintenenceEntry } from '../models/maintenenceEntryType';
-export interface IMaintenanceEntriesState extends IExternalTableState<MaintenenceEntry> { }
+import { Fault } from '../models/fault';
 
-// create eleactic search material data fetch handler
-const maintenanceEntriesSearchHandler = createSearchDataHandler<MaintenenceEntry>('maintenance');
+export interface ICurrentAlarmsState extends IExternalTableState<Fault> { }
+
+// create eleactic search data fetch handler
+const currentAlarmsSearchHandler = createSearchDataHandler<Fault>('faultcurrent');
 
 export const {
-  actionHandler: maintenanceEntriesActionHandler,
-  createActions: createmaintenanceEntriesActions,
-  createProperties: createmaintenanceEntriesProperties,
-  reloadAction: maintenanceEntriesReloadAction,
+  actionHandler: currentAlarmsActionHandler,
+  createActions: createCurrentAlarmsActions,
+  createProperties: createCurrentAlarmsProperties,
+  reloadAction: currentAlarmsReloadAction,
 
   // set value action, to change a value
-} = createExternal<MaintenenceEntry>(maintenanceEntriesSearchHandler, appState => appState.maintenance.maintenenceEntries);
+} = createExternal<Fault>(currentAlarmsSearchHandler, appState => appState.fault.currentAlarms);
 

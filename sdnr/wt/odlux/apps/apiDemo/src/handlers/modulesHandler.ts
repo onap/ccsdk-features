@@ -20,7 +20,7 @@ import { IActionHandler } from '../../../../framework/src/flux/action';
 import { ModulesRequestSuccess } from '../actions/modulesSuccess';
 import { Module } from '../models/module';
 
-export type IModules = Module[]
+export type IModules = Module[];
 
 const modulesInit: IModules = [];
 

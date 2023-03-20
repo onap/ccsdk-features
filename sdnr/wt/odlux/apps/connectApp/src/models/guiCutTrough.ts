@@ -17,6 +17,6 @@
  */
 
 export type guiCutThrough = {
-    id: string,
-    weburi?: string
-}
+  id: string;
+  weburi?: string;
+};

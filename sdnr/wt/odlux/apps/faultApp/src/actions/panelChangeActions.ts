@@ -16,6 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 import { Action } from '../../../../framework/src/flux/action';
+
 import { PanelId } from '../models/panelId';
 
 export class SetPanelAction extends Action {
@@ -32,5 +33,5 @@ export class RememberCurrentPanelAction extends Action {
 
 export const setPanelAction = (panelId: PanelId) => {
   return new SetPanelAction(panelId);
-}
+};
 

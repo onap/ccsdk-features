@@ -17,20 +17,21 @@
  */
 
 
-import { clearStuckAlarms } from "../services/faultStatusService"
-import { Dispatch } from "../../../../framework/src/flux/store";
-import { FaultApplicationBaseAction } from "./notificationActions";
+import { Dispatch } from '../../../../framework/src/flux/store';
+
+import { clearStuckAlarms } from '../services/faultStatusService';
+import { FaultApplicationBaseAction } from './notificationActions';
 
 export class AreStuckAlarmsCleared extends FaultApplicationBaseAction {
-    constructor(public isBusy: boolean) {
-        super();
-    }
+  constructor(public isBusy: boolean) {
+    super();
+  }
 }
 
 
 export const clearStuckAlarmAsyncAction = (dispatch: Dispatch) => async (nodeNames: string[]) => {
-    dispatch(new AreStuckAlarmsCleared(true));
-    const result = await clearStuckAlarms(nodeNames).catch(error => { console.error(error); return undefined });
-    dispatch(new AreStuckAlarmsCleared(false));
-    return result;
-}
+  dispatch(new AreStuckAlarmsCleared(true));
+  const result = await clearStuckAlarms(nodeNames).catch(error => { console.error(error); return undefined; });
+  dispatch(new AreStuckAlarmsCleared(false));
+  return result;
+};

@@ -27,7 +27,7 @@ export interface IListAuthors {
 
 const listAuthorsInit: IListAuthors = {
   authors: [],
-  busy: false
+  busy: false,
 };
 
 export const listAuthorsHandler: IActionHandler<IListAuthors> = (state = listAuthorsInit, action) => {
@@ -35,7 +35,7 @@ export const listAuthorsHandler: IActionHandler<IListAuthors> = (state = listAut
 
     state = {
       ...state,
-      busy: true
+      busy: true,
     };
   
   } else if (action instanceof AllAuthorsLoadedAction) {
@@ -43,12 +43,12 @@ export const listAuthorsHandler: IActionHandler<IListAuthors> = (state = listAut
       state = {
         ...state,
         authors: action.authors,
-        busy: false
+        busy: false,
       };
     } else {
       state = {
         ...state,
-        busy: false
+        busy: false,
       };
     }
   }

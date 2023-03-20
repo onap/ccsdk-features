@@ -15,10 +15,11 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { createExternal,IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
+import { createExternal, IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
 import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
 
 import { NetworkElementConnectionLog } from '../models/networkElementConnectionLog';
+
 export interface IConnectionStatusLogState extends IExternalTableState<NetworkElementConnectionLog> { }
 
 // create eleactic search material data fetch handler

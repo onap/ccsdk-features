@@ -24,21 +24,21 @@ export interface IData {
  * Structure of chartjs dataset with the chart properties.
  */
 export interface IDataSet {
-  name: string,
-  label: string,
-  lineTension: 0,
+  name: string;
+  label: string;
+  lineTension: 0;
   bezierCurve: boolean;
-  fill: boolean,
-  borderColor: string,
-  data: IData[],
-  columnLabel: string
+  fill: boolean;
+  borderColor: string;
+  data: IData[];
+  columnLabel: string;
 }
 
 /**
  * Structure of chartjs dataset which is sent to the chart.
  */
 export interface IDataSetsObject {
-  datasets: IDataSet[]
+  datasets: IDataSet[];
 }
 
 /**

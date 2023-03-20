@@ -32,14 +32,15 @@ import { applicationStoreCreator } from './store/applicationStore';
 import { ApplicationStoreProvider } from './flux/connect';
 
 import { startHistoryListener } from './middleware/navigation';
-import { startRestService } from './services/restService';
+import { startSoreService } from './services/storeService';
 
 import { startUserSessionService } from './services/userSessionService';
 import { startNotificationService } from './services/notificationService';
 
+import { startBroadcastChannel } from './services/broadcastService';
+
 import theme from './design/default';
 import '!style-loader!css-loader!./app.css';
-import { startBroadcastChannel } from './services/broadcastService';
 
 declare module '@mui/material/styles' {
 
@@ -98,7 +99,7 @@ export const runApplication = () => {
   };
   
 
-  startRestService(applicationStore);
+  startSoreService(applicationStore);
   startHistoryListener(applicationStore);
   startNotificationService(applicationStore);
 
