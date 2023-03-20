@@ -17,29 +17,29 @@
  */
 // main state handler
 
-import { combineActionHandler } from '../../../../framework/src/flux/middleware';
-
-// ** do not remove **
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { IActionHandler } from '../../../../framework/src/flux/action';
+import { combineActionHandler } from '../../../../framework/src/flux/middleware';
+// ** do not remove **
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
 import { IConnectAppStoreState } from '../../../connectApp/src/handlers/connectAppRootHandler';
+import { UpdateMountId } from '../actions/deviceListActions';
+import { SetPanelAction } from '../actions/panelChangeActions';
+import { ReloadAction } from '../actions/reloadAction';
+import { TimeChangeAction } from '../actions/timeChangeAction';
+import { ResetAllSubViewsAction, SetFilterVisibility, SetSubViewAction } from '../actions/toggleActions';
+import { PmDataInterval } from '../models/performanceDataType';
+import { currentViewType, SubTabType } from '../models/toggleDataType';
+import { adaptiveModulationActionHandler, IAdaptiveModulationState } from './adaptiveModulationHandler';
+import { availableLtpsActionHandler, IAvailableLtpsState } from './availableLtpsActionHandler';
+import { crossPolarDiscriminationActionHandler, ICrossPolarDiscriminationState } from './crossPolarDiscriminationHandler';
+import { deviceListActionHandler, IDeviceListState } from './deviceListActionHandler';
 import { IPerformanceDataState, performanceDataActionHandler } from './performanceDataHandler';
 import { IReceiveLevelState, receiveLevelActionHandler } from './receiveLevelHandler';
-import { ITransmissionPowerState, transmissionPowerActionHandler } from './transmissionPowerHandler';
-import { IAdaptiveModulationState, adaptiveModulationActionHandler } from './adaptiveModulationHandler';
-import { ITemperatureState, temperatureActionHandler } from './temperatureHandler';
 import { ISignalToInterferenceState, signalToInterferenceActionHandler } from './signalToInterferenceHandler';
-import { ICrossPolarDiscriminationState, crossPolarDiscriminationActionHandler } from './crossPolarDiscriminationHandler';
-import { SetPanelAction } from '../actions/panelChangeActions';
-import { IDeviceListState, deviceListActionHandler } from './deviceListActionHandler';
-import { IAvailableLtpsState, availableLtpsActionHandler } from './availableLtpsActionHandler';
-import { PmDataInterval } from '../models/performanceDataType';
-import { TimeChangeAction } from '../actions/timeChangeAction';
-import { UpdateMountId } from '../actions/deviceListActions';
-import { SetSubViewAction, ResetAllSubViewsAction, SetFilterVisibility } from '../actions/toggleActions';
-import { SubTabType, currentViewType } from '../models/toggleDataType';
-import { ReloadAction } from '../actions/reloadAction';
+import { ITemperatureState, temperatureActionHandler } from './temperatureHandler';
+import { ITransmissionPowerState, transmissionPowerActionHandler } from './transmissionPowerHandler';
 
 export interface IPerformanceHistoryStoreState {
   nodeId: string;
@@ -58,15 +58,15 @@ export interface IPerformanceHistoryStoreState {
   isReloadSchedueled: boolean;
 }
 
-const mountIdHandler: IActionHandler<string> = (state = "", action) => {
+const mountIdHandler: IActionHandler<string> = (state = '', action) => {
   if (action instanceof UpdateMountId) {
-    state = "";
+    state = '';
     if (action.nodeId) {
       state = action.nodeId;
     }
   }
   return state;
-}
+};
 
 const reloadHandler: IActionHandler<boolean> = (state = false, action) => {
 
@@ -74,7 +74,7 @@ const reloadHandler: IActionHandler<boolean> = (state = false, action) => {
     state = action.show;
   }
   return state;
-}
+};
 
 
 const currentOpenPanelHandler: IActionHandler<string | null> = (state = null, action) => {
@@ -82,59 +82,75 @@ const currentOpenPanelHandler: IActionHandler<string | null> = (state = null, ac
     state = action.panelId;
   }
   return state;
-}
+};
 
 const currentPMDataIntervalHandler: IActionHandler<PmDataInterval> = (state = PmDataInterval.pmInterval15Min, action) => {
   if (action instanceof TimeChangeAction) {
     state = action.time;
   }
   return state;
-}
+};
 
-type filterableSubview = { subView: SubTabType, isFilterVisible: boolean };
-type toggleViewDataType = { currentSubView: currentViewType, performanceData: filterableSubview, receiveLevel: filterableSubview, transmissionPower: filterableSubview, adaptiveModulation: filterableSubview, temperatur: filterableSubview, SINR: filterableSubview, CPD: filterableSubview };
+type filterableSubview = { subView: SubTabType; isFilterVisible: boolean };
+type toggleViewDataType = {
+  currentSubView: currentViewType;
+  performanceData: filterableSubview;
+  receiveLevel: filterableSubview;
+  transmissionPower: filterableSubview;
+  adaptiveModulation: filterableSubview;
+  temperatur: filterableSubview;
+  SINR: filterableSubview;
+  CPD: filterableSubview;
+};
 
 
-const toogleViewDataHandler: IActionHandler<toggleViewDataType> = (state = { currentSubView: "performanceData", performanceData: { subView: "chart", isFilterVisible: true }, receiveLevel: { subView: "chart", isFilterVisible: true }, adaptiveModulation: { subView: "chart", isFilterVisible: true }, transmissionPower: { subView: "chart", isFilterVisible: true }, temperatur: { subView: "chart", isFilterVisible: true }, SINR: { subView: "chart", isFilterVisible: true }, CPD: { subView: "chart", isFilterVisible: true } }, action) => {
+const toogleViewDataHandler: IActionHandler<toggleViewDataType> = (
+  state = {
+    currentSubView: 'performanceData',
+    performanceData: { subView: 'chart', isFilterVisible: true },
+    receiveLevel: { subView: 'chart', isFilterVisible: true },
+    adaptiveModulation: { subView: 'chart', isFilterVisible: true },
+    transmissionPower: { subView: 'chart', isFilterVisible: true },
+    temperatur: { subView: 'chart', isFilterVisible: true },
+    SINR: { subView: 'chart', isFilterVisible: true },
+    CPD: { subView: 'chart', isFilterVisible: true },
+  }, action) => {
 
   if (action instanceof SetSubViewAction) {
     switch (action.currentView) {
-      case "performanceData": state = { ...state, performanceData: { ...state.performanceData, subView: action.selectedTab } }; break;
-      case "adaptiveModulation": state = { ...state, adaptiveModulation: { ...state.adaptiveModulation, subView: action.selectedTab } }; break;
-      case "receiveLevel": state = { ...state, receiveLevel: { ...state.receiveLevel, subView: action.selectedTab } }; break;
-      case "transmissionPower": state = { ...state, transmissionPower: { ...state.transmissionPower, subView: action.selectedTab } }; break;
-      case "Temp": state = { ...state, temperatur: { ...state.temperatur, subView: action.selectedTab } }; break;
-      case "SINR": state = { ...state, SINR: { ...state.SINR, subView: action.selectedTab } }; break;
-      case "CPD": state = { ...state, CPD: { ...state.CPD, subView: action.selectedTab } }; break;
+      case 'performanceData': state = { ...state, performanceData: { ...state.performanceData, subView: action.selectedTab } }; break;
+      case 'adaptiveModulation': state = { ...state, adaptiveModulation: { ...state.adaptiveModulation, subView: action.selectedTab } }; break;
+      case 'receiveLevel': state = { ...state, receiveLevel: { ...state.receiveLevel, subView: action.selectedTab } }; break;
+      case 'transmissionPower': state = { ...state, transmissionPower: { ...state.transmissionPower, subView: action.selectedTab } }; break;
+      case 'Temp': state = { ...state, temperatur: { ...state.temperatur, subView: action.selectedTab } }; break;
+      case 'SINR': state = { ...state, SINR: { ...state.SINR, subView: action.selectedTab } }; break;
+      case 'CPD': state = { ...state, CPD: { ...state.CPD, subView: action.selectedTab } }; break;
     }
-  }
-  else if (action instanceof SetFilterVisibility) {
+  } else if (action instanceof SetFilterVisibility) {
     switch (action.currentView) {
-      case "performanceData": state = {
-        ...state, performanceData: { ...state.performanceData, isFilterVisible: action.isVisible }
+      case 'performanceData': state = {
+        ...state, performanceData: { ...state.performanceData, isFilterVisible: action.isVisible },
       }; break;
-      case "adaptiveModulation": state = { ...state, adaptiveModulation: { ...state.performanceData, isFilterVisible: action.isVisible } }; break;
-      case "receiveLevel": state = { ...state, receiveLevel: { ...state.receiveLevel, isFilterVisible: action.isVisible } }; break;
-      case "transmissionPower": state = { ...state, transmissionPower: { ...state.transmissionPower, isFilterVisible: action.isVisible } }; break;
-      case "Temp": state = { ...state, temperatur: { ...state.temperatur, isFilterVisible: action.isVisible } }; break;
-      case "SINR": state = { ...state, SINR: { ...state.SINR, isFilterVisible: action.isVisible } }; break;
-      case "CPD": state = { ...state, CPD: { ...state.CPD, isFilterVisible: action.isVisible } }; break;
+      case 'adaptiveModulation': state = { ...state, adaptiveModulation: { ...state.performanceData, isFilterVisible: action.isVisible } }; break;
+      case 'receiveLevel': state = { ...state, receiveLevel: { ...state.receiveLevel, isFilterVisible: action.isVisible } }; break;
+      case 'transmissionPower': state = { ...state, transmissionPower: { ...state.transmissionPower, isFilterVisible: action.isVisible } }; break;
+      case 'Temp': state = { ...state, temperatur: { ...state.temperatur, isFilterVisible: action.isVisible } }; break;
+      case 'SINR': state = { ...state, SINR: { ...state.SINR, isFilterVisible: action.isVisible } }; break;
+      case 'CPD': state = { ...state, CPD: { ...state.CPD, isFilterVisible: action.isVisible } }; break;
     }
-
   } else if (action instanceof ResetAllSubViewsAction) {
     state = {
-      ...state, performanceData: { ...state.performanceData, subView: "chart" },
-      adaptiveModulation: { ...state.adaptiveModulation, subView: "chart" },
-      receiveLevel: { ...state.receiveLevel, subView: "chart" },
-      transmissionPower: { ...state.transmissionPower, subView: "chart" },
-      temperatur: { ...state.temperatur, subView: "chart" },
-      SINR: { ...state.SINR, subView: "chart" },
-      CPD: { ...state.CPD, subView: "chart" }
-    }
+      ...state, performanceData: { ...state.performanceData, subView: 'chart' },
+      adaptiveModulation: { ...state.adaptiveModulation, subView: 'chart' },
+      receiveLevel: { ...state.receiveLevel, subView: 'chart' },
+      transmissionPower: { ...state.transmissionPower, subView: 'chart' },
+      temperatur: { ...state.temperatur, subView: 'chart' },
+      SINR: { ...state.SINR, subView: 'chart' },
+      CPD: { ...state.CPD, subView: 'chart' },
+    };
   }
-
   return state;
-}
+};
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
@@ -157,7 +173,7 @@ const actionHandlers = {
   currentOpenPanel: currentOpenPanelHandler,
   pmDataIntervalType: currentPMDataIntervalHandler,
   subViews: toogleViewDataHandler,
-  isReloadSchedueled: reloadHandler
+  isReloadSchedueled: reloadHandler,
 };
 
 const performanceHistoryRootHandler = combineActionHandler<IPerformanceHistoryStoreState>(actionHandlers);

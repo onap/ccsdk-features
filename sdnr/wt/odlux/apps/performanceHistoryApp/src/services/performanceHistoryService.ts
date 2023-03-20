@@ -15,13 +15,12 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { requestRest } from '../../../../framework/src/services/restService';
 import { Result } from '../../../../framework/src/models/elasticSearch';
+import { requestRest } from '../../../../framework/src/services/restService';
 
 import { convertPropertyNames, replaceUpperCase } from '../../../../framework/src/utilities/yangHelper';
 import { LtpIds } from '../models/availableLtps';
 import { DeviceListType } from '../models/deviceListType';
-import { Topology, TopologyNode } from '../models/topologyNetconf';
 
 /** 
  * Represents a web api accessor service for Network elements actions.
@@ -34,26 +33,26 @@ class PerformanceService {
   public async getDistinctLtpsFromDatabase(networkElement: string, selectedTimePeriod: string): Promise<LtpIds[] | null> {
     let path;
     const query = {
-      "filter": [{
-        "property": "node-name",
-        "filtervalue": networkElement
+      'filter': [{
+        'property': 'node-name',
+        'filtervalue': networkElement,
       }],
-      "sortorder": [],
-      "pagination": {
-        "size": 20,
-        "page": 1
-      }
-    }
+      'sortorder': [],
+      'pagination': {
+        'size': 20,
+        'page': 1,
+      },
+    };
 
 
-    if (selectedTimePeriod === "15min") {
+    if (selectedTimePeriod === '15min') {
       path = '/rests/operations/data-provider:read-pmdata-15m-ltp-list';
     } else {
       path = '/rests/operations/data-provider:read-pmdata-24h-ltp-list';
     }
 
-    const result = await requestRest<Result<string>>(path, { method: "POST", body: JSON.stringify(convertPropertyNames({ input: query }, replaceUpperCase)) });
-    return result && result["data-provider:output"] && result["data-provider:output"].data && result["data-provider:output"].data.map(ne => ({ key: ne })) || null;
+    const result = await requestRest<Result<string>>(path, { method: 'POST', body: JSON.stringify(convertPropertyNames({ input: query }, replaceUpperCase)) });
+    return result && result['data-provider:output'] && result['data-provider:output'].data && result['data-provider:output'].data.map(ne => ({ key: ne })) || null;
   }
 
 
@@ -64,19 +63,19 @@ class PerformanceService {
   public async getDeviceListfromPerf15minHistory(): Promise<(DeviceListType)[] | null> {
     const path = '/rests/operations/data-provider:read-pmdata-15m-device-list';
     const query = {
-      "data-provider:input": {
-        "filter": [],
-        "sortorder": [],
-        "pagination": {
-          "size": 20,
-          "page": 1
-        }
-      }
+      'data-provider:input': {
+        'filter': [],
+        'sortorder': [],
+        'pagination': {
+          'size': 20,
+          'page': 1,
+        },
+      },
     };
 
-    const result = await requestRest<Result<string>>(path, { method: "POST", body: JSON.stringify(query) });
-    return result && result["data-provider:output"] && result["data-provider:output"].data && result["data-provider:output"].data.map(ne => ({
-      nodeId: ne
+    const result = await requestRest<Result<string>>(path, { method: 'POST', body: JSON.stringify(query) });
+    return result && result['data-provider:output'] && result['data-provider:output'].data && result['data-provider:output'].data.map(ne => ({
+      nodeId: ne,
     })) || null;
   }
 
@@ -86,19 +85,19 @@ class PerformanceService {
   public async getDeviceListfromPerf24hHistory(): Promise<(DeviceListType)[] | null> {
     const path = '/rests/operations/data-provider:read-pmdata-24h-device-list';
     const query = {
-      "data-provider:input": {
-        "filter": [],
-        "sortorder": [],
-        "pagination": {
-          "size": 20,
-          "page": 1
-        }
-      }
+      'data-provider:input': {
+        'filter': [],
+        'sortorder': [],
+        'pagination': {
+          'size': 20,
+          'page': 1,
+        },
+      },
     };
 
-    const result = await requestRest<Result<string>>(path, { method: "POST", body: JSON.stringify(query) });
-    return result && result["data-provider:output"] && result["data-provider:output"].data && result["data-provider:output"].data.map(ne => ({
-      nodeId: ne
+    const result = await requestRest<Result<string>>(path, { method: 'POST', body: JSON.stringify(query) });
+    return result && result['data-provider:output'] && result['data-provider:output'].data && result['data-provider:output'].data.map(ne => ({
+      nodeId: ne,
     })) || null;
   }
 }

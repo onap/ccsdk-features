@@ -16,8 +16,8 @@
  * ============LICENSE_END==========================================================================
  */
 import { createExternal, IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
-import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
 import { getAccessPolicyByUrl } from '../../../../framework/src/services/restService';
+import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
 
 import { NetworkElementConnection } from '../models/networkElementConnection';
 import { connectService } from '../services/connectService';
@@ -32,7 +32,7 @@ export const {
   createActions: createNetworkElementsActions,
   createProperties: createNetworkElementsProperties,
   reloadAction: networkElementsReloadAction,
-  
+
   // set value action, to change a value
 } = createExternal<NetworkElementConnection>(networkElementsSearchHandler, appState => {
 
@@ -42,20 +42,19 @@ export const {
 
     appState.connect.networkElements.rows.forEach(element => {
 
-      if (element.status === "Connected") {
+      if (element.status === 'Connected') {
         const webUri = webUris.find(item => item.id === element.id as string);
         if (webUri) {
           element.weburi = webUri.weburi;
           element.isWebUriUnreachable = false;
-        }
-        else {
-          element.isWebUriUnreachable = true
+        } else {
+          element.isWebUriUnreachable = true;
         }
       }
     });
   }
 
-  return appState.connect.networkElements
+  return appState.connect.networkElements;
 }, (ne) => {
   if (!ne || !ne.id) return true;
   const neUrl = connectService.getNetworkElementUri(ne.id);

@@ -24,78 +24,74 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import { IDispatcher, connect, Connect } from '../../../../framework/src/flux/connect';
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 
-import { maintenanceEntriesReloadAction } from '../handlers/maintenenceEntriesHandler';
-import { MaintenenceEntry } from '../models/maintenenceEntryType';
+import { maintenanceEntriesReloadAction } from '../handlers/maintenanceEntriesHandler';
+import { MaintenanceEntry } from '../models/maintenanceEntryType';
 
 export enum RefreshMaintenanceEntriesDialogMode {
-  None = "none",
-  RefreshMaintenanceEntriesTable = "RefreshMaintenanceEntriesTable",
+  None = 'none',
+  RefreshMaintenanceEntriesTable = 'RefreshMaintenanceEntriesTable',
 }
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
-  refreshMaintenanceEntries: () => dispatcher.dispatch(maintenanceEntriesReloadAction)
+  refreshMaintenanceEntries: () => dispatcher.dispatch(maintenanceEntriesReloadAction),
 });
 
 type DialogSettings = {
-  dialogTitle: string,
-  dialogDescription: string,
-  applyButtonText: string,
-  cancelButtonText: string,
-  enableMountIdEditor: boolean,
-  enableUsernameEditor: boolean,
-  enableExtendedEditor: boolean,
-}
+  dialogTitle: string;
+  dialogDescription: string;
+  applyButtonText: string;
+  cancelButtonText: string;
+  enableMountIdEditor: boolean;
+  enableUsernameEditor: boolean;
+  enableExtendedEditor: boolean;
+};
 
 const settings: { [key: string]: DialogSettings } = {
   [RefreshMaintenanceEntriesDialogMode.None]: {
-    dialogTitle: "",
-    dialogDescription: "",
-    applyButtonText: "",
-    cancelButtonText: "",
+    dialogTitle: '',
+    dialogDescription: '',
+    applyButtonText: '',
+    cancelButtonText: '',
     enableMountIdEditor: false,
     enableUsernameEditor: false,
     enableExtendedEditor: false,
   },
   [RefreshMaintenanceEntriesDialogMode.RefreshMaintenanceEntriesTable]: {
-    dialogTitle: "Do you want to refresh Maintenance Entries?",
-    dialogDescription: "",
-    applyButtonText: "Yes",
-    cancelButtonText: "Cancel",
+    dialogTitle: 'Do you want to refresh Maintenance Entries?',
+    dialogDescription: '',
+    applyButtonText: 'Yes',
+    cancelButtonText: 'Cancel',
     enableMountIdEditor: true,
     enableUsernameEditor: true,
     enableExtendedEditor: true,
-  }
-}
+  },
+};
 
 type RefreshMaintenanceEntriesDialogComponentProps = Connect<undefined, typeof mapDispatch> & {
   mode: RefreshMaintenanceEntriesDialogMode;
   onClose: () => void;
 };
 
-type RefreshMaintenanceEntriesDialogComponentState = MaintenenceEntry & { isNameValid: boolean, isHostSet: boolean };
+type RefreshMaintenanceEntriesDialogComponentState = MaintenanceEntry & { isNameValid: boolean; isHostSet: boolean };
 
 class RefreshMaintenanceEntriesDialogComponent extends React.Component<RefreshMaintenanceEntriesDialogComponentProps, RefreshMaintenanceEntriesDialogComponentState> {
-  constructor(props: RefreshMaintenanceEntriesDialogComponentProps) {
-    super(props);
-  }
-
   render(): JSX.Element {
     const setting = settings[this.props.mode];
     return (
       <Dialog open={this.props.mode !== RefreshMaintenanceEntriesDialogMode.None}>
-        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, "-").toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
+        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, '-').toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
         <DialogContent>
           <DialogContentText>
             {setting.dialogDescription}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button aria-label="dialog-confirm-button" onClick={(event) => {
+          <Button aria-label="dialog-confirm-button" onClick={() => {
             this.onRefresh();
           }} color="inherit" > {setting.applyButtonText} </Button>
-          <Button aria-label="dialog-cancel-button" onClick={(event) => {
+          <Button aria-label="dialog-cancel-button" onClick={() => {
             this.onCancel();
           }} color="secondary"> {setting.cancelButtonText} </Button>
         </DialogActions>
@@ -110,7 +106,7 @@ class RefreshMaintenanceEntriesDialogComponent extends React.Component<RefreshMa
 
   private onCancel = () => {
     this.props.onClose();
-  }
+  };
 }
 
 export const RefreshMaintenanceEntriesDialog = connect(undefined, mapDispatch)(RefreshMaintenanceEntriesDialogComponent);

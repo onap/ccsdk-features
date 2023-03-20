@@ -57,6 +57,16 @@ module.exports = (env) => {
         use: [{
           loader: "babel-loader"
         }]
+      },{
+        //don't minify images
+        test: /\.(png|gif|jpg|svg)$/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 10,
+            name: './images/[name].[ext]'
+          }
+        }]
       }]
     },
 
@@ -127,37 +137,37 @@ module.exports = (env) => {
       },
       proxy: {
         "/oauth2/": {
-          target: "http://localhost:8181",
+          target: "http://sdnc-web:8080",
           secure: false
         },
         "/database/": {
-          target: "http://localhost:8181",
+          target: "http://sdnc-web:8080",
           secure: false
         },
         "/restconf/": {
-          target: "http://localhost:8181",
+          target: "http://sdnc-web:8080",
           secure: false
         },
         "/rests/": {
-          target: "http://localhost:8181",
+          target: "http://sdnc-web:8080",
           secure: false
         },
         "/help/": {
-          target: "http://localhost:8181",
+          target: "http://sdnc-web:8080",
           secure: false
         },
         "/tree/": {
-          target: "http://localhost:8181",
+          target: "http://sdnc-web:8080",
           secure: false
         },
         "/websocket": {
-          target: "http://localhost:8181",
+          target: "http://sdnc-web:8080",
           ws: true,
           changeOrigin: true,
           secure: false
         },
         "/yang-schema": {
-          target: "http://localhost:8181",
+          target: "http://sdnc-web:8080",
           ws: true,
           changeOrigin: true,
           secure: false

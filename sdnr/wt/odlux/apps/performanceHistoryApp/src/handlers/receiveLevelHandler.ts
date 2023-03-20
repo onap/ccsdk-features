@@ -29,10 +29,10 @@ export interface IReceiveLevelState extends IExternalTableState<ReceiveLevelData
 const receiveLevelSearchHandler = createSearchDataHandler<ReceiveLevelDataType>(getFilter, false, null);
 
 export const {
-    actionHandler: receiveLevelActionHandler,
-    createActions: createReceiveLevelActions,
-    createProperties: createReceiveLevelProperties,
-    createPreActions: createReceiveLevelPreActions,
-    reloadAction: receiveLevelReloadAction,
+  actionHandler: receiveLevelActionHandler,
+  createActions: createReceiveLevelActions,
+  createProperties: createReceiveLevelProperties,
+  createPreActions: createReceiveLevelPreActions,
+  reloadAction: receiveLevelReloadAction,
 } = createExternal<ReceiveLevelDataType>(receiveLevelSearchHandler, appState => appState.performanceHistory.receiveLevel);
 

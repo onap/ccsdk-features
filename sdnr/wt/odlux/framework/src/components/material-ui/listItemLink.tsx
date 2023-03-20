@@ -27,6 +27,8 @@ import { WithStyles } from '@mui/styles';
 import withStyles from '@mui/styles/withStyles';
 import createStyles from '@mui/styles/createStyles';
 import { toAriaLabel } from '../../utilities/yangHelper';
+import { IconType } from '../../models/iconDefinition';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const styles = (theme: Theme) => createStyles({
   active: {
@@ -35,7 +37,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 export interface IListItemLinkProps extends WithStyles<typeof styles> {
-  icon: JSX.Element | null;
+  icon: IconType | null;
   primary: string | React.ComponentType;
   secondary?: React.ComponentType;
   to: string;
@@ -48,13 +50,19 @@ export const ListItemLink = withStyles(styles)((props: IListItemLinkProps) => {
   const renderLink = (itemProps: any): JSX.Element => (
     props.external ? <a target="_blank" href={to} { ...itemProps }></a> :
   <NavLink exact={ exact } to={ to } activeClassName={ classes.active } { ...itemProps } />);
-
+  
+  const customIconHeight = 22;
   const ariaLabel = typeof Primary === 'string' ? toAriaLabel("link-to-"+Primary) : toAriaLabel("link-to-"+Primary.displayName);
+  
+  //create menu icon, either using an faIcon or a link to a custom svg icon
+  //moved to one place for easier usage
+  const listItemIcon = icon && ( typeof icon === 'string' ? <img height={customIconHeight} src={icon} /> : <FontAwesomeIcon icon={icon} /> );
+    
   return (
        <>
         <ListItem button component={ renderLink } aria-label={ariaLabel}>
           { icon
-            ? <ListItemIcon>{ icon }</ListItemIcon>
+            ? <ListItemIcon>{ listItemIcon }</ListItemIcon>
             : null
           }
         { typeof Primary === 'string'

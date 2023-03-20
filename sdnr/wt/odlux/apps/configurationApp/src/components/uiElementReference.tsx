@@ -17,16 +17,16 @@
  */
 
 import React, { useState } from 'react';
-import { Tooltip, Button, FormControl, Theme } from '@mui/material';
+import { Tooltip, Button, FormControl } from '@mui/material';
 
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
 import { ViewElement } from '../models/uiModels';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   button: {
-    "justifyContent": "left"
+    'justifyContent': 'left',
   },
 }));
 
@@ -37,16 +37,31 @@ type UIElementReferenceProps = {
 };
 
 export const UIElementReference: React.FC<UIElementReferenceProps> = (props) => {
-  const classes = useStyles();
-  const [disabled, setDisabled] = useState(true);
   const { element } = props;
+  const [disabled, setDisabled] = useState(true);
+  const classes = useStyles();
   return (
-    <FormControl variant="standard" key={element.id} style={{ width: 485, marginLeft: 20, marginRight: 20 }} onMouseDown={(ev) => { ev.preventDefault(); ev.stopPropagation(); ev.button === 1 && setDisabled(!disabled) }}>
+    <FormControl
+      variant="standard"
+      key={element.id}
+      style={{ width: 485, marginLeft: 20, marginRight: 20 }}
+      onMouseDown={(ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (ev.button === 1) {
+          setDisabled(!disabled);
+        }
+      }}>
       <Tooltip disableInteractive title={element.description || element.path || ''}>
-        <Button className={classes.button} aria-label={element.label+'-button'} color="secondary" disabled={props.disabled && disabled} onClick={() => {
-          props.onOpenReference(element);
-        }}  >{`${element.label}`}</Button>
+        <Button
+          className={classes.button}
+          aria-label={element.label + '-button'}
+          color="secondary"
+          disabled={props.disabled && disabled}
+          onClick={() => {
+            props.onOpenReference(element);
+          }}  >{`${element.label}`}</Button>
       </Tooltip>
     </FormControl>
   );
-}
+};

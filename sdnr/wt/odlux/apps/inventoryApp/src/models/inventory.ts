@@ -35,7 +35,7 @@ export type InventoryType = {
   partTypeId: string;
   modelIdentifier: string;
   typeName: string;
-}
+};
 
 export type InventoryTreeNode = {
   [key: string]: {
@@ -44,7 +44,7 @@ export type InventoryTreeNode = {
     isMatch?: boolean;
     ownSeverity?: string;
     childrenSeveritySummary?: string;
-  }
-}
+  };
+};
 
 export type TreeDemoItem = ExternalTreeItem<string>;

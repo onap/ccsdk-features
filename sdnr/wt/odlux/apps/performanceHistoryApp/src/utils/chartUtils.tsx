@@ -15,15 +15,17 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
-import { IDataSetsObject } from '../models/chartTypes';
+import React from 'react';
+import moment from 'moment';
 import { Line } from 'react-chartjs-2';
-import * as moment from 'moment';
-import { ITimeStamp } from 'models/chartTypes';
+
+import { IDataSetsObject } from '../models/chartTypes';
+import { ITimeStamp } from '../models/chartTypes';
 
 const style: React.CSSProperties = {
-  height: "80%"
-}
+  height: '80%',
+};
+
 export const lineChart = (chartPagedData: IDataSetsObject) => {
   return (
     <div style={style}>
@@ -44,32 +46,32 @@ export const lineChart = (chartPagedData: IDataSetsObject) => {
                 let offsetValue = new Date().getTimezoneOffset();
                 var utcDate = moment(date, 'YYYY-MM-DDTHH:mm:ss').utcOffset(offsetValue).utc(false);
                 return utcDate;
-              }
+              },
             },
             display: true,
             scaleLabel: {
               display: true,
-              labelString: 'Timestamp'
-            }
+              labelString: 'Timestamp',
+            },
           }],
           yAxes: [{
             ticks: {
-              beginAtZero: true
+              beginAtZero: true,
             },
             scaleLabel: {
               display: true,
-              labelString: 'Value'
-            }
-          }]
-        }
+              labelString: 'Value',
+            },
+          }],
+        },
       }} />
     </div>
   );
-}
+};
 
 export const sortDataByTimeStamp = <T extends ITimeStamp>(_rows: T[]): T[] => {
   return (_rows.sort((a, b) => {
-    const result = Date.parse(a["timeStamp"]) - Date.parse(b["timeStamp"]);
+    const result = Date.parse(a.timeStamp) - Date.parse(b.timeStamp);
     return isNaN(result) ? 0 : result;
   }));
-}
+};

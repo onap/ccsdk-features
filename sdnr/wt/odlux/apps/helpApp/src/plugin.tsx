@@ -17,14 +17,12 @@
  */
 // app configuration and main entry point for the app
 
-import * as React from "react";
+import React from "react";
 import { withRouter, RouteComponentProps, Route, Switch, Redirect } from 'react-router-dom';
-
-import { faFirstAid } from '@fortawesome/free-solid-svg-icons';  // select app icon
 
 import applicationManager from '../../../framework/src/services/applicationManager';
 import { IApplicationStoreState } from "../../../framework/src/store/applicationStore";
-import connect, { Connect, IDispatcher } from '../../../framework/src/flux/connect';
+import { connect, Connect, IDispatcher } from '../../../framework/src/flux/connect';
 
 import { requestTocAsyncAction, requestDocumentAsyncActionCreator } from "./actions/helpActions";
 import { helpAppRootHandler } from './handlers/helpAppRootHandler';
@@ -35,11 +33,13 @@ import { HelpStatus } from "./components/helpStatus";
 import '!style-loader!css-loader!highlight.js/styles/default.css';
 import HelpTocApp from "./views/helpTocApp";
 
+const appIcon = require('./assets/icons/helpAppIcon.svg');  // select app icon
+
 const mapProps = (state: IApplicationStoreState) => ({
 
 });
 
-const mapDisp = (dispatcher: IDispatcher) => ({
+const mapDispatch = (dispatcher: IDispatcher) => ({
   requestDocument: (path: string) => {
     dispatcher.dispatch(requestDocumentAsyncActionCreator(path));
   }
@@ -47,7 +47,7 @@ const mapDisp = (dispatcher: IDispatcher) => ({
 
 let currentHelpPath: string | undefined = undefined;
 
-const HelpApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ '0'?: string }> & Connect<typeof mapProps, typeof mapDisp>) => {
+const HelpApplicationRouteAdapter = connect(mapProps, mapDispatch)((props: RouteComponentProps<{ '0'?: string }> & Connect<typeof mapProps, typeof mapDispatch>) => {
 
   if (currentHelpPath !== props.match.params["0"]) {
     // route parameter has changed
@@ -76,7 +76,7 @@ const App = withRouter((props: RouteComponentProps) => (
 export async function register() {
   const applicationApi = applicationManager.registerApplication({
     name: "help",
-    icon: faFirstAid,
+    icon: appIcon,
     rootComponent: App,
     rootActionHandler: helpAppRootHandler,
     statusBarElement: HelpStatus,
@@ -84,7 +84,7 @@ export async function register() {
     //subMenuEntry: SubMenuEntry 
   });
 
-  // start the initial toc request after the application store is initalized
+  // start the initial toc request after the application store is initialized
   const store = await applicationApi.applicationStoreInitialized;
   store.dispatch(requestTocAsyncAction);
 

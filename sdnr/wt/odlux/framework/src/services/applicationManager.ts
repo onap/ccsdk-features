@@ -23,7 +23,7 @@ import { applicationApi } from './applicationApi';
 /** Represents registry to manage all applications. */
 class ApplicationManager {
     
-  /** Stores all registerd applications.  */
+  /** Stores all registered applications.  */
   private _applications: { [key: string]: ApplicationInfo }; 
   
   /** Initializes a new instance of this class. */
@@ -32,7 +32,7 @@ class ApplicationManager {
     this.changed = new Event<void>(); 
   }
 
-  /** The chaged event will fire if the registration has changed. */
+  /** The changed event will fire if the registration has changed. */
   public changed: Event<void>;
 
   /** Registers a new application. */

@@ -24,78 +24,74 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { inventoryElementsReloadAction } from '../handlers/inventoryElementsHandler';
-import { IDispatcher, connect, Connect } from '../../../../framework/src/flux/connect';
 
 import { InventoryType } from '../models/inventory';
 
 export enum RefreshInventoryDialogMode {
-  None = "none",
-  RefreshInventoryTable = "RefreshInventoryTable",
+  None = 'none',
+  RefreshInventoryTable = 'RefreshInventoryTable',
 }
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
-  refreshInventory: () => dispatcher.dispatch(inventoryElementsReloadAction)
+  refreshInventory: () => dispatcher.dispatch(inventoryElementsReloadAction),
 });
 
 type DialogSettings = {
-  dialogTitle: string,
-  dialogDescription: string,
-  applyButtonText: string,
-  cancelButtonText: string,
-  enableMountIdEditor: boolean,
-  enableUsernameEditor: boolean,
-  enableExtendedEditor: boolean,
-}
+  dialogTitle: string;
+  dialogDescription: string;
+  applyButtonText: string;
+  cancelButtonText: string;
+  enableMountIdEditor: boolean;
+  enableUsernameEditor: boolean;
+  enableExtendedEditor: boolean;
+};
 
 const settings: { [key: string]: DialogSettings } = {
   [RefreshInventoryDialogMode.None]: {
-    dialogTitle: "",
-    dialogDescription: "",
-    applyButtonText: "",
-    cancelButtonText: "",
+    dialogTitle: '',
+    dialogDescription: '',
+    applyButtonText: '',
+    cancelButtonText: '',
     enableMountIdEditor: false,
     enableUsernameEditor: false,
     enableExtendedEditor: false,
   },
   [RefreshInventoryDialogMode.RefreshInventoryTable]: {
-    dialogTitle: "Do you want to refresh the Inventory table?",
-    dialogDescription: "",
-    applyButtonText: "Yes",
-    cancelButtonText: "Cancel",
+    dialogTitle: 'Do you want to refresh the Inventory table?',
+    dialogDescription: '',
+    applyButtonText: 'Yes',
+    cancelButtonText: 'Cancel',
     enableMountIdEditor: true,
     enableUsernameEditor: true,
     enableExtendedEditor: true,
-  }
-}
+  },
+};
 
 type RefreshInventoryDialogComponentProps = Connect<undefined, typeof mapDispatch> & {
   mode: RefreshInventoryDialogMode;
   onClose: () => void;
 };
 
-type RefreshInventoryDialogComponentState = InventoryType & { isNameValid: boolean, isHostSet: boolean };
+type RefreshInventoryDialogComponentState = InventoryType & { isNameValid: boolean; isHostSet: boolean };
 
 class RefreshInventoryDialogComponent extends React.Component<RefreshInventoryDialogComponentProps, RefreshInventoryDialogComponentState> {
-  constructor(props: RefreshInventoryDialogComponentProps) {
-    super(props);
-  }
-
   render(): JSX.Element {
     const setting = settings[this.props.mode];
     return (
       <Dialog open={this.props.mode !== RefreshInventoryDialogMode.None}>
-        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, "-").toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
+        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, '-').toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
         <DialogContent>
           <DialogContentText>
             {setting.dialogDescription}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button aria-label="dialog-confirm-button" onClick={(event) => {
+          <Button aria-label="dialog-confirm-button" onClick={() => {
             this.onRefresh();
           }} color="inherit" > {setting.applyButtonText} </Button>
-          <Button aria-label="dialog-cancel-button" onClick={(event) => {
+          <Button aria-label="dialog-cancel-button" onClick={() => {
             this.onCancel();
           }} color="secondary"> {setting.cancelButtonText} </Button>
         </DialogActions>
@@ -110,7 +106,7 @@ class RefreshInventoryDialogComponent extends React.Component<RefreshInventoryDi
 
   private onCancel = () => {
     this.props.onClose();
-  }
+  };
 }
 
 export const RefreshInventoryDialog = connect(undefined, mapDispatch)(RefreshInventoryDialogComponent);

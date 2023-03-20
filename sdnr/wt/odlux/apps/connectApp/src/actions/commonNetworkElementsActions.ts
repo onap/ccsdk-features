@@ -1,5 +1,3 @@
-// update action erstellen, die unterscheiden kann, ob die eine oder die andere Ansicht gerade aktive ist und diese katualisiert.
-// Diese action wird dann bei jeder aktualisierung in den anderen Actions und bei eintreffen von notifikationen verwendet.
 
 /**
  * ============LICENSE_START========================================================================
@@ -19,16 +17,22 @@
  * ============LICENSE_END==========================================================================
  */
 
+/**
+ * Create an update action that can distinguish whether one or the other view is currently active and update it.
+ * This action is then used for each update in the other actions and when notifications arrive.
+ * create an update action that can distinguish whether one or the other view is currently active and update it.
+ * This action is then used for each update in the other actions and when notifications arrive.
+ */
+
 import { Action } from '../../../../framework/src/flux/action';
 import { Dispatch } from '../../../../framework/src/flux/store';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
-import { networkElementsReloadAction } from '../handlers/networkElementsHandler';
 import { connectionStatusLogReloadAction } from '../handlers/connectionStatusLogHandler';
-
-import { PanelId } from '../models/panelId';
+import { networkElementsReloadAction } from '../handlers/networkElementsHandler';
 import { guiCutThrough } from '../models/guiCutTrough';
-import { connectService} from '../services/connectService';
+import { PanelId } from '../models/panelId';
+import { connectService } from '../services/connectService';
 
 
 export class SetPanelAction extends Action {
@@ -51,7 +55,7 @@ export class RemoveWebUri extends Action {
 
 export const removeWebUriAction = (nodeId: string) => {
   return new RemoveWebUri(nodeId);
-}
+};
 
 export class SetWeburiSearchBusy extends Action {
   constructor(public isbusy: boolean) {
@@ -68,7 +72,7 @@ export const findWebUrisForGuiCutThroughAsyncAction = (networkElementIds: string
     return;
   isBusy = true;
 
-  const { connect: { guiCutThrough, networkElements } } = getState();
+  const { connect: { guiCutThrough: guiCutThrough2, networkElements } } = getState();
 
   let notConnectedElements: string[] = [];
   let elementsToSearch: string[] = [];
@@ -78,16 +82,16 @@ export const findWebUrisForGuiCutThroughAsyncAction = (networkElementIds: string
   networkElementIds.forEach(id => {
     const item = networkElements.rows.find((ne) => ne.id === id);
     if (item) {
-      if (item.status === "Connected") {
+      if (item.status === 'Connected') {
 
         // if (item.coreModelCapability !== "Unsupported") {
         // element is connected and is added to search list, if it doesn't exist already
-        const exists = guiCutThrough.searchedElements.filter(element => element.id === id).length > 0;
+        const exists = guiCutThrough2.searchedElements.filter(element => element.id === id).length > 0;
         if (!exists) {
           elementsToSearch.push(id);
 
           //element was found previously, but wasn't connected
-          if (guiCutThrough.notSearchedElements.length > 0 && guiCutThrough.notSearchedElements.includes(id)) {
+          if (guiCutThrough2.notSearchedElements.length > 0 && guiCutThrough2.notSearchedElements.includes(id)) {
             prevFoundElements.push(id);
           }
         }
@@ -104,10 +108,9 @@ export const findWebUrisForGuiCutThroughAsyncAction = (networkElementIds: string
         //     }
         //   }
         // }
-      }
-      else {
+      } else {
         // element isn't connected and cannot be searched for a weburi
-        if (!guiCutThrough.notSearchedElements.includes(id)) {
+        if (!guiCutThrough2.notSearchedElements.includes(id)) {
           notConnectedElements.push(item.id as string);
         }
       }
@@ -121,18 +124,17 @@ export const findWebUrisForGuiCutThroughAsyncAction = (networkElementIds: string
   }
   isBusy = false;
 
-}
+};
 
 export const setPanelAction = (panelId: PanelId) => {
   return new SetPanelAction(panelId);
-}
+};
 
 export const updateCurrentViewAsyncAction = () => (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
   const { connect: { currentOpenPanel } } = getState();
-  if (currentOpenPanel === "NetworkElements") {
+  if (currentOpenPanel === 'NetworkElements') {
     return dispatch(networkElementsReloadAction);
-  }
-  else {
+  } else {
     return dispatch(connectionStatusLogReloadAction);
   }
 };

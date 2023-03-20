@@ -25,7 +25,7 @@ export type Fault = {
   severity: null | 'Warning' | 'Minor' | 'Major' | 'Critical' | 'NonAlarmed';
   type: string;
   sourceType?: string;
-}
+};
 
 export type FaultAlarmNotification = {
   id: string;
@@ -35,63 +35,63 @@ export type FaultAlarmNotification = {
   objectId: string;
   problem: string;
   severity: string;
-}
+};
 
 export type FaultAlarmNotificationWS = {
-  "node-id": string;
-  "data": {
-    "counter": number;
-    "time-stamp": string;
-    "object-id-ref": string;
-    "problem": string;
-    "severity": null | 'Warning' | 'Minor' | 'Major' | 'Critical' | 'NonAlarmed';
+  'node-id': string;
+  'data': {
+    'counter': number;
+    'time-stamp': string;
+    'object-id-ref': string;
+    'problem': string;
+    'severity': null | 'Warning' | 'Minor' | 'Major' | 'Critical' | 'NonAlarmed';
   };
-  "type": {
-    "namespace": string;
-    "revision": string;
-    "type": string;
+  'type': {
+    'namespace': string;
+    'revision': string;
+    'type': string;
   };
-  "event-time": string;
-}
+  'event-time': string;
+};
 
 /**
  * Fault status return type
  */
 export type FaultsReturnType = {
-  criticals: number,
-  majors: number,
-  minors: number,
-  warnings: number,
-  Connected: number,
-  Connecting: number,
-  Disconnected: number,
-  Mounted: number,
-  UnableToConnect: number,
-  Undefined: number,
-  Unmounted: number,
-  total: number
+  criticals: number;
+  majors: number;
+  minors: number;
+  warnings: number;
+  Connected: number;
+  Connecting: number;
+  Disconnected: number;
+  Mounted: number;
+  UnableToConnect: number;
+  Undefined: number;
+  Unmounted: number;
+  total: number;
 };
 
 export type FaultType = {
-  Critical: number,
-  Major: number,
-  Minor: number,
-  Warning: number,
-  Connected: number,
-  Connecting: number,
-  Disconnected: number,
-  Mounted: number,
-  UnableToConnect: number,
-  Undefined: number,
-  Unmounted: number,
-  total: number
+  Critical: number;
+  Major: number;
+  Minor: number;
+  Warning: number;
+  Connected: number;
+  Connecting: number;
+  Disconnected: number;
+  Mounted: number;
+  UnableToConnect: number;
+  Undefined: number;
+  Unmounted: number;
+  total: number;
 };
 
 export type Faults = {
-  faults: FaultsReturnType,
-  'network-element-connections': FaultsReturnType
+  faults: FaultsReturnType;
+  'network-element-connections': FaultsReturnType;
 };
 
 export type DeletedStuckAlarms = {
-    nodenames: string[]
-}
+  nodenames: string[];
+};

@@ -15,22 +15,22 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { ColumnType, ColumnModel } from '../../../../framework/src/components/material-table';
+import { ColumnModel, ColumnType } from '../../../../framework/src/components/material-table';
 
 import { PmDataInterval } from '../models/performanceDataType';
 import { getPmDataInterval } from '../pluginPerformance';
 
 export const addColumnLabels = <T>(name: string, title: string, disableFilter = true, disableSorting = true): ColumnModel<T> => {
   return { property: name as keyof T, title: title, type: ColumnType.text, disableFilter: disableFilter, disableSorting: disableSorting };
-}
+};
 
 export function getFilter(): string {
   switch (getPmDataInterval()) {
-      case PmDataInterval.pmInterval15Min:
-          return "pmdata-15m";
-      case PmDataInterval.pmInterval24Hours:
-          return "pmdata-24h";
-      default:
-          throw new Error("Unknown time intervall");
+    case PmDataInterval.pmInterval15Min:
+      return 'pmdata-15m';
+    case PmDataInterval.pmInterval24Hours:
+      return 'pmdata-24h';
+    default:
+      throw new Error('Unknown time intervall');
   }
 }

@@ -16,18 +16,18 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { IActionHandler } from "../../../../framework/src/flux/action";
+import { IActionHandler } from '../../../../framework/src/flux/action';
 
-import { UpdatViewDescription, UpdatOutputData } from "../actions/deviceActions";
-import { ViewSpecification } from "../models/uiModels";
+import { UpdateViewDescription, UpdateOutputData } from '../actions/deviceActions';
+import { ViewSpecification } from '../models/uiModels';
 
 export enum DisplayModeType {
   doNotDisplay = 0,
   displayAsObject = 1,
   displayAsList = 2,
   displayAsRPC = 3,
-  displayAsMessage = 4
-};
+  displayAsMessage = 4,
+}
 
 export type DisplaySpecification =  {
   displayMode: DisplayModeType.doNotDisplay;
@@ -45,13 +45,13 @@ export type DisplaySpecification =  {
 } | {
   displayMode: DisplayModeType.displayAsMessage;
   renderMessage: string;
-}
+};
 
 export interface IViewDescriptionState {
   vPath: string | null;
   displaySpecification: DisplaySpecification;
-  viewData: any,
-  outputData?: any,
+  viewData: any;
+  outputData?: any;
 }
 
 const viewDescriptionStateInit: IViewDescriptionState = {
@@ -64,7 +64,7 @@ const viewDescriptionStateInit: IViewDescriptionState = {
 };
 
 export const viewDescriptionHandler: IActionHandler<IViewDescriptionState> = (state = viewDescriptionStateInit, action) => {
-  if (action instanceof UpdatViewDescription) {
+  if (action instanceof UpdateViewDescription) {
     state = {
       ...state,
       vPath: action.vPath,
@@ -72,7 +72,7 @@ export const viewDescriptionHandler: IActionHandler<IViewDescriptionState> = (st
       outputData: undefined,
       displaySpecification: action.displaySpecification,
     };
-  } else if (action instanceof UpdatOutputData) {
+  } else if (action instanceof UpdateOutputData) {
     state = {
       ...state,
       outputData: action.outputData,

@@ -27,7 +27,7 @@ export type NetworkElementConnection = {
   tlsKey?: string;
   weburi?: string;
   isWebUriUnreachable?: boolean;
-  status?: "Connected" | "mounted" | "unmounted" | "Connecting" | "Disconnected" | "idle";
+  status?: 'Connected' | 'mounted' | 'unmounted' | 'Connecting' | 'Disconnected' | 'idle';
   coreModelCapability?: string;
   deviceType?: string;
   deviceFunction?: string;
@@ -40,8 +40,8 @@ export type NetworkElementConnection = {
       failureReason: string;
       capability: string;
     }[];
-  }
-}
+  };
+};
 
 
 export type UpdateNetworkElement = {
@@ -50,15 +50,15 @@ export type UpdateNetworkElement = {
   username?: string;
   password?: string;
   tlsKey?: string;
-}
+};
 
 export type ConnectionStatus = {
-  status: string
-}
+  status: string;
+};
 
 export type TlsKeys = {
-  key: string
-}
+  key: string;
+};
 
 
 /**

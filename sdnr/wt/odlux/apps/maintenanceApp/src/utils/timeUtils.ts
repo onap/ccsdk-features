@@ -27,7 +27,7 @@ export function convertToGMTString(dateString: string): string {
     '+00:00';
 }
 
-export function convertToLocaleString(rawDate: string| number): string {
+export function convertToLocaleString(rawDate: string | number): string {
   const date = new Date(rawDate);
   const pad = (n: number) => (n < 10) ? '0' + n : n;
 
@@ -38,7 +38,7 @@ export function convertToLocaleString(rawDate: string| number): string {
     ':' + pad(date.getMinutes());
 }
 
-export function convertToISODateString(rawDate: string| number): string {
+export function convertToISODateString(rawDate: string | number): string {
   const date = new Date(rawDate);
   const displayDate = date.toISOString();
   return displayDate.replace(/\.[0-9]{2}/, '.');

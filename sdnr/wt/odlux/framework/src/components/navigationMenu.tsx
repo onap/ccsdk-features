@@ -15,14 +15,13 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 import { Theme } from '@mui/material/styles';
+import classNames from 'classnames';
 
 import { WithStyles } from '@mui/styles';
 import withStyles from '@mui/styles/withStyles';
 import createStyles from '@mui/styles/createStyles';
-
-import { faHome, faAddressBook } from '@fortawesome/free-solid-svg-icons';
 
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -34,11 +33,14 @@ import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 
 import ListItemLink from '../components/material-ui/listItemLink';
 
-import connect, { Connect } from '../flux/connect';
+import { connect, Connect } from '../flux/connect';
 import { MenuAction } from '../actions/menuAction';
-import * as classNames from 'classnames';
 import { transportPCEUrl } from '../app';
 
+const aboutIcon = require('../assets/icons/About.svg');
+const homeIcon = require('../assets/icons/Home.svg');
+const loginIcon = require('../assets/icons/User.svg');
+const settingsIcon = require('../assets/icons/Tools.svg');
 
 const drawerWidth = 240;
 
@@ -141,16 +143,15 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
     window.dispatchEvent(new Event('menu-resized'));
   }, [isOpen])
 
-  let menuItems = state.framework.applicationRegistraion && Object.keys(state.framework.applicationRegistraion).map(key => {
-    const reg = state.framework.applicationRegistraion[key];
-    const icon = !reg.icon ? null :( typeof reg.icon === 'string' ? <img height={22} src={reg.icon} /> : <FontAwesomeIcon icon={reg.icon} /> )
+  let menuItems = state.framework.applicationRegistration && Object.keys(state.framework.applicationRegistration).map(key => {
+    const reg = state.framework.applicationRegistration[key];
     return reg && (
       <ListItemLink
         key={reg.name}
         to={reg.path || `/${reg.name}`}
         primary={reg.menuEntry || reg.name}
         secondary={reg.subMenuEntry}
-        icon={icon} />
+        icon={reg.icon || null} />
     ) || null;
   }) || null;
 
@@ -160,7 +161,7 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
       key={"transportPCE"}
       to={transportUrl}
       primary={"TransportPCE"}
-      icon={<FontAwesomeIcon icon={faProjectDiagram} />}
+      icon={faProjectDiagram}
       external />;
 
     const linkFound = menuItems.find(obj => obj.key === "linkCalculation");
@@ -191,17 +192,17 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
         <div className={classes.toolbar} />
         { /* https://fiffty.github.io/react-treeview-mui/ */}
         <List className={classes.menu} component="nav">
-          <ListItemLink exact to="/" primary="Home" icon={<FontAwesomeIcon icon={faHome} />} />
+          <ListItemLink exact to="/" primary="Home" icon={homeIcon} />
           <Divider />
           {
           menuItems
           }
           <Divider />
-          <ListItemLink to="/about" primary="About" icon={<FontAwesomeIcon icon={faAddressBook} />} />
+          <ListItemLink to="/about" primary="About" icon={aboutIcon} />
           {(false && process.env.NODE_ENV === "development")
             ? <>
               <Divider />
-              <ListItemLink to="/test" primary="Test" icon={<FontAwesomeIcon icon={faHome} />} />
+              <ListItemLink to="/test" primary="Test" icon={settingsIcon} />
             </>
             : null
           }

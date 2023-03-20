@@ -15,62 +15,57 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 
-import { Theme, Tooltip } from '@mui/material';
-
+import { faBan } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import Refresh from '@mui/icons-material/Refresh';
+import RemoveIcon from '@mui/icons-material/RemoveCircleOutline';
+import { Divider, MenuItem, Theme, Typography } from '@mui/material';
 import { WithStyles } from '@mui/styles';
 import createStyles from '@mui/styles/createStyles';
 import withStyles from '@mui/styles/withStyles';
 
-import { faBan } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import RemoveIcon from '@mui/icons-material/RemoveCircleOutline';
-import Refresh from '@mui/icons-material/Refresh';
-import { MenuItem, Divider, Typography } from '@mui/material';
-
-import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
-import MaterialTable, { MaterialTableCtorType, ColumnType } from '../../../../framework/src/components/material-table';
+import MaterialTable, { ColumnType, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-
-import { MaintenenceEntry, spoofSymbol } from '../models/maintenenceEntryType';
 
 import EditMaintenenceEntryDialog, { EditMaintenenceEntryDialogMode } from '../components/editMaintenenceEntryDialog';
 import RefreshMaintenanceEntriesDialog, { RefreshMaintenanceEntriesDialogMode } from '../components/refreshMaintenanceEntries';
+import { createmaintenanceEntriesActions, createmaintenanceEntriesProperties, maintenanceEntriesReloadAction } from '../handlers/maintenanceEntriesHandler';
+import { MaintenanceEntry } from '../models/maintenanceEntryType';
 import { convertToLocaleString } from '../utils/timeUtils';
-import { createmaintenanceEntriesActions, createmaintenanceEntriesProperties, maintenanceEntriesReloadAction } from '../handlers/maintenenceEntriesHandler';
 
 const styles = (theme: Theme) => createStyles({
   button: {
     margin: 0,
-    padding: "6px 6px",
-    minWidth: 'unset'
+    padding: '6px 6px',
+    minWidth: 'unset',
   },
   spacer: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    display: "inline"
-  }
+    display: 'inline',
+  },
 });
 
-const MaintenenceEntriesTable = MaterialTable as MaterialTableCtorType<MaintenenceEntry>;
+const MaintenanceEntriesTable = MaterialTable as MaterialTableCtorType<MaintenanceEntry>;
 
 const mapProps = (state: IApplicationStoreState) => ({
-  maintenanceEntriesProperties: createmaintenanceEntriesProperties(state)
+  maintenanceEntriesProperties: createmaintenanceEntriesProperties(state),
 });
 
 const mapDispatcher = (dispatcher: IDispatcher) => ({
   maintenanceEntriesActions: createmaintenanceEntriesActions(dispatcher.dispatch),
   onLoadMaintenanceEntries: async () => {
-    await dispatcher.dispatch(maintenanceEntriesReloadAction)
-  }
+    await dispatcher.dispatch(maintenanceEntriesReloadAction);
+  },
 });
 
-const emptyMaintenenceEntry: MaintenenceEntry = {
-  _id: '',
+const emptyMaintenenceEntry: MaintenanceEntry = {
+  mId: '',
   nodeId: '',
   description: '',
   start: convertToLocaleString(new Date().valueOf()),
@@ -78,44 +73,41 @@ const emptyMaintenenceEntry: MaintenenceEntry = {
   active: false,
 };
 
-type MaintenenceViewComponentProps = Connect<typeof mapProps, typeof mapDispatcher> & WithStyles<typeof styles> & {
-
-}
+type MaintenanceViewComponentProps = Connect<typeof mapProps, typeof mapDispatcher> & WithStyles<typeof styles> & {};
 
 type MaintenenceViewComponentState = {
-  maintenenceEntryToEdit: MaintenenceEntry;
-  maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode;
+  maintenenceEntryToEdit: MaintenanceEntry;
+  maintenanceEntryEditorMode: EditMaintenenceEntryDialogMode;
   refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode;
 };
 
 let initialSorted = false;
 
-class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentProps, MaintenenceViewComponentState> {
+class MaintenenceViewComponent extends React.Component<MaintenanceViewComponentProps, MaintenenceViewComponentState> {
 
-  constructor(props: MaintenenceViewComponentProps) {
+  constructor(props: MaintenanceViewComponentProps) {
     super(props);
 
     this.state = {
       maintenenceEntryToEdit: emptyMaintenenceEntry,
-      maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.None,
-      refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode.None
+      maintenanceEntryEditorMode: EditMaintenenceEntryDialogMode.None,
+      refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode.None,
     };
 
   }
 
-  getContextMenu(rowData: MaintenenceEntry): JSX.Element[] {
+  getContextMenu(rowData: MaintenanceEntry): JSX.Element[] {
     let buttonArray = [
-      <MenuItem aria-label={"1hr-from-now"} onClick={event => this.onOpenPlus1hEditMaintenenceEntryDialog(event, rowData)}><Typography>+1h</Typography></MenuItem>,
-      <MenuItem aria-label={"8hr-from-now"} onClick={event => this.onOpenPlus8hEditMaintenenceEntryDialog(event, rowData)}><Typography>+8h</Typography></MenuItem>,
+      <MenuItem aria-label={'1hr-from-now'} onClick={event => this.onOpenPlus1hEditMaintenenceEntryDialog(event, rowData)}><Typography>+1h</Typography></MenuItem>,
+      <MenuItem aria-label={'8hr-from-now'} onClick={event => this.onOpenPlus8hEditMaintenenceEntryDialog(event, rowData)}><Typography>+8h</Typography></MenuItem>,
       <Divider />,
-      <MenuItem aria-label={"edit"} onClick={event => this.onOpenEditMaintenenceEntryDialog(event, rowData)}><EditIcon /><Typography>Edit</Typography></MenuItem>,
-      <MenuItem aria-label={"remove"} onClick={event => this.onOpenRemoveMaintenenceEntryDialog(event, rowData)}><RemoveIcon /><Typography>Remove</Typography></MenuItem>
+      <MenuItem aria-label={'edit'} onClick={event => this.onOpenEditMaintenenceEntryDialog(event, rowData)}><EditIcon /><Typography>Edit</Typography></MenuItem>,
+      <MenuItem aria-label={'remove'} onClick={event => this.onOpenRemoveMaintenenceEntryDialog(event, rowData)}><RemoveIcon /><Typography>Remove</Typography></MenuItem>,
     ];
     return buttonArray;
   }
 
   render() {
-    const { classes } = this.props;
     const addMaintenenceEntryAction = {
       icon: AddIcon, tooltip: 'Add', ariaLabel:'add-element', onClick: () => {
         const startTime = (new Date().valueOf());
@@ -126,39 +118,39 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
             start: convertToLocaleString(startTime),
             end: convertToLocaleString(endTime),
           },
-          maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.AddMaintenenceEntry
+          maintenanceEntryEditorMode: EditMaintenenceEntryDialogMode.AddMaintenenceEntry,
         });
-      }
+      },
     };
 
     const refreshMaintenanceEntriesAction = {
       icon: Refresh, tooltip: 'Refresh Maintenance Entries', ariaLabel: 'refresh', onClick: () => {
         this.setState({
-          refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode.RefreshMaintenanceEntriesTable
+          refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode.RefreshMaintenanceEntriesTable,
         });
-      }
+      },
     };
 
     const now = new Date().valueOf();
     return (
       <>
-        <MaintenenceEntriesTable stickyHeader tableId="maintenance-table" title={"Maintenance"} customActionButtons={[refreshMaintenanceEntriesAction, addMaintenenceEntryAction]} columns={
+        <MaintenanceEntriesTable stickyHeader tableId="maintenance-table" title={'Maintenance'} customActionButtons={[refreshMaintenanceEntriesAction, addMaintenenceEntryAction]} columns={
           [
-            { property: "nodeId", title: "Node Name", type: ColumnType.text },
+            { property: 'nodeId', title: 'Node Name', type: ColumnType.text },
             {
-              property: "notifications", title: "Notification", width: 50, align: "center", type: ColumnType.custom, customControl: ({ rowData }) => (
+              property: 'notifications', title: 'Notification', width: 50, align: 'center', type: ColumnType.custom, customControl: ({ rowData }) => (
                 rowData.active && (Date.parse(rowData.start).valueOf() <= now) && (Date.parse(rowData.end).valueOf() >= now) && <FontAwesomeIcon icon={faBan} /> || null
-              )
+              ),
             },
-            { property: "active", title: "Activation State", type: ColumnType.boolean, labels: { "true": "active", "false": "not active" }, },
-            { property: "start", title: "Start Date (UTC)", type: ColumnType.text },
-            { property: "end", title: "End Date (UTC)", type: ColumnType.text }
+            { property: 'active', title: 'Activation State', type: ColumnType.boolean, labels: { 'true': 'active', 'false': 'not active' } },
+            { property: 'start', title: 'Start Date (UTC)', type: ColumnType.text },
+            { property: 'end', title: 'End Date (UTC)', type: ColumnType.text },
           ]
-        } idProperty={'_id'}{...this.props.maintenanceEntriesActions} {...this.props.maintenanceEntriesProperties} asynchronus createContextMenu={rowData => {
+        } idProperty={'mId'}{...this.props.maintenanceEntriesActions} {...this.props.maintenanceEntriesProperties} asynchronus createContextMenu={rowData => {
           return this.getContextMenu(rowData);
         }} >
-        </MaintenenceEntriesTable>
-        <EditMaintenenceEntryDialog initialMaintenenceEntry={this.state.maintenenceEntryToEdit} mode={this.state.maintenenceEntryEditorMode}
+        </MaintenanceEntriesTable>
+        <EditMaintenenceEntryDialog initialMaintenenceEntry={this.state.maintenenceEntryToEdit} mode={this.state.maintenanceEntryEditorMode}
           onClose={this.onCloseEditMaintenenceEntryDialog} />
         <RefreshMaintenanceEntriesDialog mode={this.state.refreshMaintenenceEntriesEditorMode}
           onClose={this.onCloseRefreshMaintenenceEntryDialog} />
@@ -170,7 +162,7 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
 
     if (!initialSorted) {
       initialSorted = true;
-      this.props.maintenanceEntriesActions.onHandleRequestSort("node-id");
+      this.props.maintenanceEntriesActions.onHandleRequestSort('node-id');
     } else {
       this.props.onLoadMaintenanceEntries();
     }
@@ -178,7 +170,7 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
 
   }
 
-  private onOpenPlus1hEditMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenenceEntry) => {
+  private onOpenPlus1hEditMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenanceEntry) => {
     // event.preventDefault();
     // event.stopPropagation();
     const startTime = (new Date().valueOf());
@@ -189,11 +181,11 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
         start: convertToLocaleString(startTime),
         end: convertToLocaleString(endTime),
       },
-      maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.EditMaintenenceEntry
+      maintenanceEntryEditorMode: EditMaintenenceEntryDialogMode.EditMaintenenceEntry,
     });
-  }
+  };
 
-  private onOpenPlus8hEditMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenenceEntry) => {
+  private onOpenPlus8hEditMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenanceEntry) => {
     // event.preventDefault();
     // event.stopPropagation();
     const startTime = (new Date().valueOf());
@@ -204,11 +196,11 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
         start: convertToLocaleString(startTime),
         end: convertToLocaleString(endTime),
       },
-      maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.EditMaintenenceEntry
+      maintenanceEntryEditorMode: EditMaintenenceEntryDialogMode.EditMaintenenceEntry,
     });
-  }
+  };
 
-  private onOpenEditMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenenceEntry) => {
+  private onOpenEditMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenanceEntry) => {
     // event.preventDefault();
     // event.stopPropagation();
     const startTime = (new Date().valueOf());
@@ -216,13 +208,13 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     this.setState({
       maintenenceEntryToEdit: {
         ...entry,
-        ...(entry.start && endTime ? { start: convertToLocaleString(entry.start), end: convertToLocaleString(entry.end) } : { start: convertToLocaleString(startTime), end: convertToLocaleString(endTime) })
+        ...(entry.start && endTime ? { start: convertToLocaleString(entry.start), end: convertToLocaleString(entry.end) } : { start: convertToLocaleString(startTime), end: convertToLocaleString(endTime) }),
       },
-      maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.EditMaintenenceEntry
+      maintenanceEntryEditorMode: EditMaintenenceEntryDialogMode.EditMaintenenceEntry,
     });
-  }
+  };
 
-  private onOpenRemoveMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenenceEntry) => {
+  private onOpenRemoveMaintenenceEntryDialog = (event: React.MouseEvent<HTMLElement>, entry: MaintenanceEntry) => {
     // event.preventDefault();
     // event.stopPropagation();
     const startTime = (new Date().valueOf());
@@ -230,25 +222,25 @@ class MaintenenceViewComponent extends React.Component<MaintenenceViewComponentP
     this.setState({
       maintenenceEntryToEdit: {
         ...entry,
-        ...(entry.start && endTime ? { start: convertToLocaleString(entry.start), end: convertToLocaleString(entry.end) } : { start: convertToLocaleString(startTime), end: convertToLocaleString(endTime) })
+        ...(entry.start && endTime ? { start: convertToLocaleString(entry.start), end: convertToLocaleString(entry.end) } : { start: convertToLocaleString(startTime), end: convertToLocaleString(endTime) }),
       },
-      maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.RemoveMaintenenceEntry
+      maintenanceEntryEditorMode: EditMaintenenceEntryDialogMode.RemoveMaintenenceEntry,
     });
-  }
+  };
 
   private onCloseEditMaintenenceEntryDialog = () => {
     this.setState({
       maintenenceEntryToEdit: emptyMaintenenceEntry,
-      maintenenceEntryEditorMode: EditMaintenenceEntryDialogMode.None,
+      maintenanceEntryEditorMode: EditMaintenenceEntryDialogMode.None,
     });
-  }
+  };
 
   private onCloseRefreshMaintenenceEntryDialog = () => {
     this.setState({
       refreshMaintenenceEntriesEditorMode: RefreshMaintenanceEntriesDialogMode.None,
     });
-  }
+  };
 }
 
-export const MaintenenceView = withStyles(styles)(connect(mapProps, mapDispatcher)(MaintenenceViewComponent));
-export default MaintenenceView;
+export const MaintenanceView = withStyles(styles)(connect(mapProps, mapDispatcher)(MaintenenceViewComponent));
+

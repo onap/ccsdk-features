@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /**
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
@@ -15,16 +16,13 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
+import { AddSnackbarNotification } from '../../../../framework/src/actions/snackbarActions';
 import { Action } from '../../../../framework/src/flux/action';
 import { Dispatch } from '../../../../framework/src/flux/store';
-import { MaintenenceEntry, spoofSymbol } from '../models/maintenenceEntryType';
 
-import { AddSnackbarNotification } from '../../../../framework/src/actions/snackbarActions';
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-
-
+import { maintenanceEntriesReloadAction } from '../handlers/maintenanceEntriesHandler';
+import { MaintenanceEntry, spoofSymbol } from '../models/maintenanceEntryType';
 import { maintenenceService } from '../services/maintenenceService';
-import { maintenanceEntriesReloadAction } from '../handlers/maintenenceEntriesHandler';
 
 export class BaseAction extends Action { }
 
@@ -32,7 +30,7 @@ export class LoadAllMainteneceEntriesAction extends BaseAction { }
 
 export class AllMainteneceEntriesLoadedAction extends BaseAction {
 
-  constructor (public maintenenceEntries: MaintenenceEntry[] | null, error?:string) {
+  constructor(public maintenenceEntries: MaintenanceEntry[] | null) {
     super();
 
   }
@@ -40,39 +38,39 @@ export class AllMainteneceEntriesLoadedAction extends BaseAction {
 
 
 export class UpdateMaintenanceEntry extends BaseAction {
-  constructor(public maintenenceEntry: MaintenenceEntry) {
+  constructor(public maintenenceEntry: MaintenanceEntry) {
     super();
   }
 }
 
 /** Represents an async thunk action creator to add an element to the maintenence entries. */
-export const addOrUpdateMaintenenceEntryAsyncActionCreator = (entry: MaintenenceEntry) => (dispatch: Dispatch) => {
+export const addOrUpdateMaintenenceEntryAsyncActionCreator = (entry: MaintenanceEntry) => (dispatch: Dispatch) => {
   maintenenceService.writeMaintenenceEntry(entry).then(result => {
     result && window.setTimeout(() => {
       // dispatch(loadAllMountedNetworkElementsAsync);
       dispatch(new UpdateMaintenanceEntry(entry));
-      dispatch(new AddSnackbarNotification({ message: `Successfully ${result && result.created ? "created" : "updated"} maintenance settings for [${entry.nodeId}]`, options: { variant: 'success' } }));
+      dispatch(new AddSnackbarNotification({ message: `Successfully ${result && result.created ? 'created' : 'updated'} maintenance settings for [${entry.nodeId}]`, options: { variant: 'success' } }));
     }, 900);
-    dispatch(maintenanceEntriesReloadAction)
+    dispatch(maintenanceEntriesReloadAction);
   });
 };
 
 /** Represents an async thunk action creator to delete an element from the maintenence entries. */
-export const removeFromMaintenenceEntrysAsyncActionCreator = (entry: MaintenenceEntry) => (dispatch: Dispatch) => {
+export const removeFromMaintenenceEntrysAsyncActionCreator = (entry: MaintenanceEntry) => (dispatch: Dispatch) => {
   maintenenceService.deleteMaintenenceEntry(entry).then(result => {
     result && window.setTimeout(() => {
       dispatch(new UpdateMaintenanceEntry({
         [spoofSymbol]: true,
-        _id: entry._id,
+        mId: entry.mId,
         nodeId: entry.nodeId,
-        description: "",
-        start: "",
-        end: "",
-        active: false
+        description: '',
+        start: '',
+        end: '',
+        active: false,
       }));
       dispatch(new AddSnackbarNotification({ message: `Successfully removed [${entry.nodeId}]`, options: { variant: 'success' } }));
     }, 900);
-    dispatch(maintenanceEntriesReloadAction)
+    dispatch(maintenanceEntriesReloadAction);
   });
 };
 

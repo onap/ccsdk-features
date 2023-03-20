@@ -16,27 +16,25 @@
  * ============LICENSE_END==========================================================================
  */
 
-import * as React from "react";
-import { withRouter, RouteComponentProps, Route, Switch, Redirect } from 'react-router-dom';
-import { faPlug } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+import { Redirect, Route, RouteComponentProps, Switch, withRouter } from 'react-router-dom';
 
-import applicationManager from '../../../framework/src/services/applicationManager';
-import { subscribe, IFormatedMessage } from '../../../framework/src/services/notificationService';
 import { AddSnackbarNotification } from '../../../framework/src/actions/snackbarActions';
-import { IApplicationStoreState } from "../../../framework/src/store/applicationStore";
-import connect, { Connect, IDispatcher } from '../../../framework/src/flux/connect';
+import { connect, Connect, IDispatcher } from '../../../framework/src/flux/connect';
+import applicationManager from '../../../framework/src/services/applicationManager';
+import { IFormatedMessage, subscribe } from '../../../framework/src/services/notificationService';
+import { IApplicationStoreState } from '../../../framework/src/store/applicationStore';
 
-import { findWebUrisForGuiCutThroughAsyncAction, updateCurrentViewAsyncAction, SetPanelAction } from './actions/commonNetworkElementsActions';
-import { createNetworkElementsActions, createNetworkElementsProperties, networkElementsReloadAction } from './handlers/networkElementsHandler';
-import connectAppRootHandler from './handlers/connectAppRootHandler';
-import ConnectApplication from './views/connectView';
-import { PanelId } from "./models/panelId";
+import { findWebUrisForGuiCutThroughAsyncAction, SetPanelAction, updateCurrentViewAsyncAction } from './actions/commonNetworkElementsActions';
 import { NetworkElementsList } from './components/networkElements';
+import connectAppRootHandler from './handlers/connectAppRootHandler';
+import { createNetworkElementsActions, createNetworkElementsProperties, networkElementsReloadAction } from './handlers/networkElementsHandler';
+import { PanelId } from './models/panelId';
+import ConnectApplication from './views/connectView';
 
+const appIcon = require('./assets/icons/connectAppIcon.svg');  // select app icon
 
 let currentStatus: string | undefined = undefined;
-let refreshInterval: ReturnType<typeof window.setInterval> | null = null;
-
 
 const mapProps = (state: IApplicationStoreState) => ({
   networkElementDashboardProperties: createNetworkElementsProperties(state),
@@ -48,24 +46,25 @@ const mapDisp = (dispatcher: IDispatcher) => ({
 });
 
 const ConnectApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ status?: string }> & Connect<typeof mapProps, typeof mapDisp>) => {
+  
+  // TODO: move into useEffect!
   if (currentStatus !== props.match.params.status) {
     currentStatus = props.match.params.status || undefined;
     window.setTimeout(() => {
       if (currentStatus) {
-        props.setCurrentPanel("NetworkElements");
-        props.networkElementsDashboardActions.onFilterChanged("status", currentStatus);
+        props.setCurrentPanel('NetworkElements');
+        props.networkElementsDashboardActions.onFilterChanged('status', currentStatus);
         if (!props.networkElementDashboardProperties.showFilter) {
           props.networkElementsDashboardActions.onToggleFilter(false);
           props.networkElementsDashboardActions.onRefresh();
-        }
-        else
+        } else
           props.networkElementsDashboardActions.onRefresh();
       }
     });
   }
   return (
     <NetworkElementsList />
-  )
+  );
 });
 
 
@@ -79,19 +78,19 @@ const App = withRouter((props: RouteComponentProps) => (
 
 export function register() {
   const applicationApi = applicationManager.registerApplication({
-    name: "connect",
-    icon: faPlug,
+    name: 'connect',
+    icon: appIcon,
     rootComponent: App,
     rootActionHandler: connectAppRootHandler,
-    menuEntry: "Connect"
+    menuEntry: 'Connect',
   });
 
   // subscribe to the websocket notifications
-  subscribe<IFormatedMessage>(["object-creation-notification", "object-deletion-notification", "attribute-value-changed-notification"], (msg => {
+  subscribe<IFormatedMessage>(['object-creation-notification', 'object-deletion-notification', 'attribute-value-changed-notification'], (msg => {
     const store = applicationApi.applicationStore;
-    if (msg && msg.type.type === "object-creation-notification" && store) {
+    if (msg && msg.type.type === 'object-creation-notification' && store) {
       store.dispatch(new AddSnackbarNotification({ message: `Adding node [${msg.data['object-id-ref']}]`, options: { variant: 'info' } }));
-    } else if (msg && (msg.type.type === "object-deletion-notification" || msg.type.type === "attribute-value-changed-notification") && store) {
+    } else if (msg && (msg.type.type === 'object-deletion-notification' || msg.type.type === 'attribute-value-changed-notification') && store) {
       store.dispatch(new AddSnackbarNotification({ message: `Updating node [${msg.data['object-id-ref']}]`, options: { variant: 'info' } }));
     }
     if (store) {
