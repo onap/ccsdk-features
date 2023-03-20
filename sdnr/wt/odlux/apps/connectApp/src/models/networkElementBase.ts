@@ -16,7 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 export type NetworkElementBaseType = {
-  mountId: string,
-  host: string,
-  port: number,
-}
+  mountId: string;
+  host: string;
+  port: number;
+};

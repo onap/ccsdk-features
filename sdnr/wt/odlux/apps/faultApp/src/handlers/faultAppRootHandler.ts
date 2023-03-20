@@ -17,22 +17,21 @@
  */
 // main state handler
 
-import { combineActionHandler } from '../../../../framework/src/flux/middleware';
-
-// ** do not remove **
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 import { IActionHandler } from '../../../../framework/src/flux/action';
+import { combineActionHandler } from '../../../../framework/src/flux/middleware';
+// ** do not remove **
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
-import { IFaultNotifications, faultNotificationsHandler } from './notificationsHandler';
-import { ICurrentProblemsState, currentProblemsActionHandler } from './currentProblemsHandler';
-import { IAlarmLogEntriesState, alarmLogEntriesActionHandler } from './alarmLogEntriesHandler';
 import { SetPanelAction } from '../actions/panelChangeActions';
-import { IFaultStatus, faultStatusHandler } from './faultStatusHandler';
-import { stuckAlarmHandler } from './clearStuckAlarmsHandler';
 import { PanelId } from '../models/panelId';
+import { alarmLogEntriesActionHandler, IAlarmLogEntriesState } from './alarmLogEntriesHandler';
+import { currentAlarmsActionHandler, ICurrentAlarmsState } from './currentAlarmsHandler';
+import { faultStatusHandler, IFaultStatus } from './faultStatusHandler';
+import { faultNotificationsHandler, IFaultNotifications } from './notificationsHandler';
 
 export interface IFaultAppStoreState {
-  currentProblems: ICurrentProblemsState;
+  currentAlarms: ICurrentAlarmsState;
   faultNotifications: IFaultNotifications;
   alarmLogEntries: IAlarmLogEntriesState;
   currentOpenPanel: PanelId | null;
@@ -44,7 +43,7 @@ const currentOpenPanelHandler: IActionHandler<PanelId | null> = (state = null, a
     state = action.panelId;
   }
   return state;
-}
+};
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
@@ -53,7 +52,7 @@ declare module '../../../../framework/src/store/applicationStore' {
 }
 
 const actionHandlers = {
-  currentProblems: currentProblemsActionHandler,
+  currentAlarms: currentAlarmsActionHandler,
   faultNotifications: faultNotificationsHandler,
   alarmLogEntries: alarmLogEntriesActionHandler,
   currentOpenPanel: currentOpenPanelHandler,

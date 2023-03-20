@@ -16,24 +16,21 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { Action } from "../../../../framework/src/flux/action";
-import { currentViewType } from "../models/toggleDataType";
+import { Action } from '../../../../framework/src/flux/action';
+
+import { currentViewType } from '../models/toggleDataType';
 
 
 export class SetSubViewAction extends Action {
-    constructor(public currentView: currentViewType, public selectedTab: "chart" | "table") {
-        super();
-    }
+  constructor(public currentView: currentViewType, public selectedTab: 'chart' | 'table') {
+    super();
+  }
 }
 
-export class ResetAllSubViewsAction extends Action {
-    constructor() {
-        super();
-    }
-}
+export class ResetAllSubViewsAction extends Action { }
 
 export class SetFilterVisibility extends Action {
-    constructor(public currentView: currentViewType, public isVisible: boolean) {
-        super();
-    }
+  constructor(public currentView: currentViewType, public isVisible: boolean) {
+    super();
+  }
 }

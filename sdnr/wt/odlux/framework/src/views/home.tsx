@@ -16,50 +16,39 @@
  * ============LICENSE_END==========================================================================
  */
 
-import * as React from 'react';
-import { IApplicationStoreState } from "../store/applicationStore";
-import connect, { Connect, IDispatcher } from "../flux/connect";
+import React, {FC, useState} from 'react';
 import applicationService from '../services/applicationManager';
 
-type props = Connect<typeof mapProps, typeof mapDispatch>;
 
-type SettingsEntry = { name: string, element: JSX.Element }
+type DashboardElement = { name: string, element: JSX.Element };
 
-
-const mapProps = (state: IApplicationStoreState) => ({
-});
-
-const mapDispatch = (dispatcher: IDispatcher) => ({
-});
-
-const DashboardView: React.FunctionComponent<props> = (props) => {
+const DashboardView: FC = (props) => {
 
   const registrations = applicationService.applications;
 
-  const [selectedIndex] = React.useState(0);
+  const [selectedIndex] = useState(0);
 
-  let settingsArray: SettingsEntry[] = [];
+  let dashboardArray: DashboardElement[] = [];
 
-  let settingsElements: (SettingsEntry)[] = Object.keys(registrations).map(p => {
+  let dashboardElements: (DashboardElement)[] = Object.keys(registrations).map(p => {
     const application = registrations[p];
 
     if (application.dashbaordElement) {
-      const value: SettingsEntry = { name: application.menuEntry?.toString()!, element: <application.dashbaordElement /> };
+      const value: DashboardElement = { name: application.menuEntry?.toString()!, element: <application.dashbaordElement /> };
       return value;
 
     } else {
       return null;
     }
-  }).filter((x): x is SettingsEntry => x !== null);
+  }).filter((x): x is DashboardElement => x !== null);
 
-
-  settingsArray.push(...settingsElements);
+  dashboardArray.push(...dashboardElements);
 
   return <div>
     <div>
       <div>
         {
-          settingsArray[selectedIndex]?.element
+          dashboardArray[selectedIndex]?.element
         }
       </div>
     </div>
@@ -67,4 +56,4 @@ const DashboardView: React.FunctionComponent<props> = (props) => {
 }
 
 
-export default connect(mapProps, mapDispatch)(DashboardView);
+export default DashboardView;

@@ -15,13 +15,13 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 import * as marked from 'marked';
 
 import { resolvePath } from '../utilities/path';
 
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import connect, { Connect } from '../../../../framework/src/flux/connect';
+import { connect, Connect } from '../../../../framework/src/flux/connect';
 
 import { Markdown } from "../components/markdown";
 

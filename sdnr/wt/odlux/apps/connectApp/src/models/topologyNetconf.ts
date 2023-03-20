@@ -16,23 +16,23 @@
  * ============LICENSE_END==========================================================================
  */
 
- export interface AvailableCapability {
-  "capability-origin": string;
+export interface AvailableCapability {
+  'capability-origin': string;
   capability: string;
 }
 
 export interface NetconfNodeTopologyAvailableCapabilities {
-  "available-capability": AvailableCapability[];
+  'available-capability': AvailableCapability[];
 }
 
 export interface TopologyNode {
-  "node-id": string;
-  "netconf-node-topology:available-capabilities": NetconfNodeTopologyAvailableCapabilities;
+  'node-id': string;
+  'netconf-node-topology:available-capabilities': NetconfNodeTopologyAvailableCapabilities;
 }
 
 export interface Topology {
-  "topology-id": string;
-  "network-topology:node": TopologyNode[];
+  'topology-id': string;
+  'network-topology:node': TopologyNode[];
 }
 
 /**
@@ -47,13 +47,13 @@ export interface Module {
 }
 
 export interface ModuleFeatures {
-   module: Module[];
+  module: Module[];
 }
 
 export interface ModuleSet {
-  "module-set": ModuleFeatures[];
+  'module-set': ModuleFeatures[];
 }
 
 export interface FeatureTopology {
-  "ietf-yang-library:yang-library" : ModuleSet 
+  'ietf-yang-library:yang-library' : ModuleSet; 
 }

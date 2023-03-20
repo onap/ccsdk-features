@@ -16,119 +16,122 @@
  * ============LICENSE_END==========================================================================
  */
 
-import * as React from 'react'
-import { DialogContent, DialogActions, Button, Dialog, DialogTitle, DialogContentText } from '@mui/material';
-import { currentProblemsReloadAction } from '../handlers/currentProblemsHandler';
+import React from 'react';
+
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
+
 import { clearStuckAlarmAsyncAction } from '../actions/clearStuckAlarmsAction';
-import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
+import { currentAlarmsReloadAction } from '../handlers/currentAlarmsHandler';
 
 export enum ClearStuckAlarmsDialogMode {
-    None = "none",
-    Show = "show"
+  None = 'none',
+  Show = 'show',
 }
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
-    clearStuckAlarmsAsync: clearStuckAlarmAsyncAction(dispatcher.dispatch),
-    reloadCurrentProblemsAction: () => dispatcher.dispatch(currentProblemsReloadAction)
+  clearStuckAlarmsAsync: clearStuckAlarmAsyncAction(dispatcher.dispatch),
+  reloadCurrentAlarmsAction: () => dispatcher.dispatch(currentAlarmsReloadAction),
 });
 
 type clearStuckAlarmsProps = Connect<typeof undefined, typeof mapDispatch> & {
-    numberDevices: Number;
-    mode: ClearStuckAlarmsDialogMode;
-    stuckAlarms: string[];
-    onClose: () => void;
-}
+  numberDevices: Number;
+  mode: ClearStuckAlarmsDialogMode;
+  stuckAlarms: string[];
+  onClose: () => void;
+};
 
 type ClearStuckAlarmsState = {
-    clearAlarmsSuccessful: boolean;
-    errormessage: string;
-    unclearedAlarms: string[];
-}
+  clearAlarmsSuccessful: boolean;
+  errormessage: string;
+  unclearedAlarms: string[];
+};
 
-class ClearStuckAlarmsDialogComponent extends React.Component<clearStuckAlarmsProps, ClearStuckAlarmsState>{
-    constructor(props: clearStuckAlarmsProps) {
-        super(props);
-        this.state = { 
-            clearAlarmsSuccessful: true, 
-            errormessage: '', 
-            unclearedAlarms: [] 
-        };
+class ClearStuckAlarmsDialogComponent extends React.Component<clearStuckAlarmsProps, ClearStuckAlarmsState> {
+  constructor(props: clearStuckAlarmsProps) {
+    super(props);
+    this.state = {
+      clearAlarmsSuccessful: true,
+      errormessage: '',
+      unclearedAlarms: [],
+    };
+  }
+
+  onClose = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    event.preventDefault();
+    this.props.onClose();
+  };
+
+  onRefresh = async (event: React.MouseEvent) => {
+    event.stopPropagation();
+    event.preventDefault();
+    const result = await this.props.clearStuckAlarmsAsync(this.props.stuckAlarms);
+
+    if (result && result['devicemanager:output'].nodenames && result['devicemanager:output'].nodenames.length !== this.props.stuckAlarms.length) { //show errormessage if not all devices were cleared
+      const undeletedAlarm = this.props.stuckAlarms.filter(item => !result['devicemanager:output'].nodenames.includes(item));
+      const error = 'The alarms of the following devices couldn\'t be refreshed: ';
+      this.setState({ clearAlarmsSuccessful: false, errormessage: error, unclearedAlarms: undeletedAlarm });
+      return;
+
+    } else { //show errormessage if no devices were cleared
+      this.setState({ clearAlarmsSuccessful: false, errormessage: 'Alarms couldn\'t be refreshed.', unclearedAlarms: [] });
     }
 
-    onClose = (event: React.MouseEvent) => {
-        event.stopPropagation();
-        event.preventDefault();
-        this.props.onClose();
-    }
+    this.props.reloadCurrentAlarmsAction();
+    this.props.onClose();
+  };
 
-    onRefresh = async (event: React.MouseEvent) => {
-        event.stopPropagation();
-        event.preventDefault();
-        const result = await this.props.clearStuckAlarmsAsync(this.props.stuckAlarms);
+  onOk = (event: React.MouseEvent) => {
 
-        if (result && result["devicemanager:output"].nodenames && result["devicemanager:output"].nodenames.length !== this.props.stuckAlarms.length) { //show errormessage if not all devices were cleared
-            const undeletedAlarm = this.props.stuckAlarms.filter(item => !result["devicemanager:output"].nodenames.includes(item));
-            const error = "The alarms of the following devices couldn't be refreshed: ";
-            this.setState({ clearAlarmsSuccessful: false, errormessage: error, unclearedAlarms: undeletedAlarm });
-            return;
+    event.stopPropagation();
+    event.preventDefault();
+    if (this.state.unclearedAlarms.length > 0)
+      this.props.reloadCurrentAlarmsAction();
+    this.props.onClose();
+  };
 
-        } else { //show errormessage if no devices were cleared
-            this.setState({ clearAlarmsSuccessful: false, errormessage: "Alarms couldn't be refreshed.", unclearedAlarms: [] });
-        }
+  render() {
+    console.log(this.props.stuckAlarms);
+    const device = this.props.numberDevices > 1 ? 'devices' : 'device';
+    const defaultMessage = 'Are you sure you want to refresh all alarms for ' + this.props.numberDevices + ' ' + device + '?';
+    const message = this.state.clearAlarmsSuccessful ? defaultMessage : this.state.errormessage;
 
-        this.props.reloadCurrentProblemsAction();
-        this.props.onClose();
-    }
+    const defaultTitle = 'Refresh Confirmation';
+    const title = this.state.clearAlarmsSuccessful ? defaultTitle : 'Refresh Result';
 
-    onOk = (event: React.MouseEvent) => {
+    return (
+      <Dialog open={this.props.mode !== ClearStuckAlarmsDialogMode.None}>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {message}
+          </DialogContentText>
+          {
+            this.state.unclearedAlarms.map(item =>
+              <DialogContentText>
+                {item}
+              </DialogContentText>,
+            )
+          }
+        </DialogContent>
+        <DialogActions>
+          {
+            this.state.clearAlarmsSuccessful &&
+            <>
+              <Button color="inherit" onClick={this.onRefresh}>Yes</Button>
+              <Button color="inherit" onClick={this.onClose}>No</Button>
+            </>
+          }
 
-        event.stopPropagation();
-        event.preventDefault();
-        if (this.state.unclearedAlarms.length > 0)
-            this.props.reloadCurrentProblemsAction();
-        this.props.onClose();
-    }
-
-    render() {
-        console.log(this.props.stuckAlarms);
-        const device = this.props.numberDevices > 1 ? 'devices' : 'device'
-        const defaultMessage = "Are you sure you want to refresh all alarms for " + this.props.numberDevices + " " + device + "?"
-        const message = this.state.clearAlarmsSuccessful ? defaultMessage : this.state.errormessage;
-
-        const defaultTitle = "Refresh Confirmation"
-        const title = this.state.clearAlarmsSuccessful ? defaultTitle : 'Refresh Result';
-
-        return (
-            <Dialog open={this.props.mode !== ClearStuckAlarmsDialogMode.None}>
-                <DialogTitle>{title}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {message}
-                    </DialogContentText>
-                    {
-                        this.state.unclearedAlarms.map(item =>
-                            <DialogContentText>
-                                {item}
-                            </DialogContentText>
-                        )
-                    }
-                </DialogContent>
-                <DialogActions>
-                    {
-                        this.state.clearAlarmsSuccessful &&
-                        <>
-                            <Button color="inherit" onClick={this.onRefresh}>Yes</Button>
-                            <Button color="inherit" onClick={this.onClose}>No</Button>
-                        </>
-                    }
-
-                    {
-                        !this.state.clearAlarmsSuccessful && <Button color="inherit" onClick={this.onOk}>Ok</Button>
-                    }
-                </DialogActions>
-            </Dialog>
-        )
-    }
+          {
+            !this.state.clearAlarmsSuccessful && <Button color="inherit" onClick={this.onOk}>Ok</Button>
+          }
+        </DialogActions>
+      </Dialog>
+    );
+  }
 }
 
 const ClearStuckAlarmsDialog = connect(undefined, mapDispatch)(ClearStuckAlarmsDialogComponent);

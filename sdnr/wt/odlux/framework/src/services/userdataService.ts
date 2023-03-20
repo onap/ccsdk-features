@@ -22,7 +22,7 @@ import { requestRest } from "./restService";
     const settingsPath ="/userdata";
 
 
-    export function getSettings<TData>(partialPath?: string){
+    export function getUserdata<TData>(partialPath?: string){
        let path = settingsPath;
         if(partialPath){
             path+=partialPath
@@ -32,7 +32,7 @@ import { requestRest } from "./restService";
         return result;
     }
 
-    export function putSettings<TData>(partialPath: string, data: string){
+    export function saveUserdata<TData>(partialPath: string, data: string){
 
         const result = requestRest<TData>(settingsPath+partialPath, {method: "PUT", body: data})
         return result;

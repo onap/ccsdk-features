@@ -15,22 +15,19 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { createExternal,IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
-import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
+/** Represents the elestic search db type for maintenence enrties */
 
-import { Fault } from '../models/fault';
 
-export interface ICurrentProblemsState extends IExternalTableState<Fault> { }
+export const spoofSymbol = Symbol('Spoof');
 
-// create eleactic search data fetch handler
-const currentProblemsSearchHandler = createSearchDataHandler<Fault>('faultcurrent');
-
-export const {
-  actionHandler: currentProblemsActionHandler,
-  createActions: createCurrentProblemsActions,
-  createProperties: createCurrentProblemsProperties,
-  reloadAction: currentProblemsReloadAction,
-
-  // set value action, to change a value
-} = createExternal<Fault>(currentProblemsSearchHandler, appState => appState.fault.currentProblems);
+/** Represents the type for an maintenence entry. */
+export type MaintenanceEntry = {
+  mId: string;
+  nodeId: string;
+  description?: string;
+  end: string;
+  start: string;
+  active: boolean;
+  [spoofSymbol]?: boolean;
+};
 

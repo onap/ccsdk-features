@@ -16,82 +16,86 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { ViewElementBase } from "models/uiModels";
-import {
-  TextField,
-  InputAdornment,
-  Input,
-  Tooltip,
-  Divider,
-  IconButton,
-  InputBase,
-  Paper,
-  Theme,
-  FormControl,
-  InputLabel,
-  FormHelperText,
-} from "@mui/material";
+import React from 'react';
+import InputAdornment from '@mui/material/InputAdornment';
+import Input, { InputProps } from '@mui/material/Input';
+import Tooltip from '@mui/material/Tooltip';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+
 import makeStyles from '@mui/styles/makeStyles';
 import createStyles from '@mui/styles/createStyles';
-import * as React from 'react';
-import { faAdjust } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { InputProps } from "@mui/material/Input";
 
-const useStyles = makeStyles((theme: Theme) =>
+import { faAdjust } from '@fortawesome/free-solid-svg-icons/faAdjust';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import { ViewElementBase } from '../models/uiModels';
+
+const useStyles = makeStyles(() =>
   createStyles({
     iconDark: {
-      color: '#ff8800'
+      color: '#ff8800',
     },
     iconLight: {
-      color: 'orange'
+      color: 'orange',
     },
     padding: {
       paddingLeft: 10,
-      paddingRight: 10
+      paddingRight: 10,
     },
   }),
 );
 
-type IfwhenProps = InputProps & {
+type IfWhenProps = InputProps & {
   label: string;
   element: ViewElementBase;
   helperText: string;
   error: boolean;
-  onChangeTooltipVisuability(value: boolean): void;
+  onChangeTooltipVisibility(value: boolean): void;
 };
 
-export const IfWhenTextInput = (props: IfwhenProps) => {
+export const IfWhenTextInput = (props: IfWhenProps) => {
 
-  const { element, onChangeTooltipVisuability: toogleTooltip, id, label, helperText: errorText, error, style, ...otherProps } = props;
+  const { element, id, label, helperText: errorText, error, style, ...otherProps } = props;
   const classes = useStyles();
-
 
   const ifFeature = element.ifFeature
     ? (
-        <Tooltip disableInteractive onMouseMove={e => props.onChangeTooltipVisuability(false)} onMouseOut={e => props.onChangeTooltipVisuability(true)} title={element.ifFeature}>
+      <Tooltip
+        title={element.ifFeature}
+        disableInteractive
+        onMouseMove={() => props.onChangeTooltipVisibility(false)}
+        onMouseOut={() => props.onChangeTooltipVisibility(true)}
+      >
           <InputAdornment position="start">
             <FontAwesomeIcon icon={faAdjust} className={classes.iconDark} />
           </InputAdornment>
         </Tooltip>
-      )
+    )
     : null;
 
   const whenFeature = element.when
     ? (
-        <Tooltip disableInteractive className={classes.padding} onMouseMove={() => props.onChangeTooltipVisuability(false)} onMouseOut={() => props.onChangeTooltipVisuability(true)} title={element.when}>
+      <Tooltip
+        title={element.when}
+        disableInteractive
+        className={classes.padding}
+        onMouseMove={() => props.onChangeTooltipVisibility(false)}
+        onMouseOut={() => props.onChangeTooltipVisibility(true)}
+      >
           <InputAdornment className={classes.padding} position="end">
             <FontAwesomeIcon icon={faAdjust} className={classes.iconLight}/>
           </InputAdornment>
         </Tooltip>
-      ) 
+    ) 
     : null;
 
   return (
     <FormControl variant="standard" error={error} style={style}>
       <InputLabel htmlFor={id} >{label}</InputLabel>
-      <Input id={id} inputProps={{'aria-label': label+'-input'}} endAdornment={<div>{ifFeature}{whenFeature}</div>} {...otherProps}  />
+      <Input id={id} inputProps={{ 'aria-label': label + '-input' }} endAdornment={<div>{ifFeature}{whenFeature}</div>} {...otherProps}  />
       <FormHelperText>{errorText}</FormHelperText>
     </FormControl>
   );
-}
+};

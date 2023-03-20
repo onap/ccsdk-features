@@ -29,10 +29,10 @@ export interface ISignalToInterferenceState extends IExternalTableState<SignalTo
 const signalToInterferenceSearchHandler = createSearchDataHandler<SignalToInterferenceDataType>(getFilter, false, null);
 
 export const {
-    actionHandler: signalToInterferenceActionHandler,
-    createActions: createSignalToInterferenceActions,
-    createProperties: createSignalToInterferenceProperties,
-    createPreActions: createSignalToInterferencePreActions,
-    reloadAction: signalToInterferenceReloadAction,
+  actionHandler: signalToInterferenceActionHandler,
+  createActions: createSignalToInterferenceActions,
+  createProperties: createSignalToInterferenceProperties,
+  createPreActions: createSignalToInterferencePreActions,
+  reloadAction: signalToInterferenceReloadAction,
 } = createExternal<SignalToInterferenceDataType>(signalToInterferenceSearchHandler, appState => appState.performanceHistory.signalToInterference);
 

@@ -1,0 +1,54 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "import",
+    "@typescript-eslint",
+    "react",
+    "react-hooks"
+  ],
+  "extends": [
+    "airbnb-typescript"
+  ],
+  "parserOptions": {
+    "project": [
+      "./tsconfig.json"
+    ],
+    "sourceType": "module"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "rules": { 
+    "no-console": "off",
+    "no-debugger": "off",
+    "import/no-cycle": "off",
+    "quotes": [ "error", "single" ],
+    "import/prefer-default-export": "off",
+    "lines-between-class-members": "off",
+    "no-nested-ternary": "off",
+    "no-unused-vars": "off",
+    "object-curly-newline": "off", //["error", { "multiline": true, "minProperties": 8, "consistent": true }], 
+    "max-len": [ 2, 280, 2, { "ignoreUrls": true } ],
+    "@typescript-eslint/lines-between-class-members": [ "error", "always", { "exceptAfterOverload": true } ],
+    "@typescript-eslint/quotes": [ "error", "single" , { "avoidEscape": true } ],
+    "@typescript-eslint/no-unused-vars": [ "error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" } ],
+    "@typescript-eslint/naming-convention": [ "error", 
+        { "format": [ "camelCase", "PascalCase", "UPPER_CASE", "snake_case" ], "leadingUnderscore": "allow", "selector": "default", "filter": { "regex": "(^&)|(^\\w+(-\\w+)+)", "match": false } } ],
+    "no-underscore-dangle": [ "error", { "allowAfterThis": true } ],
+    "no-param-reassign": [ "error", { "props": false } ],
+    "react/prop-types": [ "error", { "skipUndeclared": true } ],
+    "@typescript-eslint/member-delimiter-style": ["error"]
+  },
+  "overrides": [
+    { 
+      "files": "**/handlers/*Handler.ts",
+      "rules": {
+        "no-param-reassign": "off",
+        "@typescript-eslint/default-param-last": "off"
+      }
+    }
+  ]
+}

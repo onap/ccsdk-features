@@ -18,16 +18,17 @@
 import { Dispatch } from '../flux/store';
 import { MiddlewareApi } from '../store/applicationStore';
 
+const LogLevel = +(localStorage.getItem('log.odlux.framework.middleware.logger') || 0);
 
 function createLoggerMiddleware() {
   return function logger({ getState }: MiddlewareApi) {
     return (next: Dispatch): Dispatch => action => {
-      console.log('will dispatch', action);
+      if (LogLevel > 2) console.log('will dispatch', action);
       const returnValue = next(action);
-      console.log('state after dispatch', getState());
+      if (LogLevel > 2) console.log('state after dispatch', getState());
       return returnValue;
     };
-  }
+  };
 }
 
 export const logger = createLoggerMiddleware();

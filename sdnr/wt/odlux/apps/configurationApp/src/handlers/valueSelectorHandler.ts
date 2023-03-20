@@ -16,9 +16,9 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { IActionHandler } from "../../../../framework/src/flux/action";
-import { ViewSpecification } from "../models/uiModels";
-import { EnableValueSelector, SetSelectedValue, UpdateDeviceDescription, SetCollectingSelectionData, UpdatViewDescription, UpdatOutputData } from "../actions/deviceActions";
+import { IActionHandler } from '../../../../framework/src/flux/action';
+import { ViewSpecification } from '../models/uiModels';
+import { EnableValueSelector, SetSelectedValue, UpdateDeviceDescription, SetCollectingSelectionData, UpdateViewDescription, UpdateOutputData } from '../actions/deviceActions';
 
 export interface IValueSelectorState {
   collectingData: boolean;
@@ -28,13 +28,13 @@ export interface IValueSelectorState {
   onValueSelected: (value: any) => void;
 }
 
-const nc = (val: React.SyntheticEvent) => { };
+const dummyFunc = () => { };
 const valueSelectorStateInit: IValueSelectorState = {
   collectingData: false,
   keyProperty: undefined,
   listSpecification: null,
   listData: [],
-  onValueSelected: nc,
+  onValueSelected: dummyFunc,
 };
 
 export const valueSelectorHandler: IActionHandler<IValueSelectorState> = (state = valueSelectorStateInit, action) => {
@@ -53,22 +53,24 @@ export const valueSelectorHandler: IActionHandler<IValueSelectorState> = (state 
       listData: action.listData,
     };
   } else if (action instanceof SetSelectedValue) {
-    state.keyProperty && state.onValueSelected(action.value[state.keyProperty]);
+    if (state.keyProperty) {
+      state.onValueSelected(action.value[state.keyProperty]);
+    }
     state = {
       ...state,
       collectingData: false,
       keyProperty: undefined,
       listSpecification: null,
-      onValueSelected: nc,
+      onValueSelected: dummyFunc,
       listData: [],
     };
-  } else if (action instanceof UpdateDeviceDescription || action instanceof UpdatViewDescription || action instanceof UpdatOutputData) {
+  } else if (action instanceof UpdateDeviceDescription || action instanceof UpdateViewDescription || action instanceof UpdateOutputData) {
     state = {
       ...state,
       collectingData: false,
       keyProperty: undefined,
       listSpecification: null,
-      onValueSelected: nc,
+      onValueSelected: dummyFunc,
       listData: [],
     };
   }

@@ -26,13 +26,13 @@ export interface ICrossPolarDiscriminationState extends IExternalTableState<Cros
 /**
  * Creates elastic search material data fetch handler for CPD from historicalperformance database.
  */
-const crossPolarDiscriminationSearchHandler = createSearchDataHandler<CrossPolarDiscriminationDataType>(getFilter, false, null)
+const crossPolarDiscriminationSearchHandler = createSearchDataHandler<CrossPolarDiscriminationDataType>(getFilter, false, null);
 
 export const {
-    actionHandler: crossPolarDiscriminationActionHandler,
-    createActions: createCrossPolarDiscriminationActions,
-    createProperties: createCrossPolarDiscriminationProperties,
-    createPreActions: createCrossPolarDiscriminationPreActions,
-    reloadAction: crossPolarDiscriminationReloadAction,
+  actionHandler: crossPolarDiscriminationActionHandler,
+  createActions: createCrossPolarDiscriminationActions,
+  createProperties: createCrossPolarDiscriminationProperties,
+  createPreActions: createCrossPolarDiscriminationPreActions,
+  reloadAction: crossPolarDiscriminationReloadAction,
 } = createExternal<CrossPolarDiscriminationDataType>(crossPolarDiscriminationSearchHandler, appState => appState.performanceHistory.crossPolarDiscrimination);
 

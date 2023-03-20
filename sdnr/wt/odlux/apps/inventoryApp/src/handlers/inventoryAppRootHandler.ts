@@ -18,26 +18,22 @@
 // main state handler
 
 import { combineActionHandler } from '../../../../framework/src/flux/middleware';
-
 // ** do not remove **
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import { IActionHandler } from '../../../../framework/src/flux/action';
 
-import { IInvenroryTree, inventoryTreeHandler } from './inventoryTreeHandler';
-import { IConnectedNetworkElementsState, connectedNetworkElementsActionHandler } from './connectedNetworkElementsHandler';
 import { PanelId } from '../models/panelId';
+import { IInventoryDeviceListState, inventoryDeviceListActionHandler } from './inventoryDeviceListActionHandler';
+import { IInventoryElementsState, inventoryElementsActionHandler } from './inventoryElementsHandler';
+import { IInvenroryTree, inventoryTreeHandler } from './inventoryTreeHandler';
 import { currentOpenPanelHandler } from './panelHandler';
-import { inventoryElementsActionHandler, IInventoryElementsState } from './inventoryElementsHandler';
 
 export interface IInventoryAppStateState {
   inventoryTree: IInvenroryTree;
-  connectedNetworkElements: IConnectedNetworkElementsState; // used for ne selection
   currentOpenPanel: PanelId;
   inventoryElements: IInventoryElementsState;
+  inventoryDeviceList: IInventoryDeviceListState;
 }
-
-
-
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
@@ -47,9 +43,9 @@ declare module '../../../../framework/src/store/applicationStore' {
 
 const actionHandlers = {
   inventoryTree: inventoryTreeHandler,
-  connectedNetworkElements: connectedNetworkElementsActionHandler,
   currentOpenPanel: currentOpenPanelHandler,
-  inventoryElements: inventoryElementsActionHandler
+  inventoryElements: inventoryElementsActionHandler,
+  inventoryDeviceList: inventoryDeviceListActionHandler,
 };
 
 export const inventoryAppRootHandler = combineActionHandler<IInventoryAppStateState>(actionHandlers);

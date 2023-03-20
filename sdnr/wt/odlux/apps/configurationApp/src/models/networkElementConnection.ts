@@ -24,7 +24,7 @@ export type NetworkElementConnection = {
   username?: string;
   password?: string;
   isRequired?: boolean;
-  status?: "connected" | "mounted" | "unmounted" | "connecting" | "disconnected" | "idle";
+  status?: 'connected' | 'mounted' | 'unmounted' | 'connecting' | 'disconnected' | 'idle';
   coreModelCapability?: string;
   deviceType?: string;
   nodeDetails?: {
@@ -33,5 +33,5 @@ export type NetworkElementConnection = {
       failureReason: string;
       capability: string;
     }[];
-  }
-}
+  };
+};

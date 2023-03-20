@@ -15,10 +15,10 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-type EditAuthorProps = RouteComponentProps<{ authorId: string}>;
+type EditAuthorProps = RouteComponentProps<{ authorId: string }>;
 
 class EditAuthorComponent extends React.Component<EditAuthorProps> {
   render(): JSX.Element {
@@ -26,7 +26,7 @@ class EditAuthorComponent extends React.Component<EditAuthorProps> {
       <div>
         <h2>Edit Author { this.props.match.params.authorId }</h2>
       </div>
-    )
+    );
   }
 }
 

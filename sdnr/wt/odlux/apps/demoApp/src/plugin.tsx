@@ -15,13 +15,13 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from "react";
+import React from 'react';
 import { withRouter, RouteComponentProps, Route, Switch, Redirect } from 'react-router-dom';
 
-import { faAddressBook, faRegistered } from '@fortawesome/free-solid-svg-icons';
+import { faAddressBook } from '@fortawesome/free-solid-svg-icons/faAddressBook';
 
 import applicationManager from '../../../framework/src/services/applicationManager';
-import connect, { Connect } from '../../../framework/src/flux/connect';
+import { connect, Connect } from '../../../framework/src/flux/connect';
 
 import { demoAppRootHandler } from './handlers/demoAppRootHandler';
 
@@ -43,12 +43,12 @@ const App = (props: AppProps) => (
 const FinalApp = withRouter(connect()(App));
 
 export function register() {
-  const applicationApi = applicationManager.registerApplication({
-    name: "demo",
+  applicationManager.registerApplication({
+    name: 'demo',
     icon: faAddressBook,
     rootComponent: FinalApp,
     rootActionHandler: demoAppRootHandler,
     exportedComponents: { counter: Counter },
-    menuEntry: "Demo"
+    menuEntry: 'Demo',
   });
 }

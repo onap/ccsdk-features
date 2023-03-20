@@ -37,7 +37,7 @@ import { updatePolicies } from '../middleware/policies';
 export type MiddlewareApi = MiddlewareArg<IApplicationStoreState>;
 
 export interface IFrameworkStoreState {
-  applicationRegistraion: IApplicationRegistration;
+  applicationRegistration: IApplicationRegistration;
   applicationState: IApplicationState;
   authenticationState: IAuthenticationState;
   navigationState: INavigationState;
@@ -48,7 +48,7 @@ export interface IApplicationStoreState {
 }
 
 const frameworkHandlers = combineActionHandler({
-  applicationRegistraion: applicationRegistryHandler,
+  applicationRegistration: applicationRegistryHandler,
   applicationState: applicationStateHandler,
   authenticationState: authenticationStateHandler,
   navigationState: navigationStateHandler
@@ -62,7 +62,7 @@ export const applicationStoreCreator = (): ApplicationStore => {
   const actionHandlers = Object.keys(applicationService.applications).reduce((acc, cur) => {
     const reg = applicationService.applications[cur];
     reg && typeof reg.rootActionHandler === 'function' && (acc[cur] = reg.rootActionHandler);
-    reg && +(reg.middlewares || 0) && middlewares.push(...(reg.middlewares as Middleware<IApplicationStoreState>[]));
+    reg && reg.middlewares && Array.isArray(reg.middlewares) && middlewares.push(...(reg.middlewares as Middleware<IApplicationStoreState>[]));
     return acc;
   }, { framework: frameworkHandlers } as any);
 

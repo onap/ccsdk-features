@@ -15,26 +15,25 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';;
-import { Theme } from '@mui/material';
 import { WithStyles } from '@mui/styles';
 import createStyles from '@mui/styles/createStyles';
-import withStyles from '@mui/styles/withStyles';
 import { Doughnut } from 'react-chartjs-2';
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import { NavigateToApplication } from '../../../../framework/src/actions/navigationActions';
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 
-const styles = (theme: Theme) => createStyles({
+import { NavigateToApplication } from '../../../../framework/src/actions/navigationActions';
+import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
+
+const styles = () => createStyles({
   pageWidthSettings: {
     width: '50%',
-    float: 'left'
+    float: 'left',
   },
-})
+});
 
-const scrollbar = { overflow: "auto", paddingRight: "20px" }
+const scrollbar = { overflow: 'auto', paddingRight: '20px' };
 
 let connectionStatusinitialLoad = true;
 let connectionStatusinitialStateChanged = false;
@@ -47,7 +46,7 @@ let alarmStatusDataLoad: number[] = [0, 0, 0, 0];
 let alarmTotalCount = 0;
 
 const mapProps = (state: IApplicationStoreState) => ({
-  alarmStatus: state.fault.faultStatus
+  alarmStatus: state.fault.faultStatus,
 });
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
@@ -60,11 +59,10 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
   constructor(props: HomeComponentProps) {
     super(props);
     this.state = {
-    }
+    };
   }
 
   render(): JSX.Element {
-    const { classes } = this.props;
 
     if (!this.props.alarmStatus.isLoadingConnectionStatusChart) {
       connectionStatusDataLoad = [
@@ -72,7 +70,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
         this.props.alarmStatus.Connecting,
         this.props.alarmStatus.Disconnected,
         this.props.alarmStatus.UnableToConnect,
-        this.props.alarmStatus.Undefined
+        this.props.alarmStatus.Undefined,
       ];
       connectionTotalCount = this.props.alarmStatus.Connected + this.props.alarmStatus.Connecting
         + this.props.alarmStatus.Disconnected + this.props.alarmStatus.UnableToConnect + this.props.alarmStatus.Undefined;
@@ -84,7 +82,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
         this.props.alarmStatus.critical,
         this.props.alarmStatus.major,
         this.props.alarmStatus.minor,
-        this.props.alarmStatus.warning
+        this.props.alarmStatus.warning,
       ];
       alarmTotalCount = this.props.alarmStatus.critical + this.props.alarmStatus.major
         + this.props.alarmStatus.minor + this.props.alarmStatus.warning;
@@ -97,7 +95,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
         'Connecting: ' + this.props.alarmStatus.Connecting,
         'Disconnected: ' + this.props.alarmStatus.Disconnected,
         'UnableToConnect: ' + this.props.alarmStatus.UnableToConnect,
-        'Undefined: ' + this.props.alarmStatus.Undefined
+        'Undefined: ' + this.props.alarmStatus.Undefined,
       ],
       datasets: [{
         labels: ['Connected', 'Connecting', 'Disconnected', 'UnableToConnect', 'Undefined'],
@@ -107,9 +105,9 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
           'rgb(255, 102, 0)',
           'rgb(191, 191, 191)',
           'rgb(191, 191, 191)',
-          'rgb(242, 240, 240)'
-        ]
-      }]
+          'rgb(242, 240, 240)',
+        ],
+      }],
     };
 
 
@@ -119,9 +117,9 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
       datasets: [{
         data: [1],
         backgroundColor: [
-          'rgb(255, 255, 255)'
-        ]
-      }]
+          'rgb(255, 255, 255)',
+        ],
+      }],
     };
 
     /** Loading Connection Status chart */
@@ -130,9 +128,9 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
       datasets: [{
         data: [1],
         backgroundColor: [
-          'rgb(255, 255, 255)'
-        ]
-      }]
+          'rgb(255, 255, 255)',
+        ],
+      }],
     };
 
     /** Loading Alarm Status chart */
@@ -141,9 +139,9 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
       datasets: [{
         data: [1],
         backgroundColor: [
-          'rgb(255, 255, 255)'
-        ]
-      }]
+          'rgb(255, 255, 255)',
+        ],
+      }],
     };
 
     /** Connection status options */
@@ -155,57 +153,57 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
             let label =
               (data.datasets[tooltipItem.datasetIndex].labels &&
                 data.datasets[tooltipItem.datasetIndex].labels[
-                tooltipItem.index
+                  tooltipItem.index
                 ]) ||
               data.labels[tooltipItem.index] ||
-              "";
+              '';
             if (label) {
-              label += ": ";
+              label += ': ';
             }
             label +=
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] +
-              (data.datasets[tooltipItem.datasetIndex].labelSuffix || "");
+              (data.datasets[tooltipItem.datasetIndex].labelSuffix || '');
 
             return label;
-          }
-        }
+          },
+        },
       },
       responsive: true,
       maintainAspectRatio: false,
       animation: {
-        duration: 0
+        duration: 0,
       },
       plugins: {
         legend: {
           display: true,
-          position: 'top'
-        }
+          position: 'top',
+        },
       },
       onClick: (event: MouseEvent, item: any) => {
         if (item[0]) {
           let connectionStatus = labels[item[0]._index] + '';
-          this.props.navigateToApplication("connect", '/connectionStatus/' + connectionStatus);
+          this.props.navigateToApplication('connect', '/connectionStatus/' + connectionStatus);
         }
-      }
-    }
+      },
+    };
 
     /** Connection status unavailable options */
     const connectionStatusUnavailableOptions = {
       responsive: true,
       maintainAspectRatio: false,
       animation: {
-        duration: 0
+        duration: 0,
       },
       plugins: {
         legend: {
           display: true,
-          position: 'top'
+          position: 'top',
         },
         tooltip: {
-          enabled: false
-        }
-      }
-    }
+          enabled: false,
+        },
+      },
+    };
 
     /** Add text inside the doughnut chart for Connection Status */
     const connectionStatusPlugins = [{
@@ -215,15 +213,15 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
           ctx = chart.ctx;
         ctx.restore();
         var fontSize = (height / 480).toFixed(2);
-        ctx.font = fontSize + "em sans-serif";
-        ctx.textBaseline = "top";
-        var text = "Network Connection Status",
+        ctx.font = fontSize + 'em sans-serif';
+        ctx.textBaseline = 'top';
+        var text = 'Network Connection Status',
           textX = Math.round((width - ctx.measureText(text).width) / 2),
           textY = height / 2;
         ctx.fillText(text, textX, textY);
         ctx.save();
-      }
-    }]
+      },
+    }];
 
     /** Alarm status Data */
     const alarmStatusData = {
@@ -231,7 +229,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
         'Critical : ' + this.props.alarmStatus.critical,
         'Major : ' + this.props.alarmStatus.major,
         'Minor : ' + this.props.alarmStatus.minor,
-        'Warning : ' + this.props.alarmStatus.warning
+        'Warning : ' + this.props.alarmStatus.warning,
       ],
       datasets: [{
         labels: ['Critical', 'Major', 'Minor', 'Warning'],
@@ -240,10 +238,10 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
           'rgb(240, 25, 10)',
           'rgb(240, 133, 10)',
           'rgb(240, 240, 10)',
-          'rgb(46, 115, 176)'
+          'rgb(46, 115, 176)',
         ],
-      }]
-    }
+      }],
+    };
 
     /** No Alarm status available */
     const alarmStatusUnavailableData = {
@@ -251,9 +249,9 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
       datasets: [{
         data: [1],
         backgroundColor: [
-          'rgb(0, 153, 51)'
-        ]
-      }]
+          'rgb(0, 153, 51)',
+        ],
+      }],
     };
 
     /** Alarm status Options */
@@ -265,36 +263,36 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
             let label =
               (data.datasets[tooltipItem.datasetIndex].labels &&
                 data.datasets[tooltipItem.datasetIndex].labels[
-                tooltipItem.index
+                  tooltipItem.index
                 ]) ||
               data.labels[tooltipItem.index] ||
-              "";
+              '';
             if (label) {
-              label += ": ";
+              label += ': ';
             }
             label +=
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] +
-              (data.datasets[tooltipItem.datasetIndex].labelSuffix || "");
+              (data.datasets[tooltipItem.datasetIndex].labelSuffix || '');
 
             return label;
-          }
-        }
+          },
+        },
       },
       responsive: true,
       maintainAspectRatio: false,
       animation: {
-        duration: 0
+        duration: 0,
       },
       plugins: {
         legend: {
           display: true,
-          position: 'top'
-        }
+          position: 'top',
+        },
       },
       onClick: (event: MouseEvent, item: any) => {
         if (item[0]) {
           let severity = alarmLabels[item[0]._index] + '';
-          this.props.navigateToApplication("fault", '/alarmStatus/' + severity);
+          this.props.navigateToApplication('fault', '/alarmStatus/' + severity);
         }
       },
     };
@@ -304,18 +302,18 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
       responsive: true,
       maintainAspectRatio: false,
       animation: {
-        duration: 0
+        duration: 0,
       },
       plugins: {
         legend: {
           display: true,
-          position: 'top'
+          position: 'top',
         },
         tooltip: {
-          enabled: false
-        }
-      }
-    }
+          enabled: false,
+        },
+      },
+    };
     /** Add text inside the doughnut chart for Alarm Status */
     const alarmStatusPlugins = [{
       beforeDraw: function (chart: any) {
@@ -324,15 +322,15 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
           ctx = chart.ctx;
         ctx.restore();
         var fontSize = (height / 480).toFixed(2);
-        ctx.font = fontSize + "em sans-serif";
-        ctx.textBaseline = "top";
-        var text = "Network Alarm Status",
+        ctx.font = fontSize + 'em sans-serif';
+        ctx.textBaseline = 'top';
+        var text = 'Network Alarm Status',
           textX = Math.round((width - ctx.measureText(text).width) / 2),
           textY = height / 2;
         ctx.fillText(text, textX, textY);
         ctx.save();
-      }
-    }]
+      },
+    }];
 
     return (
       <>
@@ -397,7 +395,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
           </div>
         </div>
       </>
-    )
+    );
   }
 
   /** Check if connection status data available */
@@ -412,7 +410,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
     } else {
       return true;
     }
-  }
+  };
 
   /** Check if connection status chart data is loaded */
   public checkElementsAreLoaded = () => {
@@ -434,7 +432,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
       return !isLoadingCheck.isLoadingConnectionStatusChart;
     }
     return true;
-  }
+  };
 
   /** Check if alarms data available */
   public checkAlarmStatus = () => {
@@ -444,11 +442,10 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
     }
     if (alarmCount.critical == 0 && alarmCount.major == 0 && alarmCount.minor == 0 && alarmCount.warning == 0) {
       return false;
-    }
-    else {
+    } else {
       return true;
     }
-  }
+  };
 
   /** Check if alarm status chart data is loaded */
   public checkAlarmsAreLoaded = () => {
@@ -470,7 +467,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
       return !isLoadingCheck.isLoadingAlarmStatusChart;
     }
     return true;
-  }
+  };
 }
 
 export default (withRouter(connect(mapProps, mapDispatch)(DashboardHome)));

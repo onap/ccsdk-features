@@ -18,9 +18,10 @@
 // main state handler
 
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import { TocTreeNode } from 'models/tocNode';
 import { IActionHandler } from '../../../../framework/src/flux/action';
+
 import { LoadTocAction, TocLoadedAction, LoadDocumentAction, DocumentLoadedAction } from '../actions/helpActions';
+import { TocTreeNode } from '../models/tocNode';
 
 export interface IHelpAppStoreState {
   busy: boolean;
