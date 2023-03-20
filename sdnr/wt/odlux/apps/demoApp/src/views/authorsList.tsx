@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import Table from '@mui/material/Table';
@@ -25,22 +25,28 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper'; // means border
 
-import connect from '../../../../framework/src/flux/connect';
+import { connect } from '../../../../framework/src/flux/connect';
 
 import { loadAllAuthorsAsync } from '../actions/authorActions';
 import { IAuthor } from '../models/author';
 
 interface IAuthorsListProps {
-  authors: IAuthor[],
-  busy: boolean,
-  onLoadAllAuthors: () => void
+  authors: IAuthor[];
+  busy: boolean;
+  onLoadAllAuthors: () => void;
 }
 
 class AuthorsListComponent extends React.Component<RouteComponentProps & IAuthorsListProps> {
 
   render(): JSX.Element {
     const { authors, busy } = this.props;
-    return (
+    return busy
+      ? (
+        <Paper>
+          Loading
+        </Paper>
+      )
+      : (
       <Paper>
         <Table padding="normal" >
           <TableHead>
@@ -52,7 +58,7 @@ class AuthorsListComponent extends React.Component<RouteComponentProps & IAuthor
           </TableHead>
           <TableBody>
             {authors.map(author => (
-              <TableRow key={author.id} onClick={(e) => this.editAuthor(author)}>
+              <TableRow key={author.id} onClick={(_e) => this.editAuthor(author)}>
                 <TableCell>{author.id}</TableCell>
                 <TableCell>{author.firstName}</TableCell>
                 <TableCell>{author.lastName}</TableCell>
@@ -61,15 +67,15 @@ class AuthorsListComponent extends React.Component<RouteComponentProps & IAuthor
           </TableBody>
         </Table>
       </Paper>
-    );
-  };
+      );
+  }
 
   public componentDidMount() {
     this.props.onLoadAllAuthors();
   }
 
   private editAuthor = (author: IAuthor) => {
-    author && this.props.history.push(this.props.match.path + '/' + author.id);
+    if (author) this.props.history.push(this.props.match.path + '/' + author.id);
   };
 }
 
@@ -77,11 +83,11 @@ export const AuthorsList = withRouter(
   connect(
     ({ demo: state }) => ({
       authors: state.listAuthors.authors,
-      busy: state.listAuthors.busy
+      busy: state.listAuthors.busy,
     }),
     (dispatcher) => ({
       onLoadAllAuthors: () => {
-        dispatcher.dispatch(loadAllAuthorsAsync)
-      }
+        dispatcher.dispatch(loadAllAuthorsAsync);
+      },
     }))(AuthorsListComponent));
 export default AuthorsList;

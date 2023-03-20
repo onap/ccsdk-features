@@ -16,10 +16,10 @@
  * ============LICENSE_END==========================================================================
  */
 
-import connect, { Connect, IDispatcher } from "../../../../framework/src/flux/connect";
+import React from 'react'
+import {connect, Connect, IDispatcher } from "../../../../framework/src/flux/connect";
 
 import { NavigateToApplication } from "../../../../framework/src/actions/navigationActions";
-import * as React from 'react'
 import { FunctionComponent } from "react";
 import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
 import TocEntry from "../components/tocEntry";

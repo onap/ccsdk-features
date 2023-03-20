@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import  React from 'react';
 import { Theme } from '@mui/material/styles';
 
 import { WithStyles } from '@mui/styles';
@@ -31,7 +31,7 @@ import Typography from '@mui/material/Typography';
 
 import { ClearErrorInfoAction, RemoveErrorInfoAction } from '../actions/errorActions';
 
-import connect, { Connect } from '../flux/connect';
+import { connect, Connect } from '../flux/connect';
 
 const styles = (theme: Theme) => createStyles({
   modal: {

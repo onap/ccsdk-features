@@ -23,5 +23,5 @@ export type ConnectionStatusLogType = {
   objectId: string;
   type: string;
   newValue: string;
-}
+};
 

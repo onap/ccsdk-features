@@ -24,78 +24,73 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { alarmLogEntriesReloadAction } from '../handlers/alarmLogEntriesHandler';
-import { IDispatcher, connect, Connect } from '../../../../framework/src/flux/connect';
-
 import { Fault } from '../models/fault';
 
 export enum RefreshAlarmLogDialogMode {
-  None = "none",
-  RefreshAlarmLogTable = "RefreshAlarmLogTable",
+  None = 'none',
+  RefreshAlarmLogTable = 'RefreshAlarmLogTable',
 }
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
-  refreshAlarmLog: () => dispatcher.dispatch(alarmLogEntriesReloadAction)
+  refreshAlarmLog: () => dispatcher.dispatch(alarmLogEntriesReloadAction),
 });
 
 type DialogSettings = {
-  dialogTitle: string,
-  dialogDescription: string,
-  applyButtonText: string,
-  cancelButtonText: string,
-  enableMountIdEditor: boolean,
-  enableUsernameEditor: boolean,
-  enableExtendedEditor: boolean,
-}
+  dialogTitle: string;
+  dialogDescription: string;
+  applyButtonText: string;
+  cancelButtonText: string;
+  enableMountIdEditor: boolean;
+  enableUsernameEditor: boolean;
+  enableExtendedEditor: boolean;
+};
 
 const settings: { [key: string]: DialogSettings } = {
   [RefreshAlarmLogDialogMode.None]: {
-    dialogTitle: "",
-    dialogDescription: "",
-    applyButtonText: "",
-    cancelButtonText: "",
+    dialogTitle: '',
+    dialogDescription: '',
+    applyButtonText: '',
+    cancelButtonText: '',
     enableMountIdEditor: false,
     enableUsernameEditor: false,
     enableExtendedEditor: false,
   },
   [RefreshAlarmLogDialogMode.RefreshAlarmLogTable]: {
-    dialogTitle: "Do you want to refresh the Alarm Log?",
-    dialogDescription: "",
-    applyButtonText: "Yes",
-    cancelButtonText: "Cancel",
+    dialogTitle: 'Do you want to refresh the Alarm Log?',
+    dialogDescription: '',
+    applyButtonText: 'Yes',
+    cancelButtonText: 'Cancel',
     enableMountIdEditor: true,
     enableUsernameEditor: true,
     enableExtendedEditor: true,
-  }
-}
+  },
+};
 
 type RefreshAlarmLogDialogComponentProps = Connect<undefined, typeof mapDispatch> & {
   mode: RefreshAlarmLogDialogMode;
   onClose: () => void;
 };
 
-type RefreshAlarmLogDialogComponentState = Fault & { isNameValid: boolean, isHostSet: boolean };
+type RefreshAlarmLogDialogComponentState = Fault & { isNameValid: boolean; isHostSet: boolean };
 
 class RefreshAlarmLogDialogComponent extends React.Component<RefreshAlarmLogDialogComponentProps, RefreshAlarmLogDialogComponentState> {
-  constructor(props: RefreshAlarmLogDialogComponentProps) {
-    super(props);
-  }
-
   render(): JSX.Element {
     const setting = settings[this.props.mode];
     return (
       <Dialog open={this.props.mode !== RefreshAlarmLogDialogMode.None}>
-        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, "-").toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
+        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, '-').toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
         <DialogContent>
           <DialogContentText>
             {setting.dialogDescription}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button aria-label="dialog-confirm-button" onClick={(event) => {
+          <Button aria-label="dialog-confirm-button" onClick={() => {
             this.onRefresh();
           }} color="inherit" > {setting.applyButtonText} </Button>
-          <Button aria-label="dialog-cancel-button" onClick={(event) => {
+          <Button aria-label="dialog-cancel-button" onClick={() => {
             this.onCancel();
           }} color="secondary"> {setting.cancelButtonText} </Button>
         </DialogActions>
@@ -110,7 +105,7 @@ class RefreshAlarmLogDialogComponent extends React.Component<RefreshAlarmLogDial
 
   private onCancel = () => {
     this.props.onClose();
-  }
+  };
 }
 
 export const RefreshAlarmLogDialog = connect(undefined, mapDispatch)(RefreshAlarmLogDialogComponent);

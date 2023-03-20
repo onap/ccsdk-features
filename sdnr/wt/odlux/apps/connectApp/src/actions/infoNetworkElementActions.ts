@@ -15,68 +15,68 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
- import { Action } from '../../../../framework/src/flux/action';
- import { Dispatch } from '../../../../framework/src/flux/store';
+import { Action } from '../../../../framework/src/flux/action';
+import { Dispatch } from '../../../../framework/src/flux/store';
  
- import { Module, TopologyNode } from '../models/topologyNetconf';
- import { connectService } from '../services/connectService';
+import { Module, TopologyNode } from '../models/topologyNetconf';
+import { connectService } from '../services/connectService';
  
- /** 
+/** 
   * Represents the base action. 
   */
- export class BaseAction extends Action { }
+export class BaseAction extends Action { }
  
- /** 
+/** 
   * Represents an action causing the store to load all element Yang capabilities.
   */
- export class LoadAllElementInfoAction extends BaseAction { }
+export class LoadAllElementInfoAction extends BaseAction { }
  
- /** 
+/** 
   * Represents an action causing the store to update element Yang capabilities. 
   */
- export class AllElementInfoLoadedAction extends BaseAction {
-   /**
+export class AllElementInfoLoadedAction extends BaseAction {
+  /**
     * Initialize this instance.
     * @param elementInfo The information of the element which is returned.
     */
-   constructor(public elementInfo: TopologyNode | null, public error?: string) {
-     super();
-   }
- }
+  constructor(public elementInfo: TopologyNode | null, public error?: string) {
+    super();
+  }
+}
  
- /** 
+/** 
   * Represents an action causing the store to update element Yang capabilities Module Features. 
   */
- export class AllElementInfoFeatureLoadedAction extends BaseAction {
-   /**
+export class AllElementInfoFeatureLoadedAction extends BaseAction {
+  /**
     * Initialize this instance.
     * @param elementFeatureInfo The information of the element which is returned.
     */
-   constructor(public elementFeatureInfo: Module[] | null | undefined, public error?: string) {
-     super();
-   }
- }
+  constructor(public elementFeatureInfo: Module[] | null | undefined, public error?: string) {
+    super();
+  }
+}
  
- /** 
+/** 
   * Represents an asynchronous thunk  action to load all yang capabilities. 
   */
- export const loadAllInfoElementAsync = (nodeId: string) => (dispatch: Dispatch) => {
-   dispatch(new LoadAllElementInfoAction());
-   connectService.infoNetworkElement(nodeId).then(info => {
-     dispatch(new AllElementInfoLoadedAction(info));
-   }, error => {
-     dispatch(new AllElementInfoLoadedAction(null, error));
-   });
- } 
+export const loadAllInfoElementAsync = (nodeId: string) => (dispatch: Dispatch) => {
+  dispatch(new LoadAllElementInfoAction());
+  connectService.infoNetworkElement(nodeId).then(info => {
+    dispatch(new AllElementInfoLoadedAction(info));
+  }, error => {
+    dispatch(new AllElementInfoLoadedAction(null, error));
+  });
+}; 
  
- /** 
+/** 
   * Represents an asynchronous thunk  action to load all yang features. 
   */
- export const loadAllInfoElementFeaturesAsync = (nodeId: string) => (dispatch: Dispatch) => {
-   dispatch(new LoadAllElementInfoAction());
-   connectService.infoNetworkElementFeatures(nodeId).then(infoFeatures => {
-     dispatch(new AllElementInfoFeatureLoadedAction(infoFeatures));
-   }, error => {
-     dispatch(new AllElementInfoFeatureLoadedAction(null, error));
-   });
- } 
+export const loadAllInfoElementFeaturesAsync = (nodeId: string) => (dispatch: Dispatch) => {
+  dispatch(new LoadAllElementInfoAction());
+  connectService.infoNetworkElementFeatures(nodeId).then(infoFeatures => {
+    dispatch(new AllElementInfoFeatureLoadedAction(infoFeatures));
+  }, error => {
+    dispatch(new AllElementInfoFeatureLoadedAction(null, error));
+  });
+}; 

@@ -17,27 +17,27 @@
  */
 // app configuration and main entry point for the app
 
-import * as React from "react";
-
-import { faLock } from '@fortawesome/free-solid-svg-icons';  // select app icon
+import React, { FC } from 'react';
 
 import applicationManager from '../../../framework/src/services/applicationManager';
 
 import { maintenanceAppRootHandler } from './handlers/maintenanceAppRootHandler';
 
-import MaintenenceView from "./views/maintenenceView";
+import { MaintenanceView } from './views/maintenanceView';
 
-const App : React.SFC = (props) => {
-  return <MaintenenceView />
+const appIcon = require('./assets/icons/maintenanceAppIcon.svg');  // select app icon
+
+const App : FC = () => {
+  return <MaintenanceView />;
 };
 
 export function register() {
   applicationManager.registerApplication({
-    name: "maintenance",
-    icon: faLock,
+    name: 'maintenance',
+    icon: appIcon,
     rootComponent: App,
     rootActionHandler: maintenanceAppRootHandler,
-    menuEntry: "Maintenance"
+    menuEntry: 'Maintenance',
   });
 }
 

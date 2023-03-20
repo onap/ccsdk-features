@@ -15,90 +15,91 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
+import React from 'react';
 
-import * as React from 'react';
-import { MenuItem, Select, FormControl, Typography, SelectChangeEvent } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import { LtpIds } from 'models/availableLtps';
-import { Loader } from '../../../../framework/src/components/material-ui';
-
+import { FormControl, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import { Loader } from '../../../../framework/src/components/material-ui';
+import { LtpIds } from '../models/availableLtps';
 
 const useStyles = makeStyles((theme: Theme) => ({
-    display: {
-        display: "inline-block"
-    },
-    selectDropdown: {
-        borderRadius: 1,
-        position: "relative",
-        backgroundColor: theme.palette.background.paper,
-        border: "1px solid #ced4da",
-        fontSize: 16,
-        width: "auto",
-        padding: "5px 5px 5px 5px",
-        transition: theme.transitions.create(["border-color", "box-shadow"]),
-    },
-    center: {
-        "flex": "1",
-        "height": "100%",
-        "display": "flex",
-        "alignItems": "center",
-        "justifyContent": "center",
-        flexDirection: "column"
-    }
+  display: {
+    display: 'inline-block',
+  },
+  selectDropdown: {
+    borderRadius: 1,
+    position: 'relative',
+    backgroundColor: theme.palette.background.paper,
+    border: '1px solid #ced4da',
+    fontSize: 16,
+    width: 'auto',
+    padding: '5px 5px 5px 5px',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
+  },
+  center: {
+    'flex': '1',
+    'height': '100%',
+    'display': 'flex',
+    'alignItems': 'center',
+    'justifyContent': 'center',
+    flexDirection: 'column',
+  },
 }));
 
-type LtpSelectionProps = { selectedNE: string, error?: string, finishedLoading: boolean, selectedLtp: string, 
-    availableLtps: LtpIds[], 
-    onChangeLtp(event: SelectChangeEvent<HTMLSelectElement | string> ): void, 
-    selectedTimePeriod: string, 
-    onChangeTimePeriod(event: SelectChangeEvent<HTMLSelectElement | string> ): void };
+type LtpSelectionProps = {
+  selectedNE: string; error?: string; finishedLoading: boolean; selectedLtp: string;
+  availableLtps: LtpIds[];
+  onChangeLtp(event: SelectChangeEvent<HTMLSelectElement | string>): void;
+  selectedTimePeriod: string;
+  onChangeTimePeriod(event: SelectChangeEvent<HTMLSelectElement | string>): void;
+};
 
 export const LtpSelection = (props: LtpSelectionProps) => {
-    const classes = useStyles();
-    return (
-        <>
-            <h3>Selected Network Element: {props.selectedNE} </h3>
-            <FormControl variant="standard" className={classes.display}>
-                <span>
-                    Select LTP
-                </span>
-                <Select variant="standard" className={classes.selectDropdown} value={props.selectedLtp} onChange={props.onChangeLtp} aria-label="ltp-selection" >
-                    <MenuItem value={"-1"} aria-label="none"><em>--Select--</em></MenuItem>
-                    {props.availableLtps.map(ltp =>
-                        (<MenuItem value={ltp.key} key={ltp.key} aria-label={ltp.key}>{ltp.key}</MenuItem>))}
-                </Select>
-                <span> Time-Period </span>
-                <Select variant="standard" className={classes.selectDropdown} value={props.selectedTimePeriod} onChange={props.onChangeTimePeriod} aria-label="time-period-selection">
-                    <MenuItem value={"15min"} aria-label="15minutes">15min</MenuItem>
-                    <MenuItem value={"24hours"} aria-label="24hours">24hours</MenuItem>
-                </Select>
-            </FormControl>
-            {
-                !props.finishedLoading && !props.error &&
-                <div className={classes.center}>
-                    <Loader />
-                    <h3>Collecting Data ...</h3>
-                </div>
-            }
-            {
-                props.finishedLoading && props.error &&
-                <div className={classes.center}>
-                    <h3>Data couldn't be loaded</h3>
-                    <Typography variant="body1">{props.error}</Typography>
-                </div>
-            }
-            {
-                props.selectedLtp === "-1" && props.finishedLoading && !props.error && (props.availableLtps.length > 0 ?
-                    <div className={classes.center}>
-                        <h3>Please select a LTP</h3>
-                    </div>
-                    :
-                    <div className={classes.center}>
-                        <h3>No performance data found</h3>
-                    </div>)
-            }
-        </>)
-}
+  const classes = useStyles();
+  return (
+    <>
+      <h3>Selected Network Element: {props.selectedNE} </h3>
+      <FormControl variant="standard" className={classes.display}>
+        <span>
+          Select LTP
+        </span>
+        <Select variant="standard" className={classes.selectDropdown} value={props.selectedLtp} onChange={props.onChangeLtp} aria-label="ltp-selection" >
+          <MenuItem value={'-1'} aria-label="none"><em>--Select--</em></MenuItem>
+          {props.availableLtps.map(ltp =>
+            (<MenuItem value={ltp.key} key={ltp.key} aria-label={ltp.key}>{ltp.key}</MenuItem>))}
+        </Select>
+        <span> Time-Period </span>
+        <Select variant="standard" className={classes.selectDropdown} value={props.selectedTimePeriod} onChange={props.onChangeTimePeriod} aria-label="time-period-selection">
+          <MenuItem value={'15min'} aria-label="15minutes">15min</MenuItem>
+          <MenuItem value={'24hours'} aria-label="24hours">24hours</MenuItem>
+        </Select>
+      </FormControl>
+      {
+        !props.finishedLoading && !props.error &&
+        <div className={classes.center}>
+          <Loader />
+          <h3>Collecting Data ...</h3>
+        </div>
+      }
+      {
+        props.finishedLoading && props.error &&
+        <div className={classes.center}>
+          <h3>Data couldn't be loaded</h3>
+          <Typography variant="body1">{props.error}</Typography>
+        </div>
+      }
+      {
+        props.selectedLtp === '-1' && props.finishedLoading && !props.error && (props.availableLtps.length > 0 ?
+          <div className={classes.center}>
+            <h3>Please select a LTP</h3>
+          </div>
+          :
+          <div className={classes.center}>
+            <h3>No performance data found</h3>
+          </div>)
+      }
+    </>);
+};
 
 export default LtpSelection;

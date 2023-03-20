@@ -20,6 +20,8 @@ import { Event } from "../common/event"
 import { Action } from './action';
 import { IActionHandler } from './action';
 
+const LogLevel = +(localStorage.getItem('log.odlux.framework.flux.store') || 0);
+
 export interface Dispatch {
   <TAction extends Action>(action: TAction): TAction;
 }
@@ -28,8 +30,8 @@ export interface Enhancer<TStoreState> {
   (store: Store<TStoreState>): Dispatch;
 }
 
-class InitialisationAction extends Action { };
-const initialisationAction = new InitialisationAction();
+class InitializationAction extends Action { };
+const initializationAction = new InitializationAction();
 
 export class Store<TStoreState> {
 
@@ -43,19 +45,22 @@ export class Store<TStoreState> {
 
     this._isDispatching = false;
      
-    this.changed = new Event<void>(); // sollten wir hier eventuell sogar den state mit übergeben ?
+    this.changed = new Event<void>();
 
     this._actionHandler = actionHandler;
     
     this._state = initialState as TStoreState;
     if (enhancer) this._dispatch = enhancer(this);
 
-    this._dispatch(initialisationAction);
+    this._dispatch(initializationAction);
   }
 
   public changed: Event<void>;
 
   private _dispatch: Dispatch = <TAction extends Action>(payload: TAction): TAction => {
+    if (LogLevel > 2) {
+      console.log('Store::Dispatch - ', payload);
+    }
     if (payload == null || !(payload instanceof Action)) {
       throw new Error(
         'Actions must inherit from type Action. ' +
@@ -76,6 +81,9 @@ export class Store<TStoreState> {
     }
 
     if (this._state !== oldState) {
+      if (LogLevel > 3) {
+        console.log('Store::Dispatch - state has changed', this._state);
+      }
       this.changed.invoke();
     }
 

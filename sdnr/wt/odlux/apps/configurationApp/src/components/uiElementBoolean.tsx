@@ -16,43 +16,48 @@
  * ============LICENSE_END==========================================================================
  */
 
-import * as React from "react"
-import { MenuItem, FormHelperText, Select, FormControl, InputLabel } from "@mui/material";
+import React from 'react';
 
-import { ViewElementBoolean } from "../models/uiModels";
-import { BaseProps } from "./baseProps";
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+
+import { ViewElementBoolean } from '../models/uiModels';
+import { BaseProps } from './baseProps';
 
 type BooleanInputProps = BaseProps<boolean>;
 
 export const UiElementBoolean = (props: BooleanInputProps) => {
 
-    const element = props.value as ViewElementBoolean;
+  const element = props.value as ViewElementBoolean;
 
-    const value = String(props.inputValue).toLowerCase();
-    const mandetoryError = element.mandatory && value !== 'true' && value !== 'false';
+  const value = String(props.inputValue).toLowerCase();
+  const mandatoryError = element.mandatory && value !== 'true' && value !== 'false';
     
-    return (!props.readOnly || element.id != null
-        ? (<FormControl variant="standard" style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
+  return (!props.readOnly || element.id != null
+    ? (<FormControl variant="standard" style={{ width: 485, marginLeft: 20, marginRight: 20 }}>
             <InputLabel htmlFor={`select-${element.id}`} >{element.label}</InputLabel>
             <Select variant="standard"
-                aria-label={element.label+'-selection'}
+                aria-label={element.label + '-selection'}
                 required={!!element.mandatory}
-                error={mandetoryError}
-                onChange={(e) => { props.onChange(e.target.value === 'true') }}
+                error={mandatoryError}
+                onChange={(e) => { props.onChange(e.target.value === 'true'); }}
                 readOnly={props.readOnly}
                 disabled={props.disabled}
                 value={value}
                 inputProps={{
-                    name: element.id,
-                    id: `select-${element.id}`,
+                  name: element.id,
+                  id: `select-${element.id}`,
                 }}
             >
                 <MenuItem value={'true'} aria-label="true">{element.trueValue || 'True'}</MenuItem>
                 <MenuItem value={'false'} aria-label="false">{element.falseValue || 'False'}</MenuItem>
 
             </Select>
-            <FormHelperText>{mandetoryError ? "Value is mandetory" : ""}</FormHelperText>
+            <FormHelperText>{mandatoryError ? 'Value is mandatory' : ''}</FormHelperText>
         </FormControl>)
-        : null
-    );
-}
+    : null
+  );
+};

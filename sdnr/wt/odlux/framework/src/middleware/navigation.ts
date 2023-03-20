@@ -55,7 +55,7 @@ const routerMiddlewareCreator = (history: History) => () => (next: Dispatch): Di
     // ensure user is logged in and token is valid
     if (action.pathname.startsWith("/oauth") && (action.search.startsWith("?token="))){
       const ind =  action.search.lastIndexOf("token=");
-      const tokenStr = ind > -1 ? action.search.substr(ind+6) : null;
+      const tokenStr = ind > -1 ? action.search.substring(ind+6) : null;
       const token = tokenStr && jwt.decode(tokenStr);
       if (tokenStr && token) {
         // @ts-ignore

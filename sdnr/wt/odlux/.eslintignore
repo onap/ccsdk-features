@@ -1,0 +1,12 @@
+**/dist/**
+**/build/**
+**/node_modules/**
+apps/eventApp/**/*
+apps/faultApp/**/*
+apps/helpApp/**/*
+apps/inventoryApp/**/*
+apps/lineOfSightApp/**/*
+apps/maintenanceApp/**/*
+apps/mediatorApp/**/*
+apps/performanceHistoryApp/**/*
+apps/siteManagerApp/**/*

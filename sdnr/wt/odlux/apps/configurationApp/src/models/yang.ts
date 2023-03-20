@@ -16,7 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { ViewElement, ViewSpecification } from "./uiModels";
+import { ViewElement, ViewSpecification } from './uiModels';
 
 export enum ModuleState {
   stable,
@@ -30,27 +30,27 @@ export type Token = {
   value: string;
   start: number;
   end: number;
-}
+};
 
 export type Statement = {
   key: string;
   arg?: string;
   sub?: Statement[];
-}
+};
 
 export type Identity = {
-  id: string,
-  label: string,
-  base?: string,
-  description?: string,
-  reference?: string,
-  children?: Identity[],
-  values?: Identity[],
-}
+  id: string;
+  label: string;
+  base?: string;
+  description?: string;
+  reference?: string;
+  children?: Identity[];
+  values?: Identity[];
+};
 
 export type Revision = {
-  description?: string,
-  reference?: string
+  description?: string;
+  reference?: string;
 };
 
 export type Module = {
@@ -68,4 +68,4 @@ export type Module = {
   views: { [view: string]: ViewSpecification };
   elements: { [view: string]: ViewElement };
   executionOrder?: number;
-}
+};

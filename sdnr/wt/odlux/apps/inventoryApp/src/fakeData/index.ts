@@ -16,11 +16,10 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { InventoryTreeNode, InventoryType } from "models/inventory";
 import { convertPropertyNames, replaceHyphen } from "../../../../framework/src/utilities/yangHelper";
 
-// Tree mittels tree-level und parent UUID (incl)
-// einzelabfrage mit db-id
+import { InventoryTreeNode, InventoryType } from "../models/inventory";
+
 const data = [
   { "manufacturer-identifier": "ONF-Wireless-Transport", "version": "a2.module-newest", "uuid": "a2.module-1.1.1.5", "part-type-id": "3FE25774AA01", "model-identifier": "VAUIAEYAAA", "tree-level": 2, "node-id": "robot_sim_2_equipment", "description": "WS/CORE-MAIN/a2.module#5", "type-name": "a2.module", "serial": "0003548168", "id": "robot_sim_2_equipment/a2.module-1.1.1.5", "parent-uuid": "CARD-1.1.1.0", "contained-holder": ["SUBRACK-1.15.0.0"], "date": "2005-11-09T00:00:00.0Z" },
   { "manufacturer-identifier": "SAN", "version": "234", "uuid": "CARD-1.1.6.0", "part-type-id": "part-number-12", "model-identifier": "model-id-12", "tree-level": 1, "node-id": "robot_sim_2_equipment", "description": "WS/p8.module", "type-name": "p8.module", "serial": "serial-number-124", "id": "robot_sim_2_equipment/CARD-1.1.6.0", "parent-uuid": "SHELF-1.1.0.0", "contained-holder": ["PORT-1.1.6.5", "PORT-1.1.6.8", "PORT-1.1.6.7", "PORT-1.1.6.6"], "date": "2013-11-23T00:00:00.0Z" },

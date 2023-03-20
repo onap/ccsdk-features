@@ -18,7 +18,7 @@
 
 import { requestRest } from '../../../../framework/src/services/restService';
 import { NetworkElementConnection, ConnectionStatus, UpdateNetworkElement } from '../models/networkElementConnection';
-import { TlsKeys } from '../models/networkElementConnection'
+import { TlsKeys } from '../models/networkElementConnection';
 import { convertPropertyNames, replaceUpperCase } from '../../../../framework/src/utilities/yangHelper';
 import { Result } from '../../../../framework/src/models/elasticSearch';
 
@@ -30,17 +30,20 @@ import { guiCutThrough } from '../models/guiCutTrough';
 */
 class ConnectService {
   public getNetworkElementUri = (nodeId: string) => '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
-  public getNetworkElementConnectDataProviderUri = (operation: "create" | "update" | "delete") => `/rests/operations/data-provider:${operation}-network-element-connection`;
+
+  public getNetworkElementConnectDataProviderUri = (operation: 'create' | 'update' | 'delete') => `/rests/operations/data-provider:${operation}-network-element-connection`;
+
   public getAllWebUriExtensionsForNetworkElementListUri = (nodeId: string) => this.getNetworkElementUri(nodeId) + '/yang-ext:mount/core-model:network-element';
-  public getNetworkElementYangLibraryFeature = (nodeId: string) => '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId + '/yang-ext:mount/ietf-yang-library:yang-library?content=nonconfig'
+
+  public getNetworkElementYangLibraryFeature = (nodeId: string) => '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId + '/yang-ext:mount/ietf-yang-library:yang-library?content=nonconfig';
 
   /**
    * Inserts a network element/node.
    */
   public async createNetworkElement(element: NetworkElementConnection): Promise<NetworkElementConnection | null> {
-    const path = this.getNetworkElementConnectDataProviderUri("create");
+    const path = this.getNetworkElementConnectDataProviderUri('create');
     const result = await requestRest<NetworkElementConnection>(path, {
-      method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": element }, replaceUpperCase))
+      method: 'POST', body: JSON.stringify(convertPropertyNames({ 'data-provider:input': element }, replaceUpperCase)),
     });
     return result || null;
   }
@@ -49,9 +52,9 @@ class ConnectService {
   * Updates a network element/node.
   */
   public async updateNetworkElement(element: UpdateNetworkElement): Promise<NetworkElementConnection | null> {
-    const path = this.getNetworkElementConnectDataProviderUri("update");
+    const path = this.getNetworkElementConnectDataProviderUri('update');
     const result = await requestRest<NetworkElementConnection>(path, {
-      method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": element }, replaceUpperCase))
+      method: 'POST', body: JSON.stringify(convertPropertyNames({ 'data-provider:input': element }, replaceUpperCase)),
     });
     return result || null;
   }
@@ -61,11 +64,11 @@ class ConnectService {
     */
   public async deleteNetworkElement(element: UpdateNetworkElement): Promise<NetworkElementConnection | null> {
     const query = {
-      "id": element.id
+      'id': element.id,
     };
-    const path = this.getNetworkElementConnectDataProviderUri("delete");
+    const path = this.getNetworkElementConnectDataProviderUri('delete');
     const result = await requestRest<NetworkElementConnection>(path, {
-      method: "POST", body: JSON.stringify(convertPropertyNames({ "data-provider:input": query }, replaceUpperCase))
+      method: 'POST', body: JSON.stringify(convertPropertyNames({ 'data-provider:input': query }, replaceUpperCase)),
     });
     return result || null;
   }
@@ -107,13 +110,12 @@ class ConnectService {
       '<name xmlns="urn:opendaylight:netconf-node-topology">TLS</name>',
       ' </protocol>',
       '<max-connection-attempts xmlns="urn:opendaylight:netconf-node-topology">2</max-connection-attempts>',
-      '</node>'].join('')
+      '</node>'].join('');
     let bodyXml;
     if (networkElement.password) {
-      bodyXml = mountXml
-    }
-    else {
-      bodyXml = tlsXml
+      bodyXml = mountXml;
+    } else {
+      bodyXml = tlsXml;
     }
 
     try {
@@ -121,16 +123,16 @@ class ConnectService {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/xml',
-          'Accept': 'application/xml'
+          'Accept': 'application/xml',
         },
-        body: bodyXml
+        body: bodyXml,
       });
       // expect an empty answer
       return result !== null;
     } catch {
       return false;
     }
-  };
+  }
 
   /** Unmounts a network element by its id. */
   public async unmountNetworkElement(nodeId: string): Promise<boolean> {
@@ -141,7 +143,7 @@ class ConnectService {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/xml',
-          'Accept': 'application/xml'
+          'Accept': 'application/xml',
         },
       });
       // expect an empty answer
@@ -150,15 +152,15 @@ class ConnectService {
     } catch {
       return false;
     }
-  };
+  }
 
   /** Yang capabilities of the selected network element/node */
   public async infoNetworkElement(nodeId: string): Promise<TopologyNode | null> {
     const path = this.getNetworkElementUri(nodeId);
-    const topologyRequestPomise = requestRest<Topology>(path, { method: "GET" });
+    const topologyRequestPomise = requestRest<Topology>(path, { method: 'GET' });
 
     return topologyRequestPomise && topologyRequestPomise.then(result => {
-      return result && result["network-topology:node"] && result["network-topology:node"][0] || null;
+      return result && result['network-topology:node'] && result['network-topology:node'][0] || null;
     });
   }
 
@@ -166,13 +168,13 @@ class ConnectService {
   /** Yang features of the selected network element/node module */
   public async infoNetworkElementFeatures(nodeId: string): Promise<Module[] | null | undefined> {
     const path = this.getNetworkElementYangLibraryFeature(nodeId);
-    const topologyRequestPomise = requestRest<FeatureTopology>(path, { method: "GET" });
+    const topologyRequestPomise = requestRest<FeatureTopology>(path, { method: 'GET' });
 
     return topologyRequestPomise && topologyRequestPomise.then(result => {
       const resultFinal = result && result['ietf-yang-library:yang-library']
-        && result["ietf-yang-library:yang-library"]["module-set"] &&
-        result["ietf-yang-library:yang-library"]["module-set"][0] &&
-        result["ietf-yang-library:yang-library"]["module-set"][0]['module'] || null;
+        && result['ietf-yang-library:yang-library']['module-set'] &&
+        result['ietf-yang-library:yang-library']['module-set'][0] &&
+        result['ietf-yang-library:yang-library']['module-set'][0].module || null;
       return resultFinal;
     });
   }
@@ -183,22 +185,22 @@ class ConnectService {
    * Get the connection state of the network element/ node
    */
   public async getNetworkElementConnectionStatus(element: string): Promise<(ConnectionStatus)[] | null> {
-    const path = `/rests/operations/data-provider:read-network-element-connection-list`;
+    const path = '/rests/operations/data-provider:read-network-element-connection-list';
     const query = {
-      "data-provider:input": {
-        "filter": [{
-          "property": "node-id",
-          "filtervalue": element
+      'data-provider:input': {
+        'filter': [{
+          'property': 'node-id',
+          'filtervalue': element,
         }],
-        "pagination": {
-          "size": 20,
-          "page": 1
-        }
-      }
-    }
-    const result = await requestRest<Result<ConnectionStatus>>(path, { method: "POST", body: JSON.stringify(query) });
-    return result && result["data-provider:output"] && result["data-provider:output"].data && result["data-provider:output"].data.map(ne => ({
-      status: ne.status
+        'pagination': {
+          'size': 20,
+          'page': 1,
+        },
+      },
+    };
+    const result = await requestRest<Result<ConnectionStatus>>(path, { method: 'POST', body: JSON.stringify(query) });
+    return result && result['data-provider:output'] && result['data-provider:output'].data && result['data-provider:output'].data.map(ne => ({
+      status: ne.status,
     })) || null;
   }
 
@@ -209,44 +211,43 @@ class ConnectService {
   public async getTlsKeys(): Promise<(TlsKeys)[] | null> {
     const path = '/rests/operations/data-provider:read-tls-key-entry';
     const query = {
-      "data-provider:input": {
-        "filter": [],
-        "sortorder": [],
-        "pagination": {
-          "size": 20,
-          "page": 1
-        }
-      }
+      'data-provider:input': {
+        'filter': [],
+        'sortorder': [],
+        'pagination': {
+          'size': 20,
+          'page': 1,
+        },
+      },
     };
 
-    const result = await requestRest<Result<string>>(path, { method: "POST", body: JSON.stringify(query) });
-    return result && result["data-provider:output"] && result["data-provider:output"].data && result["data-provider:output"].data.map(ne => ({
-      key: ne
+    const result = await requestRest<Result<string>>(path, { method: 'POST', body: JSON.stringify(query) });
+    return result && result['data-provider:output'] && result['data-provider:output'].data && result['data-provider:output'].data.map(ne => ({
+      key: ne,
     })) || null;
   }
 
   public async getAllWebUriExtensionsForNetworkElementListAsync(neList: string[]): Promise<(guiCutThrough)[]> {
-    const path = `/rests/operations/data-provider:read-gui-cut-through-entry`;
-    let webUriList: guiCutThrough[] = []
+    const path = '/rests/operations/data-provider:read-gui-cut-through-entry';
+    let webUriList: guiCutThrough[] = [];
     const query = {
-      "data-provider:input": {
-        "filter": [{
-          "property": "id",
-          "filtervalues": neList
+      'data-provider:input': {
+        'filter': [{
+          'property': 'id',
+          'filtervalues': neList,
         }],
-        "pagination": {
-          "size": 20,
-          "page": 1
-        }
-      }
-    }
+        'pagination': {
+          'size': 20,
+          'page': 1,
+        },
+      },
+    };
 
-    const result = await requestRest<Result<guiCutThrough>>(path, { method: "POST", body: JSON.stringify(query) });
-    const resultData = result && result["data-provider:output"] && result["data-provider:output"].data;
+    const result = await requestRest<Result<guiCutThrough>>(path, { method: 'POST', body: JSON.stringify(query) });
+    const resultData = result && result['data-provider:output'] && result['data-provider:output'].data;
     neList.forEach(nodeId => {
       let entryNotFound = true;
       if (resultData) {
-        const BreakException = {};
         try {
           resultData.forEach(entry => {
             if (entry.id == nodeId) {
@@ -256,7 +257,7 @@ class ConnectService {
               } else {
                 webUriList.push({ id: nodeId, weburi: undefined });
               }
-              throw BreakException;
+              throw new Error();
             }
           });
         } catch (e) { }

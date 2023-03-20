@@ -16,14 +16,13 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { Action } from '../../../../framework/src/flux/action';
-import { Dispatch } from '../../../../framework/src/flux/store';
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-
-import { InventoryType, InventoryTreeNode, TreeDemoItem } from '../models/inventory';
-import { inventoryService } from '../services/inventoryService';
 import { AddErrorInfoAction } from '../../../../framework/src/actions/errorActions';
 import { NavigateToApplication } from '../../../../framework/src/actions/navigationActions';
+import { Action } from '../../../../framework/src/flux/action';
+import { Dispatch } from '../../../../framework/src/flux/store';
+
+import { InventoryTreeNode, InventoryType, TreeDemoItem } from '../models/inventory';
+import { inventoryService } from '../services/inventoryService';
 
 /**
  * Represents the base action.
@@ -38,7 +37,7 @@ export class SetBusyAction extends BaseAction {
 }
 
 export class SetSearchTextAction extends BaseAction {
-  constructor(public searchTerm: string = "") {
+  constructor(public searchTerm: string = '') {
     super();
 
   }
@@ -65,40 +64,38 @@ export class UpdateExpandedNodesAction extends BaseAction {
   }
 }
 
-export const setSearchTermAction = (searchTerm: string) => (dispatch: Dispatch, getState: () => IApplicationStoreState) =>{
+export const setSearchTermAction = (searchTerm: string) => (dispatch: Dispatch) =>{
   dispatch(new SetSearchTextAction(searchTerm));
-}
+};
 
 
-export const updateInventoryTreeAsyncAction = (mountId: string, searchTerm?: string) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
+export const updateInventoryTreeAsyncAction = (mountId: string, searchTerm?: string) => async (dispatch: Dispatch) => {
   dispatch(new SetBusyAction(true));
   dispatch(new SetSearchTextAction(searchTerm));
   try {
     const result = await inventoryService.getInventoryTree(mountId, searchTerm);
     if (!result) {
-      dispatch(new AddErrorInfoAction({ title: "Error", message: `Could not load inventory tree for [${mountId}]. Please check you connection to the server and try later.` }));
-      dispatch(new NavigateToApplication("inventory"));
+      dispatch(new AddErrorInfoAction({ title: 'Error', message: `Could not load inventory tree for [${mountId}]. Please check you connection to the server and try later.` }));
+      dispatch(new NavigateToApplication('inventory'));
     } else {
       dispatch(new UpdateInventoryTreeAction(result));
     }
   } catch (err) {
-    throw new Error("Could not load inventory tree from server.");
-  }
-  finally {
+    throw new Error('Could not load inventory tree from server.');
+  } finally {
     dispatch(new SetBusyAction(false));
   }
 };
 
-export const selectInventoryNodeAsyncAction = (nodeId: string) => async (dispatch: Dispatch, getState: () => IApplicationStoreState) => {
+export const selectInventoryNodeAsyncAction = (nodeId: string) => async (dispatch: Dispatch) => {
   dispatch(new SetBusyAction(true));
   try {
     const result = await inventoryService.getInventoryEntry(nodeId);
-    if (!result) throw new Error("Could not load inventory tree from server.");
+    if (!result) throw new Error('Could not load inventory tree from server.');
     dispatch(new UpdateSelectedNodeAction(result));
   } catch (err) {
-    throw new Error("Could not load inventory tree from server.");
-  }
-  finally {
+    throw new Error('Could not load inventory tree from server.');
+  } finally {
     dispatch(new SetBusyAction(false));
   }
 };

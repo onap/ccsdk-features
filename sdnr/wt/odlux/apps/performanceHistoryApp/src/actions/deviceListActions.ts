@@ -17,6 +17,7 @@
  */
 import { Action } from '../../../../framework/src/flux/action';
 import { Dispatch } from '../../../../framework/src/flux/store';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
 import { DeviceListType } from '../models/deviceListType';
@@ -56,7 +57,7 @@ export const loadAllDeviceListAsync = async (dispatch: Dispatch) => {
   deviceListFromPerf24History.forEach(deviceList24h => {
     if (deviceListFromPerfHistory.findIndex(deviceList15min => deviceList15min.nodeId === deviceList24h.nodeId) < 0) {
       deviceListFromPerfHistory.push(deviceList24h);
-    };
+    }
   });
   return deviceListFromPerfHistory && dispatch(new AllDeviceListLoadedAction(deviceListFromPerfHistory));
 };
@@ -75,4 +76,4 @@ export class UpdateMountId extends BaseAction {
  */
 export const updateMountIdActionCreator = (nodeId: string) => async (dispatch: Dispatch) => {
   return dispatch(new UpdateMountId(nodeId));
-}
+};

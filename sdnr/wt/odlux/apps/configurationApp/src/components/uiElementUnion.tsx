@@ -21,7 +21,7 @@ import { BaseProps } from './baseProps';
 import { Tooltip } from '@mui/material';
 import { IfWhenTextInput } from './ifWhenTextInput';
 import { ViewElementUnion, isViewElementString, isViewElementNumber, isViewElementObject, ViewElementNumber } from '../models/uiModels';
-import { checkRange, checkPattern } from './verifyer';
+import { checkRange, checkPattern } from '../utilities/verifyer';
 
 type UiElementUnionProps = { isKey: boolean } & BaseProps;
 
@@ -77,7 +77,7 @@ export const UIElementUnion = (props: UiElementUnionProps) => {
   };
 
   return <Tooltip disableInteractive title={isTooltipVisible ? element.description || '' : ''}>
-    <IfWhenTextInput element={element} onChangeTooltipVisuability={setTooltipVisibility}
+    <IfWhenTextInput element={element} onChangeTooltipVisibility={setTooltipVisibility}
       spellCheck={false} autoFocus margin="dense"
       id={element.id} label={props.isKey ? "🔑 " + element.label : element.label} type="text" value={props.inputValue}
       onChange={(e: any) => { verifyValues(e.target.value) }}
