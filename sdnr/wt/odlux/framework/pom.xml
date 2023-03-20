@@ -19,6 +19,7 @@
   ~ ============LICENSE_END=======================================================
   ~
   -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -45,7 +46,7 @@
     <properties>
         <buildtime>${maven.build.timestamp}</buildtime>
         <distversion>ONAP Frankfurt (Neon, mdsal ${odl.mdsal.version})</distversion>
-        <buildno>142.63ceae1(22/01/31)</buildno>
+        <buildno>178.3bd8a2a9(23/03/16)</buildno>
         <odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
     </properties>
 
@@ -102,7 +103,7 @@
                         <!-- optional: default phase is "generate-resources" -->
                         <phase>initialize</phase>
                         <configuration>
-                            <nodeVersion>v12.13.0</nodeVersion>
+                            <nodeVersion>v12.22.0</nodeVersion>
                             <yarnVersion>v1.22.10</yarnVersion>
                         </configuration>
                     </execution>

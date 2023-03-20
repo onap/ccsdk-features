@@ -15,42 +15,38 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from "react";
-import { Theme } from '@mui/material/styles';
-
-import { WithStyles } from '@mui/styles';
-import withStyles from '@mui/styles/withStyles';
-import createStyles from '@mui/styles/createStyles';
-
-import { renderObject } from '../../../../framework/src/components/objectDump';
-import { Connect, connect, IDispatcher } from '../../../../framework/src/flux/connect';
-import { TreeView, TreeViewCtorType, SearchMode } from '../../../../framework/src/components/material-ui/treeView';
-
-import { IApplicationStoreState } from "../../../../framework/src/store/applicationStore";
+import React from 'react';
 
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
-
-import { updateInventoryTreeAsyncAction, selectInventoryNodeAsyncAction, UpdateSelectedNodeAction, UpdateExpandedNodesAction, setSearchTermAction } from "../actions/inventoryTreeActions";
-import { TreeDemoItem } from "../models/inventory";
-
+import { Theme } from '@mui/material/styles';
+import { WithStyles } from '@mui/styles';
+import createStyles from '@mui/styles/createStyles';
+import withStyles from '@mui/styles/withStyles';
 import { RouteComponentProps } from 'react-router-dom';
+import { SearchMode, TreeView, TreeViewCtorType } from '../../../../framework/src/components/material-ui/treeView';
+import { renderObject } from '../../../../framework/src/components/objectDump';
+import { Connect, connect, IDispatcher } from '../../../../framework/src/flux/connect';
+import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
+
+import { selectInventoryNodeAsyncAction, setSearchTermAction, UpdateExpandedNodesAction, updateInventoryTreeAsyncAction, UpdateSelectedNodeAction } from '../actions/inventoryTreeActions';
+import { TreeDemoItem } from '../models/inventory';
 
 const styles = (theme: Theme) => createStyles({
   root: {
-    flex: "1 0 0%",
-    display: "flex",
-    flexDirection: "row",
+    flex: '1 0 0%',
+    display: 'flex',
+    flexDirection: 'row',
   },
   tree: {
-    flex: "1 0 0%",
-    minWidth: "250px",
-    padding: `0px ${theme.spacing(1)}`
+    wordWrap: 'break-word',
+    minWidth: '250px',
+    padding: `0px ${theme.spacing(1)}`,
   },
   details: {
-    flex: "5 0 0%",
-    padding: `0px ${theme.spacing(1)}`
-  }
+    flex: '5 0 0%',
+    padding: `0px ${theme.spacing(1)}`,
+  },
 });
 
 const mapProps = (state: IApplicationStoreState) => ({
@@ -68,19 +64,19 @@ const mapDispatch = (dispatcher: IDispatcher) => ({
   setSearchTerm: (searchTerm: string) => dispatcher.dispatch(setSearchTermAction(searchTerm)),
 });
 
-const propsChache = Symbol("PropsCache");
+const propsChache = Symbol('PropsCache');
 const InventoryTree = TreeView as any as TreeViewCtorType<string>;
 
 
 
-type TreeviewComponentProps = RouteComponentProps<{ mountId: string }> & WithStyles<typeof styles> & Connect<typeof mapProps, typeof mapDispatch>
+type TreeviewComponentProps = RouteComponentProps<{ mountId: string }> & WithStyles<typeof styles> & Connect<typeof mapProps, typeof mapDispatch>;
 
 type TreeviewComponentState = {
   [propsChache]: {
     rootNodes?: TreeDemoItem[];
   };
   rootNodes: TreeDemoItem[];
-}
+};
 
 
 class DashboardComponent extends React.Component<TreeviewComponentProps, TreeviewComponentState> {
@@ -96,14 +92,15 @@ class DashboardComponent extends React.Component<TreeviewComponentProps, Treevie
 
   static getDerivedStateFromProps(props: TreeviewComponentProps, state: TreeviewComponentState) {
     if (state[propsChache].rootNodes != props.rootNodes) {
-      state = { ...state, rootNodes: props.rootNodes }
+      // eslint-disable-next-line no-param-reassign
+      state = { ...state, rootNodes: props.rootNodes };
     }
     return state;
   }
 
   render() {
     const { classes, updateInventoryTree, updateExpendedNodes, expendedItems, selectedNode, selectTreeNode, searchTerm, match: { params: { mountId } } } = this.props;
-    const scrollbar = { overflow: "auto", paddingRight: "20px" }
+    const scrollbar = { overflow: 'auto', paddingRight: '20px' };
 
     let filteredDashboardPath = `/inventory/dashboard/${this.props.match.params.mountId}`;
     let basePath = `/inventory/${this.props.match.params.mountId}`;
@@ -128,6 +125,7 @@ class DashboardComponent extends React.Component<TreeviewComponentProps, Treevie
         <br />
         <div style={scrollbar} className={classes.root}>
           <InventoryTree className={classes.tree} items={this.state.rootNodes} enableSearchBar initialSearchTerm={searchTerm} searchMode={SearchMode.OnEnter} searchTerm={searchTerm}
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             onSearch={(searchTerm) => updateInventoryTree(mountId, searchTerm)} expandedItems={expendedItems} onFolderClick={(item) => {
               const indexOfItemToToggle = expendedItems.indexOf(item);
               if (indexOfItemToToggle === -1) {
@@ -141,20 +139,15 @@ class DashboardComponent extends React.Component<TreeviewComponentProps, Treevie
             }}
             onItemClick={(elm) => selectTreeNode(elm.value)} />
           <div className={classes.details}>{
-            selectedNode && renderObject(selectedNode, "tree-view") || null
+            selectedNode && renderObject(selectedNode, 'tree-view') || null
           }</div>
         </div>
       </div>
     );
   }
 
-  componentDidMount() {
-    const { updateInventoryTree, searchTerm, match: { params: { mountId } } } = this.props;
-    updateInventoryTree(mountId, searchTerm);
-  }
-
   componentWillUnmount() {
-    this.props.setSearchTerm("*");
+    this.props.setSearchTerm('*');
   }
 }
 

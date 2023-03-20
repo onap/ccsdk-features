@@ -16,12 +16,12 @@
  * ============LICENSE_END==========================================================================
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, DialogContentText, Checkbox, Button, FormControlLabel, FormGroup } from '@mui/material';
 import { IApplicationState } from '../../../../framework/src/handlers/applicationStateHandler';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import connect, { Connect } from '../../../../framework/src/flux/connect';
-import { MediatorConfigResponse } from 'models/mediatorServer';
+import { connect, Connect } from '../../../../framework/src/flux/connect';
+import { MediatorConfigResponse } from '../models/mediatorServer';
 import { Panel } from '../../../../framework/src/components/material-ui/panel';
 
 export enum MediatorInfoDialogMode {

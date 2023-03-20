@@ -19,7 +19,7 @@
 export type NetworkElementConnectionLog = {
   id: string;
   nodeId: string;
-  status: "connected" | "mounted" | "unmounted" | "connecting" | "disconnected" | "idle";
+  status: 'connected' | 'mounted' | 'unmounted' | 'connecting' | 'disconnected' | 'idle';
   timestamp: string;
-}
+};
 

@@ -17,24 +17,26 @@
 */
 // app configuration and main entry point for the app
 
-import * as React from "react";
-import { faBookOpen } from '@fortawesome/free-solid-svg-icons'; // select app icon
+import React, { FC } from 'react';
+
 import applicationManager from '../../../framework/src/services/applicationManager';
 
 import { EventLog } from './views/eventLog';
 import eventLogAppRootHandler from './handlers/eventLogAppRootHandler';
 
-const App : React.SFC = (props) => {
-  return <EventLog />
+const appIcon = require('./assets/icons/eventLogAppIcon.svg');  // select app icon
+
+const App : FC = () => {
+  return <EventLog />;
 };
 
 export function register() {
   applicationManager.registerApplication({
-    name: "eventLog",
-    icon: faBookOpen,
+    name: 'eventLog',
+    icon: appIcon,
     rootActionHandler: eventLogAppRootHandler,
     rootComponent: App,
-    menuEntry: "EventLog"
+    menuEntry: 'EventLog',
   });
 }
 

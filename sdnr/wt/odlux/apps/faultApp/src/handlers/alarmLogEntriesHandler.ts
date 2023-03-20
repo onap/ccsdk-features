@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { createExternal,IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
+import { createExternal, IExternalTableState } from '../../../../framework/src/components/material-table/utilities';
 import { createSearchDataHandler } from '../../../../framework/src/utilities/elasticSearch';
 
 import { Fault } from '../models/fault';

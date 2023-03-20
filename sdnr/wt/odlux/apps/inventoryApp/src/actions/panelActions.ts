@@ -16,16 +16,16 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { Action } from "../../../../framework/src/flux/action";
-import { PanelId } from "models/panelId";
+import { Action } from '../../../../framework/src/flux/action';
 
+import { PanelId } from '../models/panelId';
 
 export class SetPanelAction extends Action {
-    constructor(public panelId: PanelId) {
-      super();
-    }
+  constructor(public panelId: PanelId) {
+    super();
   }
+}
 
 export const setPanelAction = (panelId: PanelId) => {
-    return new SetPanelAction(panelId);
-  }
+  return new SetPanelAction(panelId);
+};

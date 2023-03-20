@@ -15,7 +15,6 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { Moment } from "moment";
 
 //export { HitEntry, Result } from '../../../../framework/src/models';
 
@@ -50,5 +49,5 @@ export type PerformanceDataType = {
  */
 export const enum PmDataInterval {
   pmInterval15Min,
-  pmInterval24Hours
+  pmInterval24Hours,
 }

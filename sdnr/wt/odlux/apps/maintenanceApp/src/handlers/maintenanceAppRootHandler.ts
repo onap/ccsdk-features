@@ -19,22 +19,20 @@
 
 import { combineActionHandler } from '../../../../framework/src/flux/middleware';
 
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-
-import { IMaintenanceEntriesState, maintenanceEntriesActionHandler } from './maintenenceEntriesHandler';
+import { IMaintenanceEntriesState, maintenanceEntriesActionHandler } from './maintenanceEntriesHandler';
 
 export interface IMaintenanceAppStoreState {
-  maintenenceEntries : IMaintenanceEntriesState
+  maintenanceEntries : IMaintenanceEntriesState;
 }
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
-    maintenance: IMaintenanceAppStoreState
+    maintenance: IMaintenanceAppStoreState;
   }
 }
 
 const actionHandlers = {
-  maintenenceEntries: maintenanceEntriesActionHandler
+  maintenanceEntries: maintenanceEntriesActionHandler,
 };
 
 export const maintenanceAppRootHandler = combineActionHandler<IMaintenanceAppStoreState>(actionHandlers);

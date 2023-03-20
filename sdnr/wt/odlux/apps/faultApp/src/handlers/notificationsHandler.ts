@@ -16,6 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 import { IActionHandler } from '../../../../framework/src/flux/action';
+
 import { AddFaultNotificationAction, ResetFaultNotificationsAction } from '../actions/notificationActions';
 import { FaultAlarmNotification } from '../models/fault';
 
@@ -26,22 +27,22 @@ export interface IFaultNotifications {
 
 const faultNotoficationsInit: IFaultNotifications = {
   faults: [],
-  since: new Date()
+  since: new Date(),
 };
 
 export const faultNotificationsHandler: IActionHandler<IFaultNotifications> = (state = faultNotoficationsInit, action) => {
   if (action instanceof AddFaultNotificationAction) {
     state = {
       ...state,
-      faults: [...state.faults, action.fault]
+      faults: [...state.faults, action.fault],
     };
-  } else if (action instanceof ResetFaultNotificationsAction){
+  } else if (action instanceof ResetFaultNotificationsAction) {
     state = {
       ...state,
       faults: [],
-      since: new Date()
+      since: new Date(),
     };
   }
 
   return state;
-}
+};

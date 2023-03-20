@@ -16,79 +16,79 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { requestRest, requestRestExt } from "../../../../framework/src/services/restService";
-import { convertPropertyNames, replaceHyphen } from "../../../../framework/src/utilities/yangHelper";
+import { requestRest, requestRestExt } from '../../../../framework/src/services/restService';
+import { convertPropertyNames, replaceHyphen } from '../../../../framework/src/utilities/yangHelper';
 
-import { NetworkElementConnection } from "../models/networkElementConnection";
+import { NetworkElementConnection } from '../models/networkElementConnection';
 
 type ImportOnlyResponse = {
-  "ietf-yang-library:yang-library": {
-    "module-set": {
-      "import-only-module": {
-        "name": string,
-        "revision": string,
-      }[],
-    }[],
-  },
-}
+  'ietf-yang-library:yang-library': {
+    'module-set': {
+      'import-only-module': {
+        'name': string;
+        'revision': string;
+      }[];
+    }[];
+  };
+};
 
 
 type CapabilityResponse = {
-  "network-topology:node": {
-    "node-id": string,
-    "netconf-node-topology:available-capabilities": {
-      "available-capability": {
-        "capability-origin": string,
-        "capability": string,
-      }[]
-    },
-    "netconf-node-topology:unavailable-capabilities": {
-      "unavailable-capability": {
-        "capability": string,
-        "failure-reason": string,
-      }[]
-    }
-  }[]
-}
+  'network-topology:node': {
+    'node-id': string;
+    'netconf-node-topology:available-capabilities': {
+      'available-capability': {
+        'capability-origin': string;
+        'capability': string;
+      }[];
+    };
+    'netconf-node-topology:unavailable-capabilities': {
+      'unavailable-capability': {
+        'capability': string;
+        'failure-reason': string;
+      }[];
+    };
+  }[];
+};
 
 type CapabilityAnswer = {
   availableCapabilities: {
-    capabilityOrigin: string,
-    capability: string,
-    version: string,
-  }[] | null,
+    capabilityOrigin: string;
+    capability: string;
+    version: string;
+  }[] | null;
   unavailableCapabilities: {
-    failureReason: string,
-    capability: string,
-    version: string,
-  }[] | null,
+    failureReason: string;
+    capability: string;
+    version: string;
+  }[] | null;
   importOnlyModules: {
-    name: string,
-    revision: string,
-  }[] | null
-}
+    name: string;
+    revision: string;
+  }[] | null;
+};
 
 const capParser = /^\(.*\?revision=(\d{4}-\d{2}-\d{2})\)(\S+)$/i;
 
 class RestService {
   public getNetworkElementUri = (nodeId: string) => '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
 
-  public async getImportOnlyModules(nodeId: string): Promise<{ name: string, revision: string }[]> {
+  public async getImportOnlyModules(nodeId: string): Promise<{ name: string; revision: string }[]> {
     const path = `${this.getNetworkElementUri(nodeId)}/yang-ext:mount/ietf-yang-library:yang-library?content=nonconfig&fields=module-set(import-only-module(name;revision))`;
-    const importOnlyResult = await requestRest<ImportOnlyResponse>(path, { method: "GET" });
+    const importOnlyResult = await requestRest<ImportOnlyResponse>(path, { method: 'GET' });
     const importOnlyModules = importOnlyResult
-      ? importOnlyResult["ietf-yang-library:yang-library"]["module-set"][0]["import-only-module"]
+      ? importOnlyResult['ietf-yang-library:yang-library']['module-set'][0]['import-only-module']
       : [];
     return importOnlyModules;
   }
 
   public async getCapabilitiesByMountId(nodeId: string): Promise<CapabilityAnswer> {
     const path = this.getNetworkElementUri(nodeId);
-    const capabilitiesResult = await requestRest<CapabilityResponse>(path, { method: "GET" });
-    const availableCapabilities = capabilitiesResult && capabilitiesResult["network-topology:node"] && capabilitiesResult["network-topology:node"].length > 0 &&
-      (capabilitiesResult["network-topology:node"][0]["netconf-node-topology:available-capabilities"] &&
-        capabilitiesResult["network-topology:node"][0]["netconf-node-topology:available-capabilities"]["available-capability"] &&
-        capabilitiesResult["network-topology:node"][0]["netconf-node-topology:available-capabilities"]["available-capability"].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || [])
+    const capabilitiesResult = await requestRest<CapabilityResponse>(path, { method: 'GET' });
+    const availableCapabilities = capabilitiesResult && capabilitiesResult['network-topology:node'] && capabilitiesResult['network-topology:node'].length > 0 &&
+      (capabilitiesResult['network-topology:node'][0]['netconf-node-topology:available-capabilities'] &&
+        capabilitiesResult['network-topology:node'][0]['netconf-node-topology:available-capabilities']['available-capability'] &&
+        capabilitiesResult['network-topology:node'][0]['netconf-node-topology:available-capabilities']['available-capability'].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || [])
         .map(cap => {
           const capMatch = cap && capParser.exec(cap.capability);
           return capMatch ? {
@@ -98,20 +98,20 @@ class RestService {
           } : null ;
         }).filter((cap) => cap != null) || [] as any;
 
-    const unavailableCapabilities = capabilitiesResult && capabilitiesResult["network-topology:node"] && capabilitiesResult["network-topology:node"].length > 0 &&
-      (capabilitiesResult["network-topology:node"][0]["netconf-node-topology:unavailable-capabilities"] &&
-      capabilitiesResult["network-topology:node"][0]["netconf-node-topology:unavailable-capabilities"]["unavailable-capability"] &&
-      capabilitiesResult["network-topology:node"][0]["netconf-node-topology:unavailable-capabilities"]["unavailable-capability"].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || [])
-      .map(cap => {
-        const capMatch = cap && capParser.exec(cap.capability);
-        return capMatch ? {
-          failureReason: cap.failureReason,
-          capability: capMatch && capMatch[2] || '',
-          version: capMatch && capMatch[1] || '',
-        } : null ;
-    }).filter((cap) => cap != null) || [] as any;
+    const unavailableCapabilities = capabilitiesResult && capabilitiesResult['network-topology:node'] && capabilitiesResult['network-topology:node'].length > 0 &&
+      (capabilitiesResult['network-topology:node'][0]['netconf-node-topology:unavailable-capabilities'] &&
+      capabilitiesResult['network-topology:node'][0]['netconf-node-topology:unavailable-capabilities']['unavailable-capability'] &&
+      capabilitiesResult['network-topology:node'][0]['netconf-node-topology:unavailable-capabilities']['unavailable-capability'].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || [])
+        .map(cap => {
+          const capMatch = cap && capParser.exec(cap.capability);
+          return capMatch ? {
+            failureReason: cap.failureReason,
+            capability: capMatch && capMatch[2] || '',
+            version: capMatch && capMatch[1] || '',
+          } : null ;
+        }).filter((cap) => cap != null) || [] as any;
 
-    const importOnlyModules = availableCapabilities && availableCapabilities.findIndex((ac: {capability: string }) => ac.capability && ac.capability.toLowerCase() === "ietf-yang-library") > -1
+    const importOnlyModules = availableCapabilities && availableCapabilities.findIndex((ac: { capability: string }) => ac.capability && ac.capability.toLowerCase() === 'ietf-yang-library') > -1
       ? await this.getImportOnlyModules(nodeId)
       : null;
 
@@ -123,11 +123,11 @@ class RestService {
     // const connectedNetworkElement = await requestRest<NetworkElementConnection>(path, { method: "GET" });
     // return connectedNetworkElement || null;
 
-    const path = "/rests/operations/data-provider:read-network-element-connection-list";
-    const body = { "data-provider:input": { "filter": [{ "property": "node-id", "filtervalue": nodeId }], "sortorder": [], "pagination": { "size": 1, "page": 1 } } };
-    const networkElementResult = await requestRest<{ "data-provider:output": { data: NetworkElementConnection[] } }>(path, { method: "POST", body: JSON.stringify(body) });
-    return networkElementResult && networkElementResult["data-provider:output"] && networkElementResult["data-provider:output"].data &&
-      networkElementResult["data-provider:output"].data.map(obj => convertPropertyNames(obj, replaceHyphen))[0] || null;
+    const path = '/rests/operations/data-provider:read-network-element-connection-list';
+    const body = { 'data-provider:input': { 'filter': [{ 'property': 'node-id', 'filtervalue': nodeId }], 'sortorder': [], 'pagination': { 'size': 1, 'page': 1 } } };
+    const networkElementResult = await requestRest<{ 'data-provider:output': { data: NetworkElementConnection[] } }>(path, { method: 'POST', body: JSON.stringify(body) });
+    return networkElementResult && networkElementResult['data-provider:output'] && networkElementResult['data-provider:output'].data &&
+      networkElementResult['data-provider:output'].data.map(obj => convertPropertyNames(obj, replaceHyphen))[0] || null;
   }
 
   /** Reads the config data by restconf path.
@@ -135,7 +135,7 @@ class RestService {
   * @returns The data.
   */
   public getConfigData(path: string) {
-    return requestRestExt<{ [key: string]: any }>(path, { method: "GET" });
+    return requestRestExt<{ [key: string]: any }>(path, { method: 'GET' });
   }
 
   /** Updates or creates the config data by restconf path using data.
@@ -144,11 +144,11 @@ class RestService {
    * @returns The written data.
    */
   public setConfigData(path: string, data: any) {
-    return requestRestExt<{ [key: string]: any }>(path, { method: "PUT", body: JSON.stringify(data) });
+    return requestRestExt<{ [key: string]: any }>(path, { method: 'PUT', body: JSON.stringify(data) });
   }
 
   public executeRpc(path: string, data: any) {
-    return requestRestExt<{ [key: string]: any }>(path, { method: "POST", body: JSON.stringify(data) });
+    return requestRestExt<{ [key: string]: any }>(path, { method: 'POST', body: JSON.stringify(data) });
   }
 
   /** Removes the element by restconf path.
@@ -156,7 +156,7 @@ class RestService {
   * @returns The restconf result.
   */
   public removeConfigElement(path: string) {
-    return requestRestExt<{ [key: string]: any }>(path, { method: "DELETE" });
+    return requestRestExt<{ [key: string]: any }>(path, { method: 'DELETE' });
   }
 }
 

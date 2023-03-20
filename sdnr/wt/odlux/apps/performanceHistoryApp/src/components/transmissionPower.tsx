@@ -15,75 +15,73 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-
-import { MaterialTable, ColumnType, ColumnModel, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { ColumnModel, ColumnType, MaterialTable, MaterialTableCtorType } from '../../../../framework/src/components/material-table';
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import connect, { Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 
-import { TransmissionPowerDataType, TransmissionPowerDatabaseDataType } from '../models/transmissionPowerDataType';
+import { SetFilterVisibility, SetSubViewAction } from '../actions/toggleActions';
+import { createTransmissionPowerActions, createTransmissionPowerProperties } from '../handlers/transmissionPowerHandler';
 import { IDataSet, IDataSetsObject } from '../models/chartTypes';
-import { createTransmissionPowerProperties, createTransmissionPowerActions } from '../handlers/transmissionPowerHandler';
+import { TransmissionPowerDatabaseDataType, TransmissionPowerDataType } from '../models/transmissionPowerDataType';
 import { lineChart, sortDataByTimeStamp } from '../utils/chartUtils';
 import { addColumnLabels } from '../utils/tableUtils';
-import { SetSubViewAction, SetFilterVisibility } from '../actions/toggleActions';
 import ToggleContainer from './toggleContainer';
 
 const mapProps = (state: IApplicationStoreState) => ({
   transmissionPowerProperties: createTransmissionPowerProperties(state),
   currentView: state.performanceHistory.subViews.transmissionPower.subView,
   isFilterVisible: state.performanceHistory.subViews.transmissionPower.isFilterVisible,
-  existingFilter: state.performanceHistory.transmissionPower.filter
+  existingFilter: state.performanceHistory.transmissionPower.filter,
 });
 
 const mapDisp = (dispatcher: IDispatcher) => ({
   transmissionPowerActions: createTransmissionPowerActions(dispatcher.dispatch),
-  setSubView: (value: "chart" | "table") => dispatcher.dispatch(new SetSubViewAction("transmissionPower", value)),
-  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility("transmissionPower", value)) },
+  setSubView: (value: 'chart' | 'table') => dispatcher.dispatch(new SetSubViewAction('transmissionPower', value)),
+  toggleFilterButton: (value: boolean) => { dispatcher.dispatch(new SetFilterVisibility('transmissionPower', value)); },
 
 
 });
 
 type TransmissionPowerComponentProps = RouteComponentProps & Connect<typeof mapProps, typeof mapDisp> & {
-  selectedTimePeriod: string
-}
+  selectedTimePeriod: string;
+};
 
 const TransmissionPowerTable = MaterialTable as MaterialTableCtorType<TransmissionPowerDataType>;
 
 /**
  * The Component which gets the transmission power data from the database based on the selected time period.
  */
-class TransmissionPowerComponent extends React.Component<TransmissionPowerComponentProps>{
-
+class TransmissionPowerComponent extends React.Component<TransmissionPowerComponentProps> {
   onToggleFilterButton = () => {
     this.props.toggleFilterButton(!this.props.isFilterVisible);
-  }
+  };
 
-  onChange = (value: "chart" | "table") => {
+  onChange = (value: 'chart' | 'table') => {
     this.props.setSubView(value);
-  }
+  };
 
   onFilterChanged = (property: string, filterTerm: string) => {
     this.props.transmissionPowerActions.onFilterChanged(property, filterTerm);
     if (!this.props.transmissionPowerProperties.showFilter)
       this.props.transmissionPowerActions.onToggleFilter(false);
-  }
+  };
 
   render(): JSX.Element {
-    const properties = this.props.transmissionPowerProperties
-    const actions = this.props.transmissionPowerActions
+    const properties = this.props.transmissionPowerProperties;
+    const actions = this.props.transmissionPowerActions;
 
     const chartPagedData = this.getChartDataValues(properties.rows);
 
     const transmissionColumns: ColumnModel<TransmissionPowerDataType>[] = [
-      { property: "radioSignalId", title: "Radio signal", type: ColumnType.text },
-      { property: "scannerId", title: "Scanner ID", type: ColumnType.text },
-      { property: "timeStamp", title: "End Time", type: ColumnType.text },
+      { property: 'radioSignalId', title: 'Radio signal', type: ColumnType.text },
+      { property: 'scannerId', title: 'Scanner ID', type: ColumnType.text },
+      { property: 'timeStamp', title: 'End Time', type: ColumnType.text },
       {
-        property: "suspectIntervalFlag", title: "Suspect Interval", type: ColumnType.boolean
-      }
+        property: 'suspectIntervalFlag', title: 'Suspect Interval', type: ColumnType.boolean,
+      },
     ];
 
     chartPagedData.datasets.forEach(ds => {
@@ -92,13 +90,14 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
 
     return (
       <>
-        <ToggleContainer onChange={this.onChange} onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible} existingFilter={this.props.transmissionPowerProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} >
+        <ToggleContainer onChange={this.onChange} onToggleFilterButton={this.onToggleFilterButton} showFilter={this.props.isFilterVisible}
+          existingFilter={this.props.transmissionPowerProperties.filter} onFilterChanged={this.onFilterChanged} selectedValue={this.props.currentView} >
           {lineChart(chartPagedData)}
-          <TransmissionPowerTable stickyHeader idProperty={"_id"} tableId="transmission-power-table" columns={transmissionColumns} {...properties} {...actions} />
+          <TransmissionPowerTable stickyHeader idProperty={'_id'} tableId="transmission-power-table" columns={transmissionColumns} {...properties} {...actions} />
         </ToggleContainer>
       </>
     );
-  };
+  }
 
   /**
    * This function gets the performance values for TransmissionPower according on the chartjs dataset structure 
@@ -106,53 +105,53 @@ class TransmissionPowerComponent extends React.Component<TransmissionPowerCompon
    */
 
   private getChartDataValues = (rows: TransmissionPowerDataType[]): IDataSetsObject => {
-    const _rows = [...rows];
-    sortDataByTimeStamp(_rows);
+    const data_rows = [...rows];
+    sortDataByTimeStamp(data_rows);
 
     const datasets: IDataSet[] = [{
-      name: "txLevelMin",
-      label: "tx-level-min",
+      name: 'txLevelMin',
+      label: 'tx-level-min',
       borderColor: '#0e17f3de',
       bezierCurve: false,
       lineTension: 0,
       fill: false,
       data: [],
-      columnLabel: "Tx min"
+      columnLabel: 'Tx min',
     }, {
-      name: "txLevelAvg",
-      label: "tx-level-avg",
+      name: 'txLevelAvg',
+      label: 'tx-level-avg',
       borderColor: '#08edb6de',
       bezierCurve: false,
       lineTension: 0,
       fill: false,
       data: [],
-      columnLabel: "Tx avg"
+      columnLabel: 'Tx avg',
     }, {
-      name: "txLevelMax",
-      label: "tx-level-max",
+      name: 'txLevelMax',
+      label: 'tx-level-max',
       borderColor: '#b308edde',
       bezierCurve: false,
       lineTension: 0,
       fill: false,
       data: [],
-      columnLabel: "Tx max"
+      columnLabel: 'Tx max',
     }];
 
-    _rows.forEach(row => {
+    data_rows.forEach(row => {
       row.txLevelMin = row.performanceData.txLevelMin;
       row.txLevelAvg = row.performanceData.txLevelAvg;
       row.txLevelMax = row.performanceData.txLevelMax;
       datasets.forEach(ds => {
         ds.data.push({
-          x: row["timeStamp" as keyof TransmissionPowerDataType] as string,
-          y: row.performanceData[ds.name as keyof TransmissionPowerDatabaseDataType] as string
+          x: row['timeStamp' as keyof TransmissionPowerDataType] as string,
+          y: row.performanceData[ds.name as keyof TransmissionPowerDatabaseDataType] as string,
         });
       });
     });
     return {
-      datasets: datasets
+      datasets: datasets,
     };
-  }
+  };
 }
 
 const TransmissionPower = withRouter(connect(mapProps, mapDisp)(TransmissionPowerComponent));

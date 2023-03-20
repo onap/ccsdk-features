@@ -26,12 +26,12 @@ export interface IAdaptiveModulationState extends IExternalTableState<AdaptiveMo
 /**
  * Creates elastic search material data fetch handler for Adaptive modulation from historicalperformance database.
  */
-const adaptiveModulationSearchHandler = createSearchDataHandler<AdaptiveModulationDataType>(getFilter, false, null)
+const adaptiveModulationSearchHandler = createSearchDataHandler<AdaptiveModulationDataType>(getFilter, false, null);
 export const {
-    actionHandler: adaptiveModulationActionHandler,
-    createActions: createAdaptiveModulationActions,
-    createProperties: createAdaptiveModulationProperties,
-    createPreActions: createAdaptiveModulationPreActions,
-    reloadAction: adaptiveModulationReloadAction,
+  actionHandler: adaptiveModulationActionHandler,
+  createActions: createAdaptiveModulationActions,
+  createProperties: createAdaptiveModulationProperties,
+  createPreActions: createAdaptiveModulationPreActions,
+  reloadAction: adaptiveModulationReloadAction,
 } = createExternal<AdaptiveModulationDataType>(adaptiveModulationSearchHandler, appState => appState.performanceHistory.adaptiveModulation);
 

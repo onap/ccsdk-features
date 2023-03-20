@@ -17,7 +17,6 @@
  */
 import { Action } from '../../../../framework/src/flux/action';
 import { Dispatch } from '../../../../framework/src/flux/store';
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
 import { TlsKeys } from '../models/networkElementConnection';
 import { connectService } from '../services/connectService';
@@ -36,14 +35,14 @@ export class LoadAllTlsKeyListAction extends BaseAction { }
  * Represents an action causing the store to get all TLS Keys.
  */
 export class AllTlsKeyListLoadedAction extends BaseAction {
-    /**
+  /**
      * Initialize this instance.
      * 
      * @param gets all the tlsKey list from the  database.
      */
-    constructor(public tlsList: TlsKeys[] | null, public error?: string) {
-        super();
-    }
+  constructor(public tlsList: TlsKeys[] | null, public error?: string) {
+    super();
+  }
 }
 
 /**
@@ -51,10 +50,10 @@ export class AllTlsKeyListLoadedAction extends BaseAction {
  */
 
 export const loadAllTlsKeyListAsync = () => async (dispatch: Dispatch) => {
-    dispatch(new LoadAllTlsKeyListAction());
-    connectService.getTlsKeys().then(TlsKeyList => {
-        dispatch(new AllTlsKeyListLoadedAction(TlsKeyList));
-    }).catch(error => {
-        dispatch(new AllTlsKeyListLoadedAction(null, error));
-    });
+  dispatch(new LoadAllTlsKeyListAction());
+  connectService.getTlsKeys().then(TlsKeyList => {
+    dispatch(new AllTlsKeyListLoadedAction(TlsKeyList));
+  }).catch(error => {
+    dispatch(new AllTlsKeyListLoadedAction(null, error));
+  });
 };

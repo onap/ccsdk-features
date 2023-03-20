@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-  export type LtpIds = {
-    key : string
-  }
+export type LtpIds = {
+  key: string;
+};
 

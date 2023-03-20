@@ -18,12 +18,13 @@
 
 import { IActionHandler } from '../../../../framework/src/flux/action';
 import { combineActionHandler } from '../../../../framework/src/flux/middleware';
-import { INetworkElementsState, networkElementsActionHandler } from './networkElementsHandler';
-import { IConnectionStatusLogState, connectionStatusLogActionHandler } from './connectionStatusLogHandler';
-import { IInfoNetworkElementsState, infoNetworkElementsActionHandler, IInfoNetworkElementFeaturesState, infoNetworkElementFeaturesActionHandler } from './infoNetworkElementHandler';
-import { SetPanelAction, AddWebUriList, RemoveWebUri, SetWeburiSearchBusy } from '../actions/commonNetworkElementsActions';
-import { PanelId } from '../models/panelId';
+
+import { AddWebUriList, RemoveWebUri, SetPanelAction } from '../actions/commonNetworkElementsActions';
 import { guiCutThrough } from '../models/guiCutTrough';
+import { PanelId } from '../models/panelId';
+import { connectionStatusLogActionHandler, IConnectionStatusLogState } from './connectionStatusLogHandler';
+import { IInfoNetworkElementFeaturesState, IInfoNetworkElementsState, infoNetworkElementFeaturesActionHandler, infoNetworkElementsActionHandler } from './infoNetworkElementHandler';
+import { INetworkElementsState, networkElementsActionHandler } from './networkElementsHandler';
 import { availableTlsKeysActionHandler, IAvailableTlsKeysState } from './tlsKeyHandler';
 
 export interface IConnectAppStoreState {
@@ -33,7 +34,7 @@ export interface IConnectAppStoreState {
   elementInfo: IInfoNetworkElementsState;
   elementFeatureInfo: IInfoNetworkElementFeaturesState;
   guiCutThrough: guiCutThroughState;
-  availableTlsKeys: IAvailableTlsKeysState
+  availableTlsKeys: IAvailableTlsKeysState;
 }
 
 const currentOpenPanelHandler: IActionHandler<PanelId> = (state = null, action) => {
@@ -41,7 +42,7 @@ const currentOpenPanelHandler: IActionHandler<PanelId> = (state = null, action) 
     state = action.panelId;
   }
   return state;
-}
+};
 
 interface guiCutThroughState {
   searchedElements: guiCutThrough[];
@@ -62,12 +63,12 @@ const guiCutThroughHandler: IActionHandler<guiCutThroughState> = (state = { sear
     if (action.newlySearchedElements) {
       action.newlySearchedElements.forEach(item => {
         notSearchedElements = notSearchedElements.filter(id => id !== item);
-      })
+      });
     }
 
     searchedElements = state.searchedElements.concat(action.searchedElements);
 
-    state = { searchedElements: searchedElements, notSearchedElements: notSearchedElements, unsupportedElements: unsupportedElements }
+    state = { searchedElements: searchedElements, notSearchedElements: notSearchedElements, unsupportedElements: unsupportedElements };
 
   } else if (action instanceof RemoveWebUri) {
     const nodeId = action.element;
@@ -77,11 +78,11 @@ const guiCutThroughHandler: IActionHandler<guiCutThroughState> = (state = { sear
     state = { notSearchedElements: knownElements, searchedElements: webUris, unsupportedElements: unsupportedElement };
   }
   return state;
-}
+};
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
-    connect: IConnectAppStoreState
+    connect: IConnectAppStoreState;
   }
 }
 
@@ -92,7 +93,7 @@ const actionHandlers = {
   elementInfo: infoNetworkElementsActionHandler,
   elementFeatureInfo: infoNetworkElementFeaturesActionHandler,
   guiCutThrough: guiCutThroughHandler,
-  availableTlsKeys: availableTlsKeysActionHandler
+  availableTlsKeys: availableTlsKeysActionHandler,
 };
 
 export const connectAppRootHandler = combineActionHandler<IConnectAppStoreState>(actionHandlers);

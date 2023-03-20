@@ -15,7 +15,8 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
+import { withRouter, RouteComponentProps } from 'react-router';
 
 import { Theme } from '@mui/material/styles';
 import { WithStyles } from '@mui/styles';
@@ -23,13 +24,12 @@ import withStyles from '@mui/styles/withStyles';
 import createStyles from '@mui/styles/createStyles';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';  // select app icon
 
-import connect, { Connect } from '../../../../framework/src/flux/connect';
-import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-
 import Typography from '@mui/material/Typography';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
-import { withRouter, RouteComponentProps } from 'react-router';
+
+import { connect, Connect } from '../../../../framework/src/flux/connect';
+import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
 const styles = (theme: Theme) => createStyles({
   icon: {

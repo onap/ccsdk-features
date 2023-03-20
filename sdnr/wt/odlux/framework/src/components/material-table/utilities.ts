@@ -51,6 +51,7 @@ export type ExternalMethodes<TData> = {
     onHandleChangeRowsPerPage: (rowsPerPage: number | null) => void;
     onHideColumns: (columnName: string[]) => void;
     onShowColumns: (columnName: string[]) => void;
+    onClearFilters: () => void;
   },
  createPreActions: (dispatch: Dispatch, skipRefresh?: boolean) => {
   onPreFilterChanged: (preFilter: {
@@ -328,7 +329,13 @@ export function createExternal<TData>(callback: DataCallback<TData>, selectState
         dispatch((dispatch: Dispatch) => {
           dispatch(new ShowColumnsAction(columnName));
         })
-      }
+      },
+      onClearFilters: () => {
+        dispatch((dispatch: Dispatch) => {
+          let filter = { };
+          dispatch(new SetFilterChangedAction(filter));
+        });
+      },
       // selected:
     };
   };

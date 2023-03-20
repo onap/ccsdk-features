@@ -10,6 +10,7 @@ const path = require("path");
 const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
+const proxyConf = require('../../proxy.conf');
 
 const policies = require('./policies.json');
 
@@ -58,6 +59,16 @@ module.exports = (env) => {
         exclude: /node_modules/,
         use: [{
           loader: "babel-loader"
+        }]
+      },{
+        //don't minify images
+        test: /\.(png|gif|jpg|svg)$/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 10,
+            name: './images/[name].[ext]'
+          }
         }]
       }]
     },
@@ -133,56 +144,7 @@ module.exports = (env) => {
       before: function(app, server, compiler) {
         app.get('/oauth/policies',(_, res) => res.json(policies));
       },
-       proxy: {
-        "/about": {
-          target: "http://sdnr:8181",
-          secure: false
-        }, 
-        "/yang-schema/": {
-          target: "http://sdnr:8181",
-          secure: false
-        },   
-        "/oauth/": {
-          target: "http://sdnr:8181",
-          secure: false
-        },
-        "/database/": {
-          target: "http://sdnr:8181",
-          secure: false
-        },
-        "/restconf/": {
-          target: "http://sdnr:8181",
-          secure: false
-        },
-        "/rests/": {
-          target: "http://sdnr:8181",
-          secure: false
-        },
-        "/help/": {
-          target: "http://sdnr:8181",
-          secure: false
-        },
-         "/about/": {
-          target: "http://sdnr:8181",
-          secure: false
-        },
-        "/tree/": {
-          target: "http://sdnr:8181",
-          secure: false
-        },
-        "/websocket": {
-          target: "http://sdnr:8181",
-          ws: true,
-          changeOrigin: true,
-          secure: false
-        },
-        "/apidoc": {
-          target: "http://sdnr:8181",
-          ws: true,
-          changeOrigin: true,
-          secure: false
-        }
-      }
+      proxy: proxyConf,
     }
   }];
 }

@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 import { Theme, Tooltip } from '@mui/material';
 
 import { WithStyles } from '@mui/styles';
@@ -29,7 +29,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Refresh from '@mui/icons-material/Refresh';
 
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
-import connect, { IDispatcher, Connect } from '../../../../framework/src/flux/connect';
+import { connect, IDispatcher, Connect } from '../../../../framework/src/flux/connect';
 import MaterialTable, { MaterialTableCtorType, ColumnType } from '../../../../framework/src/components/material-table';
 
 import { createAvaliableMediatorServersProperties, createAvaliableMediatorServersActions } from '../handlers/avaliableMediatorServersHandler';

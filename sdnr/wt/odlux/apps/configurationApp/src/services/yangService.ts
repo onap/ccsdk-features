@@ -16,28 +16,22 @@
  * ============LICENSE_END==========================================================================
  */
 
-type YangInfo = [string, (string | null | undefined)];
+const cache: { [path: string]: string } = { };
+const getCapability = async (capability: string, nodeId: string, version?: string) => {
+  const url = `/yang-schema/${capability}${version ? `/${version}` : ''}?node=${nodeId}`;
 
-const cache: { [path: string]: string } = {
+  const cacheHit = cache[url];
+  if (cacheHit) return cacheHit;
 
+  const res = await fetch(url);
+  const yangFile = res.ok && (await res.text());
+  if (yangFile !== false && yangFile !== null) {
+    cache[url] = yangFile;
+  }
+  return yangFile;
 };
 
-class YangService {
-
-  public async getCapability(capability: string, nodeId: string, version?: string) {
-    const url = `/yang-schema/${capability}${version ? `/${version}` : ""}?node=${nodeId}`;
-
-    const cacheHit = cache[url];
-    if (cacheHit) return cacheHit;
-
-    const res = await fetch(url);
-    const yangFile = res.ok && (await res.text());
-    if (yangFile !== false && yangFile !== null) {
-      cache[url] = yangFile;
-    }
-    return yangFile;
-  }
-}
-
-export const yangService = new YangService();
+export const yangService = {
+  getCapability,
+};
 export default yangService;
