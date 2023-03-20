@@ -74,6 +74,16 @@ module.exports = (env) => {
             plugins: () => [autoprefixer]
           }
         }]
+      }, {
+        //don't minify images
+        test: /\.(png|gif|jpg|svg)$/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 10,
+            name: './images/[name].[ext]'
+          }
+        }]
       }]
     },
 

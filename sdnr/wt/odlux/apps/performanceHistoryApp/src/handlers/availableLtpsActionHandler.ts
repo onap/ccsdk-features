@@ -38,7 +38,7 @@ const ltpListStateInit: IAvailableLtpsState = {
   distinctLtps: [],
   busy: false,
   loadedOnce: false,
-  error: undefined
+  error: undefined,
 };
 
 export const availableLtpsActionHandler: IActionHandler<IAvailableLtpsState> = (state = ltpListStateInit, action) => {
@@ -46,7 +46,7 @@ export const availableLtpsActionHandler: IActionHandler<IAvailableLtpsState> = (
 
     state = {
       ...state,
-      busy: true
+      busy: true,
     };
 
   } else if (action instanceof AllAvailableLtpsLoadedAction) {
@@ -56,21 +56,21 @@ export const availableLtpsActionHandler: IActionHandler<IAvailableLtpsState> = (
         distinctLtps: action.availableLtps,
         busy: false,
         error: undefined,
-        loadedOnce: true
+        loadedOnce: true,
       };
     } else if (action.error) {
       state = {
         ...state,
         busy: false,
         loadedOnce: true,
-        error: action.error
-      }
+        error: action.error,
+      };
     }
   } else if (action instanceof SetInitialLoadedAction) {
 
     state = {
       ...state,
-      loadedOnce: action.initialLoaded
+      loadedOnce: action.initialLoaded,
     };
   } else if (action instanceof NoLtpsFoundAction) {
     state = {
@@ -78,22 +78,20 @@ export const availableLtpsActionHandler: IActionHandler<IAvailableLtpsState> = (
       busy: false,
       error: undefined,
       loadedOnce: true,
-      distinctLtps: []
-    }
+      distinctLtps: [],
+    };
   } else if (action instanceof ResetLtpsAction) {
     state = {
       ...state,
       busy: false,
       error: undefined,
       loadedOnce: false,
-      distinctLtps: []
-    }
-  }
-
-  else {
+      distinctLtps: [],
+    };
+  } else {
     state = {
       ...state,
-      busy: false
+      busy: false,
     };
   }
 

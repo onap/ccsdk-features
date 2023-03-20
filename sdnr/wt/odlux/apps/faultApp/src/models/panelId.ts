@@ -15,4 +15,4 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-export type PanelId = null | "CurrentProblem" | "AlarmNotifications" | "AlarmLog";
+export type PanelId = null | 'CurrentAlarms' | 'AlarmNotifications' | 'AlarmLog';

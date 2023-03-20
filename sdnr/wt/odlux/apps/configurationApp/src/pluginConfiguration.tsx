@@ -16,71 +16,74 @@
  * ============LICENSE_END==========================================================================
  */
 
-import * as React from "react";
+import React from 'react';
 import { withRouter, RouteComponentProps, Route, Switch, Redirect } from 'react-router-dom';
 
-import { faAdjust } from '@fortawesome/free-solid-svg-icons';  // select app icon
-
-import connect, { Connect, IDispatcher } from '../../../framework/src/flux/connect';
+import { connect, Connect, IDispatcher } from '../../../framework/src/flux/connect';
 import applicationManager from '../../../framework/src/services/applicationManager';
-import { IApplicationStoreState } from "../../../framework/src/store/applicationStore";
-import { configurationAppRootHandler } from "./handlers/configurationAppRootHandler";
-import { NetworkElementSelector } from "./views/networkElementSelector";
 
-import ConfigurationApplication from "./views/configurationApplication";
-import { updateNodeIdAsyncActionCreator, updateViewActionAsyncCreator } from "./actions/deviceActions";
-import { DisplayModeType } from "./handlers/viewDescriptionHandler";
-import { ViewSpecification } from "./models/uiModels";
+import { configurationAppRootHandler } from './handlers/configurationAppRootHandler';
+import { NetworkElementSelector } from './views/networkElementSelector';
+
+import ConfigurationApplication from './views/configurationApplication';
+import { updateNodeIdAsyncActionCreator, updateViewActionAsyncCreator } from './actions/deviceActions';
+import { DisplayModeType } from './handlers/viewDescriptionHandler';
+import { ViewSpecification } from './models/uiModels';
+
+const appIcon = require('./assets/icons/configurationAppIcon.svg');  // select app icon
 
 let currentNodeId: string | null | undefined = undefined;
 let currentVirtualPath: string | null | undefined = undefined;
 let lastUrl: string | undefined = undefined;
 
-const mapDisp = (dispatcher: IDispatcher) => ({
+const mapDispatch = (dispatcher: IDispatcher) => ({
   updateNodeId: (nodeId: string) => dispatcher.dispatch(updateNodeIdAsyncActionCreator(nodeId)),
   updateView: (vPath: string) => dispatcher.dispatch(updateViewActionAsyncCreator(vPath)),
 });
 
-const ConfigurationApplicationRouteAdapter = connect(undefined, mapDisp)((props: RouteComponentProps<{ nodeId?: string, 0: string }> & Connect<undefined, typeof mapDisp>) => {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const ConfigurationApplicationRouteAdapter = connect(undefined, mapDispatch)((props: RouteComponentProps<{ nodeId?: string; 0: string }> & Connect<undefined, typeof mapDispatch>) => {
   React.useEffect(() => {
     return () => {
       lastUrl = undefined;
       currentNodeId = undefined;
       currentVirtualPath = undefined;
-    }
+    };
   }, []);
   if (props.location.pathname !== lastUrl) {
-    // ensure the asynchronus update will only be called once per path
+    // ensure the asynchronous update will only be called once per path
     lastUrl = props.location.pathname;
     window.setTimeout(async () => {
 
       // check if the nodeId has changed
-      let dump = false;
+      let enableDump = false;
       if (currentNodeId !== props.match.params.nodeId) {
         currentNodeId = props.match.params.nodeId || undefined;
-        if (currentNodeId && currentNodeId.endsWith("|dump")) {
-          dump = true;
+        if (currentNodeId && currentNodeId.endsWith('|dump')) {
+          enableDump = true;
           currentNodeId = currentNodeId.replace(/\|dump$/i, '');
         }
         currentVirtualPath = null;
-        currentNodeId && (await props.updateNodeId(currentNodeId));
+        if (currentNodeId) {
+          await props.updateNodeId(currentNodeId);
+        }
       }
 
       if (currentVirtualPath !== props.match.params[0]) {
         currentVirtualPath = props.match.params[0];
-        if (currentVirtualPath && currentVirtualPath.endsWith("|dump")) {
-          dump = true;
+        if (currentVirtualPath && currentVirtualPath.endsWith('|dump')) {
+          enableDump = true;
           currentVirtualPath = currentVirtualPath.replace(/\|dump$/i, '');
         }
         await props.updateView(currentVirtualPath);
       }
 
-      if (dump) {
+      if (enableDump) {
         const device = props.state.configuration.deviceDescription;
         const ds = props.state.configuration.viewDescription.displaySpecification;
 
         const createDump = (view: ViewSpecification | null, level: number = 0) => {
-          if (view === null) return "Empty";
+          if (view === null) return 'Empty';
           const indention = Array(level * 4).fill(' ').join('');
           let result = '';
 
@@ -88,24 +91,24 @@ const ConfigurationApplicationRouteAdapter = connect(undefined, mapDisp)((props:
           // result += `${indention}  [${view.canEdit ? 'rw' : 'ro'}] ${view.ns}:${view.name} ${ds.displayMode === DisplayModeType.displayAsList ? '[LIST]' : ''}\r\n`;
           result += Object.keys(view.elements).reduce((acc, cur) => {
             const elm = view.elements[cur];
-            acc += `${indention}  [${elm.uiType === "rpc" ? "x" : elm.config ? 'rw' : 'ro'}:${elm.id}] (${elm.module}:${elm.label}) {${elm.uiType}} ${elm.uiType === "object" && elm.isList ? `as LIST with KEY [${elm.key}]` : ""}\r\n`;
-            // acc += `${indention}    +${elm.mandatory ? "mandetory" : "none"} - ${elm.path} \r\n`;
+            acc += `${indention}  [${elm.uiType === 'rpc' ? 'x' : elm.config ? 'rw' : 'ro'}:${elm.id}] (${elm.module}:${elm.label}) {${elm.uiType}} ${elm.uiType === 'object' && elm.isList ? `as LIST with KEY [${elm.key}]` : ''}\r\n`;
+            // acc += `${indention}    +${elm.mandatory ? "mandatory" : "none"} - ${elm.path} \r\n`;
             
             switch (elm.uiType) {
-              case "object":
+              case 'object':
                 acc += createDump(device.views[(elm as any).viewId], level + 1);
                 break;
               default:
             }
             return acc;
-          }, "");
+          }, '');
           return `${result}`;
-        }
+        };
 
         const dump = createDump(ds.displayMode === DisplayModeType.displayAsObject || ds.displayMode === DisplayModeType.displayAsList ? ds.viewSpecification : null, 0);
-        var element = document.createElement('a');
+        const element = document.createElement('a');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(dump));
-        element.setAttribute('download', currentNodeId + ".txt");
+        element.setAttribute('download', currentNodeId + '.txt');
 
         element.style.display = 'none';
         document.body.appendChild(element);
@@ -133,10 +136,10 @@ const App = withRouter((props: RouteComponentProps) => (
 
 export function register() {
   applicationManager.registerApplication({
-    name: "configuration",
-    icon: faAdjust,
+    name: 'configuration',
+    icon: appIcon,
     rootComponent: App,
     rootActionHandler: configurationAppRootHandler,
-    menuEntry: "Configuration"
+    menuEntry: 'Configuration',
   });
 }

@@ -26,7 +26,9 @@
     "@mui/icons-material": "^5.2.0",
     "@mui/material": "^5.2.2",
     "@mui/styles": "^5.2.2",
-    "@odlux/framework": "*"
+    "@odlux/framework": "*",
+    "@fortawesome/free-solid-svg-icons": "5.6.3",
+    "@fortawesome/react-fontawesome": "0.1.14"
   },
   "peerDependencies": {
     "@types/classnames": "2.2.6",
@@ -38,6 +40,7 @@
     "jquery": "3.3.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-router-dom": "5.2.0"
+    "react-router-dom": "5.2.0",
+    "react-chartjs-2": "^3.0.3"
   }
 }

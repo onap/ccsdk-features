@@ -450,13 +450,13 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                   if (filterExpressionAsString.length === 0 || isNaN(valueAsNumber)) return true;
                   
                   if (filterExpressionAsString.startsWith('>=')) {
-                    return valueAsNumber >= Number(filterExpressionAsString.substr(2).trim());
+                    return valueAsNumber >= Number(filterExpressionAsString.substring(2).trim());
                   } else if (filterExpressionAsString.startsWith('<=')) {
-                    return valueAsNumber <= Number(filterExpressionAsString.substr(2).trim());
+                    return valueAsNumber <= Number(filterExpressionAsString.substring(2).trim());
                   } else if (filterExpressionAsString.startsWith('>')) {
-                    return valueAsNumber > Number(filterExpressionAsString.substr(1).trim());
+                    return valueAsNumber > Number(filterExpressionAsString.substring(1).trim());
                   } else if (filterExpressionAsString.startsWith('<')) {
-                    return valueAsNumber < Number(filterExpressionAsString.substr(1).trim());
+                    return valueAsNumber < Number(filterExpressionAsString.substring(1).trim());
                   }
                 } else if (column.type === ColumnType.date){
                    const valueAsString = String(dataValue);
@@ -480,13 +480,13 @@ class MaterialTableComponent<TData extends {} = {}> extends React.Component<Mate
                    const filterExpressionAsString = String(filterExpression).trim();             
 
                    if (filterExpressionAsString.startsWith('>=')) {
-                    return valueAsDate >= convertToDate(filterExpressionAsString.substr(2).trim());
+                    return valueAsDate >= convertToDate(filterExpressionAsString.substring(2).trim());
                   } else if (filterExpressionAsString.startsWith('<=')) {
-                    return valueAsDate <= convertToDate(filterExpressionAsString.substr(2).trim());
+                    return valueAsDate <= convertToDate(filterExpressionAsString.substring(2).trim());
                   } else if (filterExpressionAsString.startsWith('>')) {
-                    return valueAsDate > convertToDate(filterExpressionAsString.substr(1).trim());
+                    return valueAsDate > convertToDate(filterExpressionAsString.substring(1).trim());
                   } else if (filterExpressionAsString.startsWith('<')) {
-                    return valueAsDate < convertToDate(filterExpressionAsString.substr(1).trim());
+                    return valueAsDate < convertToDate(filterExpressionAsString.substring(1).trim());
                   }
 
                   

@@ -27,7 +27,7 @@ export interface IDeviceListState {
 
 const deviceListStateInit: IDeviceListState = {
   deviceList: [],
-  busy: false
+  busy: false,
 };
 
 export const deviceListActionHandler: IActionHandler<IDeviceListState> = (state = deviceListStateInit, action) => {
@@ -35,7 +35,7 @@ export const deviceListActionHandler: IActionHandler<IDeviceListState> = (state 
 
     state = {
       ...state,
-      busy: true
+      busy: true,
     };
 
   } else if (action instanceof AllDeviceListLoadedAction) {
@@ -43,12 +43,12 @@ export const deviceListActionHandler: IActionHandler<IDeviceListState> = (state 
       state = {
         ...state,
         deviceList: action.deviceList,
-        busy: false
+        busy: false,
       };
     } else {
       state = {
         ...state,
-        busy: false
+        busy: false,
       };
     }
   }

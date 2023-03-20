@@ -15,39 +15,34 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import React, { FC, useEffect, useState } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import Alert from '@mui/material/Alert';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
-import LockIcon from '@mui/icons-material/LockOutlined';
 import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
 import { Theme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
-import { WithStyles } from '@mui/styles';
-import withStyles from '@mui/styles/withStyles';
-import createStyles from '@mui/styles/createStyles';
+import { makeStyles } from '@mui/styles';
 
-import connect, { Connect, IDispatcher } from '../flux/connect';
+import { useApplicationDispatch, useSelectApplicationState } from '../flux/connect';
 import authenticationService from '../services/authenticationService';
 
-import { updateExternalLoginProviderAsyncActionCreator } from '../actions/loginProvider';
 import { loginUserAction, UpdatePolicies } from '../actions/authentication';
+import { updateExternalLoginProviderAsyncActionCreator } from '../actions/loginProvider';
 
-import { IApplicationStoreState } from '../store/applicationStore';
 import { AuthPolicy, AuthToken, User } from '../models/authentication';
-import Menu from '@mui/material/Menu';
-import { MenuItem } from '@mui/material';
 
-const styles = (theme: Theme) => createStyles({
+const loginIcon = require('../assets/icons/User.svg');
+
+const styles = makeStyles((theme: Theme) =>{
+  return{
   layout: {
     width: 'auto',
     display: 'block', // Fix IE11 issue.
@@ -91,204 +86,165 @@ const styles = (theme: Theme) => createStyles({
      padding: '0 10px',
      color: 'grey'
   }
+};
 });
 
-const mapProps = (state: IApplicationStoreState) => ({
-  search: state.framework.navigationState.search,
-  authentication: state.framework.applicationState.authentication,
-  externalLoginProviders: state.framework.applicationState.externalLoginProviders ,
-});
 
-const mapDispatch = (dispatcher: IDispatcher) => ({
-  updateExternalProviders: () => dispatcher.dispatch(updateExternalLoginProviderAsyncActionCreator()),
-  updateAuthentication: (token: AuthToken | null) => {
-    const user = token && new User(token) || undefined;
-    dispatcher.dispatch(loginUserAction(user));
-  },
-  updatePolicies: (policies?: AuthPolicy[]) => {
-    return dispatcher.dispatch(new UpdatePolicies(policies));
-  },
-});
-
-type LoginProps = RouteComponentProps<{}> & WithStyles<typeof styles> & Connect<typeof mapProps, typeof mapDispatch>;
-
-interface ILoginState {
-  externalProviderAnchor: HTMLElement | null;
-  busy: boolean;
-  username: string;
-  password: string;
-  scope: string;
-  message: string;
-  isServerReady: boolean;
-  providers: {
-    id: string;
-    title: string;
-    loginUrl: string;
-  }[] | null;
-}
-
+type LoginProps = RouteComponentProps;
 
 // todo: ggf. redirect to einbauen
-class LoginComponent extends React.Component<LoginProps, ILoginState> {
+const LoginComponent:  FC<LoginProps> = (props) => {
 
-  constructor(props: LoginProps) {
-    super(props);
-
-    this.state = {
-      externalProviderAnchor: null,
-      busy: false,
-      username: '',
-      password: '',
-      scope: 'sdn',
-      message: '',
-      providers: null,
-      isServerReady: false
-    };
+  const search = useSelectApplicationState(state => state.framework.navigationState.search);
+  const authentication = useSelectApplicationState(state => state.framework.applicationState.authentication);
+  const externalLoginProviders = useSelectApplicationState(state => state.framework.applicationState.externalLoginProviders);
+  
+  const dispatch = useApplicationDispatch();
+  const updateExternalProviders = () => dispatch(updateExternalLoginProviderAsyncActionCreator());
+  const updateAuthentication = (token: AuthToken | null) => {
+    const user = token && new User(token) || undefined;
+    dispatch(loginUserAction(user));
+  }
+  const updatePolicies = (policies?: AuthPolicy[]) => {
+    return dispatch(new UpdatePolicies(policies));
   }
 
-  async componentDidMount(){
-     if (this.props.authentication === "oauth" && (this.props.externalLoginProviders == null || this.props.externalLoginProviders.length === 0)){
-       this.props.updateExternalProviders();
+  const [isBusy, setBusy] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [scope, setScope] = useState("sdn");
+  const [message, setMessage] = useState("");
+  const [isServerReady, setIsServerReady] = useState(false);
+
+  useEffect(()=>{
+     if (authentication === "oauth" && (externalLoginProviders == null || externalLoginProviders.length === 0)){
+       updateExternalProviders();
      }
 
     authenticationService.getServerReadyState().then(result =>{
-      this.setState({isServerReady: result});
+      setIsServerReady(result);
     })
+  },[]);
 
-
-
-  }
-
-  private setExternalProviderAnchor = (el: HTMLElement | null) => {
-    this.setState({externalProviderAnchor: el })
-  }
-
-  render(): JSX.Element {
-    const { classes } = this.props;
-    const areProvidersAvailable = this.props.externalLoginProviders && this.props.externalLoginProviders.length > 0;
-    return (
-      <>
-        <CssBaseline />
-        <main className={classes.layout}>
-          <Paper className={classes.paper}>
-            <Avatar className={classes.avatar}>
-              <LockIcon />
-            </Avatar>
-            <Typography variant="caption">Sign in</Typography>
-            <form className={classes.form}>
-
-
-              {areProvidersAvailable &&
-                <>
-                  {
-                    this.props.externalLoginProviders!.map((provider, index) => (
-                      <Button
-                        aria-controls="externalLogin"
-                        aria-label={"external-login-identity-provider-" + (index + 1)}
-                        aria-haspopup="true"
-                        fullWidth
-                        variant="contained"
-                        color="inherit"
-                        className={classes.submit} onClick={() => { window.location = provider.loginUrl as any; }}>
-                        {provider.title}
-                      </Button>))
-                  }
-
-                  <div className={classes.lineContainer}>
-                    <span className={classes.thirdPartyDivider}>
-                      OR
-                    </span>
-                  </div>
-                </>
-              }
-
-              <FormControl variant="standard" margin="normal" required fullWidth>
-                <InputLabel htmlFor="username">Username</InputLabel>
-                <Input id="username" name="username" autoComplete="username" autoFocus
-                  disabled={this.state.busy}
-                  value={this.state.username}
-                  onChange={event => { this.setState({ username: event.target.value }) }} />
-              </FormControl>
-              <FormControl variant="standard" margin="normal" required fullWidth>
-                <InputLabel htmlFor="password">Password</InputLabel>
-                <Input
-                  name="password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  disabled={this.state.busy}
-                  value={this.state.password}
-                  onChange={event => { this.setState({ password: event.target.value }) }}
-                />
-              </FormControl>
-              <FormControl variant="standard" margin="normal" required fullWidth>
-                <InputLabel htmlFor="password">Domain</InputLabel>
-                <Input
-                  name="scope"
-                  type="scope"
-                  id="scope"
-                  disabled={this.state.busy}
-                  value={this.state.scope}
-                  onChange={event => { this.setState({ scope: event.target.value }) }}
-                />
-              </FormControl>
-              <Button
-                aria-label="login-button"
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="inherit"
-                disabled={this.state.busy}
-                className={classes.submit}
-                onClick={this.onSignIn}
-              >
-                Sign in
-              </Button>
-
-            </form>
-            {this.state.message && <Alert severity="error">{this.state.message}</Alert>}
-          </Paper>
-        </main>
-      </>
-    );
-  }
-
-  private onSignIn = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onSignIn = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+  
+    setBusy(true);
 
-    this.setState({ busy: true });
+    const token = authentication === "oauth" 
+      ? await authenticationService.authenticateUserOAuth(username, password, scope)
+      : await authenticationService.authenticateUserBasicAuth(username, password, scope); 
 
-    const token = this.props.authentication === "oauth" 
-      ? await authenticationService.authenticateUserOAuth(this.state.username, this.state.password, this.state.scope)
-      : await authenticationService.authenticateUserBasicAuth(this.state.username, this.state.password, this.state.scope); 
-
-    this.props.updateAuthentication(token);
-    this.setState({ busy: false });
+    updateAuthentication(token);
+    setBusy(false);
 
     if (token) {
-      const query = this.props.search && this.props.search.replace(/^\?/, "").split('&').map(e => e.split("="));
+      const query = search && search.replace(/^\?/, "").split('&').map(e => e.split("="));
       const returnTo = query && query.find(e => e[0] === "returnTo");
-      this.props.history.replace(returnTo && returnTo[1] || "/");
+      props.history.replace(returnTo && returnTo[1] || "/");
     }
     else {
 
-      if(!this.state.isServerReady){
+      if(!isServerReady){
         const ready = await authenticationService.getServerReadyState();
         if(ready){
-          this.setState({isServerReady: true});
+          setIsServerReady(true);
         }else{
-          this.setState({message: "Login is currently not possible. Please re-try in a few minutes. If the problem persits, ask your administrator for assistence."});
+          setMessage("Login is currently not possible. Please re-try in a few minutes. If the problem persists, ask your administrator for assistance.");
         }
   
       }else{
-        this.setState({
-          message: "Could not log in. Please check your credentials or ask your administrator for assistence.",
-          password: ""
-        })
+        setMessage("Could not log in. Please check your credentials or ask your administrator for assistance.");
+        setPassword("");
       }
     }
   }
+  
+  const classes = styles();
+  const areProvidersAvailable = externalLoginProviders && externalLoginProviders.length > 0;
+
+  return (
+    <>
+      <CssBaseline />
+      <main className={classes.layout}>
+        <Paper className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <img src={loginIcon} alt="loginIcon" />
+          </Avatar>
+          <Typography variant="caption">Sign in</Typography>
+          <form className={classes.form}>
+            {areProvidersAvailable &&
+              <>
+                {
+                  externalLoginProviders!.map((provider, index) => (
+                    <Button
+                      aria-controls="externalLogin"
+                      aria-label={"external-login-identity-provider-" + (index + 1)}
+                      aria-haspopup="true"
+                      fullWidth
+                      variant="contained"
+                      color="inherit"
+                      className={classes.submit} onClick={() => { window.location = provider.loginUrl as any; }}>
+                      {provider.title}
+                    </Button>))
+                }
+                <div className={classes.lineContainer}>
+                  <span className={classes.thirdPartyDivider}>
+                    OR
+                  </span>
+                </div>
+              </>
+            }
+            <FormControl variant="standard" margin="normal" required fullWidth>
+              <InputLabel htmlFor="username">Username</InputLabel>
+              <Input id="username" name="username" autoComplete="username" autoFocus
+                disabled={isBusy}
+                value={username}
+                onChange={event => { setUsername(event.target.value); }} />
+            </FormControl>
+            <FormControl variant="standard" margin="normal" required fullWidth>
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <Input
+                name="password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                disabled={isBusy}
+                value={password}
+                onChange={event => { setPassword(event.target.value); }}
+              />
+            </FormControl>
+            <FormControl variant="standard" margin="normal" required fullWidth>
+              <InputLabel htmlFor="password">Domain</InputLabel>
+              <Input
+                name="scope"
+                type="scope"
+                id="scope"
+                disabled={isBusy}
+                value={scope}
+                onChange={event => { setScope(event.target.value); }}
+              />
+            </FormControl>
+            <Button
+              aria-label="login-button"
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="inherit"
+              disabled={isBusy}
+              className={classes.submit}
+              onClick={onSignIn}
+            >
+              Sign in
+            </Button>
+
+          </form>
+          {message && <Alert severity="error">{message}</Alert>}
+        </Paper>
+      </main>
+    </>
+  );
 }
 
-export const Login = withStyles(styles)(withRouter(connect(mapProps, mapDispatch)(LoginComponent)));
+export const Login = withRouter(LoginComponent);
 export default Login;

@@ -16,14 +16,14 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { ViewElementNumber } from "models/uiModels";
+import React from 'react';
+import { ViewElementNumber } from "../models/uiModels";
 import { Tooltip, InputAdornment } from "@mui/material";
-import * as React from 'react';
 import { BaseProps } from "./baseProps";
 import { IfWhenTextInput } from "./ifWhenTextInput";
-import { checkRange } from "./verifyer";
+import { checkRange } from "../utilities/verifyer";
 
-type numberInputProps = BaseProps<any>;
+type numberInputProps = BaseProps<number>;
 
 export const UiElementNumber = (props: numberInputProps) => {
 
@@ -49,12 +49,12 @@ export const UiElementNumber = (props: numberInputProps) => {
       setError(true);
       setHelperText("Input is not a number.");
     }
-    props.onChange(data);
+    props.onChange(num);
   }
 
   return (
     <Tooltip disableInteractive title={isTooltipVisible ? element.description || '' : ''}>
-      <IfWhenTextInput element={element} onChangeTooltipVisuability={setTooltipVisibility}
+      <IfWhenTextInput element={element} onChangeTooltipVisibility={setTooltipVisibility}
         spellCheck={false} autoFocus margin="dense"
         id={element.id} label={element.label} type="text" value={props.inputValue}
         style={{ width: 485, marginLeft: 20, marginRight: 20 }}

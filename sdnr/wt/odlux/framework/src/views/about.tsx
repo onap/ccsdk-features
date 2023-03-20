@@ -15,22 +15,18 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import * as marked from 'marked';
 import * as hljs from 'highlight.js';
 import { requestRestExt } from '../services/restService';
 import { Button, Typography } from '@mui/material';
+
 const defaultRenderer = new marked.Renderer();
 defaultRenderer.link = (href, title, text) => (
   `<a target="_blank" rel="noopener noreferrer" href="${href}" title="${title}">${text}</a>`
 );
-interface AboutState {
-  content: string | null;
-  isCopiedSuccessfully: boolean;
-  isContentLoadedSucessfully: boolean;
-}
 
-type odluxVersion= {version:string,build:string, framework: string, 
+type OdluxVersion= {version:string,build:string, framework: string, 
   applications:{
     configurationApp: string,
     connectApp: string,
@@ -38,25 +34,27 @@ type odluxVersion= {version:string,build:string, framework: string,
     faultApp: string,
     helpApp: string,
     inventoryApp: string,
+    linkCalculationApp: string,
     maintenanceApp: string,
     mediatorApp: string,
+    networkMapApp: string,
     permanceHistoryApp: string
   }};
 
-type topologyVersion = {version: string, buildTimestamp: string};
+type TopologyVersion = {version: string, buildTimestamp: string};
 
-class AboutComponent extends React.Component<any, AboutState> {
-  textarea: React.RefObject<HTMLTextAreaElement>;
+const AboutComponent: FC = (props) => {
+  
+  const textareaRef = React.createRef<HTMLTextAreaElement>();
+  const [content, setContent] = useState<string | null>(null);
+  const [isCopiedSuccessfully, setCopySuccess] = useState(false);
+  const [isContetLoaded, setContentLoaded] = useState(false);
 
+  useEffect(()=>{
+    loadAboutContent();
+  },[]);
 
-  constructor(props: any) {
-    super(props);
-    this.state = { content: null, isCopiedSuccessfully:false, isContentLoadedSucessfully: false }
-    this.textarea = React.createRef();
-    this.loadAboutContent();
-  }
-
-  private getMarkOdluxVersionMarkdownTable(data:odluxVersion|null|undefined):string{
+  const getMarkOdluxVersionMarkdownTable = (data:OdluxVersion|null|undefined):string => {
     if(!data) {
       return "";
     }else{
@@ -72,6 +70,8 @@ class AboutComponent extends React.Component<any, AboutState> {
         `| InventoryApp | ${data.applications.inventoryApp}|\n `+
         `| EventLogApp | ${data.applications.eventLogApp}|\n `+
         `| MediatorApp | ${data.applications.mediatorApp}|\n `+
+        `| NetworkMapApp | ${data.applications.networkMapApp}|\n `+
+        `| LinkCalculatorApp | ${data.applications.linkCalculationApp}|\n `+
         `| HelpApp | ${data.applications.helpApp}|\n `;
       }
     
@@ -80,7 +80,7 @@ class AboutComponent extends React.Component<any, AboutState> {
     }
   }
 
-  private getTopologyVersionMarkdownTable(data: topologyVersion|null|undefined){ 
+  const getTopologyVersionMarkdownTable = (data: TopologyVersion|null|undefined) => { 
     if(!data){
       return "No version";
     }
@@ -92,7 +92,7 @@ class AboutComponent extends React.Component<any, AboutState> {
     }
   }
 
-  private loadAboutContent(): void {
+  const loadAboutContent = (): void => {
     const baseUri = window.location.pathname.substring(0,window.location.pathname.lastIndexOf("/")+1);
     const init = {
       'method': 'GET',
@@ -102,7 +102,7 @@ class AboutComponent extends React.Component<any, AboutState> {
       }
     };
     const p1 = requestRestExt<string>('/about',init);
-    const p2 = requestRestExt<odluxVersion>(`${baseUri}version.json`);
+    const p2 = requestRestExt<OdluxVersion>(`${baseUri}version.json`);
     const p3 = requestRestExt<any>(`/topology/info/version`);
 
     Promise.all([p1,p2, p3]).then((responses) => {
@@ -110,30 +110,29 @@ class AboutComponent extends React.Component<any, AboutState> {
       const response2 = responses[1]; 
       const response3 = responses[2];   
       const content = response.status == 200 ? response.data : `${response.status} ${response.message}` || "Server error";
-      const content2 = `\n## ODLUX Version Info\n`+(response2.status == 200 ? this.getMarkOdluxVersionMarkdownTable(response2.data) : `${response2.message}` || "ODLUX Server error");
-      const content3 =  `\n## Topology API Version Info\n`+(response3.status == 200 ? this.getTopologyVersionMarkdownTable(response3.data): `Topology API not available`);
+      const content2 = `\n## ODLUX Version Info\n`+(response2.status == 200 ? getMarkOdluxVersionMarkdownTable(response2.data) : `${response2.message}` || "ODLUX Server error");
+      const content3 =  `\n## Topology API Version Info\n`+(response3.status == 200 ? getTopologyVersionMarkdownTable(response3.data): `Topology API not available`);
       const loadedSucessfully = response.status == 200 ? true : false;
-      this.setState({ content: (content + content2 + content3 ) || null, isContentLoadedSucessfully: loadedSucessfully });
+      setContent((content + content2 + content3 ) || null);
+      setContentLoaded(loadedSucessfully);
     }).catch((error) => {
-      this.setState({ content: error })
-    })
+      setContent(error);
+    });
   }
 
-  copyToClipboard = (e: React.MouseEvent<HTMLButtonElement>) =>{
+  const copyToClipboard = (e: React.MouseEvent<HTMLButtonElement>) =>{
     e.preventDefault();
 
-    if(this.textarea.current!==null){
-      this.textarea.current.select();
+    if(textareaRef.current!==null){
+      textareaRef.current.select();
       document.execCommand('copy');
       if(e.currentTarget != null){ // refocus on button, otherwhise the textarea would be focused
         e.currentTarget.focus();
       }
-      this.setState({isCopiedSuccessfully: true});
-      window.setTimeout(()=>{this.setState({isCopiedSuccessfully: false});},2000);
+      setCopySuccess(true);
+      window.setTimeout(()=>{ setCopySuccess(false);},2000);
     }
   }
-
-  render() {
 
     const markedOptions: marked.MarkedOptions = {
       gfm: true,
@@ -157,17 +156,17 @@ class AboutComponent extends React.Component<any, AboutState> {
     const style: React.CSSProperties = {};
     const containerStyle = { overflow: "auto", paddingRight: "20px" }
 
-    const html = (marked(this.state.content || 'loading', { renderer: markedOptions && markedOptions.renderer || defaultRenderer }));
+    const html = (marked(content || 'loading', { renderer: markedOptions && markedOptions.renderer || defaultRenderer }));
 
     return (
       <div style={containerStyle}>
-        { this.state.isContentLoadedSucessfully &&
+        { isContetLoaded &&
         <div style={{float: "right", marginRight: "10px"}}>
-        <Button aria-label="copy-version-information-button" color="inherit" variant="contained" onClick={e => this.copyToClipboard(e)}>
+        <Button aria-label="copy-version-information-button" color="inherit" variant="contained" onClick={e => copyToClipboard(e)}>
            Copy to clipboard
         </Button>
           {
-            this.state.isCopiedSuccessfully && 
+            isCopiedSuccessfully && 
             <Typography variant="body1" style={{color: "green"}} align="center">
              copied successfully
             </Typography>
@@ -183,13 +182,12 @@ class AboutComponent extends React.Component<any, AboutState> {
          <form>
           <textarea
            style={{opacity: ".01"}}
-            ref={this.textarea}
-            value={this.state.content || ''}
+            ref={textareaRef}
+            value={content || ''}
           />
         </form>
       </div>
     );
-  }
 };
 
 export const About = AboutComponent;

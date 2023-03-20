@@ -16,23 +16,23 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { Module } from "../models/yang";
-import { ViewSpecification } from "../models/uiModels";
-import { IActionHandler } from "../../../../framework/src/flux/action";
-import { UpdateDeviceDescription } from "../actions/deviceActions";
+import { Module } from '../models/yang';
+import { ViewSpecification } from '../models/uiModels';
+import { IActionHandler } from '../../../../framework/src/flux/action';
+import { UpdateDeviceDescription } from '../actions/deviceActions';
 
 export interface IDeviceDescriptionState {
-  nodeId: string,
+  nodeId: string;
   modules: {
-    [name: string]: Module
-  },
-  views: ViewSpecification[],
+    [name: string]: Module;
+  };
+  views: ViewSpecification[];
 }
 
 const deviceDescriptionStateInit: IDeviceDescriptionState = {
-  nodeId: "",
+  nodeId: '',
   modules: {},
-  views: []
+  views: [],
 };
 
 export const deviceDescriptionHandler: IActionHandler<IDeviceDescriptionState> = (state = deviceDescriptionStateInit, action) => {
@@ -41,7 +41,7 @@ export const deviceDescriptionHandler: IActionHandler<IDeviceDescriptionState> =
       ...state,
       nodeId: action.nodeId,
       modules: action.modules,
-      views: action.views
+      views: action.views,
     };
   }
   return state;

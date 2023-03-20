@@ -21,7 +21,7 @@
  */
 export interface IAuthor {
   /**
-   * Defines the unique id of the autor. 
+   * Defines the unique id of the author. 
    */
   id: number;
 

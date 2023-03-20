@@ -25,8 +25,8 @@ import { restService } from '../services/restServices';
 
 export interface IConnectedNetworkElementsState extends IExternalTableState<NetworkElementConnection> { }
 
-// create eleactic search material data fetch handler
-const connectedNetworkElementsSearchHandler = createSearchDataHandler<NetworkElementConnection>('network-element-connection', false, { status: "Connected" });
+// create elastic search material data fetch handler
+const connectedNetworkElementsSearchHandler = createSearchDataHandler<NetworkElementConnection>('network-element-connection', false, { status: 'Connected' });
 
 export const {
   actionHandler: connectedNetworkElementsActionHandler,
@@ -41,5 +41,5 @@ export const {
     const neUrl = restService.getNetworkElementUri(ne.id);
     const policy = getAccessPolicyByUrl(neUrl);
     return !(policy.GET && policy.POST);
-  }
+  },
 );

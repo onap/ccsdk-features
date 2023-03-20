@@ -16,10 +16,10 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { Action } from "../../../../framework/src/flux/action";
+import { Action } from '../../../../framework/src/flux/action';
 
 export class ReloadAction extends Action {
-    constructor(public show: boolean) {
-        super();
-    }
+  constructor(public show: boolean) {
+    super();
+  }
 }

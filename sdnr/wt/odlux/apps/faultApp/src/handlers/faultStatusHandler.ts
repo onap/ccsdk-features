@@ -15,24 +15,25 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import { IActionHandler } from "../../../../framework/src/flux/action";
-import { SetFaultStatusAction } from "../actions/statusActions";
+import { IActionHandler } from '../../../../framework/src/flux/action';
+
+import { SetFaultStatusAction } from '../actions/statusActions';
 
 export interface IFaultStatus {
-  critical: number,
-  major: number,
-  minor: number,
-  warning: number,
-  isLoadingAlarmStatusChart: boolean,
-  Connected: number,
-  Connecting: number,
-  Disconnected: number,
-  Mounted: number,
-  UnableToConnect: number,
-  Undefined: number,
-  Unmounted: number,
-  total: number,
-  isLoadingConnectionStatusChart: boolean
+  critical: number;
+  major: number;
+  minor: number;
+  warning: number;
+  isLoadingAlarmStatusChart: boolean;
+  Connected: number;
+  Connecting: number;
+  Disconnected: number;
+  Mounted: number;
+  UnableToConnect: number;
+  Undefined: number;
+  Unmounted: number;
+  total: number;
+  isLoadingConnectionStatusChart: boolean;
 }
 
 const faultStatusInit: IFaultStatus = {
@@ -49,7 +50,7 @@ const faultStatusInit: IFaultStatus = {
   Undefined: 0,
   Unmounted: 0,
   total: 0,
-  isLoadingConnectionStatusChart: false
+  isLoadingConnectionStatusChart: false,
 };
 
 export const faultStatusHandler: IActionHandler<IFaultStatus> = (state = faultStatusInit, action) => {
@@ -68,9 +69,9 @@ export const faultStatusHandler: IActionHandler<IFaultStatus> = (state = faultSt
       Undefined: action.UndefinedCount,
       Unmounted: action.UnmountedCount,
       total: action.totalCount,
-      isLoadingConnectionStatusChart: action.isLoadingConnectionStatusChart
-    }
+      isLoadingConnectionStatusChart: action.isLoadingConnectionStatusChart,
+    };
   }
 
   return state;
-}
+};

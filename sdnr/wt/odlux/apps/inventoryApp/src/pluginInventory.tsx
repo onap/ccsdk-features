@@ -16,38 +16,33 @@
 * ============LICENSE_END==========================================================================
 */
 // app configuration and main entry point for the app
+import React from 'react';
+import { Redirect, Route, RouteComponentProps, Switch, withRouter } from 'react-router-dom';
 
-import * as React from "react";
-import { withRouter, RouteComponentProps, Route, Switch, Redirect } from 'react-router-dom';
-import { faShoppingBag } from '@fortawesome/free-solid-svg-icons'; // select app icon
+import { connect, Connect, IDispatcher } from '../../../framework/src/flux/connect';
 import applicationManager from '../../../framework/src/services/applicationManager';
-import connect, { Connect, IDispatcher } from '../../../framework/src/flux/connect';
-import { IApplicationStoreState } from "../../../framework/src/store/applicationStore";
-
-import { InventoryTreeView } from './views/treeview';
-import Dashboard from './views/dashboard';
-
-import { PanelId } from "./models/panelId";
-import { SetPanelAction } from "./actions/panelActions";
-
+import { IApplicationStoreState } from '../../../framework/src/store/applicationStore';
+import { SetPanelAction } from './actions/panelActions';
 import inventoryAppRootHandler from './handlers/inventoryAppRootHandler';
-import { createInventoryElementsActions, createInventoryElementsProperties } from "./handlers/inventoryElementsHandler";
-import { createConnectedNetworkElementsProperties, createConnectedNetworkElementsActions } from "./handlers/connectedNetworkElementsHandler";
+import { createInventoryElementsActions, createInventoryElementsProperties } from './handlers/inventoryElementsHandler';
+import { PanelId } from './models/panelId';
+import Dashboard from './views/dashboard';
+import { InventoryTreeView } from './views/treeview';
+
+const appIcon = require('./assets/icons/inventoryAppIcon.svg');  // select app icon
 
 let currentMountId: string | undefined = undefined;
 const mapProps = (state: IApplicationStoreState) => ({
   inventoryProperties: createInventoryElementsProperties(state),
   panelId: state.inventory.currentOpenPanel,
-  connectedNetworkElementsProperties: createConnectedNetworkElementsProperties(state),
 });
 
-const mapDisp = (dispatcher: IDispatcher) => ({
+const mapDispatch = (dispatcher: IDispatcher) => ({
   inventoryActions: createInventoryElementsActions(dispatcher.dispatch, true),
-  connectedNetworkElementsActions: createConnectedNetworkElementsActions(dispatcher.dispatch, true),
   setCurrentPanel: (panelId: PanelId) => dispatcher.dispatch(new SetPanelAction(panelId)),
 });
 
-const InventoryTableApplicationRouteAdapter = connect(mapProps, mapDisp)((props: RouteComponentProps<{ mountId?: string }> & Connect<typeof mapProps, typeof mapDisp>) => {
+const InventoryTableApplicationRouteAdapter = connect(mapProps, mapDispatch)((props: RouteComponentProps<{ mountId?: string }> & Connect<typeof mapProps, typeof mapDispatch>) => {
   if (currentMountId !== props.match.params.mountId) {
     // route parameter has changed
     currentMountId = props.match.params.mountId || undefined;
@@ -56,26 +51,20 @@ const InventoryTableApplicationRouteAdapter = connect(mapProps, mapDisp)((props:
       if (currentMountId) {
         if (props.panelId) {
           props.setCurrentPanel(props.panelId);
+        } else {
+          props.setCurrentPanel('Equipment');
         }
-        else {
-          props.setCurrentPanel("InventoryElementsTable");
-        }
-        props.inventoryActions.onFilterChanged("nodeId", currentMountId);
-        props.connectedNetworkElementsActions.onFilterChanged("nodeId", currentMountId);
+        props.inventoryActions.onFilterChanged('nodeId', currentMountId);
         if (!props.inventoryProperties.showFilter) {
           props.inventoryActions.onToggleFilter(false);
         }
-        if (!props.connectedNetworkElementsProperties.showFilter) {
-          props.connectedNetworkElementsActions.onToggleFilter(false);
-        }
         props.inventoryActions.onRefresh();
-        props.connectedNetworkElementsActions.onRefresh();
       }
     });
   }
   return (
     <Dashboard />
-  )
+  );
 });
 
 const App = withRouter((props: RouteComponentProps) => (
@@ -89,11 +78,11 @@ const App = withRouter((props: RouteComponentProps) => (
 
 export function register() {
   applicationManager.registerApplication({
-    name: "inventory",
-    icon: faShoppingBag,
+    name: 'inventory',
+    icon: appIcon,
     rootActionHandler: inventoryAppRootHandler,
     rootComponent: App,
-    menuEntry: "Inventory"
+    menuEntry: 'Inventory',
   });
 }
 

@@ -30,7 +30,7 @@ export class BaseAction extends Action { }
 
 /** Represents an async thunk action creator to add an element to the network elements/nodes. */
 export const addNewNetworkElementAsyncActionCreator = (element: NetworkElementConnection) => async (dispatch: Dispatch) => {
-  const res = await connectService.createNetworkElement({ ...element });
+  await connectService.createNetworkElement({ ...element });
   dispatch(updateCurrentViewAsyncAction());
   dispatch(new AddSnackbarNotification({ message: `Successfully added [${element.nodeId}]`, options: { variant: 'success' } }));
 };
@@ -39,11 +39,10 @@ export const addNewNetworkElementAsyncActionCreator = (element: NetworkElementCo
 export const editNetworkElementAsyncActionCreator = (element: UpdateNetworkElement) => async (dispatch: Dispatch) => {
   const connectionStatus: ConnectionStatus[] = (await connectService.getNetworkElementConnectionStatus(element.id).then(ne => (ne))) || [];
   const currentConnectionStatus = connectionStatus[0].status;
-  if (currentConnectionStatus === "Disconnected") {
-    const res = await connectService.deleteNetworkElement(element);
-  }
-  else {
-    const res = await connectService.updateNetworkElement(element);
+  if (currentConnectionStatus === 'Disconnected') {
+    await connectService.deleteNetworkElement(element);
+  } else {
+    await connectService.updateNetworkElement(element);
   }
   dispatch(updateCurrentViewAsyncAction());
   dispatch(new AddSnackbarNotification({ message: `Successfully modified [${element.id}]`, options: { variant: 'success' } }));
@@ -52,7 +51,7 @@ export const editNetworkElementAsyncActionCreator = (element: UpdateNetworkEleme
 
 /** Represents an async thunk action creator to delete an element from network elements/nodes. */
 export const removeNetworkElementAsyncActionCreator = (element: UpdateNetworkElement) => async (dispatch: Dispatch) => {
-  const res = await connectService.deleteNetworkElement(element);
+  await connectService.deleteNetworkElement(element);
   await dispatch(unmountNetworkElementAsyncActionCreator(element && element.id));
   await dispatch(updateCurrentViewAsyncAction());
 };

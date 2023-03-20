@@ -16,9 +16,9 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { Button, Checkbox, FormControlLabel, MenuItem, Popover, Switch, Typography } from '@mui/material';
-import connect, { Connect, IDispatcher } from '../../flux/connect';
-import * as React from 'react';
+import React from 'react';
+import { Button, FormControlLabel, Popover, Switch, Typography } from '@mui/material';
+import { connect, Connect, IDispatcher } from '../../flux/connect';
 
 import { ColumnModel } from './columnModel';
 import { IApplicationStoreState } from '../../store/applicationStore';

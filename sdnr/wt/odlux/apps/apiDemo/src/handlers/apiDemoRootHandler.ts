@@ -18,22 +18,23 @@
 
 import { combineActionHandler } from '../../../../framework/src/flux/middleware';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
 
 import { moduleHandler, IModules } from './modulesHandler';
 
 export interface IApiDemoStoreState {
-   modules: IModules
+  modules: IModules;
 }
 
 declare module '../../../../framework/src/store/applicationStore' {
   interface IApplicationStoreState {
-    apiDemo: IApiDemoStoreState
+    apiDemo: IApiDemoStoreState;
   }
 }
 
 const actionHandlers = {
-   modules: moduleHandler
+  modules: moduleHandler,
 };
 
 export const apiDemoRootHandler = combineActionHandler<IApiDemoStoreState>(actionHandlers);

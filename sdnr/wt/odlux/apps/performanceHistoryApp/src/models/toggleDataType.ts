@@ -19,7 +19,7 @@
 /**
  * Specifies possible sub views
  */
-export type SubTabType = "chart" | "table";
+export type SubTabType = 'chart' | 'table';
 
-export type currentViewType = "performanceData" | "receiveLevel" | "transmissionPower" | "adaptiveModulation" | "Temp" | "SINR" | "CPD";
+export type currentViewType = 'performanceData' | 'receiveLevel' | 'transmissionPower' | 'adaptiveModulation' | 'Temp' | 'SINR' | 'CPD';
 

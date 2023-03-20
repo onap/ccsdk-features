@@ -17,14 +17,12 @@
  */
 // app configuration and main entry point for the app
 
-import * as React from "react";
+import React from "react";
 import { withRouter, RouteComponentProps, Route, Switch, Redirect } from 'react-router-dom';
 
-import { faGlobe } from '@fortawesome/free-solid-svg-icons';  // select app icon
-
 import applicationManager from '../../../framework/src/services/applicationManager';
-import { IApplicationStoreState } from "../../../framework/src/store/applicationStore";
-import connect, { Connect, IDispatcher } from '../../../framework/src/flux/connect';
+
+import { connect, Connect, IDispatcher } from '../../../framework/src/flux/connect';
 
 import { mediatorAppRootHandler } from './handlers/mediatorAppRootHandler';
 import { avaliableMediatorServersReloadAction } from "./handlers/avaliableMediatorServersHandler";
@@ -32,6 +30,8 @@ import { avaliableMediatorServersReloadAction } from "./handlers/avaliableMediat
 import { MediatorApplication } from "./views/mediatorApplication";
 import { MediatorServerSelection } from "./views/mediatorServerSelection";
 import { initializeMediatorServerAsyncActionCreator } from "./actions/mediatorServerActions";
+
+const appIcon = require('./assets/icons/mediatorAppIcon.svg');  // select app icon
 
 let currentMediatorServerId: string | undefined = undefined;
 
@@ -70,13 +70,13 @@ const FinalApp = withRouter(connect()(App));
 export function register() {
   const applicationApi = applicationManager.registerApplication({
     name: "mediator",
-    icon: faGlobe,
+    icon: appIcon,
     rootComponent: FinalApp,
     rootActionHandler: mediatorAppRootHandler,
     menuEntry: "Mediator"
   });
 
-  // prefetch all avaliable mediator servers
+  // prefetch all available mediator servers
   applicationApi.applicationStoreInitialized.then(applicationStore => {
     applicationStore.dispatch(avaliableMediatorServersReloadAction)
   });

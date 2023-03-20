@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -24,78 +24,75 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import { networkElementsReloadAction } from '../handlers/networkElementsHandler';
-import { IDispatcher, connect, Connect } from '../../../../framework/src/flux/connect';
+import { connect, Connect, IDispatcher } from '../../../../framework/src/flux/connect';
 
+import { networkElementsReloadAction } from '../handlers/networkElementsHandler';
 import { NetworkElementConnection } from '../models/networkElementConnection';
 
 export enum RefreshNetworkElementsDialogMode {
-  None = "none",
-  RefreshNetworkElementsTable = "RefreshNetworkElementsTable",
+  None = 'none',
+  RefreshNetworkElementsTable = 'RefreshNetworkElementsTable',
 }
 
 const mapDispatch = (dispatcher: IDispatcher) => ({
-  refreshNetworkElement: () => dispatcher.dispatch(networkElementsReloadAction)
+  refreshNetworkElement: () => dispatcher.dispatch(networkElementsReloadAction),
 });
 
 type DialogSettings = {
-  dialogTitle: string,
-  dialogDescription: string,
-  applyButtonText: string,
-  cancelButtonText: string,
-  enableMountIdEditor: boolean,
-  enableUsernameEditor: boolean,
-  enableExtendedEditor: boolean,
-}
+  dialogTitle: string;
+  dialogDescription: string;
+  applyButtonText: string;
+  cancelButtonText: string;
+  enableMountIdEditor: boolean;
+  enableUsernameEditor: boolean;
+  enableExtendedEditor: boolean;
+};
 
 const settings: { [key: string]: DialogSettings } = {
   [RefreshNetworkElementsDialogMode.None]: {
-    dialogTitle: "",
-    dialogDescription: "",
-    applyButtonText: "",
-    cancelButtonText: "",
+    dialogTitle: '',
+    dialogDescription: '',
+    applyButtonText: '',
+    cancelButtonText: '',
     enableMountIdEditor: false,
     enableUsernameEditor: false,
     enableExtendedEditor: false,
   },
   [RefreshNetworkElementsDialogMode.RefreshNetworkElementsTable]: {
-    dialogTitle: "Do you want to refresh the nodes table?",
-    dialogDescription: "",
-    applyButtonText: "Yes",
-    cancelButtonText: "Cancel",
+    dialogTitle: 'Do you want to refresh the nodes table?',
+    dialogDescription: '',
+    applyButtonText: 'Yes',
+    cancelButtonText: 'Cancel',
     enableMountIdEditor: true,
     enableUsernameEditor: true,
     enableExtendedEditor: true,
-  }
-}
+  },
+};
 
 type RefreshNetworkElementsDialogComponentProps = Connect<undefined, typeof mapDispatch> & {
   mode: RefreshNetworkElementsDialogMode;
   onClose: () => void;
 };
 
-type RefreshNetworkElementsDialogComponentState = NetworkElementConnection & { isNameValid: boolean, isHostSet: boolean };
+type RefreshNetworkElementsDialogComponentState = NetworkElementConnection & { isNameValid: boolean; isHostSet: boolean };
 
 class RefreshNetworkElementsDialogComponent extends React.Component<RefreshNetworkElementsDialogComponentProps, RefreshNetworkElementsDialogComponentState> {
-  constructor(props: RefreshNetworkElementsDialogComponentProps) {
-    super(props);
-  }
 
   render(): JSX.Element {
     const setting = settings[this.props.mode];
     return (
       <Dialog open={this.props.mode !== RefreshNetworkElementsDialogMode.None}>
-        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, "-").toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
+        <DialogTitle id="form-dialog-title" aria-label={`${setting.dialogTitle.replace(/ /g, '-').toLowerCase()}-dialog`}>{setting.dialogTitle}</DialogTitle>
         <DialogContent>
           <DialogContentText>
             {setting.dialogDescription}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button aria-label="dialog-confirm-button" onClick={(event) => {
+          <Button aria-label="dialog-confirm-button" onClick={() => {
             this.onRefresh();
           }} color="inherit" > {setting.applyButtonText} </Button>
-          <Button aria-label="dialog-cancel-button" onClick={(event) => {
+          <Button aria-label="dialog-cancel-button" onClick={() => {
             this.onCancel();
           }} color="secondary"> {setting.cancelButtonText} </Button>
         </DialogActions>
@@ -110,7 +107,7 @@ class RefreshNetworkElementsDialogComponent extends React.Component<RefreshNetwo
 
   private onCancel = () => {
     this.props.onClose();
-  }
+  };
 }
 
 export const RefreshNetworkElementsDialog = connect(undefined, mapDispatch)(RefreshNetworkElementsDialogComponent);

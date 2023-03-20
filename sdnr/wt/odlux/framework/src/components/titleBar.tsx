@@ -15,7 +15,7 @@
  * the License.
  * ============LICENSE_END==========================================================================
  */
-import * as React from 'react';
+import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import { Theme } from '@mui/material/styles';
@@ -27,9 +27,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import Block from '@mui/icons-material/Block';
-import Adjust from '@mui/icons-material/Adjust';
-import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
@@ -41,9 +38,11 @@ import { faDotCircle } from '@fortawesome/free-solid-svg-icons';
 import { logoutUser } from '../actions/authentication';
 import { PushAction, ReplaceAction } from '../actions/navigationActions';
 
-import connect, { Connect, IDispatcher } from '../flux/connect';
-import Logo from './logo';
+import { connect, Connect, IDispatcher } from '../flux/connect';
 import { MenuAction, MenuClosedByUser } from '../actions/menuAction';
+
+import MenuIcon from './icons/menuIcon';
+import Logo from './logo';
 
 const styles = (theme: Theme) => createStyles({
   appBar: {
@@ -58,7 +57,8 @@ const styles = (theme: Theme) => createStyles({
   },
   icon: {
     marginLeft: 16,
-    marginRight: 8
+    marginRight: 8,
+    marginBottom: -2,
   },
   connected: {
     color: "green"
@@ -112,10 +112,10 @@ class TitleBarComponent extends React.Component<TitleBarProps, { anchorEl: HTMLE
 
 
     // add notificationInfo element before help
-    if (state.framework.applicationRegistraion) {
+    if (state.framework.applicationRegistration) {
       let isNotificationInfoAdded = false;
-      Object.keys(state.framework.applicationRegistraion).map(key => {
-        const reg = state.framework.applicationRegistraion[key];
+      Object.keys(state.framework.applicationRegistration).map(key => {
+        const reg = state.framework.applicationRegistration[key];
         if (reg && reg.statusBarElement) {
           if (key === "help") {
             isNotificationInfoAdded = true;
@@ -132,7 +132,12 @@ class TitleBarComponent extends React.Component<TitleBarProps, { anchorEl: HTMLE
     }
 
     const stateIcon = state.framework.applicationState.icon;
-    const icon = !stateIcon ? null :( typeof stateIcon === 'string' ? <img className={classes.icon} height={22} src={stateIcon} /> : <FontAwesomeIcon className={classes.icon} icon={stateIcon} /> )
+    const customIconHeight = 22; 
+    const icon = !stateIcon
+      ? null
+      : (typeof stateIcon === 'string'
+        ? <img className={classes.icon} height={customIconHeight} src={stateIcon} />
+        : <FontAwesomeIcon className={classes.icon} icon={stateIcon} />)
     
 
     return (

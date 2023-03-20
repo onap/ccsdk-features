@@ -32,7 +32,7 @@ export type TemperatureDatabaseDataType = {
  * Internally used type to provide table and chart data
  */
 export type TemperatureDataType = {
-  performanceData: TemperatureDatabaseDataType
+  performanceData: TemperatureDatabaseDataType;
   radioSignalId: string;
   scannerId: string;
   timeStamp: string;

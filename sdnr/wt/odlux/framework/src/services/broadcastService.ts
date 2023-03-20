@@ -22,89 +22,95 @@ import { ReplaceAction } from "../actions/navigationActions";
 import { User } from "../models/authentication";
 import { ApplicationStore } from "../store/applicationStore";
 
-type Broadcaster = {channel: BroadcastChannel, key: String};
+type Broadcaster = {
+  channel: BroadcastChannel;
+  key: String;
+};
 
 type AuthTypes = 'login' | 'logout';
-export type AuthMessage={key: AuthTypes, data: any};
+export type AuthMessage = {
+  key: AuthTypes;
+  data: any;
+};
 
 type SettingsType = 'general';
-export type SettingsMessage={key: SettingsType, enableNotifications: boolean, user: string};
+export type SettingsMessage = {
+  key: SettingsType;
+  enableNotifications: boolean;
+  user: string;
+};
 
-let channels: Broadcaster[] = [];
-let store : ApplicationStore | null = null;
+const channels: Broadcaster[] = [];
+let store: ApplicationStore | null = null;
 
 export const saveChannel = (channel: BroadcastChannel, channelName: string) => {
-    channels.push({channel: channel, key: channelName});
-}
+  channels.push({ channel: channel, key: channelName });
+};
 
-export const startBroadcastChannel = (applicationStore: ApplicationStore)=>{
-    store=applicationStore;
+export const startBroadcastChannel = (applicationStore: ApplicationStore) => {
+  store = applicationStore;
 
-    //might decide to use one general broadcast channel with more keys in the future
-    createAuthBroadcastChannel();
-    createSettingsBroadcastChannel();
-}
+  //might decide to use one general broadcast channel with more keys in the future
+  createAuthBroadcastChannel();
+  createSettingsBroadcastChannel();
+};
 
-const createSettingsBroadcastChannel = () =>{
+const createSettingsBroadcastChannel = () => {
 
-    const name = "odlux_settings";
-    const bc: BroadcastChannel = new BroadcastChannel(name);
-    channels.push({ channel: bc, key: name });
+  const name = "odlux_settings";
+  const bc: BroadcastChannel = new BroadcastChannel(name);
+  channels.push({ channel: bc, key: name });
 
-    bc.onmessage = (eventMessage: MessageEvent<SettingsMessage>) => {
-        console.log(eventMessage)
+  bc.onmessage = (eventMessage: MessageEvent<SettingsMessage>) => {
+    console.log(eventMessage);
 
-        if (eventMessage.data.key === 'general') {
-            
-            if (store?.state.framework.authenticationState.user) {
-               const data = eventMessage.data;
-               if(store.state.framework.authenticationState.user.user === data.user){
-                  store?.dispatch(setGeneralSettingsAction(data.enableNotifications));
-               }
-            }
+    if (eventMessage.data.key === 'general') {
+
+      if (store?.state.framework.authenticationState.user) {
+        const data = eventMessage.data;
+        if (store.state.framework.authenticationState.user.user === data.user) {
+          store?.dispatch(setGeneralSettingsAction(data.enableNotifications));
         }
+      }
     }
-
-}
+  }
+};
 
 const createAuthBroadcastChannel = () => {
-    const name = "odlux_auth";
-    const bc: BroadcastChannel = new BroadcastChannel(name);
-    channels.push({ channel: bc, key: name });
+  const name = "odlux_auth";
+  const bc: BroadcastChannel = new BroadcastChannel(name);
+  channels.push({ channel: bc, key: name });
 
-    bc.onmessage = (eventMessage: MessageEvent<AuthMessage>) => {
-        console.log(eventMessage)
+  bc.onmessage = (eventMessage: MessageEvent<AuthMessage>) => {
+    console.log(eventMessage)
 
-        if (eventMessage.data.key === 'login') {
-            if (!store?.state.framework.authenticationState.user) {
-                const initialToken = localStorage.getItem("userToken");
-                if (initialToken) {
-                    store?.dispatch(loginUserAction(User.fromString(initialToken)));
-                    store?.dispatch(new ReplaceAction("/"));
-                }
-            }
+    if (eventMessage.data.key === 'login') {
+      if (!store?.state.framework.authenticationState.user) {
+        const initialToken = localStorage.getItem("userToken");
+        if (initialToken) {
+          store?.dispatch(loginUserAction(User.fromString(initialToken)));
+          store?.dispatch(new ReplaceAction("/"));
         }
-        else if (eventMessage.data.key === 'logout') {
-
-            if (store?.state.framework.authenticationState.user) {
-                store?.dispatch(logoutUser());
-                store?.dispatch(new ReplaceAction("/login"));
-            }
-        } 
+      }
     }
-}
+    else if (eventMessage.data.key === 'logout') {
 
-export const getBroadcastChannel = (channelName: string) =>{
-    const foundChannel = channels.find(s =>s.key===channelName);
-    return foundChannel?.channel;
-}
-
-
-export const sendMessage = (data: any, channel: string) =>{
-
-       const foundChannel = channels.find(s =>s.key===channel);
-       if(foundChannel){
-        foundChannel.channel.postMessage(data);
-       }
-
+      if (store?.state.framework.authenticationState.user) {
+        store?.dispatch(logoutUser());
+        store?.dispatch(new ReplaceAction("/login"));
+      }
     }
+  }
+};
+
+export const getBroadcastChannel = (channelName: string) => {
+  const foundChannel = channels.find(s => s.key === channelName);
+  return foundChannel?.channel;
+};
+
+export const sendMessage = (data: any, channel: string) => {
+  const foundChannel = channels.find(s => s.key === channel);
+  if (foundChannel) {
+    foundChannel.channel.postMessage(data);
+  }
+};
