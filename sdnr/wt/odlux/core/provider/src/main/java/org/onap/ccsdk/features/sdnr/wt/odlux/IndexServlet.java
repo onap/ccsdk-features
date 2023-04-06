@@ -22,13 +22,21 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.file.Files;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@HttpWhiteboardServletPattern({"/favicon.ico","/index2.html"})
+@HttpWhiteboardServletName("IndexServlet")
+@Component(service = Servlet.class)
 public class IndexServlet extends HttpServlet {
 
     private static final long serialVersionUID = 3039669437157215355L;

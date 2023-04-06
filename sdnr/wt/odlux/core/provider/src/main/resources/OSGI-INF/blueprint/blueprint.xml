@@ -22,7 +22,7 @@
 
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <bean id="indexServlet"
+<!--    <bean id="indexServlet"
           class="org.onap.ccsdk.features.sdnr.wt.odlux.IndexServlet">
     </bean>
 
@@ -30,27 +30,17 @@
         <service-properties>
             <entry key="alias" value="/index2.html"/>
         </service-properties>
-    </service>
+    </service>-->
 
     <bean id="indexServlet2"
           class="org.onap.ccsdk.features.sdnr.wt.odlux.IndexServlet">
     </bean>
 
-    <service interface="javax.servlet.http.HttpServlet" ref="indexServlet2">
-        <service-properties>
-            <entry key="alias" value="/favicon.ico"/>
-        </service-properties>
-    </service>
 
     <bean id="resFilesServlet"
           class="org.onap.ccsdk.features.sdnr.wt.odlux.ResFilesServlet">
     </bean>
 
-    <service interface="javax.servlet.http.HttpServlet" ref="resFilesServlet">
-        <service-properties>
-            <entry key="alias" value="/odlux"/>
-        </service-properties>
-    </service>
     <bean id="loadersvc" class="org.onap.ccsdk.features.sdnr.wt.odlux.OdluxBundleLoaderImpl"/>
     <service id="serviceRegistration" interface="org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles.OdluxBundleLoader" ref="loadersvc"/>
 

@@ -22,14 +22,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.onap.ccsdk.features.sdnr.wt.odlux.model.bundles.OdluxBundleLoader;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@HttpWhiteboardServletPattern("/odlux/*")
+@HttpWhiteboardServletName("ResFilesServlet")
+@Component(service = Servlet.class)
 public class ResFilesServlet extends HttpServlet {
 
     private static final long serialVersionUID = -6807215213921798293L;
