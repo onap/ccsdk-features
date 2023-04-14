@@ -337,11 +337,8 @@ Abbreviations
 |                                    | pedia.org/wiki/Network_function |
 |                                    | _virtualization>`__             |
 +------------------------------------+---------------------------------+
-| NFVI                               | `network functions              |
-|                                    | virtualization                  |
-|                                    | infrastructure <https://www.sdx |
-|                                    | central.com/nfv/definitions/nfv |
-|                                    | -mano/>`__                      |
+| NFVI                               | Network Functions               |
+|                                    | Virtualization Infrastructure   |
 +------------------------------------+---------------------------------+
 | NOD                                | Network On Demand               |
 +------------------------------------+---------------------------------+
@@ -379,9 +376,7 @@ Abbreviations
 | OMSA                               | ONAP Microservice Architecture  |
 +------------------------------------+---------------------------------+
 | ONAP                               | `Open Network Automation        |
-|                                    | Platform <https://wiki.onap.org |
-|                                    | /pages/viewpage.action?pageId=1 |
-|                                    | 015843>`__                      |
+|                                    | Platform`                       |
 +------------------------------------+---------------------------------+
 | OOF                                | ONAP Optimization Framework     |
 +------------------------------------+---------------------------------+
@@ -394,9 +389,8 @@ Abbreviations
 +------------------------------------+---------------------------------+
 | OpenStack                          | A cloud operating system        |
 +------------------------------------+---------------------------------+
-| OPNFV                              | `Open Platform for NFV          |
-|                                    | Project <https://www.sdxcentral |
-|                                    | .com/nfv/definitions/opnfv/>`__ |
+| OPNFV                              | Open Platform for NFV           |
+|                                    | Project                         |
 +------------------------------------+---------------------------------+
 | Originato                          | MMSC Any Non-AT&T MMSC that     |
 |                                    | originally sent the request to  |
@@ -600,12 +594,7 @@ Abbreviations
 |                                    | 3+Clean+Version+with+IFA011+v2. |
 |                                    | 5.1>`__                         |
 +------------------------------------+---------------------------------+
-| VES                                | `Virtual function               |
-|                                    | EventStream <https://wiki.opnfv |
-|                                    | .org/download/attachments/68193 |
-|                                    | 29/OPNVF%20VES.pptx?version=4&m |
-|                                    | odificationDate=1466395653000&a |
-|                                    | pi=v2>`__                       |
+| VES                                | Virtual function EventStream    |
 +------------------------------------+---------------------------------+
 | vF                                 | Virtual Firewall (an example    |
 |                                    | VNF)                            |

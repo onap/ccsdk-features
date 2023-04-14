@@ -34,7 +34,7 @@ required, it will be deleted once disconnected.
 By right-clicking on an element, an action menu opens. The menu allows
 to mount, unmount, view the details, edit and remove the element.
 Additionally, it links to several applications like
-`Fault <pnfFault.html>`__ and `Configure <pnfConfig.html>`__, which will
+:doc:`Fault <pnfFault>` and :doc:`Configure <pnfConfig>`, which will
 be filtered to display information relevant to the selected element.
 
 Connection Status Log

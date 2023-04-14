@@ -64,7 +64,7 @@ connect, configure, and fault. Currently, those buttons are disabled. By
 clicking on a link, the given link is loaded into details.
 
 If a link of type ‘microwave’ is selected, the ‘calculate link’ button
-is available, which opens the `Link Calculator <linkCalculator.html>`__
+is available, which opens the :doc:`Link Calculator <linkCalculator>`
 in a new tab or page.
 
 Just like the map, the details panel updates the URL if data is loaded.
