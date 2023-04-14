@@ -21,10 +21,17 @@
 package org.onap.ccsdk.features.sdnr.wt.apigateway;
 
 import java.io.IOException;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 
+@HttpWhiteboardServletPattern("/topology/*")
+@HttpWhiteboardServletName("TopologyServlet")
+@Component(service = Servlet.class)
 public class TopologyServlet extends BaseServlet {
 
     private static final long serialVersionUID = 5946205120796162644L;
