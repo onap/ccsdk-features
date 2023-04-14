@@ -12,9 +12,9 @@ control and manage wireless resources. Wireless resources are virtual
 network functions (e.g. vBBU, vEPC) or physical network functions (e.g.
 microwave and millimeter wave radios, eNodeB, RRH, DAS equipment).
 
-| SDN-R is integrated into ONAP. Therefore it is interfacing with PNFs
+SDN-R is integrated into ONAP. Therefore it is interfacing with PNFs
   and VNFs and with other ONAP components, such as A&AI, DCAE and SO.
-| `See abbreviations <abbreviations>`__
+`See abbreviations <abbreviations>`__
 
 .. figure:: ./ONAP-SDN-R.png
    :alt: SDN-R in ONAP
