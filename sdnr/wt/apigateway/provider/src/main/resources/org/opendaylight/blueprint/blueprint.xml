@@ -26,59 +26,33 @@
           class="org.onap.ccsdk.features.sdnr.wt.apigateway.AaiServlet">
     </bean>
 
-    <service interface="javax.servlet.http.HttpServlet" ref="aaiServlet">
-        <service-properties>
-            <entry key="alias" value="/aai"/>
-        </service-properties>
-    </service>
 
     <bean id="esServlet"
           class="org.onap.ccsdk.features.sdnr.wt.apigateway.EsServlet">
     </bean>
 
-    <service interface="javax.servlet.http.HttpServlet" ref="esServlet">
-        <service-properties>
-            <entry key="alias" value="/database"/>
-        </service-properties>
-    </service>
 
     <bean id="tilesServlet"
           class="org.onap.ccsdk.features.sdnr.wt.apigateway.TilesServlet">
     </bean>
 
-    <service interface="javax.servlet.http.HttpServlet" ref="tilesServlet">
-        <service-properties>
-            <entry key="alias" value="/tiles"/>
-        </service-properties>
-    </service>
 
     <bean id="topologyServlet"
           class="org.onap.ccsdk.features.sdnr.wt.apigateway.TopologyServlet">
     </bean>
 
-    <service interface="javax.servlet.http.HttpServlet" ref="topologyServlet">
-        <service-properties>
-            <entry key="alias" value="/topology"/>
-        </service-properties>
-    </service>
 
     <bean id="sitedocServlet"
           class="org.onap.ccsdk.features.sdnr.wt.apigateway.SitedocServlet">
     </bean>
 
-    <service interface="javax.servlet.http.HttpServlet" ref="sitedocServlet">
-        <service-properties>
-            <entry key="alias" value="/sitedoc"/>
-        </service-properties>
-    </service>
-
     <bean id="terrainServlet"
           class="org.onap.ccsdk.features.sdnr.wt.apigateway.TerrainServlet">
     </bean>
 
-    <service interface="javax.servlet.http.HttpServlet" ref="terrainServlet">
+   <!-- <service interface="javax.servlet.http.HttpServlet" ref="terrainServlet">
         <service-properties>
             <entry key="alias" value="/terrain"/>
         </service-properties>
-    </service>
+    </service>-->
 </blueprint>

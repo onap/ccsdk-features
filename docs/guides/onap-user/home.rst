@@ -14,7 +14,7 @@ microwave and millimeter wave radios, eNodeB, RRH, DAS equipment).
 
 | SDN-R is integrated into ONAP. Therefore it is interfacing with PNFs
   and VNFs and with other ONAP components, such as A&AI, DCAE and SO.
-| `See abbreviations <abbreviations>`__
+| `See abbreviations <abbreviations.html>`__
 
 .. figure:: ./ONAP-SDN-R.png
    :alt: SDN-R in ONAP
