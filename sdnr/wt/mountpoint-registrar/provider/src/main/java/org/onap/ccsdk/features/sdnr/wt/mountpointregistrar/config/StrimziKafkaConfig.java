@@ -25,7 +25,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRep
  * bootstrapServers=abc:9092,def:9092
  * securityProtocol=PLAINTEXT #OTHER POSSIBLE VALUES - SSL, SASL_PLAINTEXT, SASL_SSL
  * saslMechanism=PLAIN #Need to understand more
- * saslJaasConfig=
+ * saslJaasConfig=PLAIN
  * consumerGroup=
  * consumerID=
  */
@@ -34,18 +34,19 @@ public class StrimziKafkaConfig implements Configuration {
     private static final String SECTION_MARKER = "strimzi-kafka";
 
     private static final String PROPERTY_KEY_ENABLED = "strimziEnabled";
+    private static final String DEFAULT_VALUE_KAFKA_ENABLED = "${SDNR_KAFKA_ENABLED}";
 
     private static final String PROPERTY_KEY_BOOTSTRAPSERVERS = "bootstrapServers";
-    private static final String DEFAULT_VALUE_BOOTSTRAPSERVERS = "onap-strimzi-kafka-0:9094,onap-strimzi-kafka-1:9094";
+    private static final String DEFAULT_VALUE_BOOTSTRAPSERVERS = "${SDNR_KAFKA_BOOTSTRAP_SERVERS}";
 
     private static final String PROPERTY_KEY_SECURITYPROTOCOL = "securityProtocol";
-    private static final String DEFAULT_VALUE_SECURITYPROTOCOL = "PLAINTEXT";
+    private static final String DEFAULT_VALUE_SECURITYPROTOCOL = "${SDNR_KAFKA_SECURITY_PROTOCOL}";
 
     private static final String PROPERTY_KEY_SASLMECHANISM = "saslMechanism";
-    private static final String DEFAULT_VALUE_SASLMECHANISM = "PLAIN";
+    private static final String DEFAULT_VALUE_SASLMECHANISM = "${SDNR_KAFKA_SASL_MECHANISM}";
 
     private static final String PROPERTY_KEY_SASLJAASCONFIG = "saslJaasConfig";
-    private static final String DEFAULT_VALUE_SASLJAASCONFIG = "PLAIN"; // TBD
+    private static final String DEFAULT_VALUE_SASLJAASCONFIG = "${SDNR_KAFKA_SASL_JAAS_CONFIG}";
 
     private ConfigurationFileRepresentation configuration;
 
@@ -84,7 +85,7 @@ public class StrimziKafkaConfig implements Configuration {
     public void defaults() {
         // The default value should be "false" given that SDNR can be run in
         // environments where Strimzi is not used
-        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_ENABLED, Boolean.FALSE);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_ENABLED, DEFAULT_VALUE_KAFKA_ENABLED);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_BOOTSTRAPSERVERS,
                 DEFAULT_VALUE_BOOTSTRAPSERVERS);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_SECURITYPROTOCOL,
