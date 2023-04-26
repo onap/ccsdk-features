@@ -1,0 +1,5 @@
+---
+distribution_type: 'maven'
+version: '1.5.1'
+project: 'ccsdk-features'
+log_dir: 'ccsdk-features-maven-stage-master/315/'
