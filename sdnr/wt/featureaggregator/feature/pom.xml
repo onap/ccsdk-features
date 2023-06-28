@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>2.5.4</version>
+        <version>2.6.0</version>
         <relativePath/>
     </parent>
 
@@ -41,20 +41,6 @@
 
     <dependencies>
         <!--  Common Components go here -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-apigateway-feature</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-helpserver-feature</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-websocketmanager-feature</artifactId>
@@ -76,7 +62,7 @@
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-mountpoint-registrar-feature</artifactId>
             <version>${project.version}</version>
@@ -138,21 +124,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-devicemanager-o-ran-sc-oran-feature</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <!--  ODLUX components go here -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-odlux-core-feature</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-odlux-apps-feature</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>

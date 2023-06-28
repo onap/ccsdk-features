@@ -35,6 +35,8 @@ public class DataProviderConfig implements Configuration {
     private static final String PROPERTY_KEY_DBENABLED = "enabled";
     private static final String DEFAULT_ISENABLED = "${SDNRDBENABLED}";
     private static final boolean DEFAULT_ISENABLED_IFNOTSET = true;
+    private static final String PROPERTY_KEY_GUICUTTHROUGH_OVERWRITE = "GUICUTTHROUGH_PROXY_OVERWRITE";
+    private static final String DEFAULT_GUICUTTHROUGH_OVERWRITE = "${GUICUTTHROUGH_PROXY_OVERWRITE}";
     private final EsConfig esConfig;
     private final SqlDBConfig maridadbConfig;
     private ConfigurationFileRepresentation configuration;
@@ -55,17 +57,21 @@ public class DataProviderConfig implements Configuration {
     }
 
     public boolean isEnabled() {
-        final String s = this.configuration.getProperty(ConfigurationFileRepresentation.SECTIONNAME_ROOT, PROPERTY_KEY_DBENABLED);
-        if(s!= null && !s.isBlank()) {
+        final String s = this.configuration.getProperty(ConfigurationFileRepresentation.SECTIONNAME_ROOT,
+                PROPERTY_KEY_DBENABLED);
+        if (s != null && !s.isBlank()) {
             return Boolean.getBoolean(s);
         }
         return DEFAULT_ISENABLED_IFNOTSET;
     }
+
     @Override
     public void defaults() {
 
         configuration.setPropertyIfNotAvailable(this.getSectionName(), PROPERTY_KEY_DBTYPE, DEFAULT_DBTYPE);
         configuration.setPropertyIfNotAvailable(this.getSectionName(), PROPERTY_KEY_DBENABLED, DEFAULT_ISENABLED);
+        configuration.setPropertyIfNotAvailable(this.getSectionName(), PROPERTY_KEY_GUICUTTHROUGH_OVERWRITE,
+                DEFAULT_GUICUTTHROUGH_OVERWRITE);
     }
 
     @Override
@@ -81,5 +87,8 @@ public class DataProviderConfig implements Configuration {
         return SdnrDbType.valueOf(value);
     }
 
+    public String getGuicutthroughOverride() {
+        return this.configuration.getProperty(this.getSectionName(), PROPERTY_KEY_GUICUTTHROUGH_OVERWRITE);
+    }
 
 }

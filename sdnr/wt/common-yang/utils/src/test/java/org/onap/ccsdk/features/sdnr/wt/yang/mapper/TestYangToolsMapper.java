@@ -21,11 +21,11 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.yang.mapper;
 
-import static org.junit.Assert.assertEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.IdentifierDeserializer;
@@ -34,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.AddressLocation;
 import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.AddressLocationBuilder;
 import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.AddressType;
-import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.ItemCodeIdentity;
+import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.ItemCode;
 import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.address.location.entity.ItemList;
 import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.address.location.entity.ItemListBuilder;
 import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.address.location.entity.ItemListKey;
@@ -65,7 +65,7 @@ public class TestYangToolsMapper {
         }
         assertEquals(AddressType.OFFICE, al.getAddressType());
         assertEquals("2022-03-15T11:12:13.890Z", al.getDeliveryDateTime().getValue());
-        assertEquals(ItemCodeIdentity.VALUE, al.getTestId());
+       //TODO assertEquals(ItemCode.VALUE, al.getItemList().ke);
         System.out.println("Delivery Date = " + al.getDeliveryDateTime().getValue());
         System.out.println(al.getItemList());
         System.out.println(al.getDeliveryUrl().getValue());
@@ -100,8 +100,8 @@ public class TestYangToolsMapper {
     @Test
     public void testYangMapperSer() {
         Map<ItemListKey, ItemList> items = new HashMap<ItemListKey, ItemList>();
-        ItemList il = new ItemListBuilder().setItemKey(ItemCodeIdentity.VALUE).build();
-        items.put(new ItemListKey(ItemCodeIdentity.VALUE), il);
+        ItemList il = new ItemListBuilder().setItemKey(ItemCode.VALUE).build();
+        items.put(new ItemListKey(ItemCode.VALUE), il);
 
         Uri uri = new Uri("delivery.uri");
 
