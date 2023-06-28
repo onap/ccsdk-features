@@ -46,7 +46,7 @@ public class NtsNetworkElement implements NetworkElement {
     private final DataProvider databaseService;
     private final NotificationListenerImpl notificationListener;
 
-    private @NonNull ListenerRegistration<NotificationListener> listenerRegistrationresult;
+    private ListenerRegistration<NotificationListener> listenerRegistrationresult;
 
     NtsNetworkElement(NetconfBindingAccessor netconfAccess, DeviceManagerServiceProvider serviceProvider) {
         LOG.debug("Create {}", NtsNetworkElement.class.getSimpleName());

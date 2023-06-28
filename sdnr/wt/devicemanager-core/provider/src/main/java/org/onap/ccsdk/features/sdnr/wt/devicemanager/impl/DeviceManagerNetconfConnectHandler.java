@@ -34,8 +34,9 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeConnectListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev221225.ConnectionOper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev221225.ConnectionOper.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
@@ -179,9 +180,18 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
     private void sendUpdateNotification(NodeId nodeId, ConnectionStatus csts, NetconfNode nNode) {
         LOG.debug("update ConnectedState for device :: Name : {} ConnectionStatus {}", nodeId.getValue(), csts);
         if (isOdlEventListenerHandlerEnabled()) {
-            getOdlEventListenerHandler().updateRegistration(nodeId, ConnectionStatus.class.getSimpleName(),
+            getOdlEventListenerHandler().updateRegistration(nodeId, ConnectionOper.ConnectionStatus.class.getSimpleName(),
                     csts != null ? csts.getName() : "null", nNode);
         }
     }
 
+    @Override
+    public void onCreated(NodeId nNodeId, NetconfNode netconfNode) {
+
+    }
+
+    @Override
+    public void onStateChange(NodeId nNodeId, NetconfNode netconfNode) {
+
+    }
 }
