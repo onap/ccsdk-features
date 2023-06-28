@@ -63,8 +63,9 @@ public class OpenroadmInventoryInput {
         inventoryBuilder.setNodeId(this.accessor.getNodeId().getValue())
                 .setUuid(info.getNodeId() == null ? NOT_AVAILABLE : info.getNodeId().getValue())
                 .setDate(info.getCurrentDatetime() != null ? info.getCurrentDatetime().getValue() : null)
-                .setId(info.getNodeId().getValue()).setManufacturerIdentifier(info.getVendor())
-                .setModelIdentifier(info.getModel()).setSerial(info.getSerialId()).setTreeLevel(treeLevel)
+                .setId(this.accessor.getNodeId().getValue() + "/" + info.getNodeId().getValue())
+                .setManufacturerIdentifier(info.getVendor()).setModelIdentifier(info.getModel())
+                .setSerial(info.getSerialId()).setTreeLevel(treeLevel)
                 .setVersion(info.getOpenroadmVersion() != null ? info.getOpenroadmVersion().getName() : null)
                 .setDescription("org-openroadm-device").setParentUuid("None").setTypeName(info.getNodeType().getName())
                 .setPartTypeId("device");

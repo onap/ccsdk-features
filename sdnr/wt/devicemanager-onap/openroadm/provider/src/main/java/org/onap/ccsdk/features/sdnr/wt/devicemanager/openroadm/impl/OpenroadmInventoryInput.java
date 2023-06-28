@@ -61,7 +61,8 @@ public class OpenroadmInventoryInput {
                 .setUuid(this.openRoadmDevice.getInfo().getNodeId() == null ? "N/A"
                         : this.openRoadmDevice.getInfo().getNodeId().getValue())
                 .setDate(this.openRoadmDevice.getInfo().getCurrentDatetime().getValue())
-                .setId(this.openRoadmDevice.getInfo().getNodeId().getValue())
+                .setId(this.accessor.getNodeId().getValue() + "/"
+                        + this.openRoadmDevice.getInfo().getNodeId().getValue())
                 .setManufacturerIdentifier(this.openRoadmDevice.getInfo().getVendor())
                 .setModelIdentifier(this.openRoadmDevice.getInfo().getModel())
                 .setSerial(this.openRoadmDevice.getInfo().getSerialId()).setTreeLevel(treeLevel)

@@ -204,8 +204,9 @@ public class ORanDOMNetworkElement implements NetworkElement {
         InstanceIdentifierBuilder ietfSystemIID =
                 YangInstanceIdentifier.builder().node(ORanDeviceManagerQNames.IETF_SYSTEM_CONTAINER);
         @NonNull
-        AugmentationIdentifier onapSystemIID = YangInstanceIdentifier.AugmentationIdentifier.create(
-                Sets.newHashSet(ORanDeviceManagerQNames.ONAP_SYSTEM_NAME, ORanDeviceManagerQNames.ONAP_SYSTEM_WEB_UI));
+        AugmentationIdentifier onapSystemIID = YangInstanceIdentifier.AugmentationIdentifier
+                .create(Sets.newHashSet(ORanDeviceManagerQNames.ONAP_SYSTEM_NAME,
+                        ORanDeviceManagerQNames.ONAP_SYSTEM_WEB_UI, ORanDeviceManagerQNames.ONAP_SYSTEM_GEOLOCATION));
         InstanceIdentifierBuilder augmentedOnapSystem =
                 YangInstanceIdentifier.builder(ietfSystemIID.build()).node(onapSystemIID);
         Capabilities x = netconfDomAccessor.getCapabilites();

@@ -26,6 +26,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
@@ -56,6 +57,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.GuicutthroughBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MediatorServerEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
@@ -88,7 +91,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SqlDBDataProvider extends HtDatabaseEventsService implements DatabaseDataProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(SqlDBDataProvider.class);
@@ -104,7 +106,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     private final SqlDBStatusReader readStatus;
     private final HtUserdataManager usermanager;
     private final InventoryTreeProvider inventoryTreeProvider;
-
+    private final String guicutthroughOverride;
 
     public SqlDBReaderWriter<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.Data> getMaintenanceReaderWriter() {
         return this.maintenanceRW;
@@ -114,12 +116,13 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         return this.mediatorserverRW;
     }
 
-    public SqlDBDataProvider(SqlDBConfig config) {
-        this(config, true);
+    public SqlDBDataProvider(SqlDBConfig config, String guicutthroughOverride) {
+        this(config, true, guicutthroughOverride);
     }
 
-    public SqlDBDataProvider(SqlDBConfig config, boolean initControllerId) {
+    public SqlDBDataProvider(SqlDBConfig config, boolean initControllerId, String guicutthroughOverride) {
         super(config);
+        this.guicutthroughOverride = guicutthroughOverride;
 
         this.mediatorserverRW = new SqlDBReaderWriter<>(this.dbClient, Entity.MediatorServer, config.getDbSuffix(),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data.class,
@@ -139,8 +142,8 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
             }
         };
         this.dbMaintenanceService = new HtDatabaseMaintenanceService(this);
-        this.usermanager = new HtUserdataManagerImpl(new SqlDBReaderWriterUserdata(this.dbClient,
-                Entity.Userdata, config.getDbSuffix()));
+        this.usermanager = new HtUserdataManagerImpl(
+                new SqlDBReaderWriterUserdata(this.dbClient, Entity.Userdata, config.getDbSuffix()));
         if (initControllerId) {
             try {
                 this.setControllerId();
@@ -149,7 +152,6 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
             }
         }
         this.inventoryTreeProvider = new SqlDbInventoryTreeProvider(this.dbClient, this.getControllerId());
-
 
     }
 
@@ -186,13 +188,12 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     @Override
     public ReadCmlogListOutputBuilder readCMLogList(EntityInput input) {
         ReadCmlogListOutputBuilder outputBuilder = new ReadCmlogListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data>
-            result =
-            this.eventRWCMLog.getData(input);
+        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.Data> result =
+                this.eventRWCMLog.getData(input);
         outputBuilder.setData(result.getResult());
         outputBuilder.setPagination(
-            new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.PaginationBuilder(
-                result.getPagination()).build());
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.cmlog.list.output.PaginationBuilder(
+                        result.getPagination()).build());
         return outputBuilder;
     }
 
@@ -475,14 +476,32 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         ReadGuiCutThroughEntryOutputBuilder outputBuilder = new ReadGuiCutThroughEntryOutputBuilder();
         QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> result =
                 this.guicutthroughRW.getData(input);
-        outputBuilder.setData(result.getResult());
+
+        if (!guicutthroughOverride.isEmpty()) {
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> gcData =
+                    result.getResult();
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> updatedGcData =
+                    new ArrayList<>();
+            for (int i = 0; i < gcData.size(); i++) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data gcDataItem =
+                        gcData.get(i);
+                Guicutthrough gcItem =
+                        new GuicutthroughBuilder().setId(gcDataItem.getId()).setName(gcDataItem.getName())
+                                .setWeburi(guicutthroughOverride + "/" + gcDataItem.getId()).build();
+                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.DataBuilder gcDataBuilder =
+                        new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.DataBuilder(
+                                gcItem);
+                updatedGcData.add(gcDataBuilder.build());
+            }
+            outputBuilder.setData(updatedGcData);
+        } else {
+            outputBuilder.setData(result.getResult());
+        }
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.PaginationBuilder()
                         .build());
         return outputBuilder;
     }
-
-
 
     @Override
     public boolean waitForYellowDatabaseStatus(long timeout, TimeUnit unit) {
@@ -519,8 +538,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
             return true;
         }
         LOG.info("set controllerId {}", this.controllerId);
-        String query =
-                String.format("SELECT * FROM `%s` WHERE `id`='%s'", this.controllerTableName, this.controllerId);
+        String query = String.format("SELECT * FROM `%s` WHERE `id`='%s'", this.controllerTableName, this.controllerId);
         LOG.trace(query);
         ResultSet data = this.dbClient.read(query);
 
@@ -528,7 +546,12 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
             query = String.format("INSERT INTO `%s` (`id`,`desc`) VALUES ('%s','%s')", this.controllerTableName,
                     this.controllerId, "");
             LOG.trace(query);
-            try { if(data!=null){data.close();} } catch (SQLException ignore) { }
+            try {
+                if (data != null) {
+                    data.close();
+                }
+            } catch (SQLException ignore) {
+            }
             return this.dbClient.write(query);
         } else {
             this.controllerId = data.getString(0);
@@ -554,6 +577,5 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     public InventoryTreeProvider getInventoryTreeProvider() {
         return this.inventoryTreeProvider;
     }
-
 
 }

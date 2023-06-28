@@ -25,14 +25,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-
+import com.google.common.reflect.ClassPath;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.google.common.reflect.ClassPath;
-import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.yangtools.yang.binding.BaseIdentity;
 import org.slf4j.Logger;
@@ -63,13 +59,24 @@ public class BaseIdentityDeserializer<T> extends JsonDeserializer<T> {
         int lastDot = clazzToSearch.lastIndexOf(".");
         if (lastDot > -1) {
             simpleName = clazzToSearch.substring(lastDot + 1);
+            String finalSimpleName;
+            if(simpleName.endsWith("Identity")){
+                finalSimpleName = simpleName.substring(0, simpleName.length()-8);
+            }
+            else{
+                finalSimpleName=simpleName;
+            }
             clazz = getTypesInNamespace(clazzToSearch.substring(0, lastDot)).stream()
-                    .filter(e -> e.getSimpleName().equals(simpleName)).findFirst().orElse(null);
+                    .filter(e -> e.getSimpleName().equals(finalSimpleName)).findFirst().orElse(null);
             if (clazz != null)
                 return (T) YangToolsMapperHelper.getIdentityValueFromClass(clazz);
         } else {
             simpleName = clazzToSearch.substring(0, 1).toUpperCase() + clazzToSearch.substring(1);
+            if(simpleName.endsWith("Identity")){
+                simpleName = simpleName.substring(0, simpleName.length()-8);
+            }
         }
+
         try {
             clazz = (Class<? extends BaseIdentity>) YangToolsMapperHelper.findClass(simpleName);
             if (clazz != null)

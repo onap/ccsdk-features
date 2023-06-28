@@ -83,7 +83,7 @@ public class MariaDBTestBase {
         });
         SqlDBConfig config = new SqlDBConfig(new ConfigurationFileRepresentation("test.properties"));
         this.db = null;
-        this.dbProvider = new SqlDBDataProvider(config);
+        this.dbProvider = new SqlDBDataProvider(config, "");
         testCreateTable(this.dbProvider.getDBService());
     }
 
@@ -97,7 +97,7 @@ public class MariaDBTestBase {
         //start db server
         this.db = startDatabase(port);
         //create db with name sdnrdb
-        this.dbProvider = new SqlDBDataProvider(config);
+        this.dbProvider = new SqlDBDataProvider(config, "");
         testCreateTable(this.dbProvider.getDBService());
     }
 
