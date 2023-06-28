@@ -21,6 +21,8 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
+import com.google.common.collect.ClassToInstanceMap;
+import org.eclipse.jdt.annotation.NonNull;
 import static org.junit.Assert.fail;
 import java.util.Set;
 import org.junit.Test;
@@ -34,7 +36,9 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.impl.DataProviderImpl;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.StatusChangedHandler.StatusKey;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
 /**
@@ -60,6 +64,28 @@ public class TestImplementation {
             @Override
             public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
                     T implementation, Set<InstanceIdentifier<?>> paths) {
+                return null;
+            }
+
+            @Override
+            public @NonNull Registration registerRpcImplementation(Rpc<?, ?> implementation) {
+                return null;
+            }
+
+            @Override
+            public @NonNull Registration registerRpcImplementation(Rpc<?, ?> implementation,
+                                                                   Set<InstanceIdentifier<?>> paths) {
+                return null;
+            }
+
+            @Override
+            public @NonNull Registration registerRpcImplementations(ClassToInstanceMap<Rpc<?, ?>> implementations) {
+                return null;
+            }
+
+            @Override
+            public @NonNull Registration registerRpcImplementations(ClassToInstanceMap<Rpc<?, ?>> implementations,
+                                                                    Set<InstanceIdentifier<?>> paths) {
                 return null;
             }
 

@@ -1,13 +1,6 @@
 # wt - wireless transport microservices
 
-ODL version: sulfur sr1
-
-## apigateway (osgi)
-
-The API gateway provides WEB access to all wt related web service providers to prevent cross site requests. The Opendaylight default Web server is extended by additional URIs.
-
-  * /database to access elasticsearch
-  * /aai to access AAI
+ODL version: argon sr1
 
 ## common (osgi)
 

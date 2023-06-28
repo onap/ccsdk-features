@@ -44,7 +44,7 @@ import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsDes
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.Enumeration;
+import org.opendaylight.yangtools.yang.binding.EnumTypeObject;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -233,7 +233,7 @@ public class SqlDBMapper {
                     || implementsInterface(valueType, Map.class) || implementsInterface(valueType, Set.class)) {
                 return "JSON";
             }
-            if (implementsInterface(valueType, Enumeration.class)) {
+            if (implementsInterface(valueType, EnumTypeObject.class)) {
                 return ENUM_DBTYPE;
             }
             throw new UnableToMapClassException("no mapping for " + valueType.getName() + " found");
@@ -360,7 +360,7 @@ public class SqlDBMapper {
     }
 
     private static boolean isYangEnum(Class<?> valueType) {
-        return YangToolsMapperHelper.implementsInterface(valueType, Enumeration.class);
+        return YangToolsMapperHelper.implementsInterface(valueType, EnumTypeObject.class);
     }
 
     public static <T extends DataObject> List<T> read(ResultSet data, Class<T> clazz)
