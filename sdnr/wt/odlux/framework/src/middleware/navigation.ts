@@ -16,60 +16,62 @@
  * ============LICENSE_END==========================================================================
  */
 import * as jwt from 'jsonwebtoken';
-import { Location, History, createHashHistory } from "history";
+import { History, createHashHistory } from 'history';
 
-import { User } from "../models/authentication";
+import { User } from '../models/authentication';
 
-import { LocationChanged, NavigateToApplication } from "../actions/navigationActions";
+import { LocationChanged, NavigateToApplication } from '../actions/navigationActions';
 import { PushAction, ReplaceAction, GoAction, GoBackAction, GoForwardeAction } from '../actions/navigationActions';
 
-import { applicationManager } from "../services/applicationManager";
-import { loginUserAction, logoutUser } from "../actions/authentication";
+import { applicationManager } from '../services/applicationManager';
+import { loginUserAction, logoutUser } from '../actions/authentication';
 
-import { ApplicationStore } from "../store/applicationStore";
+import { ApplicationStore } from '../store/applicationStore';
 import { Dispatch } from '../flux/store';
 
-const routerMiddlewareCreator = (history: History) => () => (next: Dispatch): Dispatch => (action) => {
+export const history = createHashHistory();
+let applicationStore: ApplicationStore | null = null;
+
+const routerMiddlewareCreator = (historyParam: History) => () => (next: Dispatch): Dispatch => (action) => {
 
   if (action instanceof NavigateToApplication) {
     const application = applicationManager.applications && applicationManager.applications[action.applicationName];
     if (application) {
       const href = `/${application.path || application.name}${action.href ? '/' + action.href : ''}`.replace(/\/{2,}/i, '/');
       if (action.replace) {
-        history.replace(href, action.state);
+        historyParam.replace(href, action.state);
       } else {
-        history.push(href, action.state);
+        historyParam.push(href, action.state);
       }
     }
   } else if (action instanceof PushAction) {
-    history.push(action.href, action.state);
+    historyParam.push(action.href, action.state);
   } else if (action instanceof ReplaceAction) {
-    history.replace(action.href, action.state);
+    historyParam.replace(action.href, action.state);
   } else if (action instanceof GoAction) {
-    history.go(action.index);
+    historyParam.go(action.index);
   } else if (action instanceof GoBackAction) {
-    history.goBack();
+    historyParam.goBack();
   } else if (action instanceof GoForwardeAction) {
-    history.goForward();
+    historyParam.goForward();
   } else if (action instanceof LocationChanged) {
     // ensure user is logged in and token is valid
-    if (action.pathname.startsWith("/oauth") && (action.search.startsWith("?token="))){
-      const ind =  action.search.lastIndexOf("token=");
-      const tokenStr = ind > -1 ? action.search.substring(ind+6) : null;
+    if (action.pathname.startsWith('/oauth') && (action.search.startsWith('?token='))) {
+      const ind =  action.search.lastIndexOf('token=');
+      const tokenStr = ind > -1 ? action.search.substring(ind + 6) : null;
       const token = tokenStr && jwt.decode(tokenStr);
       if (tokenStr && token) {
         // @ts-ignore
-        const user = new User({ username: token["name"], access_token: tokenStr, token_type: "Bearer", expires: token['exp'], issued: token['iat'] }) || undefined;
+        const user = new User({ username: token.name, access_token: tokenStr, token_type: 'Bearer', expires: token.exp, issued: token.iat }) || undefined;
         applicationStore?.dispatch(loginUserAction(user));
       }
-    } if (!action.pathname.startsWith("/login") && applicationStore && (!applicationStore.state.framework.authenticationState.user || !applicationStore.state.framework.authenticationState.user.isValid)) {
-      history.replace(`/login?returnTo=${action.pathname}`);
+    } if (!action.pathname.startsWith('/login') && applicationStore && (!applicationStore.state.framework.authenticationState.user || !applicationStore.state.framework.authenticationState.user.isValid)) {
+      historyParam.replace(`/login?returnTo=${action.pathname}`);
       applicationStore.dispatch(logoutUser());
     
-    }else if (action.pathname.startsWith("/login") && applicationStore && (applicationStore.state.framework.authenticationState.user && applicationStore.state.framework.authenticationState.user.isValid)) {
-      history.replace(`/`);
-    }
-     else {
+    } else if (action.pathname.startsWith('/login') && applicationStore && (applicationStore.state.framework.authenticationState.user && applicationStore.state.framework.authenticationState.user.isValid)) {
+      historyParam.replace('/');
+    } else {
       return next(action);
     }
   } else {
@@ -78,20 +80,17 @@ const routerMiddlewareCreator = (history: History) => () => (next: Dispatch): Di
   return action;
 };
 
-function startListener(history: History, store: ApplicationStore) {
-  store.dispatch(new LocationChanged(history.location.pathname, history.location.search, history.location.hash));
-  history.listen((location: Location) => {
+const startListener = (historyParam: History, store: ApplicationStore) => {
+  store.dispatch(new LocationChanged(historyParam.location.pathname, historyParam.location.search, historyParam.location.hash));
+  historyParam.listen((location) => {
     store.dispatch(new LocationChanged(location.pathname, location.search, location.hash));
   });
-}
+};
 
-const history = createHashHistory();
-let applicationStore: ApplicationStore | null = null;
-
-export function startHistoryListener(store: ApplicationStore) {
+export const startHistoryListener = (store: ApplicationStore) => {
   applicationStore = store;
   startListener(history, store);
-}
+};
 
 export const routerMiddleware = routerMiddlewareCreator(history);
 export default routerMiddleware;

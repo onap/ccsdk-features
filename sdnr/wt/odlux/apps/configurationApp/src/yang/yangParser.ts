@@ -288,6 +288,8 @@ class YangLexer {
 export class YangParser {
   private _groupingsToResolve: ViewSpecification[] = [];
 
+  private _typeRefToResolve: (() => void)[] = [];
+
   private _identityToResolve: (() => void)[] = [];
 
   private _unionsToResolve: (() => void)[] = [];
@@ -608,33 +610,42 @@ export class YangParser {
       }
     });
 
+    this._typeRefToResolve.forEach(cb => {
+      try { cb(); } catch (error) {
+        console.warn(error.message);
+      }
+    });
+
     this._modulesToResolve.forEach(cb => {
       try { cb(); } catch (error) {
         console.warn(error.message);
       }
     });
 
-    // // resolve readOnly
-    // const resolveReadOnly = (view: ViewSpecification, parentConfig: boolean) => {
+    // resolve readOnly
+    const resolveReadOnly = (view: ViewSpecification, parentConfig: boolean) => {
 
-    //   // update view config
-    //   view.config = view.config && parentConfig;
+      // update view config
+      view.config = view.config && parentConfig;
 
-    //   Object.keys(view.elements).forEach((key) => {
-    //     const elm = view.elements[key];
+      Object.keys(view.elements).forEach((key) => {
+        const elm = view.elements[key];
 
-    //     // update element config
-    //     elm.config = elm.config && view.config;
+        // update element config
+        elm.config = elm.config && view.config;
 
-    //     // update all sub-elements of objects
-    //     if (elm.uiType === 'object') {
-    //       resolveReadOnly(this.views[+elm.viewId], elm.config);
-    //     }
+        // update all sub-elements of objects
+        if (elm.uiType === 'object') {
+          resolveReadOnly(this.views[+elm.viewId], elm.config);
+        }
 
-    //   });
-    // };
+      });
+    };
 
-    // const dump = resolveReadOnly(this.views[0], true);
+    const dump = resolveReadOnly(this.views[0], true);
+    if (LOGLEVEL > 2) {
+      console.log('Resolved views:', dump);
+    }
   }
 
   private _nextId = 1;
@@ -661,7 +672,7 @@ export class YangParser {
     const typedefs = this.extractNodes(statement, 'typedef');
     typedefs && typedefs.forEach(def => {
       if (!def.arg) {
-        throw new Error(`Module: [${module.name}]. Found typefed without name.`);
+        throw new Error(`Module: [${module.name}]. Found typedef without name.`);
       }
       module.typedefs[def.arg] = this.getViewElement(def, module, 0, currentPath, false);
     });
@@ -1436,28 +1447,35 @@ export class YangParser {
       let typeRef = this.resolveType(type, module);
       if (typeRef == null) console.error(new Error(`Could not resolve type ${type} in [${module.name}][${currentPath}].`));
 
-
       if (isViewElementString(typeRef)) {
         typeRef = this.resolveStringType(typeRef, extractPattern(), extractRange(0, +18446744073709551615));
       } else if (isViewElementNumber(typeRef)) {
         typeRef = this.resolveNumberType(typeRef, extractRange(typeRef.min, typeRef.max));
       }
 
-      // spoof date type here from special string type
-      if ((type === 'date-and-time' || type.endsWith(':date-and-time')) && typeRef.module === 'ietf-yang-types') {
-        return {
-          ...typeRef,
-          ...element,
-          description: description,
-          uiType: 'date',
-        };
-      }
+      const res = {
+        id: element.id,
+      } as ViewElement;
 
-      return ({
-        ...typeRef,
-        ...element,
-        description: description,
-      }) as ViewElement;
+      this._typeRefToResolve.push(() => {
+        // spoof date type here from special string type
+        if ((type === 'date-and-time' || type.endsWith(':date-and-time')) && typeRef.module === 'ietf-yang-types') {
+          Object.assign(res, {
+            ...typeRef,
+            ...element,
+            description: description,
+            uiType: 'date',
+          });
+        } else {
+          Object.assign(res, {
+            ...typeRef,
+            ...element,
+            description: description,
+          });
+        }
+      });
+      
+      return res;
     }
   }
 
@@ -1573,9 +1591,9 @@ export class YangParser {
   }
 
   private resolveType(type: string, module: Module) {
-    const collonInd = type.indexOf(':');
-    const preFix = collonInd > -1 ? type.slice(0, collonInd) : '';
-    const typeName = collonInd > -1 ? type.slice(collonInd + 1) : type;
+    const colonInd = type.indexOf(':');
+    const preFix = colonInd > -1 ? type.slice(0, colonInd) : '';
+    const typeName = colonInd > -1 ? type.slice(colonInd + 1) : type;
 
     const res = preFix
       ? this._modules[module.imports[preFix]].typedefs[typeName]

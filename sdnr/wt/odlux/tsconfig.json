@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "pretty": true,
+    "newLine": "LF",
+    "module": "es2015",
+    "target": "es2016",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "jsx": "preserve",
+    "lib": [
+      "dom",
+      "es2015",
+      "es2016"
+    ],
+    "types": [
+      "prop-types",
+      "react",
+      "react-dom"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "apps/*/dist",
+    "apps/*/node_modules"
+  ],
+  "include": [
+    "apps/*/src"
+  ]
+}

@@ -164,7 +164,7 @@ export const NavigationMenu = withStyles(styles)(connect()(({ classes, state, di
       icon={faProjectDiagram}
       external />;
 
-    const linkFound = menuItems.find(obj => obj.key === "linkCalculation");
+    const linkFound = menuItems.find(obj => obj.key === "microwave");
     
     if (linkFound) {
       const index = menuItems.indexOf(linkFound);

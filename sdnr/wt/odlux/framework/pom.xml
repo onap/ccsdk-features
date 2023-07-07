@@ -45,7 +45,7 @@
     <properties>
         <buildtime>${maven.build.timestamp}</buildtime>
         <distversion>ONAP Frankfurt (Neon, mdsal ${odl.mdsal.version})</distversion>
-        <buildno>178.3bd8a2a9(23/03/16)</buildno>
+        <buildno>188.1b12eac8(23/06/30)</buildno>
         <odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
     </properties>
 
@@ -102,8 +102,8 @@
                         <!-- optional: default phase is "generate-resources" -->
                         <phase>initialize</phase>
                         <configuration>
-                            <nodeVersion>v12.22.0</nodeVersion>
-                            <yarnVersion>v1.22.10</yarnVersion>
+                            <nodeVersion>v16.17.0</nodeVersion>
+                            <yarnVersion>v1.22.19</yarnVersion>
                         </configuration>
                     </execution>
                     <execution>

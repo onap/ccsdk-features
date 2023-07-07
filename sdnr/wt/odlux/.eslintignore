@@ -9,4 +9,3 @@ apps/lineOfSightApp/**/*
 apps/maintenanceApp/**/*
 apps/mediatorApp/**/*
 apps/performanceHistoryApp/**/*
-apps/siteManagerApp/**/*

@@ -158,6 +158,14 @@ export function register() {
   }
 
   applicationApi.loginEvent.addHandler(()=>{
+    if (refreshInterval) {
+      clearInterval(refreshInterval);
+    }
     refreshInterval = startRefreshInterval() as any;
+  });
+
+  applicationApi.logoutEvent.addHandler(()=>{
+    refreshInterval && window.clearInterval(refreshInterval);
+    refreshInterval = null;
   });
 }

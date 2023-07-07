@@ -18,80 +18,90 @@
 import { Dispatch } from '../flux/store';
 import { Action } from '../flux/action';
 import { AuthPolicy, User } from '../models/authentication';
-import { GeneralSettings, Settings } from '../models/settings';
-import { saveInitialSettings, SetGeneralSettingsAction, setGeneralSettingsAction } from './settingsAction';
+import { Settings } from '../models/settings';
+import { saveInitialSettings, SetGeneralSettingsAction } from './settingsAction';
 import { endWebsocketSession } from '../services/notificationService';
 import { endUserSession, startUserSession } from '../services/userSessionService';
 import { IApplicationStoreState } from '../store/applicationStore';
 
 export class UpdateUser extends Action {
 
-  constructor (public user?: User) {
+  constructor(public user?: User) {
     super();
   }
 }
 
 export class UpdatePolicies extends Action {
 
-  constructor (public authPolicies?: AuthPolicy[]) {
+  constructor(public authPolicies?: AuthPolicy[]) {
     super();
-  }
-}
-
-
-export const loginUserAction = (user?: User) => (dispatcher: Dispatch) =>{
-  
-  dispatcher(new UpdateUser(user));
-  if(user){
-    startUserSession(user);
-    loadUserSettings(user, dispatcher);
-    localStorage.setItem("userToken", user.toString());
   }
 }
 
 export const logoutUser = () => (dispatcher: Dispatch, getState: () => IApplicationStoreState) =>{
 
-  const {framework:{applicationState:{ authentication }, authenticationState: {user}}} = getState();
+  const { framework:{ applicationState:{ authentication }, authenticationState: { user } } } = getState();
   
   dispatcher(new UpdateUser(undefined));
   dispatcher(new SetGeneralSettingsAction(null));
   endWebsocketSession();
   endUserSession();
-  localStorage.removeItem("userToken");
+  localStorage.removeItem('userToken');
 
 
   //only call if a user is currently logged in
-  if (authentication === "oauth" && user) {
+  if (authentication === 'oauth' && user) {
 
     const url = window.location.origin;
-    window.location.href=`${url}/oauth/logout`;
+    window.location.href = `${url}/oauth/logout`;
   }
-}
+};
 
-const loadUserSettings = (user: User | undefined, dispatcher: Dispatch) =>{
+/**
+ * Loads the user settings for the given user and dispatches a `saveInitialSettings` action with the result.
+ * @param user The user for which to load the settings.
+ * @param dispatcher The dispatcher function to use for dispatching the `saveInitialSettings` action.
+ */
+const loadUserSettings = (user: User | undefined, dispatcher: Dispatch) => {
 
+  // fetch used, because state change for user login is not done when frameworks restRequest call is started (and is accordingly undefined -> /userdata call yields 401, unauthorized) and triggering an action from inside the handler / login event is impossible
+  // no timeout used, because it's bad practice to add a timeout to hopefully avoid a race condition
+  // hence, fetch used to simply use supplied user data for getting settings
 
-  //fetch used, because state change for user login is not done when frameworks restRequest call is started (and is accordingly undefined -> /userdata call yields 401, unauthorized) and triggering an action from inside the handler / login event is impossible
-  //no timeout used, because it's bad practise to add a timeout to hopefully avoid a race condition
-  //hence, fetch used to simply use supplied user data for getting settings
+  if (user && user.isValid) {
 
-  if(user && user.isValid){
-
-    fetch("/userdata", {
+    fetch('/userdata', {
       method: 'GET', 
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `${user.tokenType} ${user.token}`
-      }
+        'Authorization': `${user.tokenType} ${user.token}`,
+      },
     }).then((res: Response)=>{
-      if(res.status==200){
+      if (res.status == 200) {
         return res.json();
-      }else{
+      } else {
         return null;
       }
     }).then((result:Settings)=>{
-        dispatcher(saveInitialSettings(result));
-    })
+      dispatcher(saveInitialSettings(result));
+    });
   }  
-}
+};
+
+/**
+ * Dispatches an `UpdateUser` action with the given user and starts a user session if the user is defined.
+ * Also loads the user settings for the given user and dispatches a `saveInitialSettings` action with the result.
+ * Finally, saves the user token to local storage.
+ * @param user The user to be logged in.
+ * @param dispatcher The dispatcher function to use for dispatching the actions.
+ */
+export const loginUserAction = (user?: User) => (dispatcher: Dispatch) =>{
+  
+  dispatcher(new UpdateUser(user));
+  if (user) {
+    startUserSession(user);
+    loadUserSettings(user, dispatcher);
+    localStorage.setItem('userToken', user.toString());
+  }
+};

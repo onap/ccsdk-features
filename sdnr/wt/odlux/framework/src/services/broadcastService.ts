@@ -16,11 +16,11 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { setGeneralSettingsAction } from "../actions/settingsAction";
-import { loginUserAction, logoutUser } from "../actions/authentication";
-import { ReplaceAction } from "../actions/navigationActions";
-import { User } from "../models/authentication";
-import { ApplicationStore } from "../store/applicationStore";
+import { setGeneralSettingsAction } from '../actions/settingsAction';
+import { loginUserAction, logoutUser } from '../actions/authentication';
+import { ReplaceAction } from '../actions/navigationActions';
+import { User } from '../models/authentication';
+import { ApplicationStore } from '../store/applicationStore';
 
 type Broadcaster = {
   channel: BroadcastChannel;
@@ -47,17 +47,9 @@ export const saveChannel = (channel: BroadcastChannel, channelName: string) => {
   channels.push({ channel: channel, key: channelName });
 };
 
-export const startBroadcastChannel = (applicationStore: ApplicationStore) => {
-  store = applicationStore;
-
-  //might decide to use one general broadcast channel with more keys in the future
-  createAuthBroadcastChannel();
-  createSettingsBroadcastChannel();
-};
-
 const createSettingsBroadcastChannel = () => {
 
-  const name = "odlux_settings";
+  const name = 'odlux_settings';
   const bc: BroadcastChannel = new BroadcastChannel(name);
   channels.push({ channel: bc, key: name });
 
@@ -73,34 +65,41 @@ const createSettingsBroadcastChannel = () => {
         }
       }
     }
-  }
+  };
 };
 
 const createAuthBroadcastChannel = () => {
-  const name = "odlux_auth";
+  const name = 'odlux_auth';
   const bc: BroadcastChannel = new BroadcastChannel(name);
   channels.push({ channel: bc, key: name });
 
   bc.onmessage = (eventMessage: MessageEvent<AuthMessage>) => {
-    console.log(eventMessage)
+    console.log(eventMessage);
 
     if (eventMessage.data.key === 'login') {
       if (!store?.state.framework.authenticationState.user) {
-        const initialToken = localStorage.getItem("userToken");
+        const initialToken = localStorage.getItem('userToken');
         if (initialToken) {
           store?.dispatch(loginUserAction(User.fromString(initialToken)));
-          store?.dispatch(new ReplaceAction("/"));
+          store?.dispatch(new ReplaceAction('/'));
         }
       }
-    }
-    else if (eventMessage.data.key === 'logout') {
+    } else if (eventMessage.data.key === 'logout') {
 
       if (store?.state.framework.authenticationState.user) {
         store?.dispatch(logoutUser());
-        store?.dispatch(new ReplaceAction("/login"));
+        store?.dispatch(new ReplaceAction('/login'));
       }
     }
-  }
+  };
+};
+
+export const startBroadcastChannel = (applicationStore: ApplicationStore) => {
+  store = applicationStore;
+
+  // might decide to use one general broadcast channel with more keys in the future
+  createAuthBroadcastChannel();
+  createSettingsBroadcastChannel();
 };
 
 export const getBroadcastChannel = (channelName: string) => {

@@ -16,7 +16,7 @@
  * ============LICENSE_END==========================================================================
  */
 import React, { FC, memo } from 'react';
-import { HashRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
+import { Router, Route, Redirect, Switch } from 'react-router-dom';
 
 import { Theme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
@@ -38,10 +38,13 @@ import UserSettings from '../views/settings';
 
 import applicationService from '../services/applicationManager';
 
+import { history } from '../middleware/navigation';
+
 const aboutIcon = require('../assets/icons/About.svg');
 const homeIcon = require('../assets/icons/Home.svg');
 const loginIcon = require('../assets/icons/User.svg');
 const settingsIcon = require('../assets/icons/Tools.svg');
+
 
 const styles = makeStyles((theme: Theme) => {
 
@@ -73,7 +76,7 @@ const FrameComponent: FC = memo(() => {
   return (
     <ConfirmProvider>
       <SnackbarProvider maxSnack={3}>
-        <Router>
+        <Router history={history as any} >
           <div className={classes.root}>
             <SnackDisplay />
             <ErrorDisplay />

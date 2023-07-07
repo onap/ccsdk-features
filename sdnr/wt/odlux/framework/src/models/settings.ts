@@ -17,35 +17,32 @@
  */
 
 export type TableSettingsColumn = {
-    property: string,
-    displayed: boolean
-}
-
-export type TableSettings = {
-    tables:{
-        [key: string]: {
-            columns: TableSettingsColumn[]
-            
-            //match prop names, hide them
-            //via property name! -> only those which are hidden!
-            //all others default false, oh yeah
-            //or maybe the other way around, gotta think about that
-    
-        }
-    }
-    
-
-    
-}
-
-export type GeneralSettings = {
-    general:{
-        areNotificationsEnabled: boolean | null
-    }
+  property: string;
+  displayed: boolean;
 };
 
-export type Settings= TableSettings & GeneralSettings;
+export type TableSettings = {
+  tables:{
+    [key: string]: {
+      columns: TableSettingsColumn[];
+            
+      //match prop names, hide them
+      //via property name! -> only those which are hidden!
+      //all others default false, oh yeah
+      //or maybe the other way around, gotta think about that
+    
+    };
+  };
+};
+
+export type GeneralSettings = {
+  general:{
+    areNotificationsEnabled: boolean | null;
+  };
+};
+
+export type Settings = TableSettings & GeneralSettings;
 
 export type SettingsComponentProps = {
-    onClose(): void
+  onClose(): void;
 };

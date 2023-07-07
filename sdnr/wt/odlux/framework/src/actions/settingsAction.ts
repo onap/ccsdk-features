@@ -19,7 +19,7 @@
 import { Dispatch } from "../flux/store";
 import { Action } from "../flux/action";
 import { GeneralSettings, Settings, TableSettings, TableSettingsColumn } from "../models/settings";
-import { getUserdata, saveUserdata } from "../services/userdataService";
+import { getUserData, saveUserData } from "../services/userdataService";
 import { startWebsocketSession, suspendWebsocketSession } from "../services/notificationService";
 import { IApplicationStoreState } from "../store/applicationStore";
 
@@ -67,7 +67,7 @@ export const setGeneralSettingsAction = (value: boolean) => (dispatcher: Dispatc
 export const updateGeneralSettingsAction = (activateNotifications: boolean) => async (dispatcher: Dispatch) => {
 
     const value: GeneralSettings = { general: { areNotificationsEnabled: activateNotifications } };
-    const result = await saveUserdata("/general", JSON.stringify(value.general));
+    const result = await saveUserData("/general", JSON.stringify(value.general));
     dispatcher(setGeneralSettingsAction(activateNotifications));
 
 }
@@ -86,14 +86,14 @@ export const updateTableSettings = (tableName: string, columns: TableSettingsCol
     // would only save latest entry
     //const json = JSON.stringify({ [tableName]: { columns: columns } });
 
-    const result = await saveUserdata("/tables", json);
+    const result = await saveUserData("/tables", json);
 
     dispatcher(new SetTableSettings(tableName, columns));
 }
 
 export const getGeneralSettingsAction = () => async (dispatcher: Dispatch) => {
 
-    const result = await getUserdata<GeneralSettings>();
+    const result = await getUserData<GeneralSettings>();
 
     if (result && result.general) {
         dispatcher(new SetGeneralSettingsAction(result.general.areNotificationsEnabled!))

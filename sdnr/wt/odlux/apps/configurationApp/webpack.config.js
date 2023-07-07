@@ -41,7 +41,7 @@ module.exports = (env) => {
     output: {
       path: distPath,
       filename: "[name].js",
-      library: "[name]",
+      library: "configurationApp",
       libraryTarget: "umd2",
       chunkFilename: "[name].js"
     },

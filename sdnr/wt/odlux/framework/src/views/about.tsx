@@ -34,11 +34,9 @@ type OdluxVersion= {version:string,build:string, framework: string,
     faultApp: string,
     helpApp: string,
     inventoryApp: string,
-    linkCalculationApp: string,
     maintenanceApp: string,
     mediatorApp: string,
-    networkMapApp: string,
-    permanceHistoryApp: string
+    permanceHistoryApp: string,
   }};
 
 type TopologyVersion = {version: string, buildTimestamp: string};
@@ -70,8 +68,6 @@ const AboutComponent: FC = (props) => {
         `| InventoryApp | ${data.applications.inventoryApp}|\n `+
         `| EventLogApp | ${data.applications.eventLogApp}|\n `+
         `| MediatorApp | ${data.applications.mediatorApp}|\n `+
-        `| NetworkMapApp | ${data.applications.networkMapApp}|\n `+
-        `| LinkCalculatorApp | ${data.applications.linkCalculationApp}|\n `+
         `| HelpApp | ${data.applications.helpApp}|\n `;
       }
     

@@ -23,7 +23,7 @@ import { AuthPolicy, User } from '../models/authentication';
 import { onLogin, onLogout } from '../services/applicationApi';
 import { startWebsocketSession, endWebsocketSession } from '../services/notificationService';
 import { startUserSession, endUserSession } from '../services/userSessionService';
-import { getUserdata } from '../services/userdataService';
+import { getUserData } from '../services/userdataService';
 
 export interface IAuthenticationState {
   user?: User;

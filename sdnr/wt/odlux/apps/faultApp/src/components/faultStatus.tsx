@@ -23,6 +23,7 @@ import Typography from '@mui/material/Typography';
 import { WithStyles } from '@mui/styles';
 import createStyles from '@mui/styles/createStyles';
 import withStyles from '@mui/styles/withStyles';
+import Tooltip from '@mui/material/Tooltip';
 
 import { connect, Connect } from '../../../../framework/src/flux/connect';
 import { IApplicationStoreState } from '../../../../framework/src/store/applicationStore';
@@ -60,18 +61,42 @@ class FaultStatusComponent extends React.Component<FaultStatusComponentProps> {
 
     return (
       <>
-      <Typography variant="body1" color="inherit" aria-label="critical-alarms">
-        Alarm Status: <FontAwesomeIcon className={`${classes.icon} ${classes.critical}`} icon={faExclamationTriangle} /> { faultStatus.critical  } |
+        <Typography variant="body1" color="inherit">
+          Alarm Status:
+          <Tooltip title="Critical Alarms" arrow>
+            <span aria-label="critical-alarms">
+              <FontAwesomeIcon className={`${classes.icon} ${classes.critical}`} icon={faExclamationTriangle} />
+            </span>
+          </Tooltip>
+          {faultStatus.critical} |
         </Typography>
-        <Typography variant="body1" color="inherit" aria-label="major-alarms">
-        <FontAwesomeIcon className={`${classes.icon} ${classes.major}`} icon={faExclamationTriangle} /> { faultStatus.major } |
+
+        <Typography variant="body1" color="inherit">
+          <Tooltip title="Major Alarms" arrow>
+            <span aria-label="major-alarms">
+              <FontAwesomeIcon className={`${classes.icon} ${classes.major}`} icon={faExclamationTriangle} />
+            </span>
+          </Tooltip>
+          {faultStatus.major} |
         </Typography>
-        <Typography variant="body1" color="inherit" aria-label="minor-alarms">
-        <FontAwesomeIcon className={`${classes.icon} ${classes.minor}`} icon={faExclamationTriangle} /> { faultStatus.minor } |
+
+        <Typography variant="body1" color="inherit">
+          <Tooltip title="Minor Alarms" arrow>
+            <span aria-label="minor-alarms">
+              <FontAwesomeIcon className={`${classes.icon} ${classes.minor}`} icon={faExclamationTriangle} />
+            </span>
+          </Tooltip>
+          {faultStatus.minor} |
         </Typography>
-        <Typography variant="body1" color="inherit" aria-label="warning-alarms">
-        <FontAwesomeIcon className={`${classes.icon} ${classes.warning}`} icon={faExclamationTriangle} /> { faultStatus.warning } |
-      </Typography>
+
+        <Typography variant="body1" color="inherit">
+          <Tooltip title="Warning Alarms" arrow>
+            <span aria-label="warning-alarms">
+              <FontAwesomeIcon className={`${classes.icon} ${classes.warning}`} icon={faExclamationTriangle} />
+            </span>
+          </Tooltip>
+          {faultStatus.warning} |
+        </Typography>
       </>
     );
   }

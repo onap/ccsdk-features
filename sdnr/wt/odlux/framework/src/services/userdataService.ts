@@ -16,26 +16,13 @@
  * ============LICENSE_END==========================================================================
  */
 
-import { requestRest } from "./restService";
+import { requestRest } from './restService';
 
+const settingsPath = '/userdata';
 
-    const settingsPath ="/userdata";
+export const getUserData = <TData>(partialPath?: string) => requestRest<TData>(partialPath ? settingsPath + partialPath : settingsPath, { method: 'GET' });
 
+export const saveUserData = <TData>(partialPath: string, data: string) =>  requestRest<TData>(settingsPath + partialPath, { method: 'PUT', body: data });
 
-    export function getUserdata<TData>(partialPath?: string){
-       let path = settingsPath;
-        if(partialPath){
-            path+=partialPath
-        }
-
-        const result = requestRest<TData>(path, {method: "GET"})
-        return result;
-    }
-
-    export function saveUserdata<TData>(partialPath: string, data: string){
-
-        const result = requestRest<TData>(settingsPath+partialPath, {method: "PUT", body: data})
-        return result;
-    }
 
 

@@ -139,8 +139,8 @@
                         <!-- optional: default phase is "generate-resources" -->
                         <phase>initialize</phase>
                         <configuration>
-                            <nodeVersion>v12.22.0</nodeVersion>
-                            <yarnVersion>v1.22.10</yarnVersion>
+                            <nodeVersion>v16.17.0</nodeVersion>
+                            <yarnVersion>v1.22.19</yarnVersion>
                         </configuration>
                     </execution>
                     <execution>
