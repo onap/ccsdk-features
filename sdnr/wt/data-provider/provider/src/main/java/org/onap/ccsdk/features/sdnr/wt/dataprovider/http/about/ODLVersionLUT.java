@@ -32,6 +32,9 @@ public class ODLVersionLUT {
         if (onapCCSDKVersion == null) {
             return def;
         }
+        if (onapCCSDKVersion.startsWith("2.6.")) {
+            return "ONAP Montreal";
+        }
         if (onapCCSDKVersion.startsWith("2.5.")) {
             return "ONAP London";
         }
@@ -72,6 +75,10 @@ public class ODLVersionLUT {
         }
         if(odlMdsalVersionLUT==null) {
             odlMdsalVersionLUT = new HashMap<>();
+            odlMdsalVersionLUT.put("11.0.9","argon-SR1 (0.18.1)");
+            odlMdsalVersionLUT.put("11.0.7","argon-SR0 (0.18.0)");
+            odlMdsalVersionLUT.put("10.0.8","chlorine-SR3 (0.17.3)");
+            odlMdsalVersionLUT.put("10.0.6","chlorine-SR2 (0.17.2)");
             odlMdsalVersionLUT.put("10.0.5","chlorine-SR1 (0.17.1)");
             odlMdsalVersionLUT.put("10.0.2","chlorine-SR0 (0.17.0)");
             odlMdsalVersionLUT.put("9.0.5","sulfur-SR2 (0.16.2)");

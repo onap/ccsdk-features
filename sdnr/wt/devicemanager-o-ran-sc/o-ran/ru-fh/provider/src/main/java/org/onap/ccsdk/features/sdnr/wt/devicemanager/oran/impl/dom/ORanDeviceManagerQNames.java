@@ -35,11 +35,14 @@ public class ORanDeviceManagerQNames {
 
     // onap-system.yang
     public static final String ONAP_SYSTEM_NS = "urn:onap:system";
-    public static final String ONAP_SYSTEM_REVISION = "2020-10-26";
+    public static final String ONAP_SYSTEM_REVISION = "2022-11-04";
     public static final @NonNull QName ONAP_SYSTEM_QNAME =
             QName.create(ONAP_SYSTEM_NS, ONAP_SYSTEM_REVISION, "onap-system");
+//    public static final @NonNull QName ONAP_SYSTEM_QNAME =
+//          QName.create(ONAP_SYSTEM_NS, "onap-system");
     public static final @NonNull QName ONAP_SYSTEM_NAME = QName.create(ONAP_SYSTEM_QNAME, "name");
     public static final @NonNull QName ONAP_SYSTEM_WEB_UI = QName.create(ONAP_SYSTEM_QNAME, "web-ui");
+    public static final @NonNull QName ONAP_SYSTEM_GEOLOCATION = QName.create(ONAP_SYSTEM_QNAME, "geographical-location");
 
     //ietf-hardware.yang
     public static final String IETF_HW_NS = "urn:ietf:params:xml:ns:yang:ietf-hardware";
@@ -84,7 +87,8 @@ public class ORanDeviceManagerQNames {
 
     //o-ran-fm.yang
     public static final String ORAN_FM_NS = "urn:o-ran:fm:1.0";
-    public static final String ORAN_FM_REVISION = "2019-02-04";
+    //public static final String ORAN_FM_REVISION = "2019-02-04";
+    public static final String ORAN_FM_REVISION = "2022-08-15";
     public static final @NonNull QName ORAN_FM_MODULE = QName.create(ORAN_FM_NS, ORAN_FM_REVISION, "o-ran-fm");
     public static final @NonNull QName ORAN_FM_ALARM_NOTIF = QName.create(ORAN_FM_MODULE, "alarm-notif");
     public static final @NonNull QName ORAN_FM_FAULT_ID = QName.create(ORAN_FM_MODULE, "fault-id");

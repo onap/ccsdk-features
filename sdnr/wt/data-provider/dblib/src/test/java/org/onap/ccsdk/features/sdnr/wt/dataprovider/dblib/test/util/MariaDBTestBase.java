@@ -96,12 +96,12 @@ public class MariaDBTestBase {
         this.config.setDbSuffix("");
         this.config.setControllerId("test123");
         this.db = null;
-        this.dbProvider = new SqlDBDataProvider(config, false);
+        this.dbProvider = new SqlDBDataProvider(config, false, "");
 
         SqlDBConfig config2 = new SqlDBConfig(new ConfigurationFileRepresentation("test2.properties"));
         config2.setDbSuffix("");
         config2.setControllerId(null);
-        this.dbProviderOverall = new SqlDBDataProvider(config2, false);
+        this.dbProviderOverall = new SqlDBDataProvider(config2, false, "");
     }
 
     public MariaDBTestBase(int port) throws ManagedProcessException {
@@ -116,11 +116,11 @@ public class MariaDBTestBase {
         //start db server
         this.db = startDatabase(port);
         //create db with name sdnrdb
-        this.dbProvider = new SqlDBDataProvider(config, false);
+        this.dbProvider = new SqlDBDataProvider(config, false, "");
         SqlDBConfig config2 = new SqlDBConfig(new ConfigurationFileRepresentation("test2.properties"));
         config2.setDbSuffix("");
         config2.setControllerId(null);
-        this.dbProviderOverall = new SqlDBDataProvider(config2, false);
+        this.dbProviderOverall = new SqlDBDataProvider(config2, false, "");
     }
 
     public void close() throws ManagedProcessException {

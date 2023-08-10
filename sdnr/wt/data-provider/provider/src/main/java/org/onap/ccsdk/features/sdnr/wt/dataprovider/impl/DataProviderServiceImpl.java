@@ -154,7 +154,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
             if (this.dbConfig.getDbType() == SdnrDbType.ELASTICSEARCH) {
                 this.dataProvider = new ElasticSearchDataProvider(this.dbConfig.getEsConfig());
              } else {
-                this.dataProvider = new SqlDBDataProvider(this.dbConfig.getMariadbConfig());
+                this.dataProvider = new SqlDBDataProvider(this.dbConfig.getMariadbConfig(), this.dbConfig.getGuicutthroughOverride());
             }
         }
         else {

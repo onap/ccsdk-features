@@ -35,7 +35,6 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper2;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev191129.PmDataType;
-import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev191129.PmDataTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.BIPErrorCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.DelayTCM2Up;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.OpticalPowerInputOSCMin;
@@ -106,7 +105,6 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
     @Test
     public void testOpenroadmPMString2() throws IOException, ClassNotFoundException {
         out("Test: " + method());
-        PmDataTypeBuilder.getDefaultInstance("11298624220985537708");
         String jsonString2 = getFileContent("pmdata2.json");
         DataProviderYangToolsMapper mapper2 = new DataProviderYangToolsMapper();
         PmdataEntity generatepmdNode = mapper2.readValue(jsonString2, PmdataEntity.class);

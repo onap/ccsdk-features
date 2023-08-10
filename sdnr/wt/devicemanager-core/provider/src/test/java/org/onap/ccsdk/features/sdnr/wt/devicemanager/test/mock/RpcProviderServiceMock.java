@@ -20,11 +20,15 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test.mock;
 
+import com.google.common.collect.ClassToInstanceMap;
 import java.util.Set;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.DevicemanagerService;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
 public class RpcProviderServiceMock implements RpcProviderService {
@@ -44,6 +48,27 @@ public class RpcProviderServiceMock implements RpcProviderService {
     @Override
     public <S extends RpcService, T extends S> ObjectRegistration<T> registerRpcImplementation(Class<S> type,
             T implementation, Set<InstanceIdentifier<?>> paths) {
+        return null;
+    }
+
+    @Override
+    public @NonNull Registration registerRpcImplementation(Rpc<?, ?> implementation) {
+        return null;
+    }
+
+    @Override
+    public @NonNull Registration registerRpcImplementation(Rpc<?, ?> implementation, Set<InstanceIdentifier<?>> paths) {
+        return null;
+    }
+
+    @Override
+    public @NonNull Registration registerRpcImplementations(ClassToInstanceMap<Rpc<?, ?>> implementations) {
+        return null;
+    }
+
+    @Override
+    public @NonNull Registration registerRpcImplementations(ClassToInstanceMap<Rpc<?, ?>> implementations,
+                                                            Set<InstanceIdentifier<?>> paths) {
         return null;
     }
 
