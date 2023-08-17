@@ -38,15 +38,7 @@
     <packaging>feature</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-		<version>3.0.0</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
