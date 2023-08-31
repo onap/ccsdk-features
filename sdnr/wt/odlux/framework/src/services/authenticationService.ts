@@ -87,8 +87,7 @@ class AuthenticationService {
   }
 
   public async getServerReadyState(){
-
-    const result = await fetch("/ready", {method: "GET"});
+    const result = await requestRestExt(`/ready`, { method: "GET" }, false);
     return result.status == (200 || 304) ? true : false;
   }
 }

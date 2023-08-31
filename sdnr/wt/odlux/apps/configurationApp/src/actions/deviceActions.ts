@@ -193,29 +193,36 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
             }));
           } else {
             // Found a list at root level of a module w/o a reference key.
-            dataPath += `?content=config&fields=${encodeURIComponent(viewElement.id)}(${encodeURIComponent(viewElement.key || '')})`; 
+            dataPath += `?&fields=${encodeURIComponent(viewElement.id)}(${encodeURIComponent(viewElement.key || '')})`; 
             const restResult = (await restService.getConfigData(dataPath));
             if (restResult && restResult.status === 200 && restResult.data && restResult.data[viewElement.id] ) {
               // spoof the not existing view here
               const refData = restResult.data[viewElement.id];
-              const refView : ViewSpecification  = {
-                id: '-1',
-                canEdit: false,
-                config: false,
-                language: 'en-US',
-                elements: {
-                  [viewElement.key!] : { 
-                    uiType: 'string',
-                    config: false,
-                    id: viewElement.key,
-                    label: viewElement.key,
-                    isList: true,
-                  } as ViewElementString,
-                },
-              };
-              dispatch(new EnableValueSelector(refView, refData, viewElement.key!, (refKey) => {
-                window.setTimeout(() => dispatch(new PushAction(`${vPath}[${refKey.replace(/\//ig, '%2F')}]`))); 
-              }));
+              if (!Array.isArray(refData) || !refData.length) {
+                throw new Error('Found a list at root level of a module containing no keys.');
+              }
+              if (refData.length > 1) {
+                const refView : ViewSpecification  = {
+                  id: '-1',
+                  canEdit: false,
+                  config: false,
+                  language: 'en-US',
+                  elements: {
+                    [viewElement.key!] : { 
+                      uiType: 'string',
+                      config: false,
+                      id: viewElement.key,
+                      label: viewElement.key,
+                      isList: true,
+                    } as ViewElementString,
+                  },
+                };
+                dispatch(new EnableValueSelector(refView, refData, viewElement.key!, (refKey) => {
+                  window.setTimeout(() => dispatch(new PushAction(`${vPath}[${refKey.replace(/\//ig, '%2F')}]`))); 
+                }));
+              } else {
+                window.setTimeout(() => dispatch(new PushAction(`${vPath}[${refData[0]?.id.replace(/\//ig, '%2F')}]`))); 
+              }
             } else {
               throw new Error('Found a list at root level of a module and could not determine the keys.');
             }
