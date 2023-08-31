@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e09e17f_c4838ef3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5637
+      },
+      "writtenOn": "2023-08-31T10:33:07Z",
+      "side": 1,
+      "message": "Hello..\nUpdated ODLUX to latest- Kindly review",
+      "revId": "ffb43a8b8a17534cc577517082260008673a2c68",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
