@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b94fa64_c25c5e22",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2023-09-26T14:07:44Z",
+      "side": 1,
+      "message": "Hi All, Please review and commit if all OK.\nThanks\nRavi",
+      "revId": "3ca93f9ff6f6a3b7319ef1733476b2cad083fc1c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
