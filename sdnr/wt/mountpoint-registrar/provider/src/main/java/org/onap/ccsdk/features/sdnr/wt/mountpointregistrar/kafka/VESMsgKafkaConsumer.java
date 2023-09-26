@@ -38,7 +38,7 @@ public class VESMsgKafkaConsumer {
         props.put(SaslConfigs.SASL_MECHANISM, strimziKafkaProperties.getProperty("saslMechanism"));
         props.put(SaslConfigs.SASL_JAAS_CONFIG, strimziKafkaProperties.getProperty("saslJaasConfig"));
         props.put(ConsumerConfig.GROUP_ID_CONFIG,
-                consumerProperties.getProperty("topic") + "-" + consumerProperties.getProperty("consumerGroup"));
+                consumerProperties.getProperty("consumerGroup") + "-" + consumerProperties.getProperty("topic"));
         props.put(ConsumerConfig.CLIENT_ID_CONFIG,
                 consumerProperties.getProperty("topic") + "-" + consumerProperties.getProperty("consumerID"));
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
