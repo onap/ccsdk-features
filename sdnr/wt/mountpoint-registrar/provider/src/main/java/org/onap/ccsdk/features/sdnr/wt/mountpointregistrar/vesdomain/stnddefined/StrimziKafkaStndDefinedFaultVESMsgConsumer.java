@@ -92,9 +92,8 @@ public class StrimziKafkaStndDefinedFaultVESMsgConsumer extends StrimziKafkaVESM
                         .atZone(ZoneId.of("Z")).toString();
         int faultSequence = rootNode.at("/event/commonEventHeader/sequence").intValue();
         String faultObjectId = rootNode.at("/event/stndDefinedFields/data/alarmId").textValue();
-        String faultReason = rootNode.at("/event/stndDefinedFields/data/specificProblem").textValue();
-        String faultSeverity =
-                getSDNRSeverityType(rootNode.at("/event/stndDefinedFields/data/perceivedSeverity").textValue());
+        String faultReason = rootNode.at("/event/stndDefinedFields/data/probableCause").textValue();
+        String faultSeverity = SeverityType.NonAlarmed.toString();
 
         payloadMapMessage = FaultNotificationClient.createFaultNotificationPayloadMap(faultNodeId,
                 Integer.toString(faultSequence), faultOccurrenceTime, faultObjectId, faultReason, faultSeverity);
@@ -107,7 +106,7 @@ public class StrimziKafkaStndDefinedFaultVESMsgConsumer extends StrimziKafkaVESM
                         .atZone(ZoneId.of("Z")).toString();
         int faultSequence = rootNode.at("/event/commonEventHeader/sequence").intValue();
         String faultObjectId = rootNode.at("/event/stndDefinedFields/data/alarmId").textValue();
-        String faultReason = rootNode.at("/event/stndDefinedFields/data/specificProblem").textValue();
+        String faultReason = rootNode.at("/event/stndDefinedFields/data/probableCause").textValue();
         String faultSeverity =
                 getSDNRSeverityType(rootNode.at("/event/stndDefinedFields/data/perceivedSeverity").textValue());
 
