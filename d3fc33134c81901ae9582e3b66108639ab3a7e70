@@ -16,6 +16,23 @@
       "message": "Hi, Please review and submit if all good.\nRegards,\nRavi",
       "revId": "d3fc33134c81901ae9582e3b66108639ab3a7e70",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff584c4f_dd724e43",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2023-10-09T10:15:56Z",
+      "side": 1,
+      "message": "@Alex, FYI",
+      "revId": "d3fc33134c81901ae9582e3b66108639ab3a7e70",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
   ]
 }
