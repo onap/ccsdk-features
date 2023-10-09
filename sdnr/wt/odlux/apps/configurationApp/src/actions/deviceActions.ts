@@ -233,7 +233,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
         extractList = true;
       } else {
         // normal case & replaces unicode %2C if present
-        dataPath += `/${property}${key ? `=${key.replace(/\%2C/g, ',').replace(/\//ig, '%2F')}` : ''}`;
+        dataPath += `/${property}${key ? `=${key.replace(/,/ig, '%2C').replace(/\//ig, '%2F')}` : ''}`;
 
         // in case of the root element the required namespace will be added later,
         // while extracting the data
