@@ -16,6 +16,23 @@
       "message": "Hi,\nPlease review the changes regarding CCSDK-3942\nThanks",
       "revId": "70cc4c4295376e4af9cb9009a6ee5ddc389d61d9",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "46780b01_ee4fa6dd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2023-10-10T08:42:21Z",
+      "side": 1,
+      "message": "Looks good to me.",
+      "revId": "70cc4c4295376e4af9cb9009a6ee5ddc389d61d9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
   ]
 }
