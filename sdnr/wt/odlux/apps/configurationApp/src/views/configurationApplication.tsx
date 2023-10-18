@@ -919,6 +919,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
   }
 
   render() {
+    console.log('ConfigurationApplication.render()', this.props);
     return this.props.collectingData || !this.state.viewData
       ? this.renderCollectingData()
       : this.props.listSpecification
