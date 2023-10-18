@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "55c7e924_9f461459",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5637
+      },
+      "writtenOn": "2023-10-18T13:33:20Z",
+      "side": 1,
+      "message": "Hi,\nKindly review the changes related to ConfigurationApp\nThanks,",
+      "revId": "489b2547130ae7e56dac6780e82ff6cdc54e6abe",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
