@@ -21,9 +21,8 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl;
 import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.CoreModel14;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.slf4j.Logger;
@@ -31,24 +30,21 @@ import org.slf4j.LoggerFactory;
 
 public class Onf14DomNetworkElementFactory implements NetworkElementFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(Onf14DomNetworkElementFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Onf14DomNetworkElementFactory.class);
 
     @Override
     public Optional<NetworkElement> create(NetconfAccessor accessor, DeviceManagerServiceProvider serviceProvider) {
 
         Optional<NetworkElement> ne = Optional.empty();
-        Capabilities capabilities = accessor.getCapabilites();
-        if (capabilities.isSupportingNamespace(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)) {
-            String namespaceRevision = capabilities
-                    .getRevisionForNamespace(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER);
-
-            Optional<NetconfDomAccessor> domAccessor = accessor.getNetconfDomAccessor();
-            if (domAccessor.isPresent()) {
-                ne = Optional.of(new Onf14DomNetworkElement(domAccessor.get(), serviceProvider, namespaceRevision));
+        Optional<NetconfDomAccessor> domAccessor = accessor.getNetconfDomAccessor();
+        if (domAccessor.isPresent()) {
+            Optional<CoreModel14> onf14CoreModelQnames = CoreModel14.getModule(domAccessor.get());
+            if (onf14CoreModelQnames.isPresent()) {
+                ne = Optional
+                        .of(new Onf14DomNetworkElement(domAccessor.get(), serviceProvider, onf14CoreModelQnames.get()));
             }
-
-            log.info("Create device:{}", ne.isPresent() ? ne.get().getClass().getSimpleName() : "not");
-        }
+       }
+        LOG.info("Create device:{}", ne.isPresent() ? ne.get().getClass().getSimpleName() : "not");
         return ne;
     }
 

@@ -1,0 +1,394 @@
+module cera-microwave-model {
+  yang-version 1.1;
+  namespace "urn:onf:params:xml:ns:yang:cera-microwave-model";
+  prefix cera-microwave-model;
+
+  import core-model-1-4 {
+    prefix core-model;
+  }
+  import air-interface-2-0 {
+    prefix air-interface;
+  }
+  import wire-interface-2-0 {
+    prefix wire-interface;
+  }
+  import ethernet-container-2-0 {
+    prefix ethernet-container;
+  }
+  import alarms-1-0 {
+    prefix alarms;
+  }
+
+  organization
+    "Ceragon Networks";
+  contact
+    "
+     Editors:  Alex Stancu
+               <mailto:alexandrus@ceragon.com>
+               Dragos Dosan
+               <mailto:dragosd@ceragon.com>
+               Dragos Dan (Software Developer)
+               <mailto:ddan@ddan.io>
+     ";
+  description
+    "This model contains a collection of YANG definitions for managing Ceragon wireless network equipment.";
+
+  revision 2022-10-10 {
+    description
+      "Add new Ceragon augmentations to the ONF YANG models.";
+    reference
+      "";
+  }
+  revision 2022-06-22 {
+    description
+      "Adapt PMs to the new ONF modules";
+    reference
+      "";
+  }
+  revision 2019-08-07 {
+    description
+      "New leaf in container-performance-type-xcrg-g was added: radio-ethernet-capacity-pm-peak";
+    reference
+      "";
+  }
+  revision 2019-01-23 {
+    description
+      "Initial version";
+    reference
+      "";
+  }
+
+  grouping air-interface-performance-type-xcrg-g {
+    description
+      "Performance Monitoring interface attributes";
+    leaf rf-pm-tx-level-thresh1-exceeded {
+      type int32;
+      units "seconds";
+      config false;
+      description
+        "The number of seconds in the interval that the TSL (Transmit Signal Level) exceeded threshold";
+    }
+    leaf rf-pm-rx-level-thresh1-exceeded {
+      type int32;
+      units "seconds";
+      config false;
+      description
+        "The number of seconds in the interval that the RSL (Received Signal Level) exceeded threshold1";
+    }
+    leaf rf-pm-rx-level-thresh2-exceeded {
+      type int32;
+      units "seconds";
+      config false;
+      description
+        "The number of seconds in the interval that the RSL (Received Signal Level) exceeded threshold2";
+    }
+    leaf modem-ber-pm-bbe {
+      type int32;
+      config false;
+      description
+        "This value indicates the BBE value (Background Block Error).";
+    }
+    leaf modem-mse-pm-mse-min {
+      type int32;
+      units "dB";
+      default "0";
+      config false;
+      description
+        "This parameter holds the minimum MSE value that is measured in the interval";
+    }
+    leaf modem-mse-pm-mse-max {
+      type int32;
+      units "dB";
+      default "-99";
+      config false;
+      description
+        "This parameter holds the maximum  MSE value that is measured in the interval";
+    }
+    leaf modem-mse-pm-above-mse-threshold-sec-counter {
+      type int32;
+      units "seconds";
+      config false;
+      description
+        "This parameter holds the number of seconds that the MSE exceeded the configured threshold.";
+    }
+    leaf modem-xpi-pm-xpi-min {
+      type int32;
+      units "dB";
+      default "99";
+      config false;
+      description
+        "This parameter holds the minimum XPI value detected in the interval";
+    }
+    leaf modem-xpi-pm-xpi-max {
+      type int32;
+      units "dB";
+      default "0";
+      config false;
+      description
+        "This parameter holds the maximum XPI value detected in the interval";
+    }
+    leaf modem-xpi-pm-below-xpi-threshold-sec-counter {
+      type int32;
+      units "seconds";
+      config false;
+      description
+        "This parameter holds the number of seconds in the interval that the XPI value was below the configured threshold";
+    }
+    leaf mrmc-acm-pm-min-profile {
+      type uint32;
+      default "0";
+      config false;
+      description
+        "The minimum profile that was measured during the interval";
+    }
+    leaf mrmc-acm-pm-max-profile {
+      type uint32;
+      default "0";
+      config false;
+      description
+        "The maximum profile that was measured during the interval";
+    }
+    leaf mrmc-acm-pm-min-bitrate {
+      type uint32;
+      units "Mbps";
+      default "0";
+      config false;
+      description
+        "The minimum bitrate that was measured during the interval";
+    }
+    leaf mrmc-acm-pm-max-bitrate {
+      type uint32;
+      units "Mbps";
+      default "0";
+      config false;
+      description
+        "The maximum bitrate that was measured during the interva";
+    }
+  }
+
+  grouping container-performance-type-xcrg-g {
+    description
+      "Performance Monitoring containertes";
+    leaf radio-ethernet-capacity-pm-peak {
+      type uint32;
+      units "Mbps";
+      default "0";
+      config false;
+      description
+        "Peak radio Ethernet capacity in the PM time interval";
+    }
+    leaf radio-ethernet-capacity-pm-average {
+      type uint32;
+      units "Mbps";
+      default "0";
+      config false;
+      description
+        "Average radio Ethernet capacity in the PM time interval";
+    }
+    leaf radio-ethernet-capacity-pm-over-threshold {
+      type uint32;
+      units "seconds";
+      default "0";
+      config false;
+      description
+        "Number of seconds in the PM time interval that exceede radio capacity threshold";
+    }
+    leaf radio-ethernet-throughput-pm-peak {
+      type uint32;
+      units "Mbps";
+      default "0";
+      config false;
+      description
+        "Peak radio throughput in the PM time interval";
+    }
+    leaf radio-ethernet-throughput-pm-average {
+      type uint32;
+      units "Mbps";
+      default "0";
+      config false;
+      description
+        "Average radio Ethernet throughput in the PM time interval";
+    }
+    leaf radio-ethernet-throughput-pm-over-threshold {
+      type uint32;
+      units "seconds";
+      default "0";
+      config false;
+      description
+        "Number of seconds in the PM time interval that exceede radio throughput threshold";
+    }
+    leaf radio-ethernet-utilization-pm-peak-utilization {
+      type uint32;
+      units "%";
+      default "0";
+      config false;
+      description
+        "Peak radio utilization in the PM time interval";
+    }
+    leaf radio-ethernet-utilization-pm-average-utilization {
+      type uint32;
+      units "%";
+      default "0";
+      config false;
+      description
+        "Average radio utilization in the PM time interval";
+    }
+    leaf radio-ethernet-utilization-pm-over-threshold-utilization {
+      type uint32;
+      units "seconds";
+      default "0";
+      config false;
+      description
+        "Number of seconds in the PM time interval that exceede radio utilization threshold";
+    }
+  }
+
+  grouping transmission-mode-g {
+    leaf mrmc-profile-attribute-tx-bitrate {
+      type uint32;
+      units "Kbps";
+      default "0";
+      config false;
+      description
+        "Indicates the TX bit-rate of the profile";
+    }
+  }
+
+  grouping wire-interface-status-g {
+    leaf local-end-point-id {
+      type string;
+      default "not-supported";
+      config false;
+      description
+        "The value of the localEndPointId is a vendor specific identifier of the wire interface, used by the node to discover a link.";
+    }
+    leaf remote-end-point-id {
+      type string;
+      default "not-supported";
+      config false;
+      description
+        "The value of the remoteEndPointId is a vendor specific identifier of the wire interface at the remote side, used to by the node to discover a link.";
+    }
+  }
+
+  grouping alarm-event-notification-extra-g {
+    description
+      "Extra information to be provided in the notifications.";
+    leaf is-clearable {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "True if the alarm/event represents a condition that can be cleared at a later time (or is itself a clear); false otherwise.";
+    }
+  }
+
+  grouping alarm-extra-g {
+    description
+      "Extra information to be provided in the alarms and notifications.";
+    leaf resource-ifindex {
+      type string;
+      config false;
+      description
+        "The ifindex of the generating entity.";
+    }
+  }
+
+  grouping alarm-event-records-extra-g {
+    description
+      "Extra information to be provided in the alarms and notifications.";
+    leaf alarm-services-sequence-count {
+      type uint32;
+      config false;
+      description
+        "Event log last change sequence count.";
+    }
+  }
+
+  augment "/core-model:control-construct/core-model:logical-termination-point/core-model:layer-protocol/air-interface:air-interface-pac/air-interface:air-interface-current-performance/air-interface:current-performance-data-list/air-interface:performance-data" {
+    description
+      "Ceragon air interface augmentation";
+    uses air-interface-performance-type-xcrg-g;
+  }
+  augment "/core-model:control-construct/core-model:logical-termination-point/core-model:layer-protocol/air-interface:air-interface-pac/air-interface:air-interface-historical-performances/air-interface:historical-performance-data-list/air-interface:performance-data" {
+    description
+      "Ceragon air interface augmentation";
+    uses air-interface-performance-type-xcrg-g;
+  }
+  augment "/core-model:control-construct/core-model:logical-termination-point/core-model:layer-protocol/ethernet-container:ethernet-container-pac/ethernet-container:ethernet-container-current-performance/ethernet-container:current-performance-data-list/ethernet-container:performance-data" {
+    description
+      "Ceragon air interface augmentation";
+    uses container-performance-type-xcrg-g;
+  }
+  augment "/core-model:control-construct/core-model:logical-termination-point/core-model:layer-protocol/ethernet-container:ethernet-container-pac/ethernet-container:ethernet-container-historical-performances/ethernet-container:historical-performance-data-list/ethernet-container:performance-data" {
+    description
+      "Ceragon air interface augmentation";
+    uses container-performance-type-xcrg-g;
+  }
+  augment "/core-model:control-construct/core-model:logical-termination-point/core-model:layer-protocol/air-interface:air-interface-pac/air-interface:air-interface-capability/air-interface:transmission-mode-list" {
+    description
+      "Ceragon transmission mode list augmentations";
+    uses transmission-mode-g;
+  }
+  augment "/core-model:control-construct/core-model:logical-termination-point/core-model:layer-protocol/wire-interface:wire-interface-pac/wire-interface:wire-interface-status" {
+    description
+      "Ceragon wire interface status augmentations";
+    uses wire-interface-status-g;
+  }
+  augment "/alarms:alarm-event-notification" {
+    description
+      "Ceragon alarm event notification augmentations";
+    uses alarm-event-notification-extra-g;
+    uses alarm-extra-g;
+  }
+  augment "/core-model:control-construct/alarms:alarm-pac/alarms:current-alarms/alarms:current-alarm-list" {
+    description
+      "Ceragon alarm augmentations";
+    uses alarm-extra-g;
+  }
+  augment "/core-model:control-construct/alarms:alarm-pac/alarms:alarm-event-records" {
+    description
+      "Ceragon events augmentations";
+    uses alarm-event-records-extra-g;
+  }
+
+  rpc get-uuid {
+    description
+      "This RPC is used to retrieve the yang UUID value.";
+
+    input {
+      leaf ifindex {
+        type uint32;
+        description
+          "The ifindex of an interface.";
+      }
+      leaf uuid-type {
+        type enumeration {
+          enum "device";
+          enum "card";
+          enum "radio-unit";
+          enum "sfp";
+          enum "air-interface-ltp";
+          enum "pure-ethernet-ltp";
+          enum "wire-interface-ltp";
+          enum "abc-profile";
+          enum "linkbonding-profile";
+          enum "radioprotection-profile";
+          enum "lag-profile";
+          enum "co-channel-profile";
+          enum "advancedradio-profile";
+        }
+        mandatory true;
+        description
+          "The type of the UUID to be retrieved.";
+      }
+    }
+    output {
+      leaf uuid {
+        type string;
+        description
+          "The yang UUID value.";
+      }
+    }
+  }
+}

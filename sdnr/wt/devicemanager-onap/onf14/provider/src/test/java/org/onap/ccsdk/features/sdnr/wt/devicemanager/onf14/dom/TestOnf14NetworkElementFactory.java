@@ -25,44 +25,49 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.Onf14DomNetworkElementFactory;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
+import org.opendaylight.yangtools.yang.common.QNameModule;
+import org.opendaylight.yangtools.yang.common.Revision;
+import org.opendaylight.yangtools.yang.common.XMLNamespace;
 
 public class TestOnf14NetworkElementFactory extends Mockito {
 
+    private static final QNameModule qnm = QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
     private static NetconfAccessor accessor;
-    private static Optional<NetconfDomAccessor> domAccessor;
+    private static NetconfDomAccessor domAccessor;
     private static Capabilities capabilities;
     private static DeviceManagerServiceProvider serviceProvider;
-    private static ConfigurationFileRepresentation configurationRepresentation;
     private static String filename = "test.properties";
 
-  
+
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
         capabilities = mock(Capabilities.class);
         accessor = mock(NetconfAccessor.class);
-        domAccessor = Optional.of(mock(NetconfDomAccessor.class));
+        domAccessor = mock(NetconfDomAccessor.class);
         serviceProvider = mock(DeviceManagerServiceProvider.class);
 
-        when(accessor.getCapabilites()).thenReturn(capabilities);
+        when(domAccessor.getCapabilites()).thenReturn(capabilities);
         when(serviceProvider.getDataProvider()).thenReturn(mock(DataProvider.class));
         when(serviceProvider.getFaultService()).thenReturn(mock(FaultService.class));
-     
+
     }
 
     @Test
     public void testCreateOnf14Dom() throws Exception {
-        when(accessor.getCapabilites().isSupportingNamespace(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)).thenReturn(true);
-        when(accessor.getNetconfDomAccessor()).thenReturn(domAccessor);
+        when(accessor.getNetconfDomAccessor()).thenReturn(Optional.of(domAccessor));
+        when(capabilities.isSupportingNamespaceAndRevision(
+                QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"))))
+                        .thenReturn(true);
+        when(capabilities.isSupportingNamespaceAndRevision(
+                QNameModule.create(XMLNamespace.of("urn:onf:yang:alarms-1-0"), Revision.of("2022-03-02"))))
+                        .thenReturn(true);
         Onf14DomNetworkElementFactory factory = new Onf14DomNetworkElementFactory();
         factory.init(serviceProvider);
         assertTrue((factory.create(accessor, serviceProvider)).isPresent());
@@ -70,8 +75,10 @@ public class TestOnf14NetworkElementFactory extends Mockito {
 
     @Test
     public void testCreateNone() throws Exception {
-        when(accessor.getNetconfBindingAccessor()).thenReturn(Optional.of(mock(NetconfBindingAccessor.class)));
-        when(accessor.getCapabilites().isSupportingNamespace(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)).thenReturn(false);
+        when(accessor.getNetconfDomAccessor()).thenReturn(Optional.of(domAccessor));
+        when(capabilities.isSupportingNamespaceAndRevision(
+                QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"))))
+                        .thenReturn(false);
         Onf14DomNetworkElementFactory factory = new Onf14DomNetworkElementFactory();
         assertTrue(factory.create(accessor, serviceProvider).isEmpty());
     }

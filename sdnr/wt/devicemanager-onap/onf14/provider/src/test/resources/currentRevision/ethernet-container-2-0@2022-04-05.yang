@@ -1,0 +1,2001 @@
+module ethernet-container-2-0 {
+  yang-version 1.1;
+  namespace "urn:onf:yang:ethernet-container-2-0";
+  prefix ethernet-container;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import core-model-1-4 {
+    prefix core-model;
+  }
+
+  organization
+    "openBackhaul.com proposal to Open Networking Foundation (ONF)";
+  contact
+    "WG Web : https://github.com/openBackhaul/Overview
+     WG List: Thorsten.Heinze@openBackhaul.com
+     Editor : Thorsten Heinze
+     Email  : Thorsten.Heinze@openBackhaul.com";
+  description
+    "Technology specific amendment to the LayerProtocol class of the ONF Core IM for a transport resource for Ethernet.
+     
+     Copyright 2022 openBackhaul.com
+     
+     Licensed under the Apache License, Version 2.0 (the 'License');
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an 'AS IS' BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.";
+
+  revision 2022-04-05 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany
+       Please view https://github.com/openBackhaul/ethernetContainer/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/ethernetContainer/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+  revision 2020-01-21 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany
+       Please view https://github.com/openBackhaul/ethernetContainer/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/ethernetContainer/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+  revision 2019-11-23 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany
+       Please view https://github.com/openBackhaul/ethernetContainer/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/ethernetContainer/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+  revision 2019-06-14 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany
+       Please view https://github.com/openBackhaul/ethernetContainer/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/ethernetContainer/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+
+  identity LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER {
+    base core-model:LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "none";
+  }
+
+  identity LOOP_BACK_TYPE {
+    description
+      "none";
+  }
+
+  identity LOOP_BACK_TYPE_NONE {
+    base LOOP_BACK_TYPE;
+    description
+      "none";
+  }
+
+  identity LOOP_BACK_TYPE_BACK_TO_LOCAL {
+    base LOOP_BACK_TYPE;
+    description
+      "Returning the Ethernet frames of the local site on the outgoing interface back to the local site.";
+  }
+
+  identity LOOP_BACK_TYPE_BACK_TO_REMOTE {
+    base LOOP_BACK_TYPE;
+    description
+      "Returning the incoming Ethernet frames back to the remote site.";
+  }
+
+  identity LOOP_BACK_TYPE_NOT_YET_DEFINED {
+    base LOOP_BACK_TYPE;
+    description
+      "none";
+  }
+
+  identity HEADER_COMPRESSION_MODE_TYPE {
+    description
+      "none";
+  }
+
+  identity HEADER_COMPRESSION_MODE_TYPE_AUTO {
+    base HEADER_COMPRESSION_MODE_TYPE;
+    description
+      "The header compression algorithm determines the optimum compression.";
+  }
+
+  identity HEADER_COMPRESSION_MODE_TYPE_PROTOCOL_BASED {
+    base HEADER_COMPRESSION_MODE_TYPE;
+    description
+      "Predefined protocol layers are to be compressed.";
+  }
+
+  identity HEADER_COMPRESSION_MODE_TYPE_LENGTH_BASED {
+    base HEADER_COMPRESSION_MODE_TYPE;
+    description
+      "Predefined amount of header bytes are to be compressed.";
+  }
+
+  identity HEADER_COMPRESSION_MODE_TYPE_NO_COMPRESSION {
+    base HEADER_COMPRESSION_MODE_TYPE;
+    description
+      "none";
+  }
+
+  identity HEADER_COMPRESSION_MODE_TYPE_NOT_YET_DEFINED {
+    base HEADER_COMPRESSION_MODE_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE {
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_NONE {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_ETHERNET_MAC {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_VLAN {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_Q_IN_Q {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_MPLS {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_IPV4 {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_IPV6 {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_TCP {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_UDP {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_RTP {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_GTP_U {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_OTHERS {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_LAYER_TYPE_NOT_YET_DEFINED {
+    base PROTOCOL_LAYER_TYPE;
+    description
+      "none";
+  }
+
+  identity MPLS_PAYLOAD_KIND_TYPE {
+    description
+      "none";
+  }
+
+  identity MPLS_PAYLOAD_KIND_TYPE_NONE {
+    base MPLS_PAYLOAD_KIND_TYPE;
+    description
+      "Parameter not required.";
+  }
+
+  identity MPLS_PAYLOAD_KIND_TYPE_AUTO {
+    base MPLS_PAYLOAD_KIND_TYPE;
+    description
+      "If the Control Word (CW) will be present, it would be Ethernet Over MPLS. Otherwise, it would be Pv4/IPv6.";
+  }
+
+  identity MPLS_PAYLOAD_KIND_TYPE_ETH_O_MPLS {
+    base MPLS_PAYLOAD_KIND_TYPE;
+    description
+      "Always Ethernet over MPLS ";
+  }
+
+  identity MPLS_PAYLOAD_KIND_TYPE_IP_O_MPLS {
+    base MPLS_PAYLOAD_KIND_TYPE;
+    description
+      "Always IPv4/IPv6 over MPLS";
+  }
+
+  identity MPLS_PAYLOAD_KIND_TYPE_NOT_YET_DEFINED {
+    base MPLS_PAYLOAD_KIND_TYPE;
+    description
+      "none";
+  }
+
+  identity QUEUE_NAME_TYPE {
+    description
+      "none";
+  }
+
+  identity QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE {
+    base QUEUE_NAME_TYPE;
+    description
+      "QueueNumber=0;";
+  }
+
+  identity QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1 {
+    base QUEUE_NAME_TYPE;
+    description
+      "QueueNumber=1;";
+  }
+
+  identity QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2 {
+    base QUEUE_NAME_TYPE;
+    description
+      "QueueNumber=2;";
+  }
+
+  identity QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3 {
+    base QUEUE_NAME_TYPE;
+    description
+      "QueueNumber=3;";
+  }
+
+  identity QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE4 {
+    base QUEUE_NAME_TYPE;
+    description
+      "QueueNumber=4;";
+  }
+
+  identity QUEUE_NAME_TYPE_EXPEDITED_FORWARDING_QUEUE {
+    base QUEUE_NAME_TYPE;
+    description
+      "QueueNumber=5;";
+  }
+
+  identity QUEUE_NAME_TYPE_CLASS_SELECTOR_QUEUE6 {
+    base QUEUE_NAME_TYPE;
+    description
+      "QueueNumber=6;";
+  }
+
+  identity QUEUE_NAME_TYPE_CLASS_SELECTOR_QUEUE7 {
+    base QUEUE_NAME_TYPE;
+    description
+      "QueueNumber=7;";
+  }
+
+  identity QUEUE_NAME_TYPE_QUEUENAME_NOT_YET_DEFINED {
+    base QUEUE_NAME_TYPE;
+    description
+      "none";
+  }
+
+  identity DROP_PRECEDENCE_TYPE {
+    description
+      "none";
+  }
+
+  identity DROP_PRECEDENCE_TYPE_ALL {
+    base DROP_PRECEDENCE_TYPE;
+    description
+      "If all drop precedence are affected. This includes the case of drop precedencies are not implemented.";
+  }
+
+  identity DROP_PRECEDENCE_TYPE_LOW {
+    base DROP_PRECEDENCE_TYPE;
+    description
+      "Would be equal to GREEN.";
+  }
+
+  identity DROP_PRECEDENCE_TYPE_MEDIUM {
+    base DROP_PRECEDENCE_TYPE;
+    description
+      "Would be equal to YELLOW.";
+  }
+
+  identity DROP_PRECEDENCE_TYPE_HIGH {
+    base DROP_PRECEDENCE_TYPE;
+    description
+      "Would be equal to RED.";
+  }
+
+  identity DROP_PRECEDENCE_TYPE_NOT_YET_DEFINED {
+    base DROP_PRECEDENCE_TYPE;
+    description
+      "none";
+  }
+
+  identity DROPPING_BEHAVIOR_KIND_TYPE {
+    description
+      "none";
+  }
+
+  identity DROPPING_BEHAVIOR_KIND_TYPE_DROP_TAIL {
+    base DROPPING_BEHAVIOR_KIND_TYPE;
+    description
+      "When the queue is filled to capacity, newly arriving packets are discarded until there is room in the queue to accept new traffic.  Packets are not differentiated, i.e., all packets are treated identically.";
+  }
+
+  identity DROPPING_BEHAVIOR_KIND_TYPE_RED {
+    base DROPPING_BEHAVIOR_KIND_TYPE;
+    description
+      "Queue management based on Random Early Detection (RED).  RED drops packets based on a drop probability that is based on the average queue length, and settings of minimum and maximum queue thresholds.  On ECN-capable devices, packets may be marked instead of dropped to signal congestion to the sender.";
+  }
+
+  identity DROPPING_BEHAVIOR_KIND_TYPE_WRED {
+    base DROPPING_BEHAVIOR_KIND_TYPE;
+    description
+      "Queue management based on a variant of RED in which the packet drop probability is based on its traffic class.";
+  }
+
+  identity DROPPING_BEHAVIOR_KIND_TYPE_NOT_YET_DEFINED {
+    base DROPPING_BEHAVIOR_KIND_TYPE;
+    description
+      "none";
+  }
+
+  identity SCHEDULER_KIND_TYPE {
+    description
+      "none";
+  }
+
+  identity SCHEDULER_KIND_TYPE_STRICT {
+    base SCHEDULER_KIND_TYPE;
+    description
+      "Strict Priority";
+  }
+
+  identity SCHEDULER_KIND_TYPE_WFQ {
+    base SCHEDULER_KIND_TYPE;
+    description
+      "Weighted-Fair-Queuing";
+  }
+
+  identity SCHEDULER_KIND_TYPE_WRR {
+    base SCHEDULER_KIND_TYPE;
+    description
+      "Weighted Round Robin";
+  }
+
+  identity SCHEDULER_KIND_TYPE_DWRR {
+    base SCHEDULER_KIND_TYPE;
+    description
+      "Deficit Weighted Round Robin";
+  }
+
+  identity SCHEDULER_KIND_TYPE_NOT_YET_DEFINED {
+    base SCHEDULER_KIND_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_REDUNDANCY_SIZE_TYPE {
+    description
+      "none";
+  }
+
+  identity FEC_REDUNDANCY_SIZE_TYPE_2 {
+    base FEC_REDUNDANCY_SIZE_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_REDUNDANCY_SIZE_TYPE_4 {
+    base FEC_REDUNDANCY_SIZE_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_REDUNDANCY_SIZE_TYPE_8 {
+    base FEC_REDUNDANCY_SIZE_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_REDUNDANCY_SIZE_TYPE_16 {
+    base FEC_REDUNDANCY_SIZE_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_REDUNDANCY_SIZE_TYPE_20 {
+    base FEC_REDUNDANCY_SIZE_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_REDUNDANCY_SIZE_TYPE_NOT_YET_DEFINED {
+    base FEC_REDUNDANCY_SIZE_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_KIND_TYPE {
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_KIND_TYPE_NONE {
+    base FEC_INTERLEAVER_KIND_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_KIND_TYPE_BLOCK {
+    base FEC_INTERLEAVER_KIND_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_KIND_TYPE_CONVOLUTION {
+    base FEC_INTERLEAVER_KIND_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_KIND_TYPE_NOT_YET_DEFINED {
+    base FEC_INTERLEAVER_KIND_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE {
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_1 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_2 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_3 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_4 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_6 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_8 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_12 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_16 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_24 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_32 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_48 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_96 {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity FEC_INTERLEAVER_DEPTH_TYPE_NOT_YET_DEFINED {
+    base FEC_INTERLEAVER_DEPTH_TYPE;
+    description
+      "none";
+  }
+
+  identity GRANULARITY_PERIOD_TYPE {
+    description
+      "none";
+  }
+
+  identity GRANULARITY_PERIOD_TYPE_UNKNOWN {
+    base GRANULARITY_PERIOD_TYPE;
+    description
+      "none";
+  }
+
+  identity GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN {
+    base GRANULARITY_PERIOD_TYPE;
+    description
+      "none";
+  }
+
+  identity GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS {
+    base GRANULARITY_PERIOD_TYPE;
+    description
+      "none";
+  }
+
+  identity GRANULARITY_PERIOD_TYPE_NOT_YET_DEFINED {
+    base GRANULARITY_PERIOD_TYPE;
+    description
+      "none";
+  }
+
+  identity INTERFACE_STATUS_TYPE {
+    description
+      "none";
+  }
+
+  identity INTERFACE_STATUS_TYPE_UP {
+    base INTERFACE_STATUS_TYPE;
+    description
+      "Ready to pass packets. It is expected that the LogicalTerminationPoint::operationalState attribute is expressing this logical layer being available for use (means: ENABLED), while this value occurs.";
+  }
+
+  identity INTERFACE_STATUS_TYPE_DOWN {
+    base INTERFACE_STATUS_TYPE;
+    description
+      "The interface does not pass any packets. It is expected that the LogicalTerminationPoint::operationalState attribute is expressing this logical layer being NOT available for use (means: DISABLED), while this value occurs.";
+  }
+
+  identity INTERFACE_STATUS_TYPE_TESTING {
+    base INTERFACE_STATUS_TYPE;
+    description
+      "In some test mode.  No operational packets can be passed. It is expected that the LogicalTerminationPoint::operationalState attribute is expressing this logical layer being NOT available for use (means: DISABLED), while this value occurs.";
+  }
+
+  identity INTERFACE_STATUS_TYPE_UNKNOWN {
+    base INTERFACE_STATUS_TYPE;
+    description
+      "Status cannot be determined for some reason. While this value occurs, the LogicalTerminationPoint::operationalState attribute, which is expressing the availability of the logical layer for being used, might have either ENABLED or DISABLED as value.";
+  }
+
+  identity INTERFACE_STATUS_TYPE_DORMANT {
+    base INTERFACE_STATUS_TYPE;
+    description
+      "Waiting for some external event. It is expected that the LogicalTerminationPoint::operationalState attribute is expressing this logical layer being available for use (means: ENABLED), while this value occurs.";
+  }
+
+  identity INTERFACE_STATUS_TYPE_NOT_PRESENT {
+    base INTERFACE_STATUS_TYPE;
+    description
+      "Some component (typically hardware) is missing. It is expected that the LogicalTerminationPoint::operationalState attribute is expressing this logical layer being NOT available for use (means: DISABLED), while this value occurs.";
+  }
+
+  identity INTERFACE_STATUS_TYPE_NOT_YET_DEFINED {
+    base INTERFACE_STATUS_TYPE;
+    description
+      "While this value occurs, the LogicalTerminationPoint::operationalState attribute, which is expressing the availability of the logical layer for being used, might have either ENABLED or DISABLED as value.";
+  }
+
+  typedef loop-back-type {
+    type identityref {
+      base LOOP_BACK_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef header-compression-mode-type {
+    type identityref {
+      base HEADER_COMPRESSION_MODE_TYPE;
+    }
+    description
+      "During interface design time, an instance of HeaderCompressionKind has to be created. The key attribute headerCompressionName is free to be chosen by the vendor. The headerCompressionMode has to be chosen to be 'NO_COMPRESSION' and the rest of attributes to have their default values. During interface applying time, the afore mentioned instance of HeaderCompressionKind to be chose for switching off the header compression.";
+  }
+
+  typedef protocol-layer-type {
+    type identityref {
+      base PROTOCOL_LAYER_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef mpls-payload-kind-type {
+    type identityref {
+      base MPLS_PAYLOAD_KIND_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef queue-name-type {
+    type identityref {
+      base QUEUE_NAME_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef drop-precedence-type {
+    type identityref {
+      base DROP_PRECEDENCE_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef dropping-behavior-kind-type {
+    type identityref {
+      base DROPPING_BEHAVIOR_KIND_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef scheduler-kind-type {
+    type identityref {
+      base SCHEDULER_KIND_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef fec-redundancy-size-type {
+    type identityref {
+      base FEC_REDUNDANCY_SIZE_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef fec-interleaver-kind-type {
+    type identityref {
+      base FEC_INTERLEAVER_KIND_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef fec-interleaver-depth-type {
+    type identityref {
+      base FEC_INTERLEAVER_DEPTH_TYPE;
+    }
+    description
+      "ITU-T Rec. G.998.3 Appendix II aFECInterleaverDepth";
+  }
+
+  typedef granularity-period-type {
+    type identityref {
+      base GRANULARITY_PERIOD_TYPE;
+    }
+    description
+      "The enumeration with the options for granularity period of the performance data.";
+  }
+
+  typedef interface-status-type {
+    type identityref {
+      base INTERFACE_STATUS_TYPE;
+    }
+    description
+      "Current Interface Status";
+  }
+
+  grouping object-creation-notification {
+    description
+      "none";
+    leaf counter {
+      type int64;
+      default "-1";
+      config false;
+      description
+        "Counts object creation notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf object-type {
+      type string;
+      default "Type of created object not specified.";
+      config false;
+      description
+        "none";
+    }
+  }
+
+  grouping object-deletion-notification {
+    description
+      "none";
+    leaf counter {
+      type int64;
+      default "-1";
+      config false;
+      description
+        "Counts object deletion notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+  }
+
+  grouping attribute-value-changed-notification {
+    description
+      "none";
+    leaf counter {
+      type int64;
+      default "-1";
+      config false;
+      description
+        "Counts attribute value changed notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf attribute-name {
+      type string;
+      default "Attribute name not specified.";
+      config false;
+      description
+        "Name of the attribute that has been changed.";
+    }
+    leaf new-value {
+      type string;
+      default "New value not specified.";
+      config false;
+      description
+        "Attribute value converted to a string (xml, json, ...)";
+    }
+  }
+
+  grouping current-performance {
+    description
+      "none";
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "The timestamp associated with when the current data was collected.";
+    }
+    leaf suspect-interval-flag {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "This attribute is used to indicate that the performance data for the current period may not be reliable. Some reasons for this to occur are:
+            – Suspect data were detected by the actual resource doing data collection.
+            – Transition of the administrativeState attribute to/from the 'lock' state.
+            – Transition of the operationalState to/from the 'disabled' state.
+            – Scheduler setting that inhibits the collection function.
+            – The performance counters were reset during the interval.
+            – The currentData (or subclass) object instance was created during the monitoring period.";
+    }
+    leaf elapsed-time {
+      type int64;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Number of seconds that elapsed since the last reset of the counter.";
+    }
+    leaf scanner-id {
+      type string;
+      default "Scanner ID not defined.";
+      config false;
+      description
+        "none";
+    }
+    leaf granularity-period {
+      type granularity-period-type;
+      config false;
+      description
+        "Time period between reset of the underlying counter.";
+    }
+  }
+
+  grouping historical-performance {
+    description
+      "none";
+    leaf suspect-interval-flag {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "This attribute indicates that the data collected during the interval is suspect.";
+    }
+    leaf history-data-id {
+      type string;
+      default "History Data ID not defined.";
+      config false;
+      description
+        "none";
+    }
+    leaf granularity-period {
+      type granularity-period-type;
+      config false;
+      description
+        "Time period between reset of the underlying counter.";
+    }
+    leaf period-end-time {
+      type yang:date-and-time;
+      config false;
+      description
+        "Time when the counter values have been recorded and the counter reset.";
+    }
+  }
+
+  grouping ethernet-container-lp-spec {
+    description
+      "none";
+    container ethernet-container-pac {
+      description
+        "none";
+      uses ethernet-container-pac;
+    }
+  }
+
+  grouping ethernet-container-pac {
+    description
+      "none";
+    container ethernet-container-capability {
+      config false;
+      description
+        "none";
+      uses ethernet-container-capability;
+    }
+    container ethernet-container-configuration {
+      description
+        "none";
+      uses ethernet-container-configuration;
+    }
+    container ethernet-container-status {
+      config false;
+      description
+        "none";
+      uses ethernet-container-status;
+    }
+    container ethernet-container-current-performance {
+      config false;
+      description
+        "none";
+      uses ethernet-container-current-performance;
+    }
+    container ethernet-container-historical-performances {
+      config false;
+      description
+        "none";
+      uses ethernet-container-historical-performances;
+    }
+  }
+
+  grouping ethernet-container-capability {
+    description
+      "none";
+    list available-queue-list {
+      key "queue-name";
+      config false;
+      min-elements 1;
+      max-elements 8;
+      description
+        "List of queues, which are available at the physical interface.";
+      uses available-queue-type;
+    }
+    leaf dropping-behavior-configuration-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "This attribute has to be set on 'true', if the dropping behavior can be configured individually at every interface.";
+    }
+    leaf wred-profile-configuration-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "This attribute has to be set on 'true', if the WRED Profile can be configured individually at every interface.";
+    }
+    leaf scheduler-kind-configuration-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "This attribute has to be set on 'true', if the kind of scheduler can be configured individually at every interface.";
+    }
+    leaf explicit-congestion-notification-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Explicit Congestion Notification is available at this queue.";
+    }
+    leaf ingress-policing-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = This interface supports policing.";
+    }
+    leaf egress-shaping-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = This interface supports shaping.";
+    }
+    leaf-list supported-maximum-information-rate-list {
+      type int32;
+      units "kbit/s";
+      default "-1";
+      config false;
+      description
+        "The supportedMaximumInformationRateList attribute must exclusively contain values, which are actually configurable at the hardware (except of the default value -1, in case maximum information rate cannot be configured at all). The listed values might be all or a subset of the values actually configurable at the hardware. To allow configuring the device according to its full capabilities, the values entered into the EthernetContainerConfiguration::maximumInformationRate attribute are not limited to the ones stated here. If a value, which is supported by the hardware, but not listed here, would be tried to be configured, the device-software or mediator-software shall successfully validate (and operate) it. ";
+    }
+    leaf-list supported-maximum-burst-size-list {
+      type int16;
+      units "kByte";
+      default "-1";
+      config false;
+      description
+        "Only relevant if (egressShapingIsAvail==true): The supportedMaximumBurstSizeList attribute must exclusively contain values, which are actually configurable at the hardware (except of the default value -1, in case maximum burst size cannot be configured at all). The values listed here might be all or a subset of values actually configurable at the hardware. To allow configuring the device according to its full capabilities, the values entered into the EthernetContainerConfiguration::maximumBurstSize attribute are not limited to the ones stated here. If a value, which is supported by the hardware, but not listed in the supportedMaximumBurstSizeList, would be tried to be configured, the device-software or mediator-software shall successfully validate (and operate) it.";
+    }
+    leaf bundling-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "This attribute has to be set on 'true', if the device allows combining resources from several air interfaces for transporting this Ethernet container.";
+    }
+    leaf bundling-group-size-max {
+      type int8;
+      default "-1";
+      config false;
+      description
+        "802.3 according to 30.11.1.1.6 aLocalPAFCapacity and ITU-T Rec. G.998.3 Appendix II aGroupCapacity. No Mbit/s value, but number of Ethernet Segments that can be aggregated for transporting this Ethernet Container. Reasonable values are between1 and 32.";
+    }
+    leaf support-of-management-frames-without-preamble-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "802.3. true = Management frames with suppressed preamble are also accepted.";
+    }
+    list supported-header-compression-kind-list {
+      key "header-compression-name";
+      config false;
+      min-elements 1;
+      description
+        "Lists the kinds of header compression, which are supported by the device.";
+      uses header-compression-kind;
+    }
+    leaf fec-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "802.3 according to 30.5.1.1.15 aFECAbility, 45.2.1.92.1 BASE-R FEC ability and 45.2.3.37 10GBASE-PR and 10/1GBASE-PRX FEC ability register and ITU-T Rec. G.998.3 Appendix II aFECSupported. true = Indicates that an optional Forward Error Correction (FEC) is supported.";
+    }
+    leaf fec-word-size-max {
+      type int16;
+      units "Byte";
+      default "-1";
+      config false;
+      description
+        "ITU-T Rec. G.998.3 Appendix II aFECWordSize. Indicates maximum supported Forward Error Correction (FEC) code word size in Bytes. Expected values between 20 and 255.";
+    }
+    leaf-list supported-fec-redundancy-size-list {
+      type fec-redundancy-size-type;
+      default "FEC_REDUNDANCY_SIZE_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "ITU-T Rec. G.998.3 Appendix II aFECRedundancySize. Indicates maximum supported Forward Error Correction (FEC) redundancy word size.";
+    }
+    leaf-list supported-fec-interleaver-kind-list {
+      type fec-interleaver-kind-type;
+      default "FEC_INTERLEAVER_KIND_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "ITU-T Rec. G.998.3 Appendix II aFECInterleaverType. Supported kinds of Forward Error Correction (FEC) interleaver";
+    }
+    leaf-list supported-fec-interleaver-depth-list {
+      type fec-interleaver-depth-type;
+      default "FEC_INTERLEAVER_DEPTH_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "ITU-T Rec. G.998.3 Appendix II aFECInterleaverDepth. Indicates the supported depths of the Forward Error Correction (FEC) interleaver.";
+    }
+    leaf encryption-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "Shall be marked 'true', if Ethernet payload encryption is available.";
+    }
+    leaf admin-shut-down-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Manual switching on and off of the interface without deleting it (underlying OSI network layers are also not affected) is available.";
+    }
+    leaf-list supported-loop-back-kind-list {
+      type loop-back-type;
+      default "LOOP_BACK_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "List of supported kinds of looping back.";
+    }
+    leaf maintenance-timer-range {
+      type string;
+      default "Range of the maintenance timer not yet defined.";
+      config false;
+      description
+        "Available time periods for maintenance configurations to be described. Concrete values shall be separated by commas (e.g. '10, 60, 360'). Ranges shall be expressed as two values separated by a minus (e.g. '10-360').";
+    }
+    leaf statistics-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Continuous statistics counters are available.";
+    }
+    leaf performance-monitoring-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Collection and aggregation of performance values is available.";
+    }
+  }
+
+  grouping ethernet-container-configuration {
+    description
+      "Serving Structures are identified by LogicalTerminationPoint::_serverLtpRefList. If (bundlingIsAvail==true), multiplicity might be *. If (bundlingIsAvail==false), multiplicity must be 0..1. It is assumed that there is just one Ethernet segment per Structure.";
+    leaf interface-name {
+      type string;
+      default "Interface name not yet defined.";
+      description
+        "Description of the interface, could be a name, could be a number. Free text field to be filled by the operator.";
+    }
+    leaf interface-is-on {
+      type boolean;
+      default "false";
+      description
+        "Only relevant if (adminShutDownIsAvail==true). true = Activation of the interface. false = De-activation of the interface without deleting it (underlying OSI network layers are not affected).";
+    }
+    list queue-behavior-list {
+      key "queue-name";
+      min-elements 1;
+      max-elements 8;
+      description
+        "Defines scheduling and dropping behavior of all queues.";
+      uses queue-behavior-type;
+    }
+    leaf scheduler-profile {
+      type leafref {
+        path "/core-model:control-construct/core-model:profile-collection/core-model:profile/core-model:uuid";
+        require-instance false;
+      }
+      description
+        "Reference to a scheduler profile. Attribute to point to an instance of Profile with profileName=='PROFILE_NAME_TYPE_SCHEDULER_PROFILE'.";
+    }
+    leaf explicit-congestion-notification-is-on {
+      type boolean;
+      default "false";
+      description
+        "true = Explicit Congestion Notification is activated at this queue.";
+    }
+    leaf ingress-policing-profile {
+      type leafref {
+        path "/core-model:control-construct/core-model:profile-collection/core-model:profile/core-model:uuid";
+        require-instance false;
+      }
+      description
+        "Reference to the policing profile, which is active on this interface. Attribute to point to an instance of Profile with profileName=='PROFILE_NAME_TYPE_POLICING_PROFILE'.";
+    }
+    leaf egress-shaping-is-on {
+      type boolean;
+      default "false";
+      description
+        "true = Shaping on the egress is activated.";
+    }
+    leaf maximum-information-rate {
+      type int32;
+      units "kbit/s";
+      default "-1";
+      description
+        "Only relevant if (egressShapingIsAvail==true): Limits the throughput on the egress. If a value, which is not supported by the hardware, would be tried to be configured, the device-software or mediator-software could either respond with operation-failed tag and error message '...Configuration value out of range of hardware capabilities...' or it could map the sent configuration value on the closest value, which is actually supported by the hardware. Configuration attempts with values lower than the minimum or higher than the maximum value listed here must be answered with operation-failed tag and the error message '...Configuration value out of range of hardware capabilities...'.";
+    }
+    leaf maximum-burst-size {
+      type int16;
+      units "kByte";
+      default "-1";
+      description
+        "Only relevant if (egressShapingIsAvail==true): Limits the number of kBytes, which are sent in a single burst. If a value, which is not supported by the hardware, would be tried to be configured, the device-software or mediator-software might either respond with operation-failed tag and error message '...Configuration value out of range of hardware capabilities...' or it could map the sent configuration value on the closest value, which is actually supported by the hardware. Configuration attempts with values lower than the minimum value or higher than the maximum value of the supportedMaximumBurstSizeList must be answered with operation-failed tag and the error message '...Configuration value out of range of hardware capabilities...'.";
+    }
+    leaf qos-profile {
+      type leafref {
+        path "/core-model:control-construct/core-model:profile-collection/core-model:profile/core-model:uuid";
+        require-instance false;
+      }
+      description
+        "Reference to the QoS profile, which is active on this interface. Attribute to point to an instance of Profile with profileName=='PROFILE_NAME_TYPE_QOS_PROFILE'.";
+    }
+    leaf bundling-is-on {
+      type boolean;
+      default "false";
+      description
+        "802.3 according to 30.11.1.1.5 aPAFAdminState and 45.2.3.26.3 PAF enable. true = Algorithm for bundling Ethernet segments on AirInterfaces is activated (, even if only a single Structure would be associated).";
+    }
+    leaf header-compression-kind {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point[core-model:uuid = current()/../../../../core-model:uuid]/core-model:layer-protocol[core-model:local-id = current()/../../../core-model:local-id]/ethernet-container:ethernet-container-pac/ethernet-container:ethernet-container-capability/ethernet-container:supported-header-compression-kind-list/ethernet-container:header-compression-name";
+        require-instance false;
+      }
+      must "deref(.) = current()";
+      description
+        "Defines the kind of header compression to be used.";
+    }
+    leaf fec-is-on {
+      type boolean;
+      default "false";
+      description
+        "802.3 according to 30.5.1.1.16 aFECmode, 45.2.1.93.1 FEC enable and 45.2.3.38.2 10 Gb/s FEC Enable and ITU-T Rec. G.998.3 Appendix II aFECAdminState. Only relevant if (fecIsAvail==true). true = Activation of the Forward Error Correction (FEC).";
+    }
+    leaf fec-word-size {
+      type int16;
+      units "Byte";
+      default "-1";
+      description
+        "ITU-T Rec. G.998.3 Appendix II aFECWordSize. Only relevant if (fecIsSupported==true). Defining the Forward Error Correction (FEC) code word size in Bytes. Expected values between 20 and 255.";
+    }
+    leaf fec-redundancy-size {
+      type fec-redundancy-size-type;
+      default "FEC_REDUNDANCY_SIZE_TYPE_NOT_YET_DEFINED";
+      description
+        "ITU-T Rec. G.998.3 Appendix II aFECRedundancySize. Only relevant if (fecIsSupported==true). Defining the Forward Error Correction (FEC) redundancy word size.";
+    }
+    leaf fec-interleaver-kind {
+      type fec-interleaver-kind-type;
+      default "FEC_INTERLEAVER_KIND_TYPE_NOT_YET_DEFINED";
+      description
+        "ITU-T Rec. G.998.3 Appendix II aFECInterleaverType. Only relevant if (fecIsSupported==true). Defining the kind of Forward Error Correction (FEC) interleaver.";
+    }
+    leaf fec-interleaver-depth {
+      type fec-interleaver-depth-type;
+      default "FEC_INTERLEAVER_DEPTH_TYPE_NOT_YET_DEFINED";
+      description
+        "ITU-T Rec. G.998.3 Appendix II aFECInterleaverDepth. Only relevant if (fecIsSupported==true). Defining the depth of Forward Error Correction (FEC) interleaver.";
+    }
+    leaf encryption-is-on {
+      type boolean;
+      default "false";
+      description
+        "Activates encryption of the Ethernet payload.";
+    }
+    leaf cryptographic-key {
+      type string;
+      default "Cryptographic key not yet defined.";
+      description
+        "Key for transforming plaintext into cipher text data.";
+    }
+    leaf loop-back-kind-on {
+      type loop-back-type;
+      default "LOOP_BACK_TYPE_NOT_YET_DEFINED";
+      description
+        "Maintenance Feature. Configuration of a loop back of TDM time slots on this interface.";
+    }
+    leaf maintenance-timer {
+      type int32;
+      units "s";
+      default "-1";
+      description
+        "Time of existence of any maintenance configuration. 0 = maintenance timer is switched off. Valid values are defined in *Capability::maintenanceTimerRange.";
+    }
+    leaf statistics-is-on {
+      type boolean;
+      default "false";
+      description
+        "Only relevant if (statisticsIsAvail==true). true = Continuous statistics counters are switched on.";
+    }
+    leaf performance-monitoring-is-on {
+      type boolean;
+      default "false";
+      description
+        "Only relevant if (performanceMonitoringIsAvail==true). true = Collection and aggregation of performance values is switched on.";
+    }
+  }
+
+  grouping ethernet-container-status {
+    description
+      "none";
+    leaf interface-status {
+      type interface-status-type;
+      default "INTERFACE_STATUS_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Operational status of the interface.";
+    }
+    leaf bundling-is-up {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "802.3 and ITU-T Rec. G.998.3 Appendix II aGroupStatus. true = Algorithm for bundling Ethernet segments on AirInterfaces is operative (, even if only a single Structure would be associated).";
+    }
+    leaf remote-site-is-faulty {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "802.3. true = remote fault condition detected.";
+    }
+    leaf loop-back-kind-up {
+      type loop-back-type;
+      default "LOOP_BACK_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "The currently active (not just configured) type of loop back.";
+    }
+    leaf statistics-is-up {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Statistics are currently counted";
+    }
+    leaf performance-monitoring-is-up {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Performance values are currently collected and aggregated.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "The timestamp associated with when the statistic values were read/retrieved.";
+    }
+    leaf last-10-sec-data-input-rate {
+      type int32;
+      units "kbit/s";
+      default "-1";
+      config false;
+      description
+        "Data receive rate over the last 10 second interval in kbit/s.";
+    }
+    leaf last-10-sec-data-output-rate {
+      type int32;
+      units "kbit/s";
+      default "-1";
+      config false;
+      description
+        "Data transmit rate over the last 10 second interval in kbit/s.";
+    }
+    leaf total-bytes-input {
+      type uint64;
+      units "Byte";
+      default "0";
+      config false;
+      description
+        "Received data volume in Byte.";
+    }
+    leaf total-bytes-output {
+      type uint64;
+      units "Byte";
+      default "0";
+      config false;
+      description
+        "Sent data volume in Byte.";
+    }
+    leaf frames-of-64-byte {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of frames (including bad frames) received that were 64 bytes in length (excluding framing bits but including FCS bytes).";
+    }
+    leaf frames-of-65-to-127-byte {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of good and bad frames received that were between 65 and 127 bytes in length (excluding framing bits but including FCS bytes).";
+    }
+    leaf frames-of-128-to-255-byte {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of good and bad frames received that were between 128 and 255 bytes in length inclusive (excluding framing bits but including FCS bytes).";
+    }
+    leaf frames-of-256-to-511-byte {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of good and bad frames received that were between 256 and 511 bytes in length inclusive (excluding framing bits but including FCS bytes).";
+    }
+    leaf frames-of-512-to-1023-byte {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of good and bad frames received that were between 512 and 1023 bytes in length inclusive (excluding framing bits but including FCS bytes).";
+    }
+    leaf frames-of-1024-to-1518-byte {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of good and bad frames received that were between 1024 and 1518 bytes in length inclusive (excluding framing bits but including FCS bytes).";
+    }
+    leaf total-frames-input {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "The total number of Ethernet frames received at this interface (including those received in error).";
+    }
+    leaf total-frames-output {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "The total number of Ethernet frames sent at this interface.";
+    }
+    leaf forwarded-frames-input {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination.";
+    }
+    leaf forwarded-frames-output {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination. ";
+    }
+    leaf unicast-frames-input {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of unicast frames received at this interface.";
+    }
+    leaf unicast-frames-output {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of unicast frames sent at this interface.";
+    }
+    leaf multicast-frames-input {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of multicast frames received at this interface.";
+    }
+    leaf multicast-frames-output {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of multicast frames sent at this interface.";
+    }
+    leaf broadcast-frames-input {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of broadcast frames received at this interface.";
+    }
+    leaf broadcast-frames-output {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of broadcast frames sent at this interface.";
+    }
+    leaf fragmented-frames-input {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of fragmented frames received at this interface.";
+    }
+    leaf errored-frames-input {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of errored frames received at this interface.";
+    }
+    leaf errored-frames-output {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination.";
+    }
+    leaf dropped-frames-input {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space).";
+    }
+    leaf dropped-frames-output {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space).";
+    }
+  }
+
+  grouping ethernet-container-current-performance {
+    description
+      "Aggregated performance information of the Ethernet container at a particular moment.";
+    list current-performance-data-list {
+      key "granularity-period";
+      config false;
+      min-elements 1;
+      max-elements 2;
+      description
+        "none";
+      uses container-current-performance-type;
+    }
+    leaf number-of-current-performance-sets {
+      type int8;
+      default "-1";
+      config false;
+      description
+        "Number of sets of current performance values, which are provided in the list.";
+    }
+  }
+
+  grouping ethernet-container-historical-performances {
+    description
+      "Aggregated performance information of the Ethernet container for a pre-defined measurement interval.";
+    list historical-performance-data-list {
+      key "granularity-period period-end-time";
+      config false;
+      description
+        "none";
+      uses container-historical-performance-type;
+    }
+    leaf number-of-historical-performance-sets {
+      type int16;
+      default "-1";
+      config false;
+      description
+        "Number of sets of historical performance values, which are provided in the list.";
+    }
+    leaf time-of-latest-change {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "Date and time when the list of sets of historical performance values has been changed for the last time (e.g. new one added or existing one deleted).";
+    }
+  }
+
+  grouping header-compression-kind {
+    description
+      "none";
+    leaf header-compression-name {
+      type string;
+      config false;
+      description
+        "none";
+    }
+    leaf header-compression-mode {
+      type header-compression-mode-type;
+      default "HEADER_COMPRESSION_MODE_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Defines the way of configuring the header compression.";
+    }
+    leaf-list compressed-protocol-layer-list {
+      type protocol-layer-type;
+      default "PROTOCOL_LAYER_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Only relevant if (headerCompressionMode==PROTOCOL_BASED). List of protocol layers that get compressed with this kind of header compression.";
+    }
+    leaf-list mpls-payload-kind-list {
+      type mpls-payload-kind-type;
+      default "MPLS_PAYLOAD_KIND_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Defines how the header bytes inside the MPLS header has to be interpreted.";
+    }
+    leaf compressed-header-length {
+      type int16;
+      units "Byte";
+      default "-1";
+      config false;
+      description
+        "Only relevant if (headerCompressionMode==LENGTH_BASED). Number of Bytes of header information that get compressed.";
+    }
+  }
+
+  grouping available-queue-type {
+    description
+      "none";
+    leaf queue-name {
+      type queue-name-type;
+      config false;
+      description
+        "Name of the queue.";
+    }
+    leaf-list supported-queue-depth-list {
+      type int32;
+      units "Byte";
+      default "-1";
+      config false;
+      description
+        "Configurable values of the depth of the queue in Byte. The supportedQueueDepthList attribute must exclusively contain values, which are actually configurable at the hardware (except of the default value -1, in case buffer size cannot be configured at all). The values listed here might be all or a subset of values actually configurable at the hardware. To allow configuring the device according to its full capabilities, the values entered into the QueueBehaviorType::queueDepth attribute are not limited to the ones stated here. If a value, which is supported by the hardware, but not listed in the supportedQueueDepthList attribute, would be tried to be configured, the device-software or mediator-software shall successfully validate (and operate) it.";
+    }
+    leaf-list available-dropping-behavior-kind-list {
+      type dropping-behavior-kind-type;
+      default "DROPPING_BEHAVIOR_KIND_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Lists the available types of behavior in case of congestions.";
+    }
+    leaf-list available-drop-precedence-kind-list {
+      type drop-precedence-type;
+      default "DROP_PRECEDENCE_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Explicit list (ALL not to be used here) of drop precedencies, which are available for this queue.";
+    }
+    leaf wred-profile-per-drop-precedence-is-available {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Separate WRED profiles can be defined for every drop precedence.";
+    }
+    leaf-list available-scheduling-kind-list {
+      type scheduler-kind-type;
+      default "SCHEDULER_KIND_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Lists the available types of scheduling.";
+    }
+  }
+
+  grouping wred-behavior-type {
+    description
+      "none";
+    leaf affected-drop-precedence {
+      type drop-precedence-type;
+      description
+        "Definition of the drop precedence, for which the WRED profile shall apply on.";
+    }
+    leaf affected-protocol {
+      type protocol-layer-type;
+      description
+        "Definition of the kind of protocol, for which the WRED profile shall apply on.";
+    }
+    leaf wred-profile {
+      type leafref {
+        path "/core-model:control-construct/core-model:profile-collection/core-model:profile/core-model:uuid";
+        require-instance false;
+      }
+      description
+        "Associates a WRED profile to the queue, respectively drop precedence. Attribute to point to an instance of Profile with profileName=='PROFILE_NAME_TYPE_WRED_PROFILE'.";
+    }
+  }
+
+  grouping queue-behavior-type {
+    description
+      "none";
+    leaf queue-name {
+      type queue-name-type;
+      description
+        "Name of the queue.";
+    }
+    leaf queue-depth {
+      type int32;
+      units "Byte";
+      default "-1";
+      description
+        "Only relevant if (supportedQueueDepthList != -1). Size of the queue in Byte. If a value, which is not supported by the hardware, would be tried to be configured, the device-software or mediator-software might either respond with operation failed and ...Configuration value out of range of hardware capabilities... or it could map the sent configuration value on the closest value, which is actually supported by the hardware. Configuration attempts with values lower than the minimum value or higher than the maximum value of the supportedQueueDepthList must be answered with the operation failed and ...Configuration value out of range of hardware capabilities...";
+    }
+    leaf dropping-behavior-kind {
+      type dropping-behavior-kind-type;
+      default "DROPPING_BEHAVIOR_KIND_TYPE_NOT_YET_DEFINED";
+      description
+        "Defines the behavior in case of congestions.";
+    }
+    list wred-behavior-list {
+      key "affected-drop-precedence affected-protocol";
+      description
+        "Only relevant if (droppingBehaviorKind==WRED).";
+      uses wred-behavior-type;
+    }
+    leaf scheduler-kind {
+      type scheduler-kind-type;
+      default "SCHEDULER_KIND_TYPE_NOT_YET_DEFINED";
+      description
+        "Type of scheduler to be used for this queue.";
+    }
+    leaf weighting {
+      type int8;
+      units "%";
+      default "-1";
+      description
+        "Only relevant if (schedulerKind==WFQ) OR (schedulerKind==DWRR) OR (schedulerKind==WRR). Serving rate for this weighted fair queueing queue as a percentage value.";
+    }
+  }
+
+  grouping queue-utilization-type {
+    description
+      "none";
+    leaf queue-name {
+      type queue-name-type;
+      config false;
+      description
+        "Name of the queue.";
+    }
+    leaf max-queue-length {
+      type int32;
+      units "Byte";
+      default "-1";
+      config false;
+      description
+        "Maximum observed queue length.";
+    }
+    leaf avg-queue-length {
+      type int32;
+      units "Byte";
+      default "-1";
+      config false;
+      description
+        "Average observed queue length.";
+    }
+  }
+
+  grouping container-performance-type {
+    description
+      "Consolidated performance information of the Container.";
+    leaf max-bytes-per-second-output {
+      type int32;
+      units "Bytes/s";
+      default "-1";
+      config false;
+      description
+        "Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period.";
+    }
+    leaf total-bytes-input {
+      type int64;
+      units "Bytes";
+      default "-1";
+      config false;
+      description
+        "Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period.";
+    }
+    leaf total-bytes-output {
+      type int64;
+      units "Bytes";
+      default "-1";
+      config false;
+      description
+        "Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period.";
+    }
+    list queue-utilization-list {
+      key "queue-name";
+      config false;
+      max-elements 8;
+      description
+        "Utilization of the respective queue. One instance of QueueUtilizationType to be created for every queue supported by the hardware.";
+      uses queue-utilization-type;
+    }
+    leaf time-period {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Total length of the measurement period in seconds.";
+    }
+    leaf total-frames-input {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "The total number of Ethernet frames received at this interface (including those received in error).";
+    }
+    leaf total-frames-output {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "The total number of Ethernet frames sent at this interface.";
+    }
+    leaf forwarded-frames-input {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination.";
+    }
+    leaf forwarded-frames-output {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination. ";
+    }
+    leaf unicast-frames-input {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of unicast frames received at this interface.";
+    }
+    leaf unicast-frames-output {
+      type int64;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of unicast frames sent at this interface.";
+    }
+    leaf multicast-frames-input {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of multicast frames received at this interface.";
+    }
+    leaf multicast-frames-output {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of multicast frames sent at this interface.";
+    }
+    leaf broadcast-frames-input {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of broadcast frames received at this interface.";
+    }
+    leaf broadcast-frames-output {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of broadcast frames sent at this interface.";
+    }
+    leaf fragmented-frames-input {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of fragmented frames received at this interface.";
+    }
+    leaf errored-frames-input {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of errored frames received at this interface.";
+    }
+    leaf errored-frames-output {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination.";
+    }
+    leaf dropped-frames-input {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space).";
+    }
+    leaf dropped-frames-output {
+      type int32;
+      units "frame";
+      default "-1";
+      config false;
+      description
+        "The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space).";
+    }
+  }
+
+  grouping container-current-performance-type {
+    description
+      "Turns performance information into current performance information by inheriting from OTN_CurrentData.";
+    container performance-data {
+      config false;
+      description
+        "none";
+      uses container-performance-type;
+    }
+    uses current-performance;
+  }
+
+  grouping container-historical-performance-type {
+    description
+      "Turns performance information into historical performance information by inheriting from OTN_HistoryData.";
+    container performance-data {
+      config false;
+      description
+        "none";
+      uses container-performance-type;
+    }
+    uses historical-performance;
+  }
+
+  augment "/core-model:control-construct/core-model:logical-termination-point/core-model:layer-protocol" {
+    when "derived-from-or-self(./core-model:layer-protocol-name, 'ethernet-container:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER')";
+    description
+      "none";
+    uses ethernet-container-lp-spec;
+  }
+
+  notification object-creation-notification {
+    description
+      "none";
+    uses object-creation-notification;
+  }
+  notification object-deletion-notification {
+    description
+      "none";
+    uses object-deletion-notification;
+  }
+  notification attribute-value-changed-notification {
+    description
+      "none";
+    uses attribute-value-changed-notification;
+  }
+}

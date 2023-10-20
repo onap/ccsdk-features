@@ -1,0 +1,65 @@
+module cera-common {
+  yang-version 1.1;
+  namespace "urn:onf:params:xml:ns:yang:cera-common";
+  prefix cera-common;
+
+  organization
+    "Ceragon Networks";
+  contact
+    "
+     Editors:
+     ";
+  description
+    "This model contains common YANG definitions for managing Ceragon wireless network equipment.";
+
+  revision 2022-09-28 {
+    description
+      "Initial version";
+    reference
+      "";
+  }
+
+  typedef enable-disable {
+    type enumeration {
+      enum "enable" {
+        value 2;
+      }
+      enum "disable" {
+        value 3;
+      }
+    }
+  }
+
+  typedef down-up {
+    type enumeration {
+      enum "down" {
+        value 0;
+      }
+      enum "up" {
+        value 1;
+      }
+    }
+  }
+
+  typedef no-yes {
+    type enumeration {
+      enum "no" {
+        value 0;
+      }
+      enum "yes" {
+        value 1;
+      }
+    }
+  }
+
+  typedef off-on {
+    type enumeration {
+      enum "off" {
+        value 0;
+      }
+      enum "on" {
+        value 1;
+      }
+    }
+  }
+}

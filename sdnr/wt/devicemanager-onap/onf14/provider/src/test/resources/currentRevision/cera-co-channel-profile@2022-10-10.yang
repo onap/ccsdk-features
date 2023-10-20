@@ -1,0 +1,422 @@
+module cera-co-channel-profile {
+  yang-version 1.1;
+  namespace "urn:onf:params:xml:ns:yang:cera-co-channel-profile";
+  prefix cera-co-channel-profile;
+
+  import core-model-1-4 {
+    prefix core-model;
+  }
+  import co-channel-profile-1-0 {
+    prefix co-channel-profile;
+  }
+  import cera-common {
+    prefix cera-common;
+  }
+
+  organization
+    "Ceragon Networks";
+  contact
+    "
+     Editors:
+     ";
+  description
+    "This model contains a collection of YANG definitions for managing Ceragon wireless network equipment.";
+
+  revision 2022-10-10 {
+    description
+      "Add new Ceragon augmentations to the ONF YANG models.";
+    reference
+      "";
+  }
+
+  grouping cera-co-channel-profile-attributes {
+    container xpic-attributes {
+      leaf xpic-config-admin {
+        type cera-common:enable-disable;
+        description
+          "Administrative state of XPIC.";
+      }
+      leaf xpic-status-state {
+        type enumeration {
+          enum "init" {
+            value 0;
+          }
+          enum "xpicDisabled" {
+            value 1;
+          }
+          enum "singleChannel" {
+            value 2;
+          }
+          enum "xrsmDisabled" {
+            value 3;
+          }
+          enum "xrsmRecovery" {
+            value 4;
+          }
+          enum "xpicIdle" {
+            value 5;
+          }
+        }
+        config false;
+        description
+          "The state of XPIC State Machine";
+      }
+    }
+    container mimo-attributes {
+      leaf mimo-config-admin {
+        type cera-common:enable-disable;
+        description
+          "Administrating state of the Diversity group.";
+      }
+      leaf mimo-config-role {
+        type enumeration {
+          enum "slave" {
+            value 0;
+          }
+          enum "master" {
+            value 1;
+          }
+          enum "not-relevant" {
+            value 2;
+          }
+        }
+        description
+          "Role can be Master or Slave.";
+      }
+      leaf mimo-members-group-type {
+        type enumeration {
+          enum "mimo-2x2" {
+            value 0;
+          }
+          enum "mimo-4x4" {
+            value 1;
+          }
+          enum "space-diversity-1-plus-0" {
+            value 2;
+          }
+          enum "space-diversity-2-plus-0" {
+            value 3;
+          }
+        }
+        description
+          "Type of Diversity group";
+      }
+      leaf mimo-status-state {
+        type enumeration {
+          enum "slave" {
+            value 0;
+          }
+          enum "init" {
+            value 1;
+          }
+          enum "disabled" {
+            value 2;
+          }
+          enum "idle" {
+            value 3;
+          }
+          enum "recovery" {
+            value 4;
+          }
+          enum "half-capacity" {
+            value 5;
+          }
+        }
+        config false;
+        description
+          "Diversity State";
+      }
+      leaf mimo-status-advanced-state {
+        type enumeration {
+          enum "disabled" {
+            value 0;
+          }
+          enum "initializing" {
+            value 1;
+          }
+          enum "init-retry" {
+            value 2;
+          }
+          enum "init-retry-checkup" {
+            value 3;
+          }
+          enum "init-retry-bringup" {
+            value 4;
+          }
+          enum "idle" {
+            value 5;
+          }
+          enum "unsuitable-hw" {
+            value 6;
+          }
+          enum "half-capacity" {
+            value 7;
+          }
+          enum "master-failure" {
+            value 8;
+          }
+          enum "remote-master-failure" {
+            value 9;
+          }
+          enum "remote-has-no-master" {
+            value 10;
+          }
+          enum "mute-slave" {
+            value 11;
+          }
+          enum "slave-init" {
+            value 12;
+          }
+          enum "slave-idle" {
+            value 13;
+          }
+          enum "slave-mutted" {
+            value 14;
+          }
+          enum "self-mute-comm-fail-to-master" {
+            value 15;
+          }
+          enum "half-capacity-no-master" {
+            value 16;
+          }
+          enum "half-capacity-master-failure" {
+            value 17;
+          }
+        }
+        config false;
+        description
+          "Diversity advanced state.";
+      }
+    }
+    container amcc-attributes {
+      leaf amcc-group-type {
+        type enumeration {
+          enum "afr-aggregate" {
+            value 1;
+          }
+          enum "afr-tail" {
+            value 2;
+          }
+          enum "mimo4x4" {
+            value 3;
+          }
+          enum "sd" {
+            value 4;
+          }
+          enum "bf" {
+            value 5;
+          }
+          enum "dual-asd" {
+            value 6;
+          }
+          enum "single-asd" {
+            value 7;
+          }
+          enum "xpic" {
+            value 8;
+          }
+          enum "xpic-sd" {
+            value 9;
+          }
+        }
+        description
+          "AMCC group type.";
+      }
+      leaf amcc-group-subtype {
+        type enumeration {
+          enum "afr-1-plus-0" {
+            value 1;
+          }
+          enum "external" {
+            value 2;
+          }
+          enum "asd-2-plus-0" {
+            value 4;
+          }
+          enum "internal" {
+            value 5;
+          }
+        }
+        description
+          "AMCC group subtype.";
+      }
+      leaf amcc-group-admin {
+        type cera-common:enable-disable;
+        description
+          "AMCC group admin status.";
+      }
+    }
+  }
+
+  grouping cera-co-channel-profile-member-attributes {
+    container mimo-attributes {
+      leaf mimo-status-mmi {
+        type int32;
+        config false;
+        description
+          "Diversity interference in dB of the 1st carrier (measured in dB * 10).";
+      }
+    }
+    container amcc-attributes {
+      leaf amcc-member-config-member-role {
+        type enumeration {
+          enum "not-available" {
+            value 0;
+          }
+          enum "aggregate-1" {
+            value 1;
+          }
+          enum "aggregate-2" {
+            value 2;
+          }
+          enum "tail-1" {
+            value 3;
+          }
+          enum "tail-2" {
+            value 4;
+          }
+          enum "master" {
+            value 9;
+          }
+          enum "slave" {
+            value 10;
+          }
+          enum "horizontal" {
+            value 13;
+          }
+          enum "vertical" {
+            value 14;
+          }
+        }
+        description
+          "AMCC member role.";
+      }
+      leaf amcc-member-config-member-combined-mode {
+        type enumeration {
+          enum "not-available" {
+            value 0;
+          }
+          enum "diversity-only" {
+            value 1;
+          }
+          enum "main-only" {
+            value 2;
+          }
+          enum "combined" {
+            value 3;
+          }
+        }
+        description
+          "AMCC group member combined status.";
+      }
+      leaf amcc-member-status-member-operational-state {
+        type enumeration {
+          enum "not-available" {
+            value 0;
+          }
+          enum "init" {
+            value 1;
+          }
+          enum "individual-link-operation" {
+            value 2;
+          }
+          enum "ready" {
+            value 3;
+          }
+          enum "fail" {
+            value 4;
+          }
+          enum "mimo-config-not-support" {
+            value 5;
+          }
+          enum "master-half-capacity" {
+            value 6;
+          }
+          enum "slave-half-capacity" {
+            value 7;
+          }
+          enum "mimo-ready" {
+            value 8;
+          }
+          enum "mimo-full-capacity" {
+            value 9;
+          }
+          enum "sd-configuration-not-supported" {
+            value 10;
+          }
+          enum "master-only" {
+            value 11;
+          }
+          enum "idle" {
+            value 12;
+          }
+          enum "slave-only" {
+            value 13;
+          }
+          enum "ready-for-idle" {
+            value 14;
+          }
+          enum "sd-not-supported" {
+            value 15;
+          }
+          enum "single-channel" {
+            value 16;
+          }
+          enum "configuration-not-supported" {
+            value 17;
+          }
+        }
+        config false;
+        description
+          "AMCC group member operational state.";
+      }
+      leaf amcc-member-status-member-mmi {
+        type int32;
+        config false;
+        description
+          "AMCC group member diversity interference (MMI).";
+      }
+      leaf amcc-member-status-member-combined {
+        type enumeration {
+          enum "not-available" {
+            value 0;
+          }
+          enum "diversity-only" {
+            value 1;
+          }
+          enum "main-only" {
+            value 2;
+          }
+          enum "combined" {
+            value 3;
+          }
+        }
+        config false;
+        description
+          "AMCC group member combined status.";
+      }
+    }
+    leaf member-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+    }
+  }
+
+  augment "/core-model:control-construct/core-model:profile-collection/core-model:profile/co-channel-profile:co-channel-profile-pac" {
+    description
+      "none";
+    container cera-co-channel-profile-attributes {
+      description
+        "none";
+      uses cera-co-channel-profile-attributes;
+    }
+    list cera-co-channel-profile-member-attributes {
+      key "member-id-ref";
+      description
+        "none";
+      uses cera-co-channel-profile-member-attributes;
+    }
+  }
+}

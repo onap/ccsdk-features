@@ -1,0 +1,91 @@
+module cera-lag-profile {
+  yang-version 1.1;
+  namespace "urn:onf:params:xml:ns:yang:cera-lag-profile";
+  prefix cera-lag-profile;
+
+  import core-model-1-4 {
+    prefix core-model;
+  }
+  import cera-common {
+    prefix cera-common;
+  }
+
+  organization
+    "Ceragon Networks";
+  contact
+    "
+     Editors:
+     ";
+  description
+    "This model contains a collection of YANG definitions for managing Ceragon wireless network equipment.";
+
+  revision 2022-10-05 {
+    description
+      "Initial version";
+    reference
+      "";
+  }
+
+  identity PROFILE_NAME_TYPE_CERA_LAG_PROFILE {
+    base core-model:PROFILE_NAME_TYPE;
+    description
+      "none";
+  }
+
+  grouping cera-lag-profile-spec {
+    description
+      "none";
+    container cera-lag-profile-pac {
+      description
+        "none";
+      uses cera-lag-profile-pac;
+    }
+  }
+
+  grouping cera-lag-profile-pac {
+    description
+      "none";
+    container cera-lag-profile-attributes {
+      description
+        "none";
+      uses cera-lag-profile-attributes-g;
+    }
+  }
+
+  grouping cera-lag-profile-attributes-g {
+    description
+      "This container contains the attributes of the radioprotection group.";
+    leaf sys-if-logical-mgr-if-logical-lag-table-lag-degrade-admin {
+      type cera-common:enable-disable;
+      description
+        "Enable/Disable traffic blocking in case of lag degrade.";
+    }
+    leaf sys-if-logical-mgr-if-logical-lag-table-distribution-function {
+      type uint32 {
+        range "1..10";
+      }
+      description
+        "Distribution function (DF).";
+    }
+    leaf sys-if-logical-mgr-if-logical-lag-table-lacp-admin {
+      type cera-common:enable-disable;
+      description
+        "Enable/Disable LACP.";
+    }
+    leaf-list logical-termination-point-list {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+      description
+        "List of interfaces, which are part of the group.";
+    }
+  }
+
+  augment "/core-model:control-construct/core-model:profile-collection/core-model:profile" {
+    when "derived-from-or-self(./core-model:profile-name, 'cera-lag-profile:PROFILE_NAME_TYPE_CERA_LAG_PROFILE')";
+    description
+      "none";
+    uses cera-lag-profile-spec;
+  }
+}

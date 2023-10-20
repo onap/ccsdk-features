@@ -1,0 +1,258 @@
+module cera-linkbonding-profile {
+  yang-version 1.1;
+  namespace "urn:onf:params:xml:ns:yang:cera-linkbonding-profile";
+  prefix cera-linkbonding-profile;
+
+  import core-model-1-4 {
+    prefix core-model;
+  }
+  import cera-common {
+    prefix cera-common;
+  }
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  organization
+    "Ceragon Networks";
+  contact
+    "
+     Editors:
+     ";
+  description
+    "This model contains a collection of YANG definitions for managing Ceragon wireless network equipment.";
+
+  revision 2022-08-19 {
+    description
+      "Initial version";
+    reference
+      "";
+  }
+
+  identity PROFILE_NAME_TYPE_CERA_LINKBONDING_PROFILE {
+    base core-model:PROFILE_NAME_TYPE;
+    description
+      "none";
+  }
+
+  grouping cera-linkbonding-profile-spec {
+    description
+      "none";
+    container cera-linkbonding-profile-pac {
+      description
+        "none";
+      uses cera-linkbonding-profile-pac;
+    }
+  }
+
+  grouping cera-linkbonding-profile-pac {
+    description
+      "none";
+    container cera-linkbonding-profile-attributes {
+      description
+        "none";
+      uses cera-linkbonding-profile-attributes-g;
+    }
+    list cera-linkbonding-profile-member-attributes {
+      key "member-id-ref link-bonding-members-config-vlan-id";
+      description
+        "none";
+      uses cera-linkbonding-profile-member-attributes-g;
+    }
+  }
+
+  grouping cera-linkbonding-profile-attributes-g {
+    description
+      "This container contains the attributes of the linkbonding group.";
+    leaf link-bonding-groups-config-max-bandwidth-allocated {
+      type enumeration {
+        enum "max-bw-10G" {
+          value 0;
+        }
+        enum "max-bw-20G" {
+          value 1;
+        }
+        enum "max-bw-30G" {
+          value 2;
+        }
+      }
+      description
+        "The Max bandwidth allocated.";
+    }
+    leaf link-bonding-groups-config-lbg-mod {
+      type enumeration {
+        enum "standard" {
+          value 0;
+        }
+        enum "enhanced" {
+          value 1;
+        }
+      }
+      description
+        "The Link Bonding group mode.";
+    }
+    leaf link-bonding-eth-type {
+      type enumeration {
+        enum "eth-type-0x9908" {
+          value 0;
+        }
+      }
+      config false;
+      description
+        "The ETH type of the link bonding segments";
+    }
+    leaf link-bonding-tpid-type {
+      type enumeration {
+        enum "tpid-type-0x88a8" {
+          value 0;
+        }
+        enum "tpid-type-0x9200" {
+          value 1;
+        }
+        enum "tpid-type-0x9100" {
+          value 2;
+        }
+        enum "tpid-type-0x8100" {
+          value 3;
+        }
+      }
+      config false;
+      description
+        "The ETH type of the VLAN (if used) of the link bonding segments";
+    }
+    leaf link-bonding-control-channel-supported {
+      type cera-common:no-yes;
+      config false;
+      description
+        "Indicates whether the Link Bonding control channel supported by Hardware";
+    }
+    list logical-termination-point-list {
+      key "logical-termination-point vlan-id";
+      description
+        "List of interfaces, which are part of the group.";
+      leaf logical-termination-point {
+        type leafref {
+          path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+          require-instance false;
+        }
+      }
+      leaf vlan-id {
+        type int32 {
+          range "0..4097";
+        }
+      }
+    }
+  }
+
+  grouping cera-linkbonding-profile-member-attributes-g {
+    description
+      "Attributes of the interfaces, which are part of the group.";
+    leaf member-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+    }
+    leaf link-bonding-members-config-vlan-id {
+      type int32 {
+        range "0..4097";
+      }
+      description
+        "The link bonding member VLAN ID";
+    }
+    leaf link-bonding-members-config-admin {
+      type cera-common:enable-disable;
+      description
+        "Admin configuration of the member";
+    }
+    leaf link-bonding-members-config-shaper-max-bitrate {
+      type uint32;
+      description
+        "Member shaper maximum bit rate in Kbits per second";
+    }
+    leaf link-bonding-members-config-bw-ctrl-port-id {
+      type uint32;
+      description
+        "Port ID in the received BNM packet";
+    }
+    leaf link-bonding-members-config-bw-ctrl-vlan-id {
+      type int32 {
+        range "0..4097";
+      }
+      description
+        "VLAN ID in the received BNM packet";
+    }
+    leaf link-bonding-members-config-bw-ctrl-src-mac-address {
+      type yang:mac-address;
+      description
+        "Source MAC address in the received BNM packet";
+    }
+    leaf link-bonding-members-config-bw-ctrl-ifindex {
+      type uint32;
+      description
+        "Interface location of the BNM receiving port";
+    }
+    leaf link-bonding-members-config-l1-header-compensation-enabled {
+      type cera-common:no-yes;
+      description
+        "L1 header compensation enabled";
+    }
+    leaf link-bonding-members-config-l1-header-compensation-value {
+      type int32;
+      description
+        "L1 header compensation value in bytes";
+    }
+    leaf link-bonding-members-config-l2-header-compensation-enabled {
+      type cera-common:no-yes;
+      description
+        "L2 header compensation enabled";
+    }
+    leaf link-bonding-members-config-l2-header-compensation-value {
+      type int32;
+      description
+        "L2 header compensation value in bytes";
+    }
+    leaf link-bonding-members-status-clear-on-read {
+      type cera-common:no-yes;
+      description
+        "Clear counter statistics after reading";
+    }
+    leaf link-bonding-members-status-num-tx-packets {
+      type uint32;
+      config false;
+      description
+        "Number of Tx packets";
+    }
+    leaf link-bonding-members-status-num-tx-bytes {
+      type uint32;
+      config false;
+      description
+        "Number of Tx bytes";
+    }
+    leaf link-bonding-members-status-num-rx-packets {
+      type uint32;
+      config false;
+      description
+        "Number of Rx packets";
+    }
+    leaf link-bonding-members-status-num-rx-bytes {
+      type uint32;
+      config false;
+      description
+        "Number of Rx bytes";
+    }
+    leaf link-bonding-members-status-shaper-actual-bitrate {
+      type uint32;
+      config false;
+      description
+        "Member shaper actual bit rate in Kbits per second";
+    }
+  }
+
+  augment "/core-model:control-construct/core-model:profile-collection/core-model:profile" {
+    when "derived-from-or-self(./core-model:profile-name, 'cera-linkbonding-profile:PROFILE_NAME_TYPE_CERA_LINKBONDING_PROFILE')";
+    description
+      "none";
+    uses cera-linkbonding-profile-spec;
+  }
+}

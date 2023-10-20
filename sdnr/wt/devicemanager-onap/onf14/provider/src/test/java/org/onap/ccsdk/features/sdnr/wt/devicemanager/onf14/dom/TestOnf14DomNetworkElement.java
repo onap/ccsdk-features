@@ -12,7 +12,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.Onf14DomNetworkElementFactory;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.PerformanceManager;
@@ -22,15 +21,23 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccesso
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.common.QNameModule;
+import org.opendaylight.yangtools.yang.common.Revision;
+import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestOnf14DomNetworkElement {
 
     private static String NODEIDSTRING = "nSky";
+    private static final QNameModule coreModelQNM =
+            QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
+    private static final QNameModule alarmQNM =
+            QNameModule.create(XMLNamespace.of("urn:onf:yang:alarms-1-0"), Revision.of("2022-03-02"));
     private static final YangInstanceIdentifier TOPLEVELEQUIPMENT_IID =
-            YangInstanceIdentifier.builder().node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
-                    .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_TOP_LEVEL_EQPT).build();
+            YangInstanceIdentifier.builder().node(QName.create(coreModelQNM, "control-construct"))
+                    .node(QName.create(coreModelQNM, "top-level-equipment")).build();
     @Mock
     NetconfDomAccessor netconfDomAccessor;
     @Mock
@@ -56,9 +63,6 @@ public class TestOnf14DomNetworkElement {
     public void init() {
 
         when(netconfDomAccessor.getCapabilites()).thenReturn(capabilities);
-        when(netconfDomAccessor.getCapabilites()
-                .isSupportingNamespace(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER))
-                        .thenReturn(true);
         when(netconfDomAccessor.getNetconfDomAccessor()).thenReturn(Optional.of(netconfDomAccessor));
         when(netconfDomAccessor.getNodeId()).thenReturn(nodeId);
         when(serviceProvider.getDataProvider()).thenReturn(dataProvider);
@@ -66,6 +70,10 @@ public class TestOnf14DomNetworkElement {
         when(serviceProvider.getPerformanceManagerService()).thenReturn(pmService);
         when(netconfDomAccessor.readDataNode(LogicalDatastoreType.CONFIGURATION, TOPLEVELEQUIPMENT_IID))
                 .thenReturn(Optional.empty());
+        when(netconfDomAccessor.readDataNode(LogicalDatastoreType.CONFIGURATION, TOPLEVELEQUIPMENT_IID))
+                .thenReturn(Optional.empty());
+        when(capabilities.isSupportingNamespaceAndRevision(coreModelQNM)).thenReturn(true);
+        when(capabilities.isSupportingNamespaceAndRevision(alarmQNM)).thenReturn(true);
     }
 
     @Test
@@ -81,7 +89,24 @@ public class TestOnf14DomNetworkElement {
         onfDomNe.get().getAcessor();
         onfDomNe.get().getDeviceType();
         onfDomNe.get().warmstart();
-        //onfDomNe.get().getService(null);
+      //  onfDomNe.get().getService(null);
+        assertEquals(onfDomNe.get().getNodeId().getValue(), "nSky");
+    }
+
+    @Test
+    public void testWithNewInterfaceRevisions() {
+        Optional<NetworkElement> onfDomNe;
+        Onf14DomNetworkElementFactory factory = new Onf14DomNetworkElementFactory();
+        factory.init(serviceProvider);
+        onfDomNe = factory.create(netconfDomAccessor, serviceProvider);
+        assertTrue(onfDomNe.isPresent());
+
+        onfDomNe.get().register();
+        onfDomNe.get().deregister();
+        onfDomNe.get().getAcessor();
+        onfDomNe.get().getDeviceType();
+        onfDomNe.get().warmstart();
+      //  onfDomNe.get().getService(null);
         assertEquals(onfDomNe.get().getNodeId().getValue(), "nSky");
     }
 

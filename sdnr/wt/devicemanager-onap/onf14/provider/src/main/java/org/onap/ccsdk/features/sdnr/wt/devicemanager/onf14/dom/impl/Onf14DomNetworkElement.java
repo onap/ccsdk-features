@@ -30,7 +30,8 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.equipment.Onf14DomEquipmentManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.Onf14DomInterfacePacManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.TechnologySpecificPacKeys;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.qnames.Onf14DevicemanagerQNames;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.CoreModel14;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
@@ -45,7 +46,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.r
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,10 +57,6 @@ import org.slf4j.LoggerFactory;
 public class Onf14DomNetworkElement implements NetworkElement, PerformanceDataProvider {
 
     private static final Logger log = LoggerFactory.getLogger(Onf14DomNetworkElement.class);
-
-    protected static final YangInstanceIdentifier TOPLEVELEQUIPMENT_IID =
-            YangInstanceIdentifier.builder().node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
-                    .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_TOP_LEVEL_EQPT).build();
 
     private final @NonNull Object pmLock = new Object();
     protected @Nullable TechnologySpecificPacKeys pmLp = null;
@@ -75,21 +71,20 @@ public class Onf14DomNetworkElement implements NetworkElement, PerformanceDataPr
 
     private final @NonNull Onf14DomEquipmentManager equipmentManager;
     private final @NonNull Onf14DomInterfacePacManager interfacePacManager;
-    private final @NonNull String namespaceRevision;
+    private final @NonNull CoreModel14 onf14CoreModelQNames;
 
     public Onf14DomNetworkElement(NetconfDomAccessor netconfDomAccessor, DeviceManagerServiceProvider serviceProvider,
-            String namespaceRevision) {
+            CoreModel14 onf14CoreModelQNames) {
         log.info("Create {}", Onf14DomNetworkElement.class.getSimpleName());
         this.netconfDomAccessor = netconfDomAccessor;
+        this.onf14CoreModelQNames = onf14CoreModelQNames;
         this.databaseService = serviceProvider.getDataProvider();
         this.notificationService = serviceProvider.getNotificationService();
         this.faultService = serviceProvider.getFaultService();
         this.performanceManager = serviceProvider.getPerformanceManagerService();
-        this.namespaceRevision = namespaceRevision;
         this.onf14Mapper = new Onf14DomToInternalDataModel();
-        this.equipmentManager = new Onf14DomEquipmentManager(netconfDomAccessor, databaseService, onf14Mapper);
-        this.interfacePacManager = new Onf14DomInterfacePacManager(netconfDomAccessor, serviceProvider);
-
+        this.equipmentManager = new Onf14DomEquipmentManager(netconfDomAccessor, databaseService, onf14Mapper, onf14CoreModelQNames);
+        this.interfacePacManager = new Onf14DomInterfacePacManager(netconfDomAccessor, serviceProvider, onf14CoreModelQNames);
     }
 
     /**
@@ -113,7 +108,7 @@ public class Onf14DomNetworkElement implements NetworkElement, PerformanceDataPr
      */
     public void setCoreModel() {
         NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
-        eb.setCoreModelCapability(namespaceRevision);
+        eb.setCoreModelCapability(onf14CoreModelQNames.getRevision());
         databaseService.updateNetworkConnection22(eb.build(), netconfDomAccessor.getNodeId().getValue());
     }
 
@@ -173,7 +168,8 @@ public class Onf14DomNetworkElement implements NetworkElement, PerformanceDataPr
     }
 
     private Optional<NormalizedNode> readTopLevelEquipment(NetconfDomAccessor netconfDomAccessor) {
-        return netconfDomAccessor.readDataNode(LogicalDatastoreType.CONFIGURATION, TOPLEVELEQUIPMENT_IID);
+        log.debug("Reading Top level equipment data");
+        return netconfDomAccessor.readDataNode(LogicalDatastoreType.CONFIGURATION, onf14CoreModelQNames.getTopLevelEquipment_IId());
     }
 
     public Object getPmLock() {

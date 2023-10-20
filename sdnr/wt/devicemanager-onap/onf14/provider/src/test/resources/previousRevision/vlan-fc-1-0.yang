@@ -1,0 +1,523 @@
+module vlan-fc-1-0 {
+  yang-version 1.1;
+  namespace "urn:onf:yang:vlan-fc-1-0";
+  prefix vlan-fc;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import core-model-1-4 {
+    prefix core-model;
+  }
+
+  organization
+    "openBackhaul.com proposal to Open Networking Foundation (ONF)";
+  contact
+    "WG Web : https://github.com/openBackhaul/Overview
+     WG List: VlanFc@openBackhaul.com
+     Editor : Thorsten Heinze
+     Email  : Thorsten.Heinze@openBackhaul.com";
+  description
+    "Technology specific Forwarding Construct for VLANs according to IEEE 802.1Q-2018.
+
+     Copyright 2019 openBackhaul.com
+
+     Licensed under the Apache License, Version 2.0 (the 'License');
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an 'AS IS' BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.";
+
+  revision 2020-08-26 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany
+       Please view https://github.com/openBackhaul/vlanFc/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/vlanFc/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+  revision 2019-08-19 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany.
+       Please view https://github.com/openBackhaul/vlanFd/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/vlanFc/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+
+  identity LAYER_PROTOCOL_NAME_TYPE_VLAN_LAYER {
+    base core-model:LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "none";
+  }
+
+  augment "/core-model:control-construct/core-model:forwarding-domain/core-model:fc" {
+    when "derived-from-or-self(./core-model:layer-protocol-name, 'vlan-fc:LAYER_PROTOCOL_NAME_TYPE_VLAN_LAYER')";
+    uses vlan-fc-spec;
+    description
+      "none";
+  }
+
+  /****************************************
+   * package notifications
+   **************************************/ 
+
+  notification object-creation-notification {
+    uses object-creation-notification;
+    description
+      "none";
+  }
+
+  grouping object-creation-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts object creation notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:fc/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf object-type {
+      type string;
+      default "Type of created object not specified.";
+      config false;
+      description
+        "none";
+    }
+    description
+      "none";
+  }
+
+  notification object-deletion-notification {
+    uses object-deletion-notification;
+    description
+      "none";
+  }
+
+  grouping object-deletion-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts object deletion notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:fc/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    description
+      "none";
+  }
+
+  notification attribute-value-changed-notification {
+    uses attribute-value-changed-notification;
+    description
+      "none";
+  }
+
+  grouping attribute-value-changed-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts attribute value changed notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:fc/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf attribute-name {
+      type string;
+      default "Attribute name not specified.";
+      config false;
+      description
+        "Name of the attribute that has been changed.";
+    }
+    leaf new-value {
+      type string;
+      default "New value not specified.";
+      config false;
+      description
+        "Attribute value converted to a string (xml, json, ...)";
+    }
+    description
+      "To be sent when an attribute has changed and one or more controllers have to update their data.";
+  }
+
+  notification problem-notification {
+    uses problem-notification;
+    description
+      "none";
+  }
+
+  grouping problem-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts problem notifications";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:fc/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf problem {
+      type string;
+      default "Problem name not specified.";
+      config false;
+      description
+        "Name of the problem according to *Capability::supportedAlarmList";
+    }
+    leaf severity {
+      type severity-type;
+      default "SEVERITY_TYPE_WARNING";
+      config false;
+      description
+        "Severity of the problem according to VlanFc::VlanFcConfiguration::problemSeverityList";
+    }
+    description
+      "none";
+  }
+
+  /****************************************
+   * grouping statements for object classes
+   **************************************/ 
+  /****************************************
+   * package super-classes
+   **************************************/ 
+
+  grouping current-problem {
+    leaf sequence-number {
+      type int16;
+      config false;
+      description
+        "Unique sequence number of the current problem object.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf problem-severity {
+      type severity-type;
+      default "SEVERITY_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Severity of the alarm.";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fc-spec {
+    container vlan-fc-pac {
+      uses vlan-fc-pac;
+      description
+        "none";
+    }
+    description
+      "Represents the VLAN, which is configured on the C-VLAN or S-VLAN Component. Name in ieee802-dot1q-bridge.yang: vlan.";
+  }
+
+  grouping vlan-fc-pac {
+    container vlan-fc-capability {
+      config false;
+      uses vlan-fc-capability;
+      description
+        "none";
+    }
+    container vlan-fc-configuration {
+      uses vlan-fc-configuration;
+      description
+        "none";
+    }
+    container vlan-fc-current-problems {
+      config false;
+      uses vlan-fc-current-problems;
+      description
+        "none";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fc-capability {
+    leaf-list supported-sub-layer-protocol-name-list {
+      type sub-layer-protocol-name-type;
+      default "SUB_LAYER_PROTOCOL_NAME_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Lists the supported kinds of Components (implicitly defines the Ethertypes of the VLAN headers, which can be forwarded).";
+    }
+    leaf admin-shut-down-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Manual switching on and off of the forwarding construct without deleting it (underlying OSI network layers are also not affected) is available.";
+    }
+    leaf-list supported-alarm-list {
+      type string;
+      default "Supported Alarms not yet defined.";
+      config false;
+      description
+        "Available alarms to be listed.";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fc-configuration {
+    leaf fc-name {
+      type string;
+      default "Interface name not yet defined.";
+      description
+        "Description of the VLAN, could be a name, could be a number. Free text of up to 32 letters to be filled by the operator. Name in ieee802-dot1q-bridge.yang: name.";
+    }
+    leaf fc-is-on {
+      type boolean;
+      default "false";
+      description
+        "Only effective if (adminShutDownIsAvail==true). true = Activation of the forwarding of frames with this VLAN ID. false = De-activation of the ForwardingConstruct without deleting it (underlying OSI network layers are not affected).";
+    }
+    leaf sub-layer-protocol-name {
+      type sub-layer-protocol-name-type;
+      default "SUB_LAYER_PROTOCOL_NAME_TYPE_NOT_YET_DEFINED";
+      description
+        "Type of VLAN (e.g. C-VLAN, S-VLAN), respectively Ethertype, which is forwarded.";
+    }
+    leaf vlan-id {
+      type int64;
+      default "-1";
+      description
+        "The VLAN ID, which identifies the frames to be forwarded. Range '1..4094 | 4096..4294967295'. Name in ieee802-dot1q-bridge.yang: vid.";
+    }
+    list problem-kind-severity-list {
+      key "problem-kind-name";
+      uses problem-kind-severity-type;
+      description
+        "Severity of the problem to be configured.";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fc-current-problems {
+    list current-problem-list {
+      key "sequence-number";
+      config false;
+      uses vlan-fc-current-problem-type;
+      description
+        "none";
+    }
+    leaf number-of-current-problems {
+      type int8;
+      default "-1";
+      config false;
+      description
+        "Number of alarms, which are currently active on this interface.";
+    }
+    leaf time-of-latest-change {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "Date and time when the list of alarms has been changed for the last time.";
+    }
+    description
+      "none";
+  }
+
+  /****************************************
+   * typedef statements
+   **************************************/ 
+
+  typedef sub-layer-protocol-name-type {
+    type identityref {
+      base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    }
+    description
+      "Represents the type of Component. Name in ieee802-dot1q-bridge.yang: type-of-component.";
+  }
+
+  /*********************************************
+   * grouping statements for complex data types
+   *******************************************/ 
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE {
+    description
+      "none";
+  }
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE_C_VLAN_COMPONENT {
+    base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "Base identity for a C-VLAN component. Name in ieee802-dot1q-bridge.yang: c-vlan-component.";
+  }
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE_S_VLAN_COMPONENT {
+    base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "Base identity for a S-VLAN component. Name in ieee802-dot1q-bridge.yang: s-vlan-component.";
+  }
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE_D_BRIDGE_COMPONENT {
+    base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "Base identity for a VLAN unaware component. Name in ieee802-dot1q-bridge.yang: d-bridge-component.";
+  }
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE_EDGE_RELAY_COMPONENT {
+    base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "Base identity for an EVB station ER component. Name in ieee802-dot1q-bridge.yang: edge-relay-component. ";
+  }
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE_NOT_YET_DEFINED {
+    base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE {
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_NON_ALARMED {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_WARNING {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_MINOR {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_MAJOR {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_CRITICAL {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_NOT_YET_DEFINED {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  /****************************************
+   * package super-types
+   **************************************/ 
+
+  typedef severity-type {
+    type identityref {
+      base SEVERITY_TYPE;
+    }
+    description
+      "According to ITU-T M.3160";
+  }
+
+  grouping problem-kind-severity-type {
+    leaf problem-kind-name {
+      type string;
+      description
+        "Name of the alarm according to supportedAlarmList";
+    }
+    leaf problem-kind-severity {
+      type severity-type;
+      default "SEVERITY_TYPE_NOT_YET_DEFINED";
+      description
+        "Severity of this type of alarm.";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fc-current-problem-type {
+    leaf problem-name {
+      type string;
+      default "Problem name not specified.";
+      config false;
+      description
+        "Name of the alarm according to VlanFc::VlanFcCapability::supportedAlarmList.";
+    }
+    uses current-problem;
+    description
+      "none";
+  }
+}
