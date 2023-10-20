@@ -21,10 +21,12 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import java.io.IOException;
 import org.apache.sshd.common.util.io.IoUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
@@ -36,6 +38,8 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util.HostInfoForTest;
 public class TestUserdata {
 
     private static final String USERNAME = "admin132";
+    private static final String USERNAME2 = "admin133";
+
     private static HtDatabaseClient dbRawProvider;
     private static HtUserdataManagerImpl userDbProvider;
 
@@ -45,6 +49,7 @@ public class TestUserdata {
         HostInfo[] hosts = HostInfoForTest.get();
         dbRawProvider = HtDatabaseClient.getClient(hosts);
         userDbProvider = new HtUserdataManagerImpl(dbRawProvider);
+
     }
 
     public static void trySleep(long ms) {
@@ -87,6 +92,55 @@ public class TestUserdata {
 
         userdata = userDbProvider.getUserdata(USERNAME);
         JSONAssert.assertEquals(mergedContent, userdata, false);
+    }
+
+    @Test
+    public void test2() {
+        String fullContent = "";
+        boolean success = false;
+        try {
+            fullContent = getFileContent("/userdata/full.json");
+            success = userDbProvider.setUserdata(USERNAME2, fullContent);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+        assertTrue("problem writing data into db",success);
+
+        trySleep(2000);
+        // read with complex key
+        String userdata = userDbProvider.getUserdata(USERNAME2, "networkMap.styling");
+        JSONAssert.assertEquals("{\"theme\": \"dark\"}", userdata, false);
+        userdata = userDbProvider.getUserdata(USERNAME2, "networkMap.startupPosition.longitude");
+        assertEquals("\"13.35\"", userdata);
+        userdata = userDbProvider.getUserdata(USERNAME2, "networkMap.tileOpacity");
+        assertEquals("\"26\"", userdata);
+
+        // write with complex key => forbidden
+        success = userDbProvider.setUserdata(USERNAME2,"networkMap.styling.theme",null);
+        assertFalse(success);
+        success = userDbProvider.setUserdata(USERNAME2,"networkMap.themes.key","\"abc\"");
+        assertFalse(success);
+        // write with complex key => allowed
+        success = userDbProvider.setUserdata(USERNAME2,"networkMap.styling.theme","\"test\"");
+        assertTrue(success);
+        userdata = userDbProvider.getUserdata(USERNAME2, "networkMap.styling.theme");
+        assertEquals("\"test\"",userdata);
+        success = userDbProvider.setUserdata(USERNAME2,"networkMap.styling.theme","{\"test\":\"abc\"}");
+        assertTrue(success);
+        userdata = userDbProvider.getUserdata(USERNAME2, "networkMap.styling.theme");
+        assertEquals("{\"test\":\"abc\"}",userdata);
+
+        // delete with complex key => forbidden
+        success = userDbProvider.removeUserdata(USERNAME2,"networkMap.styling.theme2");
+        assertFalse(success);
+        // delete with complex key => allowed
+        success = userDbProvider.removeUserdata(USERNAME2,"networkMap.styling.theme");
+        assertTrue(success);
+        userdata = userDbProvider.getUserdata(USERNAME2, "networkMap.styling");
+        assertEquals("{}",userdata);
+
+
     }
 
     private static String getFileContent(String filename) throws IOException {
