@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.DomContext;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfAccessorImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.mdsal.MdsalApi;
@@ -106,6 +107,16 @@ public class NetconfDomAccessorImpl extends NetconfAccessorImpl implements Netco
     @Override
     public DOMMountPoint getMountpoint() {
         return mountpoint;
+    }
+
+    @Override
+    public DOMRpcService getRpcService() {
+        return rpcService;
+    }
+
+    @Override
+    public DomContext getDomContext() {
+        return domContext;
     }
 
     @Override

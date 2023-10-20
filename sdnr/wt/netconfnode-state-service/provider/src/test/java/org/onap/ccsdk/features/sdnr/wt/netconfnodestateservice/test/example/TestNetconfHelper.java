@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeStateServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfAccessorImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfCommunicatorManager;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContext;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContextImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev221225.ConnectionOper.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev221225.connection.oper.AvailableCapabilitiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev221225.connection.oper.available.capabilities.AvailableCapabilityBuilder;
@@ -65,7 +65,7 @@ public class TestNetconfHelper extends Mockito {
      */
     public static NetconfAccessorImpl getNetconfAcessorImpl() {
         NetconfCommunicatorManager netconfCommunicatorManager = mock(NetconfCommunicatorManager.class);
-        DomContext domContext = mock(DomContext.class);
+        DomContextImpl domContext = mock(DomContextImpl.class);
         String nodeIdString = "Test";
         String capabilityStringForNetworkElement = "network-element";
         NodeId nodeId = new NodeId(nodeIdString);

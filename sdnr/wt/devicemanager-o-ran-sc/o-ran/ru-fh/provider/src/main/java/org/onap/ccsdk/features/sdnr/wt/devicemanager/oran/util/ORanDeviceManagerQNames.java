@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -32,17 +32,6 @@ public class ORanDeviceManagerQNames {
     public static final @NonNull QName IETF_SYSTEM_QNAME =
             QName.create(IETF_SYSTEM_NS, IETF_SYSTEM_REVISION, "ietf-system");
     public static final @NonNull QName IETF_SYSTEM_CONTAINER = QName.create(IETF_SYSTEM_QNAME, "system");
-
-    // onap-system.yang
-    public static final String ONAP_SYSTEM_NS = "urn:onap:system";
-    public static final String ONAP_SYSTEM_REVISION = "2022-11-04";
-    public static final @NonNull QName ONAP_SYSTEM_QNAME =
-            QName.create(ONAP_SYSTEM_NS, ONAP_SYSTEM_REVISION, "onap-system");
-//    public static final @NonNull QName ONAP_SYSTEM_QNAME =
-//          QName.create(ONAP_SYSTEM_NS, "onap-system");
-    public static final @NonNull QName ONAP_SYSTEM_NAME = QName.create(ONAP_SYSTEM_QNAME, "name");
-    public static final @NonNull QName ONAP_SYSTEM_WEB_UI = QName.create(ONAP_SYSTEM_QNAME, "web-ui");
-    public static final @NonNull QName ONAP_SYSTEM_GEOLOCATION = QName.create(ONAP_SYSTEM_QNAME, "geographical-location");
 
     //ietf-hardware.yang
     public static final String IETF_HW_NS = "urn:ietf:params:xml:ns:yang:ietf-hardware";
@@ -85,18 +74,6 @@ public class ORanDeviceManagerQNames {
     public static final @NonNull QName ORAN_HW_MODULE = QName.create(ORAN_HW_NS, ORAN_HW_REVISION, "o-ran-hardware").intern();
     public static final @NonNull QName ORAN_HW_COMPONENT = QName.create(ORAN_HW_MODULE, "O-RAN-HW-COMPONENT");
 
-    //o-ran-fm.yang
-    public static final String ORAN_FM_NS = "urn:o-ran:fm:1.0";
-    //public static final String ORAN_FM_REVISION = "2019-02-04";
-    public static final String ORAN_FM_REVISION = "2022-08-15";
-    public static final @NonNull QName ORAN_FM_MODULE = QName.create(ORAN_FM_NS, ORAN_FM_REVISION, "o-ran-fm");
-    public static final @NonNull QName ORAN_FM_ALARM_NOTIF = QName.create(ORAN_FM_MODULE, "alarm-notif");
-    public static final @NonNull QName ORAN_FM_FAULT_ID = QName.create(ORAN_FM_MODULE, "fault-id");
-    public static final @NonNull QName ORAN_FM_FAULT_SOURCE = QName.create(ORAN_FM_MODULE, "fault-source");
-    public static final @NonNull QName ORAN_FM_FAULT_SEVERITY = QName.create(ORAN_FM_MODULE, "fault-severity");
-    public static final @NonNull QName ORAN_FM_FAULT_TEXT = QName.create(ORAN_FM_MODULE, "fault-text");
-    public static final @NonNull QName ORAN_FM_FAULT_IS_CLEARED = QName.create(ORAN_FM_MODULE, "is-cleared");
-
     //ietf-netconf-notifications.yang
     public static final String IETF_NETCONF_NOTIFICATIONS_NS = "urn:ietf:params:xml:ns:yang:ietf-netconf-notifications";
     public static final String IETF_NETCONF_NOTIFICATIONS_REVISION = "2012-02-06";
@@ -114,5 +91,11 @@ public class ORanDeviceManagerQNames {
     public static final @NonNull QName IETF_NETCONF_NOTIFICATIONS_OPERATION = QName.create(IETF_NETCONF_NOTIFICATIONS_MODULE, "operation");
     public static final @NonNull QName IETF_NETCONF_NOTIFICATIONS_TARGET = QName.create(IETF_NETCONF_NOTIFICATIONS_MODULE, "target");
     public static final @NonNull QName IETF_NETCONF_NOTIFICATIONS_DATASTORE = QName.create(IETF_NETCONF_NOTIFICATIONS_MODULE, "datastore");
+
+    //o-ran-supervision.yang
+    public static final String ORAN_SUPERVISION_NS = "urn:o-ran:supervision:1.0";
+    public static final String ORAN_SUPERVISION_REVISION = "2022-12-05";
+    public static final @NonNull QName ORAN_SUPERVISION_MODULE = QName.create(ORAN_SUPERVISION_NS, ORAN_SUPERVISION_REVISION, "o-ran-supervision");
+    public static final @NonNull QName ORAN_SUPERVISION_NOTIFICATION = QName.create(ORAN_SUPERVISION_MODULE, "supervision-notification");
 
 }

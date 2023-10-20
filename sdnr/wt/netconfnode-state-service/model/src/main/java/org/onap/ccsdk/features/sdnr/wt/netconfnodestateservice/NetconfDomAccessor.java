@@ -29,6 +29,7 @@ import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.mdsal.dom.api.DOMMountPoint;
 import org.opendaylight.mdsal.dom.api.DOMNotificationListener;
 import org.opendaylight.mdsal.dom.api.DOMRpcResult;
+import org.opendaylight.mdsal.dom.api.DOMRpcService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionInput;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.create.subscription.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
@@ -52,8 +53,18 @@ public interface NetconfDomAccessor extends NetconfAccessor {
 
     /**
      * @return the MDSAL Mountpoint service
-     **/
+     */
     DOMMountPoint getMountpoint();
+
+    /**
+     * @return DOMRpcService
+     */
+    DOMRpcService getRpcService();
+
+    /**
+     * @return DomContext
+     */
+    DomContext getDomContext();
 
     /**
      * Deliver the data into a class

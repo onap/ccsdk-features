@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.notification;
 
 import java.time.Instant;
 import java.util.ArrayList;

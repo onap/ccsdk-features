@@ -19,9 +19,11 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.vesmapper;
 
 import java.time.Instant;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDMDOMUtility;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.yangspecs.ORANFM;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESFaultFieldsPOJO;
@@ -129,23 +131,20 @@ public class ORanDOMFaultToVESFaultMapper {
         return vesCEH;
     }
 
-    public VESFaultFieldsPOJO mapFaultFields(DOMNotification alarmNotif) {
+    public VESFaultFieldsPOJO mapFaultFields(DOMNotification alarmNotif, ORANFM oranfm) {
         VESFaultFieldsPOJO vesFaultFields = new VESFaultFieldsPOJO();
         ContainerNode cn = alarmNotif.getBody();
-        vesFaultFields.setAlarmCondition(ORanDMDOMUtility.getLeafValue(cn, ORanDeviceManagerQNames.ORAN_FM_FAULT_ID));
-        vesFaultFields
-                .setAlarmInterfaceA(ORanDMDOMUtility.getLeafValue(cn, ORanDeviceManagerQNames.ORAN_FM_FAULT_SOURCE));
+        vesFaultFields.setAlarmCondition(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName()));
+        vesFaultFields.setAlarmInterfaceA(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultSourceQName()));
         vesFaultFields.setEventCategory(VES_EVENT_CATEGORY);
-        if (ORanDMDOMUtility.getLeafValue(cn, ORanDeviceManagerQNames.ORAN_FM_FAULT_IS_CLEARED).equals("true")) {
+        if (ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIsClearedQName()).equals("true")) {
             vesFaultFields.setEventSeverity("NORMAL");
         } else {
-            vesFaultFields.setEventSeverity(
-                    ORanDMDOMUtility.getLeafValue(cn, ORanDeviceManagerQNames.ORAN_FM_FAULT_SEVERITY));
+            vesFaultFields.setEventSeverity(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultSeverityQName()));
         }
         vesFaultFields.setEventSourceType(modelName);
         vesFaultFields.setFaultFieldsVersion(VES_FAULT_FIELDS_VERSION);
-        vesFaultFields
-                .setSpecificProblem(ORanDMDOMUtility.getLeafValue(cn, ORanDeviceManagerQNames.ORAN_FM_FAULT_TEXT));
+        vesFaultFields.setSpecificProblem(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultTextQName()));
         vesFaultFields.setVfStatus(VES_FAULT_FIELDS_VFSTATUS);
 
         return vesFaultFields;

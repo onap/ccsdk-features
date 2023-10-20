@@ -30,6 +30,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.threading.GenericRunnableFactory;
 import org.onap.ccsdk.features.sdnr.wt.common.threading.KeyBasedThreadpool;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.StatusChangedHandler.StatusKey;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.DomContext;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeConnectListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateListener;
@@ -37,7 +38,7 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateS
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.VesNotificationListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfAccessorManager;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfCommunicatorManager;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContext;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContextImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.NetconfStateConfig;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.odlAkka.AkkaConfig;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.odlAkka.ClusterConfig;
@@ -74,6 +75,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.parser.api.YangParserException;
 import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -226,7 +228,7 @@ public class NetconfNodeStateServiceImpl
     public void init() {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
-        this.domContext = new DomContext(this.yangParserFactory, this.bindingNormalizedNodeSerializer);
+        this.domContext = new DomContextImpl(this.yangParserFactory, this.bindingNormalizedNodeSerializer);
         this.netconfCommunicatorManager =
                 new NetconfCommunicatorManager(mountPointService, domMountPointService, domContext);
         this.accessorManager = new NetconfAccessorManager(netconfCommunicatorManager, domContext, this);

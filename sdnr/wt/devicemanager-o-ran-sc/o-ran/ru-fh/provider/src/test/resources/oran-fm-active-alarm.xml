@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<active-alarm-list xmlns="urn:o-ran:fm:1.0">
+  <active-alarms>
+    <fault-id>10001</fault-id>
+    <is-cleared>false</is-cleared>
+    <event-time>2021-03-18T19:51:50.4Z</event-time>
+    <affected-objects>
+      <name>slot0-logical0</name>
+    </affected-objects>
+    <fault-severity>MAJOR</fault-severity>
+    <fault-source>/ietf-hardware:hardware/component[name='slot0-logical0']</fault-source>
+    <fault-text>cpriPortDown</fault-text>
+  </active-alarms>
+  <active-alarms>
+    <fault-id>10002</fault-id>
+    <is-cleared>false</is-cleared>
+    <event-time>2021-03-18T19:52:50.4Z</event-time>
+    <affected-objects>
+      <name>slot2-logical2</name>
+    </affected-objects>
+    <fault-severity>MAJOR</fault-severity>
+    <fault-source>/ietf-hardware:hardware/component[name='slot2-logical2']</fault-source>
+    <fault-text>cpriPortDown</fault-text>
+  </active-alarms>
+</active-alarm-list>

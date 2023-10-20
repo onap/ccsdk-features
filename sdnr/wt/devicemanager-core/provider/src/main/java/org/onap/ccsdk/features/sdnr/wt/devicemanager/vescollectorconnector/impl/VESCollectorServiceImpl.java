@@ -44,6 +44,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESFaultFieldsPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESMessage;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESNotificationFieldsPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESPNFRegistrationFieldsPOJO;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESStndDefinedFieldsPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.config.VESCollectorCfgImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,4 +205,23 @@ public class VESCollectorServiceImpl implements VESCollectorService, IConfigChan
         return new VESMessage(objMapper.writeValueAsString(outerEvent));
     }
 
+    /**
+     * Generates VES Event JSON containing commonEventHeader and stndDefined fields
+     *
+     * @param commonEventHeader
+     * @param stndDefinedFields
+     * @return VESMessage - representing the VES Event JSON
+     * @throws JsonProcessingException
+     */
+    @Override
+    public VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader,
+            VESStndDefinedFieldsPOJO stndDefinedFields) throws JsonProcessingException {
+        Map<String, Object> innerEvent = new HashMap<String, Object>();
+        innerEvent.put("commonEventHeader", commonEventHeader);
+        innerEvent.put("stndDefinedFields", stndDefinedFields);
+
+        Map<String, Object> outerEvent = new HashMap<String, Object>();
+        outerEvent.put("event", innerEvent);
+        return new VESMessage(objMapper.writeValueAsString(outerEvent));
+    }
 }

@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.notification;
 
 import com.google.common.base.VerifyException;
 import java.time.Instant;
@@ -44,8 +44,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.UnkeyedListNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DOMNotificationToXPath {
-    private static final Logger LOG = LoggerFactory.getLogger(DOMNotificationToXPath.class);
+public class ORanDOMNotificationToXPath {
+    private static final Logger LOG = LoggerFactory.getLogger(ORanDOMNotificationToXPath.class);
 
     public HashMap<String, String> convertDomNotifToXPath(@NonNull DOMNotification domNotification) {
         @NonNull

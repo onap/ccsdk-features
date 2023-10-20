@@ -36,7 +36,7 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeS
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfAccessorImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfCommunicatorManager;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.binding.NetconfBindingAccessorImpl;
-import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContext;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContextImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.NetconfDomAccessorImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.example.TestNetconfHelper;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -64,7 +64,7 @@ public class TestNetconfAccessorImpl extends Mockito {
     @Test
     public void testConstruct() {
         NetconfCommunicatorManager netconfCommunicatorManager = mock(NetconfCommunicatorManager.class);
-        DomContext domContext = mock(DomContext.class);
+        DomContextImpl domContext = mock(DomContextImpl.class);
         String nodeIdString = "Test";
         String capabilityStringForNetworkElement = "network-element";
         NodeId nodeId = new NodeId(nodeIdString);
@@ -147,7 +147,7 @@ public class TestNetconfAccessorImpl extends Mockito {
     public void testNetconfDomNotification() {
 
         DOMDataBroker domDataBroker = mock(DOMDataBroker.class);
-        DomContext domContext = mock(DomContext.class);
+        DomContextImpl domContext = mock(DomContextImpl.class);
         DOMRpcService domRpcService = mock(DOMRpcService.class);
         NetconfAccessorImpl netconfAccessor = TestNetconfHelper.getNetconfAcessorImpl();
         DOMNotificationService domNotificationService = mock(DOMNotificationService.class);

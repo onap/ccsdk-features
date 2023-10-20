@@ -28,6 +28,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESFaultFieldsPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESMessage;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESNotificationFieldsPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESPNFRegistrationFieldsPOJO;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESStndDefinedFieldsPOJO;
 
 /**
  * Interface used for publishing VES messages to the VES Collector
@@ -97,4 +98,14 @@ public interface VESCollectorService extends DeviceManagerService {
      */
     VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader, VESPNFRegistrationFieldsPOJO faultFields) throws JsonProcessingException;
 
+    /**
+     * Generates VES Event JSON containing commonEventHeader and stndDefined fields
+     *
+     * @param commonEventHeader
+     * @param stndDefinedFields
+     * @return VESMessage - representing the VES Event JSON
+     * @throws JsonProcessingException
+     */
+    VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader, VESStndDefinedFieldsPOJO stndDefinedFields) throws JsonProcessingException;
+    
 }

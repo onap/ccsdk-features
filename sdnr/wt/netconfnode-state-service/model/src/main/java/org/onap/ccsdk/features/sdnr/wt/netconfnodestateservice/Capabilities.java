@@ -28,12 +28,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev221225.connection.oper.AvailableCapabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev221225.connection.oper.UnavailableCapabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev221225.connection.oper.available.capabilities.AvailableCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev221225.connection.oper.unavailable.capabilities.UnavailableCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
 import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,6 +151,19 @@ public class Capabilities {
         String namespace = qCapability.getNamespace().toString();
         String revision = getRevisionString(qCapability);
         return revision == null ? false : isSupportingNamespaceAndRevision(namespace, revision);
+    }
+
+    /**
+     * check if the namespace and its revision of module are supported by the given capabilities
+     *
+     * @param module
+     * @return true if supporting the model AND revision<br>
+     *         false if revision not available or both not found.
+     */
+    public boolean isSupportingNamespaceAndRevision(QNameModule module) {
+        String namespace = module.getNamespace().toString();
+        @NonNull Optional<Revision> revision = module.getRevision();
+        return revision.isEmpty() ? false : isSupportingNamespaceAndRevision(namespace, revision.get().toString());
     }
 
     /**

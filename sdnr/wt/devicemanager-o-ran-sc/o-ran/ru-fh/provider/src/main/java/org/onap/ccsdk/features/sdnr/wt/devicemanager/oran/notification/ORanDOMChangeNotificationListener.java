@@ -19,13 +19,14 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.notification;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.Instant;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDeviceManagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESNotificationFieldsPOJO;
@@ -51,7 +52,7 @@ public class ORanDOMChangeNotificationListener implements DOMNotificationListene
     private final NetconfDomAccessor netconfDomAccessor;
     private final DataProvider databaseService;
     private @NonNull VESCollectorService vesCollectorService;
-    private final DOMNotificationToXPath domNotificationXPath;
+    private final ORanDOMNotificationToXPath domNotificationXPath;
     private ORanDOMNotifToVESEventAssembly mapper = null;
     private static int sequenceNo = 0;
 
@@ -60,7 +61,7 @@ public class ORanDOMChangeNotificationListener implements DOMNotificationListene
         this.netconfDomAccessor = netconfDomAccessor;
         this.databaseService = databaseService;
         this.vesCollectorService = vesCollectorService;
-        domNotificationXPath = new DOMNotificationToXPath();
+        domNotificationXPath = new ORanDOMNotificationToXPath();
     }
 
     @Override

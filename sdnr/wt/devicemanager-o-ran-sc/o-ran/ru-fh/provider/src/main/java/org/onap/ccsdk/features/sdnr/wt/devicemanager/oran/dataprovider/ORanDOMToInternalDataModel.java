@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.dataprovider;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,9 +28,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDMDOMUtility;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDeviceManagerQNames;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.yangspecs.ORANFM;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.yangspecs.OnapSystem;
 import org.opendaylight.mdsal.dom.api.DOMEvent;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -52,6 +59,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.UnkeyedListEntryNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,12 +203,12 @@ public class ORanDOMToInternalDataModel {
      * @param sys
      * @return
      */
-    public static Optional<Guicutthrough> getGuicutthrough(@Nullable NormalizedNode sys) {
-        AugmentationNode onapSys = (AugmentationNode) sys;
-        if (onapSys != null) {
-            String name = ORanDMDOMUtility.getLeafValue(onapSys, ORanDeviceManagerQNames.ONAP_SYSTEM_NAME);
+    public static Optional<Guicutthrough> getGuicutthrough(@Nullable AugmentationNode onapSysAugData,  @NonNull OnapSystem onapSys) {
+
+        if (onapSysAugData != null) {
+            String name = ORanDMDOMUtility.getLeafValue(onapSysAugData, onapSys.getName());
             @Nullable
-            Uri uri = new Uri(ORanDMDOMUtility.getLeafValue(onapSys, ORanDeviceManagerQNames.ONAP_SYSTEM_WEB_UI));
+            Uri uri = new Uri(ORanDMDOMUtility.getLeafValue(onapSysAugData, onapSys.getWebUi()));
             if (uri.getValue() != null) {
                 GuicutthroughBuilder gcBuilder = new GuicutthroughBuilder();
                 if (name != null) {
@@ -219,27 +227,58 @@ public class ORanDOMToInternalDataModel {
      * Convert fault notification into data-provider FaultLogEntity
      *
      * @param notification with O-RAN notification
+     * @param oranfm
      * @param nodeId of node to handle
      * @param counter to be integrated into data
      * @return FaultlogEntity with data
      */
-    public static FaultlogEntity getFaultLog(DOMNotification notification, NodeId nodeId, Integer counter) {
+    public static FaultlogEntity getFaultLog(DOMNotification notification, @NonNull ORANFM oranfm, NodeId nodeId, Integer counter) {
         ContainerNode cn = notification.getBody();
         FaultlogBuilder faultAlarm = new FaultlogBuilder();
         faultAlarm.setNodeId(nodeId.getValue());
-        faultAlarm.setObjectId(ORanDMDOMUtility.getLeafValue(cn, ORanDeviceManagerQNames.ORAN_FM_FAULT_SOURCE));
-        faultAlarm.setProblem(ORanDMDOMUtility.getLeafValue(cn, ORanDeviceManagerQNames.ORAN_FM_FAULT_TEXT));
+        faultAlarm.setObjectId(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultSourceQName()));
+        faultAlarm.setProblem(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultTextQName()));
         faultAlarm.setSeverity(getSeverityType(
-                ORanDMDOMUtility.getLeafValue(cn, ORanDeviceManagerQNames.ORAN_FM_FAULT_SEVERITY),
-                ORanDMDOMUtility.getLeafValue(cn, ORanDeviceManagerQNames.ORAN_FM_FAULT_IS_CLEARED).equals("true")));
+                ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultSeverityQName()),
+                ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIsClearedQName()).equals("true")));
         faultAlarm.setCounter(counter);
-        faultAlarm.setId(ORanDMDOMUtility.getLeafValue(cn, ORanDeviceManagerQNames.ORAN_FM_FAULT_ID));
+        faultAlarm.setId(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName()));
         faultAlarm.setSourceType(SourceType.Netconf);
         faultAlarm.setTimestamp(getEventTime(notification));
         return faultAlarm.build();
     }
 
-    public static DateAndTime getEventTime(DOMNotification notification) {
+    public static FaultlogEntity getFaultLog(UnkeyedListEntryNode activeAlarmEntry, ORANFM oranfm, NodeId nodeId, Integer counter) {
+        FaultlogBuilder faultAlarm = new FaultlogBuilder();
+        faultAlarm.setNodeId(nodeId.getValue());
+        faultAlarm.setObjectId(getObjectId(
+                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultSourceQName())));
+        faultAlarm.setProblem(
+                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultTextQName()));
+        faultAlarm.setSeverity(getSeverityType(
+                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultSeverityQName()),
+                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIsClearedQName())
+                        .equals("true")));
+        faultAlarm.setCounter(counter);
+        faultAlarm.setId(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIdQName()));
+        faultAlarm.setSourceType(SourceType.Netconf);
+        faultAlarm.setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp(
+                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultEventTimeQName())));
+        return faultAlarm.build();
+
+    }
+
+    /**
+     * Convert Instant to NETCONF DateAndTime
+     * @param eventTimeInstant
+     * @return DateAndTime
+     */
+    public static DateAndTime getDateAndTimeOfInstant(Instant eventTimeInstant) {
+        Date eventDate = Date.from(eventTimeInstant);
+        return new DateAndTime(NETCONFTIME_CONVERTER.getTimeStamp(eventDate));
+    }
+
+    private static DateAndTime getEventTime(DOMNotification notification) {
         DateAndTime eventTime;
         Instant notificationEventTime = null;
         if (notification instanceof DOMEvent) {
@@ -259,7 +298,7 @@ public class ORanDOMToInternalDataModel {
      * @return data-provider severity type
      * @throws IllegalArgumentException if conversion not possible.
      */
-    public static SeverityType getSeverityType(@Nullable String faultSeverity, @Nullable Boolean isCleared)
+    private static SeverityType getSeverityType(@Nullable String faultSeverity, @Nullable Boolean isCleared)
             throws IllegalArgumentException {
         if (isCleared != null && isCleared) {
             return SeverityType.NonAlarmed;
@@ -280,14 +319,14 @@ public class ORanDOMToInternalDataModel {
                 + " faultSeverity=" + faultSeverity);
     }
 
-    /**
-     * Convert Instant to NETCONF DataAndTime
-     * @param eventTimeInstant
-     * @return DateAndTime
-     */
-    public static DateAndTime getDateAndTimeOfInstant(Instant eventTimeInstant) {
-        Date eventDate = Date.from(eventTimeInstant);
-        return new DateAndTime(NETCONFTIME_CONVERTER.getTimeStamp(eventDate));
+    private static String getObjectId(String leafValue) {
+        // fault-source = /ietf-hardware:hardware/component[name='slot0-logical0']
+        Pattern p = Pattern.compile("\\/ietf-hardware:hardware\\/component\\[name=\\'(.*)\\']");
+        Matcher m = p.matcher(leafValue);
+        if (m.find()) {
+            return m.group(1);
+        }
+        return leafValue;
     }
 
 }

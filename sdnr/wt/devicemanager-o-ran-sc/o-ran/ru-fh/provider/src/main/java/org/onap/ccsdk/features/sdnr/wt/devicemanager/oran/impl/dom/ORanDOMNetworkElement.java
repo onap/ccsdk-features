@@ -22,7 +22,6 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -30,10 +29,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.config.ORanDMConfig;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.dataprovider.ORanDOMToInternalDataModel;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.notification.ORanDOMChangeNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.notification.ORanDOMFaultNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.notification.ORanDOMSupervisionNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.notification.ORanNotificationObserverImpl;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.rpc.ORanSupervisionRPCImpl;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDMDOMUtility;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDeviceManagerQNames;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.vesmapper.ORanRegistrationToVESpnfRegistrationMapper;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.yangspecs.ORANFM;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.yangspecs.OnapSystem;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationService;
@@ -52,17 +64,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.UnkeyedListEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.UnkeyedListNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ORanDOMNetworkElement implements NetworkElement {
+public class ORanDOMNetworkElement implements NetworkElement, IConfigChangedListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(ORanDOMNetworkElement.class);
 
@@ -72,11 +86,16 @@ public class ORanDOMNetworkElement implements NetworkElement {
     private final @NonNull NotificationService notificationService;
     private final @NonNull ORanDOMChangeNotificationListener oranDomChangeNotificationListener;
     private final @NonNull ORanDOMFaultNotificationListener oranDomFaultNotificationListener;
+    private final @NonNull ORanDOMSupervisionNotificationListener oranDomSupervisionNotificationListener;
     private final @NonNull VESCollectorService vesCollectorService;
     private final @NonNull ORanRegistrationToVESpnfRegistrationMapper mapper;
+    private final Optional<OnapSystem> onapSystem;
+    private final Optional<ORANFM> oranfm;
+    private ORanDMConfig oranSupervisionConfig;
 
     public ORanDOMNetworkElement(@NonNull NetconfDomAccessor netconfDomAccessor,
-            @NonNull DeviceManagerServiceProvider serviceProvider) {
+            @NonNull DeviceManagerServiceProvider serviceProvider, ORanDMConfig oranSupervisionConfig,
+            ConfigurationFileRepresentation configFileRepresentation) {
         LOG.debug("Create {}", ORanDOMNetworkElement.class.getSimpleName());
         this.netconfDomAccessor = Objects.requireNonNull(netconfDomAccessor);
         Objects.requireNonNull(serviceProvider);
@@ -84,13 +103,20 @@ public class ORanDOMNetworkElement implements NetworkElement {
         this.vesCollectorService = serviceProvider.getVESCollectorService();
         this.faultService = serviceProvider.getFaultService();
         this.notificationService = serviceProvider.getNotificationService();
+        this.onapSystem = OnapSystem.getModule(netconfDomAccessor);
+        this.oranfm = ORANFM.getModule(netconfDomAccessor);
+        this.oranSupervisionConfig = oranSupervisionConfig;
 
+        configFileRepresentation.registerConfigChangedListener(this);
         this.oranDomChangeNotificationListener =
                 new ORanDOMChangeNotificationListener(netconfDomAccessor, vesCollectorService, databaseService);
 
         this.oranDomFaultNotificationListener =
-                new ORanDOMFaultNotificationListener(netconfDomAccessor, vesCollectorService,
+                new ORanDOMFaultNotificationListener(netconfDomAccessor, this.oranfm, vesCollectorService,
                         serviceProvider.getFaultService(), serviceProvider.getWebsocketService(), databaseService);
+
+        this.oranDomSupervisionNotificationListener = new ORanDOMSupervisionNotificationListener(netconfDomAccessor,
+                vesCollectorService, databaseService, oranSupervisionConfig);
 
         this.mapper = new ORanRegistrationToVESpnfRegistrationMapper(netconfDomAccessor, vesCollectorService);
     }
@@ -106,13 +132,28 @@ public class ORanDOMNetworkElement implements NetworkElement {
                 ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_SESSION_END,
                 ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_CAPABILITY_CHANGE};
         netconfDomAccessor.doRegisterNotificationListener(oranDomChangeNotificationListener, notifications);
-        QName[] faultNotification = {ORanDeviceManagerQNames.ORAN_FM_ALARM_NOTIF};
+
+        QName[] faultNotification = {oranfm.get().getAlarmNotifQName()};
         netconfDomAccessor.doRegisterNotificationListener(oranDomFaultNotificationListener, faultNotification);
+
+        Capabilities x = netconfDomAccessor.getCapabilites();
+        if (x.isSupportingNamespaceAndRevision(ORanDeviceManagerQNames.ORAN_SUPERVISION_MODULE)) {
+            LOG.debug("Device {} supports oran-supervision", netconfDomAccessor.getNodeId().getValue());
+            oranDomSupervisionNotificationListener.setComponentList(componentList);
+            QName[] supervisionNotification = {ORanDeviceManagerQNames.ORAN_SUPERVISION_NOTIFICATION};
+            netconfDomAccessor.doRegisterNotificationListener(oranDomSupervisionNotificationListener,
+                    supervisionNotification);
+        }
         // Output notification streams to LOG
         @SuppressWarnings("unused")
         Map<StreamKey, Stream> streams = netconfDomAccessor.getNotificationStreamsAsMap();
         // Register to default stream
         netconfDomAccessor.invokeCreateSubscription();
+        if (x.isSupportingNamespaceAndRevision(ORanDeviceManagerQNames.ORAN_SUPERVISION_MODULE)) {
+            ORanSupervisionRPCImpl.invokeWatchdogReset(netconfDomAccessor, oranSupervisionConfig);
+            oranDomSupervisionNotificationListener.registerForNotificationReceivedEvent(
+                    new ORanNotificationObserverImpl(netconfDomAccessor, oranSupervisionConfig));
+        }
     }
 
     public Collection<MapEntryNode> initialReadFromNetworkElement() {
@@ -133,9 +174,16 @@ public class ORanDOMNetworkElement implements NetworkElement {
             componentMapEntries = Collections.emptyList();
         }
 
-        Optional<Guicutthrough> oGuicutthrough = ORanDOMToInternalDataModel.getGuicutthrough(getOnapSystemData());
-        if (oGuicutthrough.isPresent()) {
-            databaseService.writeGuiCutThroughData(oGuicutthrough.get(), netconfDomAccessor.getNodeId().getValue());
+        if (oranfm.isPresent()) {
+            getActiveAlarms();
+        }
+        if (onapSystem.isPresent()) {
+            AugmentationNode gcData = (AugmentationNode) onapSystem.get().getOnapSystemData();
+            Optional<Guicutthrough> oGuicutthrough =
+                    ORanDOMToInternalDataModel.getGuicutthrough(gcData, onapSystem.get());
+            if (oGuicutthrough.isPresent()) {
+                databaseService.writeGuiCutThroughData(oGuicutthrough.get(), netconfDomAccessor.getNodeId().getValue());
+            }
         }
         return componentMapEntries;
     }
@@ -190,36 +238,6 @@ public class ORanDOMNetworkElement implements NetworkElement {
             return oData.get();
         }
         return null;
-    }
-
-    // Read from device
-    /**
-     * Read system data with GUI cut through information from device if ONAP_SYSTEM YANG is supported.
-     *
-     * @return NormalizedNode data with GUI cut through information or null if not available.
-     */
-    private @Nullable NormalizedNode getOnapSystemData() {
-        LOG.debug("Get System1 for mountpoint {}", netconfDomAccessor.getNodeId().getValue());
-        @NonNull
-        InstanceIdentifierBuilder ietfSystemIID =
-                YangInstanceIdentifier.builder().node(ORanDeviceManagerQNames.IETF_SYSTEM_CONTAINER);
-        @NonNull
-        AugmentationIdentifier onapSystemIID = YangInstanceIdentifier.AugmentationIdentifier
-                .create(Sets.newHashSet(ORanDeviceManagerQNames.ONAP_SYSTEM_NAME,
-                        ORanDeviceManagerQNames.ONAP_SYSTEM_WEB_UI, ORanDeviceManagerQNames.ONAP_SYSTEM_GEOLOCATION));
-        InstanceIdentifierBuilder augmentedOnapSystem =
-                YangInstanceIdentifier.builder(ietfSystemIID.build()).node(onapSystemIID);
-        Capabilities x = netconfDomAccessor.getCapabilites();
-        LOG.debug("Capabilites: {}", x);
-        if (x.isSupportingNamespace(ORanDeviceManagerQNames.ONAP_SYSTEM_QNAME)) {
-            Optional<NormalizedNode> res =
-                    netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedOnapSystem.build());
-            LOG.debug("Result of System1 = {}", res);
-            return res.isPresent() ? res.get() : null;
-        } else {
-            LOG.debug("No GUI cut through support");
-            return null;
-        }
     }
 
     // VES related
@@ -278,6 +296,29 @@ public class ORanDOMNetworkElement implements NetworkElement {
 
         LOG.debug("Mountpoint {} is not part of allowed-devices list", mountpointName);
         return false;
+    }
+
+    private void getActiveAlarms() {
+        InstanceIdentifierBuilder activeAlarmListBuilder =
+                YangInstanceIdentifier.builder().node(oranfm.get().getFaultActiveAlarmListQName());
+        Optional<NormalizedNode> oData =
+                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, activeAlarmListBuilder.build());
+        if (oData.isPresent()) {
+            ContainerNode cn = (ContainerNode) oData.get();
+            UnkeyedListNode activeAlarmsList =
+                    (UnkeyedListNode) cn.childByArg(new NodeIdentifier(oranfm.get().getFaultActiveAlarmsQName()));
+            int counter = 0;
+            for (UnkeyedListEntryNode activeAlarmEntry : activeAlarmsList.body())
+                faultService.faultNotification(ORanDOMToInternalDataModel.getFaultLog(activeAlarmEntry, oranfm.get(),
+                        netconfDomAccessor.getNodeId(), Integer.valueOf(counter++)));
+        }
+
+    }
+
+    @Override
+    public void onConfigChanged() {
+        LOG.info("O-RU Supervision Watchdog timers changed, resetting in O-RU via RPC");
+        ORanSupervisionRPCImpl.invokeWatchdogReset(netconfDomAccessor, oranSupervisionConfig);
     }
 
 }

@@ -22,27 +22,30 @@
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom;
 
 import java.util.Objects;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.DomContext;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DomContext {
+public class DomContextImpl implements DomContext {
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(DomContext.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DomContextImpl.class);
 
     private final YangParserFactory yangParserFactory;
     private final BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer;
 
-    public DomContext(YangParserFactory yangParserFactory, BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer) {
+    public DomContextImpl(YangParserFactory yangParserFactory, BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer) {
         this.yangParserFactory = Objects.requireNonNull(yangParserFactory);
         this.bindingNormalizedNodeSerializer = Objects.requireNonNull(bindingNormalizedNodeSerializer);
     }
 
+    @Override
     public BindingNormalizedNodeSerializer getBindingNormalizedNodeSerializer() {
         return bindingNormalizedNodeSerializer;
     }
 
+    @Override
     public YangParserFactory getYangParserFactory() {
         return yangParserFactory;
     }

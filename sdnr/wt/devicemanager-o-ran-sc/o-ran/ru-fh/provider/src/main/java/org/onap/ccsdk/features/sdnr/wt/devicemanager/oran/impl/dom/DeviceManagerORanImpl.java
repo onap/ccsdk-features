@@ -17,8 +17,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.config.ORanDMConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,6 @@ public class DeviceManagerORanImpl implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerORanImpl.class);
     private static final String APPLICATION_NAME = "DeviceManagerORan";
-    @SuppressWarnings("unused")
     private static final String CONFIGURATIONFILE = "etc/devicemanager-oran.properties";
 
 
@@ -36,6 +37,7 @@ public class DeviceManagerORanImpl implements AutoCloseable {
     private HtDatabaseClient htDatabaseClient;
     private Boolean devicemanagerInitializationOk = false;
     private FactoryRegistration<ORanNetworkElementFactory> resORan;
+    private ORanDMConfig oranSupervisionConfig;
 
     // Blueprint begin
     public DeviceManagerORanImpl() {
@@ -51,8 +53,11 @@ public class DeviceManagerORanImpl implements AutoCloseable {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
-        resORan = netconfNetworkElementService.registerBindingNetworkElementFactory(new ORanNetworkElementFactory());
+        ConfigurationFileRepresentation configFileRepresentation =
+                new ConfigurationFileRepresentation(CONFIGURATIONFILE);
 
+        oranSupervisionConfig = new ORanDMConfig(configFileRepresentation);
+        resORan = netconfNetworkElementService.registerBindingNetworkElementFactory(new ORanNetworkElementFactory(configFileRepresentation, oranSupervisionConfig));
 
         netconfNetworkElementService.writeToEventLog(APPLICATION_NAME, "startup", "done");
         this.devicemanagerInitializationOk = true;

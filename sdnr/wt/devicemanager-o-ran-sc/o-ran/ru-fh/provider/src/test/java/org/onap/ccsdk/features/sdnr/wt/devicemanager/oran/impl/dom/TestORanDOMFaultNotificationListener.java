@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import com.google.common.io.Files;
@@ -29,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,17 +39,22 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.notification.ORanDOMFaultNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.yangspecs.ORANFM;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.VESCollectorServiceImpl;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.mdsal.dom.api.DOMEvent;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.common.QNameModule;
+import org.opendaylight.yangtools.yang.common.Revision;
+import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.Builders;
@@ -89,6 +96,8 @@ public class TestORanDOMFaultNotificationListener {
     @Mock
     DataProvider databaseService;
     VESCollectorService vesCollectorService;
+    static Optional<ORANFM> oranfm;
+    private Capabilities capabilities;
 
     @After
     @Before
@@ -98,6 +107,11 @@ public class TestORanDOMFaultNotificationListener {
             LOG.info("Remove {}", f.getAbsolutePath());
             f.delete();
         }
+        capabilities = mock(Capabilities.class);
+        when(domAccessor.getCapabilites()).thenReturn(capabilities);
+        when(capabilities.isSupportingNamespaceAndRevision(
+                QNameModule.create(XMLNamespace.of(ORANFM.NAMESPACE), Revision.of("2022-08-15")))).thenReturn(true);
+        oranfm = ORANFM.getModule(domAccessor);
     }
 
     @Test
@@ -105,7 +119,7 @@ public class TestORanDOMFaultNotificationListener {
         Files.asCharSink(new File(TESTFILENAME), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
         vesCollectorService = new VESCollectorServiceImpl(new ConfigurationFileRepresentation(TESTFILENAME));
         when(domAccessor.getNodeId()).thenReturn(new NodeId("nSky"));
-        ORanDOMFaultNotificationListener faultListener = new ORanDOMFaultNotificationListener(domAccessor,
+        ORanDOMFaultNotificationListener faultListener = new ORanDOMFaultNotificationListener(domAccessor, oranfm,
                 vesCollectorService, faultService, websocketManagerService, databaseService);
         NetconfDeviceNotification ndn = new NetconfDeviceNotification(createORANDOMFault(), Instant.now());
         faultListener.onNotification(ndn);
@@ -114,19 +128,13 @@ public class TestORanDOMFaultNotificationListener {
     }
 
     public static ContainerNode createORANDOMFault() {
-        final QName fault_id = QName.create(ORanDeviceManagerQNames.ORAN_FM_ALARM_NOTIF, "fault-id");
-        final QName fault_source = QName.create(ORanDeviceManagerQNames.ORAN_FM_ALARM_NOTIF, "fault-source");
-        final QName fault_severity = QName.create(ORanDeviceManagerQNames.ORAN_FM_ALARM_NOTIF, "fault-severity");
-        final QName is_cleared = QName.create(ORanDeviceManagerQNames.ORAN_FM_ALARM_NOTIF, "is-cleared");
-        final QName fault_text = QName.create(ORanDeviceManagerQNames.ORAN_FM_ALARM_NOTIF, "fault-text");
-        return Builders.containerBuilder().withNodeIdentifier(NodeIdentifier.create(ORanDeviceManagerQNames.ORAN_FM_ALARM_NOTIF))
-                .withChild(ImmutableNodes.leafNode(fault_id, "47"))
-                .withChild(ImmutableNodes.leafNode(fault_source, "Slot-2-Port-B"))
-                .withChild(ImmutableNodes.leafNode(fault_severity, "MAJOR"))
-                .withChild(ImmutableNodes.leafNode(is_cleared, "true"))
-                .withChild(ImmutableNodes.leafNode(fault_text, "CPRI Port Down")).build();
+        return Builders.containerBuilder().withNodeIdentifier(NodeIdentifier.create(oranfm.get().getAlarmNotifQName()))
+                .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultIdQName(), "47"))
+                .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultSourceQName(), "Slot-2-Port-B"))
+                .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultSeverityQName(), "MAJOR"))
+                .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultIsClearedQName(), "true"))
+                .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultTextQName(), "CPRI Port Down")).build();
     }
-
 
     public static class NetconfDeviceNotification implements DOMNotification, DOMEvent {
         private final ContainerNode content;

@@ -29,6 +29,8 @@ import java.time.Instant;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.notification.ORanDOMChangeNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDeviceManagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
@@ -141,7 +143,6 @@ public class TestORanDOMNotification {
     @Test
     public void test() {
         ContainerNode cn = createDOMNotificationBody();
-        System.out.println(cn.toString());
         NetconfDeviceNotification ndn = new NetconfDeviceNotification(cn, Instant.now());
         ORanDOMChangeNotificationListener changeListener = new ORanDOMChangeNotificationListener(domAccessor, vesCollectorService, databaseService);
         changeListener.onNotification(ndn);

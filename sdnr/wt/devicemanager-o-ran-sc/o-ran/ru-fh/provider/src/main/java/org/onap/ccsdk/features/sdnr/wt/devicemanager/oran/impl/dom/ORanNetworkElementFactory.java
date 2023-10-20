@@ -21,8 +21,11 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 
 import java.util.Optional;
+import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFactory;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.config.ORanDMConfig;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDeviceManagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
@@ -37,6 +40,13 @@ public class ORanNetworkElementFactory implements NetworkElementFactory {
     //Workaround
     private static final QName OneCell =
             QName.create("urn:onf:otcc:wireless:yang:radio-access:commscope-onecell", "2020-06-22", "onecell").intern();
+    private ORanDMConfig oranSupervisionConfig;
+    private ConfigurationFileRepresentation configFileRepresentation;
+
+    public ORanNetworkElementFactory(ConfigurationFileRepresentation configFileRepresentation, ORanDMConfig oranSupervisionConfig) {
+        this.configFileRepresentation = configFileRepresentation;
+        this.oranSupervisionConfig = oranSupervisionConfig;
+    }
 
     @Override
     public Optional<NetworkElement> create(NetconfAccessor accessor, DeviceManagerServiceProvider serviceProvider) {
@@ -44,11 +54,9 @@ public class ORanNetworkElementFactory implements NetworkElementFactory {
         if (!capabilites.isSupportingNamespace(OneCell)) {
             if (capabilites.isSupportingNamespace(ORanDeviceManagerQNames.ORAN_HW_COMPONENT)) {
                 log.info("Create device {} ", ORanDOMNetworkElement.class.getName());
-                //Optional<NetconfBindingAccessor> bindingAccessor = accessor.getNetconfBindingAccessor();
                 Optional<NetconfDomAccessor> domAccessor = accessor.getNetconfDomAccessor();
                 if (domAccessor.isPresent()) {
-                    //return Optional.of(new ORanNetworkElement(bindingAccessor.get(), serviceProvider));
-                    return Optional.of(new ORanDOMNetworkElement(domAccessor.get(), serviceProvider));
+                    return Optional.of(new ORanDOMNetworkElement(domAccessor.get(), serviceProvider, oranSupervisionConfig, configFileRepresentation));
                 }
             }
         }
