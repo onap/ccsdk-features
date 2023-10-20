@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DMDOMUtility;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.CoreModel14;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -20,29 +20,29 @@ import org.slf4j.LoggerFactory;
 public class Onf14DomToInternalDataModel {
     private static final Logger LOG = LoggerFactory.getLogger(Onf14DomToInternalDataModel.class);
 
-    public Inventory getInternalEquipment(NodeId nodeId, MapEntryNode currentEq, MapEntryNode parentEq,
-            long treeLevel) {
+    public Inventory getInternalEquipment(NodeId nodeId, MapEntryNode currentEq, MapEntryNode parentEq, long treeLevel,
+            CoreModel14 qNames) {
 
         Objects.requireNonNull(nodeId);
         Objects.requireNonNull(currentEq);
 
         InventoryBuilder inventoryBuilder = new InventoryBuilder();
-        String parentUuid = parentEq != null ? Onf14DMDOMUtility.getUuidFromEquipment(parentEq) : "None";
+        String parentUuid =
+                parentEq != null ? Onf14DMDOMUtility.getUuidFromEquipment(parentEq, qNames.getQName("uuid")) : "None";
 
         // General
         inventoryBuilder.setNodeId(nodeId.getValue());
         inventoryBuilder.setTreeLevel(Uint32.valueOf(treeLevel));
-        inventoryBuilder.setUuid(Onf14DMDOMUtility.getUuidFromEquipment(currentEq));
+        inventoryBuilder.setUuid(Onf14DMDOMUtility.getUuidFromEquipment(currentEq, qNames.getQName("uuid")));
         inventoryBuilder.setParentUuid(parentUuid);
 
         Set<String> containedHolderKeyList = new HashSet<>();
-        MapNode containedHolderMap = (MapNode) currentEq
-                .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_CONTAINED_HOLDER));
+        MapNode containedHolderMap =
+                (MapNode) currentEq.childByArg(new NodeIdentifier(qNames.getQName("contained-holder")));
         if (containedHolderMap != null) {
             Collection<MapEntryNode> containedHolderCollection = containedHolderMap.body();
             for (MapEntryNode holder : containedHolderCollection) {
-                String occupyingFru = Onf14DMDOMUtility.getLeafValue(holder,
-                        Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_OCCUPYING_FRU);
+                String occupyingFru = Onf14DMDOMUtility.getLeafValue(holder, qNames.getQName("occupying-fru"));
 
                 if (occupyingFru != null) {
                     containedHolderKeyList.add(occupyingFru);
@@ -52,73 +52,73 @@ public class Onf14DomToInternalDataModel {
         inventoryBuilder.setContainedHolder(containedHolderKeyList);
 
         // actual-equipment
-        ContainerNode actualEquipment = (ContainerNode) currentEq
-                .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_ACTUAL_EQUIPMENT));
+        ContainerNode actualEquipment =
+                (ContainerNode) currentEq.childByArg(new NodeIdentifier(qNames.getQName("actual-equipment")));
         if (actualEquipment != null) {
             ContainerNode manThing = (ContainerNode) actualEquipment
-                    .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_MANUFACTURED_THING));
+                    .childByArg(new NodeIdentifier(qNames.getQName("manufactured-thing")));
             if (manThing != null) {
                 // Manufacturer properties
                 ContainerNode props = (ContainerNode) manThing
-                        .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_MANUFACTURER_PROPS));
+                        .childByArg(new NodeIdentifier(qNames.getQName("manufacturer-properties")));
                 if (props != null) {
-                    inventoryBuilder.setManufacturerName(Onf14DMDOMUtility.getLeafValue(props,
-                            Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_MANUFACTURER_NAME));
+                    inventoryBuilder.setManufacturerName(
+                            Onf14DMDOMUtility.getLeafValue(props, qNames.getQName("manufacturer-name")));
 
-                    inventoryBuilder.setManufacturerIdentifier(Onf14DMDOMUtility.getLeafValue(props,
-                            Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_MANUFACTURER_ID));
+                    inventoryBuilder.setManufacturerIdentifier(
+                            Onf14DMDOMUtility.getLeafValue(props, qNames.getQName("manufacturer-identifier")));
 
                 } else {
                     LOG.debug("manufacturer-properties is not present in Equipment with uuid={}",
-                            Onf14DMDOMUtility.getUuidFromEquipment(currentEq));
+                            Onf14DMDOMUtility.getUuidFromEquipment(currentEq, qNames.getQName("uuid")));
                 }
 
                 // Equipment instance
-                ContainerNode equipmentInstance = (ContainerNode) manThing.childByArg(
-                        new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_INSTANCE));
+                ContainerNode equipmentInstance =
+                        (ContainerNode) manThing.childByArg(new NodeIdentifier(qNames.getQName("equipment-instance")));
                 if (equipmentInstance != null) {
-                    inventoryBuilder.setSerial(Onf14DMDOMUtility.getLeafValue(equipmentInstance,
-                            Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_INSTANCE_SERIAL_NUM));
+                    inventoryBuilder.setSerial(
+                            Onf14DMDOMUtility.getLeafValue(equipmentInstance, qNames.getQName("serial-number")));
 
-                    inventoryBuilder.setDate(Onf14DMDOMUtility.getLeafValue(equipmentInstance,
-                            Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_INSTANCE_MANUFACTURED_DATE));
+                    inventoryBuilder.setDate(
+                            Onf14DMDOMUtility.getLeafValue(equipmentInstance, qNames.getQName("manufactured-date")));
 
                 } else {
                     LOG.debug("equipment-instance is not present in Equipment with uuid={}",
-                            Onf14DMDOMUtility.getUuidFromEquipment(currentEq));
+                            Onf14DMDOMUtility.getUuidFromEquipment(currentEq, qNames.getQName("uuid")));
                 }
 
                 // Equipment type
-                ContainerNode equipmentType = (ContainerNode) manThing.childByArg(
-                        new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE));
+                ContainerNode equipmentType =
+                        (ContainerNode) manThing.childByArg(new NodeIdentifier(qNames.getQName("equipment-type")));
                 if (equipmentType != null) {
-                    inventoryBuilder.setVersion(Onf14DMDOMUtility.getLeafValue(equipmentType,
-                            Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE_VERSION));
+                    inventoryBuilder
+                            .setVersion(Onf14DMDOMUtility.getLeafValue(equipmentType, qNames.getQName("version")));
 
-                    inventoryBuilder.setDescription(Onf14DMDOMUtility.getLeafValue(equipmentType,
-                            Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE_DESCRIPTION));
+                    inventoryBuilder.setDescription(
+                            Onf14DMDOMUtility.getLeafValue(equipmentType, qNames.getQName("description")));
 
-                    inventoryBuilder.setPartTypeId(Onf14DMDOMUtility.getLeafValue(equipmentType,
-                            Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE_PART_TYPE_ID));
+                    inventoryBuilder.setPartTypeId(
+                            Onf14DMDOMUtility.getLeafValue(equipmentType, qNames.getQName("part-type-identifier")));
 
                     inventoryBuilder.setModelIdentifier(Onf14DMDOMUtility.getLeafValue(equipmentType,
 
-                            Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE_MODEL_ID));
+                            qNames.getQName("model-identifier")));
 
-                    inventoryBuilder.setTypeName(Onf14DMDOMUtility.getLeafValue(equipmentType,
-                            Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE_TYPE_NAME));
+                    inventoryBuilder
+                            .setTypeName(Onf14DMDOMUtility.getLeafValue(equipmentType, qNames.getQName("type-name")));
 
                 } else {
                     LOG.debug("equipment-type is not present in Equipment with uuid={}",
-                            Onf14DMDOMUtility.getUuidFromEquipment(currentEq));
+                            Onf14DMDOMUtility.getUuidFromEquipment(currentEq, qNames.getQName("uuid")));
                 }
             } else {
                 LOG.debug("manufactured-thing is not present in Equipment with uuid={}",
-                        Onf14DMDOMUtility.getUuidFromEquipment(currentEq));
+                        Onf14DMDOMUtility.getUuidFromEquipment(currentEq, qNames.getQName("uuid")));
             }
         } else {
             LOG.debug("actual-equipment is not present in Equipment with uuid={}",
-                    Onf14DMDOMUtility.getUuidFromEquipment(currentEq));
+                    Onf14DMDOMUtility.getUuidFromEquipment(currentEq, qNames.getQName("uuid")));
         }
 
         return inventoryBuilder.build();

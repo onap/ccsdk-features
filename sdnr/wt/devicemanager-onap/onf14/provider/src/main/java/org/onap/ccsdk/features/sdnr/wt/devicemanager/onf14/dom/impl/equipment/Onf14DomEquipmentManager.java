@@ -30,7 +30,7 @@ import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.Onf14DomToInternalDataModel;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DMDOMUtility;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.CoreModel14;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
@@ -54,14 +54,15 @@ public class Onf14DomEquipmentManager {
     private final DataProvider databaseService;
     private final Onf14DomToInternalDataModel onf14Mapper;
     private final List<String> equipmentUuidList;
+    private final CoreModel14 qNames;
 
     public Onf14DomEquipmentManager(NetconfDomAccessor netconfDomAccessor, DataProvider databaseService,
-            Onf14DomToInternalDataModel onf14Mapper) {
+            Onf14DomToInternalDataModel onf14Mapper, CoreModel14 qNames) {
         super();
         this.netconfDomAccessor = Objects.requireNonNull(netconfDomAccessor);
         this.databaseService = Objects.requireNonNull(databaseService);
         this.onf14Mapper = Objects.requireNonNull(onf14Mapper);
-
+        this.qNames = qNames;
         this.equipmentUuidList = new ArrayList<>();
     }
 
@@ -114,11 +115,10 @@ public class Onf14DomEquipmentManager {
         log.debug("DBRead Get equipment from mountpoint {} for uuid {}", accessData.getNodeId().getValue(),
                 equipmentUuid);
 
-        InstanceIdentifierBuilder equipmentIIDBuilder = YangInstanceIdentifier.builder()
-                .node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
-                .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT)
-                .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT,
-                        QName.create(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT, "uuid").intern(), equipmentUuid);
+        InstanceIdentifierBuilder equipmentIIDBuilder =
+                YangInstanceIdentifier.builder().node(qNames.getQName("control-construct"))
+                        .node(qNames.getQName("equipment")).nodeWithKey(qNames.getQName("equipment"),
+                                QName.create(qNames.getQName("equipment"), "uuid").intern(), equipmentUuid);
 
         return accessData.readDataNode(LogicalDatastoreType.CONFIGURATION, equipmentIIDBuilder.build());
     }
@@ -128,32 +128,33 @@ public class Onf14DomEquipmentManager {
 
         // if the Equipment UUID is already in the list, it was already processed
         // needed for solving possible circular dependencies
-        if (equipmentUuidList.contains(Onf14DMDOMUtility.getUuidFromEquipment(currentEq))) {
+        if (equipmentUuidList.contains(Onf14DMDOMUtility.getUuidFromEquipment(currentEq, qNames.getQName("uuid")))) {
             log.debug("Not adding equipment with uuid {} because it was aleady added...",
-                    Onf14DMDOMUtility.getUuidFromEquipment(currentEq));
+                    Onf14DMDOMUtility.getUuidFromEquipment(currentEq, qNames.getQName("uuid")));
             return list;
         }
 
         // we add this to our internal list, such that we avoid circular dependencies
-        equipmentUuidList.add(Onf14DMDOMUtility.getUuidFromEquipment(currentEq));
+        equipmentUuidList.add(Onf14DMDOMUtility.getUuidFromEquipment(currentEq, qNames.getQName("uuid")));
         log.debug("Adding equipment with uuid {} to the database...",
-                Onf14DMDOMUtility.getUuidFromEquipment(currentEq));
+                Onf14DMDOMUtility.getUuidFromEquipment(currentEq, qNames.getQName("uuid")));
 
         // we add our current equipment to the database
-        list.add(onf14Mapper.getInternalEquipment(netconfDomAccessor.getNodeId(), currentEq, parentEq, treeLevel));
+        list.add(onf14Mapper.getInternalEquipment(netconfDomAccessor.getNodeId(), currentEq, parentEq, treeLevel,
+                qNames));
 
         // we iterate the kids of our current equipment and add them to the database
         // recursively
         // the actual reference is here:
         // /core-model:control-construct/equipment/contained-holder/occupying-fru
 
-        MapNode containedHolderMap = (MapNode) currentEq
-                .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_CONTAINED_HOLDER));
+        MapNode containedHolderMap =
+                (MapNode) currentEq.childByArg(new NodeIdentifier(qNames.getQName("contained-holder")));
         if (containedHolderMap != null) {
             Collection<MapEntryNode> containedHolderCollection = containedHolderMap.body();
             for (MapEntryNode holder : containedHolderCollection) {
                 String occupyingFru = Onf14DMDOMUtility.getLeafValue(holder,
-                        Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_OCCUPYING_FRU);
+                        qNames.getQName("occupying-fru")/*Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT_OCCUPYING_FRU*/);
 
                 if (occupyingFru != null) {
                     Optional<NormalizedNode> childEq = readEquipmentInstance(netconfDomAccessor, occupyingFru);

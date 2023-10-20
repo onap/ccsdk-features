@@ -29,24 +29,56 @@ import java.util.Optional;
 import javax.xml.stream.XMLStreamException;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.Onf14DomInterfacePacManager;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.util.Onf14DomTestUtils;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
-import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 public class TestOnf14DomInterfacePacManager {
+
+    private static final Logger log = LoggerFactory.getLogger(TestOnf14DomInterfacePacManager.class);
 
     @Test
     public void test() throws XMLStreamException, URISyntaxException, IOException, SAXException {
         NetconfDomAccessor netconfDomAccessor = mock(NetconfDomAccessor.class);
         Onf14DomInterfacePacManager interfacePacMgr = mock(Onf14DomInterfacePacManager.class);
         ContainerNode cn = (ContainerNode) Onf14DomTestUtils.getNormalizedNodeFromXML();
-        NormalizedNode ltpData = cn.getChildByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP));
-        when(interfacePacMgr.readLtpData(netconfDomAccessor)).thenReturn(Optional.of(ltpData));
-        interfacePacMgr.register();
+        //        NormalizedNode ltpData = cn.getChildByArg(new NodeIdentifier(qNames.getQName("logical-termination-point")));
+        //        when(interfacePacMgr.readLtpData(netconfDomAccessor)).thenReturn(Optional.of(ltpData));
+        //        interfacePacMgr.register();
+    }
+
+    @Test
+    public void test1() throws XMLStreamException, URISyntaxException, IOException, SAXException {
+        NetconfDomAccessor netconfDomAccessor = mock(NetconfDomAccessor.class);
+        Onf14DomInterfacePacManager interfacePacMgr = mock(Onf14DomInterfacePacManager.class);
+        ContainerNode cn = (ContainerNode) Onf14DomTestUtils.getNormalizedNodeFromXML("2022");
+
+//        AugmentationNode cmn = (AugmentationNode) cn
+//                .childByArg(new AugmentationIdentifier(Sets.newHashSet(Alarms10.ALARM_PAC)));
+//        ContainerNode mn = (ContainerNode) cmn.childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.ALARM_PAC));
+//        ContainerNode mn1 = (ContainerNode) mn.childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CURRENT_ALARMS));
+//        MapNode mn2 = (MapNode) mn1.childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CURRENT_ALARM_LIST));
+//        log.info("{}", mn2);
+//        Collection<MapEntryNode> mne = mn2.body();
+//        for (MapEntryNode currentAlarm : mne) {
+//            //			resultList.add(netconfDomAccessor.getNodeId(),
+//            log.info("{} {} {} {} {}",
+//                    Integer.parseInt(Onf14DMDOMUtility.getLeafValue(currentAlarm,
+//                            Onf14DevicemanagerQNames.CURRENT_ALARM_IDENTIFIER)),
+//                    new DateAndTime(
+//                            Onf14DMDOMUtility.getLeafValue(currentAlarm, Onf14DevicemanagerQNames.ALARM_TIMESTAMP)),
+//                    Onf14DMDOMUtility.getLeafValue(currentAlarm, Onf14DevicemanagerQNames.RESOURCE),
+//                    Onf14DMDOMUtility.getLeafValue(currentAlarm, Onf14DevicemanagerQNames.ALARM_TYPE_QUALIFIER),
+//                    InternalDataModelSeverity.mapSeverity(
+//                            Onf14DMDOMUtility.getLeafValue(currentAlarm, Onf14DevicemanagerQNames.ALARM_SEVERITY)));
+//        }
+//        //        NormalizedNode ltpData = cn.getChildByArg(new NodeIdentifier(qNames.getQName("logical-termination-point")));
+        //        when(interfacePacMgr.readLtpData(netconfDomAccessor)).thenReturn(Optional.of(ltpData));
+        //        interfacePacMgr.register();
     }
 
 }

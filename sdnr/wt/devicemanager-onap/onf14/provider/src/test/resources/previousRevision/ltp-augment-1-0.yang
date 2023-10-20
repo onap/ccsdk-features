@@ -1,0 +1,102 @@
+module ltp-augment-1-0 {
+  yang-version 1.1;
+  namespace "urn:onf:yang:ltp-augment-1-0";
+  prefix ltp-augment;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import core-model-1-4 {
+    prefix core-model;
+  }
+
+  organization 
+     "openBackhaul.com proposal to Open Networking Foundation (ONF)";
+  contact
+    "WG Web : https://github.com/openBackhaul/Overview
+    WG List: LtpAugment@openBackhaul.com
+    Editor : Thorsten Heinze
+    Email  : Thorsten.Heinze@openBackhaul.com";
+  description
+    "Copyright 2019 openBackhaul.com
+
+    Licensed under the Apache License, Version 2.0 (the 'License');
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an 'AS IS' BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.";
+
+  revision 2020-07-30 {
+    description 
+      "Model for the Transport SDN Pilot at Telefonica Germany.
+      Please view https://github.com/openBackhaul/ltpAugment/issues for changes.";
+    reference 
+      "https://github.com/openBackhaul/ltpAugment/tree/tsp: Model definition
+      https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+
+  augment "/core-model:control-construct/core-model:logical-termination-point"{
+    uses ltp-augment-spec;
+    description
+      "none";
+  }
+
+  /****************************************
+  * grouping statements for object classes
+  **************************************/ 
+    grouping ltp-augment-spec {
+      container ltp-augment-pac {
+        uses ltp-augment-pac;
+        description
+          "none";
+      }
+      description
+        "none";
+    }
+
+    grouping ltp-augment-pac {
+      container ltp-augment-configuration {
+        uses ltp-augment-configuration;
+        description
+          "none";
+      }
+      description
+        "none";
+    }
+
+    grouping ltp-augment-configuration {
+      leaf-list equipment {
+        type leafref {
+          path "/core-model:control-construct/core-model:equipment/core-model:uuid";
+          require-instance false;
+        }
+        config false;
+        description
+          "Equipment, which determines the characteristics of this interface (LTP).";
+      }
+      leaf connector {
+        type leafref {
+          path "/core-model:control-construct/core-model:equipment/core-model:connector/core-model:local-id";
+          require-instance false;
+        }
+        config false;
+        description
+          "Connector, where this interface (LTP) can be physically connected.";
+      }
+      description  
+        "none";
+    }
+
+  /****************************************
+  * typedef statements
+  **************************************/ 
+
+  /*********************************************
+  * grouping statements for complex data types
+  *******************************************/ 
+
+}

@@ -1,0 +1,216 @@
+module cera-abc-profile {
+  yang-version 1.1;
+  namespace "urn:onf:params:xml:ns:yang:cera-abc-profile";
+  prefix cera-abc-profile;
+
+  import core-model-1-4 {
+    prefix core-model;
+  }
+  import cera-common {
+    prefix cera-common;
+  }
+
+  organization
+    "Ceragon Networks";
+  contact
+    "
+     Editors:
+     ";
+  description
+    "This model contains a collection of YANG definitions for managing Ceragon wireless network equipment.";
+
+  revision 2022-08-19 {
+    description
+      "Initial version";
+    reference
+      "";
+  }
+
+  identity PROFILE_NAME_TYPE_CERA_ABC_PROFILE {
+    base core-model:PROFILE_NAME_TYPE;
+    description
+      "none";
+  }
+
+  grouping cera-abc-profile-spec {
+    description
+      "none";
+    container cera-abc-profile-pac {
+      description
+        "none";
+      uses cera-abc-profile-pac;
+    }
+  }
+
+  grouping cera-abc-profile-pac {
+    description
+      "none";
+    container cera-abc-profile-attributes {
+      description
+        "none";
+      uses cera-abc-profile-attributes-g;
+    }
+    list cera-abc-profile-member-attributes {
+      key "member-id-ref";
+      description
+        "none";
+      uses cera-abc-profile-member-attributes-g;
+    }
+  }
+
+  grouping cera-abc-profile-attributes-g {
+    description
+      "This container contains the attributes of the ABC group.";
+    leaf abc-type {
+      type string;
+      config false;
+      description
+        "The ABC group type.";
+    }
+    leaf abc-config-protection-enable {
+      type cera-common:enable-disable;
+      description
+        "When Protection is Enabled protection groups can be added to the Multi-carrier ABC group.
+         When disabled regular channels can be attached.";
+    }
+    leaf abc-config-high-pri-ethernet-bandwidth {
+      type int32;
+      description
+        "Bandwidth reserved for high priority ethernet in Kbps.
+         Values range from from 0 (i.e. No high pri ethernet) to max capacity (I.e. no STM-1s) in Kbps.";
+    }
+    leaf abc-config-min-profile {
+      type int32;
+      description
+        "Members degrading below this threshold will be set to 'do not use' in the group.";
+    }
+    leaf abc-config-robustness-admin {
+      type cera-common:enable-disable;
+      description
+        "Enables/disables mechanism to temporarily remove ABC group members after defined number of failures.";
+    }
+    leaf abc-config-robustness-number-of-failures {
+      type uint32 {
+        range "3..10";
+      }
+      description
+        "The number of failures per member within the time frame to trigger temporary disabling of the group member.";
+    }
+    leaf abc-config-robustness-time-frame {
+      type uint32 {
+        range "1..24";
+      }
+      description
+        "The time period (in hours) within which the defined number of failures triggers temporary disabling of a group member.";
+    }
+    leaf abc-config-robustness-wait-to-restore-time {
+      type uint32 {
+        range "0..168";
+      }
+      description
+        "Defines the time (in hours) that must pass before the member is re-enabled. To permanently disable the member within the group, set this parameter to zero.";
+    }
+    leaf abc-status-operational-state {
+      type cera-common:down-up;
+      config false;
+      description
+        "The operational state of the ABC group as a WAN.";
+    }
+    leaf abc-status-remote-operational-state {
+      type cera-common:down-up;
+      config false;
+      description
+        "The remote ABC groups operational state.";
+    }
+    leaf abc-status-current-aggregated-capacity-rx {
+      type int32;
+      config false;
+      description
+        "The combined current RX throughput capacity of the ABC group in Kbps.";
+    }
+    leaf abc-status-current-aggregated-capacity-tx {
+      type int32;
+      config false;
+      description
+        "The combined current TX throughput capacity of the ABC group in Kbps.";
+    }
+    leaf-list logical-termination-point-list {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+      description
+        "List of interfaces, which are part of the group.";
+    }
+  }
+
+  grouping cera-abc-profile-member-attributes-g {
+    description
+      "Attributes of the interfaces, which are part of the group.";
+    leaf member-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+    }
+    container abc-eth-attributes {
+      description
+        "none";
+      uses cera-abc-profile-eth-attributes-g;
+    }
+    leaf abc-status-channel-operstate {
+      type cera-common:down-up;
+      config false;
+      description
+        "The operational state of the ABC channel.";
+    }
+    leaf abc-status-channel-capacity {
+      type int32;
+      config false;
+      description
+        "The current throughput capacity of the ABC channel in Kbps.";
+    }
+  }
+
+  grouping cera-abc-profile-eth-attributes-g {
+    description
+      "Attributes of the ethernet interfaces, which are part of the group.";
+    leaf abc-eth-members-max-bandwidth {
+      type uint32 {
+        range "0..1000";
+      }
+      description
+        "The maximum bandwidth for current interface in Mbps.";
+    }
+    leaf abc-eth-members-tx-bandwidth {
+      type int32 {
+        range "0..1000";
+      }
+      config false;
+      description
+        "The Tx bandwidth parameter for current interface in Mbps.";
+    }
+    leaf abc-eth-members-current-bandwidth {
+      type int32 {
+        range "0..1000";
+      }
+      config false;
+      description
+        "The Current bandwidth parameter for current interface in Mbps.";
+    }
+    leaf abc-eth-members-tx-bandwidth-margin {
+      type uint32 {
+        range "5..100";
+      }
+      description
+        "The TX Bandwidth margin parameter for current interface in Mbps.";
+    }
+  }
+
+  augment "/core-model:control-construct/core-model:profile-collection/core-model:profile" {
+    when "derived-from-or-self(./core-model:profile-name, 'cera-abc-profile:PROFILE_NAME_TYPE_CERA_ABC_PROFILE')";
+    description
+      "none";
+    uses cera-abc-profile-spec;
+  }
+}

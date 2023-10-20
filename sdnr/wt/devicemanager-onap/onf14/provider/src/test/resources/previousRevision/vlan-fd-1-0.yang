@@ -1,0 +1,836 @@
+module vlan-fd-1-0 {
+  yang-version 1.1;
+  namespace "urn:onf:yang:vlan-fd-1-0";
+  prefix vlan-fd;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import core-model-1-4 {
+    prefix core-model;
+  }
+  import vlan-interface-1-0 {
+    prefix vlan-interface;
+  }
+
+  organization
+    "openBackhaul.com proposal to Open Networking Foundation (ONF)";
+  contact
+    "WG Web : https://github.com/openBackhaul/Overview
+     WG List: VlanFd@openBackhaul.com
+     Editor : Thorsten Heinze
+     Email  : Thorsten.Heinze@openBackhaul.com";
+  description
+    "Technology specific Forwarding Domain for VLAN Components according to IEEE 802.1Q-2018.
+
+     Copyright 2019 openBackhaul.com
+
+     Licensed under the Apache License, Version 2.0 (the 'License');
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an 'AS IS' BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.";
+
+  revision 2020-08-26 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany.
+       Please view https://github.com/openBackhaul/vlanFd/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/vlanFd/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+  revision 2019-08-19 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany.
+       Please view https://github.com/openBackhaul/vlanFd/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/vlanFd/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+
+  identity LAYER_PROTOCOL_NAME_TYPE_VLAN_LAYER {
+    base core-model:LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "none";
+  }
+
+  augment "/core-model:control-construct/core-model:forwarding-domain" {
+    when "derived-from-or-self(./core-model:layer-protocol-name, 'vlan-interface:LAYER_PROTOCOL_NAME_TYPE_VLAN_LAYER')";
+    uses vlan-fd-spec;
+    description
+      "none";
+  }
+
+  /****************************************
+   * package notifications
+   **************************************/ 
+
+  notification object-creation-notification {
+    uses object-creation-notification;
+    description
+      "none";
+  }
+
+  grouping object-creation-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts object creation notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf object-type {
+      type string;
+      default "Type of created object not specified.";
+      config false;
+      description
+        "none";
+    }
+    description
+      "none";
+  }
+
+  notification object-deletion-notification {
+    uses object-deletion-notification;
+    description
+      "none";
+  }
+
+  grouping object-deletion-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts object deletion notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    description
+      "none";
+  }
+
+  notification attribute-value-changed-notification {
+    uses attribute-value-changed-notification;
+    description
+      "none";
+  }
+
+  grouping attribute-value-changed-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts attribute value changed notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf attribute-name {
+      type string;
+      default "Attribute name not specified.";
+      config false;
+      description
+        "Name of the attribute that has been changed.";
+    }
+    leaf new-value {
+      type string;
+      default "New value not specified.";
+      config false;
+      description
+        "Attribute value converted to a string (xml, json, ...)";
+    }
+    description
+      "To be sent when an attribute has changed and one or more controllers have to update their data.";
+  }
+
+  notification problem-notification {
+    uses problem-notification;
+    description
+      "none";
+  }
+
+  grouping problem-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts problem notifications";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf problem {
+      type string;
+      default "Problem name not specified.";
+      config false;
+      description
+        "Name of the problem according to *Capability::supportedAlarmList";
+    }
+    leaf severity {
+      type severity-type;
+      default "SEVERITY_TYPE_WARNING";
+      config false;
+      description
+        "Severity of the problem according to *Configuration::problemSeverityList";
+    }
+    description
+      "none";
+  }
+
+  /****************************************
+   * grouping statements for object classes
+   **************************************/ 
+  /****************************************
+   * package super-classes
+   **************************************/ 
+
+  grouping current-problem {
+    leaf sequence-number {
+      type int16;
+      config false;
+      description
+        "Unique sequence number of the current problem object.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf problem-severity {
+      type severity-type;
+      default "SEVERITY_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Severity of the alarm.";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fd-spec {
+    container vlan-fd-pac {
+      uses vlan-fd-pac;
+      description
+        "none";
+    }
+    description
+      "The set of components associated with a given Bridge. For example, - A TPMR is associated with a single VLAN unaware component. - A Customer VLAN Bridge is associated with a single VLAN aware component. - A Provider Bridge is associated with a single S-VLAN component and zero or more C-VLAN components. Name in ieee802-dot1q-bridge.yang: component.";
+  }
+
+  grouping vlan-fd-pac {
+    container vlan-fd-capability {
+      config false;
+      uses vlan-fd-capability;
+      description
+        "none";
+    }
+    container vlan-fd-configuration {
+      uses vlan-fd-configuration;
+      description
+        "none";
+    }
+    container vlan-fd-status {
+      config false;
+      uses vlan-fd-status;
+      description
+        "none";
+    }
+    container vlan-fd-current-problems {
+      config false;
+      uses vlan-fd-current-problems;
+      description
+        "none";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fd-capability {
+    leaf-list supported-sub-layer-protocol-name-list {
+      type sub-layer-protocol-name-type;
+      default "SUB_LAYER_PROTOCOL_NAME_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Lists the supported kinds of Components. ";
+    }
+    leaf component-id {
+      type int32;
+      config false;
+      description
+        "Unique identifier for a particular Bridge component within the system. Name in ieee802-dot1q-bridge.yang: id.";
+    }
+    leaf extended-filtering-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Component can perform filtering on individual multicast addresses controlled by MMRP (Multiple MAC Registration Protocol). Name in ieee802-dot1q-bridge.yang: extended-filtering.";
+    }
+    leaf traffic-classes-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Component can map the Priority values into multiple traffic classes (there is more than one traffic class at the device). Name in ieee802-dot1q-bridge.yang: traffic-classes.";
+    }
+    leaf static-entries-on-individual-ports-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Static entries per port are available. Name in ieee802-dot1q-bridge.yang: static-entry-individual-port.";
+    }
+    leaf independent-vlan-learning-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Component supports Independent VLAN Learning (IVL). Name in ieee802-dot1q-bridge.yang: ivl-capable.";
+    }
+    leaf shared-vlan-learning-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Component supports Shared VLAN Learning (SVL). Name in ieee802-dot1q-bridge.yang: svl-capable.";
+    }
+    leaf hybrid-vlan-learning-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Component supports both Independent and Shared VLAN Learning simultaneously. Name in ieee802-dot1q-bridge.yang: hybrid-capable.";
+    }
+    leaf configurable-port-vlan-id-tagging-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Component supports setting the egress status (VLAN-tagged or Untagged) on each port. Name in ieee802-dot1q-bridge.yang: configurable-pvid-tagging.";
+    }
+    leaf multiple-local-bridges-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Can support multiple local Bridges, outside the scope of 802.1Q defined VLANs. Name in ieee802-dot1q-bridge.yang: local-vlan-capable.";
+    }
+    leaf supported-version {
+      type int16;
+      default "-1";
+      config false;
+      description
+        "The version number supported. Name in ieee802-dot1q-bridge.yang: version.";
+    }
+    leaf maximum-number-of-vlan-ids {
+      type int16;
+      default "-1";
+      config false;
+      description
+        "The maximum number of VLAN IDs supported. Name in ieee802-dot1q-bridge.yang: max-vids.";
+    }
+    leaf overriding-default-port-vlan-id-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Component supports overridding the default PVID on each port. Name in ieee802-dot1q-bridge.yang: override-default-pvid.";
+    }
+    leaf protocol-frame-format {
+      type protocol-frame-format-type;
+      config false;
+      description
+        "Only effective if (portAndProtocolBasedVlanIsAvail==true). The data-link encapsulation format or the detagged_frame_type in a Protocol Template. Name in ieee802-dot1q-bridge.yang: protocol-template.";
+    }
+    leaf maximum-number-of-msti {
+      type int16;
+      default "-1";
+      config false;
+      description
+        "Maximum number of Multiple Spanning Tree Instances (MSTIs) supported within an MST region (i.e., the number of spanning tree instances that can be supported in addition to the CIST), for MST Bridges. For SST Bridges, this parameter may be either omitted or reported as 0.  Name in ieee802-dot1q-bridge.yang: max-msti.";
+    }
+    leaf admin-shut-down-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Manual switching on and off of the forwarding domain without deleting it (underlying OSI network layers are also not affected) is available.";
+    }
+    leaf maintenance-timer-range {
+      type string;
+      default "Range of the maintenance timer not yet defined.";
+      config false;
+      description
+        "Available time periods for maintenance configurations to be described. Concrete values shall be separated by commas (e.g. '10, 60, 360'). Ranges shall be expressed as two values separated by a minus (e.g. '10-360').";
+    }
+    leaf-list supported-alarm-list {
+      type string;
+      default "Supported Alarms Not Yet Defined";
+      config false;
+      description
+        "Available alarms to be listed.";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fd-configuration {
+    leaf fd-name {
+      type string;
+      default "Forwarding Domain name not yet defined.";
+      description
+        "The name of the Component. Free text field to be filled by the operator. Name in ieee802-dot1q-bridge.yang: name.";
+    }
+    leaf fd-is-on {
+      type boolean;
+      default "false";
+      description
+        "Only effective if (adminShutDownIsAvail==true). true = Activation of the Component. false = De-activation of the forwarding domain without deleting it (underlying OSI network layers are not affected).";
+    }
+    leaf sub-layer-protocol-name {
+      type sub-layer-protocol-name-type;
+      default "SUB_LAYER_PROTOCOL_NAME_TYPE_NOT_YET_DEFINED";
+      description
+        "The type of Component used to classify a particular Bridge component within a Bridge system comprising multiple components. Name in ieee802-dot1q-bridge.yang: type.\n";
+    }
+    leaf mac-address {
+      type string;
+      default "00:00:00:00:00:00";
+      description
+        "Unique EUI-48 Universally Administered MAC address configured on a Bridge Component. Name in ieee802-dot1q-bridge.yang: address.";
+    }
+    leaf traffic-classes-is-on {
+      type boolean;
+      default "false";
+      description
+        "Only effective if (trafficClassesIsAvail==true). true = Traffic Classes are enabled on this Bridge Component. false = Bridge Component operates with a single priority level for all traffic. Name in ieee802-dot1q-bridge.yang: traffic-class-enabled.";
+    }
+    list protocol-group-list {
+      key "db-index";
+      uses protocol-group-type;
+      description
+        "Only effective if (portAndProtocolBasedVlanIsAvail==true). List of the protocol group database entries. Name in ieee802-dot1q-bridge.yang: protocol-group-database.";
+    }
+    leaf maintenance-timer {
+      type int32;
+      units "s";
+      default "-1";
+      description
+        "Time of existence of any maintenance configuration. 0 = maintenance timer is switched off. Valid values are defined in *Capability::maintenanceTimerRange.";
+    }
+    list problem-kind-severity-list {
+      key "problem-kind-name";
+      uses problem-kind-severity-type;
+      description
+        "Severity of each entry of the SupportedAlarmList to be configured.";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fd-status {
+    leaf mac-address-cur {
+      type string;
+      default "00:00:00:00:00:00";
+      config false;
+      description
+        "Unique EUI-48 Universally Administered MAC address assigned to a Bridge Component. Name in ieee802-dot1q-bridge.yang: address.";
+    }
+    leaf number-of-ports-cur {
+      type int16;
+      default "-1";
+      config false;
+      description
+        "Number of Bridge Ports associated with the Bridge Component. Values between 1 and 4095. Name in ieee802-dot1q-bridge.yang: ports.";
+    }
+    leaf number-of-static-vlan-registrations-cur {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "The number of Static VLAN Registration entries currently in the FDB. Name in ieee802-dot1q-bridge.yang: static-vlan-registration-entries.";
+    }
+    leaf number-of-dynamic-vlan-registrations-cur {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "The number of Dynamic VLAN Registration entries currently in the FDB. Name in ieee802-dot1q-bridge.yang: static-vlan-registration-entries.";
+    }
+    leaf fd-status {
+      type fd-status-type;
+      default "FD_STATUS_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Operational status of the forwarding domain.";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fd-current-problems {
+    list current-problem-list {
+      key "sequence-number";
+      config false;
+      uses vlan-fd-current-problem-type;
+      description
+        "none";
+    }
+    description
+      "none";
+  }
+
+  /****************************************
+   * typedef statements
+   **************************************/ 
+
+  typedef sub-layer-protocol-name-type {
+    type identityref {
+      base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    }
+    description
+      "Represents the type of Component. Name in ieee802-dot1q-bridge.yang: type-of-component.";
+  }
+
+  typedef protocol-frame-format-type {
+    type identityref {
+      base PROTOCOL_FRAME_FORMAT_TYPE;
+    }
+    description
+      "A value representing the frame format to be matched. Name in ieee802-dot1q-bridge.yang: protocol-frame-format-type.";
+  }
+
+  /*********************************************
+   * grouping statements for complex data types
+   *******************************************/ 
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE {
+    description
+      "none";
+  }
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE_C_VLAN_COMPONENT {
+    base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "c-vlan-component. Base identity for a C-VLAN component. Name in ieee802-dot1q-bridge.yang: c-vlan-component.";
+  }
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE_S_VLAN_COMPONENT {
+    base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "s-vlan-component. Base identity for a S-VLAN component. Name in ieee802-dot1q-bridge.yang: s-vlan-component.";
+  }
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE_D_BRIDGE_COMPONENT {
+    base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "d-bridge-component. Base identity for a VLAN unaware component. Name in ieee802-dot1q-bridge.yang: d-bridge-component.";
+  }
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE_EDGE_RELAY_COMPONENT {
+    base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "edge-relay-component. Base identity for an EVB station ER component. Name in ieee802-dot1q-bridge.yang: edge-relay-component. ";
+  }
+
+  identity SUB_LAYER_PROTOCOL_NAME_TYPE_NOT_YET_DEFINED {
+    base SUB_LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "none";
+  }
+
+  identity PROTOCOL_FRAME_FORMAT_TYPE {
+    description
+      "none";
+  }
+
+  identity PROTOCOL_FRAME_FORMAT_TYPE_ETHERNET {
+    base PROTOCOL_FRAME_FORMAT_TYPE;
+    description
+      "Ethernet frame format. Name in ieee802-dot1q-bridge.yang: Ethernet.";
+  }
+
+  identity PROTOCOL_FRAME_FORMAT_TYPE_RFC1042 {
+    base PROTOCOL_FRAME_FORMAT_TYPE;
+    description
+      "RFC 1042 frame format. Name in ieee802-dot1q-bridge.yang: rfc1042.";
+  }
+
+  identity PROTOCOL_FRAME_FORMAT_TYPE_SNAP8021H_ {
+    base PROTOCOL_FRAME_FORMAT_TYPE;
+    description
+      "SNAP 802.1H frame format. Name in ieee802-dot1q-bridge.yang: snap8021H.";
+  }
+
+  identity PROTOCOL_FRAME_FORMAT_TYPE_SNAP_OTHER {
+    base PROTOCOL_FRAME_FORMAT_TYPE;
+    description
+      "Other SNAP frame format. Name in ieee802-dot1q-bridge.yang: snapOther.";
+  }
+
+  identity PROTOCOL_FRAME_FORMAT_TYPE_LLC_OTHER {
+    base PROTOCOL_FRAME_FORMAT_TYPE;
+    description
+      "Other LLC frame format. Name in ieee802-dot1q-bridge.yang: llcOther.";
+  }
+
+  identity PROTOCOL_FRAME_FORMAT_TYPE_NOT_YET_DEFINED {
+    base PROTOCOL_FRAME_FORMAT_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE {
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_NON_ALARMED {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_WARNING {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_MINOR {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_MAJOR {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_CRITICAL {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_NOT_YET_DEFINED {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity FD_STATUS_TYPE {
+    description
+      "none";
+  }
+
+  identity FD_STATUS_TYPE_UP {
+    base FD_STATUS_TYPE;
+    description
+      "Ready to pass packets.";
+  }
+
+  identity FD_STATUS_TYPE_DOWN {
+    base FD_STATUS_TYPE;
+    description
+      "The interface does not pass any packets.";
+  }
+
+  identity FD_STATUS_TYPE_TESTING {
+    base FD_STATUS_TYPE;
+    description
+      "In some test mode.  No operational packets can be passed.";
+  }
+
+  identity FD_STATUS_TYPE_UNKNOWN {
+    base FD_STATUS_TYPE;
+    description
+      "Status cannot be determined for some reason.";
+  }
+
+  identity FD_STATUS_TYPE_DORMANT {
+    base FD_STATUS_TYPE;
+    description
+      "Waiting for some external event.";
+  }
+
+  identity FD_STATUS_TYPE_NOT_PRESENT {
+    base FD_STATUS_TYPE;
+    description
+      "Some component (typically hardware) is missing.";
+  }
+
+  identity FD_STATUS_TYPE_LOWER_LAYER_DOWN {
+    base FD_STATUS_TYPE;
+    description
+      "Down due to state of lower-layer interface(s).";
+  }
+
+  identity FD_STATUS_TYPE_ADMIN_DOWN {
+    base FD_STATUS_TYPE;
+    description
+      "Down due to configuration.";
+  }
+
+  identity FD_STATUS_TYPE_NOT_YET_DEFINED {
+    base FD_STATUS_TYPE;
+    description
+      "none";
+  }
+
+  /****************************************
+   * package super-types
+   **************************************/ 
+
+  typedef severity-type {
+    type identityref {
+      base SEVERITY_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef fd-status-type {
+    type identityref {
+      base FD_STATUS_TYPE;
+    }
+    description
+      "Current Status of the Forwarding Domain";
+  }
+
+  grouping problem-kind-severity-type {
+    leaf problem-kind-name {
+      type string;
+      description
+        "Name of the alarm according to SupportedAlarmList";
+    }
+    leaf problem-kind-severity {
+      type severity-type;
+      default "SEVERITY_TYPE_NOT_YET_DEFINED";
+      description
+        "Severity of this type of alarm.";
+    }
+    description
+      "none";
+  }
+
+  grouping protocol-group-type {
+    leaf db-index {
+      type uint16;
+      description
+        "The protocol group database index. Name in ieee802-dot1q-bridge.yang: db-index.";
+    }
+    leaf protocol-group-id {
+      type int32;
+      default "-1";
+      description
+        "Designates a group of protocols in the Protocol Group Database. Name in ieee802-dot1q-bridge.yang: group-id.";
+    }
+    leaf protocol-frame-format {
+      type protocol-frame-format-type;
+      default "PROTOCOL_FRAME_FORMAT_TYPE_NOT_YET_DEFINED";
+      description
+        "The data-link encapsulation format or the detagged_frame_type in a Protocol Template. Name in ieee802-dot1q-bridge.yang: frame-format-type.";
+    }
+    leaf ethertype {
+      type string;
+      default "Ethertype not yet defined.";
+      description
+        "ethertype. Only relevant if (protocolFrameFormat==ETHERNET) OR (protocolFrameFormat==RFC1042) OR (protocolFrameFormat==SNAP8021H). Format containing the 16-bit IEEE 802 EtherType field. The EtherType value represented in the canonical order defined by IEEE 802. The canonical representation is using uppercase characters. Pattern '[0-9a-fA-F]{2}-[0-9a-fA-F]{2}'. Name in ieee802-dot1q-bridge.yang: ethertype.";
+    }
+    leaf protocol-id {
+      type string;
+      default "Protocol ID not yet defined.";
+      description
+        "Only effective if (protocolFrameFormat==SNAP_OTHER). Format containing the 40-bit protocol identifier (PID). The canonical representation is using uppercase characters. Pattern '[0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){4}'. Name in ieee802-dot1q-bridge.yang: protocol-id.";
+    }
+    leaf-list llc-address {
+      type string;
+      default "LLC Address not yet defined.";
+      description
+        "Only effective if (protocolFrameFormat==LLC_OTHER). A pair of ISO/IEC 8802-2 DSAP and SSAP address field values, for matching frame formats of LLC_Other. The canonical representation is using uppercase characters. Pattern '[0-9a-fA-F]{2}-[0-9a-fA-F]{2}'. Name in ieee802-dot1q-bridge.yang: llc-address.";
+    }
+    description
+      "none";
+  }
+
+  grouping vlan-fd-current-problem-type {
+    leaf problem-name {
+      type string;
+      default "Problem name not specified.";
+      config false;
+      description
+        "Name of the alarm according to SupportedAlarmList";
+    }
+    uses current-problem;
+    description
+      "none";
+  }
+}

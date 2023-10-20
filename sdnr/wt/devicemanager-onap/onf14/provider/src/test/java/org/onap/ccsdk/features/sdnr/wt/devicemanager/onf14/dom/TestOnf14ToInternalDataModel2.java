@@ -25,14 +25,20 @@ import java.util.Collection;
 import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.Onf14DomToInternalDataModel;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.CoreModel14;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.util.Onf14DomTestUtils;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
+import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.common.QNameModule;
+import org.opendaylight.yangtools.yang.common.Revision;
+import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
@@ -41,11 +47,17 @@ import org.xml.sax.SAXException;
 
 public class TestOnf14ToInternalDataModel2 extends Mockito {
 
-    private static NodeId nodeId;
+    private static final QNameModule qnm =
+            QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
+    NetconfDomAccessor netconfDomAccessor;
+    Capabilities capabilities;
 
-    @BeforeClass
-    public static void init() {
-        nodeId = mock(NodeId.class);
+    @Before
+    public void prepare() {
+        netconfDomAccessor = mock(NetconfDomAccessor.class);
+        capabilities = mock(Capabilities.class);
+        when(netconfDomAccessor.getCapabilites()).thenReturn(capabilities);
+        when(capabilities.isSupportingNamespaceAndRevision(qnm)).thenReturn(true);
     }
 
     @After
@@ -59,13 +71,13 @@ public class TestOnf14ToInternalDataModel2 extends Mockito {
         Onf14DomToInternalDataModel model = new Onf14DomToInternalDataModel();
 
         ContainerNode cn = (ContainerNode) Onf14DomTestUtils.getNormalizedNodeFromJson();
-        MapNode equipmentMap =
-                (MapNode) cn.getChildByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT));
+        MapNode equipmentMap = (MapNode) cn.getChildByArg(new NodeIdentifier(QName.create(qnm, "equipment")));
         List<Inventory> inventoryList = new ArrayList<Inventory>();
 
         Collection<MapEntryNode> containerMapEntries = equipmentMap.body();
         for (MapEntryNode mapEntryNode : containerMapEntries) {
-            inventoryList.add(model.getInternalEquipment(new NodeId("nSky"), mapEntryNode, null, 0));
+            inventoryList.add(model.getInternalEquipment(new NodeId("nSky"), mapEntryNode, null, 0,
+                    CoreModel14.getModule(netconfDomAccessor).get()));
         }
         assertEquals("All elements", 1, inventoryList.size());
 
@@ -78,13 +90,13 @@ public class TestOnf14ToInternalDataModel2 extends Mockito {
         Onf14DomToInternalDataModel model = new Onf14DomToInternalDataModel();
 
         ContainerNode cn = (ContainerNode) Onf14DomTestUtils.getNormalizedNodeFromXML();
-        MapNode equipmentMap =
-                (MapNode) cn.getChildByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_EQPT));
+        MapNode equipmentMap = (MapNode) cn.getChildByArg(new NodeIdentifier(QName.create(qnm, "equipment")));
         List<Inventory> inventoryList = new ArrayList<Inventory>();
 
         Collection<MapEntryNode> containerMapEntries = equipmentMap.body();
         for (MapEntryNode mapEntryNode : containerMapEntries) {
-            inventoryList.add(model.getInternalEquipment(new NodeId("nSky"), mapEntryNode, null, 0));
+            inventoryList.add(model.getInternalEquipment(new NodeId("nSky"), mapEntryNode, null, 0,
+                    CoreModel14.getModule(netconfDomAccessor).get()));
         }
         assertEquals("All elements", 1, inventoryList.size());
 

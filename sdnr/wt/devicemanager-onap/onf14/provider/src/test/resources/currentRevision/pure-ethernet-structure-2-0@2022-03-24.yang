@@ -1,0 +1,676 @@
+module pure-ethernet-structure-2-0 {
+  yang-version 1.1;
+  namespace "urn:onf:yang:pure-ethernet-structure-2-0";
+  prefix pure-ethernet-structure;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import core-model-1-4 {
+    prefix core-model;
+  }
+
+  organization
+    "openBackhaul.com proposal to Open Networking Foundation (ONF)";
+  contact
+    "WG Web : https://github.com/openBackhaul/Overview
+     WG List: PureEthernetStructure@openBackhaul.com
+     Editor : Thorsten Heinze
+     Email  : Thorsten.Heinze@openBackhaul.com";
+  description
+    "Technology specific interface definition for a pure Ethernet structure on a physical media
+     
+     Copyright 2022 openBackhaul.com
+     
+     Licensed under the Apache License, Version 2.0 (the 'License');
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an 'AS IS' BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.";
+
+  revision 2022-03-24 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany.
+       Please view https://github.com/openBackhaul/pureEthernetStructure/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/pureEthernetStructure/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+  revision 2020-01-22 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany.
+       Please view https://github.com/openBackhaul/pureEthernetStructure/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/pureEthernetStructure/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+  revision 2019-11-23 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany.
+       Please view https://github.com/openBackhaul/pureEthernetStructure/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/pureEthernetStructure/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+  revision 2019-07-08 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany.
+       Please view https://github.com/openBackhaul/pureEthernetStructure/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/pureEthernetStructure/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+
+  identity LAYER_PROTOCOL_NAME_TYPE_PURE_ETHERNET_STRUCTURE_LAYER {
+    base core-model:LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "none";
+  }
+
+  identity G_826_TYPE {
+    description
+      "none";
+  }
+
+  identity G_826_TYPE_ES {
+    base G_826_TYPE;
+    description
+      "Errored Seconds. Threshold cross alarm will relate to TypeDefinitions::AirInterfacePerformanceType::es .";
+  }
+
+  identity G_826_TYPE_SES {
+    base G_826_TYPE;
+    description
+      "Severely Errored Seconds. Threshold cross alarm will relate to TypeDefinitions::AirInterfacePerformanceType::ses .";
+  }
+
+  identity G_826_TYPE_CSES {
+    base G_826_TYPE;
+    description
+      "Consecutive Severely Errored Seconds. Threshold cross alarm will relate to TypeDefinitions::AirInterfacePerformanceType::cses .";
+  }
+
+  identity G_826_TYPE_UAS {
+    base G_826_TYPE;
+    description
+      "Unavailable Seconds. Threshold cross alarm will relate to TypeDefinitions::AirInterfacePerformanceType::unavailability.";
+  }
+
+  identity G_826_TYPE_NOT_SPECIFIED {
+    base G_826_TYPE;
+    description
+      "none";
+  }
+
+  identity GRANULARITY_PERIOD_TYPE {
+    description
+      "none";
+  }
+
+  identity GRANULARITY_PERIOD_TYPE_UNKNOWN {
+    base GRANULARITY_PERIOD_TYPE;
+    description
+      "none";
+  }
+
+  identity GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN {
+    base GRANULARITY_PERIOD_TYPE;
+    description
+      "none";
+  }
+
+  identity GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS {
+    base GRANULARITY_PERIOD_TYPE;
+    description
+      "none";
+  }
+
+  identity GRANULARITY_PERIOD_TYPE_NOT_YET_DEFINED {
+    base GRANULARITY_PERIOD_TYPE;
+    description
+      "none";
+  }
+
+  identity OPERATIONAL_STATE_TYPE {
+    description
+      "none";
+  }
+
+  identity OPERATIONAL_STATE_TYPE_ENABLED {
+    base OPERATIONAL_STATE_TYPE;
+    description
+      "none";
+  }
+
+  identity OPERATIONAL_STATE_TYPE_DISABLED {
+    base OPERATIONAL_STATE_TYPE;
+    description
+      "none";
+  }
+
+  identity OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED {
+    base OPERATIONAL_STATE_TYPE;
+    description
+      "none";
+  }
+
+  typedef g-826-type {
+    type identityref {
+      base G_826_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef granularity-period-type {
+    type identityref {
+      base GRANULARITY_PERIOD_TYPE;
+    }
+    description
+      "The enumeration with the options for granularity period of the performance data.";
+  }
+
+  typedef operational-state-type {
+    type identityref {
+      base OPERATIONAL_STATE_TYPE;
+    }
+    description
+      "The list of valid operational states for the connection.";
+  }
+
+  grouping object-creation-notification {
+    description
+      "none";
+    leaf counter {
+      type int64;
+      default "-1";
+      config false;
+      description
+        "Counts object creation notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf object-type {
+      type string;
+      default "Type of created object not specified.";
+      config false;
+      description
+        "none";
+    }
+  }
+
+  grouping object-deletion-notification {
+    description
+      "none";
+    leaf counter {
+      type int64;
+      default "-1";
+      config false;
+      description
+        "Counts object deletion notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+  }
+
+  grouping attribute-value-changed-notification {
+    description
+      "none";
+    leaf counter {
+      type int64;
+      default "-1";
+      config false;
+      description
+        "Counts attribute value changed notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf attribute-name {
+      type string;
+      default "Attribute name not specified.";
+      config false;
+      description
+        "Name of the attribute that has been changed.";
+    }
+    leaf new-value {
+      type string;
+      default "New value not specified.";
+      config false;
+      description
+        "Attribute value converted to a string (xml, json, ...)";
+    }
+  }
+
+  grouping current-performance {
+    description
+      "none";
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "The timestamp associated with when the current data was collected.";
+    }
+    leaf suspect-interval-flag {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "This attribute is used to indicate that the performance data for the current period may not be reliable. Some reasons for this to occur are:
+            – Suspect data were detected by the actual resource doing data collection.
+            – Transition of the administrativeState attribute to/from the 'lock' state.
+            – Transition of the operationalState to/from the 'disabled' state.
+            – Scheduler setting that inhibits the collection function.
+            – The performance counters were reset during the interval.
+            – The currentData (or subclass) object instance was created during the monitoring period.";
+    }
+    leaf elapsed-time {
+      type int64;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Number of seconds that elapsed since the last reset of the counter.";
+    }
+    leaf scanner-id {
+      type string;
+      default "Scanner ID not defined.";
+      config false;
+      description
+        "none";
+    }
+    leaf granularity-period {
+      type granularity-period-type;
+      config false;
+      description
+        "Time period between reset of the underlying counter.";
+    }
+  }
+
+  grouping historical-performance {
+    description
+      "none";
+    leaf suspect-interval-flag {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "This attribute indicates that the data collected during the interval is suspect.";
+    }
+    leaf history-data-id {
+      type string;
+      default "History Data ID not defined.";
+      config false;
+      description
+        "none";
+    }
+    leaf granularity-period {
+      type granularity-period-type;
+      config false;
+      description
+        "Time period between reset of the underlying counter.";
+    }
+    leaf period-end-time {
+      type yang:date-and-time;
+      config false;
+      description
+        "Time when the counter values have been recorded and the counter reset.";
+    }
+  }
+
+  grouping pure-ethernet-structure-lp-spec {
+    description
+      "The PureEthernetStructureLpSpec and its attached classes MUST be provided on management interfaces of routers, switches and microwave devices, which are transporting exclusively Ethernet traffic.";
+    container pure-ethernet-structure-pac {
+      description
+        "none";
+      uses pure-ethernet-structure-pac;
+    }
+  }
+
+  grouping pure-ethernet-structure-pac {
+    description
+      "The pureEthernetStructure_Pac and its attached classes MUST be provided on management interfaces of microwave devices, which are transporting Ethernet traffic only.";
+    container pure-ethernet-structure-capability {
+      config false;
+      description
+        "none";
+      uses pure-ethernet-structure-capability;
+    }
+    container pure-ethernet-structure-configuration {
+      description
+        "none";
+      uses pure-ethernet-structure-configuration;
+    }
+    container pure-ethernet-structure-status {
+      config false;
+      description
+        "none";
+      uses pure-ethernet-structure-status;
+    }
+    container pure-ethernet-structure-current-performance {
+      config false;
+      description
+        "none";
+      uses pure-ethernet-structure-current-performance;
+    }
+    container pure-ethernet-structure-historical-performances {
+      config false;
+      description
+        "none";
+      uses pure-ethernet-structure-historical-performances;
+    }
+  }
+
+  grouping pure-ethernet-structure-capability {
+    description
+      "Describes the logical structuring of the physical capacity provided by a pure Ethernet microwave device. Segmentation is not available. No fixed segment size. No TDM transport.";
+    leaf performance-monitoring-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Collection and aggregation of performance values is available.";
+    }
+  }
+
+  grouping pure-ethernet-structure-configuration {
+    description
+      "none";
+    list g-826-threshold-cross-alarm-list {
+      key "g-826-value-kind granularity-period";
+      description
+        "List of G826 related threshold cross alarms to be configured.";
+      uses g-826-threshold-cross-alarm-type;
+    }
+    leaf clearing-threshold-cross-alarms-is-on {
+      type boolean;
+      default "false";
+      description
+        "Setting this bit is clearing all the currently active threshold cross alarms.";
+    }
+    leaf performance-monitoring-is-on {
+      type boolean;
+      default "false";
+      description
+        "Enables measurement, collection, storage and access to performance data.";
+    }
+  }
+
+  grouping pure-ethernet-structure-status {
+    description
+      "none";
+    list segment-status-list {
+      key "segment-status-type-id";
+      config false;
+      min-elements 1;
+      description
+        "Status of the Ethernet transport segment. Always just one segment.";
+      uses segment-status-type;
+    }
+    leaf performance-monitoring-is-up {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Performance values are currently collected and aggregated.";
+    }
+  }
+
+  grouping pure-ethernet-structure-current-performance {
+    description
+      "Aggregated performance information of the structure of an pure Ethernet microwave at a particular moment.";
+    list current-performance-data-list {
+      key "granularity-period";
+      config false;
+      min-elements 1;
+      max-elements 2;
+      description
+        "At least values of the counters, which are reset every 15 minutes, are to be provided. If available, the current values of the counters, which are reset every 24 hour, can be provided, too.";
+      uses structure-current-performance-type;
+    }
+    leaf number-of-current-performance-sets {
+      type int8;
+      default "-1";
+      config false;
+      description
+        "Number of sets of current performance values, which are provided in the list.";
+    }
+  }
+
+  grouping pure-ethernet-structure-historical-performances {
+    description
+      "Aggregated performance information of the structure of an pure Ethernet microwave for a pre-defined measurement interval.";
+    list historical-performance-data-list {
+      key "granularity-period period-end-time";
+      config false;
+      description
+        "none";
+      uses structure-historical-performance-type;
+    }
+    leaf number-of-historical-performance-sets {
+      type int16;
+      default "-1";
+      config false;
+      description
+        "Number of sets of historical performance values, which are provided in the list.";
+    }
+    leaf time-of-latest-change {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "Date and time when the list of sets of historical performance values has been changed for the last time (e.g. new one added or existing one deleted).";
+    }
+  }
+
+  grouping g-826-threshold-cross-alarm-type {
+    description
+      "Allows defining a threshold cross alarm.
+       ";
+    leaf g-826-value-kind {
+      type g-826-type;
+      description
+        "Kind of performance value that shall be equipped with a threshold alarm.";
+    }
+    leaf alarm-raising-threshold {
+      type int32;
+      units "s";
+      default "-1";
+      description
+        "Number of events required for raising the threshold cross alarm.";
+    }
+    leaf alarm-clearing-threshold {
+      type int32;
+      units "s";
+      default "-1";
+      description
+        "Number of events required for clearing the threshold cross alarm.";
+    }
+    leaf granularity-period {
+      type granularity-period-type;
+      description
+        "Period of the performance data collection.";
+    }
+  }
+
+  grouping segment-status-type {
+    description
+      "none";
+    leaf segment-status-type-id {
+      type int16;
+      config false;
+      description
+        "none";
+    }
+    leaf operational-status {
+      type operational-state-type;
+      default "OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Current operational status of each segment.";
+    }
+  }
+
+  grouping structure-performance-type {
+    description
+      "Consolidated performance information of the Structure.";
+    leaf time-period {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Total length of the measurement period in seconds.";
+    }
+    leaf es {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Number of errored seconds. 1+0: Same value as for single air interface. 1+1 and Diversity: Value representing the combined signals.";
+    }
+    leaf ses {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Number of severely errored seconds. 1+0: Same value as for single air interface. 1+1 and Diversity: Value representing the combined signals.";
+    }
+    leaf cses {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Number of consecutive severely errored seconds. 1+0: Same value as for single air interface. 1+1 and Diversity: Value representing the combined signals.";
+    }
+    leaf unavailability {
+      type int32;
+      units "s";
+      default "-1";
+      config false;
+      description
+        "Total time of unavailability in seconds. 1+0: Same value as for single air interface. 1+1 and Diversity: Value representing the combined signals.";
+    }
+    leaf rx-level-min {
+      type int8;
+      units "dBm";
+      default "99";
+      config false;
+      description
+        "Minimum receive level. 1+0: Same value as for single air interface. 1+1: Value representing the combined signals. Diversity: To be left on default value.";
+    }
+    leaf rx-level-max {
+      type int8;
+      units "dBm";
+      default "99";
+      config false;
+      description
+        "Maximum receive level. 1+0: Same value as for single air interface. 1+1: Value representing the combined signals. Diversity: To be left on default value.";
+    }
+    leaf rx-level-avg {
+      type int8;
+      units "dBm";
+      default "99";
+      config false;
+      description
+        "Averaged receive level. 1+0: Same value as for single air interface. 1+1: Value representing the combined signals. Diversity: To be left on default value.";
+    }
+  }
+
+  grouping structure-current-performance-type {
+    description
+      "Turns performance information into current performance information by inheriting from OTN_CurrentData.";
+    container performance-data {
+      config false;
+      description
+        "none";
+      uses structure-performance-type;
+    }
+    uses current-performance;
+  }
+
+  grouping structure-historical-performance-type {
+    description
+      "Turns performance information into historical performance information by inheriting from OTN_HistoryData.";
+    container performance-data {
+      config false;
+      description
+        "none";
+      uses structure-performance-type;
+    }
+    uses historical-performance;
+  }
+
+  augment "/core-model:control-construct/core-model:logical-termination-point/core-model:layer-protocol" {
+    when "derived-from-or-self(./core-model:layer-protocol-name, 'pure-ethernet-structure:LAYER_PROTOCOL_NAME_TYPE_PURE_ETHERNET_STRUCTURE_LAYER')";
+    description
+      "none";
+    uses pure-ethernet-structure-lp-spec;
+  }
+
+  notification object-creation-notification {
+    description
+      "none";
+    uses object-creation-notification;
+  }
+  notification object-deletion-notification {
+    description
+      "none";
+    uses object-deletion-notification;
+  }
+  notification attribute-value-changed-notification {
+    description
+      "none";
+    uses attribute-value-changed-notification;
+  }
+}

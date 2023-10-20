@@ -1,0 +1,185 @@
+module cera-radioprotection-profile {
+  yang-version 1.1;
+  namespace "urn:onf:params:xml:ns:yang:cera-radioprotection-profile";
+  prefix cera-radioprotection-profile;
+
+  import core-model-1-4 {
+    prefix core-model;
+  }
+  import cera-common {
+    prefix cera-common;
+  }
+
+  organization
+    "Ceragon Networks";
+  contact
+    "
+     Editors:
+     ";
+  description
+    "This model contains a collection of YANG definitions for managing Ceragon wireless network equipment.";
+
+  revision 2022-10-03 {
+    description
+      "Initial version";
+    reference
+      "";
+  }
+
+  identity PROFILE_NAME_TYPE_CERA_RADIOPROTECTION_PROFILE {
+    base core-model:PROFILE_NAME_TYPE;
+    description
+      "none";
+  }
+
+  grouping cera-radioprotection-profile-spec {
+    description
+      "none";
+    container cera-radioprotection-profile-pac {
+      description
+        "none";
+      uses cera-radioprotection-profile-pac;
+    }
+  }
+
+  grouping cera-radioprotection-profile-pac {
+    description
+      "none";
+    container cera-radioprotection-profile-attributes {
+      description
+        "none";
+      uses cera-radioprotection-profile-attributes-g;
+    }
+  }
+
+  grouping cera-radioprotection-profile-attributes-g {
+    description
+      "This container contains the attributes of the radioprotection group.";
+    leaf radio-protection-group-id {
+      type uint32 {
+        range "1..4";
+      }
+      description
+        "The Id of the radio protection group.";
+    }
+    leaf radio-protection-attribute-copy-to-mate-source-ifindex {
+      type uint32;
+      description
+        "The radio location which is required to be the source of configuration for copy-to-mate command.";
+    }
+    leaf radio-protection-attribute-revertive-admin {
+      type cera-common:enable-disable;
+      description
+        "Enable or disable revertive mode of radio protection.";
+    }
+    leaf radio-protection-attribute-revertive-primary-ifindex {
+      type int32;
+      description
+        "The radio which the system is required to revert to.";
+    }
+    leaf radio-protection-group-type {
+      type enumeration {
+        enum "one-plus-one-hsb" {
+          value 0;
+        }
+        enum "two-plus-two-hsb" {
+          value 4;
+        }
+        enum "two-plus-two-hsb-sd" {
+          value 5;
+        }
+        enum "one-plus-one-hsb-sd" {
+          value 6;
+        }
+      }
+      description
+        "The type of the radio protection group.";
+    }
+    leaf radio-protection-status-active-member-ifindex {
+      type int32;
+      config false;
+      description
+        "The active radio location";
+    }
+    leaf radio-protection-status-standby-member-ifindex {
+      type int32;
+      config false;
+      description
+        "The standby radio location.";
+    }
+    leaf radio-protection-status-lockout {
+      type cera-common:no-yes;
+      config false;
+      description
+        "Indicates whether the radio protection is currently in lockout";
+    }
+    leaf-list logical-termination-point-list {
+      type leafref {
+        path "/core-model:control-construct/core-model:logical-termination-point/core-model:uuid";
+        require-instance false;
+      }
+      description
+        "List of interfaces, which are part of the group.";
+    }
+  }
+
+  augment "/core-model:control-construct/core-model:profile-collection/core-model:profile" {
+    when "derived-from-or-self(./core-model:profile-name, 'cera-radioprotection-profile:PROFILE_NAME_TYPE_CERA_RADIOPROTECTION_PROFILE')";
+    description
+      "none";
+    uses cera-radioprotection-profile-spec;
+  }
+
+  rpc radio-protection-command {
+    description
+      "Radio protection user commands for maintenance purposes: force-switch, lockout and manual-switch.";
+
+    input {
+      leaf profile-uuid {
+        type leafref {
+          path "/core-model:control-construct/core-model:profile-collection/core-model:profile/core-model:uuid";
+          require-instance false;
+        }
+        description
+          "The radioprotection profile uuid";
+      }
+      leaf radio-protection-attribute-command {
+        type enumeration {
+          enum "clear" {
+            value 0;
+          }
+          enum "manual-switch" {
+            value 1;
+          }
+          enum "force-switch" {
+            value 2;
+          }
+          enum "lockout" {
+            value 3;
+          }
+        }
+        mandatory true;
+        description
+          "The radio protection command argument.";
+      }
+    }
+  }
+  rpc radio-protection-copy-to-mate {
+    description
+      "Copy to mate command that copies the configuration from one radio to another in order to achieve configuration alignment.";
+
+    input {
+      leaf profile-uuid {
+        type leafref {
+          path "/core-model:control-construct/core-model:profile-collection/core-model:profile/core-model:uuid";
+          require-instance false;
+        }
+        description
+          "The radioprotection profile uuid";
+      }
+      leaf radio-protection-attribute-copy-to-mate {
+        type cera-common:off-on;
+      }
+    }
+  }
+}

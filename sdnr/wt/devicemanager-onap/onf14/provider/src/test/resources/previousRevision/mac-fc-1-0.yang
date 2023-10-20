@@ -1,0 +1,569 @@
+module mac-fc-1-0 {
+  yang-version 1.1;
+  namespace "urn:onf:yang:mac-fc-1-0";
+  prefix mac-fc;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import core-model-1-4 {
+    prefix core-model;
+  }
+
+  organization
+    "openBackhaul.com proposal to Open Networking Foundation (ONF)";
+  contact
+    "WG Web : https://github.com/openBackhaul/Overview
+     WG List: MacFc@openBackhaul.com
+     Editor : Thorsten Heinze
+     Email  : Thorsten.Heinze@openBackhaul.com";
+  description
+    "Technology specific amendment to the ForwardingConstruct class for documenting entries in the MAC forwarding table according to IEEE 802.1 .
+
+     Copyright 2019 openBackhaul.com
+
+     Licensed under the Apache License, Version 2.0 (the 'License');
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an 'AS IS' BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.";
+
+  revision 2020-08-26 {
+    description
+      "Model for the Transport SDN Pilot at Telefonica Germany
+       Please view https://github.com/openBackhaul/macFc/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/macFc/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+
+  identity LAYER_PROTOCOL_NAME_TYPE_MAC_LAYER {
+    base core-model:LAYER_PROTOCOL_NAME_TYPE;
+    description
+      "none";
+  }
+
+  augment "/core-model:control-construct/core-model:forwarding-domain/core-model:fc" {
+    when "derived-from-or-self(./core-model:layer-protocol-name, 'mac-fc:LAYER_PROTOCOL_NAME_TYPE_MAC_LAYER')";
+    uses mac-fc-spec;
+    description
+      "none";
+  }
+
+  /****************************************
+   * package notifications
+   **************************************/ 
+
+  notification object-creation-notification {
+    uses object-creation-notification;
+    description
+      "none";
+  }
+
+  grouping object-creation-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts object creation notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:fc/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf object-type {
+      type string;
+      default "Type of created object not specified.";
+      config false;
+      description
+        "none";
+    }
+    description
+      "none";
+  }
+
+  notification object-deletion-notification {
+    uses object-deletion-notification;
+    description
+      "none";
+  }
+
+  grouping object-deletion-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts object deletion notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:fc/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    description
+      "none";
+  }
+
+  notification attribute-value-changed-notification {
+    uses attribute-value-changed-notification;
+    description
+      "none";
+  }
+
+  grouping attribute-value-changed-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts attribute value changed notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:fc/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf attribute-name {
+      type string;
+      default "Attribute name not specified.";
+      config false;
+      description
+        "Name of the attribute that has been changed.";
+    }
+    leaf new-value {
+      type string;
+      default "New value not specified.";
+      config false;
+      description
+        "Attribute value converted to a string (xml, json, ...)";
+    }
+    description
+      "To be sent when an attribute has changed and one or more controllers have to update their data.";
+  }
+
+  notification problem-notification {
+    uses problem-notification;
+    description
+      "none";
+  }
+
+  grouping problem-notification {
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts problem notifications";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/core-model:forwarding-domain/core-model:fc/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf problem {
+      type string;
+      default "Problem name not specified.";
+      config false;
+      description
+        "Name of the problem according to *Capability::supportedAlarmList";
+    }
+    leaf severity {
+      type severity-type;
+      default "SEVERITY_TYPE_WARNING";
+      config false;
+      description
+        "Severity of the problem according to *Configuration::problemSeverityList";
+    }
+    description
+      "none";
+  }
+
+  /****************************************
+   * grouping statements for object classes
+   **************************************/ 
+  /****************************************
+   * package super-classes
+   **************************************/ 
+
+  grouping current-problem {
+    leaf sequence-number {
+      type int16;
+      config false;
+      description
+        "Unique sequence number of the current problem object.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf problem-severity {
+      type severity-type;
+      default "SEVERITY_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Severity of the alarm.";
+    }
+    description
+      "none";
+  }
+
+  grouping mac-fc-spec {
+    container mac-fc-pac {
+      uses mac-fc-pac;
+      description
+        "none";
+    }
+    description
+      "Represents an entry into the MAC forwarding table. Name in ieee802-dot1q-bridge.yang: filtering-entry.";
+  }
+
+  grouping mac-fc-pac {
+    container mac-fc-capability {
+      config false;
+      uses mac-fc-capability;
+      description
+        "none";
+    }
+    container mac-fc-configuration {
+      uses mac-fc-configuration;
+      description
+        "none";
+    }
+    container mac-fc-status {
+      config false;
+      uses mac-fc-status;
+      description
+        "none";
+    }
+    container mac-fc-current-problems {
+      config false;
+      uses mac-fc-current-problems;
+      description
+        "none";
+    }
+    description
+      "none";
+  }
+
+  grouping mac-fc-capability {
+    leaf admin-shut-down-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "true = Manual switching on and off of the forwarding construct without deleting it (underlying OSI network layers are also not affected) is available.";
+    }
+    leaf-list supported-alarm-list {
+      type string;
+      default "Supported Alarms not yet defined.";
+      config false;
+      description
+        "Available alarms to be listed.";
+    }
+    description
+      "none";
+  }
+
+  grouping mac-fc-configuration {
+    leaf fc-name {
+      type string;
+      default "FC name not yet defined.";
+      description
+        "Name of the ForwardingConstruct. Free text field to be filled by the operator.";
+    }
+    leaf fc-is-on {
+      type boolean;
+      default "false";
+      description
+        "Only effective if (adminShutDownIsAvail==true). true = Activation of the forwarding of frames. false = De-activation of the ForwardingConstruct without deleting it (underlying OSI network layers are not affected).";
+    }
+    leaf database-id {
+      type int32;
+      default "-1";
+      description
+        "The identity of the Filtering Database. Name in ieee802-dot1q-bridge.yang: database-id.";
+    }
+    leaf mac-address {
+      type string;
+      default "00:00:00:00:00:00";
+      description
+        "Configuration of a MAC address (unicast, multicast, broadcast), for which the device has forwarding and/or filtering information.";
+    }
+    leaf entry-kind {
+      type entry-kind-type;
+      default "ENTRY_KIND_TYPE_NOT_YET_DEFINED";
+      description
+        "The type of filtering entry. Whether static or dynamic. Static entries can be created, deleted, and retrieved. However, dynamic entries can only be deleted or retrieved by the management entity. Consequently, a Bridge is not required to accept a command that can alter the dynamic entries except delete a dynamic entry. Name in ieee802-dot1q-bridge.yang: entry-type.";
+    }
+    list problem-kind-severity-list {
+      key "problem-kind-name";
+      uses problem-kind-severity-type;
+      description
+        "Severity of the problem to be configured.";
+    }
+    description
+      "none";
+  }
+
+  grouping mac-fc-status {
+    leaf fc-status {
+      type fc-status-type;
+      default "FC_STATUS_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "The status of this entry. Name in ieee802-dot1q-bridge.yang: status.";
+    }
+    description
+      "none";
+  }
+
+  grouping mac-fc-current-problems {
+    list current-problem-list {
+      key "sequence-number";
+      config false;
+      uses mac-fc-current-problem-type;
+      description
+        "none";
+    }
+    leaf number-of-current-problems {
+      type int8;
+      default "-1";
+      config false;
+      description
+        "Number of alarms, which are currently active on this interface.";
+    }
+    leaf time-of-latest-change {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "Date and time when the list of alarms has been changed for the last time.";
+    }
+    description
+      "none";
+  }
+
+  /****************************************
+   * typedef statements
+   **************************************/ 
+
+  typedef entry-kind-type {
+    type identityref {
+      base ENTRY_KIND_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef fc-status-type {
+    type identityref {
+      base FC_STATUS_TYPE;
+    }
+    description
+      "none";
+  }
+
+  /*********************************************
+   * grouping statements for complex data types
+   *******************************************/ 
+
+  identity ENTRY_KIND_TYPE {
+    description
+      "none";
+  }
+
+  identity ENTRY_KIND_TYPE_STATIC {
+    base ENTRY_KIND_TYPE;
+    description
+      "Static entries can be created, deleted, and retrieved. Name in ieee802-dot1q-bridge.yang: static.";
+  }
+
+  identity ENTRY_KIND_TYPE_DYNAMIC {
+    base ENTRY_KIND_TYPE;
+    description
+      "Dynamic/learnt entries can only be deleted or retrieved. Name in ieee802-dot1q-bridge.yang: dynamic.";
+  }
+
+  identity ENTRY_KIND_TYPE_NOT_YET_DEFINED {
+    base ENTRY_KIND_TYPE;
+    description
+      "none";
+  }
+
+  identity FC_STATUS_TYPE {
+    description
+      "none";
+  }
+
+  identity FC_STATUS_TYPE_OTHER {
+    base FC_STATUS_TYPE;
+    description
+      "None of the following. This may include the case where some other object is being used to determine if and how frames addressed to the value of the corresponding instance of 'address' are being forwarded. Name in ieee802-dot1q-bridge.yang: other.";
+  }
+
+  identity FC_STATUS_TYPE_INVALID {
+    base FC_STATUS_TYPE;
+    description
+      "This entry is no longer valid (e.g., it was learned but has since aged out), but has not yet been flushed from the table. Name in ieee802-dot1q-bridge.yang: invalid.";
+  }
+
+  identity FC_STATUS_TYPE_LEARNED {
+    base FC_STATUS_TYPE;
+    description
+      "The value of the corresponding instance of the port node was learned and is being used. Name in ieee802-dot1q-bridge.yang: learned.";
+  }
+
+  identity FC_STATUS_TYPE_SELF {
+    base FC_STATUS_TYPE;
+    description
+      "The value of the corresponding instance of the address node representing one of the devices address. Name in ieee802-dot1q-bridge.yang: self.";
+  }
+
+  identity FC_STATUS_TYPE_MANAGEMENT {
+    base FC_STATUS_TYPE;
+    description
+      "The value of the corresponding instance of address node that is also the value of an existing instance. Name in ieee802-dot1q-bridge.yang: mgmt.";
+  }
+
+  identity FC_STATUS_TYPE_NOT_YET_DEFINED {
+    base FC_STATUS_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE {
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_NON_ALARMED {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_WARNING {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_MINOR {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_MAJOR {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_CRITICAL {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  identity SEVERITY_TYPE_NOT_YET_DEFINED {
+    base SEVERITY_TYPE;
+    description
+      "none";
+  }
+
+  /****************************************
+   * package super-types
+   **************************************/ 
+
+  typedef severity-type {
+    type identityref {
+      base SEVERITY_TYPE;
+    }
+    description
+      "According to ITU-T M.3160";
+  }
+
+  grouping problem-kind-severity-type {
+    leaf problem-kind-name {
+      type string;
+      description
+        "Name of the alarm according to supportedAlarmList";
+    }
+    leaf problem-kind-severity {
+      type severity-type;
+      default "SEVERITY_TYPE_NOT_YET_DEFINED";
+      description
+        "Severity of this type of alarm.";
+    }
+    description
+      "none";
+  }
+
+  grouping mac-fc-current-problem-type {
+    leaf problem-name {
+      type string;
+      default "Problem name not specified.";
+      config false;
+      description
+        "Name of the alarm according to *Capability::supportedAlarmList.";
+    }
+    uses current-problem;
+    description
+      "none";
+  }
+}

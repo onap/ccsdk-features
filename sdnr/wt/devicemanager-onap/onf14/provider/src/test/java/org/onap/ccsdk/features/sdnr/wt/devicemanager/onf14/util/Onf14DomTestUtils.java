@@ -105,10 +105,36 @@ public class Onf14DomTestUtils {
 
     public static NormalizedNode getNormalizedNodeFromXML()
             throws XMLStreamException, URISyntaxException, IOException, SAXException {
-        schemaContext = TestYangParserUtil.parseYangResourceDirectory("/");
+        schemaContext = TestYangParserUtil.parseYangResourceDirectory("/previousRevision");
         hwContainerSchema = Inference.ofDataTreePath(schemaContext, CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER);
         final InputStream resourceAsStream =
-                Onf14DomTestUtils.class.getResourceAsStream("/ControlConstruct-data-test.xml");
+                Onf14DomTestUtils.class.getResourceAsStream("/previousRevision/ControlConstruct-data-test.xml");
+
+        /*
+         * final XMLInputFactory factory = XMLInputFactory.newInstance();
+         * XMLStreamReader reader = factory.createXMLStreamReader(resourceAsStream);
+         */
+        final XMLStreamReader reader = UntrustedXML.createXMLStreamReader(resourceAsStream);
+
+        final NormalizedNodeResult result = new NormalizedNodeResult();
+        final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
+
+        final XmlParserStream xmlParser = XmlParserStream.create(streamWriter, hwContainerSchema);
+        xmlParser.parse(reader);
+
+        xmlParser.flush();
+        xmlParser.close();
+
+        transformedInput = result.getResult();
+        return transformedInput;
+    }
+    
+    public static NormalizedNode getNormalizedNodeFromXML(String revision)
+            throws XMLStreamException, URISyntaxException, IOException, SAXException {
+        schemaContext = TestYangParserUtil.parseYangResourceDirectory("/currentRevision");
+        hwContainerSchema = Inference.ofDataTreePath(schemaContext, CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER);
+        final InputStream resourceAsStream =
+                Onf14DomTestUtils.class.getResourceAsStream("/currentRevision/Ceragon-Control-Construct.xml");
 
         /*
          * final XMLInputFactory factory = XMLInputFactory.newInstance();

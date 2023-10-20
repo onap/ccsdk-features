@@ -21,35 +21,32 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces;
 
-import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.InternalDataModelSeverity;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.pm.PerformanceDataAirInterface;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Debug;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.notifications.Onf14DomAirInterfaceNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.notifications.Onf14DomAlarmsNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.notifications.Onf14DomEthernetContainerNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.notifications.Onf14DomWireInterfaceNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.qnames.Onf14DevicemanagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DMDOMUtility;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.notifications.Onf14DomAirInterfaceNotificationListener;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.notifications.Onf14DomEthernetContainerNotificationListener;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.notifications.Onf14DomWireInterfaceNotificationListener;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.AirInterface20;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.Alarms10;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.CoreModel14;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.EthernetContainer20;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.WireInterface20;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
-import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -84,11 +81,11 @@ import org.slf4j.LoggerFactory;
 
 public class Onf14DomInterfacePacManager {
 
-    private static final Logger log = LoggerFactory.getLogger(Onf14DomInterfacePacManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Onf14DomInterfacePacManager.class);
 
-    private static final YangInstanceIdentifier LTP_IID =
-            YangInstanceIdentifier.builder().node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
-                    .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP).build();
+    // private static final YangInstanceIdentifier LTP_IID =
+    // YangInstanceIdentifier.builder().node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
+    // .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP).build();
 
     private final NetconfDomAccessor netconfDomAccessor;
     private final @NonNull DeviceManagerServiceProvider serviceProvider;
@@ -108,15 +105,40 @@ public class Onf14DomInterfacePacManager {
     @NonNull
     private final Onf14DomWireInterfaceNotificationListener wireInterfaceNotificationListener;
 
+    // alarm-1-0 related alarms
+    private final Onf14DomAlarmsNotificationListener alarmNotifListener;
+
+    // Services and models
     private final @NonNull FaultService faultService;
+    private final @NonNull CoreModel14 coreModel14;
+
+    private final Optional<Alarms10> alarms10;
+    private final Optional<AirInterface20> airInterface20;
+    private final Optional<EthernetContainer20> ethernetInterface20;
+    private final Optional<WireInterface20> wireInterface20;
+
+    private final Onf14Interfaces interfaces;
 
     public Onf14DomInterfacePacManager(@NonNull NetconfDomAccessor netconfDomAccessor,
-            @NonNull DeviceManagerServiceProvider serviceProvider) {
+            @NonNull DeviceManagerServiceProvider serviceProvider, CoreModel14 coreModel14) {
 
         this.netconfDomAccessor = Objects.requireNonNull(netconfDomAccessor);
         this.serviceProvider = Objects.requireNonNull(serviceProvider);
         this.faultService = Objects.requireNonNull(serviceProvider.getFaultService());
+        this.interfaces = new Onf14Interfaces();
 
+        this.coreModel14 = coreModel14;
+        this.alarms10 = Alarms10.getModule(netconfDomAccessor, coreModel14);
+        this.airInterface20 = AirInterface20.getModule(netconfDomAccessor, coreModel14);
+        this.ethernetInterface20 = EthernetContainer20.getModule(netconfDomAccessor, coreModel14);
+        this.wireInterface20 = WireInterface20.getModule(netconfDomAccessor, coreModel14);
+
+        if (alarms10.isPresent()) {
+            this.alarmNotifListener =
+                    new Onf14DomAlarmsNotificationListener(netconfDomAccessor, serviceProvider, alarms10.get());
+        } else {
+            this.alarmNotifListener = null;
+        }
         this.airInterfaceNotificationListener =
                 new Onf14DomAirInterfaceNotificationListener(netconfDomAccessor, serviceProvider);
         this.ethernetContainerNotificationListener =
@@ -128,8 +150,9 @@ public class Onf14DomInterfacePacManager {
     public void register() {
         // storing all the LTP UUIDs internally, for later usage, for air-interface and
         // ethernet-container and wire-interface
-        readKeys();
+        coreModel14.readKeys(interfaces);
         readAndWriteInterfaceCurrentProblems();
+        readCurrentAlarms();
         registerForNotifications();
     }
 
@@ -137,106 +160,64 @@ public class Onf14DomInterfacePacManager {
         return airInterfaceList;
     }
 
-    public PerformanceDataLtp readAirInterfaceHistoricalPerformanceData(String ltpUuid, String localId,
-            PerformanceDataLtp res) {
-        log.debug("Get historical performance data for class {} from mountpoint {} for LTP uuid {} and local-id {}",
-                Onf14DevicemanagerQNames.AIR_INTERFACE_2_0_MODULE, netconfDomAccessor.getNodeId().getValue(), ltpUuid,
-                localId);
-
-        // constructing the IID needs the augmentation exposed by the air-interface-2-0
-        // model
-
-        InstanceIdentifierBuilder layerProtocolIID =
-                YangInstanceIdentifier.builder().node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
-                        .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP)
-                        .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP,
-                                QName.create(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP, "uuid").intern(), ltpUuid)
-                        .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL)
-                        .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL, QName
-                                .create(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL, "local-id").intern(),
-                                localId);
-
-        @NonNull
-        AugmentationIdentifier airInterfacePacIID = YangInstanceIdentifier.AugmentationIdentifier
-                .create(Sets.newHashSet(Onf14DevicemanagerQNames.AIR_INTERFACE_PAC));
-
-        InstanceIdentifierBuilder augmentedAirInterfacePacIID =
-                YangInstanceIdentifier.builder(layerProtocolIID.build()).node(airInterfacePacIID);
-
-        // reading historical performance list for this specific LTP and LP
-        Optional<NormalizedNode> airInterfacePacDataOpt =
-                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedAirInterfacePacIID.build());
-        log.debug("Performance Data = {}", airInterfacePacDataOpt.get().body());
-        if (airInterfacePacDataOpt.isPresent()) {
-            AugmentationNode airInterfacePacData = (AugmentationNode) airInterfacePacDataOpt.get();
-            ContainerNode cn = (ContainerNode) airInterfacePacData
-                    .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_PAC));
-            if (cn != null) {
-                ContainerNode airIntfHistPerf = (ContainerNode) cn
-                        .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_HISTORICAL_PERFORMANCES));
-                if (airIntfHistPerf != null) {
-                    MapNode airInterfaceHistoricalPerformanceList = (MapNode) airIntfHistPerf.childByArg(
-                            new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_HISTORICAL_PERFORMANCES_LIST));
-                    if (airInterfaceHistoricalPerformanceList != null) {
-                        Collection<MapEntryNode> airInterfaceHistoricalPerfCollection =
-                                airInterfaceHistoricalPerformanceList.body();
-                        for (MapEntryNode airInterfaceHistPerf : airInterfaceHistoricalPerfCollection) {
-                            res.add(new PerformanceDataAirInterface(netconfDomAccessor.getNodeId(), ltpUuid, localId,
-                                    airInterfaceHistPerf));
-                        }
-                        return res;
-                    } else {
-                        log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
-                    }
-                }
-            }
+    private void readCurrentAlarms() {
+        if (alarms10.isPresent()) {
+            FaultData resultList = alarms10.get().getCurrentAlarms();
+            LOG.debug("ResultList = {}", resultList.toString());
+            faultService.initCurrentProblemStatus(netconfDomAccessor.getNodeId(), resultList);
         }
-        return null;
     }
 
     private void readAndWriteInterfaceCurrentProblems() {
         // Read all fault data
         FaultData resultList = new FaultData();
         int problems = 0;
-        readAllAirInterfaceCurrentProblems(resultList);
-        problems = resultList.size();
-        log.debug("NETCONF read air interface current problems completed. Got back {} problems.", problems);
 
+        if (airInterface20.isPresent()) {
+            resultList = airInterface20.get().readAllCurrentProblems(resultList, airInterfaceList);
 
-        readAllEthernetContainerCurrentProblems(resultList);
-        problems = resultList.size() - problems;
-        log.debug("NETCONF read current problems completed. Got back {} problems.", problems);
+            problems = resultList.size();
+            LOG.debug("NETCONF read airinterface current problems completed. Got back {} problems.", problems);
+        }
+        if (ethernetInterface20.isPresent()) {
+            resultList = ethernetInterface20.get().readAllCurrentProblems(resultList, ethernetContainerList);
 
-        readAllWireInterfaceCurrentProblems(resultList);
-        problems = resultList.size();
-        log.debug("NETCONF read wire interface current problems completed. Got back {} problems.", problems);
+            problems = resultList.size() - problems;
+            LOG.debug("NETCONF read ethernet interface current problems completed. Got back {} problems.", problems);
+        }
+        if (wireInterface20.isPresent()) {
+            resultList = wireInterface20.get().readAllCurrentProblems(resultList, wireInterfaceList);
 
+            problems = resultList.size() - problems;
+            LOG.debug("NETCONF read wire interface current problems completed. Got back {} problems.", problems);
+        }
 
         if (resultList.size() > 0) {
             faultService.initCurrentProblemStatus(netconfDomAccessor.getNodeId(), resultList);
-            log.debug("DB write current problems completed");
+            LOG.debug("DB write current problems completed");
         }
 
     }
 
     private void readKeys() {
         Optional<NormalizedNode> ltpData = readLtpData(netconfDomAccessor);
-        log.debug("LTP Data is - {}", ltpData);
+        LOG.debug("LTP Data is - {}", ltpData);
         if (ltpData.isPresent()) {
+            LOG.debug("In readKeys - ltpData = {}", ltpData.get());
 
             MapNode ccLtp = (MapNode) ltpData.get();
             if (ccLtp != null) {
-                log.debug("Iterating the LTP list for node {}", netconfDomAccessor.getNodeId().getValue());
+                LOG.debug("Iterating the LTP list for node {}", netconfDomAccessor.getNodeId().getValue());
                 Collection<MapEntryNode> ltpList = ccLtp.body();
 
                 // iterating all the Logical Termination Point list
                 for (MapEntryNode ltp : ltpList) {
-                    MapNode lpList = (MapNode) ltp
-                            .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL));
+                    MapNode lpList =
+                            (MapNode) ltp.childByArg(new NodeIdentifier(coreModel14.getQName("layer-protocol")));
                     // the Layer Protocol list should contain only one item, since we have an 1:1
                     // relationship between the LTP and the LP
                     if (lpList != null && lpList.size() != 1) {
-                        log.debug("Layer protocol has no 1:1 relationship with the LTP.");
+                        LOG.debug("Layer protocol has no 1:1 relationship with the LTP.");
                         return;
                     }
                     // accessing the LP, which should be only 1
@@ -244,49 +225,37 @@ public class Onf14DomInterfacePacManager {
                     for (MapEntryNode lpEntry : lp) {
                         String layerProtocolName = Onf14DMDOMUtility.getLeafValue(lpEntry,
 
-                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL_NAME);
+                                coreModel14.getQName("layer-protocol-name"));
                         if (layerProtocolName != null) {
                             // if the LTP has an airInterface technology extension, the layer protocol name
                             // is air-layer
                             if (layerProtocolName.contains("LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER")) {
                                 TechnologySpecificPacKeys airInterfaceKey = new TechnologySpecificPacKeys(
-                                        Onf14DMDOMUtility.getLeafValue(ltp,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_UUID),
-                                        Onf14DMDOMUtility.getLeafValue(lpEntry,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL_LOCAL_ID));
+                                        Onf14DMDOMUtility.getLeafValue(ltp, coreModel14.getQName("uuid")),
+                                        Onf14DMDOMUtility.getLeafValue(lpEntry, coreModel14.getQName("local-id")));
                                 airInterfaceList.add(airInterfaceKey);
-                                log.debug("Adding Ltp with uuid {} and local-id {} to the air-interface list",
-                                        Onf14DMDOMUtility.getLeafValue(ltp,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_UUID),
-                                        Onf14DMDOMUtility.getLeafValue(lpEntry,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL_LOCAL_ID));
+                                LOG.debug("Adding Ltp with uuid {} and local-id {} to the air-interface list",
+                                        Onf14DMDOMUtility.getLeafValue(ltp, coreModel14.getQName("uuid")),
+                                        Onf14DMDOMUtility.getLeafValue(lpEntry, coreModel14.getQName("local-id")));
                             }
-                            // if the LTP has an ethernetContainer technology extension, the layer protocol
+                            // if the LTP has an ethernetContainier technology extension, the layer protocol
                             // name is ethernet-container-layer
                             else if (layerProtocolName.contains("LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER")) {
                                 TechnologySpecificPacKeys ethernetContainerKey = new TechnologySpecificPacKeys(
-                                        Onf14DMDOMUtility.getLeafValue(ltp,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_UUID),
-                                        Onf14DMDOMUtility.getLeafValue(lpEntry,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL_LOCAL_ID));
+                                        Onf14DMDOMUtility.getLeafValue(ltp, coreModel14.getQName("uuid")),
+                                        Onf14DMDOMUtility.getLeafValue(lpEntry, coreModel14.getQName("local-id")));
                                 ethernetContainerList.add(ethernetContainerKey);
-                                log.debug("Adding Ltp with uuid {} and local-id {} to the ethernet-container list",
-                                        Onf14DMDOMUtility.getLeafValue(ltp,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_UUID),
-                                        Onf14DMDOMUtility.getLeafValue(lpEntry,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL_LOCAL_ID));
+                                LOG.debug("Adding Ltp with uuid {} and local-id {} to the ethernet-container list",
+                                        Onf14DMDOMUtility.getLeafValue(ltp, coreModel14.getQName("uuid")),
+                                        Onf14DMDOMUtility.getLeafValue(lpEntry, coreModel14.getQName("local-id")));
                             } else if (layerProtocolName.contains("LAYER_PROTOCOL_NAME_TYPE_WIRE_LAYER")) {
                                 TechnologySpecificPacKeys wireInterfaceKey = new TechnologySpecificPacKeys(
-                                        Onf14DMDOMUtility.getLeafValue(ltp,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_UUID),
-                                        Onf14DMDOMUtility.getLeafValue(lpEntry,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL_LOCAL_ID));
+                                        Onf14DMDOMUtility.getLeafValue(ltp, coreModel14.getQName("uuid")),
+                                        Onf14DMDOMUtility.getLeafValue(lpEntry, coreModel14.getQName("local-id")));
                                 wireInterfaceList.add(wireInterfaceKey);
-                                log.debug("Adding Ltp with uuid {} and local-id {} to the wire-interface list",
-                                        Onf14DMDOMUtility.getLeafValue(ltp,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_UUID),
-                                        Onf14DMDOMUtility.getLeafValue(lpEntry,
-                                                Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL_LOCAL_ID));
+                                LOG.debug("Adding Ltp with uuid {} and local-id {} to the wire-interface list",
+                                        Onf14DMDOMUtility.getLeafValue(ltp, coreModel14.getQName("uuid")),
+                                        Onf14DMDOMUtility.getLeafValue(lpEntry, coreModel14.getQName("local-id")));
                             }
                         }
                     }
@@ -295,206 +264,11 @@ public class Onf14DomInterfacePacManager {
         }
     }
 
-    private void readAllAirInterfaceCurrentProblems(FaultData resultList) {
-
-        int idxStart; // Start index for debug messages
-
-        for (TechnologySpecificPacKeys key : airInterfaceList) {
-            idxStart = resultList.size();
-
-            readAirInterfaceCurrentProblemForLtp(key.getLtpUuid(), key.getLocalId(), resultList);
-            Debug.debugResultList(key.getLtpUuid(), resultList, idxStart);
-        }
-    }
-
-    private void readAllEthernetContainerCurrentProblems(FaultData resultList) {
-
-        int idxStart; // Start index for debug messages
-
-        for (TechnologySpecificPacKeys key : ethernetContainerList) {
-            idxStart = resultList.size();
-
-            readEthernetContainerCurrentProblemForLtp(key.getLtpUuid(), key.getLocalId(), resultList);
-            Debug.debugResultList(key.getLtpUuid(), resultList, idxStart);
-        }
-    }
-
-    private void readAllWireInterfaceCurrentProblems(FaultData resultList) {
-
-        int idxStart; // Start index for debug messages
-
-        for (TechnologySpecificPacKeys key : wireInterfaceList) {
-            idxStart = resultList.size();
-
-            readWireInterfaceCurrentProblemForLtp(key.getLtpUuid(), key.getLocalId(), resultList);
-            Debug.debugResultList(key.getLtpUuid(), resultList, idxStart);
-        }
-    }
-
-    private void readAirInterfaceCurrentProblemForLtp(String ltpUuid, String localId, FaultData resultList) {
-
-        log.debug("DBRead Get current problems for class {} from mountpoint {} for LTP uuid {} and local-id {}",
-                Onf14DevicemanagerQNames.AIR_INTERFACE_2_0_MODULE, netconfDomAccessor.getNodeId().getValue(), ltpUuid,
-                localId);
-
-        // constructing the IID needs the augmentation exposed by the air-interface-2-0
-        // model
-
-        InstanceIdentifierBuilder layerProtocolIID =
-                YangInstanceIdentifier.builder().node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
-                        .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP)
-                        .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP,
-                                QName.create(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP, "uuid").intern(), ltpUuid)
-                        .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL)
-                        .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL, QName
-                                .create(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL, "local-id").intern(),
-                                localId);
-
-        @NonNull
-        AugmentationIdentifier airInterfacePacIID = YangInstanceIdentifier.AugmentationIdentifier
-                .create(Sets.newHashSet(Onf14DevicemanagerQNames.AIR_INTERFACE_PAC));
-
-        InstanceIdentifierBuilder augmentedAirInterfacePacIID =
-                YangInstanceIdentifier.builder(layerProtocolIID.build()).node(airInterfacePacIID);
-
-        // reading all the current-problems list for this specific LTP and LP
-        Optional<NormalizedNode> airInterfacePacDataOpt =
-                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedAirInterfacePacIID.build());
-
-        if (airInterfacePacDataOpt.isPresent()) {
-            AugmentationNode airInterfacePacData = (AugmentationNode) airInterfacePacDataOpt.get();
-            MapNode airInterfaceCurrentProblemsList = (MapNode) airInterfacePacData
-                    .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_CURRENT_PROBLEMS_LIST));
-            if (airInterfaceCurrentProblemsList != null) {
-                Collection<MapEntryNode> airInterfaceProblemsCollection = airInterfaceCurrentProblemsList.body();
-                for (MapEntryNode airInterfaceProblem : airInterfaceProblemsCollection) {
-                    resultList.add(netconfDomAccessor.getNodeId(),
-                            Integer.parseInt(Onf14DMDOMUtility.getLeafValue(airInterfaceProblem,
-                                    Onf14DevicemanagerQNames.AIR_INTERFACE_CURRENT_PROBLEMS_SEQ_NO)),
-                            new DateAndTime(Onf14DMDOMUtility.getLeafValue(airInterfaceProblem,
-                                    Onf14DevicemanagerQNames.AIR_INTERFACE_CURRENT_PROBLEMS_TIMESTAMP)),
-                            ltpUuid,
-                            Onf14DMDOMUtility.getLeafValue(airInterfaceProblem,
-                                    Onf14DevicemanagerQNames.AIR_INTERFACE_CURRENT_PROBLEMS_PROBLEM_NAME),
-                            InternalDataModelSeverity.mapSeverity(Onf14DMDOMUtility.getLeafValue(airInterfaceProblem,
-                                    Onf14DevicemanagerQNames.AIR_INTERFACE_CURRENT_PROBLEMS_PROBLEM_SEVERITY)));
-                }
-            } else {
-                log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
-            }
-        }
-    }
-
-    private void readEthernetContainerCurrentProblemForLtp(String ltpUuid, String localId, FaultData resultList) {
-
-        log.debug(
-                "DBRead Get current problems for Ethernet Container from mountpoint {} for LTP uuid {} and local-id {}",
-                netconfDomAccessor.getNodeId().getValue(), ltpUuid, localId);
-
-        // constructing the IID needs the augmentation exposed by the
-        // ethernet-container-2-0 model
-        InstanceIdentifierBuilder layerProtocolIID =
-                YangInstanceIdentifier.builder().node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
-                        .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP)
-                        .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP,
-                                QName.create(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP, "uuid").intern(), ltpUuid)
-                        .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL)
-                        .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL, QName
-                                .create(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL, "local-id").intern(),
-                                localId);
-
-        @NonNull
-        AugmentationIdentifier ethernetContainerIID = YangInstanceIdentifier.AugmentationIdentifier
-                .create(Sets.newHashSet(Onf14DevicemanagerQNames.ETHERNET_CONTAINER_PAC));
-
-        InstanceIdentifierBuilder augmentedEthernetContainerConfigurationIID =
-                YangInstanceIdentifier.builder(layerProtocolIID.build()).node(ethernetContainerIID);
-
-        // reading all the current-problems list for this specific LTP and LP
-        Optional<NormalizedNode> etherntContainerConfigurationOpt = netconfDomAccessor
-                .readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedEthernetContainerConfigurationIID.build());
-
-        if (etherntContainerConfigurationOpt.isPresent()) {
-            AugmentationNode etherntContainerConfiguration = (AugmentationNode) etherntContainerConfigurationOpt.get();
-            MapNode ethernetContainerCurrentProblemsList = (MapNode) etherntContainerConfiguration
-                    .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.ETHERNET_CONTAINER_CURRENT_PROBLEMS_LIST));
-            if (ethernetContainerCurrentProblemsList != null) {
-                Collection<MapEntryNode> ethernetContainerProblemsCollection =
-                        ethernetContainerCurrentProblemsList.body();
-                for (MapEntryNode ethernetContainerProblem : ethernetContainerProblemsCollection) {
-                    resultList.add(netconfDomAccessor.getNodeId(),
-                            Integer.parseInt(Onf14DMDOMUtility.getLeafValue(ethernetContainerProblem,
-                                    Onf14DevicemanagerQNames.ETHERNET_CONTAINER_CURRENT_PROBLEMS_SEQ_NO)),
-                            new DateAndTime(Onf14DMDOMUtility.getLeafValue(ethernetContainerProblem,
-                                    Onf14DevicemanagerQNames.ETHERNET_CONTAINER_CURRENT_PROBLEMS_TIMESTAMP)),
-                            ltpUuid,
-                            Onf14DMDOMUtility.getLeafValue(ethernetContainerProblem,
-                                    Onf14DevicemanagerQNames.ETHERNET_CONTAINER_CURRENT_PROBLEMS_PROBLEM_NAME),
-                            InternalDataModelSeverity.mapSeverity(Onf14DMDOMUtility.getLeafValue(
-                                    ethernetContainerProblem,
-                                    Onf14DevicemanagerQNames.ETHERNET_CONTAINER_CURRENT_PROBLEMS_PROBLEM_SEVERITY)));
-                }
-            } else {
-                log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
-            }
-        }
-
-    }
-
-    private void readWireInterfaceCurrentProblemForLtp(String ltpUuid, String localId, FaultData resultList) {
-
-        log.debug("DBRead Get current problems for Wire Interface from mountpoint {} for LTP uuid {} and local-id {}",
-                netconfDomAccessor.getNodeId().getValue(), ltpUuid, localId);
-
-        // constructing the IID needs the augmentation exposed by the wire-interface-2-0
-        // model
-        InstanceIdentifierBuilder layerProtocolIID =
-                YangInstanceIdentifier.builder().node(Onf14DevicemanagerQNames.CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER)
-                        .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP)
-                        .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP,
-                                QName.create(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP, "uuid").intern(), ltpUuid)
-                        .node(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL)
-                        .nodeWithKey(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL, QName
-                                .create(Onf14DevicemanagerQNames.CORE_MODEL_CC_LTP_LAYER_PROTOCOL, "local-id").intern(),
-                                localId);
-
-        @NonNull
-        AugmentationIdentifier wireInterfacePacIID = YangInstanceIdentifier.AugmentationIdentifier
-                .create(Sets.newHashSet(Onf14DevicemanagerQNames.WIRE_INTERFACE_PAC));
-
-        InstanceIdentifierBuilder augmentedWireInterfaceConfigurationIID =
-                YangInstanceIdentifier.builder(layerProtocolIID.build()).node(wireInterfacePacIID);
-
-        // reading all the current-problems list for this specific LTP and LP
-        Optional<NormalizedNode> wireInterfaceConfigurationOpt = netconfDomAccessor
-                .readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedWireInterfaceConfigurationIID.build());
-
-        if (wireInterfaceConfigurationOpt.isPresent()) {
-            AugmentationNode wireInterfaceConfiguration = (AugmentationNode) wireInterfaceConfigurationOpt.get();
-            MapNode wireInterfaceCurrentProblemsList = (MapNode) wireInterfaceConfiguration
-                    .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_LIST));
-            if (wireInterfaceCurrentProblemsList != null) {
-                Collection<MapEntryNode> wireInterfaceProblemsCollection = wireInterfaceCurrentProblemsList.body();
-                for (MapEntryNode wireInterfaceProblem : wireInterfaceProblemsCollection) {
-                    resultList.add(netconfDomAccessor.getNodeId(),
-                            Integer.parseInt(Onf14DMDOMUtility.getLeafValue(wireInterfaceProblem,
-                                    Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_SEQ_NO)),
-                            new DateAndTime(Onf14DMDOMUtility.getLeafValue(wireInterfaceProblem,
-                                    Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_TIMESTAMP)),
-                            ltpUuid,
-                            Onf14DMDOMUtility.getLeafValue(wireInterfaceProblem,
-                                    Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_PROBLEM_NAME),
-                            InternalDataModelSeverity.mapSeverity(Onf14DMDOMUtility.getLeafValue(wireInterfaceProblem,
-                                    Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_PROBLEM_SEVERITY)));
-                }
-            } else {
-                log.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
-            }
-        }
-
-    }
-
     private void registerForNotifications() {
+
+        if (alarms10.isPresent()) {
+            alarms10.get().doRegisterNotificationListener(alarmNotifListener);
+        }
 
         QName[] airInterfaceNotifications = {Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_CREATE_NOTIFICATION,
                 Onf14DevicemanagerQNames.AIR_INTERFACE_OBJECT_AVC_NOTIFICATION,
@@ -519,13 +293,22 @@ public class Onf14DomInterfacePacManager {
     }
 
     public Optional<NormalizedNode> readLtpData(NetconfDomAccessor netconfDomAccessor) {
-        log.info("Reading Logical Termination Point data");
-        return netconfDomAccessor.readDataNode(LogicalDatastoreType.CONFIGURATION, LTP_IID);
+        LOG.info("Reading Logical Termination Point data");
+        return netconfDomAccessor.readDataNode(LogicalDatastoreType.CONFIGURATION, getLtp_IID());
     }
 
     public PerformanceDataLtp getLtpHistoricalPerformanceData(@NonNull TechnologySpecificPacKeys lp) {
         PerformanceDataLtp res = new PerformanceDataLtp();
-        readAirInterfaceHistoricalPerformanceData(lp.getLtpUuid(), lp.getLocalId(), res);
+        if (airInterface20.isPresent()) {
+            airInterface20.get().readAirInterfaceHistoricalPerformanceData(lp.getLtpUuid(), lp.getLocalId(), res);
+        } else {
+            LOG.warn("Air Interface Module Unsupported. PM data not read");
+        }
         return res;
+    }
+
+    private YangInstanceIdentifier getLtp_IID() {
+        return YangInstanceIdentifier.builder().node(coreModel14.getQName("control-construct"))
+                .node(coreModel14.getQName("logical-termination-point")).build();
     }
 }

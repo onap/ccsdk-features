@@ -1,9 +1,9 @@
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.notifications;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.notifications;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.InternalDataModelSeverity;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.qnames.Onf14DevicemanagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DMDOMUtility;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DevicemanagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfDomAccessor;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
@@ -13,20 +13,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.model.api.stmt.SchemaNodeIdentifier.Absolute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Onf14DomEthernetContainerNotificationListener implements DOMNotificationListener {
+public class Onf14DomWireInterfaceNotificationListener implements DOMNotificationListener {
 
-    private static final Logger log = LoggerFactory.getLogger(Onf14DomEthernetContainerNotificationListener.class);
+    private static final Logger log = LoggerFactory.getLogger(Onf14DomWireInterfaceNotificationListener.class);
 
     private final NetconfDomAccessor netconfDomAccessor;
     private final DeviceManagerServiceProvider serviceProvider;
 
-    public Onf14DomEthernetContainerNotificationListener(NetconfDomAccessor netconfDomAccessor,
+    public Onf14DomWireInterfaceNotificationListener(NetconfDomAccessor netconfDomAccessor,
             DeviceManagerServiceProvider serviceProvider) {
         this.netconfDomAccessor = netconfDomAccessor;
         this.serviceProvider = serviceProvider;
@@ -36,16 +35,16 @@ public class Onf14DomEthernetContainerNotificationListener implements DOMNotific
     public void onNotification(@NonNull DOMNotification domNotification) {
         log.debug("Got event of type :: {}", domNotification.getType());
         if (domNotification.getType()
-                .equals(Absolute.of(Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_CREATE_NOTIFICATION))) {
+                .equals(Absolute.of(Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_CREATE_NOTIFICATION))) {
             onObjectCreationNotification(domNotification);
         } else if (domNotification.getType()
-                .equals(Absolute.of(Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_AVC_NOTIFICATION))) {
+                .equals(Absolute.of(Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_AVC_NOTIFICATION))) {
             onAttributeValueChangedNotification(domNotification);
         } else if (domNotification.getType()
-                .equals(Absolute.of(Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION))) {
+                .equals(Absolute.of(Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION))) {
             onProblemNotification(domNotification);
         } else if (domNotification.getType()
-                .equals(Absolute.of(Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_DELETE_NOTIFICATION))) {
+                .equals(Absolute.of(Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_DELETE_NOTIFICATION))) {
             onObjectDeletionNotification(domNotification);
         }
     }
@@ -56,21 +55,17 @@ public class Onf14DomEthernetContainerNotificationListener implements DOMNotific
         EventlogBuilder eventlogBuilder = new EventlogBuilder();
         eventlogBuilder.setNodeId(netconfDomAccessor.getNodeId().getValue()).setAttributeName("")
                 .setCounter(Integer.parseInt(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_DELETE_NOTIFICATION_COUNTER)))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_DELETE_NOTIFICATION_COUNTER)))
                 .setNewValue("deleted")
                 .setObjectId(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_DELETE_NOTIFICATION_OBJECT_ID_REF))
-
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_DELETE_NOTIFICATION_OBJECT_ID_REF))
                 .setSourceType(SourceType.Netconf).setTimestamp(new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_DELETE_NOTIFICATION_TIMESTAMP)));
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_DELETE_NOTIFICATION_TIMESTAMP)));
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
-        serviceProvider.getNotificationService().deletionNotification(netconfDomAccessor.getNodeId(),
-                Integer.parseInt(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_DELETE_NOTIFICATION_COUNTER)),
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfDomAccessor.getNodeId(),
+                Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_DELETE_NOTIFICATION,
                 new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_DELETE_NOTIFICATION_TIMESTAMP)),
-                Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_DELETE_NOTIFICATION_OBJECT_ID_REF));
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_DELETE_NOTIFICATION_TIMESTAMP)));
 
         log.debug("onObjectDeletionNotification log entry written");
     }
@@ -80,24 +75,22 @@ public class Onf14DomEthernetContainerNotificationListener implements DOMNotific
         ContainerNode cn = notification.getBody();
         FaultlogEntity faultAlarm = new FaultlogBuilder()
                 .setObjectId(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_OBJECT_ID_REF))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_OBJECT_ID_REF))
                 .setProblem(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_PROBLEM))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_PROBLEM))
                 .setTimestamp(new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)))
                 .setNodeId(this.netconfDomAccessor.getNodeId().getValue()).setSourceType(SourceType.Netconf)
                 .setSeverity(InternalDataModelSeverity.mapSeverity(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_SEVERITY)))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_SEVERITY)))
                 .setCounter(Integer.parseInt(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_COUNTER)))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_COUNTER)))
                 .build();
         serviceProvider.getFaultService().faultNotification(faultAlarm);
-        serviceProvider.getWebsocketService()
-                .sendNotification(notification, netconfDomAccessor.getNodeId(),
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_OBJECT_ID_REF,
-                        new DateAndTime(cn.childByArg(new NodeIdentifier(
-                                Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP))
-                                .body().toString()));
+        serviceProvider.getWebsocketService().sendNotification(notification, netconfDomAccessor.getNodeId(),
+                Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION,
+                new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)));
         log.debug("onProblemNotification log entry written");
     }
 
@@ -107,20 +100,20 @@ public class Onf14DomEthernetContainerNotificationListener implements DOMNotific
         EventlogBuilder eventlogBuilder = new EventlogBuilder();
         eventlogBuilder.setNodeId(netconfDomAccessor.getNodeId().getValue())
                 .setAttributeName(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_AVC_NOTIFICATION_ATTRIBUTE_NAME))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_AVC_NOTIFICATION_ATTRIBUTE_NAME))
                 .setCounter(Integer.parseInt(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_COUNTER)))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_COUNTER)))
                 .setNewValue(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_AVC_NOTIFICATION_NEW_VALUE))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_AVC_NOTIFICATION_NEW_VALUE))
                 .setObjectId(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_AVC_NOTIFICATION_OBJECT_ID_REF))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_OBJECT_ID_REF))
                 .setSourceType(SourceType.Netconf).setTimestamp(new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_AVC_NOTIFICATION_TIMESTAMP)));
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)));
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
         serviceProvider.getWebsocketService().sendNotification(notification, netconfDomAccessor.getNodeId(),
-                Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_AVC_NOTIFICATION,
+                Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_AVC_NOTIFICATION,
                 new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_AVC_NOTIFICATION_TIMESTAMP)));
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)));
 
         log.debug("onAttributeValueChangedNotification log entry written");
     }
@@ -131,20 +124,20 @@ public class Onf14DomEthernetContainerNotificationListener implements DOMNotific
         EventlogBuilder eventlogBuilder = new EventlogBuilder();
         eventlogBuilder.setNodeId(netconfDomAccessor.getNodeId().getValue())
                 .setAttributeName(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_CREATE_NOTIFICATION_OBJECT_ID_REF))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_CREATE_NOTIFICATION_OBJECT_TYPE))
                 .setCounter(Integer.parseInt(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_CREATE_NOTIFICATION_COUNTER)))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_COUNTER)))
                 .setNewValue("created")
                 .setObjectId(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_CREATE_NOTIFICATION_OBJECT_ID_REF))
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_OBJECT_ID_REF))
 
                 .setSourceType(SourceType.Netconf).setTimestamp(new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_CREATE_NOTIFICATION_TIMESTAMP)));
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)));
         serviceProvider.getDataProvider().writeEventLog(eventlogBuilder.build());
         serviceProvider.getWebsocketService().sendNotification(notification, netconfDomAccessor.getNodeId(),
-                Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_CREATE_NOTIFICATION,
+                Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_CREATE_NOTIFICATION,
                 new DateAndTime(Onf14DMDOMUtility.getLeafValue(cn,
-                        Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_CREATE_NOTIFICATION_TIMESTAMP)));
+                        Onf14DevicemanagerQNames.WIRE_INTERFACE_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP)));
 
         log.debug("onObjectCreationNotification log entry written");
     }

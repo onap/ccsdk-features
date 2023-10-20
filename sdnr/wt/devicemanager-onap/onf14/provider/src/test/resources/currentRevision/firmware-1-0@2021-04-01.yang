@@ -1,0 +1,695 @@
+module firmware-1-0 {
+  yang-version 1.1;
+  namespace "urn:onf:yang:firmware-1-0";
+  prefix firmware;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import core-model-1-4 {
+    prefix core-model;
+  }
+
+  organization
+    "openBackhaul.com proposal to Open Networking Foundation (ONF)";
+  contact
+    "WG Web : https://github.com/openBackhaul/Overview
+     WG List: firmware@openBackhaul.com
+     Editor : Thorsten Heinze
+     Email  : Thorsten.Heinze@openBackhaul.com";
+  description
+    "Augment to the ControlConstruct for managing firmware on the device.
+     
+     Copyright 2021 openBackhaul.com
+     
+     Licensed under the Apache License, Version 2.0 (the 'License');
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an 'AS IS' BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.";
+
+  revision 2021-04-01 {
+    description
+      "Model for the Transport SDN Introduction at Telefonica.
+       Please view https://github.com/openBackhaul/firmware/issues for changes.";
+    reference
+      "https://github.com/openBackhaul/firmware/tree/tsp: Model definition
+       https://github.com/openBackhaul/onfCoreIm/tree/tsp: ONF TR-512 Core IM incl. Profile and enhanced Equipment definition";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE {
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_UNKNOWN {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_OTHER {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_DRIVER {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_CONFIGURATION_DATA {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_CONFIGURATION_SOFTWARE {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_APPLICATION_SOFTWARE {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_INSTRUMENTATION {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_FIRMWARE_BIOS {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_DIAGNOSTIC_SOFTWARE {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_OPERATING_SYSTEM {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_MIDDLEWARE {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_FIRMWARE {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_BIOS_CODE {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_FPGA_CODE {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_SUPPORT_SERVICE_PACK {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_PACKAGE {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_RESERVE {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_CLASS_TYPE_DOWNSTREAM_DEVICE {
+    base FIRMWARE_COMPONENT_CLASS_TYPE;
+    description
+      "none";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE {
+    description
+      "none";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_IDLE {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "There is no download status to be represented. The device is available for starting some.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_DOWNLOAD_IN_PROGRESS {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Download process is currently in progress.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_SUCCESSFUL {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Download process successfully accomplished.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_INVALID_URI {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Download process could not be started, because of invalid URI.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_UNABLE_TO_CONNECT_TO_SERVER {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Download process could not be started, because client could not reach the server.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_ALIGNMENT_FAILURE {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Download process failed, because client and server could not align.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_AUTHENTICATION_FAILED {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Download process could not be started, because client could not successfully authenticate at the server.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_FILE_NOT_FOUND {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Client could connect to the server, but download process could not be started, because the file could not be found.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_NO_SPACE_AVAILABLE {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Client could authenticate at the server and find the file, but download process has been aborted, because there is not sufficient storage space for the file on the client.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_TRANSFER_MECHANISM_NOT_AVAILABLE {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Client could authenticate at the server and find the file, but download process could not be started, because transfer mechanism is not supported.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_NETWORK_FAILURE {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Download process could be started, but got interrupted, because client lost connection to the server.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_SW_UNIT_CHECK_FAILURE {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Client could connect to the server and download the file, but the file was corrupted.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_INCOMPATIBLE_FILE {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Client could connect to the server and download the file, but the file cannot be used due to incompatibility with either hardware of other firmware components.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_SW_RELEASE_CHECK_FAILURE {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Client could download the file, but the file cannot be used due to release mismatch with other firmware components.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_INTERNAL_ERROR {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Download process has been terminated due to an error internal to the client.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_ABORTED {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Client could connect to the server and start downloading the file, but the download process was interrupted by the client.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_FAILED {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "Download process failed due to a reason, which is not more specifically described by any other value in this enumeration.";
+  }
+
+  identity DOWNLOAD_STATUS_TYPE_NOT_YET_DEFINED {
+    base DOWNLOAD_STATUS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_STATUS_TYPE {
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_STATUS_TYPE_ACTIVE {
+    base FIRMWARE_COMPONENT_STATUS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_STATUS_TYPE_STAND_BY {
+    base FIRMWARE_COMPONENT_STATUS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_STATUS_TYPE_COMMITTED {
+    base FIRMWARE_COMPONENT_STATUS_TYPE;
+    description
+      "Firmware component will be used after reboot.";
+  }
+
+  identity FIRMWARE_COMPONENT_STATUS_TYPE_LIKE_SUPERIOR_FIRMWARE_COMPONENT {
+    base FIRMWARE_COMPONENT_STATUS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_STATUS_TYPE_NOT_APPLICABLE {
+    base FIRMWARE_COMPONENT_STATUS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_STATUS_TYPE_INCOMPLETE {
+    base FIRMWARE_COMPONENT_STATUS_TYPE;
+    description
+      "none";
+  }
+
+  identity FIRMWARE_COMPONENT_STATUS_TYPE_NOT_YET_DEFINED {
+    base FIRMWARE_COMPONENT_STATUS_TYPE;
+    description
+      "none";
+  }
+
+  typedef firmware-component-class-type {
+    type identityref {
+      base FIRMWARE_COMPONENT_CLASS_TYPE;
+    }
+    description
+      "none";
+  }
+
+  typedef download-status-type {
+    type identityref {
+      base DOWNLOAD_STATUS_TYPE;
+    }
+    description
+      "Status or result of the download process, which had been started last.";
+  }
+
+  typedef firmware-component-status-type {
+    type identityref {
+      base FIRMWARE_COMPONENT_STATUS_TYPE;
+    }
+    description
+      "Current operational status of the firmware component.";
+  }
+
+  grouping object-creation-notification {
+    description
+      "none";
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts object creation notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/firmware:firmware-collection/firmware:firmware-component-list/firmware:local-id";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf object-type {
+      type string;
+      default "Type of created object not specified.";
+      config false;
+      description
+        "none";
+    }
+  }
+
+  grouping object-deletion-notification {
+    description
+      "none";
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts object deletion notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/firmware:firmware-collection/firmware:firmware-component-list/firmware:local-id";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+  }
+
+  grouping attribute-value-changed-notification {
+    description
+      "To be sent when an attribute has changed and one or more controllers have to update their data.";
+    leaf counter {
+      type int32;
+      default "-1";
+      config false;
+      description
+        "Counts attribute value changed notifications.";
+    }
+    leaf timestamp {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "none";
+    }
+    leaf object-id-ref {
+      type leafref {
+        path "/core-model:control-construct/firmware:firmware-collection/firmware:firmware-component-list/firmware:local-id";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    leaf attribute-name {
+      type string;
+      default "Attribute name not specified.";
+      config false;
+      description
+        "Name of the attribute that has been changed.";
+    }
+    leaf new-value {
+      type string;
+      default "New value not specified.";
+      config false;
+      description
+        "Attribute value converted to a string (xml, json, ...)";
+    }
+  }
+
+  grouping firmware-cc-spec {
+    description
+      "none";
+    container firmware-collection {
+      description
+        "none";
+      uses firmware-collection;
+    }
+  }
+
+  grouping firmware-collection {
+    description
+      "none";
+    list firmware-component-list {
+      key "local-id";
+      config false;
+      description
+        "none";
+      uses firmware-component;
+    }
+    container download {
+      config false;
+      description
+        "Currently on-going download.";
+      uses download-type;
+    }
+  }
+
+  grouping firmware-component {
+    description
+      "none";
+    container firmware-component-pac {
+      config false;
+      description
+        "none";
+      uses firmware-component-pac;
+    }
+    leaf-list subordinate-firmware-component-list {
+      type leafref {
+        path "/core-model:control-construct/firmware:firmware-collection/firmware:firmware-component-list/firmware:local-id";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+    uses core-model:local-class;
+  }
+
+  grouping firmware-component-pac {
+    description
+      "none";
+    container firmware-component-capability {
+      config false;
+      description
+        "none";
+      uses firmware-component-capability;
+    }
+    container firmware-component-status {
+      config false;
+      description
+        "none";
+      uses firmware-component-status;
+    }
+  }
+
+  grouping firmware-component-capability {
+    description
+      "none";
+    leaf firmware-component-name {
+      type string;
+      default "Firmware component name not yet defined.";
+      config false;
+      description
+        "Name of the firmware component.";
+    }
+    leaf firmware-component-version {
+      type string;
+      default "Firmware component version not yet defined.";
+      config false;
+      description
+        "Version of the firmware component.";
+    }
+    leaf firmware-component-class {
+      type firmware-component-class-type;
+      default "FIRMWARE_COMPONENT_CLASS_TYPE_UNKNOWN";
+      config false;
+      description
+        "Class of firmware component.";
+    }
+    leaf individual-activation-is-avail {
+      type boolean;
+      default "false";
+      config false;
+      description
+        "True = Firmware component could be individually activated. False = Firmware component would be activated together with a superior component.";
+    }
+    leaf-list related-kinds-of-equipment-list {
+      type string;
+      default "Affected equipment types not yet defined.";
+      config false;
+      description
+        "Kinds of equipment using this firmware component after activation. Values should be identical with entries in Equipment::ManufacturedThing::EquipmentType::modelIdentifier attribute. Might be empty, if firmwareComponentClass==PACKAGE.";
+    }
+  }
+
+  grouping firmware-component-status {
+    description
+      "none";
+    leaf firmware-component-status {
+      type firmware-component-status-type;
+      default "FIRMWARE_COMPONENT_STATUS_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Operational status of the firmware.";
+    }
+    leaf firmware-component-activation-date {
+      type yang:date-and-time;
+      default "2010-11-20T14:00:00+01:00";
+      config false;
+      description
+        "Date and time of the activation of this firmware component.";
+    }
+    leaf-list is-active-on-equipment-list {
+      type leafref {
+        path "/core-model:control-construct/core-model:equipment/core-model:uuid";
+        require-instance false;
+      }
+      config false;
+      description
+        "none";
+    }
+  }
+
+  grouping download-type {
+    description
+      "none";
+    leaf filename {
+      type string;
+      default "Filename not yet defined.";
+      config false;
+      description
+        "none";
+    }
+    leaf download-status {
+      type download-status-type;
+      default "DOWNLOAD_STATUS_TYPE_NOT_YET_DEFINED";
+      config false;
+      description
+        "Status of the download, which had been initiated last.";
+    }
+    leaf download-status-description {
+      type string;
+      default "Status description not yet defined.";
+      config false;
+      description
+        "Free text field for additional information about the download status.";
+    }
+  }
+
+  augment "/core-model:control-construct" {
+    description
+      "none";
+    uses firmware-cc-spec;
+  }
+
+  rpc download-firmware-component {
+    description
+      "Operation for downloading some firmware component (e.g. package) from a server onto the device.";
+
+    input {
+      leaf source-uri {
+        type string;
+        mandatory true;
+        description
+          "URI specifying the remote-file-path for downloading the firmware component. Format:<protocol>://<host>[:port]/path'.";
+      }
+      leaf filename {
+        type string;
+        mandatory true;
+        description
+          "Name of the file, which is to be downloaded.";
+      }
+      leaf username-at-file-server {
+        type string;
+        description
+          "Username to access the file server.";
+      }
+      leaf password-at-file-server {
+        type string;
+        description
+          "Password to access the file server.";
+      }
+      leaf ssh-key {
+        type string;
+        description
+          "Client key for accessing the file server.";
+      }
+      leaf force-download {
+        type boolean;
+        mandatory true;
+        description
+          "Files to be downloaded, even if already present on the device.";
+      }
+    }
+  }
+  rpc abort-firmware-download {
+    description
+      "Currently on-going download of a firmware component shall immediately be terminated.";
+  }
+
+  rpc activate-firmware-component {
+    description
+      "Operation for activating some firmware component on the device. (Attention! Invoking this operation might cause the device to reboot.)";
+
+    input {
+      leaf firmware-component {
+        type leafref {
+          path "/core-model:control-construct/firmware:firmware-collection/firmware:firmware-component-list/firmware:local-id";
+          require-instance false;
+        }
+        mandatory true;
+        description
+          "Reference of the firmware component, which shall be activated.";
+      }
+      leaf activation-delay-period {
+        type uint64;
+        mandatory true;
+        description
+          "Number of seconds the device shall delay the execution after receiving the invokation of the activation operation.";
+      }
+    }
+  }
+
+  notification object-creation-notification {
+    description
+      "none";
+    uses object-creation-notification;
+  }
+  notification object-deletion-notification {
+    description
+      "none";
+    uses object-deletion-notification;
+  }
+  notification attribute-value-changed-notification {
+    description
+      "none";
+    uses attribute-value-changed-notification;
+  }
+}

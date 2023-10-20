@@ -19,7 +19,7 @@
  * ============LICENSE_END=========================================================
  *
  */
-package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util;
+package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.qnames;
 
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.common.QNameModule;
@@ -27,53 +27,6 @@ import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 
 public class Onf14DevicemanagerQNames {
-    public static final QNameModule CORE_MODEL_1_4_MODULE =
-            QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
-    public static final QName CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER =
-            QName.create(CORE_MODEL_1_4_MODULE, "control-construct");
-    public static final QName CORE_MODEL_CC_TOP_LEVEL_EQPT = QName.create(CORE_MODEL_1_4_MODULE, "top-level-equipment");
-    public static final QName CORE_MODEL_CC_EQPT = QName.create(CORE_MODEL_1_4_MODULE, "equipment");
-    public static final QName CORE_MODEL_CC_EQPT_GLOBAL_CLASS_UUID = QName.create(CORE_MODEL_1_4_MODULE, "uuid");
-    public static final QName CORE_MODEL_CC_EQPT_ACTUAL_EQUIPMENT =
-            QName.create(CORE_MODEL_1_4_MODULE, "actual-equipment");
-    public static final QName CORE_MODEL_CC_EQPT_CONTAINED_HOLDER =
-            QName.create(CORE_MODEL_1_4_MODULE, "contained-holder");
-    public static final QName CORE_MODEL_CC_EQPT_OCCUPYING_FRU = QName.create(CORE_MODEL_1_4_MODULE, "occupying-fru");
-    public static final QName CORE_MODEL_CC_EQPT_MANUFACTURED_THING =
-            QName.create(CORE_MODEL_1_4_MODULE, "manufactured-thing");
-    public static final QName CORE_MODEL_CC_EQPT_MANUFACTURER_PROPS =
-            QName.create(CORE_MODEL_1_4_MODULE, "manufacturer-properties");
-    public static final QName CORE_MODEL_CC_EQPT_MANUFACTURER_NAME =
-            QName.create(CORE_MODEL_1_4_MODULE, "manufacturer-name");
-    public static final QName CORE_MODEL_CC_EQPT_MANUFACTURER_ID =
-            QName.create(CORE_MODEL_1_4_MODULE, "manufacturer-identifier");
-    public static final QName CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_INSTANCE =
-            QName.create(CORE_MODEL_1_4_MODULE, "equipment-instance");
-    public static final QName CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_INSTANCE_SERIAL_NUM =
-            QName.create(CORE_MODEL_1_4_MODULE, "serial-number");
-    public static final QName CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_INSTANCE_MANUFACTURED_DATE =
-            QName.create(CORE_MODEL_1_4_MODULE, "manufactured-date");
-    public static final QName CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE =
-            QName.create(CORE_MODEL_1_4_MODULE, "equipment-type");
-    public static final QName CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE_VERSION =
-            QName.create(CORE_MODEL_1_4_MODULE, "version");
-    public static final QName CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE_DESCRIPTION =
-            QName.create(CORE_MODEL_1_4_MODULE, "description");
-    public static final QName CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE_MODEL_ID =
-            QName.create(CORE_MODEL_1_4_MODULE, "model-identifier");
-    public static final QName CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE_PART_TYPE_ID =
-            QName.create(CORE_MODEL_1_4_MODULE, "part-type-identifier");
-    public static final QName CORE_MODEL_CC_EQPT_ACTUAL_EQPT_EQPT_TYPE_TYPE_NAME =
-            QName.create(CORE_MODEL_1_4_MODULE, "type-name");
-
-
-    public static final QName CORE_MODEL_CC_LTP = QName.create(CORE_MODEL_1_4_MODULE, "logical-termination-point");
-    public static final QName CORE_MODEL_CC_LTP_LAYER_PROTOCOL = QName.create(CORE_MODEL_1_4_MODULE, "layer-protocol");
-    public static final QName CORE_MODEL_CC_LTP_LAYER_PROTOCOL_NAME =
-            QName.create(CORE_MODEL_1_4_MODULE, "layer-protocol-name");
-    public static final QName CORE_MODEL_CC_LTP_LAYER_PROTOCOL_LOCAL_ID =
-            QName.create(CORE_MODEL_1_4_MODULE, "local-id");
-    public static final QName CORE_MODEL_CC_LTP_UUID = QName.create(CORE_MODEL_1_4_MODULE, "uuid");
 
     //Interface Notifications - common fields
     private static String COUNTER = "counter";
@@ -349,5 +302,15 @@ public class Onf14DevicemanagerQNames {
             QName.create(WIRE_INTERFACE_2_0_MODULE, OBJECT_ID_REF);
     public static final QName WIRE_INTERFACE_OBJECT_DELETE_NOTIFICATION_TIMESTAMP =
             QName.create(WIRE_INTERFACE_2_0_MODULE, TIMESTAMP);
+
+
+    private final QNameModule coreModel14Module;
+    private final String namespaceRevision; //TODO generate out of coreModel14Module
+
+    private Onf14DevicemanagerQNames(QNameModule coreModel14Module, String namespaceRevision) {
+        this.coreModel14Module = coreModel14Module;
+        this.namespaceRevision = namespaceRevision;
+
+    }
 
 }
