@@ -27,20 +27,33 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
  */
 public class DatabaseInfo7 extends DatabaseInfo {
 
+    private boolean disableMapping;
+
     public DatabaseInfo7(String alias, String doctype, String mapping) {
         super(alias, alias, doctype, mapping);
+        this.disableMapping = false;
     }
     public DatabaseInfo7(String alias, String doctype, String mapping, String settingsformat) {
         super(alias, alias, doctype, mapping, settingsformat);
+        this.disableMapping = false;
     }
     public DatabaseInfo7(String index, String alias, String doctype, String mapping, String settingsformat) {
         super(index, alias, doctype, mapping, settingsformat);
+        this.disableMapping = false;
     }
 
     @Override
     public String getMapping(boolean useStrict) {
+        if(this.disableMapping){
+            return "{\"enabled\": false}";
+        }
         return this.mapping == null ? null
                 : String.format("{%s\"properties\":%s}", useStrict ? "\"dynamic\": false," : "\"dynamic\": true,",
                         this.mapping);
+    }
+
+    public DatabaseInfo disableMapping() {
+        this.disableMapping = true;
+        return this;
     }
 }

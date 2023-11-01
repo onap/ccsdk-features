@@ -47,7 +47,7 @@ public class UserdataHttpServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(UserdataHttpServlet.class);
-    private static final String REGEX = "^\\/userdata[\\/]?([a-zA-Z0-9]+)?$";
+    private static final String REGEX = "^\\/userdata[\\/]?([a-zA-Z0-9\\.]+)?$";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
     private static final String JWT_PAYLOAD_USERNAME_PROPERTYKEY = "sub";
     private static HtUserdataManager dbUserManager;

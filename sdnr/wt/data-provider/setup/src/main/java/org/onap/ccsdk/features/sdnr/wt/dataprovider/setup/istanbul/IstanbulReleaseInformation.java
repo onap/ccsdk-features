@@ -170,7 +170,7 @@ public class IstanbulReleaseInformation extends ReleaseInformation {
 
     public static Map<ComponentName, DatabaseInfo> createDBMap() {
         Map<ComponentName, DatabaseInfo> map = HonoluluReleaseInformation.createDBMap();
-        map.put(ComponentName.USERDATA, new DatabaseInfo7("userdata", "userdata", "{}"));
+        map.put(ComponentName.USERDATA, new DatabaseInfo7("userdata", "userdata", "").disableMapping());
         map.put(ComponentName.REQUIRED_NETWORKELEMENT, new DatabaseInfo7("networkelement-connection",
                 "networkelement-connection",
                 "{\"node-id\": {\"type\": \"keyword\"},\"host\": {\"type\": \"keyword\"},\"port\": "
