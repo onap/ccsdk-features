@@ -89,14 +89,11 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
         // update db with connect status
         NetconfNode netconfNode = acessor.getNetconfNode();
         sendUpdateNotification(acessor.getNodeId(), netconfNode.getConnectionStatus(), netconfNode);
-
-        for (NetworkElementFactory f : getFactoryList()) {
-            Optional<NetworkElement> optionalNe = f.create(acessor, getServiceProvider());
-            if (optionalNe.isPresent()) {
-                // sendUpdateNotification(mountPointNodeName, nNode.getConnectionStatus(), nNode);
-                handleNeStartup(acessor.getNodeId(), optionalNe.get());
-                break; // Use the first provided
-            }
+        // Start devicemanager if possible
+        Optional<NetworkElement> optionalNe = createNetworkElement(acessor);
+        // Startup device
+        if (optionalNe.isPresent()) {
+            handleNeStartup(acessor.getNodeId(), optionalNe.get());
         }
     }
 
@@ -134,6 +131,23 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
     /*--------------------------------------------
      * Private functions
      */
+
+    /**
+     * Get the NetworkElement from list
+     *
+     * @param accessor
+     * @return Optional<NetowrkElement>
+     */
+    private Optional<NetworkElement> createNetworkElement(NetconfAccessor accessor) {
+        Optional<NetworkElement> optionalNe = Optional.empty();
+        for (NetworkElementFactory f : getFactoryList()) {
+            optionalNe = f.create(accessor, getServiceProvider());
+            if (optionalNe.isPresent()) {
+                return optionalNe; // Use the first provided
+            }
+        }
+        return Optional.empty();
+    }
 
     /**
      * Do all tasks necessary to move from mountpoint state connected -> connecting

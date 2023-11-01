@@ -38,6 +38,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.jdt.annotation.NonNull;
@@ -60,8 +61,10 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.housekeeping.ResyncNetworkE
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.xml.WebSocketServiceClientInternal;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.maintenance.impl.MaintenanceServiceImpl;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.DevicemanagerNature;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFactory;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFactory2;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl.PerformanceManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.AaiService;
@@ -274,11 +277,12 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     }
 
     @Override
-    public @NonNull <L extends NetworkElementFactory> FactoryRegistration<L> registerBindingNetworkElementFactory(
+    synchronized public @NonNull <L extends NetworkElementFactory> FactoryRegistration<L> registerBindingNetworkElementFactory(
             @NonNull final L factory) {
         LOG.debug("Factory registration {}", factory.getClass().getName());
 
         factoryList.add(factory);
+        Collections.sort(factoryList, (a,b) -> DevicemanagerNature.compareTo(a, b) );
         factory.init(getServiceProvider());
         return new FactoryRegistration<L>() {
 
@@ -295,7 +299,11 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         };
     }
 
-    @SuppressWarnings("null")
+    private DevicemanagerNature getNature(NetworkElementFactory a) {
+        return (a instanceof NetworkElementFactory2) ? ((NetworkElementFactory2)a).getDevicemanagerNature()
+                : DevicemanagerNature.NETWORKELEMENT_FACTORY_DEFAULT;
+    }
+
     @Override
     public @NonNull DataProvider getDataProvider() {
         return this.dataProvider;
