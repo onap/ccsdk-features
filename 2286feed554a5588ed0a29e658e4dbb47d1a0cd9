@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e901893_61f7663f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2023-11-02T04:55:50Z",
+      "side": 1,
+      "message": "Hi, Patchset1 is rebased as it has dependencies on some the other commits. Now the build is successful. Please review and submit if everything OK.\nRegards,\nRavi",
+      "revId": "2286feed554a5588ed0a29e658e4dbb47d1a0cd9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
