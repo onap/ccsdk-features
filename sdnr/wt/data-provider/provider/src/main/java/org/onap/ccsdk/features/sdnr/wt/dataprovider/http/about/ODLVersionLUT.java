@@ -75,6 +75,7 @@ public class ODLVersionLUT {
         }
         if(odlMdsalVersionLUT==null) {
             odlMdsalVersionLUT = new HashMap<>();
+            odlMdsalVersionLUT.put("11.0.12","argon-SR2 (0.18.2)");
             odlMdsalVersionLUT.put("11.0.9","argon-SR1 (0.18.1)");
             odlMdsalVersionLUT.put("11.0.7","argon-SR0 (0.18.0)");
             odlMdsalVersionLUT.put("10.0.8","chlorine-SR3 (0.17.3)");
