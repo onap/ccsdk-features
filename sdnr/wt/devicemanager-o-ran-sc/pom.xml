@@ -23,7 +23,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-devicemanager-o-ran-sc</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.1</version>
     <packaging>pom</packaging>
 
     <name>ccsdk-sdnr-wireless transport :: O-RAN-SC micro-services</name>
