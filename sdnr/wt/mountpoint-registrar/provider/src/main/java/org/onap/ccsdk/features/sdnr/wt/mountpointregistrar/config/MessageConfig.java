@@ -36,10 +36,10 @@ public abstract class MessageConfig implements Configuration {
     private static final String DEFAULT_VALUE_CONSUMER_ID = "C1";
 
     public static final String PROPERTY_KEY_CONSUMER_TIMEOUT = "timeout";
-    private static final String DEFAULT_VALUE_CONSUMER_TIMEOUT = "20000";
+    private static final String DEFAULT_VALUE_CONSUMER_TIMEOUT = "2000";
 
     public static final String PROPERTY_KEY_CONSUMER_LIMIT = "limit";
-    private static final String DEFAULT_VALUE_CONSUMER_LIMIT = "10000";
+    private static final String DEFAULT_VALUE_CONSUMER_LIMIT = "1000";
 
     public static final String PROPERTY_KEY_CONSUMER_FETCHPAUSE = "fetchPause";
     private static final String DEFAULT_VALUE_CONSUMER_FETCHPAUSE = "5000";
