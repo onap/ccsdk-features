@@ -34,7 +34,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-devicemanager-onap-onf14-provider</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
