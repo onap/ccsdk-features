@@ -24,6 +24,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.admin.Admin;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.GeneralConfig;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.kafka.VESMsgKafkaConsumer;
 import org.slf4j.Logger;
@@ -42,6 +45,7 @@ public abstract class StrimziKafkaVESMsgConsumerImpl
     private boolean ready = false;
     private int fetchPause = 5000; // Default pause between fetch - 5 seconds
     protected final GeneralConfig generalConfig;
+    Admin kafkaAdminClient = null;
 
     protected StrimziKafkaVESMsgConsumerImpl(GeneralConfig generalConfig) {
         this.generalConfig = generalConfig;
@@ -54,22 +58,22 @@ public abstract class StrimziKafkaVESMsgConsumerImpl
      */
     @Override
     public void run() {
-
         if (ready) {
             running = true;
             while (running) {
                 try {
                     boolean noData = true;
                     List<String> consumerResponse = null;
-                    consumerResponse = consumer.poll();
-                    for (String msg : consumerResponse) {
-                        noData = false;
-                        LOG.debug("{} received ActualMessage from Kafka VES Message topic {}", name, msg);
-                        if (isMessageValid(msg)) {
-                            processMsg(msg);
+                    if (isTopicExists(consumer.getTopicName())) {
+                        consumerResponse = consumer.poll();
+                        for (String msg : consumerResponse) {
+                            noData = false;
+                            LOG.debug("{} received ActualMessage from Kafka VES Message topic {}", name, msg);
+                            if (isMessageValid(msg)) {
+                                processMsg(msg);
+                            }
                         }
                     }
-
                     if (noData) {
                         pauseThread();
                     }
@@ -103,6 +107,9 @@ public abstract class StrimziKafkaVESMsgConsumerImpl
      */
     @Override
     public void init(Properties strimziKafkaProperties, Properties consumerProperties) {
+        Properties props = new Properties();
+        props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, strimziKafkaProperties.getProperty("bootstrapServers"));
+        kafkaAdminClient = Admin.create(props);
 
         try {
             this.consumer = new VESMsgKafkaConsumer(strimziKafkaProperties, consumerProperties);
@@ -120,6 +127,19 @@ public abstract class StrimziKafkaVESMsgConsumerImpl
         } else {
             LOG.debug("No data received from fetch.  No fetch pause specified - retrying immediately");
         }
+    }
+
+    private boolean isTopicExists(String topicName) {
+        LOG.trace("Checking for existence of topic - {}", topicName);
+        try {
+            for (String kafkaTopic : kafkaAdminClient.listTopics().names().get()) {
+                if (kafkaTopic.equals(topicName))
+                    return true;
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Exception in isTopicExists method - ", e);
+        }
+        return false;
     }
 
     @Override
