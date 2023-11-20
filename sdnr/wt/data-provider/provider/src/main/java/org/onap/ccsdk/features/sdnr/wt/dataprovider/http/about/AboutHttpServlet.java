@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -42,16 +41,9 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStamp
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ServiceScope;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@HttpWhiteboardServletPattern("/about")
-@HttpWhiteboardServletName("AboutHttpServlet")
-@Component(service = Servlet.class)
 public class AboutHttpServlet extends HttpServlet {
 
     /**
@@ -63,7 +55,7 @@ public class AboutHttpServlet extends HttpServlet {
     private static final String METAINF_MAVEN = "/META-INF/maven/";
     private static final String EXCEPTION_FORMAT_UNABLE_TO_READ_INNER_POMFILE = "unable to read inner pom file: {}";
 
-    private static final String URI_PRE = "/about";
+    public static final String URI_PRE = "/about";
     private static final String RES_BASEPATH = "about/";
 
     private static final String PLACEHOLDER_ONAP_RELEASENAME = "{release-name}";

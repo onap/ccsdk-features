@@ -30,7 +30,12 @@
                interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
     <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
 
-    <bean id="aboutServlet" class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet" />
+    <reference id="onBindService" availability="mandatory" activation="eager" interface="org.osgi.service.http.HttpService">
+        <reference-listener ref="provider" bind-method="onBindService" unbind-method="onUnbindService"/>
+    </reference>
+
+    <bean id="aboutServlet" class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet">
+    </bean>
 
     <bean id="msServlet"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet">

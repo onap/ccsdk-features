@@ -28,7 +28,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
@@ -45,7 +44,7 @@ public class YangSchemaHttpServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(YangSchemaHttpServlet.class);
     private static final String CACHEPATH = "cache/";
-    private static final String SCHEMACACHEPATH_PRIMARY = CACHEPATH+"schema/";
+    private static final String SCHEMACACHEPATH_PRIMARY = CACHEPATH + "schema/";
 
     private final YangFileProvider fileProvider;
 
