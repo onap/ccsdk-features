@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.impl;
 
+import javax.servlet.ServletException;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClientException;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
@@ -37,6 +38,8 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.StatusChangedHandler.S
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +97,21 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
             if (e instanceof HtDatabaseClientException)
                 LOG.error("IOException: Could not connect to the Database. Please check Database connectivity");
             throw e;
+        }
+    }
+
+    public void onUnbindService(HttpService httpService) {
+        httpService.unregister(AboutHttpServlet.URI_PRE);
+        this.aboutServlet = null;
+    }
+
+    public void onBindService(HttpService httpService)
+            throws ServletException, NamespaceException {
+        if (httpService == null) {
+            LOG.warn("Unable to inject HttpService into loader.");
+        } else {
+            httpService.registerServlet(AboutHttpServlet.URI_PRE, aboutServlet, null, null);
+            LOG.info("about servlet registered.");
         }
     }
 
