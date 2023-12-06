@@ -68,7 +68,7 @@ public class VESMsgKafkaConsumer {
      */
     public List<String> poll() {
         List<String> msgs = new ArrayList<>();
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollTimeout));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(pollTimeout));
         for (ConsumerRecord<String, String> rec : records) {
             msgs.add(rec.value());
         }
