@@ -1,0 +1,17 @@
+html, body, #app {
+  height: 100%;
+  min-width: 1000px;
+  padding: 0px;
+  margin: 0px;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.about-table td{
+  padding:0.5rem 1rem;
+  border-bottom: 1px solid #DDD;
+}
+.about-table pre {
+  background:#FFF;
+  border:1px solid #CCC;
+  padding:1rem;
+  margin: 1rem 0;
+}

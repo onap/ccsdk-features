@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ ============LICENSE_START=======================================================
+  ~ ONAP : SDNR ODLUX
+  ~ ================================================================================
+  ~ Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
+  ~ ================================================================================
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~ ============LICENSE_END=======================================================
+  ~
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.onap.ccsdk.features.sdnr.odlux</groupId>
+    <artifactId>sdnr-odlux-framework</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>SDNR ODLUX :: ${project.artifactId}</name>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <buildtime>${maven.build.timestamp}</buildtime>
+        <distversion>ONAP Frankfurt (Neon, mdsal ${odl.mdsal.version})</distversion>
+        <buildno>172.b89e2c2b(23/10/04)</buildno>
+        <odlux.version>ONAP SDN-R | ONF Wireless for ${distversion} - Build: ${buildtime} ${buildno} ${project.version}</odlux.version>
+    </properties>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>dist</directory>
+                <targetPath>odlux</targetPath>
+            </resource>
+            <resource>
+                <directory>src2/main/resources</directory>
+                <targetPath>odlux</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>dist</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
+                            <directory>node</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
+                            <directory>node_modules</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
+                            <directory>../node_modules</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <!-- eclipse bug build bin folder in basedir -->
+                        <fileset>
+                            <directory>bin</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>de.jacks-it-lab</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.7.2</version>
+                <executions>
+                    <execution>
+                        <id>install node and yarn</id>
+                        <goals>
+                            <goal>install-node-and-yarn</goal>
+                        </goals>
+                        <!-- optional: default phase is "generate-resources" -->
+                        <phase>initialize</phase>
+                        <configuration>
+                            <nodeVersion>v16.17.0</nodeVersion>
+                            <yarnVersion>v1.22.19</yarnVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>clear cache</id>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <arguments>cache clean</arguments>
+                            <installDirectory>${project.basedir}</installDirectory>
+                            <workingDirectory>${project.basedir}/../</workingDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install lerna</id>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <arguments>add lerna@3.22.1 -W --exact</arguments>
+                            <installDirectory>${project.basedir}</installDirectory>
+                            <workingDirectory>${project.basedir}/../</workingDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>exec lerna bootstrap</id>
+                        <goals>
+                            <goal>lerna</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <lernaInheritsProxyConfigFromMaven>false</lernaInheritsProxyConfigFromMaven>
+                            <arguments>bootstrap</arguments>
+                            <installDirectory>${project.basedir}</installDirectory>
+                            <workingDirectory>${project.basedir}/../</workingDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>yarn build</id>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${basedir}/../odlux.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.2</version>
+                <executions>
+                    <execution>
+                        <id>replace version</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <basedir>${project.build.directory}/classes/odlux</basedir>
+                    <includes>
+                        <include>app.js</include>
+                        <include>version.json</include>
+                    </includes>
+                    <replacements>
+                        <replacement>
+                            <token>##odlux.version##</token>
+                            <value>${odlux.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##buildno##</token>
+                            <value>${buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##build-timestamp##</token>
+                            <value>${buildtime}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.framework.buildno##</token>
+                            <value>${odlux.framework.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.configurationApp.buildno##</token>
+                            <value>${odlux.apps.configurationApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.connectApp.buildno##</token>
+                            <value>${odlux.apps.connectApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.eventLogApp.buildno##</token>
+                            <value>${odlux.apps.eventLogApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.faultApp.buildno##</token>
+                            <value>${odlux.apps.faultApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.helpApp.buildno##</token>
+                            <value>${odlux.apps.helpApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.inventoryApp.buildno##</token>
+                            <value>${odlux.apps.inventoryApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.microwaveApp.buildno##</token>
+                            <value>${odlux.apps.microwaveApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.maintenanceApp.buildno##</token>
+                            <value>${odlux.apps.maintenanceApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.mediatorApp.buildno##</token>
+                            <value>${odlux.apps.mediatorApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.networkMapApp.buildno##</token>
+                            <value>${odlux.apps.networkMapApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.siteManagerApp.buildno##</token>
+                            <value>${odlux.apps.siteManagerApp.buildno}</value>
+                        </replacement>
+                        <replacement>
+                            <token>##odlux.apps.permanceHistoryApp.buildno##</token>
+                            <value>${odlux.apps.permanceHistoryApp.buildno}</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

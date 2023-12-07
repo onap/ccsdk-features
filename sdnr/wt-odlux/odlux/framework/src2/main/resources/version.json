@@ -1,0 +1,19 @@
+{
+    "version":"##buildno##",
+    "build":"##build-timestamp##",
+    "framework":"##odlux.framework.buildno##",
+    "applications":{
+        "configurationApp":"##odlux.apps.configurationApp.buildno##",
+        "connectApp":"##odlux.apps.connectApp.buildno##",
+        "eventLogApp":"##odlux.apps.eventLogApp.buildno##",
+        "faultApp":"##odlux.apps.faultApp.buildno##",
+        "helpApp":"##odlux.apps.helpApp.buildno##",
+        "inventoryApp":"##odlux.apps.inventoryApp.buildno##",
+        "linkCalculationApp":"##odlux.apps.linkCalculationApp.buildno##",
+        "maintenanceApp":"##odlux.apps.maintenanceApp.buildno##",
+        "mediatorApp":"##odlux.apps.mediatorApp.buildno##",
+        "networkMapApp":"##odlux.apps.networkMapApp.buildno##",
+        "permanceHistoryApp":"##odlux.apps.permanceHistoryApp.buildno##"
+    
+    }
+}

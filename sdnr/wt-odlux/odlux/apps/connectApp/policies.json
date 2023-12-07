@@ -1,0 +1,12 @@
+[
+  {
+    "path": "/rests/**/node=Sim2230**",
+    "methods": {
+      "get": true,
+      "post": false,
+      "put": false,
+      "delete": false,
+      "patch": false
+    }
+  }
+]

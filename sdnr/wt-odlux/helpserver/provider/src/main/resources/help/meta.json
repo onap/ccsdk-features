@@ -1,0 +1,261 @@
+{
+    "sdnr": {
+        "nodes": {
+            "connectApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/connect/README.md",
+                        "label": "Connect"
+                    },
+                    "current": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/connect/README.md",
+                        "label": "Connect"
+                    }
+                },
+                "label": "Connect"
+            },
+            "faultApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/pnfFault/README.md",
+                        "label": "Fault"
+                    },
+                    "current": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/pnfFault/README.md",
+                        "label": "Fault"
+                    }
+                },
+                "label": "Fault"
+            },
+            "maintenanceApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-09-13",
+                        "path": "sdnr/pnfMaintenance/README.md",
+                        "label": "Maintenance"
+                    },
+                    "current": {
+                        "date": "2018-09-13",
+                        "path": "sdnr/pnfMaintenance/README.md",
+                        "label": "Maintenance"
+                    }
+                },
+                "label": "Maintenance"
+            },
+            "configurationApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/pnfConfig/README.md",
+                        "label": "Config"
+                    },
+                    "current": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/pnfConfig/README.md",
+                        "label": "Config"
+                    }
+                },
+                "label": "Config"
+            },
+            "performanceHistoryApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/pnfPerformance/README.md",
+                        "label": "Performance"
+                    },
+                    "current": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/pnfPerformance/README.md",
+                        "label": "Performance"
+                    }
+                },
+                "label": "Performance"
+            },
+            "inventoryApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/pnfInventory/README.md",
+                        "label": "Inventory"
+                    },
+                    "current": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/pnfInventory/README.md",
+                        "label": "Inventory"
+                    }
+                },
+                "label": "Inventory"
+            },
+            "mediatorApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/pnfMediator/README.md",
+                        "label": "Mediator"
+                    },
+                    "current": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/pnfMediator/README.md",
+                        "label": "Mediator"
+                    }
+                },
+                "label": "Mediator"
+            },
+            "eventLogApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2020-02-03",
+                        "path": "sdnr/pnfEventLog/README.md",
+                        "label": "EventLog"
+                    },
+                    "current": {
+                        "date": "2020-02-03",
+                        "path": "sdnr/pnfEventLog/README.md",
+                        "label": "EventLog"
+                    }
+                },
+                "label": "EventLog"
+            },
+            "networkApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/networkMap/README.md",
+                        "label": "NetworkMap"
+                    },
+                    "current": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/networkMap/README.md",
+                        "label": "NetworkMap"
+                    }
+                },
+                "label": "NetworkMap"
+            },
+            "linkCalculationApp": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/linkCalculator/README.md",
+                        "label": "LinkCalculator"
+                    },
+                    "current": {
+                        "date": "2018-02-24",
+                        "path": "sdnr/linkCalculator/README.md",
+                        "label": "LinkCalculator"
+                    }
+                },
+                "label": "LinkCalculator"
+            }
+        },
+        "versions": {
+            "0.4.0": {
+                "date": "2018-02-24",
+                "path": "sdnr/README.md",
+                "label": "SDN-R"
+            },
+            "current": {
+                "date": "2018-02-24",
+                "path": "sdnr/README.md",
+                "label": "SDN-R"
+            }
+        },
+        "label": "SDN-R"
+    },
+    "mediatorserver": {
+        "nodes": {
+            "installation": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "",
+                        "path": "mediatorserver/installation/README.md",
+                        "label": ""
+                    },
+                    "current": {
+                        "date": "",
+                        "path": "mediatorserver/installation/README.md",
+                        "label": ""
+                    }
+                },
+                "label": "Installation"
+            },
+            "mediator": {
+                "versions": {
+                    "0.4.0": {
+                        "date": "",
+                        "path": "mediatorserver/mediator/README.md",
+                        "label": ""
+                    },
+                    "current": {
+                        "date": "",
+                        "path": "mediatorserver/mediator/README.md",
+                        "label": ""
+                    }
+                },
+                "label": "Mediator"
+            }
+        },
+        "versions": {
+            "0.4.0": {
+                "date": "",
+                "path": "mediatorserver/README.md",
+                "label": ""
+            },
+            "current": {
+                "date": "",
+                "path": "mediatorserver/README.md",
+                "label": ""
+            }
+        },
+        "label": "MediatorServer"
+    },
+    "faq": {
+        "versions": {
+            "0.4.0": {
+                "date": "2018-02-24",
+                "path": "sdnr/faq.md",
+                "label": "FAQ"
+            },
+            "current": {
+                "date": "2018-02-24",
+                "path": "sdnr/faq.md",
+                "label": "FAQ"
+            }
+        },
+        "label": "FAQ"
+    },
+    "abbreviations": {
+        "versions": {
+            "0.4.0": {
+                "date": "2018-02-24",
+                "path": "sdnr/abbreviations.md",
+                "label": "Abbreviations"
+            },
+            "current": {
+                "date": "2018-02-24",
+                "path": "sdnr/abbreviations.md",
+                "label": "Abbreviations"
+            }
+        },
+        "label": "Abbreviations"
+    },
+    "general": {
+        "versions": {
+            "0.4.0": {
+                "date": "2018-02-24",
+                "path": "sdnr/general.md",
+                "label": "General Functionality"
+            },
+            "current": {
+                "date": "2018-02-24",
+                "path": "sdnr/general.md",
+                "label": "General Functionality"
+            }
+        },
+        "label": "General Functionality"
+    }
+}

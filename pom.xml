@@ -44,6 +44,7 @@
     <modules>
         <module>features</module>
         <module>sdnr/wt</module>
+        <module>sdnr/wt-odlux</module>
         <module>sdnr/northbound</module>
         <module>aafshiro</module>
         <module>lib/rlock</module>
