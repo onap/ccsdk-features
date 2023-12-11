@@ -16,6 +16,23 @@
       "message": "Hi All, \n  Please review and submit if all OK.\nRegards,\nRavi",
       "revId": "dfd91573b7567e1dab482f17111ab8f809553d99",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3a9d057_a3ec372d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2023-12-11T05:32:45Z",
+      "side": 1,
+      "message": "Hi Team, \n Please review.\nRegards,\nRavi",
+      "revId": "dfd91573b7567e1dab482f17111ab8f809553d99",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
   ]
 }
