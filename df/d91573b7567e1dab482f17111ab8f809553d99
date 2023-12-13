@@ -1,0 +1,10 @@
+Code-Review+1: Sai Neetha Phulmali <sai-neetha.phulmali@highstreet-technologies.com>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Verified+1: ONAP Required GHA <releng+onap.required.gha@linuxfoundation.org>
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Herbert Eiselt <herbert.eiselt@highstreet-technologies.com>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Wed, 13 Dec 2023 14:11:27 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/136765
+Project: ccsdk/features
+Branch: refs/heads/master
