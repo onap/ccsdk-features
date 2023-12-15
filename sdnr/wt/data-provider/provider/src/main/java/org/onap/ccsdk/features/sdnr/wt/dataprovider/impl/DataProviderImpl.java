@@ -102,7 +102,9 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
 
     public void onUnbindService(HttpService httpService) {
         httpService.unregister(AboutHttpServlet.URI_PRE);
+        httpService.unregister(DataTreeHttpServlet.URI_PRE);
         this.aboutServlet = null;
+        this.treeServlet = null;
     }
 
     public void onBindService(HttpService httpService)
@@ -111,7 +113,8 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
             LOG.warn("Unable to inject HttpService into loader.");
         } else {
             httpService.registerServlet(AboutHttpServlet.URI_PRE, aboutServlet, null, null);
-            LOG.info("about servlet registered.");
+            httpService.registerServlet(DataTreeHttpServlet.URI_PRE, treeServlet, null, null);
+            LOG.info("about servlet and tree servlet registered.");
         }
     }
 
