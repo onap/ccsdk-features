@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,9 +40,6 @@ import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.InventoryTreeProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.DataTreeObject;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,12 +48,13 @@ import org.slf4j.LoggerFactory;
  *
  */
 
-@HttpWhiteboardServletPattern("/tree/*")
-@HttpWhiteboardServletName("DataTreeHttpServlet")
-@Component(service = Servlet.class)
+//@HttpWhiteboardServletPattern("/tree/*")
+//@HttpWhiteboardServletName("DataTreeHttpServlet")
+//@Component(service = Servlet.class)
 public class DataTreeHttpServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    public static final String URI_PRE = "/tree";
     private InventoryTreeProvider dataTreeProvider;
     private static final Logger LOG = LoggerFactory.getLogger(DataTreeHttpServlet.class);
 
