@@ -42,7 +42,7 @@ export const {
 
     appState.connect.networkElements.rows.forEach(element => {
 
-      if (element.status === 'Connected') {
+      if (element.status) {
         const webUri = webUris.find(item => item.id === element.id as string);
         if (webUri) {
           element.weburi = webUri.weburi;
