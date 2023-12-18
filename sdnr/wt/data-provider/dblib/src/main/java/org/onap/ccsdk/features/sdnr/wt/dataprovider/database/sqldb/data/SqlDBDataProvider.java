@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBConfig;
@@ -87,6 +88,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -474,33 +476,44 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     @Override
     public ReadGuiCutThroughEntryOutputBuilder readGuiCutThroughEntry(EntityInput input) {
         ReadGuiCutThroughEntryOutputBuilder outputBuilder = new ReadGuiCutThroughEntryOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> result =
-                this.guicutthroughRW.getData(input);
 
         if (!guicutthroughOverride.isEmpty()) {
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> gcData =
-                    result.getResult();
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> updatedGcData =
-                    new ArrayList<>();
-            for (int i = 0; i < gcData.size(); i++) {
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data gcDataItem =
-                        gcData.get(i);
-                Guicutthrough gcItem =
-                        new GuicutthroughBuilder().setId(gcDataItem.getId()).setName(gcDataItem.getName())
-                                .setWeburi(guicutthroughOverride + "/" + gcDataItem.getId()).build();
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.DataBuilder gcDataBuilder =
-                        new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.DataBuilder(
-                                gcItem);
-                updatedGcData.add(gcDataBuilder.build());
+            if (input.getFilter() != null) {
+                // Iterate through the Filter map, get the ID and populate the GuicutThrough object accordingly.
+                Map<FilterKey, Filter> inputFilter = input.getFilter();
+                List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> gcData =
+                        new ArrayList<>();
+                for (FilterKey fk : inputFilter.keySet()) {
+                    String fkVal = inputFilter.get(fk).getFiltervalue();
+                    if (fkVal != null) {
+                        addGcItem(gcData, fkVal);
+                    }
+                    for (String fkVals : inputFilter.get(fk).getFiltervalues()) {
+                        addGcItem(gcData, fkVals);
+                    }
+                }
+                outputBuilder.setData(gcData);
             }
-            outputBuilder.setData(updatedGcData);
         } else {
+            QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> result =
+                    this.guicutthroughRW.getData(input);
             outputBuilder.setData(result.getResult());
         }
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.PaginationBuilder()
                         .build());
         return outputBuilder;
+    }
+
+    private void addGcItem(
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> gcData,
+            String value) {
+        Guicutthrough gcItem = new GuicutthroughBuilder().setId(value).setName(value)
+                .setWeburi(guicutthroughOverride + "/" + value).build();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.DataBuilder gcDataBuilder =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.DataBuilder(
+                        gcItem);
+        gcData.add(gcDataBuilder.build());
     }
 
     @Override
