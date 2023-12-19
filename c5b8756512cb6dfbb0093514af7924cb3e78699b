@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "245372eb_8576c845",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2023-12-19T11:46:31Z",
+      "side": 1,
+      "message": "Hi, Please review and submit if all OK.\n@Kapil, need your help in submitting this and a few other open reviews as Dan seems to be on vacation.\nRegards,\nRavi",
+      "revId": "c5b8756512cb6dfbb0093514af7924cb3e78699b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
