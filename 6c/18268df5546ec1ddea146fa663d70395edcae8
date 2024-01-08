@@ -1,0 +1,9 @@
+Verified+1: ONAP Required GHA <releng+onap.required.gha@linuxfoundation.org>
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+2: Dan Timoney <dtimoney@att.com>
+Code-Review+1: Herbert Eiselt <herbert.eiselt@highstreet-technologies.com>
+Submitted-by: Dan Timoney <dtimoney@att.com>
+Submitted-at: Mon, 08 Jan 2024 20:22:00 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/ccsdk/features/+/136854
+Project: ccsdk/features
+Branch: refs/heads/master
