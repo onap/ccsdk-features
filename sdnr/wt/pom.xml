@@ -40,13 +40,11 @@
         <module>common</module>
         <module>common-yang</module>
         <module>data-provider</module>
-        <module>helpserver</module>
         <module>websocketmanager</module>
         <module>devicemanager-core</module>
         <module>devicemanager-onap</module>
         <module>devicemanager-o-ran-sc</module>
         <module>mountpoint-registrar</module>
-        <module>odlux</module>
         <module>netconfnode-state-service</module>
         <module>mountpoint-state-provider</module>
         <!--<module>oauth-provider</module>-->
