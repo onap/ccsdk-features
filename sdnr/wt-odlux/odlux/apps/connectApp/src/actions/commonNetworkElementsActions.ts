@@ -82,7 +82,7 @@ export const findWebUrisForGuiCutThroughAsyncAction = (networkElementIds: string
   networkElementIds.forEach(id => {
     const item = networkElements.rows.find((ne) => ne.id === id);
     if (item) {
-      if (item.status === 'Connected') {
+      if (item.status) {
 
         // if (item.coreModelCapability !== "Unsupported") {
         // element is connected and is added to search list, if it doesn't exist already
@@ -118,7 +118,7 @@ export const findWebUrisForGuiCutThroughAsyncAction = (networkElementIds: string
   });
 
 
-  if (elementsToSearch.length > 0 || notConnectedElements.length > 0 || unsupportedElements.length > 0) {
+  if (elementsToSearch.length > 0 || unsupportedElements.length > 0) {
     const result = await connectService.getAllWebUriExtensionsForNetworkElementListAsync(elementsToSearch);
     dispatcher(new AddWebUriList(result, notConnectedElements, unsupportedElements, prevFoundElements));
   }
