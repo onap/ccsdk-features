@@ -63,7 +63,7 @@ public class ORanDOMFaultNotificationListener implements DOMNotificationListener
     private final @NonNull DataProvider databaseService;
     private final @NonNull ORANFM oranfm;
 
-    private Integer counter; //Local counter is assigned to Notifications
+    private Integer counter; //Local counter is assigned to Events in EventLog
 
     public ORanDOMFaultNotificationListener(@NonNull NetconfDomAccessor netconfDomAccessor, Optional<ORANFM> oranfm,
             @NonNull VESCollectorService vesCollectorService, @NonNull FaultService faultService,
@@ -74,8 +74,8 @@ public class ORanDOMFaultNotificationListener implements DOMNotificationListener
         this.websocketManagerService = Objects.requireNonNull(websocketManagerService);
         this.databaseService = Objects.requireNonNull(databaseService);
         this.oranfm = oranfm.get();
-        this.mapper =
-                new ORanDOMFaultToVESFaultMapper(netconfDomAccessor.getNodeId(), vesCollectorService, "AlarmNotif");
+        this.mapper = new ORanDOMFaultToVESFaultMapper(netconfDomAccessor.getNodeId(), this.vesCollectorService,
+                this.oranfm, "AlarmNotif");
         this.counter = 0;
     }
 
@@ -112,18 +112,20 @@ public class ORanDOMFaultNotificationListener implements DOMNotificationListener
         // Send devicemanager specific notification for database and ODLUX
         Instant eventTimeInstant = ORanDMDOMUtility.getNotificationInstant(notification);
         faultService.faultNotification(
-                ORanDOMToInternalDataModel.getFaultLog(notification, oranfm, netconfDomAccessor.getNodeId(), counter));
+                ORanDOMToInternalDataModel.getFaultLog(notification, oranfm, netconfDomAccessor.getNodeId()));
         // Send model specific notification to WebSocketManager
-        websocketManagerService.sendNotification(notification, netconfDomAccessor.getNodeId(), oranfm.getAlarmNotifQName());
+        websocketManagerService.sendNotification(notification, netconfDomAccessor.getNodeId(),
+                oranfm.getAlarmNotifQName());
 
         try {
             if (vesCollectorService.getConfig().isVESCollectorEnabled()) {
-                VESCommonEventHeaderPOJO header = mapper.mapCommonEventHeader(notification, eventTimeInstant, counter);
-                VESFaultFieldsPOJO body = mapper.mapFaultFields(notification, oranfm);
+                VESCommonEventHeaderPOJO header = mapper.mapCommonEventHeader(notification, eventTimeInstant);
+                VESFaultFieldsPOJO body = mapper.mapFaultFields(notification);
                 VESMessage vesMsg = vesCollectorService.generateVESEvent(header, body);
                 vesCollectorService.publishVESMessage(vesMsg);
                 LOG.debug("VES Message is  {}", vesMsg.getMessage());
-                writeToEventLog(vesMsg.getMessage(), eventTimeInstant, oranfm.getAlarmNotifQName().getLocalName(), counter);
+                writeToEventLog(vesMsg.getMessage(), eventTimeInstant, oranfm.getAlarmNotifQName().getLocalName(),
+                        counter);
             }
         } catch (JsonProcessingException | DateTimeParseException e) {
             LOG.debug("Can not convert event into VES message {}", notification, e);
@@ -149,7 +151,7 @@ public class ORanDOMFaultNotificationListener implements DOMNotificationListener
         }
         eventlogBuilder.setNewValue(data);
         eventlogBuilder.setSourceType(SourceType.Netconf);
-        eventlogBuilder.setTimestamp(ORanDOMToInternalDataModel.getDateAndTimeOfInstant(eventTimeInstant));
+        eventlogBuilder.setTimestamp(ORanDMDOMUtility.getDateAndTimeOfInstant(eventTimeInstant));
 
         databaseService.writeEventLog(eventlogBuilder.build());
     }

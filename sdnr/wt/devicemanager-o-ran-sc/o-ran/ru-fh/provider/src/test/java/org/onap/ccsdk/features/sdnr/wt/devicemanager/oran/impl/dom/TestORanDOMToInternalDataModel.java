@@ -183,7 +183,7 @@ public class TestORanDOMToInternalDataModel {
     public void testORANFault() {
         ContainerNode cn = createORANDOMFault();
         NetconfDeviceNotification faultNotif = new NetconfDeviceNotification(cn, Instant.now());
-        FaultlogEntity fle = ORanDOMToInternalDataModel.getFaultLog(faultNotif, oranfm.get(), nodeId, 1);
+        FaultlogEntity fle = ORanDOMToInternalDataModel.getFaultLog(faultNotif, oranfm.get(), nodeId);
         assertEquals(fle.getId(), "47");
     }
 
@@ -207,7 +207,7 @@ public class TestORanDOMToInternalDataModel {
         UnkeyedListNode activeAlarmsList =
                 (UnkeyedListNode) cn.childByArg(new NodeIdentifier(oranfm.get().getFaultActiveAlarmsQName()));
         for (UnkeyedListEntryNode activeAlarmEntry : activeAlarmsList.body())
-            ORanDOMToInternalDataModel.getFaultLog(activeAlarmEntry, oranfm.get(), new NodeId("nSky"), Integer.valueOf(0));
+            ORanDOMToInternalDataModel.getFaultLog(activeAlarmEntry, oranfm.get(), new NodeId("nSky"));
     }
 
     public static ContainerNode createORANDOMFault() {
