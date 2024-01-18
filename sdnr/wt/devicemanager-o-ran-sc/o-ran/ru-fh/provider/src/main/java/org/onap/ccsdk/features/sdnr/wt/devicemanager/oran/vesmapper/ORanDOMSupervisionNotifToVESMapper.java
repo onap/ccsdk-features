@@ -23,7 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.vesmapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.dataprovider.ORanDOMToInternalDataModel;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDMDOMUtility;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESStndDefinedFieldsPOJO;
@@ -138,7 +138,7 @@ public class ORanDOMSupervisionNotifToVESMapper {
 
         IetfNotification ietfNotif = new IetfNotification();
         ietfNotif.setOranSupervisionNotif(oruSuperNotif);
-        ietfNotif.setEventTime(ORanDOMToInternalDataModel.getDateAndTimeOfInstant(eventTimeInstant).getValue());
+        ietfNotif.setEventTime(ORanDMDOMUtility.getDateAndTimeOfInstant(eventTimeInstant).getValue());
 
         DataObject data = new DataObject();
         data.setIetfNotification(ietfNotif);
