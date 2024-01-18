@@ -21,27 +21,20 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.dataprovider;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDMDOMUtility;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDeviceManagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.yangspecs.ORANFM;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.yangspecs.OnapSystem;
-import org.opendaylight.mdsal.dom.api.DOMEvent;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Guicutthrough;
@@ -66,14 +59,13 @@ import org.slf4j.LoggerFactory;
 public class ORanDOMToInternalDataModel {
 
     private static final Logger LOG = LoggerFactory.getLogger(ORanDOMToInternalDataModel.class);
-    private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStampImpl.getConverter();
 
     public static List<Inventory> getInventoryList(NodeId nodeId, NormalizedNode hwData) {
 
         List<Inventory> inventoryResultList = new ArrayList<Inventory>();
         ContainerNode hwContainer = (ContainerNode) hwData;
-        MapNode componentMap = (MapNode) hwContainer
-                .getChildByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_HW_COMPONENT_LIST));
+        MapNode componentMap =
+                (MapNode) hwContainer.getChildByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_HW_COMPONENT_LIST));
         Collection<MapEntryNode> componentMapEntries = componentMap.body();
 
         for (MapEntryNode componentMapEntryNode : getRootComponents(componentMapEntries)) {
@@ -203,7 +195,8 @@ public class ORanDOMToInternalDataModel {
      * @param sys
      * @return
      */
-    public static Optional<Guicutthrough> getGuicutthrough(@Nullable AugmentationNode onapSysAugData,  @NonNull OnapSystem onapSys) {
+    public static Optional<Guicutthrough> getGuicutthrough(@Nullable AugmentationNode onapSysAugData,
+            @NonNull OnapSystem onapSys) {
 
         if (onapSysAugData != null) {
             String name = ORanDMDOMUtility.getLeafValue(onapSysAugData, onapSys.getName());
@@ -232,14 +225,13 @@ public class ORanDOMToInternalDataModel {
      * @param counter to be integrated into data
      * @return FaultlogEntity with data
      */
-    public static FaultlogEntity getFaultLog(DOMNotification notification, @NonNull ORANFM oranfm, NodeId nodeId, Integer counter) {
+    public static FaultlogEntity getFaultLog(DOMNotification notification, @NonNull ORANFM oranfm, NodeId nodeId) {
         ContainerNode cn = notification.getBody();
         FaultlogBuilder faultAlarm = new FaultlogBuilder();
         faultAlarm.setNodeId(nodeId.getValue());
         faultAlarm.setObjectId(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultSourceQName()));
         faultAlarm.setProblem(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultTextQName()));
-        faultAlarm.setSeverity(getSeverityType(
-                ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultSeverityQName()),
+        faultAlarm.setSeverity(getSeverityType(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultSeverityQName()),
                 ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIsClearedQName()).equals("true")));
         faultAlarm.setCounter(Integer.parseInt(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName())));
         faultAlarm.setId(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName()));
@@ -250,13 +242,11 @@ public class ORanDOMToInternalDataModel {
         return faultAlarm.build();
     }
 
-    public static FaultlogEntity getFaultLog(UnkeyedListEntryNode activeAlarmEntry, ORANFM oranfm, NodeId nodeId, Integer counter) {
+    public static FaultlogEntity getFaultLog(UnkeyedListEntryNode activeAlarmEntry, ORANFM oranfm, NodeId nodeId) {
         FaultlogBuilder faultAlarm = new FaultlogBuilder();
         faultAlarm.setNodeId(nodeId.getValue());
-        faultAlarm.setObjectId(getObjectId(
-                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultSourceQName())));
-        faultAlarm.setProblem(
-                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultTextQName()));
+        faultAlarm.setObjectId(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultSourceQName()));
+        faultAlarm.setProblem(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultTextQName()));
         faultAlarm.setSeverity(getSeverityType(
                 ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultSeverityQName()),
                 ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIsClearedQName()).equals("true")));
@@ -264,32 +254,9 @@ public class ORanDOMToInternalDataModel {
                 Integer.parseInt(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIdQName())));
         faultAlarm.setId(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIdQName()));
         faultAlarm.setSourceType(SourceType.Netconf);
-        faultAlarm.setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp(
-                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultEventTimeQName())));
+        faultAlarm.setTimestamp(NetconfTimeStampImpl.getConverter()
+                .getTimeStamp(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultEventTimeQName())));
         return faultAlarm.build();
-
-    }
-
-    /**
-     * Convert Instant to NETCONF DateAndTime
-     * @param eventTimeInstant
-     * @return DateAndTime
-     */
-    public static DateAndTime getDateAndTimeOfInstant(Instant eventTimeInstant) {
-        Date eventDate = Date.from(eventTimeInstant);
-        return new DateAndTime(NETCONFTIME_CONVERTER.getTimeStamp(eventDate));
-    }
-
-    private static DateAndTime getEventTime(DOMNotification notification) {
-        DateAndTime eventTime;
-        Instant notificationEventTime = null;
-        if (notification instanceof DOMEvent) {
-            notificationEventTime = ((DOMEvent) notification).getEventInstant();
-            eventTime = NetconfTimeStampImpl.getConverter().getTimeStamp(notificationEventTime.toString());
-        } else {
-            eventTime = NetconfTimeStampImpl.getConverter().getTimeStamp();
-        }
-        return eventTime;
     }
 
     /**
@@ -319,16 +286,6 @@ public class ORanDOMToInternalDataModel {
         }
         throw new IllegalArgumentException("Unknown Alarm state represent as Critical. isCleared=" + isCleared
                 + " faultSeverity=" + faultSeverity);
-    }
-
-    private static String getObjectId(String leafValue) {
-        // fault-source = /ietf-hardware:hardware/component[name='slot0-logical0']
-        Pattern p = Pattern.compile("\\/ietf-hardware:hardware\\/component\\[name=\\'(.*)\\']");
-        Matcher m = p.matcher(leafValue);
-        if (m.find()) {
-            return m.group(1);
-        }
-        return leafValue;
     }
 
 }

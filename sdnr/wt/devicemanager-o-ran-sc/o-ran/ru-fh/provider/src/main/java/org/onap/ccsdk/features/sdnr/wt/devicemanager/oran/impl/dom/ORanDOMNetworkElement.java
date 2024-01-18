@@ -197,6 +197,7 @@ public class ORanDOMNetworkElement implements NetworkElement, IConfigChangedList
          * this.oRanFaultListenerRegistrationResult.close(); } ;
          */
         databaseService.clearGuiCutThroughEntriesOfNode(getMountpointId());
+        faultService.removeAllCurrentProblemsOfNode(getNodeId());
     }
 
     @Override
@@ -215,7 +216,9 @@ public class ORanDOMNetworkElement implements NetworkElement, IConfigChangedList
     }
 
     @Override
-    public void warmstart() {}
+    public void warmstart() {
+        faultService.removeAllCurrentProblemsOfNode(getNodeId());
+    }
 
     @Override
     public Optional<NetconfAccessor> getAcessor() {
@@ -307,12 +310,10 @@ public class ORanDOMNetworkElement implements NetworkElement, IConfigChangedList
             ContainerNode cn = (ContainerNode) oData.get();
             UnkeyedListNode activeAlarmsList =
                     (UnkeyedListNode) cn.childByArg(new NodeIdentifier(oranfm.get().getFaultActiveAlarmsQName()));
-            int counter = 0;
             for (UnkeyedListEntryNode activeAlarmEntry : activeAlarmsList.body())
                 faultService.faultNotification(ORanDOMToInternalDataModel.getFaultLog(activeAlarmEntry, oranfm.get(),
-                        netconfDomAccessor.getNodeId(), Integer.valueOf(counter++)));
+                        netconfDomAccessor.getNodeId()));
         }
-
     }
 
     @Override

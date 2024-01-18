@@ -85,15 +85,18 @@ public class ORanDOMFaultToVESFaultMapper {
 
     private final VESCollectorService vesProvider;
     private final String notifName; // Name
+    private final ORANFM oranfm;
     private final String nodeIdString; // Sourcename
     //Initialized during registration
     private String mfgName;
     private String uuid;
     private String modelName;
 
-    public ORanDOMFaultToVESFaultMapper(NodeId nodeId, VESCollectorService vesCollectorService, String notifName) {
+    public ORanDOMFaultToVESFaultMapper(NodeId nodeId, VESCollectorService vesCollectorService, ORANFM oranfm,
+            String notifName) {
         this.nodeIdString = nodeId.getValue();
         this.vesProvider = vesCollectorService;
+        this.oranfm = oranfm;
         this.notifName = notifName;
     }
 
@@ -109,29 +112,30 @@ public class ORanDOMFaultToVESFaultMapper {
         this.modelName = modelName;
     }
 
-    public VESCommonEventHeaderPOJO mapCommonEventHeader(DOMNotification notification, Instant eventTime,
-            int sequenceNo) {
+    public VESCommonEventHeaderPOJO mapCommonEventHeader(DOMNotification notification, Instant eventTime) {
         VESCommonEventHeaderPOJO vesCEH = new VESCommonEventHeaderPOJO();
+        ContainerNode cn = notification.getBody();
         vesCEH.setDomain(VES_EVENT_DOMAIN);
         vesCEH.setEventName(notifName);
         vesCEH.setEventType(VES_EVENTTYPE);
         vesCEH.setPriority(VES_EVENT_PRIORITY);
 
-        String eventId = notifName + "-" + Long.toUnsignedString(sequenceNo);
+        String eventId =
+                notifName + "-" + Integer.parseInt(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName()));
 
         vesCEH.setEventId(eventId);
         vesCEH.setStartEpochMicrosec(eventTime.toEpochMilli() * 1000);
         vesCEH.setLastEpochMicrosec(eventTime.toEpochMilli() * 1000);
         vesCEH.setNfVendorName(mfgName);
         vesCEH.setReportingEntityName(vesProvider.getConfig().getReportingEntityName());
-        vesCEH.setSequence(sequenceNo);
+        vesCEH.setSequence(Integer.parseInt(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName())));
         vesCEH.setSourceId(uuid);
         vesCEH.setSourceName(nodeIdString);
 
         return vesCEH;
     }
 
-    public VESFaultFieldsPOJO mapFaultFields(DOMNotification alarmNotif, ORANFM oranfm) {
+    public VESFaultFieldsPOJO mapFaultFields(DOMNotification alarmNotif) {
         VESFaultFieldsPOJO vesFaultFields = new VESFaultFieldsPOJO();
         ContainerNode cn = alarmNotif.getBody();
         vesFaultFields.setAlarmCondition(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName()));
