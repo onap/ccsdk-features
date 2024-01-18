@@ -24,11 +24,15 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util;
 import com.google.common.base.VerifyException;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.mdsal.dom.api.DOMEvent;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
@@ -42,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 public class ORanDMDOMUtility {
     public static final Logger LOG = LoggerFactory.getLogger(ORanDMDOMUtility.class);
+    private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStampImpl.getConverter();
 
     public static String getKeyValue(MapEntryNode componentEntry) {
         NodeIdentifierWithPredicates componentKey = componentEntry.getIdentifier(); // list key
@@ -84,6 +89,16 @@ public class ORanDMDOMUtility {
         } else {
             return Instant.now();
         }
+    }
+
+    /**
+     * Convert Instant to NETCONF DateAndTime
+     * @param eventTimeInstant
+     * @return DateAndTime
+     */
+    public static DateAndTime getDateAndTimeOfInstant(Instant eventTimeInstant) {
+        Date eventDate = Date.from(eventTimeInstant);
+        return new DateAndTime(NETCONFTIME_CONVERTER.getTimeStamp(eventDate));
     }
 
 }
