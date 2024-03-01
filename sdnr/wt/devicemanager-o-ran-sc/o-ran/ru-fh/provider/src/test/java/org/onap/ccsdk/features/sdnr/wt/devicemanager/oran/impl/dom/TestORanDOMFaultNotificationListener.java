@@ -133,7 +133,10 @@ public class TestORanDOMFaultNotificationListener {
                 .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultSourceQName(), "Slot-2-Port-B"))
                 .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultSeverityQName(), "MAJOR"))
                 .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultIsClearedQName(), "true"))
-                .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultTextQName(), "CPRI Port Down")).build();
+                .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultTextQName(), "CPRI Port Down"))
+                .withChild(
+                        ImmutableNodes.leafNode(oranfm.get().getFaultEventTimeQName(), "2024-02-29T09:33:31.000+00:00"))
+                .build();
     }
 
     public static class NetconfDeviceNotification implements DOMNotification, DOMEvent {
