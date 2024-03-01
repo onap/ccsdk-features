@@ -237,7 +237,7 @@ public class ORanDOMToInternalDataModel {
         faultAlarm.setId(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName()));
         faultAlarm.setSourceType(SourceType.Netconf);
         faultAlarm.setTimestamp(NetconfTimeStampImpl.getConverter()
-                .getTimeStamp(ORanDMDOMUtility.getNotificationInstant(notification).toString()));
+                .getTimeStamp(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultEventTimeQName())));
         return faultAlarm.build();
     }
 
@@ -249,7 +249,8 @@ public class ORanDOMToInternalDataModel {
         faultAlarm.setSeverity(getSeverityType(
                 ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultSeverityQName()),
                 ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIsClearedQName()).equals("true")));
-        faultAlarm.setCounter(Integer.parseInt(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIdQName())));
+        faultAlarm.setCounter(
+                Integer.parseInt(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIdQName())));
         faultAlarm.setId(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIdQName()));
         faultAlarm.setSourceType(SourceType.Netconf);
         faultAlarm.setTimestamp(NetconfTimeStampImpl.getConverter()

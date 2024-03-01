@@ -39,23 +39,9 @@ public class ORANFM extends YangModule {
     public static final QNameModule ORANFM_2022_08_15 =
             QNameModule.create(XMLNamespace.of(NAMESPACE), Revision.of("2022-08-15"));
     private static final List<QNameModule> MODULES = Arrays.asList(ORANFM_2019_02_04, ORANFM_2022_08_15);
-//    private final QName ORAN_FM_ALARM_NOTIF;
-//    private final QName ORAN_FM_FAULT_ID;
-//    private final QName ORAN_FM_FAULT_SOURCE;
-//    private final QName ORAN_FM_FAULT_SEVERITY;
-//    private final QName ORAN_FM_FAULT_TEXT;
-//    private final QName ORAN_FM_FAULT_IS_CLEARED;
-
-
 
     ORANFM(NetconfDomAccessor netconfDomAccessor, QNameModule module) {
         super(netconfDomAccessor, module);
-//        ORAN_FM_ALARM_NOTIF = QName.create(module, "alarm-notif");
-//        ORAN_FM_FAULT_ID = QName.create(module, "fault-id");
-//        ORAN_FM_FAULT_SOURCE = QName.create(module, "fault-source");
-//        ORAN_FM_FAULT_SEVERITY = QName.create(module, "fault-severity");
-//        ORAN_FM_FAULT_TEXT = QName.create(module, "fault-text");
-//        ORAN_FM_FAULT_IS_CLEARED = QName.create(module, "is-cleared");
     }
 
     public QName getFaultSourceQName() {
@@ -83,17 +69,17 @@ public class ORANFM extends YangModule {
     }
 
     public QName getFaultEventTimeQName() {
-    	return getQName("event-time");
+        return getQName("event-time");
     }
-    
+
     public QName getFaultActiveAlarmListQName() {
-    	return getQName("active-alarm-list");
+        return getQName("active-alarm-list");
     }
-    
+
     public QName getFaultActiveAlarmsQName() {
-    	return getQName("active-alarms");
+        return getQName("active-alarms");
     }
-    
+
     /**
      * Get specific instance, depending on capabilities
      *
