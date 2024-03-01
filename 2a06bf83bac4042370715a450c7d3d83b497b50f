@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "86ea5a73_fab6959a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4931
+      },
+      "writtenOn": "2024-03-01T16:42:22Z",
+      "side": 1,
+      "message": "I have added a missing tox.ini configuration change that was done in sdnc/oam this week to make it working.",
+      "revId": "2a06bf83bac4042370715a450c7d3d83b497b50f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
