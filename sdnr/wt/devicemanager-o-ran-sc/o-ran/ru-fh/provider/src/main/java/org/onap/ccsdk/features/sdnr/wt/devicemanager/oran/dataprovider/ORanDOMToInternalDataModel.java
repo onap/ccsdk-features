@@ -241,10 +241,12 @@ public class ORanDOMToInternalDataModel {
         faultAlarm.setSeverity(getSeverityType(
                 ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultSeverityQName()),
                 ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIsClearedQName()).equals("true")));
-        faultAlarm.setCounter(counter);
+        faultAlarm.setCounter(Integer.parseInt(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName())));
         faultAlarm.setId(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName()));
         faultAlarm.setSourceType(SourceType.Netconf);
-        faultAlarm.setTimestamp(getEventTime(notification));
+        faultAlarm.setTimestamp(NetconfTimeStampImpl.getConverter()
+                .getTimeStamp(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultEventTimeQName())));
+
         return faultAlarm.build();
     }
 
@@ -257,9 +259,9 @@ public class ORanDOMToInternalDataModel {
                 ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultTextQName()));
         faultAlarm.setSeverity(getSeverityType(
                 ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultSeverityQName()),
-                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIsClearedQName())
-                        .equals("true")));
-        faultAlarm.setCounter(counter);
+                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIsClearedQName()).equals("true")));
+        faultAlarm.setCounter(
+                Integer.parseInt(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIdQName())));
         faultAlarm.setId(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIdQName()));
         faultAlarm.setSourceType(SourceType.Netconf);
         faultAlarm.setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp(
