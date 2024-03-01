@@ -244,7 +244,12 @@ public class ORanDOMToInternalDataModel {
         faultAlarm.setCounter(counter);
         faultAlarm.setId(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName()));
         faultAlarm.setSourceType(SourceType.Netconf);
+<<<<<<< HEAD   (45b972 Inventory TreeView Fixed)
         faultAlarm.setTimestamp(getEventTime(notification));
+=======
+        faultAlarm.setTimestamp(NetconfTimeStampImpl.getConverter()
+                .getTimeStamp(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultEventTimeQName())));
+>>>>>>> CHANGE (2a06bf Change event time mapping)
         return faultAlarm.build();
     }
 
@@ -257,9 +262,15 @@ public class ORanDOMToInternalDataModel {
                 ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultTextQName()));
         faultAlarm.setSeverity(getSeverityType(
                 ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultSeverityQName()),
+<<<<<<< HEAD   (45b972 Inventory TreeView Fixed)
                 ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIsClearedQName())
                         .equals("true")));
         faultAlarm.setCounter(counter);
+=======
+                ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIsClearedQName()).equals("true")));
+        faultAlarm.setCounter(
+                Integer.parseInt(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIdQName())));
+>>>>>>> CHANGE (2a06bf Change event time mapping)
         faultAlarm.setId(ORanDMDOMUtility.getLeafValue(activeAlarmEntry, oranfm.getFaultIdQName()));
         faultAlarm.setSourceType(SourceType.Netconf);
         faultAlarm.setTimestamp(NetconfTimeStampImpl.getConverter().getTimeStamp(
