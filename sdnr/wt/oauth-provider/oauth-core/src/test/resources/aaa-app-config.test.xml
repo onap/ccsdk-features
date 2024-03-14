@@ -1,0 +1,77 @@
+<?xml version="1.0" ?>
+
+
+<shiro-configuration xmlns="urn:opendaylight:aaa:app:config">
+
+
+    <main>
+        <pair-key>tokenAuthRealm</pair-key>
+        <pair-value>org.onap.ccsdk.features.sdnr.wt.oauthprovider.OAuth2Realm</pair-value>
+    </main>
+
+    <main>
+        <pair-key>securityManager.realms</pair-key>
+        <pair-value>$tokenAuthRealm</pair-value>
+    </main>
+
+    <main>
+        <pair-key>anyroles</pair-key>
+        <pair-value>org.opendaylight.aaa.shiro.filters.AnyRoleHttpAuthenticationFilter</pair-value>
+    </main>
+    <main>
+        <pair-key>authcBearer</pair-key>
+        <pair-value>org.opendaylight.aaa.shiro.filters.ODLHttpAuthenticationFilter2</pair-value>
+    </main>
+
+    <main>
+        <pair-key>accountingListener</pair-key>
+        <pair-value>org.opendaylight.aaa.shiro.filters.AuthenticationListener</pair-value>
+    </main>
+    <main>
+        <pair-key>securityManager.authenticator.authenticationListeners</pair-key>
+        <pair-value>$accountingListener</pair-value>
+    </main>
+
+    <main>
+        <pair-key>dynamicAuthorization</pair-key>
+        <pair-value>org.opendaylight.aaa.shiro.realm.MDSALDynamicAuthorizationFilter</pair-value>
+    </main>
+
+    <urls>
+        <pair-key>/**/operations/cluster-admin**</pair-key>
+        <pair-value>dynamicAuthorization</pair-value>
+    </urls>
+    <urls>
+        <pair-key>/**/v1/**</pair-key>
+        <pair-value>authcBearer, roles[admin]</pair-value>
+    </urls>
+    <urls>
+        <pair-key>/**/config/aaa*/**</pair-key>
+        <pair-value>authcBearer, roles[admin]</pair-value>
+    </urls>
+     <urls>
+        <pair-key>/oauth/**</pair-key>
+        <pair-value>anon</pair-value>
+    </urls>
+    <urls>
+        <pair-key>/odlux/**</pair-key>
+        <pair-value>anon</pair-value>
+    </urls>
+    <urls>
+        <pair-key>/apidoc/**</pair-key>
+        <pair-value>authcBasic, roles[admin]</pair-value>
+    </urls>
+     <urls>
+        <pair-key>/test123/**</pair-key>
+        <pair-value>authcBasic</pair-value>
+    </urls>
+    <urls>
+        <pair-key>/rests/**</pair-key>
+        <pair-value>authcBearer, anyroles["admin,provision"]</pair-value>
+    </urls>
+    <urls>
+        <pair-key>/**</pair-key>
+        <pair-value>authcBearer, anyroles["admin,provision"]</pair-value>
+    </urls>
+</shiro-configuration>
+
