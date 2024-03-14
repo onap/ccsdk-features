@@ -49,7 +49,7 @@
         <module>odlux</module>
         <module>netconfnode-state-service</module>
         <module>mountpoint-state-provider</module>
-        <!--<module>oauth-provider</module>-->
+        <module>oauth-provider</module>
         <module>featureaggregator</module>
     </modules>
 </project>
