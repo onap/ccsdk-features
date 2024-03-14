@@ -3,7 +3,7 @@
   ~ ============LICENSE_START=======================================================
   ~ ONAP : ccsdk features
   ~ ================================================================================
-  ~ Copyright (C) 2018 highstreet technologies GmbH Intellectual Property.
+  ~ Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
   ~ All rights reserved.
   ~ ================================================================================
   ~ Update Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
@@ -22,30 +22,20 @@
   ~ ============LICENSE_END=======================================================
   ~
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.onap.ccsdk.parent</groupId>
-        <artifactId>odlparent-lite</artifactId>
-        <version>2.6.1</version>
-        <relativePath/>
-    </parent>
+<blueprint xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" odl:use-default-for-reference-types="true">
 
-    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
-    <artifactId>sdnr-wt-oauth-provider-top</artifactId>
-    <version>1.6.3-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
+    <reference id="passwordCredentialAuth" interface="org.opendaylight.aaa.api.PasswordCredentialAuth"/>
+    <reference id="onBindService" availability="mandatory" activation="eager" interface="org.osgi.service.http.HttpService">
+        <reference-listener ref="authServlet" bind-method="onBindService" unbind-method="onUnbindService"/>
+    </reference>
 
-    <name>ccsdk-features :: ${project.artifactId}</name>
+    <bean id="authServlet"
+          class="org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet">
+        <property ref="dataBroker" name="dataBroker" />
+        <property ref="passwordCredentialAuth" name="passwordCredentialAuth" />
+    </bean>
 
-    <modules>
-        <module>oauth-core</module>
-        <module>oauth-realm</module>
-	    <module>oauth-web</module>
-    </modules>
-
-    <properties>
-        <feature-name>sdnr-wt-oauth-provider</feature-name>
-    </properties>
-</project>
+</blueprint>

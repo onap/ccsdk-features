@@ -41,7 +41,7 @@
 
     <modules>
         <module>feature</module>
-        <!-- <module>feature-oauth</module> -->
+        <module>feature-oauth</module>
         <module>feature-devicemanager</module>
         <module>feature-devicemanager-base</module>
         <module>installer</module>
