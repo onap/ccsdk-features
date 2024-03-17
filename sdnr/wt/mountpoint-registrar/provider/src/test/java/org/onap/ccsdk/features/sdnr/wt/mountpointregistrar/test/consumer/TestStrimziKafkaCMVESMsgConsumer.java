@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.InvalidMessageException;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.config.GeneralConfigForTest;
+import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.config.TestStrimziKafkaConfig;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.vesdomain.cm.StrimziKafkaCMVESMsgConsumer;
 
 public class TestStrimziKafkaCMVESMsgConsumer {
@@ -43,11 +44,13 @@ public class TestStrimziKafkaCMVESMsgConsumer {
     private static final String CONFIGURATION_FILE = "cm_test.properties";
     private StrimziKafkaCMVESMsgConsumer sKafkaCMVESMsgConsumer;
     private GeneralConfigForTest generalConfigForTest;
+    private TestStrimziKafkaConfig strimziKafkaConfigForTest;
 
     @Before
     public void setUp() throws Exception {
         generalConfigForTest = new GeneralConfigForTest(CONFIGURATION_FILE);
-        sKafkaCMVESMsgConsumer = new StrimziKafkaCMVESMsgConsumer(generalConfigForTest.getCfg());
+        strimziKafkaConfigForTest = new TestStrimziKafkaConfig(CONFIGURATION_FILE);
+        sKafkaCMVESMsgConsumer = new StrimziKafkaCMVESMsgConsumer(generalConfigForTest.getCfg(), null);
     }
 
     @Test

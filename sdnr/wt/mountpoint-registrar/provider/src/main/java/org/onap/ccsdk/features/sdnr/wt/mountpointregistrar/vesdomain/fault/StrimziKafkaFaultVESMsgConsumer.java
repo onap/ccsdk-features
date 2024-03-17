@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Map;
-
+import org.apache.kafka.clients.admin.Admin;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.GeneralConfig;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.StrimziKafkaVESMsgConsumerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
@@ -36,8 +36,8 @@ public class StrimziKafkaFaultVESMsgConsumer extends StrimziKafkaVESMsgConsumerI
 
     private static final Logger LOG = LoggerFactory.getLogger(StrimziKafkaFaultVESMsgConsumer.class);
 
-    public StrimziKafkaFaultVESMsgConsumer(GeneralConfig generalConfig) {
-        super(generalConfig);
+    public StrimziKafkaFaultVESMsgConsumer(GeneralConfig generalConfig, Admin kafkaAdminClient) {
+        super(generalConfig, kafkaAdminClient);
     }
 
     @Override

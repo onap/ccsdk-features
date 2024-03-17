@@ -95,7 +95,11 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
     @Override
     public void onConfigChanged() {
         if (generalConfig == null) { // Included as NullPointerException observed once in docker logs
-            LOG.warn("onConfigChange cannot be handled. Unexpected Null");
+            LOG.warn("onConfigChange cannot be handled. Unexpected Null for generalConfig");
+            return;
+        }
+        if (strimziKafkaConfig == null) { // Included as NullPointerException observed once in docker logs
+            LOG.warn("onConfigChange cannot be handled. Unexpected Null for strimziKafkaConfig");
             return;
         }
         LOG.info("Service configuration state changed. Enabled: {}", strimziKafkaConfig.getEnabled());
