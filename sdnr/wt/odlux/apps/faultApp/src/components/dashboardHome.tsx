@@ -1,3 +1,5 @@
+<<<<<<< HEAD   (907af9 fix oauth code)
+=======
 /**
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
@@ -153,7 +155,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
             let label =
               (data.datasets[tooltipItem.datasetIndex].labels &&
                 data.datasets[tooltipItem.datasetIndex].labels[
-                  tooltipItem.index
+                tooltipItem.index
                 ]) ||
               data.labels[tooltipItem.index] ||
               '';
@@ -180,10 +182,12 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
         },
       },
       onClick: (event: MouseEvent, item: any) => {
-        if (item[0]) {
-          let connectionStatus = labels[item[0]._index] + '';
-          this.props.navigateToApplication('connect', '/connectionStatus/' + connectionStatus);
-        }
+        setTimeout(() => {
+          if (item[0]) {
+            let connectionStatus = labels[item[0]._index] + '';
+            this.props.navigateToApplication('connect', '/connectionStatus/' + connectionStatus);
+          }
+        }, 0);
       },
     };
 
@@ -263,7 +267,7 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
             let label =
               (data.datasets[tooltipItem.datasetIndex].labels &&
                 data.datasets[tooltipItem.datasetIndex].labels[
-                  tooltipItem.index
+                tooltipItem.index
                 ]) ||
               data.labels[tooltipItem.index] ||
               '';
@@ -290,10 +294,12 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
         },
       },
       onClick: (event: MouseEvent, item: any) => {
-        if (item[0]) {
-          let severity = alarmLabels[item[0]._index] + '';
-          this.props.navigateToApplication('fault', '/alarmStatus/' + severity);
-        }
+        setTimeout(() => {
+          if (item[0]) {
+            let severity = alarmLabels[item[0]._index] + '';
+            this.props.navigateToApplication('fault', '/alarmStatus/' + severity);
+          }
+        }, 0);
       },
     };
 
@@ -471,3 +477,4 @@ class DashboardHome extends React.Component<HomeComponentProps>  {
 }
 
 export default (withRouter(connect(mapProps, mapDispatch)(DashboardHome)));
+>>>>>>> CHANGE (5418ff ODLUX Update)

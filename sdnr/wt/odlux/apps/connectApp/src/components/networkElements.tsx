@@ -1,3 +1,5 @@
+<<<<<<< HEAD   (907af9 fix oauth code)
+=======
 /**
 * ============LICENSE_START========================================================================
 * ONAP : ccsdk feature sdnr wt odlux
@@ -199,8 +201,9 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
         { property: 'port', title: 'Port', type: ColumnType.numeric },
         { property: 'isRequired', title: 'Required', type: ColumnType.boolean },
         { property: 'deviceType', title: 'Type', type: ColumnType.text },
-        //  { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
         { property: 'deviceFunction', title: 'Function', type: ColumnType.text, width: '25%' },
+        { property: "coreModelCapability", title: "Core Model", type: ColumnType.text },
+        { property: "mountMethod", title: "Mount Method", type: ColumnType.text },
       ]} idProperty="id" {...this.props.networkElementsActions} {...this.props.networkElementsProperties} asynchronus createContextMenu={rowData => {
 
         return this.getContextMenu(rowData);
@@ -312,3 +315,4 @@ export class NetworkElementsListComponent extends React.Component<NetworkElement
 }
 
 export const NetworkElementsList = withStyles(styles)(connect(mapProps, mapDispatch)(NetworkElementsListComponent));
+>>>>>>> CHANGE (5418ff ODLUX Update)

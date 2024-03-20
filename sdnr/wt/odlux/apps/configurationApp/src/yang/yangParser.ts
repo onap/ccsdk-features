@@ -1,3 +1,5 @@
+<<<<<<< HEAD   (907af9 fix oauth code)
+=======
 /* eslint-disable @typescript-eslint/no-loss-of-precision */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -491,7 +493,12 @@ export class YangParser {
   }
 
   public postProcess() {
-
+    // process all type refs
+    this._typeRefToResolve.forEach(cb => {
+      try { cb(); } catch (error) {
+        console.warn(error.message);
+      }
+    });
     /**
      * This is to fix the issue for sequential execution of modules based on their child and parent relationship
      * We are sorting the module object based on their augment status
@@ -580,7 +587,7 @@ export class YangParser {
         const identity = module.identities[idKey];
         if (identity.base != null) {
           const base = this.resolveIdentity(identity.base, module);
-          base.children?.push(identity);
+          base?.children?.push(identity);
         } else {
           baseIdentities.push(identity);
         }
@@ -591,12 +598,6 @@ export class YangParser {
     });
 
     this._identityToResolve.forEach(cb => {
-      try { cb(); } catch (error) {
-        console.warn(error.message);
-      }
-    });
-
-    this._typeRefToResolve.forEach(cb => {
       try { cb(); } catch (error) {
         console.warn(error.message);
       }
@@ -622,8 +623,11 @@ export class YangParser {
       }
     });
 
+    const knownViews: ViewSpecification[] = [];
     // resolve readOnly
     const resolveReadOnly = (view: ViewSpecification, parentConfig: boolean) => {
+      if (knownViews.includes(view)) return;
+      knownViews.push(view);
 
       // update view config
       view.config = view.config && parentConfig;
@@ -1623,3 +1627,4 @@ export class YangParser {
 
   }
 }
+>>>>>>> CHANGE (5418ff ODLUX Update)

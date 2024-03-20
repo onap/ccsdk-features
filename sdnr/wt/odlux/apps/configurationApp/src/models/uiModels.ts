@@ -1,3 +1,5 @@
+<<<<<<< HEAD   (907af9 fix oauth code)
+=======
 /**
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
@@ -174,11 +176,11 @@ export const isViewElementBoolean = (viewElement: ViewElement): viewElement is V
 };
 
 export const isViewElementObject = (viewElement: ViewElement): viewElement is ViewElementObject => {
-  return viewElement && viewElement.uiType === 'object' && viewElement.isList === false;
+  return viewElement && viewElement.uiType === 'object' && !viewElement.isList;
 };
 
 export const isViewElementList = (viewElement: ViewElement): viewElement is ViewElementList => {
-  return viewElement && viewElement.uiType === 'object' && viewElement.isList === true;
+  return viewElement && viewElement.uiType === 'object' && !!viewElement.isList;
 };
 
 export const isViewElementObjectOrList = (viewElement: ViewElement): viewElement is ViewElementObject | ViewElementList => {
@@ -239,3 +241,4 @@ export type Operator<T> = {
   operation: 'AND' | 'OR';
   arguments: Expression<T>[];
 };
+>>>>>>> CHANGE (5418ff ODLUX Update)

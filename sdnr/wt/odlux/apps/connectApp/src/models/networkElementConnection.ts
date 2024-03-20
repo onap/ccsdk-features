@@ -1,3 +1,5 @@
+<<<<<<< HEAD   (907af9 fix oauth code)
+=======
 /**
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
@@ -41,6 +43,7 @@ export type NetworkElementConnection = {
       capability: string;
     }[];
   };
+  mountMethod?: string;
 };
 
 
@@ -67,3 +70,4 @@ export type TlsKeys = {
  * @param name propertyname
  */
 export const propertyOf = <TObj>(name: keyof TObj) => name;
+>>>>>>> CHANGE (5418ff ODLUX Update)

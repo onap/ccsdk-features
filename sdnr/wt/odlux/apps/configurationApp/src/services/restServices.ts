@@ -1,3 +1,5 @@
+<<<<<<< HEAD   (907af9 fix oauth code)
+=======
 /**
  * ============LICENSE_START========================================================================
  * ONAP : ccsdk feature sdnr wt odlux
@@ -143,8 +145,8 @@ class RestService {
    * @param data The data to be updated.
    * @returns The written data.
    */
-  public setConfigData(path: string, data: any) {
-    return requestRestExt<{ [key: string]: any }>(path, { method: 'PUT', body: JSON.stringify(data) });
+  public setConfigData(path: string, data: any, method: 'PUT' | 'POST' = 'PUT') {
+    return requestRestExt<{ [key: string]: any }>(path, { method, body: JSON.stringify(data) });
   }
 
   public executeRpc(path: string, data: any) {
@@ -162,3 +164,4 @@ class RestService {
 
 export const restService = new RestService();
 export default restService;
+>>>>>>> CHANGE (5418ff ODLUX Update)
