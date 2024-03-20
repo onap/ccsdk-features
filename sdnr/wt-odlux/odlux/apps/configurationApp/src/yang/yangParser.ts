@@ -491,21 +491,12 @@ export class YangParser {
   }
 
   public postProcess() {
-
-    // execute all post processes like resolving in proper order
-    this._unionsToResolve.forEach(cb => {
+    // process all type refs
+    this._typeRefToResolve.forEach(cb => {
       try { cb(); } catch (error) {
         console.warn(error.message);
       }
     });
-
-    // process all groupings
-    this._groupingsToResolve.filter(vs => vs.uses && vs.uses[ResolveFunction]).forEach(vs => {
-      try { vs.uses![ResolveFunction] !== undefined && vs.uses![ResolveFunction]!('|'); } catch (error) {
-        console.warn(`Error resolving: [${vs.name}] [${error.message}]`);
-      }
-    });
-
     /**
      * This is to fix the issue for sequential execution of modules based on their child and parent relationship
      * We are sorting the module object based on their augment status
@@ -594,7 +585,7 @@ export class YangParser {
         const identity = module.identities[idKey];
         if (identity.base != null) {
           const base = this.resolveIdentity(identity.base, module);
-          base.children?.push(identity);
+          base?.children?.push(identity);
         } else {
           baseIdentities.push(identity);
         }
@@ -610,20 +601,31 @@ export class YangParser {
       }
     });
 
-    this._typeRefToResolve.forEach(cb => {
-      try { cb(); } catch (error) {
-        console.warn(error.message);
-      }
-    });
-
     this._modulesToResolve.forEach(cb => {
       try { cb(); } catch (error) {
         console.warn(error.message);
       }
     });
 
+    // execute all post processes like resolving in proper order
+    this._unionsToResolve.forEach(cb => {
+      try { cb(); } catch (error) {
+        console.warn(error.message);
+      }
+    });
+
+    // process all groupings
+    this._groupingsToResolve.filter(vs => vs.uses && vs.uses[ResolveFunction]).forEach(vs => {
+      try { vs.uses![ResolveFunction] !== undefined && vs.uses![ResolveFunction]!('|'); } catch (error) {
+        console.warn(`Error resolving: [${vs.name}] [${error.message}]`);
+      }
+    });
+
+    const knownViews: ViewSpecification[] = [];
     // resolve readOnly
     const resolveReadOnly = (view: ViewSpecification, parentConfig: boolean) => {
+      if (knownViews.includes(view)) return;
+      knownViews.push(view);
 
       // update view config
       view.config = view.config && parentConfig;

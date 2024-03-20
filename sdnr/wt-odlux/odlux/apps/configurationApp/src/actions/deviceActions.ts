@@ -24,6 +24,7 @@ import {
   flattenViewElements,
   getReferencedDataList,
   resolveViewDescription,
+  createViewData,
 } from '../utilities/viewEngineHelper';
 
 export class EnableValueSelector extends Action {
@@ -58,6 +59,12 @@ export class UpdateViewDescription extends Action {
 
 export class UpdateOutputData extends Action {
   constructor(public outputData: any) {
+    super();
+  }
+}
+
+export class UpdateNewData extends Action {
+  constructor(public newData: any) {
     super();
   }
 }
@@ -138,6 +145,8 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
   let currentNS: string | null = null;
   let defaultNS: string | null = null;
 
+  let newData: any = null;
+
   dispatch(new SetCollectingSelectionData(true));
   try {
     for (let ind = 0; ind < pathParts.length; ++ind) {
@@ -150,32 +159,27 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
       viewElement = viewSpecification.elements[property] || viewSpecification.elements[`${namespace}:${property}`];
       if (!viewElement) throw Error('Property [' + property + '] does not exist.');
 
-      if (viewElement.isList && !key) {
-        if (pathParts.length - 1 > ind) {
+      if (newData) { 
+        // update view data
+        newData = newData[property];
+
+      } else if (viewElement.isList && !key) {
+        // handle new list element without key
+        if (pathParts[ind][1] === null) {
+
+          // create new data if not already exists
+          newData = getState().configuration.viewDescription.newData;
+          if (!newData && viewElement && 'viewId' in viewElement) {
+            newData = createViewData(namespace, views[+viewElement.viewId], views);
+            dispatch(new UpdateNewData(newData));
+          }
+
+        } else if ((pathParts.length) - 1 > ind) {
+          // handle list without key which is not a new element
           dispatch(new SetCollectingSelectionData(false));
           throw new Error('No key for list [' + property + ']');
-        } else if (vPath.endsWith('[]') && pathParts.length - 1 === ind) {
-
-          // empty key is used for new element
-          if (viewElement && 'viewId' in viewElement) viewSpecification = views[+viewElement.viewId];
-          const data = Object.keys(viewSpecification.elements).reduce<{ [name: string]: any }>((acc, cur) => {
-            const elm = viewSpecification.elements[cur];
-            if (elm.default) {
-              acc[elm.id] = elm.default || '';
-            }
-            return acc;
-          }, {});
-
-          // create display specification
-          const ds: DisplaySpecification = {
-            displayMode: DisplayModeType.displayAsObject,
-            viewSpecification: resolveViewDescription(defaultNS, vPath, viewSpecification),
-            keyProperty: isViewElementList(viewElement!) && viewElement.key || undefined,
-          };
-
-          // update display specification
-          return dispatch(postProcessDisplaySpecificationActionCreator(vPath, data, ds));
         }
+        
         if (viewElement && isViewElementList(viewElement) && viewSpecification.parentView === '0') {
           // check if there is a reference as key
           const listSpecification = views[+viewElement.viewId];
@@ -232,8 +236,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
         }
         extractList = true;
       } else {
-        // normal case & replaces unicode %2C if present
-        dataPath += `/${property}${key ? `=${key.replace(/\%2C/g, ',').replace(/\//ig, '%2F')}` : ''}`;
+        dataPath += `/${property}${key ? `=${key.replace(/\//ig, '%2F')}` : ''}`;
 
         // in case of the root element the required namespace will be added later,
         // while extracting the data
@@ -248,7 +251,7 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
       } else if (viewElement.uiType === 'rpc') {
         viewSpecification = views[+(viewElement.inputViewId || 0)];
 
-        // create new instance & flaten
+        // create new instance & flatten
         inputViewSpecification = viewElement.inputViewId != null && {
           ...views[+(viewElement.inputViewId || 0)],
           elements: flattenViewElements(defaultNS, '', views[+(viewElement.inputViewId || 0)].elements, views, viewElement.label),
@@ -261,11 +264,44 @@ export const updateViewActionAsyncCreator = (vPath: string) => async (dispatch: 
       }
     }
 
+    if (newData) {
+      // create display specification
+      const ds: DisplaySpecification = {
+        displayMode: DisplayModeType.displayAsObject,
+        viewSpecification: resolveViewDescription(defaultNS, vPath, viewSpecification),
+        keyProperty: isViewElementList(viewElement!) && viewElement.key || undefined,
+      };
+
+      // update display specification
+      return dispatch(postProcessDisplaySpecificationActionCreator(vPath, newData, ds));
+    }
+
     let data: any = {};
     // do not get any data from netconf if there is no view specified || this is the root element [0] || this is an rpc
     if (viewSpecification && !(viewSpecification.id === '0' || viewElement!.uiType === 'rpc')) {
       const restResult = (await restService.getConfigData(dataPath));
-      if (!restResult.data) {
+      if (restResult.status === 409) {
+        // special case: if this is a list without any response  
+        if (isViewElementList(viewElement!)) {
+          // create display specification
+          const ds: DisplaySpecification = {
+            displayMode: extractList ? DisplayModeType.displayAsList : DisplayModeType.displayAsObject,
+            viewSpecification: resolveViewDescription(defaultNS, vPath, viewSpecification),
+            keyProperty: viewElement.key,
+          };
+          // update display specification
+          return dispatch(postProcessDisplaySpecificationActionCreator(vPath, [], ds));
+        } else {
+          // create display specification
+          const ds: DisplaySpecification = {
+            displayMode: DisplayModeType.displayAsObject,
+            viewSpecification: resolveViewDescription(defaultNS, vPath, viewSpecification),
+          };
+          // update display specification
+          return dispatch(postProcessDisplaySpecificationActionCreator(vPath, { }, ds));
+        }
+  
+      } else if (!restResult.data) {
         // special case: if this is a list without any response
         if (extractList && restResult.status === 404) {
           if (!isViewElementList(viewElement!)) {
@@ -360,6 +396,9 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
   let currentNS: string | null = null;
   let defaultNS: string | null = null;
 
+  let newData: any = null;
+  let newElement: any = null;
+
   dispatch(new SetCollectingSelectionData(true));
   try {
     for (let ind = 0; ind < pathParts.length; ++ind) {
@@ -371,24 +410,40 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
       viewElement = viewSpecification.elements[property] || viewSpecification.elements[`${namespace}:${property}`];
       if (!viewElement) throw Error('Property [' + property + '] does not exist.');
 
-      if (isViewElementList(viewElement) && !key) {
+      if (newElement) { 
+        // update view data
+        if (pathParts.length - 1 === ind) {
+          newElement[property] = data;
+          return dispatch(new UpdateNewData(newData));
+        } else {
+          newElement[property] = Array.isArray(newElement[property]) ? [ ...newElement[property] ] : { ...newElement[property] };
+        }
+      } else if (isViewElementList(viewElement) && !key) {
         embedList = true;
         if (viewElement && viewElement.isList && viewSpecification.parentView === '0') {
-          throw new Error('Found a list at root level of a module w/o a refenrece key.');
+          throw new Error('Found a list at root level of a module w/o a reference key.');
         }
-        if (pathParts.length - 1 > ind) {
+        
+        if (key === null) {
+          // set new data
+          const stateData = getState().configuration.viewDescription.newData;
+          newElement = newData = Array.isArray(stateData) ? [ ...stateData ] : { ...stateData };
+
+          if (vPath.endsWith('[]') && pathParts.length - 1 === ind) {
+            // handle new element with any number of arguments
+            let keyList = viewElement.key?.split(' ');
+            let dataPathParam = keyList?.map(id => data[id]).join(',');
+            key = viewElement.key && String(dataPathParam) || '';
+            isNew = key;
+            if (!key) {
+              dispatch(new SetCollectingSelectionData(false));
+              throw new Error('No value for key [' + viewElement.key + '] in list [' + property + ']');
+            }
+          }
+
+        } else if (pathParts.length - 1 > ind) {
           dispatch(new SetCollectingSelectionData(false));
           throw new Error('No key for list [' + property + ']');
-        } else if (vPath.endsWith('[]') && pathParts.length - 1 === ind) {
-          // handle new element with any number of arguments
-          let keyList = viewElement.key?.split(' ');
-          let dataPathParam = keyList?.map(id => data[id]).join(',');
-          key = viewElement.key && String(dataPathParam) || '';
-          isNew = key;
-          if (!key) {
-            dispatch(new SetCollectingSelectionData(false));
-            throw new Error('No value for key [' + viewElement.key + '] in list [' + property + ']');
-          }
         }
       }
 
@@ -410,7 +465,7 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
           const [nsOrName, name] = cur.split(':', 1);
           const element = pViewSpecification.elements[cur] || pViewSpecification.elements[nsOrName] || pViewSpecification.elements[name];
           if (!element && process.env.NODE_ENV === 'development' ) {
-            throw new Error('removeReadOnlyElements: Could not determine elment for data.');
+            throw new Error('removeReadOnlyElements: Could not determine element for data.');
           }
           if (element && element.config) {
             if (element.uiType === 'object') {
@@ -436,7 +491,7 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
       : data;
 
     // embed the first element list[key]
-    data = isNew
+    data = isNew || newData
       ? [data]
       : data;
 
@@ -447,6 +502,10 @@ export const updateDataActionAsyncCreator = (vPath: string, data: any) => async 
         const message = updateResult.data && updateResult.data.errors && updateResult.data.errors.error && updateResult.data.errors.error[0] && updateResult.data.errors.error[0]['error-message'] || '';
         throw new Error(`Server Error. Status: [${updateResult.status}]\n${message || updateResult.message || ''}`);
       }
+    }
+
+    if (newData) {
+      dispatch(new UpdateNewData(null));
     }
 
     if (isNew) {

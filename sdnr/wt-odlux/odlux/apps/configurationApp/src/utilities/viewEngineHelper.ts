@@ -10,6 +10,7 @@ import {
   isViewElementRpc,
   isViewElementChoice,
   ViewElementChoiceCase,
+  isViewElementObject,
 } from '../models/uiModels';
 
 import { Module } from '../models/yang';
@@ -47,13 +48,13 @@ export const resolveVPath = (current: string, vPath: string): string => {
   return parts.join('/');
 };
 
-export const splitVPath = (vPath: string, vPathParser : RegExp): [string, string?][] => {
-  const pathParts: [string, string?][] = [];
+export const splitVPath = (vPath: string, vPathParser : RegExp): [string, (string | undefined | null)][] => {
+  const pathParts: [string, (string | undefined | null)][] = [];
   let partMatch: RegExpExecArray | null;
   if (vPath) do {
     partMatch = vPathParser.exec(vPath);
     if (partMatch) {
-      pathParts.push([partMatch[1], partMatch[2] || undefined]);
+      pathParts.push([partMatch[1], partMatch[2] || (partMatch[0].includes('[]') ? null : undefined)]);
     }
   } while (partMatch);
   return pathParts;
@@ -322,3 +323,29 @@ export const filterViewElements = async (vPath: string, viewData: any, viewSpeci
     return acc;
   }, Promise.resolve({ ...viewSpecification, elements: {} as { [key: string]: ViewElement } }));
 };
+
+export const createViewData = (namespace: string | null, viewSpecification: ViewSpecification, views: ViewSpecification[]) => Object.keys(viewSpecification.elements).reduce<{ [name: string]: any }>((acc, cur) => {
+  const elm = viewSpecification.elements[cur];
+  let currentNamespace = namespace;
+  const key = elm.id;
+  if (elm.default) {
+    acc[key] = elm.default || '';
+  } else if (elm.uiType === 'boolean') {
+    acc[key] = false;
+  } else if (elm.uiType === 'number') {
+    acc[key] = 0;
+  } else if (elm.uiType === 'string') {
+    acc[key] = '';
+  } else if (isViewElementObject(elm)) {
+    const view = views[+elm.viewId];
+    if (view) {
+      if (view.ns) {
+        currentNamespace = view.ns;
+      }
+      acc[key] = createViewData(currentNamespace, view, views);
+    }
+  } else if (isViewElementList(elm)) {
+    acc[key] = [];
+  }
+  return acc;
+}, {});
