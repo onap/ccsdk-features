@@ -41,6 +41,7 @@ export type NetworkElementConnection = {
       capability: string;
     }[];
   };
+  mountMethod?: string;
 };
 
 
