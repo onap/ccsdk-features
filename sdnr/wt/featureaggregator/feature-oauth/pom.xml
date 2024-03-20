@@ -22,6 +22,7 @@
   ~ ============LICENSE_END=======================================================
   ~
   -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -34,7 +35,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-feature-aggregator-oauth</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.7.0-SNAPSHOT</version>
     <packaging>feature</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
@@ -47,14 +48,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>sdnr-wt-oauth-provider</artifactId>
+            <artifactId>sdnr-wt-oauth-web</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>sdnr-wt-oauth-provider-jar</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-oauth-realm</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

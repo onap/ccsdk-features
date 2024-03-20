@@ -40,8 +40,9 @@
     <name>ccsdk-features :: ${project.artifactId}</name>
 
     <modules>
-        <module>provider-jar</module>
-        <module>provider-osgi</module>
+        <module>oauth-core</module>
+        <module>oauth-realm</module>
+	    <module>oauth-web</module>
     </modules>
 
     <properties>

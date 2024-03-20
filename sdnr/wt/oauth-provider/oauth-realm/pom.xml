@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ ============LICENSE_START=======================================================
+  ~ ONAP : ccsdk features
+  ~ ================================================================================
+  ~ Copyright (C) 2019 highstreet technologies GmbH Intellectual Property.
+  ~ All rights reserved.
+  ~ ================================================================================
+  ~ Update Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
+  ~ ================================================================================
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~ ============LICENSE_END=======================================================
+  ~
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.onap.ccsdk.parent</groupId>
+        <artifactId>binding-parent</artifactId>
+        <version>2.6.1</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
+    <artifactId>sdnr-wt-oauth-realm</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+
+    <name>ccsdk-features :: ${project.artifactId}</name>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <checkstyle.skip>true</checkstyle.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdnr-wt-oauth-core</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.opendaylight.aaa</groupId>
+                    <artifactId>aaa-shiro</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opendaylight.aaa</groupId>
+                    <artifactId>aaa-shiro</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.shiro</groupId>
+                    <artifactId>shiro-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>sdnr-wt-common</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Export-Package>
+                            org.onap.ccsdk.features.sdnr.wt.oauthprovider;version=${project.version},
+                            org.onap.ccsdk.features.sdnr.wt.oauthprovider.filters;version=${project.version},
+                            org.onap.ccsdk.features.sdnr.wt.oauthprovider.data;version=${project.version},
+                            org.onap.ccsdk.features.sdnr.wt.oauthprovider.services;version=${project.version}
+                        </Export-Package>
+                        <Import-Package>
+                            javax.servlet,
+                            javax.servlet.http,
+                            javax.net.ssl,
+                            javax.crypto,
+                            javax.crypto.spec,
+                            javax.xml.transform,
+                            javax.xml.datatype,
+                            javax.management,
+                            javax.security.auth,
+                            javax.security.auth.login,
+                            javax.security.auth.callback,
+                            javax.xml.parsers,
+                            javax.xml.namespace,
+                            javax.xml.transform.stream,
+                            org.apache.commons.codec.binary,
+                            org.apache.shiro,
+                            org.apache.shiro.authc,
+                            org.apache.shiro.authz,
+                            org.apache.shiro.realm,
+                            org.apache.shiro.subject,
+                            org.apache.shiro.web.filter.authc,
+                            org.apache.shiro.web.filter.authz,
+                            org.apache.shiro.web.util,
+                            org.jolokia.osgi.security,
+                            org.onap.ccsdk.features.sdnr.wt.common.http,
+                            org.opendaylight.aaa.api,
+                            org.opendaylight.aaa.api.shiro.principal,
+                            org.opendaylight.aaa.shiro.realm,
+                            org.opendaylight.mdsal.binding.api,
+                            org.opendaylight.mdsal.common.api,
+                            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214,
+                            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.authorization,
+                            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.authorization.policies,
+                            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.permission,
+                            org.opendaylight.yangtools.concepts,
+                            org.opendaylight.yangtools.yang.binding,
+                            org.opendaylight.yangtools.yang.common,
+                            org.slf4j,
+                            com.fasterxml.jackson.databind,
+                            com.fasterxml.jackson.databind.deser.std,
+                            com.fasterxml.jackson.databind.ser.std,
+                            com.fasterxml.jackson.databind.module,
+                            com.fasterxml.jackson.annotation,
+                            com.fasterxml.jackson.core.type,
+                            com.fasterxml.jackson.core,
+                            com.google.common.base,
+                            com.google.common.collect,
+                            com.google.common.util.concurrent
+                        </Import-Package>
+                        <Embed-Dependency>*;scope=compile|runtime;inline=false</Embed-Dependency>
+                        <Embed-Dependency>*;scope=compile|runtime;artifactId=!shiro-core;inline=false</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+                        <Fragment-Host>org.opendaylight.aaa.shiro</Fragment-Host>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

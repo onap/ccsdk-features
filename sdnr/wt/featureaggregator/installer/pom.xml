@@ -65,13 +65,13 @@
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
-        <!-- <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-feature-aggregator-oauth</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
-        </dependency> -->
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-data-provider-setup</artifactId>
