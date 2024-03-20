@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0a2a3cb_5aea9733",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5637
+      },
+      "writtenOn": "2024-03-20T14:58:27Z",
+      "side": 1,
+      "message": "ODLUX update to latest. Please verify",
+      "revId": "5418ff6a08cd2482cf76aed8def6592623253229",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
