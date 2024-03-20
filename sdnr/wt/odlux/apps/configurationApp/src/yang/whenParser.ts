@@ -3,6 +3,7 @@ enum WhenTokenType {
   OR = 'OR',
   NOT = 'NOT',
   EQUALS = 'EQUALS',
+  NOT_EQUALS = 'NOT_EQUALS',
   COMMA = 'COMMA',
   STRING = 'STRING',
   FUNCTION = 'FUNCTION',
@@ -17,9 +18,31 @@ type Token = {
   value: string;
 };
 
-const isAlpha = (char: string) => /[a-z]/i.test(char);
+const isAlpha = (char: string) => {
+  if (!char) return false;
+  const code = char.charCodeAt(0);
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+};
 
-const isAlphaNumeric = (char: string) => /[A-Za-z0-9_\-/:\.]/i.test(char);
+const isAlphaNumeric = (char: string) => {
+  if (!char) return false;
+  const code = char.charCodeAt(0);
+  return (
+    isAlpha(char) ||
+    (code >= 48 && code <= 57) ||
+    code === 95 || // underscore
+    code === 45 || // hyphen
+    code === 47 || // slash
+    code === 58 || // colon
+    code === 46 // dot
+  );
+};
+
+const isOperator = (char: string) => {
+  if (!char) return false;
+  const code = char.charCodeAt(0);
+  return code === 33 || code === 38 || code === 124 || code === 61;
+};
 
 const lex = (input: string) : Token[] => {
   let tokens = [] as any[];
@@ -110,6 +133,7 @@ const lex = (input: string) : Token[] => {
 
       continue;
     }
+    
     if (isAlphaNumeric(char)) {
       let value = '';
       while (isAlphaNumeric(char)) {
@@ -120,6 +144,36 @@ const lex = (input: string) : Token[] => {
       tokens.push({ type: WhenTokenType.IDENTIFIER, value });
       continue;
     }
+
+    if (isOperator(char)) {
+      let value = '';
+      while (isOperator(char)) {
+        value += char;
+        char = input[++current];
+      }
+
+      switch (value) {
+        case '&&':
+          tokens.push({ type: WhenTokenType.AND });
+          break;
+        case '||':
+          tokens.push({ type: WhenTokenType.OR });
+          break;
+        case '!':
+          tokens.push({ type: WhenTokenType.NOT });
+          break;
+        case '==':
+          tokens.push({ type: WhenTokenType.EQUALS });
+          break;
+        case '!=':
+          tokens.push({ type: WhenTokenType.NOT_EQUALS });
+          break;  
+        default:
+          throw new TypeError(`I don't know what this operator is: ${value}`);
+      }
+      continue;
+    }
+    
     throw new TypeError(`I don't know what this character is: ${char}`);
   }
   return tokens;

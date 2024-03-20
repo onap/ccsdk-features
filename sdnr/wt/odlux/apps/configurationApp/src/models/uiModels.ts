@@ -174,11 +174,11 @@ export const isViewElementBoolean = (viewElement: ViewElement): viewElement is V
 };
 
 export const isViewElementObject = (viewElement: ViewElement): viewElement is ViewElementObject => {
-  return viewElement && viewElement.uiType === 'object' && viewElement.isList === false;
+  return viewElement && viewElement.uiType === 'object' && !viewElement.isList;
 };
 
 export const isViewElementList = (viewElement: ViewElement): viewElement is ViewElementList => {
-  return viewElement && viewElement.uiType === 'object' && viewElement.isList === true;
+  return viewElement && viewElement.uiType === 'object' && !!viewElement.isList;
 };
 
 export const isViewElementObjectOrList = (viewElement: ViewElement): viewElement is ViewElementObject | ViewElementList => {
