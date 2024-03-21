@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2aaf5bc9_970cae33",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2024-03-21T09:12:45Z",
+      "side": 1,
+      "message": "Hi, This change has been picked from master (New Delhi) to accommodate the maintenance release request for Montreal as mentioned in https://jira.onap.org/browse/CCSDK-3999\nPlease review and submit if all OK.\nRegards,\nRavi",
+      "revId": "2f53c8c6e2fec2911bb8a59bb81945699dd606a3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
