@@ -66,6 +66,7 @@ import AddIcon from '@mui/icons-material/Add';
 import PostAdd from '@mui/icons-material/PostAdd';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import RemoveIcon from '@mui/icons-material/RemoveCircleOutline';
+import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
@@ -202,6 +203,7 @@ type ConfigurationApplicationComponentProps = RouteComponentProps & Connect<type
 
 type ConfigurationApplicationComponentState = {
   isNew: boolean;
+  isNewSubElement: boolean;
   editMode: boolean;
   canEdit: boolean;
   viewData: { [key: string]: any } | null;
@@ -235,6 +237,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
 
     this.state = {
       isNew: false,
+      isNewSubElement: false,
       canEdit: false,
       editMode: false,
       viewData: null,
@@ -283,11 +286,14 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
   static getDerivedStateFromProps(nextProps: ConfigurationApplicationComponentProps, prevState: ConfigurationApplicationComponentState & { [OldProps]: ConfigurationApplicationComponentProps }) {
 
     if (!prevState || !prevState[OldProps] || (prevState[OldProps].viewData !== nextProps.viewData)) {
-      const isNew: boolean = nextProps.vPath?.endsWith('[]') || false;
+      const isNew: boolean = nextProps.vPath?.includes('[]') || false;
+      const isNewSubElement: boolean = nextProps.vPath?.includes('[]') && !nextProps.vPath?.endsWith('[]') || false;
+
       const state = {
         ...prevState,
         isNew: isNew,
         editMode: isNew,
+        isNewSubElement: isNewSubElement,
         viewData: nextProps.viewData || null,
         [OldProps]: nextProps,
         choices: nextProps.displaySpecification.displayMode === DisplayModeType.doNotDisplay
@@ -543,7 +549,7 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
           ? (
             <div className={classes.section}>
               {sections.references.map(element => (
-                <UIElementReference key={element.id} element={element} disabled={editMode || this.isPolicyViewElementForbidden(element, dataPath)} onOpenReference={(elm) => { this.navigate(`/${elm.id}`); }} />
+                <UIElementReference key={element.id} element={element} disabled={!isNew && (editMode || this.isPolicyViewElementForbidden(element, dataPath))} onOpenReference={(elm) => { this.navigate(`/${elm.id}`); }} />
               ))}
             </div>
           ) : null
@@ -698,12 +704,12 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         ev.preventDefault();
         let keyId = '';
         if (listKeyProperty && listKeyProperty.split(' ').length > 1) {
-          keyId += listKeyProperty.split(' ').map(id => row[id]).join(',');
+          keyId += listKeyProperty.split(' ').map(id => encodeURIComponent(String(row[id]))).join(',');
         } else {
-          keyId = row[listKeyProperty];
+          keyId = encodeURIComponent(String(row[listKeyProperty]));
         }
         if (listKeyProperty) {
-          navigate(`[${encodeURIComponent(keyId)}]`); // Do not navigate without key.
+          navigate(`[${keyId}]`); // Do not navigate without key.
         }
       }} ></SelectElementTable>
     );
@@ -774,11 +780,13 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
   }
 
   private renderBreadCrumps() {
-    const { editMode } = this.state;
+    const { editMode, isNew, isNewSubElement } = this.state;
     const { displaySpecification, vPath, nodeId } = this.props;
     const pathParts = splitVPath(vPath!, /(?:([^\/\["]+)(?:\[([^\]]*)\])?)/g); // 1 = property / 2 = optional key
+    
     let lastPath = '/configuration';
     let basePath = `/configuration/${nodeId}`;
+    
     return (
       <div className={this.props.classes.header}>
         <div>
@@ -827,7 +835,13 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         {this.state.editMode && (
           <Fab color="secondary" aria-label="back-button" className={this.props.classes.fab} onClick={async () => {
             if (this.props.vPath) {
-              await this.props.reloadView(this.props.vPath);
+              if (isNewSubElement || isNew) {
+                const index = this.props.vPath.lastIndexOf('[]');
+                const newVPath = this.props.vPath.substring(0, index + ( isNewSubElement ? 2 : 0 ));
+                this.props.history.replace(`/configuration/${nodeId}/${newVPath}`);
+              } else {
+                await this.props.reloadView(this.props.vPath);
+              }
             }
             this.setState({ editMode: false });
           }} ><ArrowBack /></Fab>
@@ -835,15 +849,21 @@ class ConfigurationApplicationComponent extends React.Component<ConfigurationApp
         { /* do not show edit if this is a list or it can't be edited */
           displaySpecification.displayMode === DisplayModeType.displayAsObject && displaySpecification.viewSpecification.canEdit && (<div>
             <Fab color="secondary" aria-label={editMode ? 'save-button' : 'edit-button'} className={this.props.classes.fab} onClick={() => {
-              if (this.state.editMode) {
+              if (this.state.editMode && this.props.vPath) {
                 // ensure only active choices will be contained
                 const resultingViewData = this.collectData(displaySpecification.viewSpecification.elements);
                 this.props.onUpdateData(this.props.vPath!, resultingViewData);
+
+                const index = this.props.vPath.lastIndexOf('[]');
+                const newVPath = this.props.vPath.substring(0, index + ( isNewSubElement ? 2 : 0 ));
+                this.props.history.replace(`/configuration/${nodeId}/${newVPath}`);
               }
               this.setState({ editMode: !editMode });
             }}>
-              {editMode
-                ? <SaveIcon />
+              { editMode
+                ? isNewSubElement
+                  ? <CheckIcon />
+                  : <SaveIcon />
                 : <EditIcon />
               }
             </Fab>

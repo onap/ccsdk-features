@@ -18,7 +18,7 @@
 
 import { IActionHandler } from '../../../../framework/src/flux/action';
 
-import { UpdateViewDescription, UpdateOutputData } from '../actions/deviceActions';
+import { UpdateViewDescription, UpdateOutputData, UpdateNewData } from '../actions/deviceActions';
 import { ViewSpecification } from '../models/uiModels';
 
 export enum DisplayModeType {
@@ -50,6 +50,7 @@ export type DisplaySpecification =  {
 export interface IViewDescriptionState {
   vPath: string | null;
   displaySpecification: DisplaySpecification;
+  newData?: any;
   viewData: any;
   outputData?: any;
 }
@@ -76,6 +77,11 @@ export const viewDescriptionHandler: IActionHandler<IViewDescriptionState> = (st
     state = {
       ...state,
       outputData: action.outputData,
+    };
+  } else if (action instanceof UpdateNewData) {
+    state = {
+      ...state,
+      newData: action.newData,
     };
   }
   return state;
