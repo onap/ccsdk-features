@@ -16,6 +16,23 @@
       "message": "Hi, Please review and submit.\nRegards,\nRavi",
       "revId": "9e7f6c67a7ef8478f4b321ae4eb608374cc9a5d4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e34d9a32_0d2bd7d9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 87
+      },
+      "writtenOn": "2024-03-26T17:51:05Z",
+      "side": 1,
+      "message": "Sorry, there are merge conflicts.  Please resolve and I\u0027ll be happy to merge",
+      "revId": "9e7f6c67a7ef8478f4b321ae4eb608374cc9a5d4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
   ]
 }
