@@ -31,7 +31,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
     <artifactId>addCMHandle-model</artifactId>
-    <version>1.6.3-SNAPSHOT</version>
+    <version>1.6.3</version>
     <packaging>bundle</packaging>
 
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
