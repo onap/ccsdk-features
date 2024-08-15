@@ -28,6 +28,7 @@ import org.elasticsearch.client.Response;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntry;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntryList;
 
+@Deprecated
 public class ListAliasesResponse extends BaseResponse {
 
     /*

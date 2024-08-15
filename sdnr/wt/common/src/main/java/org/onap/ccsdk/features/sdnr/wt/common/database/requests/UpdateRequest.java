@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class UpdateRequest extends BaseRequest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateRequest.class);

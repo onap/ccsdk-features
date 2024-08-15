@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@Deprecated
 public class AggregationEntries extends LinkedHashMap<String, Long> {
 
     private static final long serialVersionUID = 1L;

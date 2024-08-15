@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Herbert
  *
  */
+@Deprecated
 public class EsObject implements IsEsObject {
 
     @JsonIgnore

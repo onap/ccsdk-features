@@ -26,6 +26,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
  *
  *         https://github.com/elastic/elasticsearch/blob/7.1/rest-api-spec/src/main/resources/rest-api-spec/api/update.json
  */
+@Deprecated
 public class Update7Request extends UpdateRequest {
 
     public Update7Request(String alias, String esId, int retries, boolean refresh) {

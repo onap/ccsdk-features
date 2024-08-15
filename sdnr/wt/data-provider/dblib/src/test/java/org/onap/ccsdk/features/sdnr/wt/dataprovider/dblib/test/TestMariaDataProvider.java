@@ -24,7 +24,9 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test;
 
 import ch.vorburger.exec.ManagedProcessException;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +53,6 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test.util.MariaDBTestB
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
-import org.opendaylight.netconf.shaded.sshd.common.util.io.IoUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmNotificationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmSourceIndicator;
@@ -190,7 +191,7 @@ public class TestMariaDataProvider {
         assertEquals(2, faultCurrents.getData().size());
         ReadStatusOutputBuilder status = null;
         try {
-            EntityInput input=null;
+            EntityInput input = null;
             status = dbProvider.readStatus(input);
         } catch (IOException e) {
             e.printStackTrace();
@@ -203,7 +204,7 @@ public class TestMariaDataProvider {
 
         List<String> nodeList = dbProvider.getAllNodesWithCurrentAlarms();
         assertTrue(nodeList.contains(NODEID1));
-        assertEquals(1,nodeList.size());
+        assertEquals(1, nodeList.size());
 
         faultCurrent1 = new FaultcurrentBuilder().setNodeId(NODEID1).setCounter(1).setObjectId("obj")
                 .setProblem(PROBLEM1).setTimestamp(DateAndTime.getDefaultInstance(TIME1))
@@ -475,7 +476,7 @@ public class TestMariaDataProvider {
             e.printStackTrace();
             fail("unable to update maintenance data");
         }
-        data = dbProvider.readMaintenanceList(createInput("active","false",1, 20));
+        data = dbProvider.readMaintenanceList(createInput("active", "false", 1, 20));
         assertEquals(1, data.getData().size());
         DeleteMaintenanceInput delete1 = new DeleteMaintenanceInputBuilder().setId(NODEID1).build();
         try {
@@ -496,14 +497,14 @@ public class TestMariaDataProvider {
         HtDatabaseMaintenance maintenanceService = dbProvider.getHtDatabaseMaintenance();
         MaintenanceEntity e = maintenanceService.createIfNotExists(nodeId);
         assertNotNull(e);
-        assertEquals(nodeId,e.getNodeId());
+        assertEquals(nodeId, e.getNodeId());
         MaintenanceEntity e2 = new CreateMaintenanceInputBuilder(e).setActive(true).build();
         e = maintenanceService.setMaintenance(e2);
         assertNotNull(e);
-        assertEquals(nodeId,e.getNodeId());
+        assertEquals(nodeId, e.getNodeId());
         assertTrue(e.getActive());
         maintenanceService.deleteIfNotRequired(nodeId);
-        data = dbProvider.readMaintenanceList(createInput("node-id",nodeId,1, 20));
+        data = dbProvider.readMaintenanceList(createInput("node-id", nodeId, 1, 20));
         assertEquals(0, data.getData().size());
 
     }
@@ -618,7 +619,7 @@ public class TestMariaDataProvider {
 
         ReadStatusOutputBuilder status = null;
         try {
-            EntityInput input=null;
+            EntityInput input = null;
             status = dbProvider.readStatus(input);
         } catch (IOException e) {
             e.printStackTrace();
@@ -633,9 +634,9 @@ public class TestMariaDataProvider {
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUndefined().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnmounted().intValue());
 
-        ReadStatusOutputBuilder status2=null;
+        ReadStatusOutputBuilder status2 = null;
         try {
-            EntityInput input=createInput("node-id","node2*", 1, 20);
+            EntityInput input = createInput("node-id", "node2*", 1, 20);
             status = dbProvider.readStatus(input);
             status2 = dbProviderOverall.readStatus(input);
         } catch (IOException e) {
@@ -650,7 +651,7 @@ public class TestMariaDataProvider {
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnableToConnect().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUndefined().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnmounted().intValue());
-        
+
         assertEquals(1, status2.getData().get(0).getNetworkElementConnections().getConnected().intValue());
         assertEquals(1, status2.getData().get(0).getNetworkElementConnections().getConnecting().intValue());
         assertEquals(0, status2.getData().get(0).getNetworkElementConnections().getDisconnected().intValue());
@@ -679,31 +680,32 @@ public class TestMariaDataProvider {
     public void testUserdata() {
         HtUserdataManager mgr = dbProvider.getUserManager();
         String userdata = mgr.getUserdata(USERNAME);
-        assertEquals("{}",userdata);
+        assertEquals("{}", userdata);
         JSONObject o = new JSONObject();
         o.put("key1", false);
-        o.put("key2","value2");
+        o.put("key2", "value2");
         boolean result = mgr.setUserdata(USERNAME, o.toString());
         assertTrue(result);
         userdata = mgr.getUserdata(USERNAME);
         o = new JSONObject(userdata);
-        assertEquals(false,o.getBoolean("key1"));
-        assertEquals("value2",o.getString("key2"));
+        assertEquals(false, o.getBoolean("key1"));
+        assertEquals("value2", o.getString("key2"));
         o = new JSONObject();
         o.put("enabled", true);
-        o.put("name","abcdef");
-        result = mgr.setUserdata(USERNAME,"app1",o.toString());
+        o.put("name", "abcdef");
+        result = mgr.setUserdata(USERNAME, "app1", o.toString());
         assertTrue(result);
         userdata = mgr.getUserdata(USERNAME);
         o = new JSONObject(userdata);
-        assertEquals(false,o.getBoolean("key1"));
-        assertEquals("value2",o.getString("key2"));
+        assertEquals(false, o.getBoolean("key1"));
+        assertEquals("value2", o.getString("key2"));
         JSONObject app = o.getJSONObject("app1");
         assertNotNull(app);
         assertEquals(true, app.getBoolean("enabled"));
         assertEquals("abcdef", app.getString("name"));
 
     }
+
     @Test
     public void testpm15m() {
         try {
@@ -799,7 +801,9 @@ public class TestMariaDataProvider {
     }
 
     private static String loadFile(String filename) throws IOException {
-        return String.join("\n", IoUtils.readAllLines(TestMariaDataProvider.class.getResourceAsStream(filename)));
+        return String.join("\n",
+                Files.readAllLines(new File(TestMariaDataProvider.class.getResource(filename).getFile()).toPath()));
+
     }
 
     static EntityInput createInput(String filter, String filterValue, int page, int size) {

@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 //https://github.com/elastic/elasticsearch/blob/6.4/rest-api-spec/src/main/resources/rest-api-spec/api/indices.create.json
 //https://github.com/elastic/elasticsearch/blob/6.4/rest-api-spec/src/main/resources/rest-api-spec/api/indices.put_mapping.json
+@Deprecated
 public class CreateIndexRequest extends BaseRequest {
 
     private JSONObject settings;

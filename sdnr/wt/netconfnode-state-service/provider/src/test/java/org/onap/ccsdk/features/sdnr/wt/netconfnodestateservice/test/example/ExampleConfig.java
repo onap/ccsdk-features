@@ -22,7 +22,6 @@
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.example;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Objects;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.DomContext;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomParser;
@@ -32,12 +31,11 @@ import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizationResult;
 import org.opendaylight.yangtools.yang.model.api.EffectiveModelContext;
 import org.opendaylight.yangtools.yang.model.repo.api.YangTextSchemaSource;
 import org.opendaylight.yangtools.yang.parser.api.YangParser;
 import org.opendaylight.yangtools.yang.parser.api.YangParserException;
-import org.opendaylight.yangtools.yang.model.repo.api.YangTextSchemaSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,10 +61,10 @@ public class ExampleConfig {
         final EffectiveModelContext schemaContext = parser.buildEffectiveModel();
 
         // (2) parsing of configuration into binding-independent format
-        final NormalizedNode data = DomParser.parseJsonFile("/example.json", schemaContext);
+        final NormalizationResult<?> data = DomParser.parseJsonFile("/example.json", schemaContext);
 
         // (3) conversion into binding-aware format (md-sal codec needs to know about path on which data is placed)
-        final Configuration config = (Configuration) domContext.getBindingNormalizedNodeSerializer().fromNormalizedNode(CONFIGURATION_PATH, data)
+        final Configuration config = (Configuration) domContext.getBindingNormalizedNodeSerializer().fromNormalizedNode(CONFIGURATION_PATH, data.data())
                 .getValue();
 
         // (4) printing some useful information

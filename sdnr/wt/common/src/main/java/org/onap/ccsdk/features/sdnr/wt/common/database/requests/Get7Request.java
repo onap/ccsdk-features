@@ -25,6 +25,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
  * @author Michael Dürre
  *
  */
+@Deprecated
 public class Get7Request extends GetRequest {
 
     public Get7Request(String alias, String esId) {

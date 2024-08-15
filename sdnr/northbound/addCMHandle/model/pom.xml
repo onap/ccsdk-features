@@ -38,11 +38,13 @@
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>
 
     <dependencies>
+    <!--
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>sal-netconf-connector</artifactId>
             <scope>provided</scope>
         </dependency>
+    -->
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>mdsal-binding-dom-codec-api</artifactId>

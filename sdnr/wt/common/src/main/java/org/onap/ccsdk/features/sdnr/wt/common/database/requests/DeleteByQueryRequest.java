@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 
+@Deprecated
 public class DeleteByQueryRequest extends BaseRequest {
 
     public DeleteByQueryRequest(String alias) {

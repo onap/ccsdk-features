@@ -21,7 +21,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs;
 
-import com.google.common.collect.Sets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -44,10 +43,8 @@ import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
@@ -132,21 +129,22 @@ public class Alarms10 extends YangModule {
 
         YangInstanceIdentifier alarmsPacIID =
                 YangInstanceIdentifier.builder().node(coreModel14.getControlConstructQName()).build();
+        InstanceIdentifierBuilder alarmsContainerIID = YangInstanceIdentifier.builder(alarmsPacIID).node(ALARM_PAC);
 
-        @NonNull
-        AugmentationIdentifier alarmsContainerIID =
-                YangInstanceIdentifier.AugmentationIdentifier.create(Sets.newHashSet(ALARM_PAC));
-
-        InstanceIdentifierBuilder augmentedAlarmsIID =
-                YangInstanceIdentifier.builder(alarmsPacIID).node(alarmsContainerIID);
-
-        // reading all the alarms
+        //        @NonNull
+        //        AugmentationIdentifier alarmsContainerIID =
+        //                YangInstanceIdentifier.AugmentationIdentifier.create(Sets.newHashSet(ALARM_PAC));
+        //
+        //        InstanceIdentifierBuilder augmentedAlarmsIID =
+        //                YangInstanceIdentifier.builder(alarmsPacIID).node(alarmsContainerIID);
+        //
+        //        // reading all the alarms
         Optional<NormalizedNode> alarms =
-                this.getNetconfDomAccessor().readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedAlarmsIID.build());
+                this.getNetconfDomAccessor().readDataNode(LogicalDatastoreType.OPERATIONAL, alarmsContainerIID.build());
 
         FaultData resultList = new FaultData();
         if (alarms.isPresent()) {
-            AugmentationNode alarmsDataNode = (AugmentationNode) alarms.get();
+            ContainerNode alarmsDataNode = (ContainerNode) alarms.get();
             ContainerNode alarmsContainer = (ContainerNode) alarmsDataNode.childByArg(new NodeIdentifier(ALARM_PAC));
             ContainerNode currentAlarmsContainer =
                     (ContainerNode) alarmsContainer.childByArg(new NodeIdentifier(CURRENT_ALARMS));
@@ -167,6 +165,7 @@ public class Alarms10 extends YangModule {
             }
         }
         return resultList;
+
     }
 
     public boolean isSupported(Capabilities capabilites) {

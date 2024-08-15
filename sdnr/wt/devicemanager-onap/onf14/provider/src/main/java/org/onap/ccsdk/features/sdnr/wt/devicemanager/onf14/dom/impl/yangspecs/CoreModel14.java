@@ -68,11 +68,6 @@ public class CoreModel14 extends YangModule {
         return module.getRevision().get().toString();
     }
 
-    @Override
-    public QName getQName(String localName) {
-        return QName.create(module, localName);
-    }
-
     public QName getControlConstructQName() {
         return CONTROL_CONSTRUCT;
     }

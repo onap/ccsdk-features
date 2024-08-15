@@ -17,6 +17,7 @@
  * ============LICENSE_END==========================================================================
  */
 
+
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config;
 
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;

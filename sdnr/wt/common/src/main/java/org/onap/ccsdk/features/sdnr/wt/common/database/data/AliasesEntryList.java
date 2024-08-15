@@ -28,6 +28,7 @@ import java.util.List;
  * @author Michael Dürre
  *
  */
+@Deprecated
 public class AliasesEntryList extends ArrayList<AliasesEntry> {
 
     /**

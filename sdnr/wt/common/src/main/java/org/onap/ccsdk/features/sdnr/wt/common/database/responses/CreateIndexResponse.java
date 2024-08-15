@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.responses;
 
 import org.elasticsearch.client.Response;
 
+@Deprecated
 public class CreateIndexResponse extends AcknowledgedResponse {
 
     public CreateIndexResponse(Response response) {

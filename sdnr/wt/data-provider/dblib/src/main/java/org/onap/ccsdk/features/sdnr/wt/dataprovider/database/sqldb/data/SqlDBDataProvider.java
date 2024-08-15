@@ -567,7 +567,7 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
             }
             return this.dbClient.write(query);
         } else {
-            this.controllerId = data.getString(0);
+            this.controllerId = data.getString(1);
             LOG.trace("controllerId already set");
         }
         return true;

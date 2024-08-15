@@ -34,7 +34,7 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NotificationProxyPa
 import org.opendaylight.yangtools.concepts.Identifier;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.EventInstantAware;
-import org.opendaylight.yangtools.yang.binding.Identifiable;
+import org.opendaylight.yangtools.yang.binding.KeyAware;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
@@ -215,8 +215,8 @@ public class NotificationProxyParserImpl implements NotificationProxyParser {
                     String keyString;
                     for (Object listObject : (List<?>) value) {
                         if (listObject != null) {
-                            if (Identifiable.class.isAssignableFrom(listObject.getClass())) {
-                                keyString = getKeyString((Identifiable<?>) listObject);
+                            if (KeyAware.class.isAssignableFrom(listObject.getClass())) {
+                                keyString = getKeyString((KeyAware<?>) listObject);
                             } else {
                                 keyString = String.valueOf(idx);
                             }
@@ -318,7 +318,7 @@ public class NotificationProxyParserImpl implements NotificationProxyParser {
          *
          * @return
          */
-        private String getKeyString(Identifiable<?> indentifiableObject) {
+        private String getKeyString(KeyAware<?> indentifiableObject) {
             String keyString = (indentifiableObject.key()).toString();
             int start = keyString.indexOf("=") + 1;
             int end = keyString.length() - 1;

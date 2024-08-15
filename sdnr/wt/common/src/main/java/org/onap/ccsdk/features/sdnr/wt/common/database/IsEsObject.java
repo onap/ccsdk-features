@@ -24,6 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database;
 /**
  * Element is a document in the ES database.
  */
+@Deprecated
 public interface IsEsObject {
 
     /**

@@ -31,6 +31,7 @@ import org.json.JSONObject;
  * @author jack
  *
  */
+@Deprecated
 public class UpdateResponse extends BaseResponse {
 
     private String result;

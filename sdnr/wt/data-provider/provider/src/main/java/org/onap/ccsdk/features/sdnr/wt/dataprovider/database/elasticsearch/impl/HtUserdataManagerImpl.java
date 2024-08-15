@@ -28,6 +28,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.HtUserdataManagerBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 
+@Deprecated
 public class HtUserdataManagerImpl extends HtUserdataManagerBase {
 
     private final HtDatabaseClient dbClient;

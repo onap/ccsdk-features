@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.status.entity.NetworkElementConnectionsBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
+@Deprecated
 public class DataObjectAcessorStatus extends DataObjectAcessor<Data> {
 
     final String ESDATATYPE_FAULTCURRENT_SEVERITY_KEY = "severity";

@@ -26,12 +26,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizationResult;
 import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizedNodeStreamWriter;
 import org.opendaylight.yangtools.yang.data.codec.gson.JSONCodecFactory;
 import org.opendaylight.yangtools.yang.data.codec.gson.JSONCodecFactorySupplier;
 import org.opendaylight.yangtools.yang.data.codec.gson.JsonParserStream;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNormalizedNodeStreamWriter;
-import org.opendaylight.yangtools.yang.data.impl.schema.NormalizedNodeResult;
+import org.opendaylight.yangtools.yang.data.impl.schema.NormalizationResultHolder;
 import org.opendaylight.yangtools.yang.model.api.EffectiveModelContext;
 
 public class DomParser {
@@ -43,9 +44,9 @@ public class DomParser {
      * @param schemaContext schema context
      * @return created {@link NormalizedNode}
      */
-    public static NormalizedNode parseJsonFile(final String path, final EffectiveModelContext schemaContext) {
+    public static NormalizationResult<?> parseJsonFile(final String path, final EffectiveModelContext schemaContext) {
         final JSONCodecFactory codecFactory = JSONCodecFactorySupplier.RFC7951.createSimple(schemaContext);
-        final NormalizedNodeResult resultHolder = new NormalizedNodeResult();
+        final NormalizationResultHolder resultHolder = new NormalizationResultHolder();
         try (NormalizedNodeStreamWriter writer = ImmutableNormalizedNodeStreamWriter.from(resultHolder);
              JsonParserStream jsonParser = JsonParserStream.create(writer, codecFactory);
              InputStream inputStream = NetconfDomAccessorImpl.class.getResourceAsStream(path);

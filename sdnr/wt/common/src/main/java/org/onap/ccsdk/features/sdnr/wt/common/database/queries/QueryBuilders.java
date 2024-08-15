@@ -24,6 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.queries;
 import java.util.List;
 import org.json.JSONObject;
 
+@Deprecated
 public class QueryBuilders {
 
     public static QueryBuilder matchAllQuery() {

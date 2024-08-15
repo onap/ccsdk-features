@@ -25,6 +25,7 @@ import org.elasticsearch.client.Response;
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 
+@Deprecated
 public class GetResponse extends BaseResponse {
 
     private boolean found;

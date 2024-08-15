@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.SearchHit;
 
+@Deprecated
 public class SearchResponse extends BaseResponse {
 
     private long total;

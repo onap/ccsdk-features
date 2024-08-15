@@ -21,12 +21,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs;
 
-import com.google.common.collect.Sets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.InternalDataModelSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.TechnologySpecificPacKeys;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.qnames.Onf14DevicemanagerQNames;
@@ -41,10 +39,9 @@ import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
+import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -74,20 +71,21 @@ public class WireInterface20 extends YangModule {
         // constructing the IID needs the augmentation exposed by the wire-interface-2-0
         // model
         YangInstanceIdentifier layerProtocolIID = coreModel14.getLayerProtocolIId(ltpUuid, localId);
-
-        @NonNull
-        AugmentationIdentifier wireInterfacePacIID = YangInstanceIdentifier.AugmentationIdentifier
-                .create(Sets.newHashSet(Onf14DevicemanagerQNames.WIRE_INTERFACE_PAC));
-
-        InstanceIdentifierBuilder augmentedWireInterfaceConfigurationIID =
-                YangInstanceIdentifier.builder(layerProtocolIID).node(wireInterfacePacIID);
+        InstanceIdentifierBuilder wireInterfacePacIID =
+                YangInstanceIdentifier.builder(layerProtocolIID).node(Onf14DevicemanagerQNames.WIRE_INTERFACE_PAC);
+        //        @NonNull
+        //        YangInstanceIdentifier wireInterfacePacIID =
+        //                YangInstanceIdentifier.of(Onf14DevicemanagerQNames.WIRE_INTERFACE_PAC);
+        //
+        //        InstanceIdentifierBuilder augmentedWireInterfaceConfigurationIID =
+        //                YangInstanceIdentifier.builder(layerProtocolIID).node(wireInterfacePacIID.getLastPathArgument());
 
         // reading all the current-problems list for this specific LTP and LP
-        Optional<NormalizedNode> wireInterfaceConfigurationOpt = netconfDomAccessor
-                .readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedWireInterfaceConfigurationIID.build());
+        Optional<NormalizedNode> wireInterfaceConfigurationOpt =
+                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, wireInterfacePacIID.build());
 
         if (wireInterfaceConfigurationOpt.isPresent()) {
-            AugmentationNode wireInterfaceConfiguration = (AugmentationNode) wireInterfaceConfigurationOpt.get();
+            ContainerNode wireInterfaceConfiguration = (ContainerNode) wireInterfaceConfigurationOpt.get();
             MapNode wireInterfaceCurrentProblemsList = (MapNode) wireInterfaceConfiguration
                     .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_LIST));
             if (wireInterfaceCurrentProblemsList != null) {
@@ -111,8 +109,7 @@ public class WireInterface20 extends YangModule {
         return resultList;
     }
 
-    public FaultData readAllCurrentProblems(FaultData resultList,
-            List<TechnologySpecificPacKeys> wireInterfaceList) {
+    public FaultData readAllCurrentProblems(FaultData resultList, List<TechnologySpecificPacKeys> wireInterfaceList) {
 
         int idxStart; // Start index for debug messages
 

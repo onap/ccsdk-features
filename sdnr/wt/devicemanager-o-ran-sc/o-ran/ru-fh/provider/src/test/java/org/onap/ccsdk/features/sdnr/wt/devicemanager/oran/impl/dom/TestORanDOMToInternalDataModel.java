@@ -24,7 +24,6 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -33,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import org.eclipse.jdt.annotation.NonNull;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,19 +53,18 @@ import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.UnkeyedListEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.UnkeyedListNode;
+import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizationResult;
 import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizedNodeStreamWriter;
 import org.opendaylight.yangtools.yang.data.codec.xml.XmlParserStream;
 import org.opendaylight.yangtools.yang.data.impl.schema.Builders;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNormalizedNodeStreamWriter;
-import org.opendaylight.yangtools.yang.data.impl.schema.NormalizedNodeResult;
+import org.opendaylight.yangtools.yang.data.impl.schema.NormalizationResultHolder;
 import org.opendaylight.yangtools.yang.model.api.EffectiveModelContext;
 import org.opendaylight.yangtools.yang.model.api.stmt.SchemaNodeIdentifier.Absolute;
 import org.opendaylight.yangtools.yang.model.util.SchemaInferenceStack.Inference;
@@ -135,7 +134,7 @@ public class TestORanDOMToInternalDataModel {
          */
         final XMLStreamReader reader = UntrustedXML.createXMLStreamReader(resourceAsStream);
 
-        final NormalizedNodeResult result = new NormalizedNodeResult();
+        final NormalizationResultHolder result = new NormalizationResultHolder();
         final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
 
         final XmlParserStream xmlParser = XmlParserStream.create(streamWriter, hwContainerSchema);
@@ -144,7 +143,7 @@ public class TestORanDOMToInternalDataModel {
         xmlParser.flush();
         xmlParser.close();
 
-        NormalizedNode transformedInput = result.getResult();
+        NormalizedNode transformedInput = result.getResult().data();
 
         List<Inventory> inventoryList = ORanDOMToInternalDataModel.getInventoryList(nodeId, transformedInput);
         assertEquals("All elements", 27, inventoryList.size());
@@ -160,7 +159,7 @@ public class TestORanDOMToInternalDataModel {
 
         final XMLStreamReader reader = UntrustedXML.createXMLStreamReader(resourceAsStream);
 
-        final NormalizedNodeResult result = new NormalizedNodeResult();
+        final NormalizationResultHolder result = new NormalizationResultHolder();
         final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
 
         final XmlParserStream xmlParser = XmlParserStream.create(streamWriter, systemSchema);
@@ -169,14 +168,10 @@ public class TestORanDOMToInternalDataModel {
         xmlParser.flush();
         xmlParser.close();
 
-        NormalizedNode transformedInput = result.getResult();
+        NormalizedNode transformedInput = result.getResult().data();
         ContainerNode cn = (ContainerNode) transformedInput;
-        AugmentationNode gcData = (AugmentationNode) cn.childByArg(
-                YangInstanceIdentifier.AugmentationIdentifier.create(Sets.newHashSet(onapSystem.get().getName(),
-                        onapSystem.get().getWebUi(), onapSystem.get().getGeoLocation())));
-        Optional<Guicutthrough> gc = ORanDOMToInternalDataModel.getGuicutthrough(gcData, onapSystem.get());
+        Optional<Guicutthrough> gc = ORanDOMToInternalDataModel.getGuicutthrough(cn, onapSystem.get());
         assertEquals(gc.isPresent(), true);
-
     }
 
     @Test
@@ -193,7 +188,7 @@ public class TestORanDOMToInternalDataModel {
                 TestORanDOMToInternalDataModel.class.getResourceAsStream("/oran-fm-active-alarm.xml");
 
         final XMLStreamReader reader = UntrustedXML.createXMLStreamReader(resourceAsStream);
-        final NormalizedNodeResult result = new NormalizedNodeResult();
+        final NormalizationResultHolder result = new NormalizationResultHolder();
         final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
 
         final XmlParserStream xmlParser = XmlParserStream.create(streamWriter, activeAlarmSchema);
@@ -201,8 +196,8 @@ public class TestORanDOMToInternalDataModel {
 
         xmlParser.flush();
         xmlParser.close();
-        NormalizedNode transformedInput = result.getResult();
-        ContainerNode cn = (ContainerNode) transformedInput;
+        @NonNull NormalizationResult<?> transformedInput = result.getResult();
+        ContainerNode cn = (ContainerNode) transformedInput.data();
 
         UnkeyedListNode activeAlarmsList =
                 (UnkeyedListNode) cn.childByArg(new NodeIdentifier(oranfm.get().getFaultActiveAlarmsQName()));

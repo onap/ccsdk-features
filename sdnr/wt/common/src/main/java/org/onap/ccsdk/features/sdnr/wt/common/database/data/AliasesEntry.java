@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
  * @author Michael Dürre
  *
  */
+@Deprecated
 public class AliasesEntry {
     private static final String regex = "^([^\\ ]+)[\\ ]+([^\\ ]+)[\\ ]+.*$";
     private static final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);

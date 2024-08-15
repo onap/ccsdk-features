@@ -21,12 +21,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs;
 
-import com.google.common.collect.Sets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.InternalDataModelSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.TechnologySpecificPacKeys;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.pm.PerformanceDataAirInterface;
@@ -43,10 +41,8 @@ import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
@@ -70,8 +66,7 @@ public class AirInterface20 extends YangModule {
         this.coreModel14 = coreModel14;
     }
 
-    public FaultData readAllCurrentProblems(FaultData resultList,
-            List<TechnologySpecificPacKeys> airInterfaceList) {
+    public FaultData readAllCurrentProblems(FaultData resultList, List<TechnologySpecificPacKeys> airInterfaceList) {
 
         int idxStart; // Start index for debug messages
 
@@ -107,20 +102,24 @@ public class AirInterface20 extends YangModule {
         // model
 
         YangInstanceIdentifier layerProtocolIID = coreModel14.getLayerProtocolIId(ltpUuid, localId);
+        InstanceIdentifierBuilder airInterfacePacIID =
+                YangInstanceIdentifier.builder(layerProtocolIID).node(getQName("air-interface-pac"));
 
-        @NonNull
-        AugmentationIdentifier airInterfacePacIID =
-                YangInstanceIdentifier.AugmentationIdentifier.create(Sets.newHashSet(getQName("air-interface-pac")));
-
-        InstanceIdentifierBuilder augmentedAirInterfacePacIID =
-                YangInstanceIdentifier.builder(layerProtocolIID).node(airInterfacePacIID);
-
+        //        @NonNull
+        //        AugmentationIdentifier airInterfacePacIID =
+        //                YangInstanceIdentifier.AugmentationIdentifier.create(Sets.newHashSet(getQName("air-interface-pac")));
+        //
+        //        InstanceIdentifierBuilder augmentedAirInterfacePacIID =
+        //                YangInstanceIdentifier.builder(layerProtocolIID).node(airInterfacePacIID);
+        //
         // reading all the current-problems list for this specific LTP and LP
         Optional<NormalizedNode> airInterfacePacDataOpt =
-                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedAirInterfacePacIID.build());
-
+                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, airInterfacePacIID.build());
         if (airInterfacePacDataOpt.isPresent()) {
-            AugmentationNode airInterfacePacData = (AugmentationNode) airInterfacePacDataOpt.get();
+            LOG.info("Air Interface = {}", airInterfacePacDataOpt.get().prettyTree());
+        }
+        if (airInterfacePacDataOpt.isPresent()) {
+            ContainerNode airInterfacePacData = (ContainerNode) airInterfacePacDataOpt.get();
             MapNode airInterfaceCurrentProblemsList =
                     (MapNode) airInterfacePacData.childByArg(new NodeIdentifier(getQName("current-problem-list")));
             if (airInterfaceCurrentProblemsList != null) {
@@ -151,42 +150,44 @@ public class AirInterface20 extends YangModule {
         // model
 
         YangInstanceIdentifier layerProtocolIID = coreModel14.getLayerProtocolIId(ltpUuid, localId);
+        InstanceIdentifierBuilder airInterfacePacIID =
+                YangInstanceIdentifier.builder(layerProtocolIID).node(getQName("air-interface-pac"));
 
-        @NonNull
-        AugmentationIdentifier airInterfacePacIID = YangInstanceIdentifier.AugmentationIdentifier
-                .create(Sets.newHashSet(Onf14DevicemanagerQNames.AIR_INTERFACE_PAC));
-
-        InstanceIdentifierBuilder augmentedAirInterfacePacIID =
-                YangInstanceIdentifier.builder(layerProtocolIID).node(airInterfacePacIID);
-
-        // reading historical performance list for this specific LTP and LP
-        Optional<NormalizedNode> airInterfacePacDataOpt =
-                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedAirInterfacePacIID.build());
-        LOG.debug("Performance Data = {}", airInterfacePacDataOpt.get().body());
-        if (airInterfacePacDataOpt.isPresent()) {
-            AugmentationNode airInterfacePacData = (AugmentationNode) airInterfacePacDataOpt.get();
-            ContainerNode cn = (ContainerNode) airInterfacePacData
-                    .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_PAC));
-            if (cn != null) {
-                ContainerNode airIntfHistPerf = (ContainerNode) cn
-                        .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_HISTORICAL_PERFORMANCES));
-                if (airIntfHistPerf != null) {
-                    MapNode airInterfaceHistoricalPerformanceList = (MapNode) airIntfHistPerf.childByArg(
-                            new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_HISTORICAL_PERFORMANCES_LIST));
-                    if (airInterfaceHistoricalPerformanceList != null) {
-                        Collection<MapEntryNode> airInterfaceHistoricalPerfCollection =
-                                airInterfaceHistoricalPerformanceList.body();
-                        for (MapEntryNode airInterfaceHistPerf : airInterfaceHistoricalPerfCollection) {
-                            res.add(new PerformanceDataAirInterface(netconfDomAccessor.getNodeId(), ltpUuid, localId,
-                                    airInterfaceHistPerf));
+        //        @NonNull
+        //        AugmentationIdentifier airInterfacePacIID = YangInstanceIdentifier.AugmentationIdentifier
+        //                .create(Sets.newHashSet(Onf14DevicemanagerQNames.AIR_INTERFACE_PAC));
+        //
+        //        InstanceIdentifierBuilder augmentedAirInterfacePacIID =
+        //                YangInstanceIdentifier.builder(layerProtocolIID).node(airInterfacePacIID);
+        //
+        //        // reading historical performance list for this specific LTP and LP
+                Optional<NormalizedNode> airInterfacePacDataOpt =
+                        netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, airInterfacePacIID.build());
+                LOG.debug("Performance Data = {}", airInterfacePacDataOpt.get().body());
+                if (airInterfacePacDataOpt.isPresent()) {
+                    ContainerNode airInterfacePacData = (ContainerNode) airInterfacePacDataOpt.get();
+                    ContainerNode cn = (ContainerNode) airInterfacePacData
+                            .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_PAC));
+                    if (cn != null) {
+                        ContainerNode airIntfHistPerf = (ContainerNode) cn
+                                .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_HISTORICAL_PERFORMANCES));
+                        if (airIntfHistPerf != null) {
+                            MapNode airInterfaceHistoricalPerformanceList = (MapNode) airIntfHistPerf.childByArg(
+                                    new NodeIdentifier(Onf14DevicemanagerQNames.AIR_INTERFACE_HISTORICAL_PERFORMANCES_LIST));
+                            if (airInterfaceHistoricalPerformanceList != null) {
+                                Collection<MapEntryNode> airInterfaceHistoricalPerfCollection =
+                                        airInterfaceHistoricalPerformanceList.body();
+                                for (MapEntryNode airInterfaceHistPerf : airInterfaceHistoricalPerfCollection) {
+                                    res.add(new PerformanceDataAirInterface(netconfDomAccessor.getNodeId(), ltpUuid, localId,
+                                            airInterfaceHistPerf));
+                                }
+                                return res;
+                            } else {
+                                LOG.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
+                            }
                         }
-                        return res;
-                    } else {
-                        LOG.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
                     }
                 }
-            }
-        }
         return null;
 
     }

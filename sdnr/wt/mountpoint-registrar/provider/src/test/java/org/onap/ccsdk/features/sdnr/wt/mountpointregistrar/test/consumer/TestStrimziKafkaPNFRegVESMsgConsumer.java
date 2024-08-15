@@ -248,7 +248,7 @@ public class TestStrimziKafkaPNFRegVESMsgConsumer {
     @Test
     public void processMsgTest() {
 
-        StrimziKafkaPNFRegVESMsgConsumer pnfRegMsgConsumer = new StrimziKafkaPNFRegVESMsgConsumer(cfgTest.getCfg(), null);
+        StrimziKafkaPNFRegVESMsgConsumer pnfRegMsgConsumer = new StrimziKafkaPNFRegVESMsgConsumer(cfgTest.getCfg());
         try {
             pnfRegMsgConsumer.processMsg(pnfRegMsg);
             pnfRegMsgConsumer.processMsg(pnfRegMsg_SSH);
@@ -262,7 +262,7 @@ public class TestStrimziKafkaPNFRegVESMsgConsumer {
 
     @Test
     public void Test1() {
-        StrimziKafkaPNFRegVESMsgConsumer pnfConsumer = new StrimziKafkaPNFRegVESMsgConsumer(cfgTest.getCfg(), null);
+        StrimziKafkaPNFRegVESMsgConsumer pnfConsumer = new StrimziKafkaPNFRegVESMsgConsumer(cfgTest.getCfg());
         System.out.println(pnfConsumer.getBaseUrl());
         System.out.println(pnfConsumer.getSDNRUser());
         System.out.println(pnfConsumer.getSDNRPasswd());
