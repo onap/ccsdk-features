@@ -23,10 +23,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Iterator;
 import java.util.Map;
-import org.apache.kafka.clients.admin.Admin;
+
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.GeneralConfig;
-import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.InvalidMessageException;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.StrimziKafkaVESMsgConsumerImpl;
+import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.InvalidMessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +34,8 @@ public class StrimziKafkaCMVESMsgConsumer extends StrimziKafkaVESMsgConsumerImpl
 
     private static final Logger LOG = LoggerFactory.getLogger(StrimziKafkaCMVESMsgConsumer.class);
 
-    public StrimziKafkaCMVESMsgConsumer(GeneralConfig generalConfig, Admin kafkaAdminClient) {
-        super(generalConfig, kafkaAdminClient);
+    public StrimziKafkaCMVESMsgConsumer(GeneralConfig generalConfig) {
+        super(generalConfig);
         LOG.info("StrimziKafkaCMVESMsgConsumer started successfully");
     }
 

@@ -73,11 +73,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.netconf</groupId>
-            <artifactId>sal-netconf-connector</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
             <artifactId>rfc6991-ietf-yang-types</artifactId>
             <scope>provided</scope>
@@ -123,20 +118,5 @@
         </dependency>
         <!--  MariaDB end -->
     </dependencies>
-
-    <!-- Tests require MariaDB4j , which does not currently support ARM64 -->
-    <profiles>
-        <profile>
-            <id>disable-test-on-ARM64</id>
-            <activation>
-                <os>
-                    <arch>aarch64</arch>
-                </os>
-            </activation>
-            <properties>
-                <skipTests>true</skipTests>
-            </properties>
-        </profile>
-    </profiles>
 
 </project>

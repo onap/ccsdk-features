@@ -29,6 +29,7 @@ import org.elasticsearch.client.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@Deprecated
 public class NodeStatsResponse extends BaseResponse {
 
     private NodesInfo nodesInfo;

@@ -24,6 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.queries;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+@Deprecated
 public class QueryBuilder {
 
     private JSONObject innerQuery;

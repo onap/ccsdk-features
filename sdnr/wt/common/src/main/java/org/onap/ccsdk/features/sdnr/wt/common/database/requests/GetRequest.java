@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
 import javax.annotation.Nonnull;
 
+@Deprecated
 public class GetRequest extends BaseRequest {
 
     private final String alias;

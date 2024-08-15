@@ -66,7 +66,6 @@ import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
@@ -178,7 +177,7 @@ public class ORanDOMNetworkElement implements NetworkElement, IConfigChangedList
             getActiveAlarms();
         }
         if (onapSystem.isPresent()) {
-            AugmentationNode gcData = (AugmentationNode) onapSystem.get().getOnapSystemData();
+            ContainerNode gcData = (ContainerNode) onapSystem.get().getOnapSystemData();
             Optional<Guicutthrough> oGuicutthrough =
                     ORanDOMToInternalDataModel.getGuicutthrough(gcData, onapSystem.get());
             if (oGuicutthrough.isPresent()) {

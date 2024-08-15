@@ -70,6 +70,7 @@ public class MountpointStateProviderImpl implements VESCollectorConfigChangeList
         boolean vesCollectorEnabled = vesCollectorService.getConfig().isVESCollectorEnabled();
 
         if (vesCollectorEnabled) {
+            vesCollectorEnabledCV = true;
             startPublishing();
         }
     }

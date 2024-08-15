@@ -78,6 +78,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author herbert
  */
+@Deprecated
 public class HtDatabaseEventsService implements ArchiveCleanProvider, DataProvider {
     private static final Logger LOG = LoggerFactory.getLogger(HtDatabaseEventsService.class);
 

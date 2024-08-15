@@ -38,16 +38,19 @@ import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizationResult;
 import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizedNodeStreamWriter;
+
 import org.opendaylight.yangtools.yang.data.codec.gson.JSONCodecFactory;
 import org.opendaylight.yangtools.yang.data.codec.gson.JSONCodecFactorySupplier;
 import org.opendaylight.yangtools.yang.data.codec.gson.JsonParserStream;
 import org.opendaylight.yangtools.yang.data.codec.xml.XmlParserStream;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNormalizedNodeStreamWriter;
-import org.opendaylight.yangtools.yang.data.impl.schema.NormalizedNodeResult;
+import org.opendaylight.yangtools.yang.data.impl.schema.NormalizationResultHolder;
 import org.opendaylight.yangtools.yang.model.api.EffectiveModelContext;
-import org.opendaylight.yangtools.yang.model.util.SchemaInferenceStack.Inference;
+
 //import org.opendaylight.yangtools.yang.model.util.SchemaInferenceStack.Inference; //Yangtool 8.0
+import org.opendaylight.yangtools.yang.model.util.SchemaInferenceStack.Inference;
 import org.xml.sax.SAXException;
 
 public class Onf14DomTestUtils {
@@ -88,7 +91,7 @@ public class Onf14DomTestUtils {
                 loadTextFile(new File(Onf14DomTestUtils.class.getResource("/ControlConstruct-data-test.json").toURI()));
         final JsonReader reader = new JsonReader(new StringReader(streamAsString));
 
-        NormalizedNodeResult result = new NormalizedNodeResult();
+        NormalizationResultHolder result = new NormalizationResultHolder();
 
         // StreamWriter which attaches NormalizedNode under parent
         final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
@@ -99,7 +102,7 @@ public class Onf14DomTestUtils {
         }
 
         // Finally build the node
-        transformedInput = result.getResult();
+        transformedInput = result.getResult().data();
         return transformedInput;
     }
 
@@ -116,7 +119,7 @@ public class Onf14DomTestUtils {
          */
         final XMLStreamReader reader = UntrustedXML.createXMLStreamReader(resourceAsStream);
 
-        final NormalizedNodeResult result = new NormalizedNodeResult();
+        final NormalizationResultHolder result = new NormalizationResultHolder();
         final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
 
         final XmlParserStream xmlParser = XmlParserStream.create(streamWriter, hwContainerSchema);
@@ -125,7 +128,7 @@ public class Onf14DomTestUtils {
         xmlParser.flush();
         xmlParser.close();
 
-        transformedInput = result.getResult();
+        transformedInput = result.getResult().data();
         return transformedInput;
     }
     
@@ -142,7 +145,7 @@ public class Onf14DomTestUtils {
          */
         final XMLStreamReader reader = UntrustedXML.createXMLStreamReader(resourceAsStream);
 
-        final NormalizedNodeResult result = new NormalizedNodeResult();
+        final NormalizationResultHolder result = new NormalizationResultHolder();
         final NormalizedNodeStreamWriter streamWriter = ImmutableNormalizedNodeStreamWriter.from(result);
 
         final XmlParserStream xmlParser = XmlParserStream.create(streamWriter, hwContainerSchema);
@@ -151,7 +154,7 @@ public class Onf14DomTestUtils {
         xmlParser.flush();
         xmlParser.close();
 
-        transformedInput = result.getResult();
+        transformedInput = result.getResult().data();
         return transformedInput;
     }
 

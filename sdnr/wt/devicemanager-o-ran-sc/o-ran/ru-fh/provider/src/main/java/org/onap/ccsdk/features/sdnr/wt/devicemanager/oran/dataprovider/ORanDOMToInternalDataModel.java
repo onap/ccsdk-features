@@ -47,7 +47,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.CodeHelpers;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
@@ -195,13 +194,13 @@ public class ORanDOMToInternalDataModel {
      * @param sys
      * @return
      */
-    public static Optional<Guicutthrough> getGuicutthrough(@Nullable AugmentationNode onapSysAugData,
+    public static Optional<Guicutthrough> getGuicutthrough(@Nullable ContainerNode sysData,
             @NonNull OnapSystem onapSys) {
 
-        if (onapSysAugData != null) {
-            String name = ORanDMDOMUtility.getLeafValue(onapSysAugData, onapSys.getName());
+        if (sysData != null) {
+            String name = ORanDMDOMUtility.getLeafValue(sysData, onapSys.getName());
             @Nullable
-            Uri uri = new Uri(ORanDMDOMUtility.getLeafValue(onapSysAugData, onapSys.getWebUi()));
+            Uri uri = new Uri(ORanDMDOMUtility.getLeafValue(sysData, onapSys.getWebUi()));
             if (uri.getValue() != null) {
                 GuicutthroughBuilder gcBuilder = new GuicutthroughBuilder();
                 if (name != null) {
@@ -212,7 +211,6 @@ public class ORanDOMToInternalDataModel {
             }
             LOG.warn("Uri not set to invoke a Gui cut through session to the device. Please set the Uri in the device");
         }
-        LOG.warn("Retrieving augmented System details failed. Gui cut through information not available");
         return Optional.empty();
     }
 

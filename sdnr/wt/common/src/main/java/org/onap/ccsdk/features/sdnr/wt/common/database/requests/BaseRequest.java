@@ -31,6 +31,7 @@ import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public abstract class BaseRequest {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseRequest.class);

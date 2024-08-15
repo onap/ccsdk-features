@@ -55,7 +55,7 @@ public class MountpointStateVESMessageFormatter {
 
     public VESMessage createVESMessage(JSONObject obj) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("JSON Object to format to VES is - {0}", obj);
+            LOG.debug("JSON Object to format to VES is - {}", obj);
         }
 
         MountpointStateVESMessageFormatter.incrSequenceNo();

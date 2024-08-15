@@ -10,10 +10,11 @@ import java.util.List;
 import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
-import org.opendaylight.yangtools.yang.binding.Identifiable;
-import org.opendaylight.yangtools.yang.binding.Identifier;
+import org.opendaylight.yangtools.yang.binding.Key;
+import org.opendaylight.yangtools.yang.binding.KeyAware;
 
-public class YangtoolsMapDesirializer2<K extends Identifier<V>, V extends Identifiable<K>>
+
+public class YangtoolsMapDesirializer2<K extends Key<V>, V extends KeyAware<K>>
         extends JsonDeserializer<Map<K, V>> {
 
     private final Class<V> clazz;

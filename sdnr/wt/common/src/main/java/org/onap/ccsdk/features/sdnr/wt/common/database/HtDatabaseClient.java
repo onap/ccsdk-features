@@ -53,6 +53,8 @@ import org.slf4j.LoggerFactory;
  *         Hint: Elasticsearch index/alias and doctype will be the same value server side restricted since ES 5.0
  *
  */
+
+@Deprecated
 public class HtDatabaseClient extends ExtRestClient implements DatabaseClient, AutoCloseable {
 
     private static final boolean REFRESH_AFTER_REWRITE_DEFAULT = true;

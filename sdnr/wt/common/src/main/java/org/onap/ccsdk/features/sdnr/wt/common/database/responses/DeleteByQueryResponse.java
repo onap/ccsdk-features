@@ -30,6 +30,7 @@ import org.json.JSONObject;
  * @author jack
  *
  */
+@Deprecated
 public class DeleteByQueryResponse extends BaseResponse {
 
     private int deleted;

@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilders;
 
+@Deprecated
 public class UpdateByQueryRequest extends BaseRequest {
 
     private JSONObject params;

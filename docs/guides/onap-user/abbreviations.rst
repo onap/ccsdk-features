@@ -156,9 +156,10 @@ Abbreviations
 |                                    | alisation>`__                   |
 +------------------------------------+---------------------------------+
 | EUAG                               | `ONAP End User Advisory         |
-|                                    | Group <https://wiki.lfnetworkin |
-|                                    | g.org/pages/viewpage.action?pag |
-|                                    | eId=2916362>`__                 |
+|                                    | Group <https://lf-networking.at |
+|                                    | lassian.net/wiki/spaces/LN/page |
+|                                    | s/15633594/INACTIVE+EUAG+LFN+En |
+|                                    | d+User+Advisory+Group>`__       |
 +------------------------------------+---------------------------------+
 | FCAPS                              | Fault Configuration Accounting  |
 |                                    | Performance Security            |

@@ -26,6 +26,7 @@ import org.elasticsearch.client.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@Deprecated
 public class ClusterHealthResponse extends BaseResponse {
 
     public static final String HEALTHSTATUS_GREEN = "green";

@@ -131,7 +131,7 @@ public class TestStrimziKafkaFaultVESMsgConsumer {
 
     @Test
     public void test() throws IOException {
-        StrimziKafkaFaultVESMsgConsumer faultMsgConsumer = new StrimziKafkaFaultVESMsgConsumer(cfgTest.getCfg(), null);
+        StrimziKafkaFaultVESMsgConsumer faultMsgConsumer = new StrimziKafkaFaultVESMsgConsumer(cfgTest.getCfg());
         try {
 
             faultMsgConsumer.processMsg(faultVESMsg.replace("@eventSeverity@", "CRITICAL"));

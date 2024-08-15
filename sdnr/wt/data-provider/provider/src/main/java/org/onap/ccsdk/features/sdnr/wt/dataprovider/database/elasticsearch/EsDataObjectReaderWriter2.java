@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> Yang tools generated class object.
  */
+@Deprecated
 public class EsDataObjectReaderWriter2<T extends DataObject> {
 
     private static final Logger LOG = LoggerFactory.getLogger(EsDataObjectReaderWriter2.class);

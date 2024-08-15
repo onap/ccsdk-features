@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database;
 
 import org.json.JSONObject;
 
+@Deprecated
 public class SearchHit {
 
     private final String index;

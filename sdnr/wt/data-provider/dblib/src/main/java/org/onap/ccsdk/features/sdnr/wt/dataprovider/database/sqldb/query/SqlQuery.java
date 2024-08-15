@@ -40,7 +40,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
-import io.netty.util.internal.StringUtil;
+
 
 public interface SqlQuery {
 
@@ -79,7 +79,8 @@ public interface SqlQuery {
         }
         if (!filters2.isEmpty()) {
             sb.append(" WHERE ");
-            sb.append(StringUtil.join(" AND ", filters2));
+            sb.append(String.join(" AND ", filters2));
+
         }
         return sb.toString();
     }

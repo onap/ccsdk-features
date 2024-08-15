@@ -30,8 +30,9 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SortOrder;
-import org.opendaylight.yangtools.yang.binding.Identifiable;
-import org.opendaylight.yangtools.yang.binding.Identifier;
+
+import org.opendaylight.yangtools.yang.binding.Key;
+import org.opendaylight.yangtools.yang.binding.KeyAware;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -84,7 +85,7 @@ public class YangHelper2 {
     /**
      * Aluminium version
      */
-    public static <K extends Identifier<T>,T extends Identifiable<K>> Map<K, T> getListOrMap(Class<K> clazz, List<T> list) {
+    public static <K extends Key<T>,T extends KeyAware<K>> Map<K, T> getListOrMap(Class<K> clazz, List<T> list) {
         Map<K,T> map = new HashMap<>();
         for(T listelement:list) {
             Constructor<K> constructor;
@@ -98,7 +99,7 @@ public class YangHelper2 {
         }
         return map;
     }
-    public static <K extends Identifier<T>,T extends Identifiable<K>> Map<K, T> getListOrMap(Class<K> clazz, T listElement) {
+    public static <K extends Key<T>,T extends KeyAware<K>> Map<K, T> getListOrMap(Class<K> clazz, T listElement) {
         return getListOrMap(clazz, Arrays.asList(listElement) );
     }
     public static Uint32 getLongOrUint32(long longVal) {

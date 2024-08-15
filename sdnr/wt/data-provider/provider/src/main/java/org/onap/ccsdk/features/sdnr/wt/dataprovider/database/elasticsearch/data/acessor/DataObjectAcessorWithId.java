@@ -27,6 +27,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class DataObjectAcessorWithId<T extends DataObject> extends DataObjectAcessor<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataObjectAcessorWithId.class);

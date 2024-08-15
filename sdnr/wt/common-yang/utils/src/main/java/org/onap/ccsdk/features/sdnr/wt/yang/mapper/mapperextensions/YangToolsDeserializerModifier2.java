@@ -40,8 +40,8 @@ import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.BaseIdentityDeseria
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.ClassDeserializer;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.IdentifierDeserializer;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.TypeObjectDeserializer;
+import org.opendaylight.yangtools.concepts.Identifier;
 import org.opendaylight.yangtools.yang.binding.BaseIdentity;
-import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.ScalarTypeObject;
 import org.opendaylight.yangtools.yang.binding.TypeObject;
 import org.slf4j.Logger;
