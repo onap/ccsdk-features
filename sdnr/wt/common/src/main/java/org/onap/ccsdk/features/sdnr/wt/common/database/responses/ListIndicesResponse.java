@@ -28,6 +28,7 @@ import org.elasticsearch.client.Response;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.IndicesEntry;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.IndicesEntryList;
 
+@Deprecated
 public class ListIndicesResponse extends BaseResponse {
 
     /*

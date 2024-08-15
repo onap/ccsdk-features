@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.queries;
 
+@Deprecated
 public enum SortOrder {
 
     ASCENDING("asc"), DESCENDING("desc");

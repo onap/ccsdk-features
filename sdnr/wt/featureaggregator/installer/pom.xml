@@ -43,8 +43,25 @@
     <properties>
         <application.name>sdnr-wt-installer</application.name>
     </properties>
-
+    <!-- <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.onap.ccsdk.parent</groupId>
+                <artifactId>installed-odl-bom</artifactId>
+                <version>2.8.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+                 
+        </dependencies>
+    </dependencyManagement> -->
     <dependencies>
+        <!-- <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
+        </dependency> -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-feature-aggregator</artifactId>
@@ -66,7 +83,7 @@
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
-        <dependency>
+	    <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-feature-aggregator-oauth</artifactId>
             <version>${project.version}</version>

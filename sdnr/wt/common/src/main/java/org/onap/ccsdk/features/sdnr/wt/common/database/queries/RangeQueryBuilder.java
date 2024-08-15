@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.queries;
 
 import org.json.JSONObject;
 
+@Deprecated
 public class RangeQueryBuilder extends QueryBuilder {
 
     private Object gtValue = null;

@@ -42,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 class QueryByFilterStatic {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataObjectAcessorPm.class);

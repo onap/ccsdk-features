@@ -37,7 +37,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev221225.ConnectionOper.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.ConnectionOper.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
@@ -129,7 +129,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     /**
      * (NonConnected) A registration after creation of a mountpoint occured
      *
-     * @param registrationName of device (mountpoint name)
+     * @param nodeId of device (mountpoint name)
      * @param nNode with mountpoint data
      */
     @Override
@@ -177,7 +177,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     /**
      * (Connected) mountpoint state moves to connected
      *
-     * @param mountpointNodeName uuid that is nodeId or mountpointId
+     * @param nNodeId uuid that is nodeId or mountpointId
      * @param deviceType according to assessement
      */
     @Override
@@ -202,7 +202,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     /**
      * (NonConnected) mountpoint state changed.
      *
-     * @param mountpointNodeName nodeid
+     * @param nodeId nodeid
      * @param netconfNode node
      */
     public void onStateChangeIndication(NodeId nodeId, NetconfNode netconfNode) {
@@ -216,7 +216,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     /**
      * (NonConnected) A deregistration after removal of a mountpoint occured.
      *
-     * @param registrationName Name of the event that is used as key in the database.
+     * @param nodeId Name of the event that is used as key in the database.
      */
     @SuppressWarnings("null")
     @Override
@@ -238,7 +238,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     /**
      * Mountpoint state changed .. from connected -> connecting or unable-to-connect or vis-e-versa.
      *
-     * @param registrationName Name of the event that is used as key in the database.
+     * @param nodeId Name of the event that is used as key in the database.
      */
     @Override
     public void updateRegistration(NodeId nodeId, String attribute, String attributeNewValue, NetconfNode nNode) {

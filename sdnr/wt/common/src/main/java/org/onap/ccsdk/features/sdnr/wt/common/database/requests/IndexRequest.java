@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
 import javax.annotation.Nullable;
 
+@Deprecated
 public class IndexRequest extends BaseRequest {
 
     private final String alias;

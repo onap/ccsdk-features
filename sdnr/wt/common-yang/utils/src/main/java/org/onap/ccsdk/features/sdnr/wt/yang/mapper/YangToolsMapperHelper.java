@@ -43,6 +43,7 @@ import javax.annotation.Nullable;
 import org.opendaylight.mdsal.dom.api.DOMEvent;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
+
 import org.opendaylight.yangtools.yang.binding.*;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -316,8 +317,8 @@ public class YangToolsMapperHelper {
     }
 
 
-    public static <K extends Identifier<V>, V extends Identifiable<K>> Map<K, V> toMap(List<V> list) {
-        return list == null || list.isEmpty() ? null : Maps.uniqueIndex(list, Identifiable::key);
+    public static <K extends Key<V>, V extends KeyAware<K>> Map<K, V> toMap(List<V> list) {
+        return list == null || list.isEmpty() ? null : Maps.uniqueIndex(list, KeyAware::key);
     }
 
     @SuppressWarnings("unchecked")

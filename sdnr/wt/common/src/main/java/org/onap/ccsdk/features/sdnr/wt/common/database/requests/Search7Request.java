@@ -25,6 +25,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
  * @author Michael Dürre
  *
  */
+@Deprecated
 public class Search7Request extends SearchRequest {
 
     /**

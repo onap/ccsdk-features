@@ -32,6 +32,7 @@ import org.json.JSONObject;
  * @author jack
  *
  */
+@Deprecated
 public class UpdateByQueryResponse extends BaseResponse {
 
 

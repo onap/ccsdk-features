@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.kafka.clients.admin.Admin;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.FaultConfig;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.GeneralConfig;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.MessageConfig;
@@ -63,7 +62,6 @@ public class StrimziKafkaVESMsgConsumerMain implements Runnable {
     private ProvisioningConfig provisioningConfig;
     private StndDefinedFaultConfig stndDefinedFaultConfig;
     private StrimziKafkaConfig strimziKafkaConfig;
-    private Admin kafkaAdminClient = null;
 
     public StrimziKafkaVESMsgConsumerMain(Map<String, MessageConfig> configMap, GeneralConfig generalConfig) {
         this.generalConfig = generalConfig;
@@ -74,7 +72,6 @@ public class StrimziKafkaVESMsgConsumerMain implements Runnable {
             StrimziKafkaConfig strimziKafkaConfig) {
         this.generalConfig = generalConfig;
         this.strimziKafkaConfig = strimziKafkaConfig;
-        kafkaAdminClient = Admin.create(getStrimziKafkaProps(strimziKafkaConfig));
         configMap.forEach(this::initialize);
     }
 
@@ -151,10 +148,10 @@ public class StrimziKafkaVESMsgConsumerMain implements Runnable {
 
     private Properties getStrimziKafkaProps(StrimziKafkaConfig strimziKafkaConfig) {
         if (strimziKafkaProperties.size() == 0) {
-            strimziKafkaProperties.put("bootstrap.servers", strimziKafkaConfig.getBootstrapServers());
-            strimziKafkaProperties.put("security.protocol", strimziKafkaConfig.getSecurityProtocol());
-            strimziKafkaProperties.put("sasl.mechanism", strimziKafkaConfig.getSaslMechanism());
-            strimziKafkaProperties.put("sasl.jaas.config", strimziKafkaConfig.getSaslJaasConfig());
+            strimziKafkaProperties.put("bootstrapServers", strimziKafkaConfig.getBootstrapServers());
+            strimziKafkaProperties.put("securityProtocol", strimziKafkaConfig.getSecurityProtocol());
+            strimziKafkaProperties.put("saslMechanism", strimziKafkaConfig.getSaslMechanism());
+            strimziKafkaProperties.put("saslJaasConfig", strimziKafkaConfig.getSaslJaasConfig());
         }
         return strimziKafkaProperties;
     }
@@ -173,13 +170,13 @@ public class StrimziKafkaVESMsgConsumerMain implements Runnable {
         StrimziKafkaVESMsgConsumerImpl consumer = null;
 
         if (consumerType.equalsIgnoreCase(_PNFREG_DOMAIN))
-            consumer = new StrimziKafkaPNFRegVESMsgConsumer(generalConfig, kafkaAdminClient);
+            consumer = new StrimziKafkaPNFRegVESMsgConsumer(generalConfig);
         else if (consumerType.equalsIgnoreCase(_FAULT_DOMAIN))
-            consumer = new StrimziKafkaFaultVESMsgConsumer(generalConfig, kafkaAdminClient);
+            consumer = new StrimziKafkaFaultVESMsgConsumer(generalConfig);
         else if (consumerType.equalsIgnoreCase(_CM_DOMAIN))
-            consumer = new StrimziKafkaCMVESMsgConsumer(generalConfig, kafkaAdminClient);
+            consumer = new StrimziKafkaCMVESMsgConsumer(generalConfig);
         else if (consumerType.equals(_STNDDEFINED_FAULT_DOMAIN))
-            consumer = new StrimziKafkaStndDefinedFaultVESMsgConsumer(generalConfig, kafkaAdminClient);
+            consumer = new StrimziKafkaStndDefinedFaultVESMsgConsumer(generalConfig);
 
         handleConsumer(consumer, consumerProperties, strimziKafkaProps, consumers);
         return !consumers.isEmpty();
@@ -219,7 +216,7 @@ public class StrimziKafkaVESMsgConsumerMain implements Runnable {
                 Thread.currentThread().interrupt();
             }
         }
-        kafkaAdminClient.close();
+
         LOG.info("No listener threads running - exiting");
     }
 

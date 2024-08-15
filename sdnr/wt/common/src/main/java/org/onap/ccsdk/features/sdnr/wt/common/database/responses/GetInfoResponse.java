@@ -25,6 +25,7 @@ import org.elasticsearch.client.Response;
 import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.DatabaseVersion;
 
+@Deprecated
 public class GetInfoResponse extends BaseResponse {
 
     /**

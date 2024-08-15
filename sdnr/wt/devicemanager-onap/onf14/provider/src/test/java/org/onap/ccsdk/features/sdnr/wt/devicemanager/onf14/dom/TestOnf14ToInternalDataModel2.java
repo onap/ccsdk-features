@@ -71,6 +71,7 @@ public class TestOnf14ToInternalDataModel2 extends Mockito {
         Onf14DomToInternalDataModel model = new Onf14DomToInternalDataModel();
 
         ContainerNode cn = (ContainerNode) Onf14DomTestUtils.getNormalizedNodeFromJson();
+        System.out.println("Container Node = "+cn);
         MapNode equipmentMap = (MapNode) cn.getChildByArg(new NodeIdentifier(QName.create(qnm, "equipment")));
         List<Inventory> inventoryList = new ArrayList<Inventory>();
 

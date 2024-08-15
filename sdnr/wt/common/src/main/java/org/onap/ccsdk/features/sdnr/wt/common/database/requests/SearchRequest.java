@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.QueryBuilder;
 
+@Deprecated
 public class SearchRequest extends BaseRequest {
 
     private final String alias;

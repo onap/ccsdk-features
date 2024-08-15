@@ -24,6 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.responses;
 import org.elasticsearch.client.Response;
 import org.json.JSONObject;
 
+@Deprecated
 public class IndexResponse extends BaseResponse {
 
     private boolean isCreated;

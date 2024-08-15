@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Map;
-import org.apache.kafka.clients.admin.Admin;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.GeneralConfig;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.InvalidMessageException;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.StrimziKafkaVESMsgConsumerImpl;
@@ -39,8 +38,8 @@ public class StrimziKafkaStndDefinedFaultVESMsgConsumer extends StrimziKafkaVESM
     String faultNodeId;
     String notificationType;
 
-    public StrimziKafkaStndDefinedFaultVESMsgConsumer(GeneralConfig generalConfig, Admin kafkaAdminClient) {
-        super(generalConfig, kafkaAdminClient);
+    public StrimziKafkaStndDefinedFaultVESMsgConsumer(GeneralConfig generalConfig) {
+        super(generalConfig);
         LOG.info("StrimziKafkaStndDefinedFaultVESMsgConsumer started successfully");
     }
 

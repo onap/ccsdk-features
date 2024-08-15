@@ -28,6 +28,7 @@ import java.util.List;
  * @author Michael Dürre
  *
  */
+@Deprecated
 public class IndicesEntryList extends ArrayList<IndicesEntry> {
 
     /**

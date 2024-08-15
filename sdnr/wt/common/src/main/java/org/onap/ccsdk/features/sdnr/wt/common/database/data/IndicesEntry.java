@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
  *
  *         yellow open inventoryequipment-v1 5nNPRbJ3T9arMxqxBbJKyQ 5 1 0 0 1.2kb 1.2kb
  */
+@Deprecated
 public class IndicesEntry {
 
     private final String status;

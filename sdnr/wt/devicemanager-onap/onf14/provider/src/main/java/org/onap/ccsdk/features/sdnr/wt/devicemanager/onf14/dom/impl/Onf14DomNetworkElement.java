@@ -30,7 +30,6 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.equipment.Onf14DomEquipmentManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.Onf14DomInterfacePacManager;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.TechnologySpecificPacKeys;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.qnames.Onf14DevicemanagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs.CoreModel14;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
@@ -131,6 +130,7 @@ public class Onf14DomNetworkElement implements NetworkElement, PerformanceDataPr
 
     @Override
     public void deregister() {
+        faultService.removeAllCurrentProblemsOfNode(netconfDomAccessor.getNodeId());
         performanceManager.deRegistration(netconfDomAccessor.getNodeId());
     }
 
@@ -146,7 +146,17 @@ public class Onf14DomNetworkElement implements NetworkElement, PerformanceDataPr
     }
 
     @Override
-    public void warmstart() {}
+    public void warmstart() {
+        int problems = removeAllCurrentProblemsOfNode();
+        log.debug("Removed all {} problems from database at deregistration for {}", problems, netconfDomAccessor.getNodeId().getValue());
+    }
+
+    /**
+     * Remove all entries from list
+     */
+    public int removeAllCurrentProblemsOfNode() {
+        return faultService.removeAllCurrentProblemsOfNode(netconfDomAccessor.getNodeId());
+    }
 
     @Override
     public Optional<NetconfAccessor> getAcessor() {

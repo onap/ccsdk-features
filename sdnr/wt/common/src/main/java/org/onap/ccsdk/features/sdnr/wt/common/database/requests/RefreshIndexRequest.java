@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
 
+@Deprecated
 public class RefreshIndexRequest extends BaseRequest {
 
     public RefreshIndexRequest(String alias) {

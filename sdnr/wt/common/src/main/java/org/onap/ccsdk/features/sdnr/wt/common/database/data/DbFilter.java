@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.common.database.queries.RangeQueryBuilder;
 
+@Deprecated
 public class DbFilter {
 
     private static final List<String> timestampValueNames = Arrays.asList("timestamp", "start", "end", "date");

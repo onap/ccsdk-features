@@ -25,6 +25,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.database.requests;
  * @author Michael Dürre
  *
  */
+@Deprecated
 public class Delete7Request extends DeleteRequest {
 
     public Delete7Request(String alias, String esId) {

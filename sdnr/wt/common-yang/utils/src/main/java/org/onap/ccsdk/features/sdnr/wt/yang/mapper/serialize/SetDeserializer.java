@@ -8,13 +8,9 @@ import com.fasterxml.jackson.databind.type.CollectionLikeType;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
-import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
-import org.opendaylight.yangtools.yang.binding.Identifiable;
-import org.opendaylight.yangtools.yang.binding.Identifier;
 
 public class SetDeserializer<V>
         extends JsonDeserializer<Set<V>> {

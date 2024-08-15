@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.Admin;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.GeneralConfig;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.kafka.VESMsgKafkaConsumer;
@@ -46,9 +47,8 @@ public abstract class StrimziKafkaVESMsgConsumerImpl
     protected final GeneralConfig generalConfig;
     Admin kafkaAdminClient = null;
 
-    protected StrimziKafkaVESMsgConsumerImpl(GeneralConfig generalConfig, Admin kafkaAdminClient) {
+    protected StrimziKafkaVESMsgConsumerImpl(GeneralConfig generalConfig) {
         this.generalConfig = generalConfig;
-        this.kafkaAdminClient = kafkaAdminClient;
     }
 
     /*
@@ -107,6 +107,9 @@ public abstract class StrimziKafkaVESMsgConsumerImpl
      */
     @Override
     public void init(Properties strimziKafkaProperties, Properties consumerProperties) {
+        Properties props = new Properties();
+        props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, strimziKafkaProperties.getProperty("bootstrapServers"));
+        kafkaAdminClient = Admin.create(props);
 
         try {
             this.consumer = new VESMsgKafkaConsumer(strimziKafkaProperties, consumerProperties);
@@ -155,7 +158,6 @@ public abstract class StrimziKafkaVESMsgConsumerImpl
      */
     @Override
     public void stopConsumer() {
-        consumer.stop();
         running = false;
     }
 

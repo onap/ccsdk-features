@@ -35,6 +35,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class EsConfig implements Configuration, IEsConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(EsConfig.class);

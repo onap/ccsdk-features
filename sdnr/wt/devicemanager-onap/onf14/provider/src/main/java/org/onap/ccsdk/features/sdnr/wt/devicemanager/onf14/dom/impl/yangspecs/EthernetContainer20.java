@@ -21,12 +21,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.yangspecs;
 
-import com.google.common.collect.Sets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.InternalDataModelSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.TechnologySpecificPacKeys;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Debug;
@@ -40,10 +38,9 @@ import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
+import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -74,20 +71,20 @@ public class EthernetContainer20 extends YangModule {
         // constructing the IID needs the augmentation exposed by the
         // ethernet-container-2-0 model
         YangInstanceIdentifier layerProtocolIID = coreModel14.getLayerProtocolIId(ltpUuid, localId);
-
-        @NonNull
-        AugmentationIdentifier ethernetContainerIID = YangInstanceIdentifier.AugmentationIdentifier
-                .create(Sets.newHashSet(getQName("ethernet-container-pac")));
-
-        InstanceIdentifierBuilder augmentedEthernetContainerConfigurationIID =
-                YangInstanceIdentifier.builder(layerProtocolIID).node(ethernetContainerIID);
-
-        // reading all the current-problems list for this specific LTP and LP
+        InstanceIdentifierBuilder ethernetContainerIID = YangInstanceIdentifier.builder(layerProtocolIID).node(getQName("ethernet-container-pac"));
+//        @NonNull
+//        AugmentationIdentifier ethernetContainerIID = YangInstanceIdentifier.AugmentationIdentifier
+//                .create(Sets.newHashSet(getQName("ethernet-container-pac")));
+//
+//        InstanceIdentifierBuilder augmentedEthernetContainerConfigurationIID =
+//                YangInstanceIdentifier.builder(layerProtocolIID).node(ethernetContainerIID);
+//
+//        // reading all the current-problems list for this specific LTP and LP
         Optional<NormalizedNode> etherntContainerConfigurationOpt = netconfDomAccessor
-                .readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedEthernetContainerConfigurationIID.build());
+                .readDataNode(LogicalDatastoreType.OPERATIONAL, ethernetContainerIID.build());
 
         if (etherntContainerConfigurationOpt.isPresent()) {
-            AugmentationNode etherntContainerConfiguration = (AugmentationNode) etherntContainerConfigurationOpt.get();
+            ContainerNode etherntContainerConfiguration = (ContainerNode) etherntContainerConfigurationOpt.get();
             MapNode ethernetContainerCurrentProblemsList = (MapNode) etherntContainerConfiguration
                     .childByArg(new NodeIdentifier(getQName("current-problem-list")));
             if (ethernetContainerCurrentProblemsList != null) {

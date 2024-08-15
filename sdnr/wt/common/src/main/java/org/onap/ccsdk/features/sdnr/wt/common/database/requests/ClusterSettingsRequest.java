@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 //https://www.elastic.co/guide/en/elasticsearch/reference/6.8/docs-index_.html
 //https://github.com/elastic/elasticsearch/blob/6.8/rest-api-spec/src/main/resources/rest-api-spec/api/cluster.put_settings.json
+@Deprecated
 public class ClusterSettingsRequest extends BaseRequest {
 
     private static final boolean DEFAULT_ALLOW_AUTOCREATEINDEX = true;
