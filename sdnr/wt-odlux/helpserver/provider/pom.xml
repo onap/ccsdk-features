@@ -28,7 +28,7 @@
 
 	<groupId>org.onap.ccsdk.features.sdnr.odlux</groupId>
 	<artifactId>sdnr-odlux-helpserver-provider</artifactId>
-	<version>1.8.0-SNAPSHOT</version>
+	<version>1.8.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>SDNR ODLUX :: ${project.artifactId}</name>
