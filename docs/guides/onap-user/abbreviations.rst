@@ -9,14 +9,16 @@ Abbreviations
 | **Abbreviation**                   | **Description**                 |
 +====================================+=================================+
 | AAF                                | `Application Authorization      |
-|                                    | Framework <https://wiki.onap.or |
-|                                    | g/display/DW/Application+Author |
-|                                    | ization+Framework+Project>`__   |
+|                                    | Framework <https://lf-onap.atla |
+|                                    | ssian.net/wiki/spaces/DW/pages/ |
+|                                    | 16234177/Application+Authorizat |
+|                                    | ion+Framework+Project>`__       |
 +------------------------------------+---------------------------------+
 | A&AI                               | `Active & Available             |
-|                                    | Inventory <https://wiki.onap.or |
-|                                    | g/display/DW/Active+and+Availab |
-|                                    | le+Inventory+Project>`__        |
+|                                    | Inventory <https://lf-onap.atla |
+|                                    | ssian.net/wiki/spaces/DW/pages/ |
+|                                    | 16230663/Active+and+Available+I |
+|                                    | nventory+Project>`__            |
 +------------------------------------+---------------------------------+
 | AAA                                | `Authentication, Authorization  |
 |                                    | and                             |
@@ -32,9 +34,10 @@ Abbreviations
 |                                    | Document                        |
 +------------------------------------+---------------------------------+
 | APPC                               | `Application                    |
-|                                    | Controller <https://wiki.onap.o |
-|                                    | rg/display/DW/Application+Contr |
-|                                    | oller+Project>`__               |
+|                                    | Controller <https://lf-onap.atl |
+|                                    | assian.net/wiki/spaces/DW/pages |
+|                                    | /16230665/Application+Controlle |
+|                                    | r+Project>`__                   |
 +------------------------------------+---------------------------------+
 | BPEL                               | Business Process Execution      |
 |                                    | Language                        |
@@ -71,9 +74,10 @@ Abbreviations
 |                                    | Management Platform (project)   |
 +------------------------------------+---------------------------------+
 | CLI                                | `Command Line Interface         |
-|                                    | (project) <https://wiki.onap.or |
-|                                    | g/display/DW/Command+Line+Inter |
-|                                    | face+Project>`__                |
+|                                    | (project) <https://lf-onap.atla |
+|                                    | ssian.net/wiki/spaces/DW/pages/ |
+|                                    | 16230629/Command+Line+Interface |
+|                                    | +Project>`__                    |
 +------------------------------------+---------------------------------+
 | CMA                                | Change Management Application   |
 |                                    | (within ONAP)                   |
@@ -98,9 +102,10 @@ Abbreviations
 |                                    | g/wiki/Data_access_object>`__   |
 +------------------------------------+---------------------------------+
 | DCAE                               | `Data Collection Analytics and  |
-|                                    | Events <https://wiki.onap.org/p |
-|                                    | ages/viewpage.action?pageId=659 |
-|                                    | 2895>`__                        |
+|                                    | Events <https://lf-onap.atlassi |
+|                                    | an.net/wiki/spaces/DW/pages/162 |
+|                                    | 20166/Data+Collection+Analytics |
+|                                    | +and+Events+DCAE>`__            |
 +------------------------------------+---------------------------------+
 | DDoS                               | Distributed Denial-of-Service   |
 |                                    | attack                          |
@@ -110,13 +115,16 @@ Abbreviations
 | DG Builder                         | Directed Graph Builder          |
 +------------------------------------+---------------------------------+
 | DMaaP                              | `Data Movement as a             |
-|                                    | Platform <https://wiki.onap.org |
-|                                    | /display/DW/DMaaP>`__           |
+|                                    | Platform <https://lf-onap.atlas |
+|                                    | sian.net/wiki/spaces/DW/pages/1 |
+|                                    | 6232041/Data+Movement+as+a+Plat |
+|                                    | form+Project>`__                |
 +------------------------------------+---------------------------------+
 | DME                                | `Direct Messaging Engine        |
 |                                    | (common service within          |
-|                                    | ONAP) <https://wiki.onap.org/di |
-|                                    | splay/DW/Common+Services>`__    |
+|                                    | ONAP) <https://lf-onap.atlassia |
+|                                    | n.net/wiki/spaces/DW/pages/1622 |
+|                                    | 0186/Common+Services>`__        |
 +------------------------------------+---------------------------------+
 | DMIP                               | Device Management Interface     |
 |                                    | Profile                         |
@@ -144,9 +152,10 @@ Abbreviations
 |                                    | m>`__                           |
 +------------------------------------+---------------------------------+
 | ESR                                | `External System                |
-|                                    | Register <https://wiki.onap.org |
-|                                    | /pages/viewpage.action?pageId=5 |
-|                                    | 734948>`__                      |
+|                                    | Register <https://lf-onap.atlas |
+|                                    | sian.net/wiki/spaces/DW/pages/1 |
+|                                    | 6225697/External+System+Registe |
+|                                    | r+5+14+17>`__                   |
 +------------------------------------+---------------------------------+
 | ETSI                               | `European Telecommunications    |
 |                                    | Standards                       |
@@ -156,9 +165,10 @@ Abbreviations
 |                                    | alisation>`__                   |
 +------------------------------------+---------------------------------+
 | EUAG                               | `ONAP End User Advisory         |
-|                                    | Group <https://wiki.lfnetworkin |
-|                                    | g.org/pages/viewpage.action?pag |
-|                                    | eId=2916362>`__                 |
+|                                    | Group <https://lf-networking.at |
+|                                    | lassian.net/wiki/spaces/LN/page |
+|                                    | s/15633594/INACTIVE+EUAG+LFN+En |
+|                                    | d+User+Advisory+Group>`__       |
 +------------------------------------+---------------------------------+
 | FCAPS                              | Fault Configuration Accounting  |
 |                                    | Performance Security            |
@@ -174,11 +184,16 @@ Abbreviations
 | Glance                             | OpenStack Image repository      |
 +------------------------------------+---------------------------------+
 | GNFC                               | `Genric Network Function        |
-|                                    | Controller <https://wiki.onap.o |
-|                                    | rg/download/attachments/4530014 |
-|                                    | 8/ONAP_GNF_ControllersSOL003.pp |
-|                                    | tx?version=1&modificationDate=1 |
-|                                    | 548619943000&api=v2>`__         |
+|                                    | Controller <https://lf-onap.atl |
+|                                    | assian.net/wiki/pages/viewpagea |
+|                                    | ttachments.action?pageId=163261 |
+|                                    | 29&preview=%2F16326129%2F172027 |
+|                                    | 18%2FONAP_GNF_ControllersSOL003 |
+|                                    | .pptx&search_id=7706a134-2de0-4 |
+|                                    | e51-995f-f4467786630f&additiona |
+|                                    | l_analytics=queryHash---0e639dd |
+|                                    | 1a8ec8ee054c21299f9d42e11133fa5 |
+|                                    | 2b854c69185c789a68fb172c9f>`__  |
 +------------------------------------+---------------------------------+
 | GUI                                | `Graphical User                 |
 |                                    | Interface <https://en.wikipedia |
@@ -186,9 +201,10 @@ Abbreviations
 |                                    | ace>`__                         |
 +------------------------------------+---------------------------------+
 | HAS                                | `Homing and Allocation          |
-|                                    | Service <https://wiki.onap.org/ |
-|                                    | pages/viewpage.action?pageId=16 |
-|                                    | 005528>`__                      |
+|                                    | Service <https://lf-onap.atlass |
+|                                    | ian.net/wiki/spaces/DW/pages/16 |
+|                                    | 254225/Homing+and+Allocation+Se |
+|                                    | rvice+HAS>`__                   |
 +------------------------------------+---------------------------------+
 | HDFS                               | Hadoop Distributed File System  |
 +------------------------------------+---------------------------------+
@@ -200,9 +216,10 @@ Abbreviations
 +------------------------------------+---------------------------------+
 | HV VES                             | `High Volume Virtual function   |
 |                                    | Event                           |
-|                                    | Stream <https://wiki.onap.org/d |
-|                                    | isplay/DW/High+Volume+VES+Colle |
-|                                    | ctor>`__                        |
+|                                    | Stream <https://lf-onap.atlassi |
+|                                    | an.net/wiki/spaces/DW/pages/163 |
+|                                    | 05357/High+Volume+VES+Collecto  |
+|                                    | r>`__                           |
 +------------------------------------+---------------------------------+
 | IAM/IDAM                           | Identity and Access Management  |
 +------------------------------------+---------------------------------+
@@ -239,8 +256,9 @@ Abbreviations
 |                                    | rg/wiki/JAR_(file_format)>`__   |
 +------------------------------------+---------------------------------+
 | JSC                                | `JavaServiceContainer <https:// |
-|                                    | wiki.onap.org/display/DW/Common |
-|                                    | +Services>`__                   |
+|                                    | lf-onap.atlassian.net/wiki/spac |
+|                                    | es/DW/pages/16220186/Common+Ser |
+|                                    | vices>`__                       |
 +------------------------------------+---------------------------------+
 | JSON                               | JavaScript Object Notation      |
 +------------------------------------+---------------------------------+
@@ -255,15 +273,17 @@ Abbreviations
 +------------------------------------+---------------------------------+
 | LFN CVC                            | `Linux Foundation Networking    |
 |                                    | Compliance/Verification         |
-|                                    | Committee <https://wiki.onap.or |
-|                                    | g/display/DW/LFN+CVC+Testing+in |
-|                                    | +VNFSDK>`__                     |
+|                                    | Committee <https://lf-onap.atla |
+|                                    | ssian.net/wiki/spaces/DW/pages/ |
+|                                    | 16324395/LFN+CVC+Testing+in+VNF |
+|                                    | SDK>`__                         |
 +------------------------------------+---------------------------------+
 | LFN CVP                            | `Linux Foundation Networking    |
 |                                    | Compliance/Verification         |
-|                                    | Program <https://wiki.onap.org/ |
-|                                    | display/DW/LFN+CVC+Testing+in+V |
-|                                    | NFSDK>`__                       |
+|                                    | Program <https://lf-onap.atlass |
+|                                    | ian.net/wiki/spaces/DW/pages/16 |
+|                                    | 324395/LFN+CVC+Testing+in+VNFSD |
+|                                    | K>`__                           |
 +------------------------------------+---------------------------------+
 | LRM                                | Local Resource Monitor          |
 +------------------------------------+---------------------------------+
@@ -306,9 +326,10 @@ Abbreviations
 | MSB                                | Microservice Bus                |
 +------------------------------------+---------------------------------+
 | MSO                                | `Master Service                 |
-|                                    | Orchestrator <https://wiki.onap |
-|                                    | .org/pages/viewpage.action?page |
-|                                    | Id=1015834>`__                  |
+|                                    | Orchestrator <https://lf-onap.a |
+|                                    | tlassian.net/wiki/spaces/DW/pag |
+|                                    | es/16220168/Master+Service+Orch |
+|                                    | estrator+MSO>`__                |
 +------------------------------------+---------------------------------+
 | MVP                                | `Minimum                        |
 |                                    | ViableProduct <https://en.wikip |
@@ -384,8 +405,10 @@ Abbreviations
 |                                    | daylight.org/>`__               |
 +------------------------------------+---------------------------------+
 | OOM                                | `ONAP Operations                |
-|                                    | Manager <https://wiki.onap.org/ |
-|                                    | display/DW/OOM+User+Guide>`__   |
+|                                    | Manager <https://docs.onap.org/ |
+|                                    | projects/onap-oom/en/latest/sec |
+|                                    | tions/guides/user_guides/oom_us |
+|                                    | er_guide.html>`__               |
 +------------------------------------+---------------------------------+
 | OpenStack                          | A cloud operating system        |
 +------------------------------------+---------------------------------+
@@ -397,9 +420,10 @@ Abbreviations
 |                                    | ICMMS                           |
 +------------------------------------+---------------------------------+
 | OSAM                               | `Open Source Access             |
-|                                    | Manager <https://wiki.onap.org/ |
-|                                    | display/DW/OpenSource+Access+Ma |
-|                                    | nager+%28OSAM%29+Use+Case>`__   |
+|                                    | Manager <https://lf-onap.atlass |
+|                                    | ian.net/wiki/spaces/DW/pages/16 |
+|                                    | 258031/OpenSource+Access+Manage |
+|                                    | r+OSAM+Use+Case>`__             |
 +------------------------------------+---------------------------------+
 | OSC                                | O-RAN Software Community or     |
 |                                    | Optical Supervisory Channel     |
@@ -439,8 +463,9 @@ Abbreviations
 | PoC                                | Proof of Concept                |
 +------------------------------------+---------------------------------+
 | POMBA                              | `Post Orchestration Model Based |
-|                                    | Audit <https://wiki.onap.org/di |
-|                                    | splay/DW/POMBA>`__              |
+|                                    | Audit <https://lf-onap.atlassia |
+|                                    | n.net/wiki/spaces/DW/pages/1628 |
+|                                    | 0439/POMBA>`__                  |
 +------------------------------------+---------------------------------+
 | PRH                                | Phyiical Network Function       |
 |                                    | Registration Handler            |
@@ -472,9 +497,10 @@ Abbreviations
 +------------------------------------+---------------------------------+
 | S3P                                | `Stability, Security,           |
 |                                    | Scalability,                    |
-|                                    | Performance <https://wiki.onap. |
-|                                    | org/pages/viewpage.action?pageI |
-|                                    | d=16003367>`__                  |
+|                                    | Performance <https://lf-onap.at |
+|                                    | lassian.net/wiki/spaces/DW/page |
+|                                    | s/16252737/Platform+Maturity+Re |
+|                                    | quirements+S3P>`__              |
 +------------------------------------+---------------------------------+
 | SDC                                | Service Design and Creation     |
 |                                    | (component of ONAP for visual   |
@@ -492,8 +518,9 @@ Abbreviations
 | SDN-R                              | `SDN-Radio, Router, ROADM - a   |
 |                                    | set of model-driven application |
 |                                    | based on                        |
-|                                    | SDN-C <https://wiki.onap.org/di |
-|                                    | splay/DW/SDN-R>`__              |
+|                                    | SDN-C <https://lf-onap.atlassia |
+|                                    | n.net/wiki/spaces/DW/pages/1626 |
+|                                    | 4181/SDN-R>`__                  |
 +------------------------------------+---------------------------------+
 | SDN-GP                             | Software Defined Network -      |
 |                                    | Global Platform                 |
@@ -513,9 +540,10 @@ Abbreviations
 |                                    | Protocol                        |
 +------------------------------------+---------------------------------+
 | SO                                 | `Service Orchestrator           |
-|                                    | (project) <https://wiki.onap.or |
-|                                    | g/display/DW/Service+Orchestrat |
-|                                    | or+Project>`__                  |
+|                                    | (project) <https://lf-onap.atla |
+|                                    | ssian.net/wiki/spaces/DW/pages/ |
+|                                    | 16230651/Service+Orchestrator+P |
+|                                    | roject>`__                      |
 +------------------------------------+---------------------------------+
 | SON                                | Self-Organizing Networks        |
 +------------------------------------+---------------------------------+
@@ -589,10 +617,11 @@ Abbreviations
 |                                    | example VNF)                    |
 +------------------------------------+---------------------------------+
 | VDU                                | `Virtualisation Deployment      |
-|                                    | Unit <https://wiki.onap.org/dis |
-|                                    | play/DW/Comparison+of+Current+R |
-|                                    | 3+Clean+Version+with+IFA011+v2. |
-|                                    | 5.1>`__                         |
+|                                    | Unit <https://lf-onap.atlassian |
+|                                    | .net/wiki/spaces/DW/pages/16293 |
+|                                    | 271/Comparison+of+Current+R3+Cl |
+|                                    | ean+Version+with+IFA011+v2.5.   |
+|                                    | 1>`__                           |
 +------------------------------------+---------------------------------+
 | VES                                | Virtual function EventStream    |
 +------------------------------------+---------------------------------+
@@ -602,9 +631,10 @@ Abbreviations
 | VF                                 | Virtual Function                |
 +------------------------------------+---------------------------------+
 | VFC                                | `Virtual Function               |
-|                                    | Controller <https://wiki.onap.o |
-|                                    | rg/display/DW/Virtual+Function+ |
-|                                    | Controller+Project>`__          |
+|                                    | Controller <https://lf-onap.atl |
+|                                    | assian.net/wiki/spaces/DW/pages |
+|                                    | /16230607/Virtual+Function+Cont |
+|                                    | roller+Project>`__              |
 +------------------------------------+---------------------------------+
 | VFC                                | Virtual Function Component      |
 |                                    | (Resource Onboarding)           |
@@ -616,9 +646,10 @@ Abbreviations
 +------------------------------------+---------------------------------+
 | VID                                | `Virtual Infrastructure         |
 |                                    | Deployment                      |
-|                                    | (Project) <https://wiki.onap.or |
-|                                    | g/display/DW/Virtual+Infrastruc |
-|                                    | ture+Deployment+Project>`__     |
+|                                    | (Project) <https://lf-onap.atla |
+|                                    | ssian.net/wiki/spaces/DW/pages/ |
+|                                    | 16230625/Virtual+Infrastructure |
+|                                    | +Deployment+Project>`__         |
 +------------------------------------+---------------------------------+
 | VIM                                | Virtualized Infrastructure      |
 |                                    | Manager                         |
@@ -637,9 +668,10 @@ Abbreviations
 |                                    | Component                       |
 +------------------------------------+---------------------------------+
 | VNFD                               | `VNF                            |
-|                                    | Descriptor <https://wiki.onap.o |
-|                                    | rg/pages/viewpage.action?pageId |
-|                                    | =8226059>`__                    |
+|                                    | Descriptor <https://lf-onap.atl |
+|                                    | assian.net/wiki/spaces/DW/pages |
+|                                    | /16314007/Casablanca+R3+TOSCA+V |
+|                                    | NFD+Requirements+Draft>`__      |
 +------------------------------------+---------------------------------+
 | VNFM                               | VNF Manager                     |
 +------------------------------------+---------------------------------+
@@ -656,14 +688,16 @@ Abbreviations
 |                                    | SDC Demo Guide)                 |
 +------------------------------------+---------------------------------+
 | VTP                                | `VNF Test                       |
-|                                    | Platform <https://wiki.onap.org |
-|                                    | /pages/viewpage.action?pageId=4 |
-|                                    | 3386304>`__                     |
+|                                    | Platform <https://lf-onap.atlas |
+|                                    | sian.net/wiki/spaces/DW/pages/1 |
+|                                    | 6316605/VNF+Test+Platform+VT    |
+|                                    | P>`__                           |
 +------------------------------------+---------------------------------+
 | VVP                                | `VNF Validation                 |
-|                                    | Program <https://wiki.onap.org/ |
-|                                    | display/DW/VNF+Validation+Progr |
-|                                    | am+Project>`__                  |
+|                                    | Program <https://lf-onap.atlass |
+|                                    | ian.net/wiki/spaces/DW/pages/16 |
+|                                    | 232043/VNF+Validation+Program+P |
+|                                    | roject>`__                      |
 +------------------------------------+---------------------------------+
 | WAR                                | `Web application                |
 |                                    | Archive <https://en.wikipedia.o |
