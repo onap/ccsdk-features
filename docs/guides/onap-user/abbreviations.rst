@@ -156,9 +156,10 @@ Abbreviations
 |                                    | alisation>`__                   |
 +------------------------------------+---------------------------------+
 | EUAG                               | `ONAP End User Advisory         |
-|                                    | Group <https://wiki.lfnetworkin |
-|                                    | g.org/pages/viewpage.action?pag |
-|                                    | eId=2916362>`__                 |
+|                                    | Group <https://lf-networking.at |
+|                                    | lassian.net/wiki/spaces/LN/page |
+|                                    | s/15633594/INACTIVE+EUAG+LFN+En |
+|                                    | d+User+Advisory+Group>`__       |
 +------------------------------------+---------------------------------+
 | FCAPS                              | Fault Configuration Accounting  |
 |                                    | Performance Security            |
@@ -174,11 +175,16 @@ Abbreviations
 | Glance                             | OpenStack Image repository      |
 +------------------------------------+---------------------------------+
 | GNFC                               | `Genric Network Function        |
-|                                    | Controller <https://wiki.onap.o |
-|                                    | rg/download/attachments/4530014 |
-|                                    | 8/ONAP_GNF_ControllersSOL003.pp |
-|                                    | tx?version=1&modificationDate=1 |
-|                                    | 548619943000&api=v2>`__         |
+|                                    | Controller <https://lf-onap.atl |
+|                                    | assian.net/wiki/pages/viewpagea |
+|                                    | ttachments.action?pageId=163261 |
+|                                    | 29&preview=%2F16326129%2F172027 |
+|                                    | 18%2FONAP_GNF_ControllersSOL003 |
+|                                    | .pptx&search_id=7706a134-2de0-4 |
+|                                    | e51-995f-f4467786630f&additiona |
+|                                    | l_analytics=queryHash---0e639dd |
+|                                    | 1a8ec8ee054c21299f9d42e11133fa5 |
+|                                    | 2b854c69185c789a68fb172c9f>`__  |
 +------------------------------------+---------------------------------+
 | GUI                                | `Graphical User                 |
 |                                    | Interface <https://en.wikipedia |
