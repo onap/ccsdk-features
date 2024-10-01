@@ -54,7 +54,10 @@ Abbreviations
 | CCSDK                              | Common Controller SDK project   |
 +------------------------------------+---------------------------------+
 | CDAP                               | `Cask Data Application          |
-|                                    | Platform <https://cdap.io/>`__  |
+|                                    | Platform <https://cdap.atlassia |
+|                                    | n.net/wiki/spaces/DOCS/pages/   |
+|                                    | 480313476/CDAP+Platform+Overvie |
+|                                    | w>`__                           |
 +------------------------------------+---------------------------------+
 | CDR                                | Charging Data Record            |
 +------------------------------------+---------------------------------+
