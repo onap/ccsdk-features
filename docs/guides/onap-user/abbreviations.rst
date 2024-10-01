@@ -54,7 +54,10 @@ Abbreviations
 | CCSDK                              | Common Controller SDK project   |
 +------------------------------------+---------------------------------+
 | CDAP                               | `Cask Data Application          |
-|                                    | Platform <https://cdap.io/>`__  |
+|                                    | Platform <https://cdap.atlassia |
+|                                    | n.net/wiki/spaces/DOCS/pages/   |
+|                                    | 480313476/CDAP+Platform+Overvie |
+|                                    | w>`__                           |
 +------------------------------------+---------------------------------+
 | CDR                                | Charging Data Record            |
 +------------------------------------+---------------------------------+
@@ -175,11 +178,12 @@ Abbreviations
 | Glance                             | OpenStack Image repository      |
 +------------------------------------+---------------------------------+
 | GNFC                               | `Genric Network Function        |
-|                                    | Controller <https://wiki.onap.o |
-|                                    | rg/download/attachments/4530014 |
-|                                    | 8/ONAP_GNF_ControllersSOL003.pp |
-|                                    | tx?version=1&modificationDate=1 |
-|                                    | 548619943000&api=v2>`__         |
+|                                    | Controller <https://lf-onap.atl |
+|                                    | assian.net/wiki/pages/viewpagea |
+|                                    | ttachments.action?pageId=163693 |
+|                                    | 49&preview=%2F16369349%2F172794 |
+|                                    | 24%2FONAP_GNF_ControllersSOL003 |
+|                                    | .pptx>`__                       |
 +------------------------------------+---------------------------------+
 | GUI                                | `Graphical User                 |
 |                                    | Interface <https://en.wikipedia |
