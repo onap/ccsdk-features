@@ -24,7 +24,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.odlux</groupId>
     <artifactId>sdnr-odlux-app-mediatorApp</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>1.7.0</version>
     <packaging>jar</packaging>
 
     <name>SDNR ODLUX :: ${project.artifactId}</name>
