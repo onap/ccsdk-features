@@ -660,11 +660,8 @@ Abbreviations
 +------------------------------------+---------------------------------+
 | VM                                 | Virtual Machine                 |
 +------------------------------------+---------------------------------+
-| VNF                                | `Virtual Network                |
-|                                    | Function <https://www.techtarge |
-|                                    | t.com/searchnetworking/         |
-|                                    | definition/virtual-network-     |
-|                                    | functions-VNF>`__               |
+| VNF                                | Virtual Network                 |
+|                                    | Function                        |
 +------------------------------------+---------------------------------+
 | VNFC                               | Virtual Network Function        |
 |                                    | Component                       |
