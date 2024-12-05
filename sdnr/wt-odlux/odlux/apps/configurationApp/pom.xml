@@ -25,7 +25,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.odlux</groupId>
     <artifactId>sdnr-odlux-app-configurationApp</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.2-SNAPSHOT.yaml</version>
     <packaging>jar</packaging>
 
     <name>SDNR ODLUX :: ${project.artifactId}</name>
