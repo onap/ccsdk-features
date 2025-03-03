@@ -209,7 +209,7 @@ export const isViewElementEmpty = (viewElement: ViewElement): viewElement is Vie
   return viewElement && viewElement.uiType === 'empty';
 };
 
-export const ResolveFunction = Symbol('IsResolved');
+export const ResolveFunction = Symbol('ResolveFunction');
 
 export type ViewSpecification = {
   id: string;
@@ -219,6 +219,7 @@ export type ViewSpecification = {
   parentView?: string;
   language: string;
   ifFeature?: string;
+  augmentations?: string[];
   when?: WhenAST;
   uses?: (string[]) & { [ResolveFunction]?: (parent: string) => void };
   elements: { [name: string]: ViewElement };

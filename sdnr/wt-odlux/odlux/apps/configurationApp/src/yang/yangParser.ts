@@ -490,6 +490,34 @@ export class YangParser {
     return module;
   }
 
+  private calculateExecutionOrder(moduleName: string, visited: Set<string> = new Set()): number {
+    if (visited.has(moduleName)) {
+      return 0;
+    }
+    visited.add(moduleName);
+
+    const module = this.modules[moduleName];
+    const augments = module?.augments || {};
+    const augmentPaths = Object.keys(augments);
+
+    if (augmentPaths.length === 0) {
+      module.executionOrder = 0;
+      return 0;
+    }
+
+    const orders = augmentPaths.map((path) => {
+      const pathParts = path.split('/');
+      const lastPart = pathParts[pathParts.length - 1];
+      const [ns] = lastPart.split(':');
+      const baseModuleOrder = this.calculateExecutionOrder(ns, visited);
+      return baseModuleOrder + 1;
+    });
+
+    const maxOrder = Math.max(...orders);
+    module.executionOrder = maxOrder;
+    return maxOrder;
+  }
+
   public postProcess() {
     // process all type refs
     this._typeRefToResolve.forEach(cb => {
@@ -497,26 +525,28 @@ export class YangParser {
         console.warn(error.message);
       }
     });
-    /**
-     * This is to fix the issue for sequential execution of modules based on their child and parent relationship
-     * We are sorting the module object based on their augment status
-     */
-    Object.keys(this.modules)
-      .map(elem => {
-        if (this.modules[elem].augments && Object.keys(this.modules[elem].augments).length > 0) {
-          const { augments, ..._rest } = this.modules[elem];
-          const partsOfKeys = Object.keys(augments).map((key) => (key.split('/').length - 1));
-          this.modules[elem].executionOrder = Math.max(...partsOfKeys);
-        } else {
-          this.modules[elem].executionOrder = 0;
-        }
-      });
 
-    // process all augmentations / sort by namespace changes to ensure proper order 
-    Object.keys(this.modules).sort((a, b) => this.modules[a].executionOrder! - this.modules[b].executionOrder!).forEach(modKey => {
-      const module = this.modules[modKey];
+    // process all groupings
+    this._groupingsToResolve.filter(vs => vs.uses && vs.uses[ResolveFunction]).forEach(vs => {
+      try { vs.uses![ResolveFunction] !== undefined && vs.uses![ResolveFunction]!('|'); } catch (error) {
+        console.warn(`Error resolving: [${vs.name}] [${error.message}]`);
+      }
+    });
+
+    // process all augmentations
+    Object.keys(this.modules).forEach((moduleName) => {
+      this.calculateExecutionOrder(moduleName);
+    });
+
+    const orderedModules = Object.values(this.modules)
+      .filter((m) => m.executionOrder)
+      .sort((a, b) => {
+        return a.executionOrder! - b.executionOrder!;
+    });
+
+    orderedModules.forEach((module) => {
       const augmentKeysWithCounter = Object.keys(module.augments).map((key) => {
-        const pathParts = splitVPath(key, /(?:(?:([^\/\:]+):)?([^\/]+))/g);  // 1 = opt: namespace / 2 = property 
+        const pathParts = splitVPath(key, /(?:(?:([^\/\:]+):)?([^\/]+))/g); // 1 = opt: namespace / 2 = property
         let nameSpaceChangeCounter = 0;
         let currentNS = module.name; // init namespace
         pathParts.forEach(([ns, _]) => {
@@ -531,40 +561,96 @@ export class YangParser {
         };
       });
 
-      const augmentKeys = augmentKeysWithCounter
-        .sort((a, b) => a.nameSpaceChangeCounter > b.nameSpaceChangeCounter ? 1 : a.nameSpaceChangeCounter === b.nameSpaceChangeCounter ? 0 : -1)
-        .map((a) => a.key);
+      const augmentKeys = augmentKeysWithCounter.sort((a, b) => (a.nameSpaceChangeCounter > b.nameSpaceChangeCounter ? 1 : a.nameSpaceChangeCounter === b.nameSpaceChangeCounter ? 0 : -1)).map((a) => a.key);
 
-      augmentKeys.forEach(augKey => {
-        const augments = module.augments[augKey];
-        const viewSpec = this.resolveView(augKey);
-        if (!viewSpec) console.warn(`Could not find view to augment [${augKey}] in [${module.name}].`);
-        if (augments && viewSpec) {
-          augments.forEach(augment => Object.keys(augment.elements).forEach(key => {
-            const elm = augment.elements[key];
-            
-            const when = elm.when && augment.when
-              ? {
-                type: WhenTokenType.AND,
-                left: elm.when,
-                right: augment.when,
-              }
-              : elm.when || augment.when;
-            
-            const ifFeature = elm.ifFeature
-              ? `(${augment.ifFeature}) and (${elm.ifFeature})`
-              : augment.ifFeature;
-            
-            viewSpec.elements[key] = {
-              ...augment.elements[key],
-              when,
-              ifFeature,
-            };
-          }));
+      augmentKeys.forEach((augKey) => {
+        const viewToAugment = this.resolveView(augKey);
+        const augmentations = module.augments[augKey];
+
+        if (!viewToAugment) {
+          console.warn(`Could not find view to augment [${augKey}] from [${module.name}].`);
+          return;
+        }
+
+        if (augmentations && viewToAugment) {
+          augmentations.forEach(({ id }) => {
+            viewToAugment.augmentations = viewToAugment.augmentations || [];
+            viewToAugment.augmentations.push(id);
+          });
         }
       });
     });
 
+    // build a map of views with all their augmentation level
+    const viewsWithNestedAugmentations = new Map<ViewSpecification, number>();
+
+    // helper function to get maximum augmentation depth
+    const calculateAugmentationDepth = (view: ViewSpecification): number => {
+      // Return cached value if already calculated
+      if (viewsWithNestedAugmentations.has(view)) {
+        return viewsWithNestedAugmentations.get(view)!;
+      }
+
+      // Base case: no augmentations
+      if (!view.augmentations || view.augmentations.length === 0) {
+        viewsWithNestedAugmentations.set(view, 0);
+        return 0;
+      }
+
+      // Get depths of all child augmentations
+      let maxDepth = 0;
+      for (const augId of view.augmentations) {
+        const augView = this.views[+augId];
+        for (const nestedAugId in augView.elements || {}) {
+          const nestedAug = augView.elements[nestedAugId];
+          if (isViewElementObjectOrList(nestedAug)) {
+            const nestedView = this.views[+nestedAug.viewId];
+            maxDepth = nestedView ? Math.max(maxDepth, calculateAugmentationDepth(nestedView)) : maxDepth;
+          }
+        }
+      }
+
+      // Add 1 for current level and cache result
+      const totalDepth = maxDepth + 1;
+      viewsWithNestedAugmentations.set(view, totalDepth);
+      return totalDepth;
+    };
+
+    // process views from lowest to highest augmentation depth
+    const viewEntries = Object.entries(this.views.filter((v) => v.augmentations && v.augmentations.length > 0))
+      .map(([, view]) => view)
+      .sort((a, b) => calculateAugmentationDepth(a) - calculateAugmentationDepth(b));
+
+    for (const view of viewEntries) {
+      if (!view.augmentations || view.augmentations.length === 0) continue;
+
+      for (const augId of view.augmentations) {
+        const augmentation = this.views[+augId];
+
+        // merge elements from augmentation into main view
+        Object.keys(augmentation.elements).forEach((key) => {
+          const elm = augmentation.elements[key];
+
+          const when =
+            elm.when && augmentation.when
+              ? {
+                  type: WhenTokenType.AND,
+                  left: elm.when,
+                  right: augmentation.when,
+                }
+              : elm.when || augmentation.when;
+
+          const ifFeature = elm.ifFeature ? `(${augmentation.ifFeature}) and (${elm.ifFeature})` : augmentation.ifFeature;
+
+          view.elements[key] = {
+            ...augmentation.elements[key],
+            when,
+            ifFeature,
+          };
+        });
+      }
+    }
+    
     // process Identities
     const traverseIdentity = (identities: Identity[]) => {
       const result: Identity[] = [];
@@ -611,13 +697,6 @@ export class YangParser {
     this._unionsToResolve.forEach(cb => {
       try { cb(); } catch (error) {
         console.warn(error.message);
-      }
-    });
-
-    // process all groupings
-    this._groupingsToResolve.filter(vs => vs.uses && vs.uses[ResolveFunction]).forEach(vs => {
-      try { vs.uses![ResolveFunction] !== undefined && vs.uses![ResolveFunction]!('|'); } catch (error) {
-        console.warn(`Error resolving: [${vs.name}] [${error.message}]`);
       }
     });
 
@@ -1561,6 +1640,29 @@ export class YangParser {
     return [element, resultPathParts.slice(0, -1).map(p => `${moduleName !== p.ns ? `${moduleName = p.ns}:` : ''}${p.property}${p.ind || ''}`).join('/')];
   }
 
+  
+  private resolveViewElement(name: string, referenceView: ViewSpecification): ViewElement | null {
+    let element: ViewElement | null = null;
+    element = referenceView.elements[name];
+
+    if (element) {
+      return element;
+    }
+
+    const augmentViewIds = referenceView.augmentations;
+    if (augmentViewIds) {
+      for (let i = 0; i < augmentViewIds.length; ++i) {
+        const augmentView = this._views[+augmentViewIds[i]];
+        if (augmentView) {
+          element = this.resolveViewElement(name, augmentView);
+          if (element) break;
+        }
+      }
+    }
+    return element;
+  }
+
+
   private resolveView(vPath: string) {
     const vPathParser = /(?:(?:([^\/\[\]\:]+):)?([^\/\[\]]+)(\[[^\]]+\])?)/g; // 1 = opt: namespace / 2 = property / 3 = opt: indexPath
     let element: ViewElement | null = null;
@@ -1572,16 +1674,17 @@ export class YangParser {
       if (partMatch) {
         if (element === null) {
           moduleName = partMatch[1]!;
-          const rootModule = this._modules[moduleName];
-          if (!rootModule) return null;
-          element = rootModule.elements[`${moduleName}:${partMatch[2]!}`];
+          view = Object.values(this.views).find((v) => v.parentView === '0' && v.ns === moduleName) || null;
+          if (view) {
+            element = this.resolveViewElement(`${moduleName}:${partMatch[2]!}`, view);
+          }
         } else if (isViewElementObjectOrList(element)) {
           view = this._views[+element.viewId];
           if (moduleName !== partMatch[1]) {
             moduleName = partMatch[1];
-            element = view.elements[`${moduleName}:${partMatch[2]}`];
+            element = this.resolveViewElement(`${moduleName}:${partMatch[2]}`, view);
           } else {
-            element = view.elements[partMatch[2]];
+            element = this.resolveViewElement(partMatch[2], view);
           }
         } else {
           return null;
