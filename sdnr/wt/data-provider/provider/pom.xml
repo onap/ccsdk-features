@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.1</version>
         <relativePath/>
     </parent>
 
@@ -50,6 +50,7 @@
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <databaseport>49402</databaseport>
         <initdb>${basedir}/../setup/target/sdnr-wt-data-provider-setup-${project.version}.jar</initdb>
+        <elasticsearch.maven.plugin.version>6.29</elasticsearch.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -204,12 +205,13 @@
             <plugin>
                 <groupId>com.github.alexcojocaru</groupId>
                 <artifactId>elasticsearch-maven-plugin</artifactId>
+                <version>${elasticsearch.maven.plugin.version}</version>
                 <configuration>
                     <skip>${skipTests}</skip>
                     <clusterName>testCluster</clusterName>
                     <transportPort>9500</transportPort>
                     <httpPort>${databaseport}</httpPort>
-                    <version>7.9.3</version>
+                    <version>9.0.0</version>
                     <timeout>120</timeout>
                     <pathInitScript>${project.build.directory}/EsInit.script</pathInitScript>
                 </configuration>
