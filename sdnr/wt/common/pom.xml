@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.1</version>
         <relativePath/>
     </parent>
 
@@ -52,6 +52,7 @@
         <buildtime>${maven.build.timestamp} UTC</buildtime>
         <databaseport>49400</databaseport>
         <elasticsearch-rest-client.version>6.4.3</elasticsearch-rest-client.version>
+        <elasticsearch.maven.plugin.version>6.29</elasticsearch.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -101,12 +102,13 @@
             <plugin>
                 <groupId>com.github.alexcojocaru</groupId>
                 <artifactId>elasticsearch-maven-plugin</artifactId>
+                <version>${elasticsearch.maven.plugin.version}</version>
                 <configuration>
                     <skip>${skipTests}</skip>
                     <clusterName>testCluster</clusterName>
                     <transportPort>9500</transportPort>
                     <httpPort>${databaseport}</httpPort>
-                    <version>7.9.3</version>
+                    <version>7.17.15</version>
                     <timeout>120</timeout>
                 </configuration>
                 <executions>
