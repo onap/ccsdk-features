@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
-import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
 
 public class Portstatus {
 
@@ -60,24 +59,13 @@ public class Portstatus {
 
         return false;
     }
-
-    public static boolean isAvailable(HostInfo... hosts) {
-        for (HostInfo host : hosts) {
-            if (!isAvailable(host.hostname, host.port)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean waitSecondsTillAvailable(long timeoutSeconds, HostInfo... hosts) {
-
+    public static boolean waitSecondsTillAvailable(long timeoutSeconds, String dnsName, int port) {
         if (timeoutSeconds < 0) {
             throw new IllegalArgumentException("Invalid timeout: " + timeoutSeconds);
         }
         long waitSeconds = 0;
         boolean res = false;
-        while ((timeoutSeconds == 0 || ++waitSeconds < timeoutSeconds) && !(res = isAvailable(hosts))) {
+        while ((timeoutSeconds == 0 || ++waitSeconds < timeoutSeconds) && !(res = isAvailable(dnsName, port))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -86,9 +74,4 @@ public class Portstatus {
         }
         return res;
     }
-
-    public static boolean waitSecondsTillAvailable(long timeoutSeconds, String dnsName, int port) {
-        return waitSecondsTillAvailable(timeoutSeconds, new HostInfo(dnsName, port));
-    }
-
 }

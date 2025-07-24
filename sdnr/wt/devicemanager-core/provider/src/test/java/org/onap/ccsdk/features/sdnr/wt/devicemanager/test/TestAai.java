@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import com.google.common.io.Files;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -40,7 +41,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
-import org.onap.ccsdk.features.sdnr.wt.common.util.ResourceFileLoader;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl.AaiProviderClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl.config.AaiConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InventoryInformationDcae;
@@ -92,11 +92,14 @@ public class TestAai {
     private static HttpServer server;
     private static ExecutorService httpThreadPool;
     private static ConfigurationFileRepresentation globalCfg;
-
+    public static File getFile(Object o, String fileName) {
+        ClassLoader classLoader = o.getClass().getClassLoader();
+        return new File(classLoader.getResource(fileName).getFile());
+    }
     @Test
     public void test() {
 
-        String testConfigurationFileName = ResourceFileLoader.getFile(this, CONFIGURATIONTESTFILE).getAbsolutePath();
+        String testConfigurationFileName = getFile(this, CONFIGURATIONTESTFILE).getAbsolutePath();
         ConfigurationFileRepresentation cfg = new ConfigurationFileRepresentation(testConfigurationFileName);
 
         AaiProviderClient provider = new AaiProviderClient(cfg, null);

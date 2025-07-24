@@ -41,15 +41,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-
 public class OnapSystem extends YangModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(OnapSystem.class);
     public static final String NAMESPACE = "urn:onap:system";
     public static final QNameModule ONAPSYSTEM_2020_10_26 =
-            QNameModule.create(XMLNamespace.of(NAMESPACE), Revision.of("2020-10-26"));
+            QNameModule.of(XMLNamespace.of(NAMESPACE), Revision.of("2020-10-26"));
     public static final QNameModule ONAPSYSTEM_2022_11_04 =
-            QNameModule.create(XMLNamespace.of(NAMESPACE), Revision.of("2022-11-04"));
+            QNameModule.of(XMLNamespace.of(NAMESPACE), Revision.of("2022-11-04"));
     private static final List<QNameModule> MODULES = Arrays.asList(ONAPSYSTEM_2020_10_26, ONAPSYSTEM_2022_11_04);
 
     private final QName NAME;
@@ -77,6 +76,7 @@ public class OnapSystem extends YangModule {
     }
 
     // Read from device
+
     /**
      * Read system data with GUI cut through information from device if ONAP_SYSTEM YANG is supported.
      *
@@ -87,9 +87,20 @@ public class OnapSystem extends YangModule {
         @NonNull
         InstanceIdentifierBuilder ietfSystemIID =
                 YangInstanceIdentifier.builder().node(ORanDeviceManagerQNames.IETF_SYSTEM_CONTAINER);
+        InstanceIdentifierBuilder augmentedOnapSystem = null;
 
+        if (netconfDomAccessor.getCapabilites().isSupportingNamespaceAndRevision(ONAPSYSTEM_2020_10_26)) {
+            augmentedOnapSystem = YangInstanceIdentifier.builder(ietfSystemIID.build()).node(NAME).node(WEB_UI);
+
+        } else if (netconfDomAccessor.getCapabilites().isSupportingNamespaceAndRevision(ONAPSYSTEM_2022_11_04)) {
+            augmentedOnapSystem = YangInstanceIdentifier.builder(ietfSystemIID.build()).node(NAME).node(WEB_UI)
+                    .node(GEOGRAPHICAL_LOCATION);
+        }
+        else {
+            return null;
+        }
         Optional<NormalizedNode> res =
-                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, ietfSystemIID.build());
+                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedOnapSystem.build());
         LOG.debug("Result of System1 = {}", res);
         return res.isPresent() ? res.get() : null;
 
@@ -98,7 +109,7 @@ public class OnapSystem extends YangModule {
     /**
      * Get specific instance, depending on capabilities
      *
-     * @param capabilities
+     * @param netconfDomAccessor
      * @return
      */
     public static Optional<OnapSystem> getModule(NetconfDomAccessor netconfDomAccessor) {

@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.websocketmanager2.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Timer;

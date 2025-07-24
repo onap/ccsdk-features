@@ -22,7 +22,6 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters;
 
 import java.math.BigInteger;
-
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
 
 public class DBKeyValuePair<T> implements SqlDBFilter {

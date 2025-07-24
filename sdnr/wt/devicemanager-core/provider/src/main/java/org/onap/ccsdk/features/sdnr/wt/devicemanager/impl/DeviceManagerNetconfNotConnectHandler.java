@@ -29,10 +29,10 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.NetworkElementFa
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class DeviceManagerNetconfNotConnectHandler implements NetconfNodeStateLi
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerNetconfNotConnectHandler.class);
 
-    private final @NonNull ListenerRegistration<NetconfNodeStateListener> registerNetconfNodeStateListener;
+    private final @NonNull Registration registerNetconfNodeStateListener;
 
     private final @NonNull ODLEventListenerHandler odlEventListenerHandler;
     private final @NonNull DeviceMonitor deviceMonitor;

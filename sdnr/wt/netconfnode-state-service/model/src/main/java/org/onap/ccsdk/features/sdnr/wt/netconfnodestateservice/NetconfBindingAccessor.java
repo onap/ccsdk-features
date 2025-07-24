@@ -22,10 +22,12 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPoint;
+import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionOutput;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
+import org.opendaylight.yangtools.concepts.Registration;
+import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
@@ -87,8 +89,8 @@ public interface NetconfBindingAccessor extends NetconfAccessor {
      * @param listener listener to be called
      * @return handler to manager registration
      */
-    <T extends NotificationListener> ListenerRegistration<NotificationListener> doRegisterNotificationListener(
-            @NonNull T listener);
+    @NonNull <N extends Notification<N> & DataObject> Registration doRegisterNotificationListener(
+            Class<N> type, NotificationService.Listener<N> listener);
 
 
 }

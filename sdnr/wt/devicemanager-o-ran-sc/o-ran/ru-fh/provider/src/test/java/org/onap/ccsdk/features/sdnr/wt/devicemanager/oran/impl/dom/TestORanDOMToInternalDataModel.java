@@ -24,15 +24,17 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import org.eclipse.jdt.annotation.NonNull;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,22 +51,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.util.xml.UntrustedXML;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.UnkeyedListEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.UnkeyedListNode;
-import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizationResult;
 import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizedNodeStreamWriter;
 import org.opendaylight.yangtools.yang.data.codec.xml.XmlParserStream;
-import org.opendaylight.yangtools.yang.data.impl.schema.Builders;
-import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNormalizedNodeStreamWriter;
 import org.opendaylight.yangtools.yang.data.impl.schema.NormalizationResultHolder;
+import org.opendaylight.yangtools.yang.data.spi.node.ImmutableNodes;
 import org.opendaylight.yangtools.yang.model.api.EffectiveModelContext;
 import org.opendaylight.yangtools.yang.model.api.stmt.SchemaNodeIdentifier.Absolute;
 import org.opendaylight.yangtools.yang.model.util.SchemaInferenceStack.Inference;
@@ -73,15 +76,15 @@ import org.xml.sax.SAXException;
 public class TestORanDOMToInternalDataModel {
 
     private static final QNameModule IETF_HARDWARE_MODULE =
-            QNameModule.create(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-hardware"), Revision.of("2018-03-13"));
+            QNameModule.of(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-hardware"), Revision.of("2018-03-13"));
     private static final QName HW_CONTAINER = QName.create(IETF_HARDWARE_MODULE, "hardware");
 
     private static final QNameModule IETF_SYSTEM_MODULE =
-            QNameModule.create(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-system"), Revision.of("2014-08-06"));
+            QNameModule.of(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-system"), Revision.of("2014-08-06"));
     private static final QName IETF_CONTAINER = QName.create(IETF_SYSTEM_MODULE, "system");
 
     private static final QNameModule ORAN_MODULE =
-            QNameModule.create(XMLNamespace.of("urn:o-ran:fm:1.0"), Revision.of("2022-08-15"));
+            QNameModule.of(XMLNamespace.of("urn:o-ran:fm:1.0"), Revision.of("2022-08-15"));
     private static final QName ORAN_ACTIVE_ALARM_CONTAINER = QName.create(ORAN_MODULE, "active-alarm-list");
 
     private static EffectiveModelContext schemaContext;
@@ -106,10 +109,10 @@ public class TestORanDOMToInternalDataModel {
         domAccessor = mock(NetconfDomAccessor.class);
         when(domAccessor.getCapabilites()).thenReturn(capabilities);
         when(capabilities.isSupportingNamespaceAndRevision(
-                QNameModule.create(XMLNamespace.of(OnapSystem.NAMESPACE), Revision.of("2022-11-04")))).thenReturn(true);
+                QNameModule.of(XMLNamespace.of(OnapSystem.NAMESPACE), Revision.of("2022-11-04")))).thenReturn(true);
         onapSystem = OnapSystem.getModule(domAccessor);
         when(capabilities.isSupportingNamespaceAndRevision(
-                QNameModule.create(XMLNamespace.of(ORANFM.NAMESPACE), Revision.of("2022-08-15")))).thenReturn(true);
+                QNameModule.of(XMLNamespace.of(ORANFM.NAMESPACE), Revision.of("2022-08-15")))).thenReturn(true);
         oranfm = ORANFM.getModule(domAccessor);
 
     }
@@ -170,8 +173,12 @@ public class TestORanDOMToInternalDataModel {
 
         NormalizedNode transformedInput = result.getResult().data();
         ContainerNode cn = (ContainerNode) transformedInput;
+       /* var gcData = cn.childByArg(
+                new NodeIdentifier(onapSystem.get().getName(),
+                onapSystem.get().getWebUi(), onapSystem.get().getGeoLocation()));*/
         Optional<Guicutthrough> gc = ORanDOMToInternalDataModel.getGuicutthrough(cn, onapSystem.get());
         assertEquals(gc.isPresent(), true);
+
     }
 
     @Test
@@ -196,17 +203,19 @@ public class TestORanDOMToInternalDataModel {
 
         xmlParser.flush();
         xmlParser.close();
-        @NonNull NormalizationResult<?> transformedInput = result.getResult();
-        ContainerNode cn = (ContainerNode) transformedInput.data();
+        NormalizedNode transformedInput = result.getResult().data();
+        ContainerNode cn = (ContainerNode) transformedInput;
 
         UnkeyedListNode activeAlarmsList =
                 (UnkeyedListNode) cn.childByArg(new NodeIdentifier(oranfm.get().getFaultActiveAlarmsQName()));
-        for (UnkeyedListEntryNode activeAlarmEntry : activeAlarmsList.body())
+        for (UnkeyedListEntryNode activeAlarmEntry : activeAlarmsList.body()) {
             ORanDOMToInternalDataModel.getFaultLog(activeAlarmEntry, oranfm.get(), new NodeId("nSky"));
+        }
     }
 
     public static ContainerNode createORANDOMFault() {
-        return Builders.containerBuilder().withNodeIdentifier(NodeIdentifier.create(oranfm.get().getAlarmNotifQName()))
+        return ImmutableNodes.builderFactory().newContainerBuilder()
+                .withNodeIdentifier(NodeIdentifier.create(oranfm.get().getAlarmNotifQName()))
                 .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultIdQName(), "47"))
                 .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultSourceQName(), "Slot-2-Port-B"))
                 .withChild(ImmutableNodes.leafNode(oranfm.get().getFaultSeverityQName(), "MAJOR"))
@@ -218,6 +227,7 @@ public class TestORanDOMToInternalDataModel {
     }
 
     public static class NetconfDeviceNotification implements DOMNotification, DOMEvent {
+
         private final ContainerNode content;
         private final Absolute schemaPath;
         private final Instant eventTime;
@@ -225,7 +235,7 @@ public class TestORanDOMToInternalDataModel {
         NetconfDeviceNotification(final ContainerNode content, final Instant eventTime) {
             this.content = content;
             this.eventTime = eventTime;
-            this.schemaPath = Absolute.of(content.getIdentifier().getNodeType());
+            this.schemaPath = Absolute.of(content.name().getNodeType());
         }
 
         NetconfDeviceNotification(final ContainerNode content, final Absolute schemaPath, final Instant eventTime) {

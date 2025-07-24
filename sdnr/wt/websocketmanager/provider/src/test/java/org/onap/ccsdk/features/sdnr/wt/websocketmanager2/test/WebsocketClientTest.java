@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager2.test;
 
 import static org.junit.Assert.fail;
+
 import org.java_websocket.handshake.ServerHandshake;
 import org.junit.Test;
 import org.mockito.Mockito;

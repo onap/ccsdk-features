@@ -28,19 +28,15 @@ import java.util.Map;
 
 public class YangHelper {
 
-    static public <T extends Object> Collection<T> getCollection( Map<?,T> map ) {
+    static public <T> Collection<T> getCollection( Map<?,T> map ) {
         return map != null ? map.values() : null;
     }
 
-    static public <T extends Object> Collection<T> getCollection( List<T> map ) {
+    static public <T> Collection<T> getCollection( List<T> map ) {
         return map;
     }
 
-    static public <T extends Object> List<T> getList( Map<?,T> map ) {
-        return map != null ? new ArrayList<T>(map.values()) : null;
-    }
-
-    static public <T extends Object> List<T> getList( List<T> map ) {
-        return map;
+    static public <T> List<T> getList( Map<?,T> map ) {
+        return map != null ? new ArrayList<>(map.values()) : null;
     }
 }

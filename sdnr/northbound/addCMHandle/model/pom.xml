@@ -47,7 +47,7 @@
     -->
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-dom-codec-api</artifactId>
+            <artifactId>mdsal-dom-api</artifactId>
             <scope>provided</scope>
         </dependency>
    </dependencies>

@@ -27,19 +27,22 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeS
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfAccessorImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.NetconfCommunicatorManager;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.DomContextImpl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.ConnectionOper.ConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.connection.oper.AvailableCapabilitiesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.connection.oper.available.capabilities.AvailableCapabilityBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.ConnectionOper.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.connection.oper.AvailableCapabilitiesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.connection.oper.available.capabilities.AvailableCapabilityBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.NetconfNodeAugment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
+import org.opendaylight.yangtools.binding.Augmentation;
 
 public class TestNetconfHelper extends Mockito {
 
     /**
      * Provide a test node.
+     *
      * @param nodeId
      * @param capabilityString
      */
@@ -55,13 +58,14 @@ public class TestNetconfHelper extends Mockito {
 
         NodeBuilder nodeBuilder = new NodeBuilder();
 
-        nodeBuilder.addAugmentation(rootNodeNetconf);
+        nodeBuilder.addAugmentation((NetconfNodeAugment) () -> rootNodeNetconf);
         nodeBuilder.setNodeId(nodeId);
         return nodeBuilder.build();
     }
 
     /**
      * Provide a test NetconfAccessorImpl
+     *
      * @return object NetconfAccessorImpl
      */
     public static NetconfAccessorImpl getNetconfAcessorImpl() {
@@ -71,11 +75,12 @@ public class TestNetconfHelper extends Mockito {
         String capabilityStringForNetworkElement = "network-element";
         NodeId nodeId = new NodeId(nodeIdString);
         NetconfNode testNode = TestNetconfHelper.getTestNode(nodeId, capabilityStringForNetworkElement)
-                .augmentation(NetconfNode.class);
+                .augmentation(NetconfNodeAugment.class).getNetconfNode();
 
         NetconfNodeStateServiceImpl netconfNodeStateService = mock(NetconfNodeStateServiceImpl.class);
         NetconfAccessorImpl netconfAccessor =
-                new NetconfAccessorImpl(nodeId, testNode, netconfCommunicatorManager, domContext, netconfNodeStateService);
+                new NetconfAccessorImpl(nodeId, testNode, netconfCommunicatorManager, domContext,
+                        netconfNodeStateService);
         return netconfAccessor;
     }
 }

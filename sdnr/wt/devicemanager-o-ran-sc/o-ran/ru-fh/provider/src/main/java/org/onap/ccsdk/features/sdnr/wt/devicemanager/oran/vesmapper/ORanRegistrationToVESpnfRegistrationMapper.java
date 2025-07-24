@@ -68,6 +68,7 @@ public class ORanRegistrationToVESpnfRegistrationMapper {
         vesCEH.setLastEpochMicrosec(Instant.now().toEpochMilli() * 1000);
         vesCEH.setNfVendorName(
                 ORanDMDOMUtility.getLeafValue(component, ORanDeviceManagerQNames.IETF_HW_COMPONENT_LIST_MFG_NAME));
+        vesCEH.setReportingEntityId(vesProvider.getConfig().getReportingEntityId());
         vesCEH.setReportingEntityName(vesProvider.getConfig().getReportingEntityName());
         vesCEH.setSequence(sequenceNo++);
         vesCEH.setSourceId(
@@ -81,6 +82,7 @@ public class ORanRegistrationToVESpnfRegistrationMapper {
 
     public VESPNFRegistrationFieldsPOJO mapPNFRegistrationFields(MapEntryNode component) {
         VESPNFRegistrationFieldsPOJO vesPnfFields = new VESPNFRegistrationFieldsPOJO();
+
         vesPnfFields.setModelNumber(
                 ORanDMDOMUtility.getLeafValue(component, ORanDeviceManagerQNames.IETF_HW_COMPONENT_LIST_MFG_NAME));
         vesPnfFields

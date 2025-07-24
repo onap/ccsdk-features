@@ -24,7 +24,6 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DataMigrationReport;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.database.ElasticsearchDataMigrationProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.database.MariaDbDataMigrationProvider;
 
 public class DataMigrationProviderImpl implements DataMigrationProviderService {
@@ -34,7 +33,7 @@ public class DataMigrationProviderImpl implements DataMigrationProviderService {
     public DataMigrationProviderImpl(SdnrDbType type, String url, String username, String password, boolean trustAll,
             long timeoutms) throws Exception {
         if (type == SdnrDbType.ELASTICSEARCH) {
-            dbProvider = new ElasticsearchDataMigrationProvider(url, username, password, trustAll, timeoutms);
+            throw new RuntimeException("Elasticsearch no longer supported");
         } else {
             dbProvider = new MariaDbDataMigrationProvider(url, username, password, trustAll, timeoutms);
         }

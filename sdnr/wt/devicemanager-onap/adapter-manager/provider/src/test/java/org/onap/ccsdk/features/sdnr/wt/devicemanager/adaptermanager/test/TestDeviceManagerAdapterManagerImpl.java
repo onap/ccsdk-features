@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.test;
 
 import static org.mockito.Mockito.mock;
+
 import org.junit.After;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.impl.DeviceManagerAdapterManagerImpl;

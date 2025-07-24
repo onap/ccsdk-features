@@ -85,8 +85,7 @@ public class Onf14DomEquipmentManager {
         List<Inventory> inventoryList = new ArrayList<>();
         for (String uuid : getTopLevelEquipment(controlConstruct)) {
             Optional<NormalizedNode> equipment = readEquipmentInstance(netconfDomAccessor, uuid);
-            log.info("Equipment Data is - {}", equipment.get().prettyTree());
-            MapEntryNode equipmentEntry = (MapEntryNode) equipment.get();
+            MapEntryNode equipmentEntry = (MapEntryNode) equipment.orElse(null);
             if (equipmentEntry != null) {
                 collectEquipment(inventoryList, equipmentEntry, null, EQUIPMENTROOTLEVEL);
             }

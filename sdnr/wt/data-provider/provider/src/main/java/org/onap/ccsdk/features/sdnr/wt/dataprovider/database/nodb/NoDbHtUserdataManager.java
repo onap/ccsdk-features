@@ -21,38 +21,29 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.nodb;
 
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
+import java.util.HashMap;
+import java.util.Map;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.HtUserdataManagerBase;
 
-public class NoDbHtUserdataManager implements HtUserdataManager {
+public class NoDbHtUserdataManager extends HtUserdataManagerBase {
+
+    private final Map<String, String> userDataStore = new HashMap<>();
 
     @Override
-    public String getUserdata(String username) {
-        return "{}";
-    }
-
-    @Override
-    public String getUserdata(String username, String key) {
-        return "{}";
+    protected String readUserdata(String username, String defaultValue) {
+        return this.userDataStore.getOrDefault(username, defaultValue);
     }
 
     @Override
     public boolean setUserdata(String username, String data) {
-        return true;
-    }
-
-    @Override
-    public boolean setUserdata(String username, String key, String data) {
+        this.userDataStore.put(username, data);
         return true;
     }
 
     @Override
     public boolean removeUserdata(String username) {
+        this.userDataStore.remove(username);
         return true;
     }
-
-    @Override
-    public boolean removeUserdata(String username, String key) {
-        return true;
-    }
-
 }
+

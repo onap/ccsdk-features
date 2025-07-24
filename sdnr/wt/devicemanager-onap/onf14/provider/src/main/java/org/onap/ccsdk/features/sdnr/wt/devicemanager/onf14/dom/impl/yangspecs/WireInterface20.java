@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.InternalDataModelSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.TechnologySpecificPacKeys;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.qnames.Onf14DevicemanagerQNames;
@@ -40,8 +42,9 @@ import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -54,7 +57,7 @@ public class WireInterface20 extends YangModule {
 
     private static String NAMESPACE = "urn:onf:yang:wire-interface-2-0";
     private static final List<QNameModule> MODULES =
-            Arrays.asList(QNameModule.create(XMLNamespace.of(NAMESPACE), Revision.of("2020-01-23")));
+            Arrays.asList(QNameModule.of(XMLNamespace.of(NAMESPACE), Revision.of("2020-01-23")));
 
     private final CoreModel14 coreModel14;
 
@@ -71,36 +74,36 @@ public class WireInterface20 extends YangModule {
         // constructing the IID needs the augmentation exposed by the wire-interface-2-0
         // model
         YangInstanceIdentifier layerProtocolIID = coreModel14.getLayerProtocolIId(ltpUuid, localId);
-        InstanceIdentifierBuilder wireInterfacePacIID =
+
+        InstanceIdentifierBuilder augmentedWireInterfaceConfigurationIID =
                 YangInstanceIdentifier.builder(layerProtocolIID).node(Onf14DevicemanagerQNames.WIRE_INTERFACE_PAC);
-        //        @NonNull
-        //        YangInstanceIdentifier wireInterfacePacIID =
-        //                YangInstanceIdentifier.of(Onf14DevicemanagerQNames.WIRE_INTERFACE_PAC);
-        //
-        //        InstanceIdentifierBuilder augmentedWireInterfaceConfigurationIID =
-        //                YangInstanceIdentifier.builder(layerProtocolIID).node(wireInterfacePacIID.getLastPathArgument());
 
         // reading all the current-problems list for this specific LTP and LP
-        Optional<NormalizedNode> wireInterfaceConfigurationOpt =
-                netconfDomAccessor.readDataNode(LogicalDatastoreType.OPERATIONAL, wireInterfacePacIID.build());
+        Optional<NormalizedNode> wireInterfaceConfigurationOpt = netconfDomAccessor
+                .readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedWireInterfaceConfigurationIID.build());
 
         if (wireInterfaceConfigurationOpt.isPresent()) {
-            ContainerNode wireInterfaceConfiguration = (ContainerNode) wireInterfaceConfigurationOpt.get();
-            MapNode wireInterfaceCurrentProblemsList = (MapNode) wireInterfaceConfiguration
-                    .childByArg(new NodeIdentifier(Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_LIST));
+
+            @Nullable MapEntryNode wireInterfaceCurrentProblemsList = ((MapNode)  wireInterfaceConfigurationOpt.get())
+                    .childByArg(NodeIdentifierWithPredicates.of(Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_LIST));
             if (wireInterfaceCurrentProblemsList != null) {
-                Collection<MapEntryNode> wireInterfaceProblemsCollection = wireInterfaceCurrentProblemsList.body();
-                for (MapEntryNode wireInterfaceProblem : wireInterfaceProblemsCollection) {
-                    resultList.add(netconfDomAccessor.getNodeId(),
-                            Integer.parseInt(Onf14DMDOMUtility.getLeafValue(wireInterfaceProblem,
-                                    Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_SEQ_NO)),
-                            new DateAndTime(Onf14DMDOMUtility.getLeafValue(wireInterfaceProblem,
-                                    Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_TIMESTAMP)),
-                            ltpUuid,
-                            Onf14DMDOMUtility.getLeafValue(wireInterfaceProblem,
-                                    Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_PROBLEM_NAME),
-                            InternalDataModelSeverity.mapSeverity(Onf14DMDOMUtility.getLeafValue(wireInterfaceProblem,
-                                    Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_PROBLEM_SEVERITY)));
+                Collection<@NonNull DataContainerChild> wireInterfaceProblemsCollection = wireInterfaceCurrentProblemsList.body();
+                for (DataContainerChild wireInterfaceProblem : wireInterfaceProblemsCollection) {
+                    if(wireInterfaceProblem instanceof DataContainerNode dataContainerNode) {
+                        resultList.add(netconfDomAccessor.getNodeId(),
+                                Integer.parseInt(Onf14DMDOMUtility.getLeafValue(dataContainerNode,
+                                        Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_SEQ_NO)),
+                                new DateAndTime(Onf14DMDOMUtility.getLeafValue(dataContainerNode,
+                                        Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_TIMESTAMP)),
+                                ltpUuid,
+                                Onf14DMDOMUtility.getLeafValue(dataContainerNode,
+                                        Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_PROBLEM_NAME),
+                                InternalDataModelSeverity.mapSeverity(Onf14DMDOMUtility.getLeafValue(dataContainerNode,
+                                        Onf14DevicemanagerQNames.WIRE_INTERFACE_CURRENT_PROBLEMS_PROBLEM_SEVERITY)));
+                    }
+                    else {
+                        LOG.warn("unable to cast if problem {} as container node",wireInterfaceProblem);
+                    }
                 }
             } else {
                 LOG.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
@@ -109,7 +112,8 @@ public class WireInterface20 extends YangModule {
         return resultList;
     }
 
-    public FaultData readAllCurrentProblems(FaultData resultList, List<TechnologySpecificPacKeys> wireInterfaceList) {
+    public FaultData readAllCurrentProblems(FaultData resultList,
+            List<TechnologySpecificPacKeys> wireInterfaceList) {
 
         int idxStart; // Start index for debug messages
 

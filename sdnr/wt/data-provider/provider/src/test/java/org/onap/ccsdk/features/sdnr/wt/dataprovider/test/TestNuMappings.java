@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
 import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;

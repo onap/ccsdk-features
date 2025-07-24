@@ -25,10 +25,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import org.junit.After;
 import org.junit.Before;
@@ -37,8 +36,6 @@ import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRep
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.exception.ConversionException;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section;
-import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo;
-import org.onap.ccsdk.features.sdnr.wt.common.database.config.HostInfo.Protocol;
 
 public class TestConfig {
 
@@ -224,23 +221,6 @@ public class TestConfig {
         }
         confiuration.unregisterConfigChangedListener(listener);
         assertTrue("changelistener not called", changeFlag);
-    }
-
-    @Test
-    public void testHostInfo() {
-        HostInfo hi = HostInfo.getDefault();
-        try {
-            new URL(hi.toUrl());
-        } catch (MalformedURLException e) {
-            fail("url conversion failed: " + e.getMessage());
-        }
-        hi = new HostInfo("localhost", 44444, Protocol.getValueOf("https"));
-        try {
-            new URL(hi.toUrl());
-        } catch (MalformedURLException e) {
-            fail("url conversion failed: " + e.getMessage());
-        }
-
     }
 
     @Test

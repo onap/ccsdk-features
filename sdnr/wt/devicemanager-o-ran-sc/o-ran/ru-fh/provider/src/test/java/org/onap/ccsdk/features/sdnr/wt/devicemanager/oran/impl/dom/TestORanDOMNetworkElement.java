@@ -102,9 +102,9 @@ public class TestORanDOMNetworkElement {
         when(domAccessor.getCapabilites()).thenReturn(capabilities);
         when(vesCollectorService.getNotificationProxyParser()).thenReturn(notificationProxyParser);
         when(capabilities.isSupportingNamespaceAndRevision(
-                QNameModule.create(XMLNamespace.of(ORANFM.NAMESPACE), Revision.of("2022-08-15")))).thenReturn(true);
+                QNameModule.of(XMLNamespace.of(ORANFM.NAMESPACE), Revision.of("2022-08-15")))).thenReturn(true);
         when(capabilities.isSupportingNamespaceAndRevision(
-                QNameModule.create(XMLNamespace.of(OnapSystem.NAMESPACE), Revision.of("2022-11-04")))).thenReturn(true);
+                QNameModule.of(XMLNamespace.of(OnapSystem.NAMESPACE), Revision.of("2022-11-04")))).thenReturn(true);
 
         DataProvider dataProvider = mock(DataProvider.class);
         FaultService faultService = mock(FaultService.class);

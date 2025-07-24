@@ -23,13 +23,13 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data;
 
 import java.util.ArrayList;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataContainer;
 
 @SuppressWarnings("serial")
 public class PropertyList extends ArrayList<SqlPropertyInfo> {
 
 
-    public PropertyList(Class<? extends DataObject> clazz){
+    public PropertyList(Class<? extends DataContainer> clazz){
         super(SqlDBMapper.getProperties(clazz));
     }
 

@@ -24,9 +24,9 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query;
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.DBKeyValuePair;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataContainer;
 
-public class UpsertQuery<T extends DataObject> extends InsertQuery<T> {
+public class UpsertQuery<T extends DataContainer> extends InsertQuery<T> {
 
     public UpsertQuery(Entity e, T object, String controllerId) {
         super(e, object, controllerId);

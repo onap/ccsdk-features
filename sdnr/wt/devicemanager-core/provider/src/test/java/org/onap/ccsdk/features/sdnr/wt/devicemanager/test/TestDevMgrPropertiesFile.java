@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +33,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl.config.AaiConfig;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.archiveservice.ArchiveCleanService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.config.DcaeConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.performancemanager.impl.config.PmConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.toggleAlarmFilter.conf.ToggleAlarmConfig;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 public class TestDevMgrPropertiesFile {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ArchiveCleanService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestDevMgrPropertiesFile.class);
 
     private static final File FILENAME = new File("testdevmgrpropertiesfile.properties");
     private static final File AAIPROP_FILE = new File("testdevmgrpropertiesfileaaiclient.properties");
