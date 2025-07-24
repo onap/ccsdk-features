@@ -25,7 +25,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
-import org.opendaylight.yangtools.yang.binding.EnumTypeObject;
+import org.opendaylight.yangtools.binding.EnumTypeObject;
 
 
 @SuppressWarnings("rawtypes")

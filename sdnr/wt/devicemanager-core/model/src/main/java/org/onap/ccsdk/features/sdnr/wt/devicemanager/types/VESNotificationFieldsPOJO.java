@@ -25,10 +25,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import lombok.Getter;
+import lombok.Setter;
 
 @JsonPropertyOrder({"arrayOfNamedHashMap", "changeContact", "changeIdentifier", "changeType", "newState", "oldState",
         "notificationFieldsVersion"})
 
+@Getter
+@Setter
 public class VESNotificationFieldsPOJO {
 
     private ArrayList<HashMap<String, Object>> arrayOfNamedHashMap = new ArrayList<HashMap<String, Object>>();
@@ -47,70 +51,5 @@ public class VESNotificationFieldsPOJO {
     @JsonIgnore
     private String stateInterface = "";
     private String notificationFieldsVersion = "2.0";
-
-    public ArrayList<HashMap<String, Object>> getArrayOfNamedHashMap() {
-        return arrayOfNamedHashMap;
-    }
-
-    public void setArrayOfNamedHashMap(ArrayList<HashMap<String, Object>> arrayOfNamedHashMap) {
-        this.arrayOfNamedHashMap = arrayOfNamedHashMap;
-    }
-
-    public String getChangeContact() {
-        return changeContact;
-    }
-
-    public void setChangeContact(String changeContact) {
-        this.changeContact = changeContact;
-    }
-
-    public String getChangeIdentifier() {
-        return changeIdentifier;
-    }
-
-    public void setChangeIdentifier(String changeIdentifier) {
-        this.changeIdentifier = changeIdentifier;
-    }
-
-    public String getChangeType() {
-        return changeType;
-    }
-
-    public void setChangeType(String changeType) {
-        this.changeType = changeType;
-    }
-
-    public String getNewState() {
-        return newState;
-    }
-
-    public void setNewState(String newState) {
-        this.newState = newState;
-    }
-
-    public String getOldState() {
-        return oldState;
-    }
-
-    public void setOldState(String oldState) {
-        this.oldState = oldState;
-    }
-
-    public String getStateInterface() {
-        return stateInterface;
-    }
-
-    public void setStateInterface(String stateInterface) {
-        this.stateInterface = stateInterface;
-    }
-
-    public String getNotificationFieldsVersion() {
-        return notificationFieldsVersion;
-    }
-
-    public void setNotificationFieldsVersion(String notificationFieldsVersion) {
-        this.notificationFieldsVersion = notificationFieldsVersion;
-    }
-
 
 }

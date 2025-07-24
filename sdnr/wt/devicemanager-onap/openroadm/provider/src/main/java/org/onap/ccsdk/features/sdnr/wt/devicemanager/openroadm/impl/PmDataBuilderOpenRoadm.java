@@ -28,7 +28,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
@@ -69,6 +68,7 @@ import org.slf4j.LoggerFactory;
  * Reading Openroadm PM data and returning as PmDataEntitiy data
  */
 public class PmDataBuilderOpenRoadm {
+
     // variables
     private static final Logger log = LoggerFactory.getLogger(PmDataBuilderOpenRoadm.class);
     private PmdataEntityBuilder pmDataBuilder;
@@ -188,6 +188,9 @@ public class PmDataBuilderOpenRoadm {
                 URL path = results.nextElement();
 
                 Class<?> cls1 = loadClass(b, path.getFile());
+                if (cls1 == null) {
+                    continue;
+                }
 
                 if (PerformanceMeasurementTypeId.class.isAssignableFrom(cls1)) {
                     measTypeObjList.add((Class<? extends PerformanceMeasurementTypeId>) cls1);
@@ -232,7 +235,7 @@ public class PmDataBuilderOpenRoadm {
         } else {
             for (Class<? extends PerformanceMeasurementTypeId> obj : setMeasurementTypeId()) {
                 if (obj.toString().contains(pmType.name())) {
-                    measBuilder.setPmKey(YangToolsMapperHelper.getIdentityValueFromClass(obj) );
+                    measBuilder.setPmKey(YangToolsMapperHelper.getIdentityValueFromClass(obj));
                 }
             }
         }
@@ -278,7 +281,6 @@ public class PmDataBuilderOpenRoadm {
 
         return resultUrl;
     }
-
 
     // end of private methods
 }

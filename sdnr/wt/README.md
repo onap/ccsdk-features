@@ -1,6 +1,6 @@
 # wt - wireless transport microservices
 
-ODL version: argon sr1
+ODL version: scandium sr2
 
 ## common (osgi)
 
@@ -40,7 +40,7 @@ Provide netconf state information to devicemanager and mountpoint-state-provider
 
 Web applications for user operations for devices
 
-## websocketmanager (osgi)
+## websocketmanager2 (osgi)
 
 Notification service for browser clients.
 

@@ -18,20 +18,15 @@
 
 package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.test.mock.odlapi;
 
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
+
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
+import org.opendaylight.yangtools.concepts.Registration;
 
 public class ClusterSingletonServiceProviderMock implements ClusterSingletonServiceProvider {
 
     @Override
-    public void close() throws Exception {
-
-    }
-
-    @Override
-    public ClusterSingletonServiceRegistration registerClusterSingletonService(ClusterSingletonService service) {
+    public Registration registerClusterSingletonService(ClusterSingletonService service) {
         return null;
     }
-
 }

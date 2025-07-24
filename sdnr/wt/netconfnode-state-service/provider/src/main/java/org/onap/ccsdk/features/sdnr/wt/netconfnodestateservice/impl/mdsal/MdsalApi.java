@@ -38,8 +38,9 @@ public class MdsalApi {
     * @return service requested or throw
     * @throws IllegalStateException
     */
-   public static <T extends DOMService> T getMountpointService(final DOMMountPoint mountPoint, final Class<T> service) {
-       final Optional<T> optional = mountPoint.getService(service);
+   public static <T extends DOMService<T, E>, E extends DOMService.Extension<T, E>> T getMountpointService(final DOMMountPoint mountPoint, final Class<T> service) {
+
+       final var optional = mountPoint.getService(service);
        Preconditions.checkState(optional.isPresent(), "Service not present on mount point: %s", service.getName());
        return optional.get();
    }

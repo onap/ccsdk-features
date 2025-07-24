@@ -23,10 +23,16 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import ch.vorburger.exec.ManagedProcessException;
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,14 +41,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
@@ -63,14 +66,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateNetworkElementConnectionOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
@@ -100,7 +98,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListOutputBuilder;
@@ -113,8 +110,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
@@ -191,7 +186,7 @@ public class TestMariaDataProvider {
         assertEquals(2, faultCurrents.getData().size());
         ReadStatusOutputBuilder status = null;
         try {
-            EntityInput input = null;
+            EntityInput input=null;
             status = dbProvider.readStatus(input);
         } catch (IOException e) {
             e.printStackTrace();
@@ -204,7 +199,7 @@ public class TestMariaDataProvider {
 
         List<String> nodeList = dbProvider.getAllNodesWithCurrentAlarms();
         assertTrue(nodeList.contains(NODEID1));
-        assertEquals(1, nodeList.size());
+        assertEquals(1,nodeList.size());
 
         faultCurrent1 = new FaultcurrentBuilder().setNodeId(NODEID1).setCounter(1).setObjectId("obj")
                 .setProblem(PROBLEM1).setTimestamp(DateAndTime.getDefaultInstance(TIME1))
@@ -476,7 +471,7 @@ public class TestMariaDataProvider {
             e.printStackTrace();
             fail("unable to update maintenance data");
         }
-        data = dbProvider.readMaintenanceList(createInput("active", "false", 1, 20));
+        data = dbProvider.readMaintenanceList(createInput("active","false",1, 20));
         assertEquals(1, data.getData().size());
         DeleteMaintenanceInput delete1 = new DeleteMaintenanceInputBuilder().setId(NODEID1).build();
         try {
@@ -497,70 +492,16 @@ public class TestMariaDataProvider {
         HtDatabaseMaintenance maintenanceService = dbProvider.getHtDatabaseMaintenance();
         MaintenanceEntity e = maintenanceService.createIfNotExists(nodeId);
         assertNotNull(e);
-        assertEquals(nodeId, e.getNodeId());
+        assertEquals(nodeId,e.getNodeId());
         MaintenanceEntity e2 = new CreateMaintenanceInputBuilder(e).setActive(true).build();
         e = maintenanceService.setMaintenance(e2);
         assertNotNull(e);
-        assertEquals(nodeId, e.getNodeId());
+        assertEquals(nodeId,e.getNodeId());
         assertTrue(e.getActive());
         maintenanceService.deleteIfNotRequired(nodeId);
-        data = dbProvider.readMaintenanceList(createInput("node-id", nodeId, 1, 20));
+        data = dbProvider.readMaintenanceList(createInput("node-id",nodeId,1, 20));
         assertEquals(0, data.getData().size());
 
-    }
-
-    @Test
-    public void testMediatorserver() {
-        try {
-            dbClient.delete(new DeleteQuery(Entity.MediatorServer, null).toSql());
-        } catch (SQLException e) {
-            e.printStackTrace();
-            fail("problem clearing mediator server");
-        }
-        ReadMediatorServerListOutputBuilder data = dbProvider.readMediatorServerList(createInput(1, 20));
-        assertEquals(0, data.getData().size());
-        CreateMediatorServerInput mediator1 =
-                new CreateMediatorServerInputBuilder().setName("server1").setUrl("http://10.20.30.40:7070").build();
-        CreateMediatorServerInput mediator2 =
-                new CreateMediatorServerInputBuilder().setName("server2").setUrl("http://10.20.30.42:7070").build();
-        CreateMediatorServerInput mediator3 =
-                new CreateMediatorServerInputBuilder().setName("server3").setUrl("http://10.20.30.43:7070").build();
-        CreateMediatorServerOutputBuilder output1 = null, output2 = null;
-        try {
-            output1 = dbProvider.createMediatorServer(mediator1);
-            output2 = dbProvider.createMediatorServer(mediator2);
-            dbProvider.createMediatorServer(mediator3);
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("problem creating mediator servers");
-        }
-        data = dbProvider.readMediatorServerList(createInput(1, 20));
-        assertEquals(3, data.getData().size());
-        UpdateMediatorServerInput update1 = new UpdateMediatorServerInputBuilder().setId(output1.getId())
-                .setName("server1").setUrl("http://10.20.30.40:7071").build();
-        try {
-            dbProvider.updateMediatorServer(update1);
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("failed to update mediator server");
-        }
-        data = dbProvider.readMediatorServerList(createInput("id", output1.getId(), 1, 20));
-        assertEquals(1, data.getData().size());
-        assertEquals(output1.getId(), data.getData().get(0).getId());
-        assertEquals("server1", data.getData().get(0).getName());
-        assertEquals("http://10.20.30.40:7071", data.getData().get(0).getUrl());
-
-        DeleteMediatorServerInput delete2 = new DeleteMediatorServerInputBuilder().setId(output2.getId()).build();
-        try {
-            dbProvider.deleteMediatorServer(delete2);
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("unable to delete mediator server");
-        }
-        data = dbProvider.readMediatorServerList(createInput("id", output2.getId(), 1, 20));
-        assertEquals(0, data.getData().size());
-        data = dbProvider.readMediatorServerList(createInput(1, 20));
-        assertEquals(2, data.getData().size());
     }
 
     @Test
@@ -619,7 +560,7 @@ public class TestMariaDataProvider {
 
         ReadStatusOutputBuilder status = null;
         try {
-            EntityInput input = null;
+            EntityInput input=null;
             status = dbProvider.readStatus(input);
         } catch (IOException e) {
             e.printStackTrace();
@@ -634,9 +575,9 @@ public class TestMariaDataProvider {
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUndefined().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnmounted().intValue());
 
-        ReadStatusOutputBuilder status2 = null;
+        ReadStatusOutputBuilder status2=null;
         try {
-            EntityInput input = createInput("node-id", "node2*", 1, 20);
+            EntityInput input=createInput("node-id","node2*", 1, 20);
             status = dbProvider.readStatus(input);
             status2 = dbProviderOverall.readStatus(input);
         } catch (IOException e) {
@@ -651,7 +592,7 @@ public class TestMariaDataProvider {
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnableToConnect().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUndefined().intValue());
         assertEquals(0, status.getData().get(0).getNetworkElementConnections().getUnmounted().intValue());
-
+        
         assertEquals(1, status2.getData().get(0).getNetworkElementConnections().getConnected().intValue());
         assertEquals(1, status2.getData().get(0).getNetworkElementConnections().getConnecting().intValue());
         assertEquals(0, status2.getData().get(0).getNetworkElementConnections().getDisconnected().intValue());
@@ -680,32 +621,31 @@ public class TestMariaDataProvider {
     public void testUserdata() {
         HtUserdataManager mgr = dbProvider.getUserManager();
         String userdata = mgr.getUserdata(USERNAME);
-        assertEquals("{}", userdata);
+        assertEquals("{}",userdata);
         JSONObject o = new JSONObject();
         o.put("key1", false);
-        o.put("key2", "value2");
+        o.put("key2","value2");
         boolean result = mgr.setUserdata(USERNAME, o.toString());
         assertTrue(result);
         userdata = mgr.getUserdata(USERNAME);
         o = new JSONObject(userdata);
-        assertEquals(false, o.getBoolean("key1"));
-        assertEquals("value2", o.getString("key2"));
+        assertEquals(false,o.getBoolean("key1"));
+        assertEquals("value2",o.getString("key2"));
         o = new JSONObject();
         o.put("enabled", true);
-        o.put("name", "abcdef");
-        result = mgr.setUserdata(USERNAME, "app1", o.toString());
+        o.put("name","abcdef");
+        result = mgr.setUserdata(USERNAME,"app1",o.toString());
         assertTrue(result);
         userdata = mgr.getUserdata(USERNAME);
         o = new JSONObject(userdata);
-        assertEquals(false, o.getBoolean("key1"));
-        assertEquals("value2", o.getString("key2"));
+        assertEquals(false,o.getBoolean("key1"));
+        assertEquals("value2",o.getString("key2"));
         JSONObject app = o.getJSONObject("app1");
         assertNotNull(app);
         assertEquals(true, app.getBoolean("enabled"));
         assertEquals("abcdef", app.getString("name"));
 
     }
-
     @Test
     public void testpm15m() {
         try {
@@ -801,9 +741,9 @@ public class TestMariaDataProvider {
     }
 
     private static String loadFile(String filename) throws IOException {
-        return String.join("\n",
-                Files.readAllLines(new File(TestMariaDataProvider.class.getResource(filename).getFile()).toPath()));
-
+        InputStreamReader inputStreamReader = new InputStreamReader(TestMariaDataProvider.class.getResourceAsStream(filename), StandardCharsets.UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        return String.join("\n", bufferedReader.lines().collect(Collectors.toList()));
     }
 
     static EntityInput createInput(String filter, String filterValue, int page, int size) {

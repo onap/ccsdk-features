@@ -21,6 +21,8 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.yang.mapper;
 
+import static org.junit.Assert.assertNotNull;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -58,7 +60,9 @@ public class TestHashMap {
         objectMapper.registerModule(new YangToolsModule());
 
 
-        myMap = objectMapper.readValue(mapData, new TypeReference<List<Map<String, Object>>>(){});
+        myMap = objectMapper.readValue(mapData, new TypeReference<>() {
+        });
+        assertNotNull(myMap);
         System.out.println("Type1: "+myMap.getClass().getSimpleName());
         System.out.println("Type2: "+myMap.get(0).getClass().getSimpleName());
         System.out.println("Map is: "+myMap);    }

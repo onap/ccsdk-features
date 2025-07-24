@@ -23,10 +23,6 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 
 public class Constants {
 
-    public static final String NODEID = "NodeId";
-    public static final String NETCONFNODESTATE = "NetConfNodeState";
-    public static final String TIMESTAMP = "TimeStamp";
-
     public static final String VES_DOMAIN = "notification";
     public static final String VES_PRIORITY = "Normal";
     public static final String VES_CHANGETYPE = "ConnectionState";

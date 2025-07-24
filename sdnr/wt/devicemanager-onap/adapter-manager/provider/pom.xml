@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>3.2.0-SNAPSHOT</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
@@ -54,6 +54,14 @@
     </properties>
 
     <dependencies>
+        <!-- begin for testing -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- end for testing -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-devicemanager-onap-adapter-manager-model</artifactId>
@@ -90,8 +98,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-singleton-common-api</artifactId>
+            <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
+            <artifactId>rfc6991-ietf-inet-types</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -101,21 +109,19 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-dom-api</artifactId>
+            <artifactId>mdsal-binding-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- begin for testing -->
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-dom-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>netconf-topology</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- end for testing -->
     </dependencies>
 
     <build>
@@ -125,19 +131,5 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-       <!-- <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/gen/**</exclude>
-                        <exclude>**/generated-sources/**</exclude>
-                        <exclude>**/yang-gen-sal/**</exclude>
-                        <exclude>**/pax/**</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>-->
     </build>
 </project>

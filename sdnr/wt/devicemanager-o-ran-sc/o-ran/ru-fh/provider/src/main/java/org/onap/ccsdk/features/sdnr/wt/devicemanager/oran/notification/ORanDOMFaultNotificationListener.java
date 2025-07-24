@@ -26,7 +26,6 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,7 +64,7 @@ public class ORanDOMFaultNotificationListener implements DOMNotificationListener
 
     private Integer counter; //Local counter is assigned to Events in EventLog
 
-    public ORanDOMFaultNotificationListener(@NonNull NetconfDomAccessor netconfDomAccessor, Optional<ORANFM> oranfm,
+    public ORanDOMFaultNotificationListener(@NonNull NetconfDomAccessor netconfDomAccessor, ORANFM oranfm,
             @NonNull VESCollectorService vesCollectorService, @NonNull FaultService faultService,
             @NonNull WebsocketManagerService websocketManagerService, @NonNull DataProvider databaseService) {
         this.netconfDomAccessor = Objects.requireNonNull(netconfDomAccessor);
@@ -73,7 +72,7 @@ public class ORanDOMFaultNotificationListener implements DOMNotificationListener
         this.faultService = Objects.requireNonNull(faultService);
         this.websocketManagerService = Objects.requireNonNull(websocketManagerService);
         this.databaseService = Objects.requireNonNull(databaseService);
-        this.oranfm = oranfm.get();
+        this.oranfm = oranfm;
         this.mapper = new ORanDOMFaultToVESFaultMapper(netconfDomAccessor.getNodeId(), this.vesCollectorService,
                 this.oranfm, "AlarmNotif");
         this.counter = 0;

@@ -1,14 +1,9 @@
 package org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev191129;
-import java.lang.String;
-import java.lang.UnsupportedOperationException;
-import java.math.BigDecimal;
-
-import javax.annotation.processing.Generated;
-
-import org.opendaylight.yangtools.yang.common.Decimal64;
-import org.opendaylight.yangtools.yang.common.Uint64;
 
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import javax.annotation.processing.Generated;
+import org.opendaylight.yangtools.yang.common.Decimal64;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * The purpose of generated class in src/main/java for Union types is to create new instances of unions from a string representation.

@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.http;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.regex.Matcher;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = Servlet.class)
 public class UserdataHttpServlet extends HttpServlet {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(UserdataHttpServlet.class);
     private static final String REGEX = "^\\/userdata[\\/]?([a-zA-Z0-9\\.]+)?$";

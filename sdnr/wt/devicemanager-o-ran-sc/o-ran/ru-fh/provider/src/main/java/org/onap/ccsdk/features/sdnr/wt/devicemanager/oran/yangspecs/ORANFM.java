@@ -35,9 +35,9 @@ public class ORANFM extends YangModule {
 
     public static final String NAMESPACE = "urn:o-ran:fm:1.0";
     public static final QNameModule ORANFM_2019_02_04 =
-            QNameModule.create(XMLNamespace.of(NAMESPACE), Revision.of("2019-02-04"));
+            QNameModule.of(XMLNamespace.of(NAMESPACE), Revision.of("2019-02-04"));
     public static final QNameModule ORANFM_2022_08_15 =
-            QNameModule.create(XMLNamespace.of(NAMESPACE), Revision.of("2022-08-15"));
+            QNameModule.of(XMLNamespace.of(NAMESPACE), Revision.of("2022-08-15"));
     private static final List<QNameModule> MODULES = Arrays.asList(ORANFM_2019_02_04, ORANFM_2022_08_15);
 
     ORANFM(NetconfDomAccessor netconfDomAccessor, QNameModule module) {
@@ -83,7 +83,7 @@ public class ORANFM extends YangModule {
     /**
      * Get specific instance, depending on capabilities
      *
-     * @param capabilities
+     * @param netconfDomAccessor
      * @return
      */
     public static Optional<ORANFM> getModule(NetconfDomAccessor netconfDomAccessor) {

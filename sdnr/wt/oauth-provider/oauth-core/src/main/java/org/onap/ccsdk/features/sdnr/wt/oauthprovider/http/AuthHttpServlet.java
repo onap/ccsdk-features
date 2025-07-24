@@ -38,15 +38,20 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.BearerToken;
 import org.apache.shiro.codec.Base64;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.Subject;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.*;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.InvalidConfigurationException;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.NoDefinitionFoundException;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthProviderConfig;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OAuthToken;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlShiroConfiguration;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlShiroConfiguration.MainItem;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlShiroConfiguration.UrlItem;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlXmlMapper;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UnableToConfigureOAuthService;
+import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.filters.CustomizedMDSALDynamicAuthorizationFilter;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.AuthService;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.AuthService.PublicOAuthProviderConfig;
@@ -100,8 +105,8 @@ public class AuthHttpServlet extends HttpServlet {
     private final TokenCreator tokenCreator;
     private final Config config;
     private static MdSalAuthorizationStore mdsalAuthStore;
-    private PasswordCredentialAuth passwordCredentialAuth;
-    private OdlShiroConfiguration shiroConfiguration;
+    private static PasswordCredentialAuth passwordCredentialAuth;
+    private static OdlShiroConfiguration shiroConfiguration;
 
     public AuthHttpServlet() throws IllegalArgumentException, IOException, InvalidConfigurationException,
             UnableToConfigureOAuthService {
@@ -174,6 +179,9 @@ public class AuthHttpServlet extends HttpServlet {
         String redirectUrl = req.getParameter(LOGOUT_REDIRECT_URL_PARAMETER);
         if (redirectUrl == null) {
             redirectUrl = this.config.getPublicUrl();
+        }
+        if(redirectUrl == null) {
+            redirectUrl = getHost(req);
         }
         UserTokenPayload userInfo = this.tokenCreator.decode(bearerToken);
         if (bearerToken != null && userInfo != null && !userInfo.isInternal()) {

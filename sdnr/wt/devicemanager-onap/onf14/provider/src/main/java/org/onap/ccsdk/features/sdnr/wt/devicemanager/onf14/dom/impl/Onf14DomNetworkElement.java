@@ -102,9 +102,6 @@ public class Onf14DomNetworkElement implements NetworkElement, PerformanceDataPr
 
     }
 
-    /**
-     * @param nNode set core-model-capability
-     */
     public void setCoreModel() {
         NetworkElementConnectionBuilder eb = new NetworkElementConnectionBuilder();
         eb.setCoreModelCapability(onf14CoreModelQNames.getRevision());

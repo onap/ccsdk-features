@@ -45,9 +45,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,11 +65,11 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     private static final Logger log = LoggerFactory.getLogger(OpenroadmNetworkElement.class);
     private Hashtable<String, Long> circuitPacksRecord;
     private Hashtable<String, Long> shelfProvisionedcircuitPacks;
-    private ListenerRegistration<NotificationListener> openRdmListenerRegistrationResult;
+    private Registration openRdmListenerRegistrationResult;
     private @NonNull final OpenroadmChangeNotificationListener openRdmListener;
-    private ListenerRegistration<NotificationListener> opnRdmFaultListenerRegistrationResult;
+    private Registration opnRdmFaultListenerRegistrationResult;
     private @NonNull OpenroadmFaultNotificationListener opnRdmFaultListener;
-    private ListenerRegistration<NotificationListener> opnRdmDeviceListenerRegistrationResult;
+    private Registration opnRdmDeviceListenerRegistrationResult;
     private OpenroadmDeviceChangeNotificationListener opnRdmDeviceListener;
     private OpenroadmInventoryInput opnRdmInventoryInput;
     private PmDataBuilderOpenRoadm openRoadmPmData;
@@ -140,11 +139,11 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     public void register() {
         initialReadFromNetworkElement();
 
-        this.openRdmListenerRegistrationResult = netconfAccessor.doRegisterNotificationListener(openRdmListener);
+        this.openRdmListenerRegistrationResult = openRdmListener.registerNotificationListener(netconfAccessor.getMountpoint());
         this.opnRdmFaultListenerRegistrationResult =
-                netconfAccessor.doRegisterNotificationListener(opnRdmFaultListener);
+                opnRdmFaultListener.registerNotificationListener(netconfAccessor.getMountpoint());
         this.opnRdmDeviceListenerRegistrationResult =
-                netconfAccessor.doRegisterNotificationListener(opnRdmDeviceListener);
+                opnRdmDeviceListener.registerNotificationListener(netconfAccessor.getMountpoint());
         // Register netconf stream
         netconfAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
     }
