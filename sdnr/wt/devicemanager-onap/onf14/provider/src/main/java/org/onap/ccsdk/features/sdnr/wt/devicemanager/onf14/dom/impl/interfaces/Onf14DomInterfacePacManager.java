@@ -54,30 +54,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
-* Notifications streams provided by device NTSSim ONF14
-* Stream{getName=StreamNameType{_value=nc-notifications}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=hybrid-mw-structure-2-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=vlan-interface-1-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=tdm-container-2-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=ethernet-container-2-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=ietf-yang-library}, isReplaySupport=false, augmentation=[]},
-* Stream{getDescription=Default NETCONF stream containing all the Event Notifications., getName=StreamNameType{_value=NETCONF}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=vlan-fd-1-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=wire-interface-2-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=mac-fd-1-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=co-channel-profile-1-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=mac-interface-1-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=ietf-keystore}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=pure-ethernet-structure-2-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=ietf-netconf-notifications}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=mac-fc-1-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=wred-profile-1-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=air-interface-2-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=ip-interface-1-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=qos-profile-1-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=vlan-fc-1-0}, isReplaySupport=true, augmentation=[]},
-* Stream{getName=StreamNameType{_value=l-3vpn-profile-1-0}, isReplaySupport=true, augmentation=[]}]
-*/
+ * Notifications streams provided by device NTSSim ONF14
+ * Stream{getName=StreamNameType{_value=nc-notifications}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=hybrid-mw-structure-2-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=vlan-interface-1-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=tdm-container-2-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=ethernet-container-2-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=ietf-yang-library}, isReplaySupport=false, augmentation=[]},
+ * Stream{getDescription=Default NETCONF stream containing all the Event Notifications., getName=StreamNameType{_value=NETCONF}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=vlan-fd-1-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=wire-interface-2-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=mac-fd-1-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=co-channel-profile-1-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=mac-interface-1-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=ietf-keystore}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=pure-ethernet-structure-2-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=ietf-netconf-notifications}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=mac-fc-1-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=wred-profile-1-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=air-interface-2-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=ip-interface-1-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=qos-profile-1-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=vlan-fc-1-0}, isReplaySupport=true, augmentation=[]},
+ * Stream{getName=StreamNameType{_value=l-3vpn-profile-1-0}, isReplaySupport=true, augmentation=[]}]
+ */
 
 public class Onf14DomInterfacePacManager {
 
@@ -212,11 +212,17 @@ public class Onf14DomInterfacePacManager {
 
                 // iterating all the Logical Termination Point list
                 for (MapEntryNode ltp : ltpList) {
+                    if (ltp == null) {
+                        continue;
+                    }
                     MapNode lpList =
                             (MapNode) ltp.childByArg(new NodeIdentifier(coreModel14.getQName("layer-protocol")));
+                    if (lpList == null) {
+                        continue;
+                    }
                     // the Layer Protocol list should contain only one item, since we have an 1:1
                     // relationship between the LTP and the LP
-                    if (lpList != null && lpList.size() != 1) {
+                    if (lpList.size() != 1) {
                         LOG.debug("Layer protocol has no 1:1 relationship with the LTP.");
                         return;
                     }

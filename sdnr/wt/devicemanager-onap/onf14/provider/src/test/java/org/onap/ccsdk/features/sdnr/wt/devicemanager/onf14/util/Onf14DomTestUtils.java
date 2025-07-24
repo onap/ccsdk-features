@@ -38,9 +38,7 @@ import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
-import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizationResult;
 import org.opendaylight.yangtools.yang.data.api.schema.stream.NormalizedNodeStreamWriter;
-
 import org.opendaylight.yangtools.yang.data.codec.gson.JSONCodecFactory;
 import org.opendaylight.yangtools.yang.data.codec.gson.JSONCodecFactorySupplier;
 import org.opendaylight.yangtools.yang.data.codec.gson.JsonParserStream;
@@ -48,15 +46,13 @@ import org.opendaylight.yangtools.yang.data.codec.xml.XmlParserStream;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNormalizedNodeStreamWriter;
 import org.opendaylight.yangtools.yang.data.impl.schema.NormalizationResultHolder;
 import org.opendaylight.yangtools.yang.model.api.EffectiveModelContext;
-
-//import org.opendaylight.yangtools.yang.model.util.SchemaInferenceStack.Inference; //Yangtool 8.0
 import org.opendaylight.yangtools.yang.model.util.SchemaInferenceStack.Inference;
 import org.xml.sax.SAXException;
 
 public class Onf14DomTestUtils {
 
     private static final QNameModule CORE_MODEL_1_4_MODULE =
-            QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
+            QNameModule.of(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
     private static final QName CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER =
             QName.create(CORE_MODEL_1_4_MODULE, "control-construct");
 
@@ -86,7 +82,7 @@ public class Onf14DomTestUtils {
 
     public static NormalizedNode getNormalizedNodeFromJson() throws IOException, URISyntaxException {
         schemaContext = TestYangParserUtil.parseYangResourceDirectory("/");
-        lhotkaCodecFactory = JSONCodecFactorySupplier.DRAFT_LHOTKA_NETMOD_YANG_JSON_02.getShared(schemaContext);
+        lhotkaCodecFactory = JSONCodecFactorySupplier.RFC7951.getShared(schemaContext);
         streamAsString =
                 loadTextFile(new File(Onf14DomTestUtils.class.getResource("/ControlConstruct-data-test.json").toURI()));
         final JsonReader reader = new JsonReader(new StringReader(streamAsString));

@@ -3,6 +3,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,9 +33,9 @@ public class TestOnf14DomNetworkElement {
 
     private static String NODEIDSTRING = "nSky";
     private static final QNameModule coreModelQNM =
-            QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
+            QNameModule.of(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
     private static final QNameModule alarmQNM =
-            QNameModule.create(XMLNamespace.of("urn:onf:yang:alarms-1-0"), Revision.of("2022-03-02"));
+            QNameModule.of(XMLNamespace.of("urn:onf:yang:alarms-1-0"), Revision.of("2022-03-02"));
     private static final YangInstanceIdentifier TOPLEVELEQUIPMENT_IID =
             YangInstanceIdentifier.builder().node(QName.create(coreModelQNM, "control-construct"))
                     .node(QName.create(coreModelQNM, "top-level-equipment")).build();

@@ -58,15 +58,16 @@ public class Onf14DMDOMUtility {
     private static final Pattern ALARM_RESOURCE_PATTERN =
             Pattern.compile(".*uuid=([0-9a-z]*-[0-9a-z]*-[0-9a-z]*-[0-9a-z]*-[0-9a-z]*).*", Pattern.MULTILINE);
 
-    private Onf14DMDOMUtility() {}
+    private Onf14DMDOMUtility() {
+    }
 
     private static String getLeafValueX(DataContainerNode componentEntry, QName leafQName) {
         NodeIdentifier leafNodeIdentifier = new NodeIdentifier(leafQName);
         LeafNode<?> optLeafNode = (LeafNode<?>) componentEntry.getChildByArg(leafNodeIdentifier);
         if (optLeafNode.body() instanceof QName) {
             LOG.debug("Leaf is of type QName"); // Ex:
-                                                // ImmutableLeafNode{identifier=(urn:onf:yang:air-interface-2-0?revision=2020-01-21)severity,
-                                                // body=(urn:onf:yang:air-interface-2-0?revision=2020-01-21)SEVERITY_TYPE_MAJOR}
+            // ImmutableLeafNode{identifier=(urn:onf:yang:air-interface-2-0?revision=2020-01-21)severity,
+            // body=(urn:onf:yang:air-interface-2-0?revision=2020-01-21)SEVERITY_TYPE_MAJOR}
             String severity_ = optLeafNode.body().toString();
             return severity_.substring(severity_.indexOf(')') + 1); // Any other solution??
         }
@@ -75,8 +76,9 @@ public class Onf14DMDOMUtility {
 
     /**
      * Return value as String
+     *
      * @param componentEntry Container node with data
-     * @param leafQName Leaf to be converted
+     * @param leafQName      Leaf to be converted
      * @return String or null
      */
     public static String getLeafValue(DataContainerNode componentEntry, QName leafQName) {
@@ -92,14 +94,15 @@ public class Onf14DMDOMUtility {
      * Return value as Integer
      *
      * @param componentEntry Container node with data
-     * @param leafQName Leaf to be converted
+     * @param leafQName      Leaf to be converted
      * @return Integer with value
      * @throws IllegalArgumentException, VerifyException
      */
     public static Integer getLeafValueInt(DataContainerNode componentEntry, QName leafQName) {
         String val = getLeafValueX(componentEntry, leafQName);
-        if (val == null || val.isEmpty())
+        if (val == null || val.isEmpty()) {
             throw new IllegalArgumentException("Value should not be null or empty");
+        }
         return Integer.parseInt(val);
     }
 
@@ -107,7 +110,7 @@ public class Onf14DMDOMUtility {
      * Return value as DateAndTime
      *
      * @param componentEntry Container node with data
-     * @param leafQName Leaf to be converted
+     * @param leafQName      Leaf to be converted
      * @return DateAndTime value
      * @throws IllegalArgumentException, VerifyException
      */
@@ -117,8 +120,9 @@ public class Onf14DMDOMUtility {
 
     /**
      * return string with Uuid
+     *
      * @param componentEntry Container node with data
-     * @param resource Leaf to be converted
+     * @param resource       Leaf to be converted
      * @return Uuid
      */
     public static @Nullable String getLeafValueUuid(DataContainerNode componentEntry, QName resource) {
@@ -127,13 +131,15 @@ public class Onf14DMDOMUtility {
 
     /**
      * return internal severity
+     *
      * @param componentEntry Container node with data
-     * @param resource Leaf to be converted
+     * @param resource       Leaf to be converted
      * @return Internal SeverityType
      */
-    public static @Nullable SeverityType getLeafValueInternalSeverity(DataContainerNode componentEntry, QName resource) {
+    public static @Nullable SeverityType getLeafValueInternalSeverity(DataContainerNode componentEntry,
+            QName resource) {
         return InternalDataModelSeverity
-        .mapSeverity(Onf14DMDOMUtility.getLeafValue(componentEntry, resource));
+                .mapSeverity(Onf14DMDOMUtility.getLeafValue(componentEntry, resource));
     }
 
 
@@ -154,12 +160,12 @@ public class Onf14DMDOMUtility {
     }
 
     public static String getUuidFromEquipment(MapEntryNode equipment, QName qName) {
-        LOG.debug("Equipment Identifier is {}", equipment.getIdentifier());
-        NodeIdentifierWithPredicates componentKey = equipment.getIdentifier(); // list key
+        LOG.debug("Equipment Identifier is {}", equipment.name());
+        NodeIdentifierWithPredicates componentKey = equipment.name(); // list key
+        final var value = componentKey.getValue(qName);
         LOG.debug("Key Name is - {}", componentKey.keySet());
-        LOG.debug("Key Value is - {}", componentKey.getValue(qName));
-
-        return componentKey.getValue(qName).toString();
+        LOG.debug("Key Value is - {}", value);
+        return value != null ? value.toString() : null;
     }
 
     public static Instant getNotificationInstant(DOMNotification notification) {

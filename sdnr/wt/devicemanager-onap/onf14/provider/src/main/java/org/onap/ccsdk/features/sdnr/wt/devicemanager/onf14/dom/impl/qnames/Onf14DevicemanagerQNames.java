@@ -34,7 +34,7 @@ public class Onf14DevicemanagerQNames {
     private static String TIMESTAMP = "timestamp";
     // Air-interface
     public static final QNameModule AIR_INTERFACE_2_0_MODULE =
-            QNameModule.create(XMLNamespace.of("urn:onf:yang:air-interface-2-0"), Revision.of("2020-01-21"));
+            QNameModule.of(XMLNamespace.of("urn:onf:yang:air-interface-2-0"), Revision.of("2020-01-21"));
     public static final QName AIR_INTERFACE_2_0_MODULE_NS =
             QName.create(XMLNamespace.of("urn:onf:yang:air-interface-2-0"), "air-interface-2-0");
     public static final QName AIR_INTERFACE_PAC = QName.create(AIR_INTERFACE_2_0_MODULE, "air-interface-pac");
@@ -174,7 +174,7 @@ public class Onf14DevicemanagerQNames {
 
     // Ethernet interface
     public static final QNameModule ETHERNET_CONTAINER_2_0_MODULE =
-            QNameModule.create(XMLNamespace.of("urn:onf:yang:ethernet-container-2-0"), Revision.of("2020-01-21"));
+            QNameModule.of(XMLNamespace.of("urn:onf:yang:ethernet-container-2-0"), Revision.of("2020-01-21"));
     public static final QName ETHERNET_CONTAINER_2_0_NS =
             QName.create(XMLNamespace.of("urn:onf:yang:ethernet-container-2-0"), "ethernet-container-2-0");
     public static final QName ETHERNET_CONTAINER_PAC =
@@ -240,7 +240,7 @@ public class Onf14DevicemanagerQNames {
 
     //Wire interface
     public static final QNameModule WIRE_INTERFACE_2_0_MODULE =
-            QNameModule.create(XMLNamespace.of("urn:onf:yang:wire-interface-2-0"), Revision.of("2020-01-23"));
+            QNameModule.of(XMLNamespace.of("urn:onf:yang:wire-interface-2-0"), Revision.of("2020-01-23"));
     public static final QName WIRE_INTERFACE_2_0_NS =
             QName.create(XMLNamespace.of("urn:onf:yang:wire-interface-2-0"), "wire-interface-2-0");
     public static final QName WIRE_INTERFACE_PAC = QName.create(WIRE_INTERFACE_2_0_MODULE, "wire-interface-pac");

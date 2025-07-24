@@ -46,7 +46,7 @@ public class Resources {
     // static methods
     private static URL getFileURL(Class<?> cls, String resFile) {
         Bundle b = FrameworkUtil.getBundle(cls);
-        URL u = null;
+        URL u;
         LOG.debug("try to get file {}", resFile);
         if (b == null) {
             LOG.info("Load resource as file: {}", resFile);
@@ -69,7 +69,7 @@ public class Resources {
         StringBuilder sb = new StringBuilder();
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
-            sb.append(inputLine + LR);
+            sb.append(inputLine).append(LR);
         }
         in.close();
         s.close();
@@ -90,7 +90,6 @@ public class Resources {
             LOG.warn("problem reading file: {}", e.getMessage());
         }
         return s;
-
     }
 
     public static URL getUrlForRessource(Class<?> cls, String fileOrDirectory) {

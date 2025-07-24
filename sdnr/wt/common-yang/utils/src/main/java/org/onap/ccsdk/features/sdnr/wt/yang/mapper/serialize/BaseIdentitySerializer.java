@@ -3,9 +3,8 @@ package org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.opendaylight.yangtools.yang.binding.BaseIdentity;
-
 import java.io.IOException;
+import org.opendaylight.yangtools.binding.BaseIdentity;
 
 public class BaseIdentitySerializer extends JsonSerializer<BaseIdentity> {
 

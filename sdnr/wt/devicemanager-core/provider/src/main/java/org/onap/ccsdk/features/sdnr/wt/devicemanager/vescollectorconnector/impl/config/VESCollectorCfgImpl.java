@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.vescollectorconnector.impl.config;
 
+import java.util.UUID;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
@@ -58,6 +59,9 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
     private static final String PROPERTY_KEY_REPORTING_ENTITY_NAME = "REPORTING_ENTITY_NAME";
     private static final String DEFAULT_VALUE_REPORTING_ENTITY_NAME = "${SDNR_VES_COLLECTOR_REPORTING_ENTITY_NAME}";
     private static final String DEFAULT_VALUE_REPORTING_ENTITY_NAME_NA = "ONAP SDN-R";
+    private static final String PROPERTY_KEY_REPORTING_ENTITY_ID = "REPORTING_ENTITY_ID";
+    private static final String DEFAULT_VALUE_REPORTING_ENTITY_ID = "${SDNR_VES_COLLECTOR_REPORTING_ENTITY_ID}";
+    private static final String DEFAULT_VALUE_REPORTING_ENTITY_ID_NA = UUID.randomUUID().toString();
 
     private static final String PROPERTY_KEY_EVENTLOG_DETAIL = "EVENTLOG_MSG_DETAIL";
     private static final String DEFAULT_VALUE_EVENTLOG_DETAIL = "${SDNR_VES_COLLECTOR_EVENTLOG_MSG_DETAIL}";
@@ -75,6 +79,12 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
     @Override
     public String getSectionName() {
         return SECTION_MARKER;
+    }
+
+    @Override
+    public String getReportingEntityId() {
+        String v = configuration.getProperty(SECTION_MARKER, PROPERTY_KEY_REPORTING_ENTITY_ID);
+        return (v == null || v.isBlank()) ? DEFAULT_VALUE_REPORTING_ENTITY_ID_NA : v;
     }
 
     @Override
@@ -143,6 +153,8 @@ public class VESCollectorCfgImpl implements VESCollectorCfgService, Configuratio
                 DEFAULT_VALUE_VES_COLLECTOR_VERSION);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_REPORTING_ENTITY_NAME,
                 DEFAULT_VALUE_REPORTING_ENTITY_NAME);
+        configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_REPORTING_ENTITY_ID,
+                DEFAULT_VALUE_REPORTING_ENTITY_ID);
         configuration.setPropertyIfNotAvailable(SECTION_MARKER, PROPERTY_KEY_EVENTLOG_DETAIL,
                 DEFAULT_VALUE_EVENTLOG_DETAIL);
     }

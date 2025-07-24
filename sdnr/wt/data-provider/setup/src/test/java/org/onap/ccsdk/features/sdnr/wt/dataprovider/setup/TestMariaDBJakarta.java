@@ -23,6 +23,8 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import ch.vorburger.exec.ManagedProcessException;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 import org.junit.AfterClass;
@@ -32,7 +34,6 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
-import ch.vorburger.exec.ManagedProcessException;
 
 public class TestMariaDBJakarta {
 

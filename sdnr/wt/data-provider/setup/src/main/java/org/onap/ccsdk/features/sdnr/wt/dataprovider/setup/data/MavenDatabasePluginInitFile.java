@@ -29,7 +29,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.ReleaseInformation;
 
 

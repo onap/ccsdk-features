@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.config.ORanDMConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
@@ -34,7 +33,6 @@ public class DeviceManagerORanImpl implements AutoCloseable {
 
     private NetconfNetworkElementService netconfNetworkElementService;
 
-    private HtDatabaseClient htDatabaseClient;
     private Boolean devicemanagerInitializationOk = false;
     private FactoryRegistration<ORanNetworkElementFactory> resORan;
     private ORanDMConfig oranSupervisionConfig;
@@ -69,7 +67,6 @@ public class DeviceManagerORanImpl implements AutoCloseable {
     @Override
     public void close() throws Exception {
         LOG.info("closing ...");
-        close(htDatabaseClient);
         close(resORan);
         LOG.info("closing done");
     }
@@ -77,7 +74,7 @@ public class DeviceManagerORanImpl implements AutoCloseable {
     /**
      * Used to close all Services, that should support AutoCloseable Pattern
      *
-     * @param toClose
+     * @param toCloseList
      * @throws Exception
      */
     private void close(AutoCloseable... toCloseList) {

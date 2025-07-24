@@ -19,7 +19,6 @@
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.Registration;
 
 public interface NetconfNodeStateService extends Registration {
@@ -31,7 +30,7 @@ public interface NetconfNodeStateService extends Registration {
      * @return managing object for listener
      */
     @NonNull
-    <L extends NetconfNodeConnectListener> ListenerRegistration<L> registerNetconfNodeConnectListener(
+    <L extends NetconfNodeConnectListener> Registration registerNetconfNodeConnectListener(
             @NonNull L netconfNodeConnectListener);
 
     /**
@@ -41,7 +40,7 @@ public interface NetconfNodeStateService extends Registration {
      * @return managing object for listener
      */
     @NonNull
-    <L extends NetconfNodeStateListener> ListenerRegistration<L> registerNetconfNodeStateListener(
+    <L extends NetconfNodeStateListener> Registration registerNetconfNodeStateListener(
             @NonNull L netconfNodeStateListener);
 
     /**
@@ -51,7 +50,7 @@ public interface NetconfNodeStateService extends Registration {
      * @return managing object for listener
      */
     @NonNull
-    <L extends VesNotificationListener> ListenerRegistration<L> registerVesNotifications(
+    <L extends VesNotificationListener> Registration registerVesNotifications(
             @NonNull L netconfNodeStateListener);
 
 }

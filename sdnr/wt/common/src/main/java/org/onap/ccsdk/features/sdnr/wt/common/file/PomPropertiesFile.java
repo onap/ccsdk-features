@@ -40,16 +40,11 @@ import java.util.Locale;
 public class PomPropertiesFile {
 
     private Date buildDate;
-    private String version;
     private String groupId;
     private String artifactId;
 
     public Date getBuildDate() {
         return this.buildDate;
-    }
-
-    public String getVersion() {
-        return this.version;
     }
 
     public String getGroupId() {
@@ -88,7 +83,7 @@ public class PomPropertiesFile {
 
                 }
             }
-            if (version != null && this.buildDate != null && this.groupId != null && this.artifactId != null) {
+            if (this.buildDate != null && this.groupId != null && this.artifactId != null) {
                 break;
             }
         }

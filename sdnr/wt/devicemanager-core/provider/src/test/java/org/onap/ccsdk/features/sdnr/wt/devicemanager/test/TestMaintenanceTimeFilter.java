@@ -22,6 +22,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import java.time.ZonedDateTime;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.maintenance.impl.MaintenanceCalculator;

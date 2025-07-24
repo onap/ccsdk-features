@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.builder.DateAndTimeBuilder;
-//import org.onap.ccsdk.features.sdnr.wt.dataprovider.data.builders.rev201110.read.network.element.connection.list.output.DataBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;

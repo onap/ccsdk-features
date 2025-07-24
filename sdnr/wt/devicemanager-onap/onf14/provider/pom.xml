@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>3.2.0-SNAPSHOT</version>
+        <version>3.2.0</version>
         <relativePath/>
     </parent>
 
@@ -52,7 +52,7 @@
         <buildtime>${maven.build.timestamp} UTC</buildtime>
         <databaseport>49400</databaseport>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -64,7 +64,7 @@
             <artifactId>sdnr-wt-devicemanager-core-model</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency>        
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-websocketmanager-model</artifactId>
@@ -84,49 +84,15 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-dom-codec-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-netconfnode-state-service-model</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-singleton-common-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
             <artifactId>rfc6991-ietf-yang-types</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal.model</groupId>
-            <artifactId>ietf-topology</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-common-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-dom-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.netconf.model</groupId>
-            <artifactId>rfc5277</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>yang-data-codec-binfmt</artifactId>
         </dependency>
         <!-- begin for testing -->
         <dependency>
@@ -135,11 +101,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>yang-model-util</artifactId>
-            <scope>test</scope>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-dom-api</artifactId>
         </dependency>
-         <dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>ietf-topology</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.netconf.model</groupId>
+            <artifactId>rfc5277</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
             <artifactId>yang-parser-api</artifactId>
             <scope>test</scope>
@@ -155,11 +128,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-binding-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>netconf-topology</artifactId>
             <scope>test</scope>
         </dependency>
-
         <!-- end for testing -->
     </dependencies>
 
@@ -170,7 +147,87 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <pluginManagement><plugins>
+	        <plugin>
+          <groupId>org.opendaylight.yangtools</groupId>
+          <artifactId>yang-maven-plugin</artifactId>
+          <version>7.0.9</version>
+          <executions>
+            <execution>
+              <id>binding</id>
+              <phase>none</phase>
+              <goals>
+                <goal>generate-sources</goal>
+              </goals>
+              <configuration>
+                <inspectDependencies>true</inspectDependencies>
+              </configuration>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>org.opendaylight.mdsal</groupId>
+              <artifactId>mdsal-binding-java-api-generator</artifactId>
+              <version>8.0.6</version>
+              <scope>compile</scope>
+            </dependency>
+          </dependencies>
+        </plugin>
+	      </plugins>
+	    </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/gen/**</exclude>
+                        <exclude>**/generated-sources/**</exclude>
+                        <exclude>**/yang-gen-sal/**</exclude>
+                        <exclude>**/pax/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+                  <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>enforce-maven</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>11</version>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[3.5.0,)</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-banned-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <message>Please always use mockito-core instead of mockito-all (see https://bugs.opendaylight.org/show_bug.cgi?id=7662), and spotbugs:annotations instead of findbugs:annotations</message>
+                  <excludes>
+                    <exclude>org.mockito:mockito-all</exclude>
+                    <exclude>com.google.code.findbugs:annotations</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+              <fail>false</fail>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
         </plugins>
     </build>
 </project>

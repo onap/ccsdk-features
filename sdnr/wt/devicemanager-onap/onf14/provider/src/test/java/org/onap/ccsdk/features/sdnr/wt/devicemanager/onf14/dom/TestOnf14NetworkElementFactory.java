@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom;
 
 import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -38,7 +39,7 @@ import org.opendaylight.yangtools.yang.common.XMLNamespace;
 
 public class TestOnf14NetworkElementFactory extends Mockito {
 
-    private static final QNameModule qnm = QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
+    private static final QNameModule qnm = QNameModule.of(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
     private static NetconfAccessor accessor;
     private static NetconfDomAccessor domAccessor;
     private static Capabilities capabilities;
@@ -63,10 +64,10 @@ public class TestOnf14NetworkElementFactory extends Mockito {
     public void testCreateOnf14Dom() throws Exception {
         when(accessor.getNetconfDomAccessor()).thenReturn(Optional.of(domAccessor));
         when(capabilities.isSupportingNamespaceAndRevision(
-                QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"))))
+                QNameModule.of(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"))))
                         .thenReturn(true);
         when(capabilities.isSupportingNamespaceAndRevision(
-                QNameModule.create(XMLNamespace.of("urn:onf:yang:alarms-1-0"), Revision.of("2022-03-02"))))
+                QNameModule.of(XMLNamespace.of("urn:onf:yang:alarms-1-0"), Revision.of("2022-03-02"))))
                         .thenReturn(true);
         Onf14DomNetworkElementFactory factory = new Onf14DomNetworkElementFactory();
         factory.init(serviceProvider);
@@ -77,7 +78,7 @@ public class TestOnf14NetworkElementFactory extends Mockito {
     public void testCreateNone() throws Exception {
         when(accessor.getNetconfDomAccessor()).thenReturn(Optional.of(domAccessor));
         when(capabilities.isSupportingNamespaceAndRevision(
-                QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"))))
+                QNameModule.of(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"))))
                         .thenReturn(false);
         Onf14DomNetworkElementFactory factory = new Onf14DomNetworkElementFactory();
         assertTrue(factory.create(accessor, serviceProvider).isEmpty());

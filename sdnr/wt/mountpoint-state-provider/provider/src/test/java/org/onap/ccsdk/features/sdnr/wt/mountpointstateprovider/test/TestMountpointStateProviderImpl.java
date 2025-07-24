@@ -26,7 +26,7 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import java.io.IOException;
+
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
@@ -41,7 +41,7 @@ public class TestMountpointStateProviderImpl {
 
 
     @Test
-    public void test() throws InterruptedException, IOException {
+    public void test() {
         NetconfNodeStateService netconfNodeStateService = mock(NetconfNodeStateService.class);
         DeviceManagerServiceProvider serviceProvider = mock(DeviceManagerServiceProvider.class);
         VESCollectorService vesCollectorService = mock(VESCollectorService.class);
@@ -57,6 +57,13 @@ public class TestMountpointStateProviderImpl {
         mountpointStateProvider.setNetconfNetworkElementService(netconfNetworkElementService);
         mountpointStateProvider.setNetconfNodeStateService(netconfNodeStateService);
         mountpointStateProvider.init();
+      /*  final var NODEID1 = new NodeId("node1");
+        final var netconfNode = new NetconfNodeBuilder()
+                .setHost(new Host(new IpAddress(new Ipv4Address("1.1.1.1"))))
+                .setConnectionStatus(ConnectionStatus.Connected)
+                .build();
+        mountpointStateProvider.onStateChange(NODEID1, netconfNode);
+        verify(vesCollectorService.publishVESMessage(any()));*/
     }
 
 }

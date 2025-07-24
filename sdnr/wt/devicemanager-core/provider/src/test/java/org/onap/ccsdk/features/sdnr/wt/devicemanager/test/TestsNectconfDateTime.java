@@ -23,7 +23,6 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;

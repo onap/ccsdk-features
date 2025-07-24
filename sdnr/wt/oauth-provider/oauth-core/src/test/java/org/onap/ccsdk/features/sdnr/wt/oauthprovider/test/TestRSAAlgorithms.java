@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.oauthprovider.test;
 
 import static org.junit.Assert.fail;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;

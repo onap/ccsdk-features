@@ -33,11 +33,11 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServic
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeConnectListener;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.ConnectionOper.ConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.ConnectionOper.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class DeviceManagerNetconfConnectHandler extends DeviceManagerNetconfNotC
     @GuardedBy("networkelementLock")
     private final ConcurrentHashMap<String, NetworkElement> connectedNetworkElementRepresentations;
 
-    private final @NonNull ListenerRegistration<DeviceManagerNetconfConnectHandler> registerNetconfNodeConnectListener;
+    private final @NonNull Registration registerNetconfNodeConnectListener;
 
     public DeviceManagerNetconfConnectHandler(@NonNull NetconfNodeStateService netconfNodeStateService,
             @NonNull ClusterSingletonServiceProvider clusterSingletonServiceProvider,

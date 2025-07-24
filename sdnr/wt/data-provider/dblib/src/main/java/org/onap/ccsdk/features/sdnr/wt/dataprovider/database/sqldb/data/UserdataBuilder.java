@@ -26,9 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.processing.Generated;
-import org.opendaylight.yangtools.yang.binding.AbstractAugmentable;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.Augmentation;
+import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.lib.AbstractAugmentable;
 
 /**
  * Class that builds {@link UserdataBuilder} instances. Overall design of the class is that of a
