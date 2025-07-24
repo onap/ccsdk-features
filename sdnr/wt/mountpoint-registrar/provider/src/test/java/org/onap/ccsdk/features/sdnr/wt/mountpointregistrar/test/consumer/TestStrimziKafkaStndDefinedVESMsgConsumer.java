@@ -201,15 +201,22 @@ public class TestStrimziKafkaStndDefinedVESMsgConsumer {
 
     @Test
     public void testNotifyNewAlarm() throws IOException {
-        StrimziKafkaStndDefinedFaultVESMsgConsumer stndDefinedFaultMsgConsumer = new StrimziKafkaStndDefinedFaultVESMsgConsumer(cfgTest.getCfg());
+        StrimziKafkaStndDefinedFaultVESMsgConsumer stndDefinedFaultMsgConsumer =
+                new StrimziKafkaStndDefinedFaultVESMsgConsumer(cfgTest.getCfg(), null);
         try {
 
-            stndDefinedFaultMsgConsumer.processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "CRITICAL"));
-            stndDefinedFaultMsgConsumer.processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "Major"));
-            stndDefinedFaultMsgConsumer.processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "minor"));
-            stndDefinedFaultMsgConsumer.processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "NonAlarmed"));
-            stndDefinedFaultMsgConsumer.processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "warning"));
-            stndDefinedFaultMsgConsumer.processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "Unknown"));
+            stndDefinedFaultMsgConsumer
+                    .processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "CRITICAL"));
+            stndDefinedFaultMsgConsumer
+                    .processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "Major"));
+            stndDefinedFaultMsgConsumer
+                    .processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "minor"));
+            stndDefinedFaultMsgConsumer
+                    .processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "NonAlarmed"));
+            stndDefinedFaultMsgConsumer
+                    .processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "warning"));
+            stndDefinedFaultMsgConsumer
+                    .processMsg(stndDefinedVESMsg_NotifyNewAlarm.replace("@eventSeverity@", "Unknown"));
             //stndDefinedFaultMsgConsumer.processMsg(faultVESMsg_Incomplete);
         } catch (Exception e) {
             e.printStackTrace();
@@ -219,11 +226,14 @@ public class TestStrimziKafkaStndDefinedVESMsgConsumer {
 
     @Test
     public void testNotifyClearedAlarm() throws IOException {
-        StrimziKafkaStndDefinedFaultVESMsgConsumer stndDefinedFaultMsgConsumer = new StrimziKafkaStndDefinedFaultVESMsgConsumer(cfgTest.getCfg());
+        StrimziKafkaStndDefinedFaultVESMsgConsumer stndDefinedFaultMsgConsumer =
+                new StrimziKafkaStndDefinedFaultVESMsgConsumer(cfgTest.getCfg(), null);
         try {
 
-            stndDefinedFaultMsgConsumer.processMsg(stndDefinedVESMsg_NotifyClearedAlarm.replace("@eventSeverity@", "cleared"));
-            stndDefinedFaultMsgConsumer.processMsg(stndDefinedVESMsg_NotifyClearedAlarm.replace("@eventSeverity@", "Indeterminate"));
+            stndDefinedFaultMsgConsumer
+                    .processMsg(stndDefinedVESMsg_NotifyClearedAlarm.replace("@eventSeverity@", "cleared"));
+            stndDefinedFaultMsgConsumer
+                    .processMsg(stndDefinedVESMsg_NotifyClearedAlarm.replace("@eventSeverity@", "Indeterminate"));
             //stndDefinedFaultMsgConsumer.processMsg(faultVESMsg_Incomplete);
         } catch (Exception e) {
             e.printStackTrace();
@@ -233,7 +243,8 @@ public class TestStrimziKafkaStndDefinedVESMsgConsumer {
 
     @Test(expected = InvalidMessageException.class)
     public void testInvalidStndDefinedMessage() throws InvalidMessageException, JsonProcessingException {
-        StrimziKafkaStndDefinedFaultVESMsgConsumer stndDefinedFaultMsgConsumer = new StrimziKafkaStndDefinedFaultVESMsgConsumer(cfgTest.getCfg());
+        StrimziKafkaStndDefinedFaultVESMsgConsumer stndDefinedFaultMsgConsumer =
+                new StrimziKafkaStndDefinedFaultVESMsgConsumer(cfgTest.getCfg(), null);
         stndDefinedFaultMsgConsumer.processMsg(stndDefinedVESMsg_Invalid.replace("@eventSeverity@", "cleared"));
     }
 }

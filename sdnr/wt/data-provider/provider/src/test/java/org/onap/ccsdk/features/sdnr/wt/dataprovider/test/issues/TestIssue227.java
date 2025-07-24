@@ -21,6 +21,8 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test.issues;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -34,8 +36,8 @@ public class TestIssue227 extends Mockito {
     static String inputJsonString = "{\"value1\":\"forty-two\", \"value2\":\"forty-three\"}";
     static String inputJsonNumber = "{\"value1\":42, \"value2\":43}";
 
-    @Test
-    public void testWithException() {
+    @Test(expected = IOException.class)
+    public void testWithException() throws IOException {
         String inputJson = inputJsonNumber;
         System.out.println("Input " + inputJson);
 
@@ -43,6 +45,7 @@ public class TestIssue227 extends Mockito {
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
         doMapping(mapper, inputJson);
+        fail("should have thrown an exception");
     }
 
     @Test
@@ -54,19 +57,20 @@ public class TestIssue227 extends Mockito {
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.addMixIn(TestBuilder.class, IgnoreFooSetValueIntMixIn.class);
 
-        doMapping(mapper, inputJson);
+        try {
+            doMapping(mapper, inputJson);
+        } catch (IOException e) {
+            fail(e);
+        }
     }
 
 
-    private void doMapping(ObjectMapper mapper, String json) {
+    private void doMapping(ObjectMapper mapper, String json) throws IOException {
         TestBuilder foo;
-        try {
             foo = mapper.readValue(json.getBytes(), TestBuilder.class);
             System.out.println("Foo " + foo);
             System.out.println(mapper.writeValueAsString(foo));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
     static class TestBuilder {

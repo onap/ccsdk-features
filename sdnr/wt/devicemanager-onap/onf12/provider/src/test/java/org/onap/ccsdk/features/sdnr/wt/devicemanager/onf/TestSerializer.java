@@ -22,6 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf;
 
 import static org.junit.Assert.fail;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;

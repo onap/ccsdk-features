@@ -26,7 +26,9 @@ import java.util.Collection;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Assert;
+
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -41,21 +43,23 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom.N
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.example.TestNetconfHelper;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPoint;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.mdsal.dom.api.DOMMountPoint;
 import org.opendaylight.mdsal.dom.api.DOMNotificationListener;
 import org.opendaylight.mdsal.dom.api.DOMNotificationService;
 import org.opendaylight.mdsal.dom.api.DOMRpcService;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscription;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionInput;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.NotificationsService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.StreamNameType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.StreamBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.NetconfNodeAugment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.stmt.SchemaNodeIdentifier.Absolute;
 
@@ -69,7 +73,7 @@ public class TestNetconfAccessorImpl extends Mockito {
         String capabilityStringForNetworkElement = "network-element";
         NodeId nodeId = new NodeId(nodeIdString);
         NetconfNode testNode = TestNetconfHelper.getTestNode(nodeId, capabilityStringForNetworkElement)
-                .augmentation(NetconfNode.class);
+                .augmentation(NetconfNodeAugment.class).getNetconfNode();
 
         NetconfNodeStateServiceImpl netconfNodeStateService = mock(NetconfNodeStateServiceImpl.class);
         NetconfAccessorImpl netconfAccessor = new NetconfAccessorImpl(nodeId, testNode, netconfCommunicatorManager,
@@ -88,14 +92,14 @@ public class TestNetconfAccessorImpl extends Mockito {
 
         DataBroker dataBroker = mock(DataBroker.class);
 
-        NotificationsService notificationService = mock(NotificationsService.class);
-
-        RpcConsumerRegistry rpcComerRegistry = mock(RpcConsumerRegistry.class);
-        when(rpcComerRegistry.getRpcService(NotificationsService.class)).thenReturn(notificationService);
+        NotificationService notificationService = mock(NotificationService.class);
 
         MountPoint mountPoint = mock(MountPoint.class);
-        when(mountPoint.getService(RpcConsumerRegistry.class)).thenReturn(Optional.of(rpcComerRegistry));
-
+        RpcService rpcService = mock(RpcService.class);
+        when(mountPoint.getService(NotificationService.class)).thenReturn(Optional.of(notificationService));
+        when(mountPoint.getService(RpcService.class)).thenReturn(Optional.of(rpcService));
+        CreateSubscription createSubscriptionRpc = mock(CreateSubscription.class);
+        when(rpcService.getRpc(CreateSubscription.class)).thenReturn(createSubscriptionRpc);
         //Start here
         NetconfBindingAccessorImpl test =
                 new NetconfBindingAccessorImpl(netconfAccessor, dataBroker, mountPoint);
@@ -105,7 +109,7 @@ public class TestNetconfAccessorImpl extends Mockito {
 
         //Capture parameters and assert them
         ArgumentCaptor<CreateSubscriptionInput> captor = ArgumentCaptor.forClass(CreateSubscriptionInput.class);
-        verify(notificationService).createSubscription(captor.capture());
+        verify(createSubscriptionRpc).invoke(captor.capture());
 
         assertEquals("StreamName", streamName, captor.getValue().getStream().getValue());
     }
@@ -116,15 +120,13 @@ public class TestNetconfAccessorImpl extends Mockito {
         NetconfAccessorImpl netconfAccessor = TestNetconfHelper.getNetconfAcessorImpl();
 
         DataBroker dataBroker = mock(DataBroker.class);
-
-        NotificationsService notificationService = mock(NotificationsService.class);
-
-        RpcConsumerRegistry rpcComerRegistry = mock(RpcConsumerRegistry.class);
-        when(rpcComerRegistry.getRpcService(NotificationsService.class)).thenReturn(notificationService);
-
+        NotificationService notificationService = mock(NotificationService.class);
         MountPoint mountPoint = mock(MountPoint.class);
-        when(mountPoint.getService(RpcConsumerRegistry.class)).thenReturn(Optional.of(rpcComerRegistry));
-
+        RpcService rpcService = mock(RpcService.class);
+        when(mountPoint.getService(NotificationService.class)).thenReturn(Optional.of(notificationService));
+        when(mountPoint.getService(RpcService.class)).thenReturn(Optional.of(rpcService));
+        CreateSubscription createSubscriptionRpc = mock(CreateSubscription.class);
+        when(rpcService.getRpc(CreateSubscription.class)).thenReturn(createSubscriptionRpc);
 
         //Start here
         NetconfBindingAccessorImpl test =
@@ -137,7 +139,7 @@ public class TestNetconfAccessorImpl extends Mockito {
 
         //Capture parameters and assert them
         ArgumentCaptor<CreateSubscriptionInput> captor = ArgumentCaptor.forClass(CreateSubscriptionInput.class);
-        verify(notificationService).createSubscription(captor.capture());
+        verify(createSubscriptionRpc).invoke(captor.capture());
 
         assertEquals("StreamName", streamName, captor.getValue().getStream().getValue());
 
@@ -155,15 +157,12 @@ public class TestNetconfAccessorImpl extends Mockito {
 
         when(domNotificationService.registerNotificationListener(any(DOMNotificationListener.class),
                 ArgumentMatchers.<Collection<Absolute>>any()))
-                        .thenReturn(new ListenerRegistration<DOMNotificationListener>() {
-                            @Override
-                            public @NonNull DOMNotificationListener getInstance() {
-                                return null;
-                            }
+                .thenReturn(new Registration() {
+                    @Override
+                    public void close() {
 
-                            @Override
-                            public void close() {}
-                        });
+                    }
+                });
 
         YangInstanceIdentifier mountpointPath = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).build();
         when(domMountPoint.getIdentifier()).thenReturn(mountpointPath);
@@ -180,8 +179,7 @@ public class TestNetconfAccessorImpl extends Mockito {
 
         Collection<Absolute> types = Arrays.asList(Absolute.of(NetworkTopology.QNAME));
         DOMNotificationListener listener = (notification) -> System.out.println("Notification: " + notification);
-        ListenerRegistration<DOMNotificationListener> res =
-                netconfDomAccessor.doRegisterNotificationListener(listener, types);
+        Registration res = netconfDomAccessor.doRegisterNotificationListener(listener, types);
 
         //Capture parameters and assert them
         ArgumentCaptor<DOMNotificationListener> captor1 = ArgumentCaptor.forClass(DOMNotificationListener.class);

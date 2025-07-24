@@ -21,6 +21,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about;
 
+import com.google.common.net.HttpHeaders;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
@@ -34,7 +35,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.http.HttpHeaders;
 import org.onap.ccsdk.features.sdnr.wt.common.Resources;
 import org.onap.ccsdk.features.sdnr.wt.common.file.PomFile;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;

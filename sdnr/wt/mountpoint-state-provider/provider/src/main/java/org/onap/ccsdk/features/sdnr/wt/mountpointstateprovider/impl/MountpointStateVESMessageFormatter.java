@@ -24,7 +24,6 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.Instant;
 import org.eclipse.jdt.annotation.NonNull;
-import org.json.JSONObject;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.VESCommonEventHeaderPOJO;
@@ -34,14 +33,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MountpointStateVESMessageFormatter {
+
     private static final Logger LOG = LoggerFactory.getLogger(MountpointStateVESMessageFormatter.class);
 
     private final @NonNull VESCollectorCfgService vesCfg;
     private final @NonNull VESCollectorService vesCollectorService;
     static long sequenceNo = 0;
 
-    public MountpointStateVESMessageFormatter(VESCollectorCfgService vesCfg, VESCollectorService vesCollectorService) {
-        this.vesCfg = vesCfg;
+    public MountpointStateVESMessageFormatter(VESCollectorService vesCollectorService) {
+        this.vesCfg = vesCollectorService.getConfig();
         this.vesCollectorService = vesCollectorService;
     }
 
@@ -53,15 +53,16 @@ public class MountpointStateVESMessageFormatter {
         return sequenceNo;
     }
 
-    public VESMessage createVESMessage(JSONObject obj) {
+    public VESMessage createVESMessage(String nodeId, String connectionStatus,
+            Instant timestamp) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("JSON Object to format to VES is - {}", obj);
+            LOG.debug("format to VES from {}, {}, {}", nodeId, connectionStatus, timestamp);
         }
 
         MountpointStateVESMessageFormatter.incrSequenceNo();
 
-        VESCommonEventHeaderPOJO vesCommonEventHeader = createVESCommonEventHeader(obj);
-        VESNotificationFieldsPOJO vesNotificationFields = createVESNotificationFields(obj);
+        VESCommonEventHeaderPOJO vesCommonEventHeader = createVESCommonEventHeader(nodeId, connectionStatus, timestamp);
+        VESNotificationFieldsPOJO vesNotificationFields = createVESNotificationFields(nodeId, connectionStatus);
 
         VESMessage vesMsg = null;
         try {
@@ -75,32 +76,30 @@ public class MountpointStateVESMessageFormatter {
 
     }
 
-    private VESNotificationFieldsPOJO createVESNotificationFields(JSONObject obj) {
+    private VESNotificationFieldsPOJO createVESNotificationFields(String nodeId, String connectionStatus) {
         VESNotificationFieldsPOJO vesNotificationFields = new VESNotificationFieldsPOJO();
 
-        vesNotificationFields.setChangeIdentifier(obj.getString(Constants.NODEID));
+        vesNotificationFields.setChangeIdentifier(nodeId);
         vesNotificationFields.setChangeType(Constants.VES_CHANGETYPE);
-        vesNotificationFields.setNewState(obj.getString(Constants.NETCONFNODESTATE));
+        vesNotificationFields.setNewState(connectionStatus);
 
         return vesNotificationFields;
     }
 
-    private VESCommonEventHeaderPOJO createVESCommonEventHeader(JSONObject obj) {
+    private VESCommonEventHeaderPOJO createVESCommonEventHeader(String nodeId, String connectionStatus,
+            Instant timestamp) {
         VESCommonEventHeaderPOJO vesCommonEventHeader = new VESCommonEventHeaderPOJO();
 
         vesCommonEventHeader.setDomain(Constants.VES_DOMAIN);
-        vesCommonEventHeader
-                .setEventId(obj.getString(Constants.NODEID) + "_" + obj.getString(Constants.NETCONFNODESTATE) + "_" + getSequenceNo());
-        vesCommonEventHeader
-                .setEventName(obj.getString(Constants.NODEID) + "_" + obj.getString(Constants.NETCONFNODESTATE) + "_" + getSequenceNo());
-        vesCommonEventHeader.setSourceName(obj.getString(Constants.NODEID));
+        vesCommonEventHeader.setEventId(nodeId + "_" + connectionStatus + "_" + getSequenceNo());
+        vesCommonEventHeader.setEventName(nodeId + "_" + connectionStatus + "_" + getSequenceNo());
+        vesCommonEventHeader.setSourceName(nodeId);
         vesCommonEventHeader.setPriority(Constants.VES_PRIORITY);
+        vesCommonEventHeader.setReportingEntityId(this.vesCfg.getReportingEntityId());
         vesCommonEventHeader.setReportingEntityName(this.vesCfg.getReportingEntityName());
         vesCommonEventHeader.setSequence(getSequenceNo());
-
-        Instant time = (Instant) obj.get(Constants.TIMESTAMP);
-        vesCommonEventHeader.setLastEpochMicrosec(time.toEpochMilli() * 100);
-        vesCommonEventHeader.setStartEpochMicrosec(time.toEpochMilli() * 100);
+        vesCommonEventHeader.setLastEpochMicrosec(timestamp.toEpochMilli() * 1000);
+        vesCommonEventHeader.setStartEpochMicrosec(timestamp.toEpochMilli() * 1000);
 
         return vesCommonEventHeader;
     }

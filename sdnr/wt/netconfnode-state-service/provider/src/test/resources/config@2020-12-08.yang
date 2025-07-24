@@ -1,0 +1,29 @@
+module config {
+    yang-version 1.1;
+    namespace urn:ietf:params:xml:ns:yang:config;
+    prefix config;
+
+    revision 2020-12-08 {
+        description "Initial revision";
+    }
+
+    container configuration {
+        list entry {
+            key "setting";
+
+            leaf setting {
+                type string;
+            }
+            leaf value {
+                type uint8;
+            }
+        }
+
+        leaf config1 {
+            type string;
+        }
+        leaf config2 {
+            type boolean;
+        }
+    }
+}

@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,10 +35,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Threadpool for running n instances per key T
  *
- * @author jack
- *
  * @param <T> type of key for the pools
  * @param <S> type of arg to create a runner
+ * @author jack
  */
 public class KeyBasedThreadpool<T, S> implements GenericRunnableFactoryCallback<T> {
 
@@ -51,17 +49,16 @@ public class KeyBasedThreadpool<T, S> implements GenericRunnableFactoryCallback<
     private final ExecutorService executor;
 
     /**
-     *
-     * @param poolSize overall maximum amount of threads
+     * @param poolSize    overall maximum amount of threads
      * @param keyPoolSize amount of threads per key
-     * @param runner runnable to start
+     * @param factory     factory for creating runnables to start
      */
     public KeyBasedThreadpool(int poolSize, int keyPoolSize, GenericRunnableFactory<T, S> factory) {
         this.queue = new ConcurrentLinkedQueue<>();
         this.keyPoolSize = keyPoolSize;
         this.factory = factory;
         this.executor = Executors.newFixedThreadPool(poolSize);
-        this.runningKeys = Collections.synchronizedList(new ArrayList<T>());
+        this.runningKeys = Collections.synchronizedList(new ArrayList<>());
         LOG.info("starting key-based threadpool with keysize={} and size={}", keyPoolSize, poolSize);
     }
 
@@ -69,13 +66,11 @@ public class KeyBasedThreadpool<T, S> implements GenericRunnableFactoryCallback<
         if (this.isKeyPoolSizeReached(key)) {
             LOG.debug("pool size for key {} reached. add to queue", key);
             queue.add(new SimpleEntry<>(key, arg));
-
         } else {
             LOG.debug("starting executor for key {}.", key);
             this.runningKeys.add(key);
-            this.executor.execute(new RunnableWrapper<T>(this.factory.create(key, arg), key, this));
+            this.executor.execute(new RunnableWrapper<>(this.factory.create(key, arg), key, this));
         }
-
     }
 
     private void executeNext() {
@@ -85,7 +80,7 @@ public class KeyBasedThreadpool<T, S> implements GenericRunnableFactoryCallback<
             if (!this.isKeyPoolSizeReached(entry.getKey())) {
                 this.queue.poll();
                 this.runningKeys.add(entry.getKey());
-                this.executor.execute(new RunnableWrapper<T>(this.factory.create(entry.getKey(), entry.getValue()),
+                this.executor.execute(new RunnableWrapper<>(this.factory.create(entry.getKey(), entry.getValue()),
                         entry.getKey(), this));
             } else {
                 LOG.debug("key pool size reached. waiting for someone else to stop");
@@ -112,13 +107,35 @@ public class KeyBasedThreadpool<T, S> implements GenericRunnableFactoryCallback<
 
     public synchronized void join() {
         LOG.debug("wait for all executors to finish");
-        while (this.runningKeys.size() > 0 && this.queue.size() > 0) {
+        while (!this.isEmpty()) {
             try {
-                Thread.sleep(1000);
+                wait(1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    public synchronized void join(final int millis) {
+        int waitBeforeKill = millis;
+        while (!this.runningKeys.isEmpty() && !this.queue.isEmpty()) {
+            try {
+                wait(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            waitBeforeKill -= 1000;
+            if (waitBeforeKill <= 0) {
+                LOG.debug("join after {} milliseconds still not finished. killing", millis);
+                this.queue.clear();
+                this.runningKeys.clear();
+
+            }
+        }
+    }
+
+    public boolean isEmpty() {
+        return this.queue.isEmpty() && this.runningKeys.isEmpty();
     }
 
     private static class RunnableWrapper<T> implements Runnable {
@@ -138,6 +155,5 @@ public class KeyBasedThreadpool<T, S> implements GenericRunnableFactoryCallback<
             this.inner.run();
             this.callback.onFinish(this.key);
         }
-
     }
 }

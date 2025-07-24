@@ -328,7 +328,7 @@ public abstract class ONFCoreNetworkElement12Base extends ONFCoreNetworkElementB
     @Override
     public boolean checkIfConnectionToMediatorIsOk() {
         synchronized (dmLock) {
-            return optionalNe != null;
+            return optionalNe.isPresent();
         }
     }
 

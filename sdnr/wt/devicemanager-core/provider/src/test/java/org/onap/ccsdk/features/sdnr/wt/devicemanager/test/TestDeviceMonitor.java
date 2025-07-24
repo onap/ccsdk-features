@@ -21,7 +21,6 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
 import java.io.File;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

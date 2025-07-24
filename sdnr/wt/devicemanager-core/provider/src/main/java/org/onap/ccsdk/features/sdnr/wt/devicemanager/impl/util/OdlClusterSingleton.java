@@ -20,10 +20,10 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,12 +31,12 @@ public class OdlClusterSingleton implements ClusterSingletonService, AutoCloseab
 
     private static final Logger LOG = LoggerFactory.getLogger(OdlClusterSingleton.class);
     private final @NonNull ServiceGroupIdentifier ident;
-    private final ClusterSingletonServiceRegistration cssRegistration;
+    private final Registration cssRegistration;
     private volatile boolean master;
 
     @SuppressWarnings("null")
     public OdlClusterSingleton(ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
-        this.ident = ServiceGroupIdentifier.create("ODLEventListenerHandler");
+        this.ident = new ServiceGroupIdentifier("ODLEventListenerHandler");
         this.cssRegistration = clusterSingletonServiceProvider.registerClusterSingletonService(this);
         this.master = false;
     }

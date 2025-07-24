@@ -18,15 +18,16 @@
 
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.pm;
 
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DMDOMUtility;
+import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.qnames.Onf14DevicemanagerQNames;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DMDOMUtility;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.pmdata.entity.PerformanceDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
-import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,7 @@ public class PerformanceDataAirInterface extends PmdataEntityBuilder {
     private static final Logger log = LoggerFactory.getLogger(PerformanceDataAirInterface.class);
 
     public PerformanceDataAirInterface(NodeId nodeId, String ltpUuid, String localId,
-            MapEntryNode airInterfaceHistPerfEntry) {
+            @NonNull DataContainerNode airInterfaceHistPerfEntry) {
         log.debug("Performance Data of Air Interface = {}", airInterfaceHistPerfEntry);
         String leafVal;
 

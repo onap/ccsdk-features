@@ -23,10 +23,11 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.util.ONFLayerProtocolNa
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.FaultData;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.PerformanceDataLtp;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.util.InconsistentPMDataException;
+import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.UniversalId;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.logical.termination.point.g.Lp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.QName;
 
 public interface OnfMicrowaveModel {
@@ -35,8 +36,6 @@ public interface OnfMicrowaveModel {
             FaultData resultList);
 
     public Class<?> getClassForLtpExtension(QName qName);
-
-    public <T extends NotificationListener> T getNotificationListener();
 
     // -- Frankfurt below
 
@@ -55,4 +54,5 @@ public interface OnfMicrowaveModel {
     void setNotificationQueue(NotificationWorker<EventlogEntity> notificationQueue);
 
 
+    Registration registerListeners(NotificationService notificationService);
 }

@@ -32,9 +32,6 @@ public interface IEntityDataProvider {
     /** Set some static status information after startup */
     public void setStatus(StatusKey key, String value);
 
-    /** Database configuration information **/
-    public IEsConfig getEsConfig();
-
     /** Provide NetconfTimeStamp handler **/
     public NetconfTimeStamp getConverter();
 }

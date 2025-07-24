@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>3.2.0-SNAPSHOT</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
@@ -46,11 +46,11 @@
         </license>
     </licenses>
 
-<!--    <properties>
+    <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <buildtime>${maven.build.timestamp} UTC</buildtime>
-    </properties>-->
+    </properties>
 
     <dependencies>
         <dependency>
@@ -61,22 +61,7 @@
         <!-- md-sal -->
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-dom-codec-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>mdsal-binding-dom-adapter</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-generator</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-runtime-spi</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -84,11 +69,6 @@
             <artifactId>mdsal-dom-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-singleton-common-api</artifactId>
-            <scope>provided</scope>
-        </dependency>        
         <dependency>
               <groupId>com.google.code.findbugs</groupId>
               <artifactId>annotations</artifactId>
@@ -100,11 +80,6 @@
             <artifactId>netconf-dom-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!--<dependency>
-            <groupId>org.opendaylight.netconf</groupId>
-            <artifactId>sal-netconf-connector</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <!-- akka -->
         <dependency>
             <groupId>com.typesafe</groupId>
@@ -135,14 +110,14 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.netconf</groupId>
-            <artifactId>netconf-topology</artifactId>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>ietf-topology</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-dom-codec</artifactId>
-            <scope>test</scope>
+            <groupId>org.opendaylight.netconf</groupId>
+            <artifactId>netconf-topology</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

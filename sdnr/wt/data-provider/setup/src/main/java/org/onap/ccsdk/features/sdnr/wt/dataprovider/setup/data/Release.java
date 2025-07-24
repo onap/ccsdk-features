@@ -21,22 +21,20 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data;
 
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntry;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.DatabaseVersion;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
-
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlView;
 
 public enum Release {
 
     EL_ALTO("el alto", "_v1", new DatabaseVersion(2, 2, 0), new DatabaseVersion(2, 2, 0)),
     FRANKFURT_R1("frankfurt-R1", "-v2", new DatabaseVersion(6, 4, 3), new DatabaseVersion(6, 8, 6)),
     FRANKFURT_R2("frankfurt-R2", "-v3", new DatabaseVersion(7, 0, 1), new DatabaseVersion(7, 6, 1)),
-    GUILIN_R1("guilin-R1", "-v4", new DatabaseVersion(7,1,1), new DatabaseVersion(7,6,1)),
-	HONOLULU_R1("honolulu-R1", "-v5", new DatabaseVersion(7,1,1), new DatabaseVersion(8,0,0), false),
-	ISTANBUL_R1("istanbul-R1", "-v6", new DatabaseVersion(7,1,1), new DatabaseVersion(8,0,0), false,
-            new DatabaseVersion(10,2,7), new DatabaseVersion(10,6,0), false),
-    JAKARTA_R1("jakarta-R1", "-v7", new DatabaseVersion(7,1,1), new DatabaseVersion(8,0,0), false,
-            new DatabaseVersion(10,2,7), new DatabaseVersion(11,1,5), false);
+    GUILIN_R1("guilin-R1", "-v4", new DatabaseVersion(7, 1, 1), new DatabaseVersion(7, 6, 1)),
+    HONOLULU_R1("honolulu-R1", "-v5", new DatabaseVersion(7, 1, 1), new DatabaseVersion(8, 0, 0), false),
+    ISTANBUL_R1("istanbul-R1", "-v6", new DatabaseVersion(7, 1, 1), new DatabaseVersion(8, 0, 0), false,
+            new DatabaseVersion(10, 2, 7), new DatabaseVersion(10, 6, 0), false),
+    JAKARTA_R1("jakarta-R1", "-v7", new DatabaseVersion(7, 1, 1), new DatabaseVersion(8, 0, 0), false,
+            new DatabaseVersion(10, 2, 7), new DatabaseVersion(11, 1, 5), false);
 
 
     public static final Release CURRENT_RELEASE = Release.JAKARTA_R1;
@@ -96,21 +94,22 @@ public enum Release {
             suffix = "-" + suffix;
         }
         for (Release r : Release.values()) {
-            if (r.dbSuffix.equals(suffix))
+            if (r.dbSuffix.equals(suffix)) {
                 return r;
+            }
         }
         return null;
     }
 
-    public static String getDbSuffix(AliasesEntry entry) throws Exception {
-        ComponentName comp = ComponentName.getValueOf(entry.getAlias());
+    public static String getDbSuffix(SqlView entry) throws Exception {
+        ComponentName comp = ComponentName.getValueOf(entry.getName());
         if (comp != null) {
-            return entry.getIndex().substring(entry.getAlias().length());
+            return entry.getTableReference().substring(entry.getName().length());
         }
         return null;
     }
 
-    public String getDBSuffix() {
+    public String getDbSuffix() {
         return this.dbSuffix;
     }
 
@@ -118,20 +117,13 @@ public enum Release {
         return this.minDbVersion;
     }
 
-    public boolean isDbInRange(DatabaseVersion dbVersion, SdnrDbType type) {
-        if (type == SdnrDbType.ELASTICSEARCH) {
-            if (this.includeEndVersion) {
-                return dbVersion.isNewerOrEqualThan(minDbVersion) && dbVersion.isOlderOrEqualThan(maxDbVersion);
-            } else {
-                return dbVersion.isNewerOrEqualThan(minDbVersion) && dbVersion.isOlderThan(maxDbVersion);
-            }
-        } else {
-            if (this.mariaDbIncludeEndVersion) {
-                return dbVersion.isNewerOrEqualThan(minMariaDbVersion)
-                        && dbVersion.isOlderOrEqualThan(maxMariaDbVersion);
-            } else {
-                return dbVersion.isNewerOrEqualThan(minMariaDbVersion) && dbVersion.isOlderThan(maxMariaDbVersion);
-            }
+    public boolean isDbInRange(DatabaseVersion dbVersion) {
+
+        if (this.mariaDbIncludeEndVersion) {
+            return dbVersion.isNewerOrEqualThan(minMariaDbVersion)
+                    && dbVersion.isOlderOrEqualThan(maxMariaDbVersion);
         }
+        return dbVersion.isNewerOrEqualThan(minMariaDbVersion) && dbVersion.isOlderThan(maxMariaDbVersion);
     }
+
 }

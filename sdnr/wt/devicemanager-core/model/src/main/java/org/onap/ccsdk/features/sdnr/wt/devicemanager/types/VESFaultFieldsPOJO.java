@@ -22,7 +22,11 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.types;
 
 import java.util.HashMap;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class VESFaultFieldsPOJO {
 
     //fault domain Fields
@@ -35,77 +39,5 @@ public class VESFaultFieldsPOJO {
     private String specificProblem = "";
     private String vfStatus = "";
     private HashMap<String, Object> alarmAdditionalInformation = new HashMap<String, Object>();
-
-    public String getAlarmCondition() {
-        return alarmCondition;
-    }
-
-    public void setAlarmCondition(String alarmCondition) {
-        this.alarmCondition = alarmCondition;
-    }
-
-    public String getAlarmInterfaceA() {
-        return alarmInterfaceA;
-    }
-
-    public void setAlarmInterfaceA(String alarmInterfaceA) {
-        this.alarmInterfaceA = alarmInterfaceA;
-    }
-
-    public String getEventCategory() {
-        return eventCategory;
-    }
-
-    public void setEventCategory(String eventCategory) {
-        this.eventCategory = eventCategory;
-    }
-
-    public String getEventSeverity() {
-        return eventSeverity;
-    }
-
-    public void setEventSeverity(String eventSeverity) {
-        this.eventSeverity = eventSeverity;
-    }
-
-    public String getEventSourceType() {
-        return eventSourceType;
-    }
-
-    public void setEventSourceType(String eventSourceType) {
-        this.eventSourceType = eventSourceType;
-    }
-
-    public String getFaultFieldsVersion() {
-        return faultFieldsVersion;
-    }
-
-    public void setFaultFieldsVersion(String faultFieldsVersion) {
-        this.faultFieldsVersion = faultFieldsVersion;
-    }
-
-    public String getSpecificProblem() {
-        return specificProblem;
-    }
-
-    public void setSpecificProblem(String specificProblem) {
-        this.specificProblem = specificProblem;
-    }
-
-    public String getVfStatus() {
-        return vfStatus;
-    }
-
-    public void setVfStatus(String vfStatus) {
-        this.vfStatus = vfStatus;
-    }
-
-    public HashMap<String, Object> getAlarmAdditionalInformation() {
-        return alarmAdditionalInformation;
-    }
-
-    public void setAlarmAdditionalInformation(HashMap<String, Object> alarmAdditionalInformation) {
-        this.alarmAdditionalInformation = alarmAdditionalInformation;
-    }
 
 }

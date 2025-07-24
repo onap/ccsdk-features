@@ -45,19 +45,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.PmdataEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Shabnam Sultana
- *
- *         Creating the openroadm device as an optical network element and writing inventory, fault, pm data to elastic
- *         search db
- *
+ * <p>
+ * Creating the openroadm device as an optical network element and writing inventory, fault, pm data to elastic search
+ * db
  **/
 public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
 
@@ -66,11 +64,12 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     private static final Logger LOG = LoggerFactory.getLogger(OpenroadmNetworkElement.class);
     private Hashtable<String, Long> circuitPacksRecord;
     private Hashtable<String, Long> shelfProvisionedcircuitPacks;
-    private ListenerRegistration<NotificationListener> openRdmListenerRegistrationResult;
-    private @NonNull final OpenroadmChangeNotificationListener openRdmListener;
-    private ListenerRegistration<NotificationListener> opnRdmFaultListenerRegistrationResult;
+    private Registration openRdmListenerRegistrationResult;
+    private @NonNull
+    final OpenroadmChangeNotificationListener openRdmListener;
+    private Registration opnRdmFaultListenerRegistrationResult;
     private @NonNull OpenroadmFaultNotificationListener opnRdmFaultListener;
-    private ListenerRegistration<NotificationListener> opnRdmDeviceListenerRegistrationResult;
+    private Registration opnRdmDeviceListenerRegistrationResult;
     private OpenroadmDeviceChangeNotificationListener opnRdmDeviceListener;
     private OpenroadmInventoryInput opnRdmInventoryInput;
     private PmDataBuilderOpenRoadm openRoadmPmData;
@@ -138,16 +137,16 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     public void register() {
         initialReadFromNetworkElement();
 
-        this.openRdmListenerRegistrationResult = netconfAccessor.doRegisterNotificationListener(openRdmListener);
+        this.openRdmListenerRegistrationResult = openRdmListener.doRegisterNotificationListener(
+                this.netconfAccessor.getMountpoint());
         this.opnRdmFaultListenerRegistrationResult =
-                netconfAccessor.doRegisterNotificationListener(opnRdmFaultListener);
+                opnRdmFaultListener.doRegisterNotificationListener(this.netconfAccessor.getMountpoint());
         this.opnRdmDeviceListenerRegistrationResult =
-                netconfAccessor.doRegisterNotificationListener(opnRdmDeviceListener);
+                opnRdmDeviceListener.doRegisterNotificationListener(this.netconfAccessor.getMountpoint());
         if (netconfAccessor.isNotificationsRFC5277Supported()) {
             // Register netconf stream
             netconfAccessor.registerNotificationsStream(NetconfAccessor.DefaultNotificationsStream);
-        }
-        else {
+        } else {
             LOG.debug("device {} does not support netconf notification", netconfAccessor.getNodeId().getValue());
         }
     }
@@ -206,16 +205,18 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
 
                 inventoryList.add(this.opnRdmInventoryInput.getXponderInventory(xponder,
                         Uint32.valueOf(EQUIPMENTLEVEL_BASE + 1)));
-                LOG.debug("Xponders: No.: {} , \n Port: {} ,\n Type: {}", xponder.getXpdrNumber(), xponder.getXpdrPort(),
+                LOG.debug("Xponders: No.: {} , \n Port: {} ,\n Type: {}", xponder.getXpdrNumber(),
+                        xponder.getXpdrPort(),
                         xponder.getXpdrType());
                 Collection<XpdrPort> xpdrportlist = YangHelper.getCollection(xponder.getXpdrPort());
                 if (xpdrportlist != null) {
-                    for (XpdrPort xpdrport : xpdrportlist)
+                    for (XpdrPort xpdrport : xpdrportlist) {
                         if (xpdrport.getCircuitPackName() != null) {
                             this.shelfProvisionedcircuitPacks.put(xpdrport.getCircuitPackName(),
                                     EQUIPMENTLEVEL_BASE + 2);
                             LOG.debug("Size of dict{}", this.shelfProvisionedcircuitPacks.size());
                         }
+                    }
                 }
 
             }
@@ -257,7 +258,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
                                 .setNewValue("Missing parent circuit pack name").build());
                     } else if (cp.getParentCircuitPack().getCircuitPackName() != null
                             && this.shelfProvisionedcircuitPacks
-                                    .containsKey(cp.getParentCircuitPack().getCircuitPackName())) {
+                            .containsKey(cp.getParentCircuitPack().getCircuitPackName())) {
                         LOG.debug("Cp {} has parent circuit pack and shelf", cp.getCircuitPackName());
                         this.circuitPacksRecord.put(cp.getCircuitPackName(), (EQUIPMENTLEVEL_BASE + 3));
                         inventoryList.add(this.opnRdmInventoryInput.getCircuitPackInventory(cp,
@@ -284,6 +285,9 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     }
 
     private void readInterfaceData(List<Inventory> inventoryList, OrgOpenroadmDevice device) {
+        if (device == null) {
+            return;
+        }
         Collection<Interface> interfaceList = YangHelper.getCollection(device.getInterface());
         if (interfaceList != null) {
             for (Interface deviceInterface : interfaceList) {
@@ -310,7 +314,7 @@ public class OpenroadmNetworkElement extends OpenroadmNetworkElementBase {
     }
 
     private OrgOpenroadmDevice readDevice(NetconfBindingAccessor accessor) {
-    	final Class<OrgOpenroadmDevice> openRoadmDev = OrgOpenroadmDevice.class;
+        final Class<OrgOpenroadmDevice> openRoadmDev = OrgOpenroadmDevice.class;
         InstanceIdentifier<OrgOpenroadmDevice> deviceId = InstanceIdentifier.builder(openRoadmDev).build();
         return accessor.getTransactionUtils().readData(accessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
                 deviceId);

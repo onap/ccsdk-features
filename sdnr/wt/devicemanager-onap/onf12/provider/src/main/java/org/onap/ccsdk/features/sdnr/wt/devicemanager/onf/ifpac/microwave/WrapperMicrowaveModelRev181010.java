@@ -18,10 +18,10 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave;
 
 
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.YangHelper;
@@ -46,7 +46,6 @@ import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.r
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.AttributeValueChangedNotification;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.ContainerCurrentProblemTypeG;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.ContainerHistoricalPerformanceTypeG;
-import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.MicrowaveModelListener;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.MwAirInterfaceDiversityPac;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.MwAirInterfaceDiversityPacKey;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.microwave.model.rev181010.MwAirInterfacePac;
@@ -78,14 +77,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, MicrowaveModelListener {
+public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel {
 
     private static final Logger LOG = LoggerFactory.getLogger(WrapperMicrowaveModelRev181010.class);
 
@@ -104,7 +103,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     /**
      * Handle specific version of microwave model
      *
-     * @param acessor to access device
+     * @param acessor         to access device
      * @param serviceProvider for devicemanager services
      */
     public WrapperMicrowaveModelRev181010(@NonNull NetconfBindingAccessor acessor,
@@ -122,15 +121,24 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
      * Setter/Getter
      */
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends NotificationListener> T getNotificationListener() {
-        return (T) this;
-    }
-
     @Override
     public void setNotificationQueue(NotificationWorker<EventlogEntity> notificationQueue) {
         this.notificationQueue = Optional.of(notificationQueue);
+    }
+
+    @Override
+    public Registration registerListeners(org.opendaylight.mdsal.binding.api.NotificationService notificationService) {
+        final var listenerRegistrations = List.of(
+                notificationService.registerListener(ProblemNotification.class,
+                        WrapperMicrowaveModelRev181010.this::onProblemNotification),
+                notificationService.registerListener(AttributeValueChangedNotification.class,
+                        WrapperMicrowaveModelRev181010.this::onAttributeValueChangedNotification),
+                notificationService.registerListener(ObjectCreationNotification.class,
+                        WrapperMicrowaveModelRev181010.this::onObjectCreationNotification),
+                notificationService.registerListener(ObjectDeletionNotification.class,
+                        WrapperMicrowaveModelRev181010.this::onObjectDeletionNotification)
+        );
+        return () -> listenerRegistrations.forEach(e -> e.close());
     }
 
     /*-----------------------------------------------------------------------------
@@ -220,7 +228,6 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         return res;
     }
 
-    @Override
     public void onObjectCreationNotification(ObjectCreationNotification notification) {
         LOG.debug("Got event of type :: {}", ObjectCreationNotification.class.getSimpleName());
         if (notification != null) {
@@ -229,7 +236,6 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         }
     }
 
-    @Override
     public void onObjectDeletionNotification(ObjectDeletionNotification notification) {
         LOG.debug("Got event of type :: {}", ObjectDeletionNotification.class.getSimpleName());
         if (notification != null) {
@@ -238,7 +244,6 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         }
     }
 
-    @Override
     public void onAttributeValueChangedNotification(AttributeValueChangedNotification notification) {
         LOG.debug("Got event of type :: {}", AttributeValueChangedNotification.class.getSimpleName());
         EventlogEntity beventlogEntity = new EventlogBuilder().setNodeId(acessor.getNodeId().getValue())
@@ -251,7 +256,6 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
         }
     }
 
-    @Override
     public void onProblemNotification(ProblemNotification notification) {
 
         LOG.debug("Got event of type :: {}", ProblemNotification.class.getSimpleName());
@@ -273,7 +277,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     /**
      * Read problems of specific interfaces
      *
-     * @param uuId Universal Id String of the interface
+     * @param interfacePacUuid Universal Id String of the interface
      * @return number of alarms
      */
     private FaultData readTheFaultsOfMwAirInterfacePac(UniversalId interfacePacUuid, FaultData resultList) {
@@ -310,7 +314,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     /**
      * Read problems of specific interfaces
      *
-     * @param uuId Universal index of Interfacepac
+     * @param interfacePacUuid Universal index of Interfacepac
      * @return number of alarms
      */
     private FaultData readTheFaultsOfMwEthernetContainerPac(UniversalId interfacePacUuid, FaultData resultList) {
@@ -344,7 +348,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     /**
      * Read problems of specific interfaces
      *
-     * @param uuId Universal index of Interfacepac
+     * @param interfacePacUuid Universal index of Interfacepac
      * @return number of alarms
      */
     private FaultData readTheFaultsOfMwAirInterfaceDiversityPac(UniversalId interfacePacUuid, FaultData resultList) {
@@ -378,7 +382,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     /**
      * Read problems of specific interfaces
      *
-     * @param uuId Universal index of Interfacepac
+     * @param interfacePacUuid Universal index of Interfacepac
      * @return number of alarms
      */
     private FaultData readTheFaultsOfMwPureEthernetStructurePac(UniversalId interfacePacUuid, FaultData resultList) {
@@ -412,7 +416,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     /**
      * Read problems of specific interfaces
      *
-     * @param uuId Universal index of Interfacepac
+     * @param interfacePacUuid Universal index of Interfacepac
      * @return number of alarms
      */
     private FaultData readTheFaultsOfMwHybridMwStructurePac(UniversalId interfacePacUuid, FaultData resultList) {
@@ -447,7 +451,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
      * Read problems of specific interfaces. TODO Goal for future implementation without usage of explicit new. Key is
      * generated by newInstance() function here to verify this approach.
      *
-     * @param uuId Universal index of Interfacepac
+     * @param interfacePacUuid Universal index of Interfacepac
      * @return number of alarms
      * @throws SecurityException
      * @throws NoSuchMethodException
@@ -486,7 +490,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
                 }
             }
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-                | IllegalArgumentException | InvocationTargetException e) {
+                 | IllegalArgumentException | InvocationTargetException e) {
             LOG.warn("Could not reade instance of MwTdmContainerPacKey: ", e);
         }
         return resultList;
@@ -499,7 +503,7 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
     /**
      * Read and add performance data
      *
-     * @param lp to read from
+     * @param lp     to read from
      * @param result Object to be filled with data
      * @return result
      * @throws InconsistentPMDataException
@@ -584,12 +588,11 @@ public class WrapperMicrowaveModelRev181010 implements OnfMicrowaveModel, Microw
             SeverityType severity) {
 
         Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType> res =
-                Optional.ofNullable(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType
-                        .forName(severity.name()));
+                Optional.ofNullable(
+                        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType
+                                .forName(severity.name()));
         return res.orElse(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType.NonAlarmed);
     }
-
-
-
+    
 }

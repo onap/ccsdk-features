@@ -31,18 +31,19 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.Netco
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPoint;
 import org.opendaylight.mdsal.binding.api.NotificationService;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscription;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionOutput;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.NotificationsService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.StreamNameType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.Netconf;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.Streams;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.Notification;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,12 +56,13 @@ public class NetconfBindingAccessorImpl extends NetconfAccessorImpl implements N
 
     private final DataBroker dataBroker;
     private final MountPoint mountpoint;
-    final NotificationsService mountpointNotificationService;
+    final NotificationService mountpointNotificationService;
+    private final CreateSubscription createSubscriptionRpc;
 
     /**
      * Contains all data to access and manage NETCONF device
      *
-     * @param accessor with basic mountpoint information
+     * @param accessor   with basic mountpoint information
      * @param dataBroker to access node
      * @param mountpoint of netconfNode
      * @throws IllegalArgumentException
@@ -70,14 +72,10 @@ public class NetconfBindingAccessorImpl extends NetconfAccessorImpl implements N
         super(accessor);
         this.dataBroker = Objects.requireNonNull(dataBroker);
         this.mountpoint = Objects.requireNonNull(mountpoint);
+        this.mountpointNotificationService = mountpoint.getService(NotificationService.class).orElseThrow();
+        this.createSubscriptionRpc = mountpoint.getService(RpcService.class).orElseThrow()
+                .getRpc(CreateSubscription.class);
 
-        final Optional<RpcConsumerRegistry> optionalRpcConsumerService =
-                mountpoint.getService(RpcConsumerRegistry.class);
-        if (optionalRpcConsumerService.isPresent()) {
-            mountpointNotificationService = optionalRpcConsumerService.get().getRpcService(NotificationsService.class);
-        } else {
-            throw new IllegalArgumentException("Can not process without rpcConsumerService service");
-        }
     }
 
     @Override
@@ -96,16 +94,16 @@ public class NetconfBindingAccessorImpl extends NetconfAccessorImpl implements N
     }
 
     @Override
-    public @NonNull <T extends NotificationListener> ListenerRegistration<NotificationListener> doRegisterNotificationListener(
-            @NonNull T listener) {
+    public @NonNull <N extends Notification<N> & DataObject> Registration doRegisterNotificationListener(
+            Class<N> type, NotificationService.Listener<N> listener) {
         log.debug("Begin register listener for Mountpoint {}", mountpoint.getIdentifier().toString());
         final Optional<NotificationService> optionalNotificationService =
                 mountpoint.getService(NotificationService.class);
-        final NotificationService notificationService = optionalNotificationService.get();
-        final ListenerRegistration<NotificationListener> ranListenerRegistration =
-                notificationService.registerNotificationListener(listener);
+        final NotificationService notificationService = optionalNotificationService.orElseThrow();
+        final var ranListenerRegistration =
+                notificationService.registerListener(type, listener);
         log.debug("End registration listener for Mountpoint {} Listener: {} Result: {}",
-                mountpoint.getIdentifier().toString(), optionalNotificationService, ranListenerRegistration);
+                mountpoint.getIdentifier(), optionalNotificationService, ranListenerRegistration);
         return ranListenerRegistration;
     }
 
@@ -116,13 +114,14 @@ public class NetconfBindingAccessorImpl extends NetconfAccessorImpl implements N
         if (streamName != null) {
             createSubscriptionInputBuilder.setStream(new StreamNameType(streamName));
         }
+
         log.debug("Event listener triggering notification stream '{}' for node {}", streamName, getNodeId());
-        return mountpointNotificationService.createSubscription(createSubscriptionInputBuilder.build());
+        return this.createSubscriptionRpc.invoke(createSubscriptionInputBuilder.build());
     }
 
     @Override
     public ListenableFuture<RpcResult<CreateSubscriptionOutput>> registerNotificationsStream() {
-        return registerNotificationsStream((String)null);
+        return registerNotificationsStream((String) null);
     }
 
     @Override
@@ -134,8 +133,10 @@ public class NetconfBindingAccessorImpl extends NetconfAccessorImpl implements N
                 String streamNameValue = stream.getName().getValue();
                 log.debug("Stream Name = {}, Stream Description = {}", streamNameValue, stream.getDescription());
                 if (!(streamNameValue.equals(DefaultNotificationsStream)))
-                    // Register any not default stream. Default stream is already registered
+                // Register any not default stream. Default stream is already registered
+                {
                     registerNotificationsStream(streamNameValue);
+                }
             } else {
                 log.warn("Ignore a stream without name");
             }

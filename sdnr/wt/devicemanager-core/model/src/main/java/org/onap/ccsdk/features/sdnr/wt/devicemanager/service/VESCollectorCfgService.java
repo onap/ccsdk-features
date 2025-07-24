@@ -27,6 +27,9 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
 public interface VESCollectorCfgService {
 
+
+    /* gets the reportingEntityId (REPORTING_ENTITY_ID) configured in the etc/devicemanager.properties configuration file */
+    String getReportingEntityId();
     /* gets the reportingEntityName (REPORTING_ENTITY_NAME) configured in the etc/devicemanager.properties configuration file */
     String getReportingEntityName();
 

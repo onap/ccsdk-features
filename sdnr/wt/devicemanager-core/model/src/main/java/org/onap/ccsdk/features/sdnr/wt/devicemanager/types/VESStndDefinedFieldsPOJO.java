@@ -21,34 +21,14 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.types;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class VESStndDefinedFieldsPOJO {
 
     private String schemaReference;
     private String stndDefinedFieldsVersion = "1.0";
     private Object data;
-
-    public String getSchemaReference() {
-        return schemaReference;
-    }
-
-    public void setSchemaReference(String schemaReference) {
-        this.schemaReference = schemaReference;
-    }
-
-    public String getStndDefinedFieldsVersion() {
-        return stndDefinedFieldsVersion;
-    }
-
-    public void setStndDefinedFieldsVersion(String stndDefinedFieldsVersion) {
-        this.stndDefinedFieldsVersion = stndDefinedFieldsVersion;
-    }
-
-    public Object getData() {
-        return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
-
 }

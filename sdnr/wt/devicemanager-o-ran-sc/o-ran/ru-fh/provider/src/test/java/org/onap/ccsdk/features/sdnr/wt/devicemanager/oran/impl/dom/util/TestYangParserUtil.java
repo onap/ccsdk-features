@@ -23,7 +23,11 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom.util;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -33,13 +37,15 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.yangtools.yang.common.QName;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.yangtools.yang.common.YangConstants;
 import org.opendaylight.yangtools.yang.model.api.EffectiveModelContext;
+import org.opendaylight.yangtools.yang.model.api.source.SourceIdentifier;
+import org.opendaylight.yangtools.yang.model.api.source.YangSourceRepresentation;
+import org.opendaylight.yangtools.yang.model.api.source.YangTextSource;
 import org.opendaylight.yangtools.yang.model.api.stmt.FeatureSet;
-import org.opendaylight.yangtools.yang.model.repo.api.SchemaSourceRepresentation;
-import org.opendaylight.yangtools.yang.model.repo.api.YangTextSchemaSource;
 import org.opendaylight.yangtools.yang.parser.api.YangParser;
 import org.opendaylight.yangtools.yang.parser.api.YangParserConfiguration;
 import org.opendaylight.yangtools.yang.parser.api.YangParserException;
@@ -71,10 +77,11 @@ public final class TestYangParserUtil {
 		return parseYangFiles(null, config, files.stream().map(e->e.toPath()).collect(Collectors.toList()));
 	}
 
-	public static EffectiveModelContext parseYangFiles(final Set<QName> supportedFeatures,
+	public static EffectiveModelContext parseYangFiles(final FeatureSet supportedFeatures,
 			final YangParserConfiguration config, final Collection<Path> files) {
+
 		return parseSources(config, supportedFeatures,
-				files.stream().map(YangTextSchemaSource::forPath).collect(Collectors.toList()));
+				files.stream().map(e->new YangTextSourceHelper(e.toFile())).collect(Collectors.toList()));
 	}
 
 
@@ -95,10 +102,10 @@ public final class TestYangParserUtil {
 
 
 	public static EffectiveModelContext parseSources(final YangParserConfiguration config,
-			final Set<QName> supportedFeatures, final Collection<? extends SchemaSourceRepresentation> sources) {
+			final FeatureSet supportedFeatures, final Collection<? extends YangSourceRepresentation> sources) {
 		final YangParser parser = PARSER_FACTORY.createParser(config);
 		if (supportedFeatures != null) {
-			parser.setSupportedFeatures(FeatureSet.of(supportedFeatures));
+			parser.setSupportedFeatures(supportedFeatures);
 		}
 
 		try {
@@ -113,6 +120,36 @@ public final class TestYangParserUtil {
 			return parser.buildEffectiveModel();
 		} catch (YangParserException e) {
 			throw new IllegalStateException("Failed to assemble SchemaContext", e);
+		}
+	}
+	private static class YangTextSourceHelper extends YangTextSource {
+
+		private final InputStreamReader reader;
+		private File file;
+
+		public YangTextSourceHelper(File file) {
+
+			try {
+				this.reader = new InputStreamReader(new FileInputStream(file));
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException(e);
+			}
+			this.file = file;
+		}
+
+		@Override
+		public Reader openStream() throws IOException {
+			return reader;
+		}
+
+		@Override
+		public @NonNull SourceIdentifier sourceId() {
+			return SourceIdentifier.ofYangFileName(this.file.getName());
+		}
+
+		@Override
+		public @Nullable String symbolicName() {
+			return null;
 		}
 	}
 

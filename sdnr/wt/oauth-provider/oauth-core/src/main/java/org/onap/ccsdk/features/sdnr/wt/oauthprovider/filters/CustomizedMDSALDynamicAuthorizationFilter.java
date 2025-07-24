@@ -1,25 +1,27 @@
 package org.onap.ccsdk.features.sdnr.wt.oauthprovider.filters;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.servlet.Filter;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authz.AuthorizationFilter;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
@@ -27,14 +29,14 @@ import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.HttpAuthorization;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.authorization.policies.Policies;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.permission.Permissions;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilter
-        implements ClusteredDataTreeChangeListener<HttpAuthorization> {
+        implements DataTreeChangeListener<HttpAuthorization> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CustomizedMDSALDynamicAuthorizationFilter.class);
 
@@ -46,8 +48,8 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
     public static void setDataBroker(DataBroker dataBroker2){
         dataBroker = dataBroker2;
     }
-    private ListenerRegistration<?> reg;
-    private volatile ListenableFuture<Optional<HttpAuthorization>> authContainer;
+    private Registration reg;
+    private ListenableFuture<Optional<HttpAuthorization>> authContainer;
 
     public CustomizedMDSALDynamicAuthorizationFilter() {
 
@@ -72,7 +74,7 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<HttpAuthorization>> changes) {
+    public void onDataTreeChanged(@NonNull List<DataTreeModification<HttpAuthorization>> changes) {
         final HttpAuthorization newVal = Iterables.getLast(changes).getRootNode().getDataAfter();
         LOG.debug("Updating authorization information to {}", newVal);
         authContainer = Futures.immediateFuture(Optional.ofNullable(newVal));
@@ -88,7 +90,7 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
             try (ReadTransaction tx = dataBroker.newReadOnlyTransaction()) {
                 authContainer = tx.read(AUTHZ_CONTAINER.getDatastoreType(), AUTHZ_CONTAINER.getRootIdentifier());
             }
-            reg = dataBroker.registerDataTreeChangeListener(AUTHZ_CONTAINER, this);
+            reg = dataBroker.registerTreeChangeListener(AUTHZ_CONTAINER, this);
         }
         checkArgument(request instanceof HttpServletRequest, "Expected HttpServletRequest, received {}", request);
 
@@ -102,9 +104,15 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
         final Optional<HttpAuthorization> authorizationOptional;
         try {
             authorizationOptional = authContainer.get();
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (ExecutionException e){
             // Something went completely wrong trying to read the authz container.  Deny access.
             LOG.warn("MDSAL attempt to read Http Authz Container failed, disallowing access", e);
+            return false;
+        }
+        catch(InterruptedException e) {
+            // Something went completely wrong trying to read the authz container.  Deny access.
+            LOG.warn("MDSAL attempt to read Http Authz Container failed, disallowing access", e);
+            Thread.currentThread().interrupt();
             return false;
         }
 
@@ -185,4 +193,8 @@ public class CustomizedMDSALDynamicAuthorizationFilter extends AuthorizationFilt
             LOG.warn("unable to send {} {} response", code, message);
         }
     }
+
+
+
+
 }

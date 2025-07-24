@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>odlparent-lite</artifactId>
-        <version>3.2.0-SNAPSHOT</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
@@ -44,6 +44,7 @@
         <module>oauth-core</module>
         <module>oauth-realm</module>
 	    <module>oauth-web</module>
+        <module>oauth-cli</module>
     </modules>
 
     <properties>
