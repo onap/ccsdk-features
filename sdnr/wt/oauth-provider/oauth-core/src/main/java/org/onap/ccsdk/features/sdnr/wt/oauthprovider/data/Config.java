@@ -55,7 +55,7 @@ public class Config {
     public static final String TOKENALG_CLIENT_RS512 = CLIENTALG_PRE + TOKENALG_RS512;
     private static final String DEFAULT_TOKEN_ALGORITHM = TOKENALG_HS256;
 
-    private static final long DEFAULT_TOKEN_LIFETIME = 30 * 60;
+    private static final long DEFAULT_TOKEN_LIFETIME = 30L * 60;
     private static final List<String> VALID_ALGORITHMS =
             Arrays.asList(TOKENALG_HS256, TOKENALG_RS256, TOKENALG_RS512, TOKENALG_CLIENT_RS256, TOKENALG_CLIENT_RS512);
     private static final List<String> VALID_ALGORITHMS_FOR_INTERNAL_LOGIN =

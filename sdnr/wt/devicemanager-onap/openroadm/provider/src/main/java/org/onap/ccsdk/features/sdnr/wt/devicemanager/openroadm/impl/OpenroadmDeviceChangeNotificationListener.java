@@ -22,34 +22,37 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm.impl;
 
 import java.util.List;
+import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
+import org.opendaylight.mdsal.binding.api.MountPoint;
+import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.ChangeNotification;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.CreateTechInfoNotification;
-import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.OrgOpenroadmDeviceListener;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.OtdrScanResult;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.device.rev191129.change.notification.Edit;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
+import org.opendaylight.yangtools.binding.NodeStep;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Shabnam Sultana
- *
- *         Listener for Open roadm device specific change notifications
+ * <p>
+ * Listener for Open roadm device specific change notifications
  **/
 
-public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDeviceListener {
+public class OpenroadmDeviceChangeNotificationListener {
+
     // variables
-    private static final Logger log = LoggerFactory.getLogger(OpenroadmDeviceChangeNotificationListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenroadmDeviceChangeNotificationListener.class);
     private Integer counter = 1;
     private final NetconfAccessor netconfAccessor;
     private final DataProvider databaseProvider;
@@ -67,15 +70,13 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
     // end of constructors
 
     // public methods
-    @Override
     public void onOtdrScanResult(OtdrScanResult notification) {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
     public void onChangeNotification(ChangeNotification notification) {
-        log.debug("onDeviceConfigChange(1){}", notification);
+        LOG.debug("onDeviceConfigChange(1){}", notification);
         StringBuffer sb = new StringBuffer();
 
         @NonNull
@@ -86,14 +87,17 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
             }
             sb.append(edit);
             EventlogBuilder eventlogBuilder = new EventlogBuilder();
-            InstanceIdentifier<?> target = edit.getTarget();
+            var target = edit.getTarget();
             if (target != null) {
-                eventlogBuilder.setObjectId(target.getPathArguments().toString());
-                log.debug("TARGET: {} {}", target.getClass(), target.getTargetType());
-                for (PathArgument pa : target.getPathArguments()) {
-                    log.debug("PathArgument {}", pa);
+                eventlogBuilder.setObjectId(((NodeStep)target.steps().iterator().next()).type().toString());
+                LOG.debug("TARGET: {} {}", target.getClass(), target.getClass());
+                final var it = target.steps().iterator();
+                while (it.hasNext()) {
+                    LOG.debug("PathArgument {}", it.next());
                 }
-                eventlogBuilder.setAttributeName(target.getTargetType().getName());
+                //TODO getTargetTyoe does not exists anymore
+                var it2 = target.steps().iterator();
+                eventlogBuilder.setAttributeName(((NodeStep)it2.next()).type().getName());
             }
             eventlogBuilder.setNodeId(netconfAccessor.getNodeId().getValue());
             eventlogBuilder.setNewValue(String.valueOf(edit.getOperation()));
@@ -101,18 +105,17 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
             eventlogBuilder.setCounter(counter);
             eventlogBuilder.setSourceType(SourceType.Netconf);
             databaseProvider.writeEventLog(eventlogBuilder.build());
-            log.debug("onDeviceConfigChange (2) {}", sb);
+            LOG.debug("onDeviceConfigChange (2) {}", sb);
             counter++;
         }
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 ChangeNotification.QNAME, notification.getChangeTime());
     }
 
-    @Override
     public void onCreateTechInfoNotification(CreateTechInfoNotification notification) {
 
         DateAndTime now = NetconfTimeStampImpl.getConverter().getTimeStamp();
-        log.debug("onCreateTechInfoNotification(1){}", notification);
+        LOG.debug("onCreateTechInfoNotification(1){}", notification);
         EventlogBuilder eventlogBuilder = new EventlogBuilder();
         eventlogBuilder.setId(notification.getShelfId()).setAttributeName(notification.getShelfId())
                 .setObjectId(notification.getShelfId()).setNodeId(this.netconfAccessor.getNodeId().getValue())
@@ -121,8 +124,29 @@ public class OpenroadmDeviceChangeNotificationListener implements OrgOpenroadmDe
         databaseProvider.writeEventLog(eventlogBuilder.build());
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 CreateTechInfoNotification.QNAME, now);
-        log.debug("Create-techInfo Notification written ");
+        LOG.debug("Create-techInfo Notification written ");
         counter++;
+    }
+
+    public Registration registerNotificationListener(MountPoint mountpoint) {
+        final Optional<NotificationService> optionalNotificationService =
+                mountpoint.getService(NotificationService.class);
+        if (optionalNotificationService.isEmpty()) {
+            LOG.warn("unable to get notification service for node {}. cannot register for notifications",
+                    this.netconfAccessor.getNodeId().getValue());
+            return () -> {
+            };
+        }
+        final NotificationService notificationService = optionalNotificationService.get();
+        final var listenerRegistrations = List.of(
+                notificationService.registerListener(OtdrScanResult.class,
+                        OpenroadmDeviceChangeNotificationListener.this::onOtdrScanResult),
+                notificationService.registerListener(ChangeNotification.class,
+                        OpenroadmDeviceChangeNotificationListener.this::onChangeNotification),
+                notificationService.registerListener(CreateTechInfoNotification.class,
+                        OpenroadmDeviceChangeNotificationListener.this::onCreateTechInfoNotification)
+        );
+        return () -> listenerRegistrations.forEach(e -> e.close());
     }
     // end of public methods
 

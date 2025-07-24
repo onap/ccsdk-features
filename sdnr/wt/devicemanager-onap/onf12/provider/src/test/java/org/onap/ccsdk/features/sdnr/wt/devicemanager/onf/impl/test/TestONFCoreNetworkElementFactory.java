@@ -20,6 +20,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl.test;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;

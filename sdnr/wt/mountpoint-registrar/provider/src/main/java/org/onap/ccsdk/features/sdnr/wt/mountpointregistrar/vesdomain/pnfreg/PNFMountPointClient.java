@@ -21,22 +21,31 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.vesdomain.pnfreg;
 
 import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient.MessageType.xml;
 import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient.SendMethod.PUT;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.wt.common.database.requests.BaseRequest;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PNFMountPointClient extends MessageClient {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PNFMountPointClient.class);
 
     private static final String MOUNTPOINT_URI =
             "rests/data/network-topology:network-topology/topology=topology-netconf/node=";
     public static final String DEVICE_NAME = "@device-name@", DEVICE_IP = "@device-ip@", DEVICE_PORT = "@device-port@",
             USERNAME = "@username@", PASSWORD = "@password@", KEY_ID = "@key-id@";
     private static final String PROTOCOL = "protocol_sec";
-    public static List<String> REQUIRED_FIELDS_SSH = List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME, PASSWORD);
-    public static List<String> REQUIRED_FIELDS_TLS = List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME, KEY_ID);
+    public static List<String> REQUIRED_FIELDS_SSH = List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME,
+            PASSWORD);
+    public static List<String> REQUIRED_FIELDS_TLS = List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME,
+            KEY_ID);
 
     private static final String SSH_PAYLOAD = "<node xmlns=\"urn:TBD:params:xml:ns:yang:network-topology\">\n"
             + "  <node-id>" + DEVICE_NAME + "</node-id>\n"
@@ -86,19 +95,31 @@ public class PNFMountPointClient extends MessageClient {
     public String prepareMessageFromPayloadMap(Map<String, String> notificationPayloadMap) {
         updateNotificationUriWithPnfName(notificationPayloadMap.get(DEVICE_NAME));
         String message = "";
-        if(!notificationPayloadMap.containsKey(PROTOCOL)) {
+        if (!notificationPayloadMap.containsKey(PROTOCOL)) {
             return message;
         }
-        if(notificationPayloadMap.get(PROTOCOL).equals("SSH")) {
+        if (notificationPayloadMap.get(PROTOCOL).equals("SSH")) {
             message = super.prepareMessageFromPayloadMap(notificationPayloadMap, SSH_PAYLOAD, REQUIRED_FIELDS_SSH);
-        } else if(notificationPayloadMap.get(PROTOCOL).equals("TLS")) {
+        } else if (notificationPayloadMap.get(PROTOCOL).equals("TLS")) {
             message = super.prepareMessageFromPayloadMap(notificationPayloadMap, TLS_PAYLOAD, REQUIRED_FIELDS_TLS);
         }
         return message;
     }
 
     private void updateNotificationUriWithPnfName(String pnfName) {
-        setNotificationUri(MOUNTPOINT_URI + BaseRequest.urlEncodeValue(pnfName));
+        setNotificationUri(MOUNTPOINT_URI + urlEncodeValue(pnfName));
+    }
+
+    public static String urlEncodeValue(String value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20");
+        } catch (UnsupportedEncodingException ex) {
+            LOG.warn("encoding problem: {}", ex.getMessage());
+        }
+        return value;
     }
 
     @Override
@@ -106,9 +127,10 @@ public class PNFMountPointClient extends MessageClient {
         return super.sendNotification(message, PUT, xml);
     }
 
-    public static Map<String, String> createPNFNotificationPayloadMap(@NonNull String pnfName, @NonNull String ipAddress,
-                                                                      @NonNull String commPort, @NonNull String protocol,
-                                                                      String username, String password, String keyId) {
+    public static Map<String, String> createPNFNotificationPayloadMap(@NonNull String pnfName,
+            @NonNull String ipAddress,
+            @NonNull String commPort, @NonNull String protocol,
+            String username, String password, String keyId) {
         HashMap<String, String> map = new HashMap<>();
         map.put(DEVICE_NAME, pnfName);
         map.put(DEVICE_IP, ipAddress);

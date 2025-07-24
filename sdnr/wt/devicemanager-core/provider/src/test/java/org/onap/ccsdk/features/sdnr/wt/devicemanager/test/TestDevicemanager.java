@@ -21,9 +21,9 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.test;
 
 import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.HashSet;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,8 +31,8 @@ import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.DeviceManagerApiServiceImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.DeviceManagerImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util.InternalDateAndTime;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
@@ -45,19 +45,18 @@ import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerSe
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.MaintenanceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SeverityType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ClearCurrentFaultByNodenameInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.DevicemanagerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.GetRequiredNetworkElementKeysInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushAttributeChangeNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.PushFaultNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.ShowRequiredNetworkElementInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +66,7 @@ public class TestDevicemanager extends Mockito {
     private static final Logger log = LoggerFactory.getLogger(TestDevicemanager.class);
 
     private static DeviceManagerImpl deviceManager = new DeviceManagerImpl();
-    private static DevicemanagerService apiService;
+    private static DeviceManagerApiServiceImpl apiService;
     private static HtDatabaseMaintenance htDataBaseMaintenance = mock(HtDatabaseMaintenance.class);
 
     @BeforeClass
@@ -81,13 +80,13 @@ public class TestDevicemanager extends Mockito {
         NetconfNodeStateService netconfNodeStateService = mock(NetconfNodeStateService.class);
 
         @SuppressWarnings("unchecked")
-        ListenerRegistration<NetconfNodeConnectListener> lr1 = mock(ListenerRegistration.class);
+        Registration lr1 = mock(Registration.class);
         //doNothing().when(lr1).close();
         when(netconfNodeStateService.registerNetconfNodeConnectListener(mock(NetconfNodeConnectListener.class)))
                 .thenReturn(lr1);
 
         @SuppressWarnings("unchecked")
-        ListenerRegistration<NetconfNodeStateListener> lr2 = mock(ListenerRegistration.class);
+        Registration lr2 = mock(Registration.class);
         //doNothing().when(lr2).close();
         when(netconfNodeStateService.registerNetconfNodeStateListener(mock(NetconfNodeStateListener.class)))
                 .thenReturn(lr2);
@@ -100,11 +99,6 @@ public class TestDevicemanager extends Mockito {
         when(iEntityDataProvider.getDataProvider()).thenReturn(dataProvider);
 
         when(iEntityDataProvider.getHtDatabaseMaintenance()).thenReturn(htDataBaseMaintenance);
-
-
-        IEsConfig esConfig = mock(IEsConfig.class);
-        when(iEntityDataProvider.getEsConfig()).thenReturn(esConfig);
-
 
         deviceManager.setDataBroker(dataBroker);
         deviceManager.setRpcProviderRegistry(rpcProviderRegistry);

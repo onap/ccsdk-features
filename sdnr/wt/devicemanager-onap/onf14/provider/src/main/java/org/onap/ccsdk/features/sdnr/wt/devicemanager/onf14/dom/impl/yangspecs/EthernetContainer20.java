@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.InternalDataModelSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.TechnologySpecificPacKeys;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Debug;
@@ -39,8 +40,9 @@ import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.XMLNamespace;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -53,7 +55,7 @@ public class EthernetContainer20 extends YangModule {
 
     private static String NAMESPACE = "urn:onf:yang:ethernet-container-2-0";
     private static final List<QNameModule> MODULES =
-            Arrays.asList(QNameModule.create(XMLNamespace.of(NAMESPACE), Revision.of("2020-01-21")));
+            Arrays.asList(QNameModule.of(XMLNamespace.of(NAMESPACE), Revision.of("2020-01-21")));
 
     private final CoreModel14 coreModel14;
 
@@ -71,48 +73,57 @@ public class EthernetContainer20 extends YangModule {
         // constructing the IID needs the augmentation exposed by the
         // ethernet-container-2-0 model
         YangInstanceIdentifier layerProtocolIID = coreModel14.getLayerProtocolIId(ltpUuid, localId);
-        InstanceIdentifierBuilder ethernetContainerIID = YangInstanceIdentifier.builder(layerProtocolIID).node(getQName("ethernet-container-pac"));
-//        @NonNull
-//        AugmentationIdentifier ethernetContainerIID = YangInstanceIdentifier.AugmentationIdentifier
-//                .create(Sets.newHashSet(getQName("ethernet-container-pac")));
-//
-//        InstanceIdentifierBuilder augmentedEthernetContainerConfigurationIID =
-//                YangInstanceIdentifier.builder(layerProtocolIID).node(ethernetContainerIID);
-//
-//        // reading all the current-problems list for this specific LTP and LP
+
+        InstanceIdentifierBuilder augmentedEthernetContainerConfigurationIID =
+                YangInstanceIdentifier.builder(layerProtocolIID).node(getQName("ethernet-container-pac"));
+
+        // reading all the current-problems list for this specific LTP and LP
         Optional<NormalizedNode> etherntContainerConfigurationOpt = netconfDomAccessor
-                .readDataNode(LogicalDatastoreType.OPERATIONAL, ethernetContainerIID.build());
+                .readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedEthernetContainerConfigurationIID.build());
 
         if (etherntContainerConfigurationOpt.isPresent()) {
-            ContainerNode etherntContainerConfiguration = (ContainerNode) etherntContainerConfigurationOpt.get();
-            MapNode ethernetContainerCurrentProblemsList = (MapNode) etherntContainerConfiguration
-                    .childByArg(new NodeIdentifier(getQName("current-problem-list")));
-            if (ethernetContainerCurrentProblemsList != null) {
-                Collection<MapEntryNode> ethernetContainerProblemsCollection =
-                        ethernetContainerCurrentProblemsList.body();
-                for (MapEntryNode ethernetContainerProblem : ethernetContainerProblemsCollection) {
+
+            MapEntryNode ethernetContainerCurrentProblemsList = ((MapNode) etherntContainerConfigurationOpt.get())
+                    .childByArg(NodeIdentifierWithPredicates.of(getQName("current-problem-list")));
+            if (ethernetContainerCurrentProblemsList == null) {
+                return null;
+            }
+            Collection<@NonNull DataContainerChild> ethernetContainerProblemsCollection =
+                    ethernetContainerCurrentProblemsList.body();
+            for (@NonNull DataContainerChild ethernetContainerProblem : ethernetContainerProblemsCollection) {
+                if (ethernetContainerProblem instanceof DataContainerNode dataContainerNode) {
                     resultList.add(netconfDomAccessor.getNodeId(),
-                            Integer.parseInt(Onf14DMDOMUtility.getLeafValue(ethernetContainerProblem,
+                            Integer.parseInt(Onf14DMDOMUtility.getLeafValue(dataContainerNode,
                                     getQName("sequence-number"))),
                             new DateAndTime(
-                                    Onf14DMDOMUtility.getLeafValue(ethernetContainerProblem, getQName("timestamp"))),
-                            ltpUuid, Onf14DMDOMUtility.getLeafValue(ethernetContainerProblem, getQName("problem-name")),
+                                    Onf14DMDOMUtility.getLeafValue(dataContainerNode, getQName("timestamp"))),
+                            ltpUuid, Onf14DMDOMUtility.getLeafValue(dataContainerNode, getQName("problem-name")),
                             InternalDataModelSeverity.mapSeverity(Onf14DMDOMUtility
-                                    .getLeafValue(ethernetContainerProblem, getQName("problem-severity"))));
+                                    .getLeafValue(dataContainerNode, getQName("problem-severity"))));
+                } else {
+                    LOG.warn("unable to cast ethernet container problem {} as container node",
+                            ethernetContainerProblem);
                 }
-            } else {
-                LOG.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
             }
+        } else {
+            LOG.debug("DBRead Id {} empty CurrentProblemList", ltpUuid);
         }
+
         return resultList;
     }
 
     public FaultData readAllCurrentProblems(FaultData resultList,
             List<TechnologySpecificPacKeys> ethernetContainerList) {
 
+        if (resultList == null) {
+            resultList = new FaultData();
+        }
         int idxStart; // Start index for debug messages
 
         for (TechnologySpecificPacKeys key : ethernetContainerList) {
+            if (resultList == null) {
+                resultList = new FaultData();
+            }
             idxStart = resultList.size();
 
             resultList = readEthernetContainerCurrentProblemForLtp(key.getLtpUuid(), key.getLocalId(), resultList);
@@ -120,7 +131,6 @@ public class EthernetContainer20 extends YangModule {
         }
         return resultList;
     }
-
 
 
     /**

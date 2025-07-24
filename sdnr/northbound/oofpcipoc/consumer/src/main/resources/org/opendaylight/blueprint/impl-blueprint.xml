@@ -33,6 +33,10 @@
     <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"
                odl:type="default"/>
 
+    <reference id="notificationService" interface="org.opendaylight.mdsal.binding.api.NotificationService"
+               odl:type="default"/>
+
+
     <!-- Register the OofpcipocListener to receive yang notifications -->
 
     <odl:notification-listener ref="listener"/>
@@ -40,6 +44,7 @@
     <bean id="listener" class="org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.OofpcipocHandleNotif">
         <argument ref="dataBroker"/>
         <argument ref="client"/>
+        <argument ref="notificationService"/>
     </bean>
 
 </blueprint>

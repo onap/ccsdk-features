@@ -41,18 +41,27 @@ public class ReducedSchemaInfo {
         this.type = qname.getLocalName();
     }
 
-    public boolean equals(QName obj) {
-        Optional<Revision> orev = obj.getRevision();
-        if (this.namespace.equals(obj.getNamespace().toString()) && this.type.equals(obj.getLocalName())) {
-            if (this.revision == null) {
-                return orev.isEmpty();
-            } else if (orev.isEmpty()) {
-                return false;
-            } else {
-                return orev.get().toString().equals(this.revision);
+    @Override
+    public boolean equals(Object object) {
+        if(object instanceof QName obj) {
+            Optional<Revision> orev = obj.getRevision();
+            if (this.namespace.equals(obj.getNamespace().toString()) && this.type.equals(obj.getLocalName())) {
+                if (this.revision == null) {
+                    return orev.isEmpty();
+                } else if (orev.isEmpty()) {
+                    return false;
+                } else {
+                    return orev.get().toString().equals(this.revision);
+                }
             }
+            return false;
         }
-        return false;
+        return super.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public String getNamespace() {

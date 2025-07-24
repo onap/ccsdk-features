@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.opendaylight.yangtools.yang.binding.TypeObject;
+import org.opendaylight.yangtools.binding.TypeObject;
 
 public class TypeObjectSerializer extends JsonSerializer<TypeObject> {
 

@@ -22,9 +22,10 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
 import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper2;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data;
 
 public class TestDataMappings {
@@ -87,7 +88,7 @@ public class TestDataMappings {
     @Test
     public void testPmData15m() throws ClassNotFoundException {
 
-        YangToolsMapper2<Data> mapper = new YangToolsMapper2<Data>(Data.class, null);
+        YangToolsMapper mapper = new YangToolsMapper();
         try {
             Data data = mapper.readValue(PMDATA15M_SERVERDB_JSON.getBytes(), Data.class);
             System.out.println(data);

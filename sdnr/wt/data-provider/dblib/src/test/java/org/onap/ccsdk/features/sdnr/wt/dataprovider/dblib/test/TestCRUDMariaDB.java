@@ -24,6 +24,8 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import ch.vorburger.exec.ManagedProcessException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -31,13 +33,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntryList;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.DatabaseVersion;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.IndicesEntryList;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test.util.MariaDBTestBase;
-import ch.vorburger.exec.ManagedProcessException;
 
 public class TestCRUDMariaDB {
 
@@ -198,13 +197,13 @@ public class TestCRUDMariaDB {
             fail(e.getMessage());
         }
         //read Tables
-        IndicesEntryList tables = dbClient.readTables();
+        var tables = dbClient.readTables();
         assertTrue(tables.stream().filter(t -> t.getName().equals(TABLE2_NAME)).count() == 1);
         assertTrue(tables.stream().filter(t -> t.getName().equals(TABLE3_NAME)).count() == 1);
-        AliasesEntryList views = dbClient.readViews(DBNAME);
-        assertTrue(views.stream().filter(t -> t.getIndex().equals(TABLE2_NAME) && t.getAlias().equals(VIEW2_NAME))
+        var views = dbClient.readViews(DBNAME);
+        assertTrue(views.stream().filter(t -> t.getTableReference().equals(TABLE2_NAME) && t.getName().equals(VIEW2_NAME))
                 .count() == 1);
-        assertTrue(views.stream().filter(t -> t.getIndex().equals(TABLE3_NAME) && t.getAlias().equals(VIEW3_NAME))
+        assertTrue(views.stream().filter(t -> t.getTableReference().equals(TABLE3_NAME) && t.getName().equals(VIEW3_NAME))
                 .count() == 1);
 
         //delete Tables/Views

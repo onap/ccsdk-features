@@ -49,7 +49,7 @@ public class ORanDMDOMUtility {
     private static final NetconfTimeStamp NETCONFTIME_CONVERTER = NetconfTimeStampImpl.getConverter();
 
     public static String getKeyValue(MapEntryNode componentEntry) {
-        NodeIdentifierWithPredicates componentKey = componentEntry.getIdentifier(); // list key
+        NodeIdentifierWithPredicates componentKey = componentEntry.name(); // list key
         return (String) componentKey.getValue(ORanDeviceManagerQNames.IETF_HW_COMPONENT_LIST_KEY);
     }
 

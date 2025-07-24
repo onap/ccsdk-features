@@ -67,6 +67,7 @@ public class ORanDOMNotifToVESEventAssembly {
         vesCEH.setStartEpochMicrosec(time.toEpochMilli() * 1000);
         vesCEH.setLastEpochMicrosec(time.toEpochMilli() * 1000);
         vesCEH.setNfVendorName("ORAN");
+        vesCEH.setReportingEntityId(vesProvider.getConfig().getReportingEntityId());
         vesCEH.setReportingEntityName(vesProvider.getConfig().getReportingEntityName());
         vesCEH.setSequence(sequenceNo);
         vesCEH.setSourceId("ORAN");

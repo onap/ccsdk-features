@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
-import org.opendaylight.yangtools.yang.binding.BaseIdentity;
+import org.opendaylight.yangtools.binding.BaseIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

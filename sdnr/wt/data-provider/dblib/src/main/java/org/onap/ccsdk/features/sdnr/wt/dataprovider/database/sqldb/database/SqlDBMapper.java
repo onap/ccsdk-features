@@ -43,8 +43,9 @@ import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsBui
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions.YangToolsDeserializerModifier;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.EnumTypeObject;
+import org.opendaylight.yangtools.binding.DataContainer;
+import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.EnumTypeObject;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -298,7 +299,7 @@ public class SqlDBMapper {
         return result.toString();
     }
 
-    public static List<SqlPropertyInfo> getProperties(Class<? extends DataObject> clazz) {
+    public static List<SqlPropertyInfo> getProperties(Class<? extends DataContainer> clazz) {
         return getFilteredMethods(clazz, true).stream().map(e -> {
             try {
                 return new SqlPropertyInfo(e);
@@ -363,7 +364,7 @@ public class SqlDBMapper {
         return YangToolsMapperHelper.implementsInterface(valueType, EnumTypeObject.class);
     }
 
-    public static <T extends DataObject> List<T> read(ResultSet data, Class<T> clazz)
+    public static <T extends DataContainer> List<T> read(ResultSet data, Class<T> clazz)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException,
             SecurityException, NoSuchMethodException, JsonProcessingException, SQLException {
         return read(data, clazz, null);

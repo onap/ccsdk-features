@@ -46,6 +46,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -59,8 +60,8 @@ public class Alarms10 extends YangModule {
 
     private static final String NAMESPACE = "urn:onf:yang:alarms-1-0";
     private static final List<QNameModule> MODULES =
-            Arrays.asList(QNameModule.create(XMLNamespace.of(NAMESPACE), Revision.of("2022-03-02")),
-                    QNameModule.create(XMLNamespace.of(NAMESPACE), Revision.of("2022-07-29")));
+            Arrays.asList(QNameModule.of(XMLNamespace.of(NAMESPACE), Revision.of("2022-03-02")),
+                    QNameModule.of(XMLNamespace.of(NAMESPACE), Revision.of("2022-07-29")));
 
     private final QName ALARM_PAC;
     private final QName CURRENT_ALARMS;
@@ -129,27 +130,23 @@ public class Alarms10 extends YangModule {
 
         YangInstanceIdentifier alarmsPacIID =
                 YangInstanceIdentifier.builder().node(coreModel14.getControlConstructQName()).build();
-        InstanceIdentifierBuilder alarmsContainerIID = YangInstanceIdentifier.builder(alarmsPacIID).node(ALARM_PAC);
 
-        //        @NonNull
-        //        AugmentationIdentifier alarmsContainerIID =
-        //                YangInstanceIdentifier.AugmentationIdentifier.create(Sets.newHashSet(ALARM_PAC));
-        //
-        //        InstanceIdentifierBuilder augmentedAlarmsIID =
-        //                YangInstanceIdentifier.builder(alarmsPacIID).node(alarmsContainerIID);
-        //
-        //        // reading all the alarms
+        InstanceIdentifierBuilder augmentedAlarmsIID =
+                YangInstanceIdentifier.builder(alarmsPacIID).node(ALARM_PAC);
+
+        // reading all the alarms
         Optional<NormalizedNode> alarms =
-                this.getNetconfDomAccessor().readDataNode(LogicalDatastoreType.OPERATIONAL, alarmsContainerIID.build());
+                this.getNetconfDomAccessor().readDataNode(LogicalDatastoreType.OPERATIONAL, augmentedAlarmsIID.build());
 
         FaultData resultList = new FaultData();
         if (alarms.isPresent()) {
-            ContainerNode alarmsDataNode = (ContainerNode) alarms.get();
-            ContainerNode alarmsContainer = (ContainerNode) alarmsDataNode.childByArg(new NodeIdentifier(ALARM_PAC));
-            ContainerNode currentAlarmsContainer =
-                    (ContainerNode) alarmsContainer.childByArg(new NodeIdentifier(CURRENT_ALARMS));
+
+            var alarmsContainer = ((ContainerNode) alarms.get()).childByArg(new NodeIdentifier(ALARM_PAC));
+            var currentAlarmsContainer = alarmsContainer != null ? ((ContainerNode) alarmsContainer).childByArg(
+                    new NodeIdentifier(CURRENT_ALARMS)) : null;
             MapNode currentAlarmsList =
-                    (MapNode) currentAlarmsContainer.childByArg(new NodeIdentifier(CURRENT_ALARM_LIST));
+                    currentAlarmsContainer != null ? (MapNode) ((DataContainerNode) currentAlarmsContainer).childByArg(
+                            new NodeIdentifier(CURRENT_ALARM_LIST)) : null;
             if (currentAlarmsList != null) {
                 Collection<MapEntryNode> currentAlarmsCollection = currentAlarmsList.body();
                 for (MapEntryNode currentAlarm : currentAlarmsCollection) {
@@ -165,7 +162,6 @@ public class Alarms10 extends YangModule {
             }
         }
         return resultList;
-
     }
 
     public boolean isSupported(Capabilities capabilites) {
@@ -179,7 +175,7 @@ public class Alarms10 extends YangModule {
     /**
      * Get specific instance, depending on capabilities
      *
-     * @param capabilities
+     * @param netconfDomAccessor
      * @return
      */
     public static Optional<Alarms10> getModule(NetconfDomAccessor netconfDomAccessor, CoreModel14 coreModel14) {

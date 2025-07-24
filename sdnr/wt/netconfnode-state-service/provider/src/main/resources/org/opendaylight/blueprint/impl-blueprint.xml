@@ -42,9 +42,6 @@
     <reference id="rpcProviderRegistry"
                interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
 
-    <reference id="clusterSingletonService"
-               interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
-
     <reference id="iEntityDataProvider"
                interface="org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider"/>
 
@@ -52,7 +49,7 @@
                interface="org.opendaylight.yangtools.yang.parser.api.YangParserFactory"/>
 
     <reference id="bindingNormalizedNodeSerializer"
-               interface="org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer"/>
+               interface="org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer"/>
 
 
     <bean id="netconfNodeStateService" class="org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.NetconfNodeStateServiceImpl" init-method="init" destroy-method="destroy" scope="singleton">
@@ -62,7 +59,6 @@
         <property name="notificationPublishService" ref="notificationPublishService"/>
         <property name="mountPointService" ref="mountPointService"/>
         <property name="domMountPointService" ref="domMountPointService"/>
-        <property name="clusterSingletonService" ref="clusterSingletonService"/>
         <property name="entityDataProvider" ref="iEntityDataProvider"/>
         <property name="yangParserFactory" ref="yangParserFactory"/>
         <property name="bindingNormalizedNodeSerializer" ref="bindingNormalizedNodeSerializer"/>

@@ -21,15 +21,14 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.oauthprovider.test;
 
-import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import org.junit.Ignore;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -40,14 +39,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.shiro.authc.BearerToken;
 import org.jolokia.osgi.security.Authenticator;
 import org.json.JSONArray;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.internal.matchers.Any;
 import org.onap.ccsdk.features.sdnr.wt.common.http.BaseHTTPClient;
 import org.onap.ccsdk.features.sdnr.wt.common.test.ServletOutputStreamToByteArrayOutputStream;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
@@ -56,16 +56,13 @@ import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.InvalidConfigurationEx
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.OdlPolicy;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet;
-import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.HeadersOnlyHttpServletRequest;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.providers.TokenCreator;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.test.helper.OdlJsonMapper;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.test.helper.OdlXmlMapper;
 import org.opendaylight.aaa.api.Claim;
 import org.opendaylight.aaa.api.IdMService;
-import org.apache.shiro.authc.BearerToken;
 import org.opendaylight.aaa.api.PasswordCredentialAuth;
 import org.opendaylight.aaa.api.PasswordCredentials;
-import org.opendaylight.aaa.shiro.web.env.AAAShiroWebEnvironment;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;

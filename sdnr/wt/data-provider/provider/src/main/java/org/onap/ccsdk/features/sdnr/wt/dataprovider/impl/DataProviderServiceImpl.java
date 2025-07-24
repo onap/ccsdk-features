@@ -27,6 +27,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -35,89 +36,114 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.impl.ElasticSearchDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.nodb.NoDbDatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.InventoryTreeProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.keystore.rev171017.Keystore;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.keystore.rev171017.keystore.entry.KeyCredential;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.keystore.rev171017.keystore.entry.KeyCredentialKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.keystore.rev240708.Keystore;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.keystore.rev240708.keystore.entry.KeyCredential;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.keystore.rev240708.keystore.entry.KeyCredentialKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenance;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateNetworkElementConnection;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateNetworkElementConnectionOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DataProviderService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenance;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnection;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadCmlogListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadConnectionlogListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadEventlogListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultcurrentListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadFaultlogListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadGuiCutThroughEntryOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mDeviceList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mDeviceListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mDeviceListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mLtpList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mLtpListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mLtpListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hDeviceList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hDeviceListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hDeviceListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpListInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata24hLtpListOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadStatusInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadStatusOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadTlsKeyEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadTlsKeyEntryInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadTlsKeyEntryOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadTlsKeyEntryOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenance;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnection;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.tls.key.entry.output.Pagination;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.tls.key.entry.output.PaginationBuilder;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.Rpc;
+import org.opendaylight.yangtools.binding.RpcInput;
+import org.opendaylight.yangtools.binding.RpcOutput;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -131,45 +157,72 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     private static final Logger LOG = LoggerFactory.getLogger(DataProviderServiceImpl.class);
     public static final String CONFIGURATIONFILE = "etc/dataprovider.properties";
     private static final long DATABASE_TIMEOUT_MS = 120 * 1000L;
-    private static final @NonNull InstanceIdentifier<Keystore> KEYSTORE_IIF = InstanceIdentifier.create(Keystore.class);
+    private static final @NonNull DataObjectIdentifier<Keystore> KEYSTORE_IIF = DataObjectIdentifier.builder(
+            Keystore.class).build();
     private static final Pagination EMPTY_PAGINATION = new PaginationBuilder().setSize(Uint32.valueOf(20))
             .setTotal(Uint64.valueOf(0)).setPage(Uint64.valueOf(1)).build();
     private static final long DEFAULT_PAGESIZE = 20;
     private static final long DEFAULT_PAGE = 1;
 
-    private final ObjectRegistration<@NonNull DataProviderServiceImpl> rpcReg;
+    private final Registration rpcReg;
     private final DatabaseDataProvider dataProvider;
-    private final ConfigurationFileRepresentation configuration;
-    private final DataProviderConfig dbConfig;
     private final DataBroker dataBroker;
-    private final MsServlet mediatorServerServlet;
 
-    public DataProviderServiceImpl(final RpcProviderService rpcProviderService, MsServlet mediatorServerServlet,
-            DataBroker dataBroker) throws Exception {
-        this.configuration = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
-        this.dbConfig = new DataProviderConfig(configuration);
+    public DataProviderServiceImpl(final RpcProviderService rpcProviderService, DataBroker dataBroker) {
+        var configuration = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
+        var dbConfig = new DataProviderConfig(configuration);
         this.dataBroker = dataBroker;
-        this.mediatorServerServlet = mediatorServerServlet;
-        if(this.dbConfig.isEnabled()) {
-            if (this.dbConfig.getDbType() == SdnrDbType.ELASTICSEARCH) {
-                this.dataProvider = new ElasticSearchDataProvider(this.dbConfig.getEsConfig());
-             } else {
-                this.dataProvider = new SqlDBDataProvider(this.dbConfig.getMariadbConfig(), this.dbConfig.getGuicutthroughOverride());
-            }
-        }
-        else {
-            this.dataProvider = new NoDbDatabaseDataProvider();
+        if (dbConfig.isEnabled()) {
+            this.dataProvider = new SqlDBDataProvider(dbConfig.getMariadbConfig(),
+                    dbConfig.getGuicutthroughOverride());
+        } else {
+            this.dataProvider = new NoDbDatabaseDataProvider(dataBroker);
         }
         this.dataProvider.waitForYellowDatabaseStatus(DATABASE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        mediatorServerServlet.setDataProvider(this.dataProvider.getHtDatabaseMediatorServer());
         // Register ourselves as the REST API RPC implementation
         LOG.info("Register RPC Service {}", DataProviderServiceImpl.class.getSimpleName());
-        this.rpcReg = rpcProviderService.registerRpcImplementation(DataProviderService.class, this);
+        this.rpcReg = rpcProviderService.registerRpcImplementations(
+                List.of(new RpcHelper<>(ReadFaultcurrentList.class, DataProviderServiceImpl.this::readFaultcurrentList),
+                        new RpcHelper<>(ReadFaultlogList.class, DataProviderServiceImpl.this::readFaultlogList),
+                        new RpcHelper<>(ReadCmlogList.class, DataProviderServiceImpl.this::readCmlogList),
+                        new RpcHelper<>(ReadMaintenanceList.class, DataProviderServiceImpl.this::readMaintenanceList),
+                        new RpcHelper<>(ReadMediatorServerList.class,
+                                DataProviderServiceImpl.this::readMediatorServerList),
+                        new RpcHelper<>(ReadNetworkElementConnectionList.class,
+                                DataProviderServiceImpl.this::readNetworkElementConnectionList),
+                        new RpcHelper<>(ReadPmdata15mList.class, DataProviderServiceImpl.this::readPmdata15mList),
+                        new RpcHelper<>(ReadPmdata24hList.class, DataProviderServiceImpl.this::readPmdata24hList),
+                        new RpcHelper<>(ReadStatus.class, DataProviderServiceImpl.this::readStatus),
+                        new RpcHelper<>(ReadInventoryList.class, DataProviderServiceImpl.this::readInventoryList),
+                        new RpcHelper<>(ReadInventoryDeviceList.class,
+                                DataProviderServiceImpl.this::readInventoryDeviceList),
+                        new RpcHelper<>(ReadPmdata15mLtpList.class, DataProviderServiceImpl.this::readPmdata15mLtpList),
+                        new RpcHelper<>(ReadPmdata15mDeviceList.class,
+                                DataProviderServiceImpl.this::readPmdata15mDeviceList),
+                        new RpcHelper<>(ReadPmdata24hLtpList.class, DataProviderServiceImpl.this::readPmdata24hLtpList),
+                        new RpcHelper<>(ReadPmdata24hDeviceList.class,
+                                DataProviderServiceImpl.this::readPmdata24hDeviceList),
+                        new RpcHelper<>(ReadConnectionlogList.class,
+                                DataProviderServiceImpl.this::readConnectionlogList),
+                        new RpcHelper<>(CreateNetworkElementConnection.class,
+                                DataProviderServiceImpl.this::createNetworkElementConnection),
+                        new RpcHelper<>(UpdateNetworkElementConnection.class,
+                                DataProviderServiceImpl.this::updateNetworkElementConnection),
+                        new RpcHelper<>(DeleteNetworkElementConnection.class,
+                                DataProviderServiceImpl.this::deleteNetworkElementConnection),
+                        new RpcHelper<>(DeleteMediatorServer.class, DataProviderServiceImpl.this::deleteMediatorServer),
+                        new RpcHelper<>(CreateMediatorServer.class, DataProviderServiceImpl.this::createMediatorServer),
+                        new RpcHelper<>(CreateMaintenance.class, DataProviderServiceImpl.this::createMaintenance),
+                        new RpcHelper<>(DeleteMaintenance.class, DataProviderServiceImpl.this::deleteMaintenance),
+                        new RpcHelper<>(UpdateMediatorServer.class, DataProviderServiceImpl.this::updateMediatorServer),
+                        new RpcHelper<>(UpdateMaintenance.class, DataProviderServiceImpl.this::updateMaintenance),
+                        new RpcHelper<>(ReadEventlogList.class, DataProviderServiceImpl.this::readEventlogList),
+                        new RpcHelper<>(ReadGuiCutThroughEntry.class,
+                                DataProviderServiceImpl.this::readGuiCutThroughEntry),
+                        new RpcHelper<>(ReadTlsKeyEntry.class, DataProviderServiceImpl.this::readTlsKeyEntry)
+                ));
 
-    }
 
-    private void sendResyncCallbackToApiGateway() {
-        this.mediatorServerServlet.triggerReloadSync();
     }
 
     /**
@@ -179,9 +232,6 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         return dataProvider.getDataProvider();
     }
 
-    public HtDatabaseClient getRawClient() {
-        return this.dataProvider.getRawClient();
-    }
 
     /**
      * @return data provider for Maintenance()
@@ -190,16 +240,9 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         return dataProvider.getHtDatabaseMaintenance();
     }
 
-    /**
-     * @return configuration object
-     */
-    public IEsConfig getEsConfig() {
-        return dbConfig.getEsConfig();
-    }
-
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         LOG.info("Close RPC Service");
         if (rpcReg != null) {
             rpcReg.close();
@@ -243,9 +286,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<ReadMediatorServerListOutput>> readMediatorServerList(
             ReadMediatorServerListInput input) {
         LOG.debug("RPC Request: readMediatorServerList with input {}", input);
-        RpcResultBuilder<ReadMediatorServerListOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.readMediatorServerList(input));
-        return result.buildFuture();
+        throw new RuntimeException("not supported anymore");
     }
 
     @Override
@@ -378,20 +419,14 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<DeleteMediatorServerOutput>> deleteMediatorServer(
             DeleteMediatorServerInput input) {
         LOG.debug("RPC Request: deleteMediatorServer with input {}", input);
-        RpcResultBuilder<DeleteMediatorServerOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.deleteMediatorServer(input));
-        this.sendResyncCallbackToApiGateway();
-        return result.buildFuture();
+        throw new RuntimeException("not supported anymore");
     }
 
     @Override
     public ListenableFuture<RpcResult<CreateMediatorServerOutput>> createMediatorServer(
             CreateMediatorServerInput input) {
         LOG.debug("RPC Request: createMediatorServer with input {}", input);
-        RpcResultBuilder<CreateMediatorServerOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.createMediatorServer(input));
-        this.sendResyncCallbackToApiGateway();
-        return result.buildFuture();
+        throw new RuntimeException("not supported anymore");
     }
 
     @Override
@@ -414,10 +449,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     public ListenableFuture<RpcResult<UpdateMediatorServerOutput>> updateMediatorServer(
             UpdateMediatorServerInput input) {
         LOG.debug("RPC Request: updateMediatorServer with input {}", input);
-        RpcResultBuilder<UpdateMediatorServerOutput> result =
-                read(() -> DataProviderServiceImpl.this.dataProvider.updateMediatorServer(input));
-        this.sendResyncCallbackToApiGateway();
-        return result.buildFuture();
+        throw new RuntimeException("not supported anymore");
     }
 
     @Override
@@ -457,16 +489,17 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     private ReadTlsKeyEntryOutputBuilder readTlsKeys(ReadTlsKeyEntryInput input) {
         Optional<Keystore> result = Optional.empty();
         // The implicite close is not handled correctly by underlaying opendaylight netconf service
-        ReadTransaction transaction = this.dataBroker.newReadOnlyTransaction();
-        try {
-            result = transaction.read(LogicalDatastoreType.CONFIGURATION, KEYSTORE_IIF).get();
-        } catch (ExecutionException e) {
-            LOG.warn("problem reading netconf-keystore: ", e);
+        try (ReadTransaction transaction = this.dataBroker.newReadOnlyTransaction()) {
+            try {
+                result = transaction.read(LogicalDatastoreType.CONFIGURATION, KEYSTORE_IIF).get();
+            } catch (ExecutionException e) {
+                LOG.warn("problem reading netconf-keystore: ", e);
 
-        } catch (InterruptedException e) {
-            LOG.warn("Interrupted!", e);
-            // Restore interrupted state...
-            Thread.currentThread().interrupt();
+            } catch (InterruptedException e) {
+                LOG.warn("Interrupted!", e);
+                // Restore interrupted state...
+                Thread.currentThread().interrupt();
+            }
         }
         ReadTlsKeyEntryOutputBuilder output = new ReadTlsKeyEntryOutputBuilder();
         if (result.isEmpty()) {
@@ -483,7 +516,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         long size = pagination == null ? DEFAULT_PAGESIZE
                 : pagination.getSize() == null ? DEFAULT_PAGESIZE : pagination.getSize().longValue();
         long from = pageNum > 0 ? (pageNum - 1) * size : 0;
-        output.setData(keyCredential.keySet().stream().skip(from).limit(size).map(e -> e.getKeyId())
+        output.setData(keyCredential.keySet().stream().skip(from).limit(size).map(KeyCredentialKey::getKeyId)
                 .collect(Collectors.toSet()));
         output.setPagination(new PaginationBuilder().setPage(Uint64.valueOf(pageNum))
                 .setSize(Uint32.valueOf(output.getData().size())).setTotal(Uint64.valueOf(keyCredential.size()))
@@ -496,9 +529,9 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
 
-        StringBuffer buf = new StringBuffer();
+        var buf = new StringBuilder();
         buf.append("Exception: ");
-        buf.append(sw.toString());
+        buf.append(sw);
         return buf.toString();
     }
 
@@ -506,12 +539,12 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         return this.dataProvider.getInventoryTreeProvider();
     }
 
-    private interface GetEntityInput<O extends DataObject,B> {
+    private interface GetEntityInput<O extends DataObject, B> {
         B get() throws IOException;
     }
 
     private static <O extends DataObject, B> RpcResultBuilder<O> read(
-            GetEntityInput<O,B> inputgetter) {
+            GetEntityInput<O, B> inputgetter) {
         RpcResultBuilder<O> result;
         try {
             B outputBuilder = inputgetter.get();
@@ -524,11 +557,34 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
         return result;
     }
 
-    
+
     public HtUserdataManager getHtDatabaseUserManager() {
         return this.dataProvider.getUserManager();
     }
 
+    private interface RpcExecutionWrapper<I extends RpcInput, O extends RpcOutput> {
 
+        ListenableFuture<@NonNull RpcResult<@NonNull O>> execute(@NonNull I input);
+    }
 
+    private static class RpcHelper<I extends RpcInput, O extends RpcOutput> implements Rpc<I, O> {
+
+        private final RpcExecutionWrapper<I, O> executor;
+        private final Class<? extends Rpc<I, O>> implementedInterface;
+
+        RpcHelper(Class<? extends Rpc<I, O>> implementedInterface, RpcExecutionWrapper<I, O> executor) {
+            this.implementedInterface = implementedInterface;
+            this.executor = executor;
+        }
+
+        @Override
+        public @NonNull ListenableFuture<@NonNull RpcResult<@NonNull O>> invoke(@NonNull I input) {
+            return this.executor.execute(input);
+        }
+
+        @Override
+        public @NonNull Class<? extends Rpc<I, O>> implementedInterface() {
+            return this.implementedInterface;
+        }
+    }
 }

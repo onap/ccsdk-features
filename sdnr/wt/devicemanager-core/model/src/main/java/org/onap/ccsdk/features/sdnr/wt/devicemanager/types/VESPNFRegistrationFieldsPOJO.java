@@ -21,13 +21,16 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.types;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import java.util.HashMap;
+import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 @JsonInclude(Include.NON_NULL)
+@Getter
+@Setter
 public class VESPNFRegistrationFieldsPOJO {
 
     private Map<String, String> additionalFields = new HashMap<String, String>();
@@ -43,110 +46,5 @@ public class VESPNFRegistrationFieldsPOJO {
     private String unitFamily;
     private String unitType;
     private String vendorName;
-
-    public Map<String, String> getAdditionalFields() {
-        return additionalFields;
-    }
-
-    public void setAdditionalFields(Map<String, String> additionalFields) {
-        this.additionalFields = additionalFields;
-    }
-
-    public String getLastServiceDate() {
-        return lastServiceDate;
-    }
-
-    public void setLastServiceDate(String lastServiceDate) {
-        this.lastServiceDate = lastServiceDate;
-    }
-
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
-
-    public String getManufactureDate() {
-        return manufactureDate;
-    }
-
-    public void setManufactureDate(String manufactureDate) {
-        this.manufactureDate = manufactureDate;
-    }
-
-    public String getModelNumber() {
-        return modelNumber;
-    }
-
-    public void setModelNumber(String modelNumber) {
-        this.modelNumber = modelNumber;
-    }
-
-    public String getOamV4IpAddress() {
-        return oamV4IpAddress;
-    }
-
-    public void setOamV4IpAddress(String oamV4IpAddress) {
-        this.oamV4IpAddress = oamV4IpAddress;
-    }
-
-    public String getOamV6IpAddress() {
-        return oamV6IpAddress;
-    }
-
-    public void setOamV6IpAddress(String oamV6IpAddress) {
-        this.oamV6IpAddress = oamV6IpAddress;
-    }
-
-    public String getPnfRegistrationFieldsVersion() {
-        return pnfRegistrationFieldsVersion;
-    }
-
-    public void setPnfRegistrationFieldsVersion(String pnfRegistrationFieldsVersion) {
-        this.pnfRegistrationFieldsVersion = pnfRegistrationFieldsVersion;
-    }
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    public String getSoftwareVersion() {
-        return softwareVersion;
-    }
-
-    public void setSoftwareVersion(String softwareVersion) {
-        this.softwareVersion = softwareVersion;
-    }
-
-    public String getUnitFamily() {
-        return unitFamily;
-    }
-
-    public void setUnitFamily(String unitFamily) {
-        this.unitFamily = unitFamily;
-    }
-
-    public String getUnitType() {
-        return unitType;
-    }
-
-    public void setUnitType(String unitType) {
-        this.unitType = unitType;
-    }
-
-    public String getVendorName() {
-        return vendorName;
-    }
-
-    public void setVendorName(String vendorName) {
-        this.vendorName = vendorName;
-
-    }
 
 }

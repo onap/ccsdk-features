@@ -18,11 +18,9 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.maintenance.impl;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.maintenance.MaintenanceRPCServiceAPI;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.MaintenanceService;

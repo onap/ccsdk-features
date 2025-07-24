@@ -35,8 +35,6 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
-import java.math.*;
-
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationOutput;
 
@@ -59,7 +57,7 @@ public class TestCMNotify {
             cMNotifyProvider = new CMNotifyProvider();
             cMNotifyProvider.setDataBroker(dataBroker);
             cMNotifyProvider.setNotificationPublishService(mockNotification);
-            cMNotifyProvider.setRpcProviderRegistry(mockRpcRegistry);
+            cMNotifyProvider.setRpcProviderService(mockRpcRegistry);
             cMNotifyProvider.setClient(mockSliClient);
         }
     }

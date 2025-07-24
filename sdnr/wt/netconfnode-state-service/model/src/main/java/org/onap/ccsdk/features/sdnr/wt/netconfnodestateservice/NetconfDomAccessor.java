@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.mdsal.dom.api.DOMMountPoint;
@@ -34,8 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.create.subscription.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.Stream;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netmod.notification.rev080714.netconf.streams.StreamKey;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.concepts.Registration;
+import org.opendaylight.yangtools.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -105,7 +104,7 @@ public interface NetconfDomAccessor extends NetconfAccessor {
      * @param types as list of SchemaPath
      * @return handler to manager registration
      */
-    <T extends DOMNotificationListener> @NonNull ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
+    <T extends DOMNotificationListener> @NonNull Registration doRegisterNotificationListener(
             @NonNull T listener, Collection<Absolute> types);
 
     /**
@@ -117,7 +116,7 @@ public interface NetconfDomAccessor extends NetconfAccessor {
      * @param types as array of SchemaPath
      * @return Object to close and access
      */
-    <T extends DOMNotificationListener> @NonNull ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
+    <T extends DOMNotificationListener> @NonNull Registration doRegisterNotificationListener(
             @NonNull T listener, Absolute[] types);
 
     /**
@@ -128,7 +127,7 @@ public interface NetconfDomAccessor extends NetconfAccessor {
      * @param types as array of QName
      * @return Object to close and access
      */
-    <T extends DOMNotificationListener> @NonNull ListenerRegistration<DOMNotificationListener> doRegisterNotificationListener(
+    <T extends DOMNotificationListener> @NonNull Registration doRegisterNotificationListener(
             @NonNull T listener, QName[] types);
 
     /**

@@ -1,6 +1,4 @@
 package org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev200327;
-import java.lang.String;
-import java.lang.UnsupportedOperationException;
 
 /**
  * The purpose of generated class in src/main/java for Union types is to create new instances of unions from a string representation.

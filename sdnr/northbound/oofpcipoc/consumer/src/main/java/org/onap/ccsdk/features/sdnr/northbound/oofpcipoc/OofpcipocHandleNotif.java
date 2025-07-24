@@ -44,7 +44,7 @@ import org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.handlenotif.pojos.X0005
 
 import org.opendaylight.mdsal.binding.api.DataBroker;
 
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.rev190308.OofpcipocListener;
+import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.rev190308.NbrlistChangeNotification;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.rev190308.NetconfConfigChange;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofpcipoc.rev190308.nbrlist.change.notification.*;
@@ -53,6 +53,7 @@ import org.opendaylight.yang.gen.v1.org.onap.ccsdk.features.sdnr.northbound.oofp
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.JSONArray;
@@ -66,7 +67,7 @@ import org.json.JSONObject;
  * initialization / clean up methods.
  *
  */
-public class OofpcipocHandleNotif implements AutoCloseable, OofpcipocListener {
+public class OofpcipocHandleNotif implements AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(OofpcipocHandleNotif.class);
 
@@ -85,6 +86,10 @@ public class OofpcipocHandleNotif implements AutoCloseable, OofpcipocListener {
 
 	private OofpcipocClient OofpcipocClient;
 
+    private NotificationService notificationService;
+
+    private Registration registration;
+
 	public OofpcipocHandleNotif() {
 
 		this.LOG.info("Creating listener for {}", APPLICATION_NAME);
@@ -101,18 +106,24 @@ public class OofpcipocHandleNotif implements AutoCloseable, OofpcipocListener {
 		this.OofpcipocClient = OofpcipocClient;
 	}
 
+    public void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
+
 	public void init() {
 		LOG.info("Placeholder: Initializing listener  for {}", APPLICATION_NAME);
+        this.registration = notificationService.registerListener(NbrlistChangeNotification.class,
+                OofpcipocHandleNotif.this::onNbrlistChangeNotification);
 	}
 
 	@Override
 	public void close() throws Exception {
 		LOG.info("Closing listener for {}", APPLICATION_NAME);
 		executor.shutdown();
+        registration.close();
 		LOG.info("Successfully closed listener for {}", APPLICATION_NAME);
 	}
 
-	@Override
 	public void onNbrlistChangeNotification(final NbrlistChangeNotification notification) {
 
 		LOG.info("Reached onNbrlistChangeNotification");
@@ -288,7 +299,6 @@ public class OofpcipocHandleNotif implements AutoCloseable, OofpcipocListener {
 		return writer.toString();
 	}
 
-	@Override
 	public void onNetconfConfigChange(final NetconfConfigChange notification) {
 
 	}

@@ -21,15 +21,13 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.nodb;
 
+import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.InventoryTreeProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.DataTreeObject;
 
-import java.io.IOException;
-import java.util.List;
-
 public class NoDbInventoryTreeProvider implements InventoryTreeProvider {
     @Override
-    public DataTreeObject readInventoryTree(List<String> tree, String filter) throws IOException {
+    public DataTreeObject readInventoryTree(List<String> tree, String filter) {
         return new DataTreeObject("","");
     }
 }
