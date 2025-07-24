@@ -192,11 +192,17 @@ public class OAuthProviderConfig {
 
     @JsonIgnore
     public String getUrlOrInternal() {
-        return this.internalUrl != null && this.internalUrl.length() > 0 ? this.internalUrl : this.url;
+        return this.getUrlOrInternal(true);
     }
-
+    @JsonIgnore
+    public String getUrlOrInternal(boolean internalFirst) {
+        if(internalFirst) {
+            return this.internalUrl != null && !this.internalUrl.isEmpty() ? this.internalUrl : this.url;
+        }
+        return this.url != null && !this.url.isEmpty() ? this.url : this.internalUrl;
+    }
     @JsonIgnore
     public boolean hasToBeConfigured(){
-        return this.openIdConfigUrl!=null && this.openIdConfigUrl.length()>0;
+        return this.openIdConfigUrl!=null && !this.openIdConfigUrl.isEmpty();
     }
 }

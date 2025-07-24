@@ -17,7 +17,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl;
 
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.slf4j.Logger;
@@ -30,7 +29,6 @@ public class DeviceManagerOnfImpl implements AutoCloseable {
 
     private NetconfNetworkElementService netconfNetworkElementService;
 
-    private HtDatabaseClient htDatabaseClient;
     private Boolean devicemanagerInitializationOk = false;
     private FactoryRegistration<ONFCoreNetworkElementFactory> resOnf;
     private DeviceManagerOnfConfiguration configuration;
@@ -65,7 +63,6 @@ public class DeviceManagerOnfImpl implements AutoCloseable {
     @Override
     public void close() throws Exception {
         LOG.info("closing ...");
-        close(htDatabaseClient);
         close(resOnf);
         LOG.info("closing done");
     }
@@ -73,7 +70,7 @@ public class DeviceManagerOnfImpl implements AutoCloseable {
     /**
      * Used to close all Services, that should support AutoCloseable Pattern
      *
-     * @param toClose
+     * @param toCloseList
      * @throws Exception
      */
     private void close(AutoCloseable... toCloseList) {

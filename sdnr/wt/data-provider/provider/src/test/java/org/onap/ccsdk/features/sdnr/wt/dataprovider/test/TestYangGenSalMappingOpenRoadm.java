@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
@@ -31,9 +32,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jline.utils.Log;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.yangtools.DataProviderYangToolsMapper;
-import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper2;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev191129.PmDataType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.BIPErrorCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.openroadm.pm.types.rev200413.DelayTCM2Up;
@@ -68,7 +69,7 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
 
         PerformanceDataBuilder performanceDataBuilder = new PerformanceDataBuilder();
         performanceDataBuilder.setMeasurement(
-                YangHelper2.getListOrMap(MeasurementKey.class, Arrays.asList(measurement1, measurement2)));
+                YangHelper.getListOrMap(MeasurementKey.class, Arrays.asList(measurement1, measurement2)));
 
         PmdataEntityBuilder pmDataEntitybuilder = new PmdataEntityBuilder();
         pmDataEntitybuilder.setPerformanceData(performanceDataBuilder.build());
@@ -91,8 +92,9 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
         String jsonString2 = getFileContent("pmdata1.json");
         DataProviderYangToolsMapper mapper2 = new DataProviderYangToolsMapper();
         PmdataEntity generatepmdNode = mapper2.readValue(jsonString2.getBytes(), PmdataEntity.class);
-        out("String1:"+generatepmdNode.toString()); // Print it with specified indentation
-        assertTrue("GranularityPeriod", generatepmdNode.getGranularityPeriod().equals(GranularityPeriodType.Period15Min));
+        out("String1:" + generatepmdNode.toString()); // Print it with specified indentation
+        assertTrue("GranularityPeriod",
+                generatepmdNode.getGranularityPeriod().equals(GranularityPeriodType.Period15Min));
         assertTrue("NodeName", generatepmdNode.getNodeName().equals("NTS_RDM2"));
         @Nullable PerformanceData performanceData = generatepmdNode.getPerformanceData();
         assertNotNull("PerformanceData", performanceData);
@@ -108,6 +110,7 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
         String jsonString2 = getFileContent("pmdata2.json");
         DataProviderYangToolsMapper mapper2 = new DataProviderYangToolsMapper();
         PmdataEntity generatepmdNode = mapper2.readValue(jsonString2, PmdataEntity.class);
+        assertNotNull(generatepmdNode);
         out(generatepmdNode.toString()); // Print it with specified indentation
     }
 
@@ -115,11 +118,9 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
     public void testOpenroadmPMString3() throws IOException, ClassNotFoundException {
         out("Test: " + method());
         String jsonString2 = getFileContent("pmdata3.json");
-        YangToolsMapper2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> mapper2 =
-                new YangToolsMapper2<>(
-                        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data.class,
-                        null);
+        YangToolsMapper mapper2 = new YangToolsMapper();
         PmdataEntity generatepmdNode = mapper2.readValue(jsonString2.getBytes(), PmdataEntity.class);
+        assertNotNull(generatepmdNode);
         out(generatepmdNode.toString()); // Print it with specified indentation
     }
 
@@ -128,10 +129,7 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
     public void testOpenroadmPMString4() throws IOException, ClassNotFoundException {
         out("Test: " + method());
         String jsonString = getFileContent("pmdata3.json");
-        YangToolsMapper2<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data> mapper =
-                new YangToolsMapper2<>(
-                        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data.class,
-                        null);
+        YangToolsMapper mapper = new YangToolsMapper();
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data data =
                 mapper.readValue(jsonString.getBytes(),
                         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.pmdata._15m.list.output.Data.class);
@@ -144,7 +142,8 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
         @Nullable Map<MeasurementKey, Measurement> measurement = performanceData.getMeasurement();
         assertNotNull("Measurement", measurement);
         Measurement measurement1 = measurement.get(new MeasurementKey(DelayTCM2Up.VALUE));
-        assertTrue("Measurement=11298624220985537708", measurement1.getPmValue().stringValue().equals("11298624220985537708"));
+        assertTrue("Measurement=11298624220985537708",
+                measurement1.getPmValue().stringValue().equals("11298624220985537708"));
     }
     /*
      * --------------------------------- Private
@@ -161,7 +160,8 @@ public class TestYangGenSalMappingOpenRoadm extends Mockito {
 
     private static String getFileContent(String filename) throws IOException {
         return String.join("\n",
-                IoUtils.readAllLines(TestTree.class.getResourceAsStream(resourceDirectoryPath + filename)));
+                IoUtils.readAllLines(
+                        TestYangGenSalMappingOpenRoadm.class.getResourceAsStream(resourceDirectoryPath + filename)));
     }
 
 }

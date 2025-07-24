@@ -24,10 +24,10 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.onap.ccsdk.features.sdnr.wt.common.database.queries.SortOrder;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.DataTreeChildObject;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.DataTreeObject;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryEntity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SortOrder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public abstract class BaseInventoryTreeProvider implements InventoryTreeProvider {
@@ -77,10 +77,10 @@ public abstract class BaseInventoryTreeProvider implements InventoryTreeProvider
         //get uuid of path
         final String uuid = path.size() > 0 ? path.get(path.size() - 1) : null;
         List<InventoryEntity> matches =
-                this.search(filter, nodeId, parentUuid, uuid, INVENTORY_PROPERTY_TREELEVEL, SortOrder.ASCENDING);
+                this.search(filter, nodeId, parentUuid, uuid, INVENTORY_PROPERTY_TREELEVEL, SortOrder.Ascending);
         //tree.a(subtreePath);
         List<InventoryEntity> others =
-                this.search((String) null, nodeId, null, null, INVENTORY_PROPERTY_TREELEVEL, SortOrder.ASCENDING);
+                this.search((String) null, nodeId, null, null, INVENTORY_PROPERTY_TREELEVEL, SortOrder.Ascending);
         if (matches.size() > 0) {
             int treeLevelToStart = (path == null || path.size() <= 0) ? 0 : path.size() - 1;
             //build tree
@@ -133,7 +133,7 @@ public abstract class BaseInventoryTreeProvider implements InventoryTreeProvider
     private DataTreeObject readInventoryTreeWithNode(String filter) throws IOException {
         DataTreeObject tree = new DataTreeObject(INVENTORY_PROPERTY_PARENTUUID, INVENTORY_PROPERTY_UUID);
 
-        List<InventoryEntity> matches = this.search(filter, INVENTORY_PROPERTY_TREELEVEL, SortOrder.ASCENDING);
+        List<InventoryEntity> matches = this.search(filter, INVENTORY_PROPERTY_TREELEVEL, SortOrder.Ascending);
         List<InventoryEntity> others = null;
         if (matches.size() > 0) {
             if (filter != null) {
@@ -150,7 +150,7 @@ public abstract class BaseInventoryTreeProvider implements InventoryTreeProvider
                             new DataTreeChildObject(nodeId, false).setProperty(INVENTORY_PROPERTY_UUID, nodeId));
 
                 }
-                others = this.getItemsForNodes(alreadyInList, INVENTORY_PROPERTY_TREELEVEL, SortOrder.ASCENDING);
+                others = this.getItemsForNodes(alreadyInList, INVENTORY_PROPERTY_TREELEVEL, SortOrder.Ascending);
             } else {
                 List<String> nodeIds = this.getAllNodeIds();
                 for (String node : nodeIds) {

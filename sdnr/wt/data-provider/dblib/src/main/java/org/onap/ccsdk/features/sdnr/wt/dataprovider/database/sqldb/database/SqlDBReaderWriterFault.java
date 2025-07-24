@@ -24,9 +24,9 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database;
 import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataContainer;
 
-public class SqlDBReaderWriterFault<T extends DataObject> extends SqlDBReaderWriter<T> {
+public class SqlDBReaderWriterFault<T extends DataContainer> extends SqlDBReaderWriter<T> {
 
     private static final String NODE_KEY = "node-id";
 

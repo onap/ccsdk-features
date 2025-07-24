@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom;
 
 import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ import org.xml.sax.SAXException;
 public class TestOnf14ToInternalDataModel2 extends Mockito {
 
     private static final QNameModule qnm =
-            QNameModule.create(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
+            QNameModule.of(XMLNamespace.of("urn:onf:yang:core-model-1-4"), Revision.of("2019-11-27"));
     NetconfDomAccessor netconfDomAccessor;
     Capabilities capabilities;
 
@@ -71,7 +72,6 @@ public class TestOnf14ToInternalDataModel2 extends Mockito {
         Onf14DomToInternalDataModel model = new Onf14DomToInternalDataModel();
 
         ContainerNode cn = (ContainerNode) Onf14DomTestUtils.getNormalizedNodeFromJson();
-        System.out.println("Container Node = "+cn);
         MapNode equipmentMap = (MapNode) cn.getChildByArg(new NodeIdentifier(QName.create(qnm, "equipment")));
         List<Inventory> inventoryList = new ArrayList<Inventory>();
 

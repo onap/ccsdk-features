@@ -21,7 +21,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm71.impl;
 
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.slf4j.Logger;
@@ -40,7 +39,6 @@ public class DeviceManagerOpenroadmImpl implements AutoCloseable {
     @SuppressWarnings("unused")
     private static final String CONFIGURATIONFILE = "etc/devicemanager-opeenroadm.properties";
     private NetconfNetworkElementService netconfNetworkElementService;
-    private HtDatabaseClient htDatabaseClient;
     private Boolean devicemanagerInitializationOk = false;
     private FactoryRegistration<OpenroadmNetworkElementFactory> resOpenRoadm;
     // end of variables
@@ -75,7 +73,6 @@ public class DeviceManagerOpenroadmImpl implements AutoCloseable {
     @Override
     public void close() throws Exception {
         LOG.info("closing ...");
-        close(htDatabaseClient);
         close(resOpenRoadm);
         LOG.info("closing done");
     }
@@ -85,7 +82,7 @@ public class DeviceManagerOpenroadmImpl implements AutoCloseable {
     /**
      * Used to close all Services, that should support AutoCloseable Pattern
      *
-     * @param toClose
+     * @param toCloseList
      * @throws Exception
      */
     private void close(AutoCloseable... toCloseList) {

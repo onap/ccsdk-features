@@ -1,6 +1,7 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.notifications;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.dataprovider.InternalDataModelSeverity;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.qnames.Onf14DevicemanagerQNames;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.util.Onf14DMDOMUtility;
@@ -92,12 +93,13 @@ public class Onf14DomEthernetContainerNotificationListener implements DOMNotific
                         Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_COUNTER)))
                 .build();
         serviceProvider.getFaultService().faultNotification(faultAlarm);
+        final var timestamp = cn.childByArg(
+                new NodeIdentifier(Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP));
         serviceProvider.getWebsocketService()
                 .sendNotification(notification, netconfDomAccessor.getNodeId(),
                         Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_OBJECT_ID_REF,
-                        new DateAndTime(cn.childByArg(new NodeIdentifier(
-                                Onf14DevicemanagerQNames.ETHERNET_CONTAINER_OBJECT_PROBLEM_NOTIFICATION_TIMESTAMP))
-                                .body().toString()));
+                        timestamp != null ? new DateAndTime(timestamp.body().toString())
+                                : NetconfTimeStampImpl.getConverter().getTimeStamp());
         log.debug("onProblemNotification log entry written");
     }
 

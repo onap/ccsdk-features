@@ -23,6 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.oauthprovider.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;

@@ -22,13 +22,16 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm71.impl;
 
 
+import java.util.List;
+import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.FaultService;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
+import org.opendaylight.mdsal.binding.api.MountPoint;
+import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev200529.AlarmNotification;
-import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev200529.OrgOpenroadmAlarmListener;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.alarm.rev200529.alarm.ProbableCause;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.probablecause.rev200529.ProbableCauseEnum;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.resource.rev200529.resource.resource.Resource;
@@ -53,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,8 +65,8 @@ import org.slf4j.LoggerFactory;
  *
  *         Listener for Open roadm device specific alarm notifications
  **/
-public class OpenroadmFaultNotificationListener implements OrgOpenroadmAlarmListener {
-    private static final Logger log = LoggerFactory.getLogger(OpenroadmFaultNotificationListener.class);
+public class OpenroadmFaultNotificationListener {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenroadmFaultNotificationListener.class);
 
     private final @NonNull FaultService faultEventListener;
     private @NonNull WebsocketManagerService notificationService;
@@ -78,14 +82,13 @@ public class OpenroadmFaultNotificationListener implements OrgOpenroadmAlarmList
 
     }
 
-    @Override
     public void onAlarmNotification(AlarmNotification notification) {
-        log.debug("AlarmNotification is {} \t {}", notification.getId(), notification.getAdditionalDetail());
+        LOG.debug("AlarmNotification is {} \t {}", notification.getId(), notification.getAdditionalDetail());
         String affectedResourceName = getAffectedResourceName(notification.getResource().getResource().getResource());
         String probableCauseName = getProbableCauseName(notification.getProbableCause());
 
         if (notification.getId() == null) {
-            log.warn("Alarm ID is null. Not logging alarm information to the DB. Alarm ID should not be null. Please fix the same in the Device");
+            LOG.warn("Alarm ID is null. Not logging alarm information to the DB. Alarm ID should not be null. Please fix the same in the Device");
             return;
         }
         FaultlogEntity faultAlarm = new FaultlogBuilder().setObjectId(affectedResourceName)
@@ -98,7 +101,7 @@ public class OpenroadmFaultNotificationListener implements OrgOpenroadmAlarmList
         this.notificationService.sendNotification(notification,new NodeId(netconfAccessor.getNodeId().getValue()), AlarmNotification.QNAME,
                 notification.getRaiseTime());
         count++;
-        log.debug("Notification is written into the database {}", faultAlarm.getObjectId());
+        LOG.debug("Notification is written into the database {}", faultAlarm.getObjectId());
 
     }
 
@@ -139,7 +142,7 @@ public class OpenroadmFaultNotificationListener implements OrgOpenroadmAlarmList
             return ((TempService)affectedResource).getCommonId();
         }
 
-        log.warn("Unknown Resource {} received from Notification", affectedResource.getClass().getSimpleName());
+        LOG.warn("Unknown Resource {} received from Notification", affectedResource.getClass().getSimpleName());
         return "Unknown Resource";
     }
 
@@ -149,11 +152,27 @@ public class OpenroadmFaultNotificationListener implements OrgOpenroadmAlarmList
             if (pce != null) {
                 return pce.getName();
             }
-            log.warn("ProbableCauseEnum is NULL");
+            LOG.warn("ProbableCauseEnum is NULL");
             return "Unknown Cause";
         }
-        log.warn("ProbableCause is NULL");
+        LOG.warn("ProbableCause is NULL");
         return "Unknown Cause";
     }
 
+    public Registration doRegisterNotificationListener(MountPoint mountpoint) {
+        final Optional<NotificationService> optionalNotificationService =
+                mountpoint.getService(NotificationService.class);
+        if (optionalNotificationService.isEmpty()) {
+            LOG.warn("unable to get notification service for node {}. cannot register for notifications",
+                    this.netconfAccessor.getNodeId().getValue());
+            return () -> {
+            };
+        }
+        final NotificationService notificationService = optionalNotificationService.get();
+        final var listenerRegistrations = List.of(
+                notificationService.registerListener(AlarmNotification.class,
+                        OpenroadmFaultNotificationListener.this::onAlarmNotification)
+        );
+        return () -> listenerRegistrations.forEach(e->e.close());
+    }
 }

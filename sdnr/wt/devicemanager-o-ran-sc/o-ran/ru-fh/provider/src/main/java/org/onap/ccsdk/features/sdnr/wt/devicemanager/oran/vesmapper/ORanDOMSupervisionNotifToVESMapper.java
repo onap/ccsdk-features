@@ -116,6 +116,7 @@ public class ORanDOMSupervisionNotifToVESMapper {
         vesCEH.setStartEpochMicrosec(eventTime.toEpochMilli() * 1000);
         vesCEH.setLastEpochMicrosec(eventTime.toEpochMilli() * 1000);
         vesCEH.setNfVendorName(mfgName);
+        vesCEH.setReportingEntityId(vesProvider.getConfig().getReportingEntityId());
         vesCEH.setReportingEntityName(vesProvider.getConfig().getReportingEntityName());
         vesCEH.setSequence(sequenceNo);
         vesCEH.setSourceId(uuid);

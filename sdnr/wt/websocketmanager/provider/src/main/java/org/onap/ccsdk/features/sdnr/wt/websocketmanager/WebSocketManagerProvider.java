@@ -33,7 +33,8 @@ import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.yang.binding.Notification;
+import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.Notification;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -62,10 +63,10 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
                 new ConfigurationFileRepresentation(CONFIGURATIONFILE);
 
         wsConfig = new WebSocketManagerConfig(configFileRepresentation);
-
-        if (wsConfig.getWebsocketPort().isPresent() && !wsConfig.getWebsocketPort().isEmpty()) {
+        final var port = wsConfig.getWebsocketPort();
+        if (port.isPresent()) {
             try {
-                startServer(DEFAULT_IP_ADDR, wsConfig.getWebsocketPort().get().intValue(), ALIAS);
+                startServer(DEFAULT_IP_ADDR, port.get().intValue(), ALIAS);
             } catch (Exception e) {
                 LOG.error("Failed in Websocker server startup {}", e);
             }
@@ -160,7 +161,7 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
     }
 
     @Override
-    public void sendNotification(Notification notification, NodeId nodeId, QName eventType) {
+    public <N extends Notification<N> & DataObject> void sendNotification(N notification, NodeId nodeId, QName eventType) {
         if (!assertNotificationType(notification, eventType)) {
             return;
         }
@@ -169,7 +170,7 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
     }
 
     @Override
-    public void sendNotification(Notification notification, NodeId nodeId, QName eventType, DateAndTime eventTime) {
+    public <N extends Notification<N> & DataObject> void sendNotification(N notification, NodeId nodeId, QName eventType, DateAndTime eventTime) {
         WebSocketManagerSocket.broadCast(new NotificationOutput(notification, nodeId.getValue(), eventType, eventTime));
 
     }

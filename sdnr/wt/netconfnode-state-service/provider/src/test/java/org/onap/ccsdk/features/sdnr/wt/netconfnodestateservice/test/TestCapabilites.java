@@ -27,7 +27,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.test.example.TestNetconfHelper;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.NetconfNodeAugment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -48,7 +49,7 @@ public class TestCapabilites {
         NodeId nodeId = new NodeId(nodeIdString);
         String capabilityString = "network-element";
         Node node = TestNetconfHelper.getTestNode(nodeId,capabilityString);
-        NetconfNode netconfNode = node.augmentation(NetconfNode.class);
+        NetconfNode netconfNode = node.augmentation(NetconfNodeAugment.class).getNetconfNode();
         capabilites = Capabilities.getAvailableCapabilities(netconfNode);
         uacapabilites = Capabilities.getUnavailableCapabilities(netconfNode);
     }

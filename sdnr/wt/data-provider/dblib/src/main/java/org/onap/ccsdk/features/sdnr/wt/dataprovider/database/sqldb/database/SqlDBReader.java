@@ -22,6 +22,13 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.PropertyList;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.rpctypehelper.QueryResult;
@@ -32,19 +39,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-public class SqlDBReader<T extends DataObject> {
+public class SqlDBReader<T extends DataContainer> {
     private static final Logger LOG = LoggerFactory.getLogger(SqlDBReader.class);
 
     protected final Entity entity;
@@ -135,7 +134,7 @@ public class SqlDBReader<T extends DataObject> {
         return QueryResult.createEmpty();
     }
 
-    public <S extends DataObject> List<S> readAll(Class<S> clazz) {
+    public <S extends DataContainer> List<S> readAll(Class<S> clazz) {
         SelectQuery query = new SelectQuery(this.tableName, this.controllerId);
         if (LOG.isTraceEnabled()) {
             LOG.trace("query={}", query.toSql());
@@ -143,18 +142,18 @@ public class SqlDBReader<T extends DataObject> {
         return this.readAll(clazz, query);
     }
 
-    public <S extends DataObject> List<S> readAll(Class<S> clazz, EntityInput input) {
+    public <S extends DataContainer> List<S> readAll(Class<S> clazz, EntityInput input) {
         SelectQuery query = new SelectQuery(this.tableName, input, this.controllerId);
         return this.readAll(clazz, query);
     }
-    public  <S extends DataObject> List<S> searchAll(Class<S> clazz, EntityInput input, String searchTerm) {
+    public  <S extends DataContainer> List<S> searchAll(Class<S> clazz, EntityInput input, String searchTerm) {
         SelectQuery query = new SelectQuery(this.tableName, input, this.controllerId);
         if(searchTerm!=null && !searchTerm.isEmpty()) {
             query.setAllPropertyFilter(searchTerm, this.propertyList);
         }
         return this.readAll(clazz, query);
     }
-    public <S extends DataObject> List<S> readAll(Class<S> clazz, SelectQuery query) {
+    public <S extends DataContainer> List<S> readAll(Class<S> clazz, SelectQuery query) {
         try {
             ResultSet data = this.dbService.read(query.toSql());
             List<S> mappedData = SqlDBMapper.read(data, clazz);

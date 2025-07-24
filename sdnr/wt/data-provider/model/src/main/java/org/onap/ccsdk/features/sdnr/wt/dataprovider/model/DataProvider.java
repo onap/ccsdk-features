@@ -20,7 +20,6 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 import java.util.List;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
@@ -72,7 +71,7 @@ public interface DataProvider extends ArchiveCleanProvider {
     /**
      * write internal equipment to database
      * @param nodeId
-     * @param internalEquipment with mandatory fields.
+     * @param list with mandatory fields.
      */
     void writeInventory(String nodeId, List<Inventory> list);
 
@@ -116,10 +115,5 @@ public interface DataProvider extends ArchiveCleanProvider {
      * @param list
      */
     void doWritePerformanceData(List<PmdataEntity> list);
-
-    /**
-     * @return raw database client
-     */
-    HtDatabaseClient getRawClient();
 
 }

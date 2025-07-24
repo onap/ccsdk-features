@@ -24,6 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm71.test;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;

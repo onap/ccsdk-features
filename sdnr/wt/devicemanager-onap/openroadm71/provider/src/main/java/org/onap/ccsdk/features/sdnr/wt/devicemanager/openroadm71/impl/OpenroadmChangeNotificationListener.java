@@ -22,11 +22,13 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm71.impl;
 
 import java.util.List;
+import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.IetfNetconfNotificationsListener;
+import org.opendaylight.mdsal.binding.api.MountPoint;
+import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfCapabilityChange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfConfigChange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfConfirmedCommit;
@@ -34,8 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.not
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.NetconfSessionStart;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.notifications.rev120206.netconf.config.change.Edit;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,7 @@ import org.slf4j.LoggerFactory;
  *         Listener for change notifications
  *
  **/
-public class OpenroadmChangeNotificationListener implements IetfNetconfNotificationsListener {
+public class OpenroadmChangeNotificationListener {
 
     // variables
     private static final Logger LOG = LoggerFactory.getLogger(OpenroadmChangeNotificationListener.class);
@@ -65,14 +66,12 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
     // end of constructors
 
     // public methods
-    @Override
     public void onNetconfConfirmedCommit(NetconfConfirmedCommit notification) {
         LOG.debug("onNetconfConfirmedCommit {} ", notification);
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfConfirmedCommit.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
-    @Override
     public void onNetconfSessionStart(NetconfSessionStart notification) {
         LOG.debug("onNetconfSessionStart {} ", notification);
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
@@ -80,21 +79,18 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
 
     }
 
-    @Override
     public void onNetconfSessionEnd(NetconfSessionEnd notification) {
         LOG.debug("onNetconfSessionEnd {}", notification);
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfSessionEnd.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
-    @Override
     public void onNetconfCapabilityChange(NetconfCapabilityChange notification) {
         LOG.debug("onNetconfCapabilityChange {}", notification);
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfCapabilityChange.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
     }
 
-    @Override
     public void onNetconfConfigChange(NetconfConfigChange notification) {
         LOG.debug("onNetconfConfigChange (1) {}", notification);
         StringBuffer sb = new StringBuffer();
@@ -115,12 +111,13 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
 
             EventlogBuilder eventlogBuilder = new EventlogBuilder();
 
-            InstanceIdentifier<?> target = edit.getTarget();
+            var target = edit.getTarget();
             if (target != null) {
                 eventlogBuilder.setObjectId(target.toString());
-                LOG.debug("TARGET: {} {}", target.getClass(), target.getTargetType());
-                for (PathArgument pa : target.getPathArguments()) {
-                    LOG.debug("PathArgument {}", pa);
+                LOG.debug("TARGET: {} ", target.getClass());
+                var it = target.steps().iterator();
+                while(it.hasNext()) {
+                    LOG.debug("PathArgument {}", it.next());
                 }
             }
             eventlogBuilder.setNodeId(netconfAccessor.getNodeId().getValue());
@@ -131,6 +128,31 @@ public class OpenroadmChangeNotificationListener implements IetfNetconfNotificat
         this.notificationServiceService.sendNotification(notification, this.netconfAccessor.getNodeId(),
                 NetconfConfigChange.QNAME, NetconfTimeStampImpl.getConverter().getTimeStamp());
 
+    }
+
+    public Registration doRegisterNotificationListener(MountPoint mountpoint) {
+        final Optional<NotificationService> optionalNotificationService =
+                mountpoint.getService(NotificationService.class);
+        if (optionalNotificationService.isEmpty()) {
+            LOG.warn("unable to get notification service for node {}. cannot register for notifications",
+                    this.netconfAccessor.getNodeId().getValue());
+            return () -> {
+            };
+        }
+        final NotificationService notificationService = optionalNotificationService.get();
+        final var listenerRegistrations = List.of(
+                notificationService.registerListener(NetconfSessionStart.class,
+                        OpenroadmChangeNotificationListener.this::onNetconfSessionStart),
+                notificationService.registerListener(NetconfSessionEnd.class,
+                        OpenroadmChangeNotificationListener.this::onNetconfSessionEnd),
+                notificationService.registerListener(NetconfConfirmedCommit.class,
+                        OpenroadmChangeNotificationListener.this::onNetconfConfirmedCommit),
+                notificationService.registerListener(NetconfCapabilityChange.class,
+                        OpenroadmChangeNotificationListener.this::onNetconfCapabilityChange),
+                notificationService.registerListener(NetconfConfigChange.class,
+                        OpenroadmChangeNotificationListener.this::onNetconfConfigChange)
+        );
+        return () -> listenerRegistrations.forEach(e->e.close());
     }
 
     // end of public methods

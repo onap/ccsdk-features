@@ -23,7 +23,8 @@ package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.access.dom;
 
 import java.util.Objects;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.DomContext;
-import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
+
+import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

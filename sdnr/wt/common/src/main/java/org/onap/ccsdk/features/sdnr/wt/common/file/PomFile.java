@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,7 +37,7 @@ import org.xml.sax.SAXException;
 
 public class PomFile {
 
-    private Document xmlDoc;
+    private final Document xmlDoc;
 
     public PomFile(InputStream is) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -74,7 +73,7 @@ public class PomFile {
     }
 
     private static String getTextValue(Node node) {
-        StringBuffer textValue = new StringBuffer();
+        var textValue = new StringBuilder();
         for (int i = 0, length = node.getChildNodes().getLength(); i < length; i++) {
             Node c = node.getChildNodes().item(i);
             if (c.getNodeType() == Node.TEXT_NODE) {

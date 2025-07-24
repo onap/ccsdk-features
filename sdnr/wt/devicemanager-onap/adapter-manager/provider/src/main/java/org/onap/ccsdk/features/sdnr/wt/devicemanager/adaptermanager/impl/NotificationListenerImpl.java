@@ -21,37 +21,49 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.impl;
 
+import java.util.List;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.DeviceManagerServiceProvider;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.o.ran.sc.params.xml.ns.yang.nts.manager.rev210608.InstanceChanged;
-import org.opendaylight.yang.gen.v1.urn.o.ran.sc.params.xml.ns.yang.nts.manager.rev210608.NtsManagerListener;
 import org.opendaylight.yang.gen.v1.urn.o.ran.sc.params.xml.ns.yang.nts.manager.rev210608.OperationStatusChanged;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NotificationListenerImpl implements NtsManagerListener {
+public class NotificationListenerImpl {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationListenerImpl.class);
     private final NetconfBindingAccessor netconfAccessor;
     private final DeviceManagerServiceProvider serviceProvider;
 
-    public NotificationListenerImpl(NetconfBindingAccessor netconfAccess, DeviceManagerServiceProvider serviceProvider) {
+    public NotificationListenerImpl(NetconfBindingAccessor netconfAccess,
+            DeviceManagerServiceProvider serviceProvider) {
         this.netconfAccessor = netconfAccess;
         this.serviceProvider = serviceProvider;
+
     }
 
-    @Override
+
     public void onInstanceChanged(InstanceChanged notification) {
         log.debug("Got event of type :: InstanceChanged");
         this.serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 InstanceChanged.QNAME);
     }
 
-    @Override
+
     public void onOperationStatusChanged(OperationStatusChanged notification) {
         log.debug("Got event of type :: OperationStatusChanged");
         this.serviceProvider.getWebsocketService().sendNotification(notification, netconfAccessor.getNodeId(),
                 OperationStatusChanged.QNAME);
     }
 
+    public Registration registerNotifications() {
+        final var notificationRegistrations = List.of(
+                this.netconfAccessor.doRegisterNotificationListener(InstanceChanged.class,
+                        NotificationListenerImpl.this::onInstanceChanged),
+                this.netconfAccessor.doRegisterNotificationListener(OperationStatusChanged.class,
+                        NotificationListenerImpl.this::onOperationStatusChanged)
+        );
+        return () -> notificationRegistrations.forEach(e -> e.close());
+    }
 }

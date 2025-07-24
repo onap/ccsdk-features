@@ -21,7 +21,8 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
-import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
+
+import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
 
 public interface DomContext {

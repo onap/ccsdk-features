@@ -31,7 +31,6 @@ import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeWithValue;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.ChoiceNode;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
@@ -66,61 +65,61 @@ public class ORanDOMNotificationToXPath {
 
     private void recurseDOMData(@NonNull ContainerNode notifContainer, DataContainerChild domData, DataContainerNode cn,
             HashMap<String, String> result, String namePath) {
-        NodeIdentifier id = domData.name();
-        namePath += "/" + id.getNodeType().getLocalName();
+        var pa1 = domData.name();
+        namePath += "/" + pa1.getNodeType().getLocalName();
         if (domData.getClass().getSimpleName().equals("ImmutableContainerNode")) {
             try {
-                ContainerNode cn1 = (ContainerNode) cn.getChildByArg(id);
+                ContainerNode cn1 = (ContainerNode) cn.getChildByArg(pa1);
                 for (DataContainerChild data1 : cn1.body()) {
                     recurseDOMData(notifContainer, data1, cn1, result, namePath);
                 }
             } catch (VerifyException ve) {
-                LOG.debug("{} does not exist", id);
+                LOG.debug("{} does not exist", pa1);
             }
         }
 
         if (domData.getClass().getSimpleName().equals("ImmutableChoiceNode")) {
             try {
-                ChoiceNode cn1 = (ChoiceNode) cn.getChildByArg(id);
+                ChoiceNode cn1 = (ChoiceNode) cn.getChildByArg(pa1);
                 for (DataContainerChild data1 : cn1.body()) {
                     // recurseChoiceData(data1, cn1, namePath);
                     recurseDOMData(notifContainer, data1, cn1, result, namePath);
                 }
             } catch (VerifyException ve) {
-                LOG.debug("{} does not exist", id);
+                LOG.debug("{} does not exist", pa1);
             }
         }
 
         if (domData.getClass().getSimpleName().equals("ImmutableUnkeyedListNode")) {
             try {
-                UnkeyedListNode cn1 = (UnkeyedListNode) cn.getChildByArg(id);
+                UnkeyedListNode cn1 = (UnkeyedListNode) cn.getChildByArg(pa1);
                 for (UnkeyedListEntryNode data1 : cn1.body()) {
                     recurseUnkeyedListEntryNodeData(data1, cn1, result, namePath);
                 }
             } catch (VerifyException ve) {
-                LOG.debug("{} does not exist", id);
+                LOG.debug("{} does not exist", pa1);
             }
         }
 
         if (domData.getClass().getSimpleName().equals("ImmutableMapNode")) {
             try {
-                MapNode cn1 = (MapNode) cn.getChildByArg(id);
+                MapNode cn1 = (MapNode) cn.getChildByArg(pa1);
                 for (MapEntryNode data1 : cn1.body()) {
                     recurseMapEntryNodeData(notifContainer, data1, cn1, result, namePath);
                 }
             } catch (VerifyException ve) {
-                LOG.debug("{} does not exist", id);
+                LOG.debug("{} does not exist", pa1);
             }
         }
 
         if (domData.getClass().getSimpleName().equals("ImmutableLeafSetNode")) {
             try {
-                LeafSetNode<?> cn1 = (LeafSetNode<?>) cn.getChildByArg(id);
+                LeafSetNode<?> cn1 = (LeafSetNode<?>) cn.getChildByArg(pa1);
                 for (LeafSetEntryNode<?> data1 : cn1.body()) {
                     recurseLeafSetEntryNodeData(data1, cn1, result, namePath);
                 }
             } catch (VerifyException ve) {
-                LOG.debug("{} does not exist", id);
+                LOG.debug("{} does not exist", pa1);
             }
         }
 
@@ -131,7 +130,7 @@ public class ORanDOMNotificationToXPath {
 
     private void recurseLeafSetEntryNodeData(LeafSetEntryNode<?> data, LeafSetNode<?> cn1,
             HashMap<String, String> result, String namePath) {
-        NodeWithValue<?> pa1 = data.name();
+        var pa1 = data.name();
         namePath += "/" + pa1.getNodeType().getLocalName();
 
         if (data.getClass().getSimpleName().equals("ImmutableLeafSetEntryNode")) {
@@ -142,7 +141,7 @@ public class ORanDOMNotificationToXPath {
 
     private void recurseMapEntryNodeData(@NonNull ContainerNode notifContainer, MapEntryNode data, MapNode cn1,
             HashMap<String, String> result, String namePath) {
-        PathArgument pa1 = data.name();
+        var pa1 = data.name();
         NodeIdentifierWithPredicates ni = data.name();
 
         for (QName qn : ni.keySet()) {
@@ -168,7 +167,7 @@ public class ORanDOMNotificationToXPath {
 
         if (data.getClass().getSimpleName().equals("ImmutableLeafSetNode")) {
             try {
-                LeafSetNode<?> cn2 = (LeafSetNode<?>) notifContainer.getChildByArg((NodeIdentifier) pa1);
+                LeafSetNode<?> cn2 = (LeafSetNode<?>) notifContainer.getChildByArg(new NodeIdentifier(data.name().getNodeType()));
                 for (LeafSetEntryNode<?> data1 : cn2.body()) {
                     recurseLeafSetEntryNodeData(data1, cn2, result, namePath);
                 }

@@ -23,8 +23,5 @@ package org.onap.ccsdk.features.sdnr.wt.common.threading;
 
 public abstract class GenericRunnableFactory<T,S> {
 
-    public GenericRunnableFactory() {
-    }
-
     public abstract Runnable create(final T key, final S arg);
 }

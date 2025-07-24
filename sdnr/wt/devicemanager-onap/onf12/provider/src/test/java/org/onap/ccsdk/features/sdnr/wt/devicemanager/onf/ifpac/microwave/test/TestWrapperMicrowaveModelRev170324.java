@@ -19,6 +19,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
