@@ -32,21 +32,22 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.TransactionUtils;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class GenericTransactionUtils implements TransactionUtils {
+
     static final Logger LOG = LoggerFactory.getLogger(GenericTransactionUtils.class);
 
     /**
      * Deliver the data back or null. Warning
      *
-     * @param <T> SubType of the DataObject to be handled
-     * @param dataBroker for accessing data
+     * @param <T>           SubType of the DataObject to be handled
+     * @param dataBroker    for accessing data
      * @param dataStoreType to address datastore
-     * @param iid id to access data
+     * @param iid           id to access data
      * @return null or object
      */
     @Override
@@ -70,12 +71,12 @@ public final class GenericTransactionUtils implements TransactionUtils {
     /**
      * Deliver the data back or null
      *
-     * @param <T> SubType of the DataObject to be handled
-     * @param dataBroker for accessing data
-     * @param dataStoreType to address datastore
-     * @param iid id to access data
+     * @param <T>               SubType of the DataObject to be handled
+     * @param dataBroker        for accessing data
+     * @param dataStoreType     to address datastore
+     * @param iid               id to access data
      * @param noErrorIndication (Output) true if data could be read and are available and is not null
-     * @param statusIndicator (Output) String with status indications during the read.
+     * @param statusIndicator   (Output) String with status indications during the read.
      * @return null or object
      */
     @Override
@@ -90,52 +91,27 @@ public final class GenericTransactionUtils implements TransactionUtils {
         statusIndicator.set("Preconditions");
         Preconditions.checkNotNull(dataBroker);
 
-        int retry = 0;
-        int retryDelayMilliseconds = 2000;
-        int maxRetries = 0; // 0 no Retry
-
-        do {
-            if (retry > 0) {
-                try {
-                    LOG.debug("Sleep {}ms", retryDelayMilliseconds);
-                    Thread.sleep(retryDelayMilliseconds);
-                } catch (InterruptedException e) {
-                    LOG.debug("Sleep interrupted", e);
-                    Thread.currentThread().interrupt();
-                }
+        statusIndicator.set("Create Read Transaction");
+        try (ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction()) {
+            @NonNull
+            FluentFuture<Optional<T>> od = readTransaction.read(dataStoreType, iid);
+            statusIndicator.set("Read done");
+            statusIndicator.set("Unwrap checkFuture done");
+            Optional<T> optionalData = od.get();
+            statusIndicator.set("Unwrap optional done");
+            data = optionalData.orElse(null);
+            statusIndicator.set("Read transaction done");
+            noErrorIndication.set(true);
+        } catch (CancellationException | ExecutionException | InterruptedException | NoSuchElementException e) {
+            statusIndicator.set(StackTrace.toString(e));
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
             }
-
-            LOG.debug("Sending message with retry {} ", retry);
-            statusIndicator.set("Create Read Transaction");
-            ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction();
-            try {
-                @NonNull
-                FluentFuture<Optional<T>> od = readTransaction.read(dataStoreType, iid);
-                statusIndicator.set("Read done");
-                if (od != null) {
-                    statusIndicator.set("Unwrap checkFuture done");
-                    Optional<T> optionalData = od.get();
-                    statusIndicator.set("Unwrap optional done");
-                    data = optionalData.orElse(null);
-                    statusIndicator.set("Read transaction done");
-                    noErrorIndication.set(true);
-                } else {
-                    statusIndicator.set("od feature is null");
-                }
-            } catch (CancellationException | ExecutionException | InterruptedException | NoSuchElementException e) {
-                statusIndicator.set(StackTrace.toString(e));
-                if (e instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                }
-                LOG.debug("Exception during read", e);
-            }
-
-        } while (noErrorIndication.get() == false && retry++ < maxRetries);
+            LOG.debug("Exception during read", e);
+        }
 
         LOG.debug("stage 2 noErrorIndication {} status text {}", noErrorIndication.get(), statusIndicator.get());
 
         return data;
     }
-
-
 }

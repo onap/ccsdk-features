@@ -46,9 +46,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.aaiconnector.impl.AaiProviderClient;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.archiveservice.ArchiveCleanService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeForwarderImpl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.dcaeconnector.impl.DcaeProviderClient;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.devicemonitor.impl.DeviceMonitor;
@@ -85,7 +83,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +122,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     private MaintenanceServiceImpl maintenanceService;
     private DevicemanagerNotificationDelayService notificationDelayService;
     private ResyncNetworkElementHouskeepingService resyncNetworkElementHouskeepingService;
-    private ArchiveCleanService archiveCleanService;
     private ConnectionStatusHousekeepingService housekeepingService;
     private NetconfNodeStateService netconfNodeStateService;
     private DataProvider dataProvider;
@@ -204,15 +201,14 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         // Websockets
         this.webSocketService = new WebSocketServiceClientImpl(websocketmanagerService);
 
-        IEsConfig esConfig = iEntityDataProvider.getEsConfig();
         // DCAE
-        this.dcaeProviderClient = new DcaeProviderClient(config, esConfig.getCluster(), this);
+        this.dcaeProviderClient = new DcaeProviderClient(config,"", this);
 
         this.aaiProviderClient = new AaiProviderClient(config, this);
 
         this.vesCollectorServiceImpl = new VESCollectorServiceImpl(config);
         // EM
-        String myDbKeyNameExtended = MYDBKEYNAMEBASE + "-" + esConfig.getCluster();
+        String myDbKeyNameExtended = MYDBKEYNAMEBASE + "-";
 
         this.aotsDcaeForwarder = new DcaeForwarderImpl(null, dcaeProviderClient, maintenanceService);
 
@@ -223,8 +219,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
                 new RpcPushNotificationsHandler(webSocketService, dataProvider, aotsDcaeForwarder);
         this.odlEventListenerHandler = new ODLEventListenerHandler(myDbKeyNameExtended, webSocketService, dataProvider,
                 aotsDcaeForwarder, dataBroker);
-        this.archiveCleanService = new ArchiveCleanService(iEntityDataProvider.getEsConfig(),
-                clusterSingletonServiceProvider, dataProvider);
         this.housekeepingService = new ConnectionStatusHousekeepingService(config, clusterSingletonServiceProvider,
                 this.dataBroker, dataProvider);
         // PM
@@ -269,7 +263,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         close(maintenanceService);
         close(rpcApiService);
         close(notificationDelayService);
-        close(archiveCleanService);
         close(housekeepingService);
         close(deviceManagerNetconfConnectHandler);
         close(vesCollectorServiceImpl);
@@ -362,7 +355,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     /**
      * Used to close all Services, that should support AutoCloseable Pattern
      *
-     * @param toClose
+     * @param toCloseList
      */
     private void close(AutoCloseable... toCloseList) {
         for (AutoCloseable element : toCloseList) {
@@ -379,11 +372,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     /*-------------------------------------------------------------------------------------------
      * Functions
      */
-
-    public ArchiveCleanService getArchiveCleanService() {
-        return this.archiveCleanService;
-    }
-
     public DataProvider getDatabaseClientEvents() {
         return dataProvider;
     }

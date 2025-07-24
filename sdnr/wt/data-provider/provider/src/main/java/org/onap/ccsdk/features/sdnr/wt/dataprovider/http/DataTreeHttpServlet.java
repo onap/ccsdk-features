@@ -25,14 +25,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.Serial;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,17 +45,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Michael Dürre
- *
  */
-
-//@HttpWhiteboardServletPattern("/tree/*")
-//@HttpWhiteboardServletName("DataTreeHttpServlet")
-//@Component(service = Servlet.class)
 public class DataTreeHttpServlet extends HttpServlet {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     public static final String URI_PRE = "/tree";
-    private InventoryTreeProvider dataTreeProvider;
+    private static InventoryTreeProvider dataTreeProvider;
     private static final Logger LOG = LoggerFactory.getLogger(DataTreeHttpServlet.class);
 
     public DataTreeHttpServlet() {
@@ -69,7 +65,7 @@ public class DataTreeHttpServlet extends HttpServlet {
 
     public static String readPayload(HttpServletRequest request) throws IOException {
 
-        String body = null;
+        String body;
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader bufferedReader = null;
         IOException toThrow = null;
@@ -78,12 +74,10 @@ public class DataTreeHttpServlet extends HttpServlet {
             if (inputStream != null) {
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 char[] charBuffer = new char[128];
-                int bytesRead = -1;
+                int bytesRead;
                 while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
                     stringBuilder.append(charBuffer, 0, bytesRead);
                 }
-            } else {
-                stringBuilder.append("");
             }
         } catch (IOException ex) {
             toThrow = ex;
@@ -105,7 +99,7 @@ public class DataTreeHttpServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         final String uri = req.getRequestURI();
         LOG.debug("GET request for {}", uri);
         final EntityWithTree e = getEntity(uri);
@@ -113,8 +107,14 @@ public class DataTreeHttpServlet extends HttpServlet {
             LOG.debug("GET request for {} to e={} with tree={}", uri, e.entity, e.tree);
             switch (e.entity) {
                 case Inventoryequipment:
-                    DataTreeObject o = this.dataTreeProvider.readInventoryTree(e.tree, null);
-                    this.doJsonResponse(resp, o);
+                    try {
+                        DataTreeObject o = this.dataTreeProvider.readInventoryTree(e.tree, null);
+
+                        this.doJsonResponse(resp, o);
+                    }
+                    catch (IOException err){
+                        LOG.warn("problem reading inventory tree: ", err);
+                    }
                     break;
                 default:
                     this.notAvailble(resp);
@@ -126,7 +126,7 @@ public class DataTreeHttpServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         final String uri = req.getRequestURI();
         String filter = null;
         try {
@@ -137,15 +137,20 @@ public class DataTreeHttpServlet extends HttpServlet {
             }
 
         } catch (Exception e) {
-            LOG.warn("problem reading payload: {}", e);
+            LOG.warn("problem reading payload: ", e);
         }
         LOG.debug("POST request for {}", uri);
         final EntityWithTree e = getEntity(uri);
         if (e != null) {
             switch (e.entity) {
                 case Inventoryequipment:
-                    DataTreeObject o = this.dataTreeProvider.readInventoryTree(e.tree, filter);
-                    this.doJsonResponse(resp, o);
+                    try {
+                        DataTreeObject o = this.dataTreeProvider.readInventoryTree(e.tree, filter);
+                        this.doJsonResponse(resp, o);
+                    }
+                    catch (IOException err){
+                        LOG.warn("problem reading inventory tree for filter {}: ",filter, err);
+                    }
                     break;
                 default:
                     this.notAvailble(resp);
@@ -155,13 +160,13 @@ public class DataTreeHttpServlet extends HttpServlet {
     }
 
     /**
-     * @param resp
+     * @param resp response object to write onto
      */
     private void notAvailble(HttpServletResponse resp) {
         try {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         } catch (IOException e) {
-
+            LOG.debug("error sending 404: ", e);
         }
     }
 
@@ -195,6 +200,7 @@ public class DataTreeHttpServlet extends HttpServlet {
     }
 
     public static class EntityWithTree {
+
         public final Entity entity;
         public final List<String> tree;
 
@@ -204,14 +210,11 @@ public class DataTreeHttpServlet extends HttpServlet {
         }
 
         /**
-        *
-        * @param e database enttity to access
-        * @param tree tree description
-        *   e.g. nodeA           => tree entry for node-id=nodeA
-        *        nodeA/key0      => tree entry for node-id=nodeA and uuid=key0 and tree-level=0
-        *        nodeA/key0/key1 => tree entry for node-id=nodeA and uuid=key1 and tree-level=1
-        *
-        */
+         * @param e    database enttity to access
+         * @param tree tree description e.g. nodeA           => tree entry for node-id=nodeA nodeA/key0      => tree
+         *             entry for node-id=nodeA and uuid=key0 and tree-level=0 nodeA/key0/key1 => tree entry for
+         *             node-id=nodeA and uuid=key1 and tree-level=1
+         */
         public EntityWithTree(Entity e, String tree) {
             this.entity = e;
             if (tree != null) {
@@ -223,14 +226,10 @@ public class DataTreeHttpServlet extends HttpServlet {
                 }
                 String[] tmp = tree.split("\\/");
                 this.tree = new ArrayList<>();
-                for (int i = 0; i < tmp.length; i++) {
-                    try {
-                        String s = URLDecoder.decode(tmp[i], "utf-8");
-                        if (s != null && s.length() > 0) {
-                            this.tree.add(s);
-                        }
-                    } catch (UnsupportedEncodingException e1) {
-                        LOG.warn("problem urldecode {}: {}", tmp[i], e);
+                for (String string : tmp) {
+                    String s = URLDecoder.decode(string, StandardCharsets.UTF_8);
+                    if (s != null && !s.isEmpty()) {
+                        this.tree.add(s);
                     }
                 }
             } else {

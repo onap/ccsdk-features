@@ -24,6 +24,7 @@ package org.onap.ccsdk.features.sdnr.wt.websocketmanager2.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data.NotificationOutput;

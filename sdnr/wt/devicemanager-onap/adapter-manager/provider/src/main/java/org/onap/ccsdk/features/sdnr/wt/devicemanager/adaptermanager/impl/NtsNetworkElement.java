@@ -18,7 +18,6 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.impl;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElement;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.service.NetworkElementService;
@@ -27,8 +26,7 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfBindingAccessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +44,7 @@ public class NtsNetworkElement implements NetworkElement {
     private final DataProvider databaseService;
     private final NotificationListenerImpl notificationListener;
 
-    private @NonNull ListenerRegistration<NotificationListener> listenerRegistrationresult;
+    private Registration listenerRegistrationresult;
 
     NtsNetworkElement(NetconfBindingAccessor netconfAccess, DeviceManagerServiceProvider serviceProvider) {
         LOG.debug("Create {}", NtsNetworkElement.class.getSimpleName());
@@ -80,7 +78,7 @@ public class NtsNetworkElement implements NetworkElement {
     @Override
     public void register() {
         if (netconfAccessor.isNotificationsRFC5277Supported()) {
-            listenerRegistrationresult = netconfAccessor.doRegisterNotificationListener(this.notificationListener);
+            listenerRegistrationresult = this.notificationListener.registerNotifications();
             // Register default (NETCONF) stream
             netconfAccessor.registerNotificationsStream();
             LOG.debug("registered for notifications");

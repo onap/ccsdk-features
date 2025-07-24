@@ -21,14 +21,19 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.yang.mapper;
 
+import static org.junit.Assert.assertEquals;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.jdt.annotation.NonNull;
 import org.json.JSONObject;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.IdentifierDeserializer;
+import org.opendaylight.mdsal.dom.api.DOMEvent;
+import org.opendaylight.mdsal.dom.api.DOMNotification;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.AddressLocation;
@@ -38,6 +43,10 @@ import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.ItemCode;
 import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.address.location.entity.ItemList;
 import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.address.location.entity.ItemListBuilder;
 import org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.address.location.entity.ItemListKey;
+import org.opendaylight.yangtools.binding.EventInstantAware;
+import org.opendaylight.yangtools.binding.Notification;
+import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
+import org.opendaylight.yangtools.yang.model.api.stmt.SchemaNodeIdentifier;
 
 public class TestYangToolsMapper {
 
@@ -47,6 +56,7 @@ public class TestYangToolsMapper {
     public void init() {
         MAPPER.addKeyDeserializer(ItemListKey.class, new IdentifierDeserializer());
     }
+
     @Test
     public void testYangMapperDeser2() {
         AddressLocation al = null;
@@ -65,11 +75,12 @@ public class TestYangToolsMapper {
         }
         assertEquals(AddressType.OFFICE, al.getAddressType());
         assertEquals("2022-03-15T11:12:13.890Z", al.getDeliveryDateTime().getValue());
-       //TODO assertEquals(ItemCode.VALUE, al.getItemList().ke);
+        //TODO assertEquals(ItemCode.VALUE, al.getItemList().ke);
         System.out.println("Delivery Date = " + al.getDeliveryDateTime().getValue());
         System.out.println(al.getItemList());
         System.out.println(al.getDeliveryUrl().getValue());
     }
+
     @Test
     public void testYangMapperDeser() {
         AddressLocation al = null;
@@ -77,15 +88,15 @@ public class TestYangToolsMapper {
         try {
             al = MAPPER.readValue(
                     "{\n"
-                    + "    \"address-type\": \"OFFICE\",\n"
-                    + "    \"delivery-date-time\": \"2022-03-15T11:12:13.890Z\",\n"
-                    + "    \"delivery-url\": \"delivery.uri\",\n"
-                    + "    \"item-list\": [\n"
-                    + "        {\n"
-                    + "            \"item-key\": \"org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.ItemCodeIdentity\"\n"
-                    + "        }\n"
-                    + "    ]\n"
-                    + "}",
+                            + "    \"address-type\": \"OFFICE\",\n"
+                            + "    \"delivery-date-time\": \"2022-03-15T11:12:13.890Z\",\n"
+                            + "    \"delivery-url\": \"delivery.uri\",\n"
+                            + "    \"item-list\": [\n"
+                            + "        {\n"
+                            + "            \"item-key\": \"org.opendaylight.yang.gen.v1.urn.test.yang.utils.norev.ItemCodeIdentity\"\n"
+                            + "        }\n"
+                            + "    ]\n"
+                            + "}",
                     AddressLocation.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -119,5 +130,89 @@ public class TestYangToolsMapper {
         assertEquals("2022-03-15T11:12:13.890Z", new JSONObject(str).getString("delivery-date-time"));
         System.out.println(new JSONObject(str).getJSONArray("item-list"));
         System.out.println(str);
+    }
+
+    @Test
+    public void testNotificationTime() {
+
+        int LIMIT = 20;
+        var now = Instant.now();
+        var nowPlus2 = now.plusSeconds(20);
+        var domNotif = new TestDomEvent(now);
+        var notif = new TestNotification(now);
+        var domNotif2 = new TestDomEvent2();
+        var notif2 = new TestNotification2();
+        assertEquals(now.toString().substring(0,LIMIT), YangToolsMapperHelper.getTime(notif, null).getValue().substring(0,LIMIT));
+        assertEquals(now.toString().substring(0,LIMIT),YangToolsMapperHelper.getTime(domNotif, null).getValue().substring(0,LIMIT));
+        assertEquals(nowPlus2.toString().substring(0,LIMIT), YangToolsMapperHelper.getTime(notif2, nowPlus2).getValue().substring(0,LIMIT));
+        assertEquals(nowPlus2.toString().substring(0,LIMIT),YangToolsMapperHelper.getTime(domNotif2, nowPlus2).getValue().substring(0,LIMIT));
+    }
+
+    @Test
+    public void testCamelCase(){
+        assertEquals("camelCase", YangToolsMapperHelper.toCamelCase("camel-case"));
+        assertEquals("camel", YangToolsMapperHelper.toCamelCase("camel"));
+        assertEquals("camelCaseConverter", YangToolsMapperHelper.toCamelCase("camel-case-converter"));
+        assertEquals("CamelCase", YangToolsMapperHelper.toCamelCaseClassName("camel-case"));
+    }
+
+    static class TestDomEvent implements DOMNotification, DOMEvent {
+
+        private final Instant instant;
+
+        TestDomEvent(Instant instant) {
+            this.instant = instant;
+        }
+
+        @Override
+        public Instant getEventInstant() {
+            return this.instant;
+        }
+
+        @Override
+        public SchemaNodeIdentifier.Absolute getType() {
+            return null;
+        }
+
+        @Override
+        public @NonNull ContainerNode getBody() {
+            return null;
+        }
+    }
+    static class TestDomEvent2 implements DOMNotification{
+
+        @Override
+        public SchemaNodeIdentifier.Absolute getType() {
+            return null;
+        }
+
+        @Override
+        public ContainerNode getBody() {
+            return null;
+        }
+    }
+    static class TestNotification implements Notification, EventInstantAware {
+        private final Instant instant;
+
+        TestNotification(Instant instant) {
+            this.instant = instant;
+        }
+
+        @Override
+        public @NonNull Instant eventInstant() {
+            return this.instant;
+        }
+
+        @Override
+        public Class implementedInterface() {
+            return null;
+        }
+    }
+    static class TestNotification2 implements Notification {
+
+        @Override
+        public Class implementedInterface() {
+            return null;
+        }
     }
 }

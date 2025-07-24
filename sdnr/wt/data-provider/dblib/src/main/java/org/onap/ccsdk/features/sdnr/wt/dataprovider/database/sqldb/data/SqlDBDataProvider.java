@@ -47,13 +47,9 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.InventoryTreeProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateNetworkElementConnectionOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
@@ -72,7 +68,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListOutputBuilder;
@@ -83,8 +78,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadStatusOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
@@ -207,19 +200,6 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
         outputBuilder.setData(result.getResult());
         outputBuilder.setPagination(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.maintenance.list.output.PaginationBuilder(
-                        result.getPagination()).build());
-        return outputBuilder;
-    }
-
-    @Override
-    public ReadMediatorServerListOutputBuilder readMediatorServerList(EntityInput input) {
-
-        ReadMediatorServerListOutputBuilder outputBuilder = new ReadMediatorServerListOutputBuilder();
-        QueryResult<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.Data> result =
-                this.mediatorserverRW.getData(input);
-        outputBuilder.setData(result.getResult());
-        outputBuilder.setPagination(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.mediator.server.list.output.PaginationBuilder(
                         result.getPagination()).build());
         return outputBuilder;
     }
@@ -407,15 +387,6 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     }
 
     @Override
-    public DeleteMediatorServerOutputBuilder deleteMediatorServer(DeleteMediatorServerInput input) throws IOException {
-        boolean removed = this.mediatorserverRW.remove(input.getId()) > 0;
-        if (!removed) {
-            throw new IOException(EXCEPTION_UNABLE_TO_REMOVE_FROM_DATABASE);
-        }
-        return new DeleteMediatorServerOutputBuilder();
-    }
-
-    @Override
     public DeleteMaintenanceOutputBuilder deleteMaintenance(DeleteMaintenanceInput input) throws IOException {
         boolean removed = this.maintenanceRW.remove(input.getId()) > 0;
         if (!removed) {
@@ -438,20 +409,6 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     }
 
     @Override
-    public UpdateMediatorServerOutputBuilder updateMediatorServer(UpdateMediatorServerInput input) throws IOException {
-        if (input.getId() == null) {
-            throw new IOException("please give the id for updating entry");
-        }
-        String id = this.mediatorserverRW.update(input, input.getId());
-        if (id == null) {
-            throw new IOException(EXCEPTION_UNABLE_TO_UPDATE_IN_DATABASE);
-        }
-        UpdateMediatorServerOutputBuilder builder = new UpdateMediatorServerOutputBuilder();
-        builder.setId(id).setName(input.getName()).setUrl(input.getUrl());
-        return builder;
-    }
-
-    @Override
     public CreateMaintenanceOutputBuilder createMaintenance(CreateMaintenanceInput input) throws IOException {
         String id = this.maintenanceRW.write(input, input.getNodeId());
         if (id == null) {
@@ -462,25 +419,13 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     }
 
     @Override
-    public CreateMediatorServerOutputBuilder createMediatorServer(CreateMediatorServerInput input) throws IOException {
-        String id = this.mediatorserverRW.write(input, null);
-
-        if (id == null) {
-            throw new IOException(EXCEPTION_UNABLE_TO_WRITE_IN_DATABASE);
-        }
-        CreateMediatorServerOutputBuilder builder = new CreateMediatorServerOutputBuilder();
-        builder.setId(id).setName(input.getName()).setUrl(input.getUrl());
-        return builder;
-    }
-
-    @Override
     public ReadGuiCutThroughEntryOutputBuilder readGuiCutThroughEntry(EntityInput input) {
         ReadGuiCutThroughEntryOutputBuilder outputBuilder = new ReadGuiCutThroughEntryOutputBuilder();
 
         if (!guicutthroughOverride.isEmpty()) {
-            if (input.getFilter() != null) {
+            Map<FilterKey, Filter> inputFilter = input == null ? null : input.getFilter();
+            if (inputFilter != null) {
                 // Iterate through the Filter map, get the ID and populate the GuicutThrough object accordingly.
-                Map<FilterKey, Filter> inputFilter = input.getFilter();
                 List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.read.gui.cut.through.entry.output.Data> gcData =
                         new ArrayList<>();
                 for (FilterKey fk : inputFilter.keySet()) {
@@ -529,11 +474,6 @@ public class SqlDBDataProvider extends HtDatabaseEventsService implements Databa
     @Override
     public HtDatabaseMaintenance getHtDatabaseMaintenance() {
         return this.dbMaintenanceService;
-    }
-
-    @Override
-    public HtDatabaseMediatorserver getHtDatabaseMediatorServer() {
-        return this.dbMediatorServerService;
     }
 
     public boolean delete(Entity e, List<Filter> filters) throws SQLException {

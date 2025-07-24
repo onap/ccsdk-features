@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>3.2.0-SNAPSHOT</version>
+        <version>3.2.0</version>
         <relativePath/>
     </parent>
 
@@ -44,7 +44,14 @@
         </license>
     </licenses>
 
+    <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+        <buildtime>${maven.build.timestamp} UTC</buildtime>
+    </properties>
+
     <dependencies>
+       
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-devicemanager-onap-openroadm-model</artifactId>
@@ -80,11 +87,6 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- <dependency>
-            <groupId>org.opendaylight.netconf</groupId>
-            <artifactId>sal-netconf-connector</artifactId>
-            <scope>provided</scope>
-        </dependency> -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -94,13 +96,12 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-          <!--  <version>3.2.4</version>-->
+            <version>3.2.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <artifactId>byte-buddy</artifactId>
             <groupId>net.bytebuddy</groupId>
-            <version>1.14.9</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -111,19 +112,12 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
-            <artifactId>rfc6991-ietf-inet-types</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
-            <artifactId>rfc6991-ietf-yang-types</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.netconf.model</groupId>
-            <artifactId>rfc6241</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.netconf.model</groupId>
             <artifactId>rfc6470</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>ietf-topology</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
@@ -141,14 +135,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.mdsal.model</groupId>
-            <artifactId>ietf-topology</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>netconf-topology</artifactId>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
         <!-- end for testing -->
     </dependencies>
@@ -160,19 +149,5 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-       <!-- <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/gen/**</exclude>
-                        <exclude>**/generated-sources/**</exclude>
-                        <exclude>**/yang-gen-sal/**</exclude>
-                        <exclude>**/pax/**</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>-->
     </build>
 </project>

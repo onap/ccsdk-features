@@ -19,6 +19,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ne.test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.OnfMicrowaveModel;

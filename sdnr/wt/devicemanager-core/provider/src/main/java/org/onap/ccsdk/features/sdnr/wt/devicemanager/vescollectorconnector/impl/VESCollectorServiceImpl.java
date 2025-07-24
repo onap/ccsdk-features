@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class VESCollectorServiceImpl implements VESCollectorService, IConfigChangedListener, AutoCloseable {
+
     private static final Logger LOG = LoggerFactory.getLogger(VESCollectorServiceImpl.class);
     private final VESCollectorCfgImpl vesConfig;
     private final ConfigurationFileRepresentation cfg;
@@ -121,7 +122,8 @@ public class VESCollectorServiceImpl implements VESCollectorService, IConfigChan
 
     @Override
     public void onConfigChanged() {
-        LOG.debug("In onConfigChanged - isTrustAllCerts = {} getBaseUrl = {}", getConfig().isTrustAllCerts(), getBaseUrl());
+        LOG.debug("In onConfigChanged - isTrustAllCerts = {} getBaseUrl = {}", getConfig().isTrustAllCerts(),
+                getBaseUrl());
         httpClient = new BaseHTTPClient(getBaseUrl(), this.vesConfig.isTrustAllCerts());
         setAuthorization(getConfig().getUsername(), getConfig().getPassword());
         Iterator<VESCollectorConfigChangeListener> it = registeredObjects.iterator();
@@ -157,14 +159,11 @@ public class VESCollectorServiceImpl implements VESCollectorService, IConfigChan
     @Override
     public VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader,
             VESNotificationFieldsPOJO notifFields) throws JsonProcessingException {
-        Map<String, Object> innerEvent = new HashMap<String, Object>();
-        innerEvent.put("commonEventHeader", commonEventHeader);
-        innerEvent.put("notificationFields", notifFields);
-
-        Map<String, Object> outerEvent = new HashMap<String, Object>();
-        outerEvent.put("event", innerEvent);
-        LOG.debug("In generateVESEvent - {}", objMapper.writeValueAsString(outerEvent));
-        return new VESMessage(objMapper.writeValueAsString(outerEvent));
+        final var evt = Map.of("event",
+                Map.of("commonEventHeader", commonEventHeader, "notificationFields", notifFields));
+        final var str = objMapper.writeValueAsString(evt);
+        LOG.debug("In generateVESEvent - {}", str);
+        return new VESMessage(str);
     }
 
     /**
@@ -176,14 +175,11 @@ public class VESCollectorServiceImpl implements VESCollectorService, IConfigChan
      * @throws JsonProcessingException
      */
     @Override
-    public VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader, VESFaultFieldsPOJO faultFields) throws JsonProcessingException {
-        Map<String, Object> innerEvent = new HashMap<String, Object>();
-        innerEvent.put("commonEventHeader", commonEventHeader);
-        innerEvent.put("faultFields", faultFields);
-
-        Map<String, Object> outerEvent = new HashMap<String, Object>();
-        outerEvent.put("event", innerEvent);
-        return new VESMessage(objMapper.writeValueAsString(outerEvent));
+    public VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader, VESFaultFieldsPOJO faultFields)
+            throws JsonProcessingException {
+        final var evt = Map.of("event",
+                Map.of("commonEventHeader", commonEventHeader, "faultFields", faultFields));
+        return new VESMessage(objMapper.writeValueAsString(evt));
     }
 
     /**
@@ -195,14 +191,11 @@ public class VESCollectorServiceImpl implements VESCollectorService, IConfigChan
      * @throws JsonProcessingException
      */
     @Override
-    public VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader, VESPNFRegistrationFieldsPOJO pnfRegistrationFields) throws JsonProcessingException {
-        Map<String, Object> innerEvent = new HashMap<String, Object>();
-        innerEvent.put("commonEventHeader", commonEventHeader);
-        innerEvent.put("pnfRegistrationFields", pnfRegistrationFields);
-
-        Map<String, Object> outerEvent = new HashMap<String, Object>();
-        outerEvent.put("event", innerEvent);
-        return new VESMessage(objMapper.writeValueAsString(outerEvent));
+    public VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader,
+            VESPNFRegistrationFieldsPOJO pnfRegistrationFields) throws JsonProcessingException {
+        final var evt = Map.of("event",
+                Map.of("commonEventHeader", commonEventHeader, "pnfRegistrationFields", pnfRegistrationFields));
+        return new VESMessage(objMapper.writeValueAsString(evt));
     }
 
     /**
@@ -216,12 +209,8 @@ public class VESCollectorServiceImpl implements VESCollectorService, IConfigChan
     @Override
     public VESMessage generateVESEvent(VESCommonEventHeaderPOJO commonEventHeader,
             VESStndDefinedFieldsPOJO stndDefinedFields) throws JsonProcessingException {
-        Map<String, Object> innerEvent = new HashMap<String, Object>();
-        innerEvent.put("commonEventHeader", commonEventHeader);
-        innerEvent.put("stndDefinedFields", stndDefinedFields);
-
-        Map<String, Object> outerEvent = new HashMap<String, Object>();
-        outerEvent.put("event", innerEvent);
-        return new VESMessage(objMapper.writeValueAsString(outerEvent));
+        final var evt = Map.of("event",
+                Map.of("commonEventHeader", commonEventHeader, "stndDefinedFields", stndDefinedFields));
+        return new VESMessage(objMapper.writeValueAsString(evt));
     }
 }

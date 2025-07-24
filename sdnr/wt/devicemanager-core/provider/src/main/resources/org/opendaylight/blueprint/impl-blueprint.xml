@@ -40,7 +40,7 @@
                interface="org.opendaylight.mdsal.binding.api.RpcProviderService" />
 
     <reference id="clusterSingletonService"
-               interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+               interface="org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider"/>
 
     <reference id="netconfNodeStateService"
                availability="mandatory" activation="eager"

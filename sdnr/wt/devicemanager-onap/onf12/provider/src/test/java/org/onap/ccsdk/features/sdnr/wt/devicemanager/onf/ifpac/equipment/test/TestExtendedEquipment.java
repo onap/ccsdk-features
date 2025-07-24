@@ -17,14 +17,12 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.equipment.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Test;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.WrapperPTPModelRev170208;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.equipment.ExtendedEquipment;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.Equipment;

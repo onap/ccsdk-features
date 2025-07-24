@@ -23,34 +23,24 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.impl;
 
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.Configuration;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.elasticsearch.EsConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBConfig;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 
 public class DataProviderConfig implements Configuration {
 
-    private static final String PROPERTY_KEY_DBTYPE = "dbType";
-    private static final Object DEFAULT_DBTYPE = "${SDNRDBTYPE}";
-    private static final SdnrDbType DEFAULT_DBTYPE_VALUE = SdnrDbType.ELASTICSEARCH;
     private static final String PROPERTY_KEY_DBENABLED = "enabled";
     private static final String DEFAULT_ISENABLED = "${SDNRDBENABLED}";
     private static final boolean DEFAULT_ISENABLED_IFNOTSET = true;
     private static final String PROPERTY_KEY_GUICUTTHROUGH_OVERWRITE = "GUICUTTHROUGH_PROXY_OVERWRITE";
     private static final String DEFAULT_GUICUTTHROUGH_OVERWRITE = "${GUICUTTHROUGH_PROXY_OVERWRITE}";
-    private final EsConfig esConfig;
     private final SqlDBConfig maridadbConfig;
-    private ConfigurationFileRepresentation configuration;
+    private final ConfigurationFileRepresentation configuration;
 
     public DataProviderConfig(ConfigurationFileRepresentation configuration) {
         this.configuration = configuration;
         defaults();
-        this.esConfig = new EsConfig(configuration);
         this.maridadbConfig = new SqlDBConfig(configuration);
     }
 
-    public EsConfig getEsConfig() {
-        return this.esConfig;
-    }
 
     public SqlDBConfig getMariadbConfig() {
         return this.maridadbConfig;
@@ -68,7 +58,6 @@ public class DataProviderConfig implements Configuration {
     @Override
     public void defaults() {
 
-        configuration.setPropertyIfNotAvailable(this.getSectionName(), PROPERTY_KEY_DBTYPE, DEFAULT_DBTYPE);
         configuration.setPropertyIfNotAvailable(this.getSectionName(), PROPERTY_KEY_DBENABLED, DEFAULT_ISENABLED);
         configuration.setPropertyIfNotAvailable(this.getSectionName(), PROPERTY_KEY_GUICUTTHROUGH_OVERWRITE,
                 DEFAULT_GUICUTTHROUGH_OVERWRITE);
@@ -77,14 +66,6 @@ public class DataProviderConfig implements Configuration {
     @Override
     public String getSectionName() {
         return ConfigurationFileRepresentation.SECTIONNAME_ROOT;
-    }
-
-    public SdnrDbType getDbType() {
-        String value = this.configuration.getProperty(this.getSectionName(), PROPERTY_KEY_DBTYPE);
-        if (value.isEmpty()) {
-            return DEFAULT_DBTYPE_VALUE;
-        }
-        return SdnrDbType.valueOf(value);
     }
 
     public String getGuicutthroughOverride() {

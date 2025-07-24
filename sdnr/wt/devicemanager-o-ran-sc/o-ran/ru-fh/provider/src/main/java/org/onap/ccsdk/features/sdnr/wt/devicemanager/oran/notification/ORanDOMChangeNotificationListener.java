@@ -109,12 +109,12 @@ public class ORanDOMChangeNotificationListener implements DOMNotificationListene
                 .childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_EDITNODE));
         if (editList != null) {
             for (int listCnt = 0; listCnt < editList.size(); listCnt++) {
-                String operationValue = editList.childAt(listCnt)
-                        .childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_OPERATION))
-                        .body().toString();
-                String targetValue = editList.childAt(listCnt)
-                        .childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_TARGET))
-                        .body().toString();
+                final var ietfNetconfNotifOp = editList.childAt(listCnt)
+                        .childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_OPERATION));
+                String operationValue = ietfNetconfNotifOp != null ? ietfNetconfNotifOp.body().toString() : "";
+                final var ietfNetconfNotifTarget = editList.childAt(listCnt)
+                        .childByArg(new NodeIdentifier(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_TARGET));
+                String targetValue = ietfNetconfNotifTarget != null ? ietfNetconfNotifTarget.body().toString() : "";
 
                 EventlogEntity eventLogEntity1 = new EventlogBuilder()
                         .setNodeId(netconfDomAccessor.getNodeId().getValue()).setCounter(sequenceNo++)

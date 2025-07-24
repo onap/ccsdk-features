@@ -24,9 +24,9 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data;
 import com.google.common.base.MoreObjects;
 import java.util.Objects;
 import javax.annotation.processing.Generated;
-import org.opendaylight.yangtools.yang.binding.Augmentable;
-import org.opendaylight.yangtools.yang.binding.CodeHelpers;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.Augmentable;
+import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.lib.CodeHelpers;
 
 /**
  *

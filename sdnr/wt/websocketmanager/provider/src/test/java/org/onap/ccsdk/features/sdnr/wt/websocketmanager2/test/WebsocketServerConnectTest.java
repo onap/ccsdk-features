@@ -18,6 +18,7 @@
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager2.test;
 
 import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.utils.AkkaConfig;
 

@@ -29,7 +29,7 @@ import javax.servlet.WriteListener;
 public class ServletOutputStreamToStringWriter extends ServletOutputStream {
 
     // variables
-    private StringWriter out = new StringWriter();
+    private final StringWriter out = new StringWriter();
     // end of variables
 
     public StringWriter getStringWriter() {

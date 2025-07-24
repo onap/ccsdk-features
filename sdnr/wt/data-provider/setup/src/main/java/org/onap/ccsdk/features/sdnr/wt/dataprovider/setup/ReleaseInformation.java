@@ -22,25 +22,23 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.IndicesEntryList;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlTable;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.SdnrDbType;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.DatabaseInfo;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.KeepDataSearchHitConverter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.MariaDBTableInfo;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.Release;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.SearchHitConverter;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.elalto.ElAltoReleaseInformation;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformation;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.frankfurt.FrankfurtReleaseInformationR2;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.guilin.GuilinReleaseInformation;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.honolulu.HonoluluReleaseInformation;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.istanbul.IstanbulReleaseInformation;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.jakarta.JakartaReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.releases.ElAltoReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.releases.FrankfurtReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.releases.FrankfurtReleaseInformationR2;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.releases.GuilinReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.releases.HonoluluReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.releases.IstanbulReleaseInformation;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.releases.JakartaReleaseInformation;
 
 public abstract class ReleaseInformation {
 
@@ -99,7 +97,7 @@ public abstract class ReleaseInformation {
      * @return null if component does not exists in this release, otherwise index name
      */
     public String getIndex(ComponentName comp, String prefix) {
-        return dbMap.get(comp) == null ? null : (prefix + dbMap.get(comp).getIndex(this.release.getDBSuffix()));
+        return dbMap.get(comp) == null ? null : (prefix + dbMap.get(comp).getIndex(this.release.getDbSuffix()));
     }
 
     /**
@@ -142,24 +140,10 @@ public abstract class ReleaseInformation {
                 return this.getDatabaseMapping(name);
             case MARIADB:
                 return mariadbMap.get(name) == null ? null
-                        : mariadbMap.get(name).getMapping(this.release.getDBSuffix());
+                        : mariadbMap.get(name).getMapping(this.release.getDbSuffix());
             default:
                 return null;
         }
-    }
-
-    /**
-     * get converter for component data
-     *
-     * @param dst destination release
-     * @param comp component to convert
-     * @return
-     */
-    public SearchHitConverter getConverter(Release dst, ComponentName comp) {
-        if (dst == this.release && this.getComponents().contains(comp)) {
-            return new KeepDataSearchHitConverter(comp);
-        }
-        return null;
     }
 
     public static ReleaseInformation getInstance(Release r) {
@@ -199,17 +183,17 @@ public abstract class ReleaseInformation {
     }
 
     /**
-     * @param indices
+     * @param views
      * @return true if components of this release are covered by the given indices
      */
-    public boolean containsIndices(IndicesEntryList indices) {
+    public boolean containsIndices(List<SqlTable> views) {
 
         if (this.dbMap.size() <= 0) {
             return false;
         }
         for (DatabaseInfo entry : this.dbMap.values()) {
-            String dbIndexName = entry.getIndex(this.release.getDBSuffix());
-            if (indices.findByIndex(dbIndexName) == null) {
+            String dbIndexName = entry.getIndex(this.release.getDbSuffix());
+            if (!views.stream().anyMatch(e->e.getName().equals(dbIndexName))) {
                 return false;
             }
         }
@@ -221,8 +205,6 @@ public abstract class ReleaseInformation {
      * @param dbClient
      * @return if succeeded or not
      */
-    public abstract boolean runPreInitCommands(HtDatabaseClient dbClient);
-
     public abstract boolean runPreInitCommands(SqlDBClient dbClient);
 
     /**
@@ -230,8 +212,6 @@ public abstract class ReleaseInformation {
      * @param dbClient
      * @return if succeeded or not
      */
-    public abstract boolean runPostInitCommands(HtDatabaseClient dbClient);
-
     public abstract boolean runPostInitCommands(SqlDBClient dbClient);
 
 

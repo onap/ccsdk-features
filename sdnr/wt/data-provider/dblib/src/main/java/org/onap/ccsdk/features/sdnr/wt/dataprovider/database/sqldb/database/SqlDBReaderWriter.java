@@ -21,6 +21,11 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.DeleteQuery;
@@ -30,17 +35,12 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.UpsertQ
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterBuilder;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataContainer;
+import org.opendaylight.yangtools.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-
-public class SqlDBReaderWriter<T extends DataObject> extends SqlDBReader<T> {
+public class SqlDBReaderWriter<T extends DataContainer> extends SqlDBReader<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SqlDBReaderWriter.class);
 
@@ -54,7 +54,7 @@ public class SqlDBReaderWriter<T extends DataObject> extends SqlDBReader<T> {
         super(dbService, e, dbSuffix, clazz, controllerId, ignoreControllerId);
     }
 
-    public <S extends DataObject> String write(S object, String id) {
+    public <S extends DataContainer> String write(S object, String id) {
         if (id == null) {
             return this.writeWithoutId(object);
         }
@@ -73,7 +73,7 @@ public class SqlDBReaderWriter<T extends DataObject> extends SqlDBReader<T> {
         return success ? id : null;
     }
 
-    private <S extends DataObject> String writeWithoutId(S object) {
+    private <S extends DataContainer> String writeWithoutId(S object) {
 
         InsertQuery<S> query =
                 new InsertQuery<S>(this.entity, object, this.controllerId, this.ignoreControllerId, true);
@@ -132,7 +132,7 @@ public class SqlDBReaderWriter<T extends DataObject> extends SqlDBReader<T> {
         return insertedId;
     }
 
-    public <S extends DataObject> String updateOrInsert(S object, String id) {
+    public <S extends DataContainer> String updateOrInsert(S object, String id) {
         UpsertQuery<S> query = new UpsertQuery<S>(this.entity, object, this.controllerId, this.ignoreControllerId, true);
         query.setId(id);
         String insertedId = null;
@@ -172,7 +172,7 @@ public class SqlDBReaderWriter<T extends DataObject> extends SqlDBReader<T> {
         return insertedId;
     }
 
-    public SqlDBReaderWriter<T> setWriteInterface(Class<? extends DataObject> writeInterfaceClazz) {
+    public SqlDBReaderWriter<T> setWriteInterface(Class<? extends DataContainer> writeInterfaceClazz) {
         LOG.debug("Set write interface to {}", writeInterfaceClazz);
         if (writeInterfaceClazz == null) {
             throw new IllegalArgumentException("Null not allowed here.");

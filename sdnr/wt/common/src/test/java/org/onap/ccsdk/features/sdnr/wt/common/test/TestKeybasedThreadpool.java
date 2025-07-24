@@ -21,9 +21,9 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.common.test;
 
-import java.util.Random;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
+import java.util.Random;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.threading.GenericRunnableFactory;
 import org.onap.ccsdk.features.sdnr.wt.common.threading.KeyBasedThreadpool;
@@ -32,35 +32,29 @@ import org.slf4j.LoggerFactory;
 
 public class TestKeybasedThreadpool {
 
-
     private static final Logger LOG  = LoggerFactory.getLogger(TestKeybasedThreadpool.class);
     private static final String KEY_A = "a";
     private static final String KEY_B = "b";
     private static final String KEY_C = "c";
     private static final String KEY_D = "d";
 
-    @Ignore
     @Test
     public void test1() {
         GenericRunnableFactory<String, TestClass> factory1 =
-                new GenericRunnableFactory<String, TestKeybasedThreadpool.TestClass>() {
+                new GenericRunnableFactory<>() {
                     @Override
                     public Runnable create(final String key, final TestClass arg) {
-                        return new Runnable() {
-
-                            @Override
-                            public void run() {
-                                final String key2 = arg.value;
-                                final long sleep = arg.sleep;
-                                LOG.info("{}: sleeping now for {} seconds",key2, sleep);
-                                try {
-                                    Thread.sleep(sleep*1000);
-                                } catch (InterruptedException e) {
-                                    LOG.error("InterruptedException",e);
-                                    Thread.currentThread().interrupt();
-                                }
-                                LOG.info("{}: finished",key2);
+                        return () -> {
+                            final String key2 = arg.value;
+                            final long sleep = arg.sleep;
+                            LOG.info("{}: sleeping now for {} seconds", key2, sleep);
+                            try {
+                                Thread.sleep(sleep * 1000);
+                            } catch (InterruptedException e) {
+                                LOG.error("InterruptedException", e);
+                                Thread.currentThread().interrupt();
                             }
+                            LOG.info("{}: finished", key2);
                         };
                     }
                 };
@@ -74,6 +68,7 @@ public class TestKeybasedThreadpool {
         threadpool.execute(KEY_D, new TestClass(KEY_D));
         threadpool.execute(KEY_D, new TestClass(KEY_D));
         threadpool.join();
+        assertTrue(threadpool.isEmpty());
         LOG.info("done");
     }
 
@@ -88,7 +83,7 @@ public class TestKeybasedThreadpool {
 
             this.value = value+ String.valueOf(counter++);
             Random rnd = new Random();
-            this.sleep = rnd.nextInt(20);
+            this.sleep = rnd.nextInt(3);
             LOG.info("instatiate {}",this);
         }
 

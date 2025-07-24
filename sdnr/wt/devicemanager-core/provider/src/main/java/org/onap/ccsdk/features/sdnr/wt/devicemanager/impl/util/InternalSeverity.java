@@ -17,7 +17,6 @@
  */
 /**
  * @author herbert
- *
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.impl.util;
 
@@ -113,8 +112,12 @@ public enum InternalSeverity {
         }
         return null;
     }
+
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType toYang(
             @Nullable SeverityType severity) {
+        if (severity == null) {
+            return null;
+        }
         switch (severity) {
             case NonAlarmed:
                 return org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.devicemanager.rev190109.SeverityType.NonAlarmed;
@@ -173,7 +176,6 @@ public enum InternalSeverity {
     //    }
 
 
-
     /**
      * convert a text string into Severity
      *
@@ -219,9 +221,6 @@ public enum InternalSeverity {
         }
         return InternalSeverity.NonAlarmed;
     }
-
-
-
 
 
 }

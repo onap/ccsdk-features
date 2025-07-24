@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
@@ -47,13 +48,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SourceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObjectStep;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
-
 
 
 public class TestOpenRoadmDeviceChangeNotification {
+
     private static final String NODEID = "Roadm1";
     private NetconfAccessor netconfAccessor = mock(NetconfAccessor.class);
     private DataProvider databaseService = mock(DataProvider.class);
@@ -66,24 +66,13 @@ public class TestOpenRoadmDeviceChangeNotification {
     public void testOnChangeNotification() {
 
         when(netconfAccessor.getNodeId()).thenReturn(new NodeId(NODEID));
-        List<? extends PathArgument> pathArguments = Arrays.asList(new PathArgument() {
-
-            @Override
-            public int compareTo(PathArgument arg0) {
-                return 0;
-            }
-
-            @Override
-            public Class<? extends DataObject> getType() {
-                return Component.class;
-            }
-        });
-        InstanceIdentifier<?> target = InstanceIdentifier.unsafeOf(pathArguments);
+        InstanceIdentifier<?> target = InstanceIdentifier.unsafeOf(
+                List.of(DataObjectStep.of(Component.class)));
 
         deviceChangeListener.onChangeNotification(createNotification(EditOperationType.Create, target));
         EventlogEntity event =
                 new EventlogBuilder().setNodeId(NODEID).setNewValue(String.valueOf(EditOperationType.Create))
-                        .setObjectId(target.getPathArguments().toString()).setCounter(1)
+                        .setObjectId(target.steps().iterator().next().type().toString()).setCounter(1)
                         .setAttributeName(target.getTargetType().getName()).setSourceType(SourceType.Netconf).build();
         verify(databaseService).writeEventLog(event);
 
@@ -103,8 +92,8 @@ public class TestOpenRoadmDeviceChangeNotification {
     private static ChangeNotification createNotification(EditOperationType type, InstanceIdentifier<?> target) {
         ChangeNotification change = mock(ChangeNotification.class);
 
-        @SuppressWarnings("null")
-        final @NonNull List<Edit> edits = Arrays.asList(new EditBuilder().setOperation(type).setTarget(target).build());
+        @SuppressWarnings("null") final @NonNull List<Edit> edits = Arrays.asList(
+                new EditBuilder().setOperation(type).setTarget(target.toIdentifier()).build());
         when(change.nonnullEdit()).thenReturn(edits);
         return change;
     }

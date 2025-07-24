@@ -24,7 +24,6 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.nodb;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
@@ -128,10 +127,5 @@ public class NoDbDataProvider implements DataProvider {
     @Override
     public void doWritePerformanceData(List<PmdataEntity> list) {
   
-    }
-
-    @Override
-    public HtDatabaseClient getRawClient() {
-        return null;
     }
 }

@@ -35,16 +35,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.BaseIdentityDeserializer;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.ClassDeserializer;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.IdentifierDeserializer;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.TypeObjectDeserializer;
+import org.opendaylight.yangtools.binding.BaseIdentity;
+import org.opendaylight.yangtools.binding.ScalarTypeObject;
+import org.opendaylight.yangtools.binding.TypeObject;
 import org.opendaylight.yangtools.concepts.Identifier;
-import org.opendaylight.yangtools.yang.binding.BaseIdentity;
-import org.opendaylight.yangtools.yang.binding.ScalarTypeObject;
-import org.opendaylight.yangtools.yang.binding.TypeObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

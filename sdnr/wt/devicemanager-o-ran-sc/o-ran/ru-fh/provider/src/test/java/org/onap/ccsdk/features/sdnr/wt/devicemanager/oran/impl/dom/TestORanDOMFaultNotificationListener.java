@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
@@ -110,7 +111,7 @@ public class TestORanDOMFaultNotificationListener {
         capabilities = mock(Capabilities.class);
         when(domAccessor.getCapabilites()).thenReturn(capabilities);
         when(capabilities.isSupportingNamespaceAndRevision(
-                QNameModule.create(XMLNamespace.of(ORANFM.NAMESPACE), Revision.of("2022-08-15")))).thenReturn(true);
+                QNameModule.of(XMLNamespace.of(ORANFM.NAMESPACE), Revision.of("2022-08-15")))).thenReturn(true);
         oranfm = ORANFM.getModule(domAccessor);
     }
 
@@ -119,7 +120,7 @@ public class TestORanDOMFaultNotificationListener {
         Files.asCharSink(new File(TESTFILENAME), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
         vesCollectorService = new VESCollectorServiceImpl(new ConfigurationFileRepresentation(TESTFILENAME));
         when(domAccessor.getNodeId()).thenReturn(new NodeId("nSky"));
-        ORanDOMFaultNotificationListener faultListener = new ORanDOMFaultNotificationListener(domAccessor, oranfm,
+        ORanDOMFaultNotificationListener faultListener = new ORanDOMFaultNotificationListener(domAccessor, oranfm.get(),
                 vesCollectorService, faultService, websocketManagerService, databaseService);
         NetconfDeviceNotification ndn = new NetconfDeviceNotification(createORANDOMFault(), Instant.now());
         faultListener.onNotification(ndn);
@@ -147,7 +148,7 @@ public class TestORanDOMFaultNotificationListener {
         NetconfDeviceNotification(final ContainerNode content, final Instant eventTime) {
             this.content = content;
             this.eventTime = eventTime;
-            this.schemaPath = Absolute.of(content.getIdentifier().getNodeType());
+            this.schemaPath = Absolute.of(content.name().getNodeType());
         }
 
         NetconfDeviceNotification(final ContainerNode content, final Absolute schemaPath, final Instant eventTime) {
