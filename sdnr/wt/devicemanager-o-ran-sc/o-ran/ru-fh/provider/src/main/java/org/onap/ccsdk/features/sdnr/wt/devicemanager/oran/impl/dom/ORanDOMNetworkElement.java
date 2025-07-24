@@ -67,6 +67,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -109,10 +110,12 @@ public class ORanDOMNetworkElement implements NetworkElement, IConfigChangedList
         configFileRepresentation.registerConfigChangedListener(this);
         this.oranDomChangeNotificationListener =
                 new ORanDOMChangeNotificationListener(netconfDomAccessor, vesCollectorService, databaseService);
-
+        if(oranfm.isEmpty()) {
+            throw new RuntimeException("unable to detect ORAN FM module version");
+        }
         this.oranDomFaultNotificationListener =
-                new ORanDOMFaultNotificationListener(netconfDomAccessor, this.oranfm, vesCollectorService,
-                        serviceProvider.getFaultService(), serviceProvider.getWebsocketService(), databaseService);
+                    new ORanDOMFaultNotificationListener(netconfDomAccessor, this.oranfm.get(), vesCollectorService,
+                            serviceProvider.getFaultService(), serviceProvider.getWebsocketService(), databaseService);
 
         this.oranDomSupervisionNotificationListener = new ORanDOMSupervisionNotificationListener(netconfDomAccessor,
                 vesCollectorService, databaseService, oranSupervisionConfig);
@@ -177,9 +180,10 @@ public class ORanDOMNetworkElement implements NetworkElement, IConfigChangedList
             getActiveAlarms();
         }
         if (onapSystem.isPresent()) {
-            ContainerNode gcData = (ContainerNode) onapSystem.get().getOnapSystemData();
+
             Optional<Guicutthrough> oGuicutthrough =
-                    ORanDOMToInternalDataModel.getGuicutthrough(gcData, onapSystem.get());
+                    ORanDOMToInternalDataModel.getGuicutthrough(
+                            (DataContainerChild) onapSystem.get().getOnapSystemData(), onapSystem.get());
             if (oGuicutthrough.isPresent()) {
                 databaseService.writeGuiCutThroughData(oGuicutthrough.get(), netconfDomAccessor.getNodeId().getValue());
             }
@@ -309,9 +313,13 @@ public class ORanDOMNetworkElement implements NetworkElement, IConfigChangedList
             ContainerNode cn = (ContainerNode) oData.get();
             UnkeyedListNode activeAlarmsList =
                     (UnkeyedListNode) cn.childByArg(new NodeIdentifier(oranfm.get().getFaultActiveAlarmsQName()));
-            for (UnkeyedListEntryNode activeAlarmEntry : activeAlarmsList.body())
+            if (activeAlarmsList == null) {
+                return;
+            }
+            for (UnkeyedListEntryNode activeAlarmEntry : activeAlarmsList.body()) {
                 faultService.faultNotification(ORanDOMToInternalDataModel.getFaultLog(activeAlarmEntry, oranfm.get(),
                         netconfDomAccessor.getNodeId()));
+            }
         }
     }
 

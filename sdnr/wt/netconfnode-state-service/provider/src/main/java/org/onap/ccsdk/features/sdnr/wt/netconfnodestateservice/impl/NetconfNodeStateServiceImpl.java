@@ -45,7 +45,6 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.odlAkka
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.conf.odlGeo.GeoConfig;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.rpc.NetconfnodeStateServiceRpcApiImpl;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.impl.rpc.RpcApigetStateCallback;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
@@ -55,16 +54,14 @@ import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.mdsal.dom.api.DOMMountPointService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.ConnectionOper.ConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.connection.oper.ClusteredConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.network.topology.topology.topology.types.TopologyNetconf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.ConnectionOper.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.connection.oper.ClusteredConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.NetconfNodeAugment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.GetStatusInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netconfnode.state.rev191011.GetStatusOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -73,7 +70,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.parser.api.YangParserException;
 import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
@@ -112,41 +110,52 @@ public class NetconfNodeStateServiceImpl
     private IEntityDataProvider iEntityDataProvider;
     @SuppressWarnings("unused")
     private NotificationPublishService notificationPublishService;
-    @SuppressWarnings("unused")
-    private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     private YangParserFactory yangParserFactory;
     private BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer;
 
     // -- Parameter
-    private ListenerRegistration<L1> listenerL1;
-    private ListenerRegistration<L2> listenerL2;
-    @SuppressWarnings("unused")
-    private ClusterSingletonServiceRegistration cssRegistration;
+    private Registration listenerL1;
 
     private NetconfnodeStateServiceRpcApiImpl rpcApiService;
 
-    /** Indication if init() function called and fully executed **/
+    /**
+     * Indication if init() function called and fully executed
+     **/
     private Boolean initializationSuccessful;
 
-    /** Manager accessor objects for connection **/
+    /**
+     * Manager accessor objects for connection
+     **/
     private NetconfAccessorManager accessorManager;
 
-    /** List of all registered listeners **/
+    /**
+     * List of all registered listeners
+     **/
     private final List<NetconfNodeConnectListener> netconfNodeConnectListenerList;
 
-    /** List of all registered listeners **/
+    /**
+     * List of all registered listeners
+     **/
     private final List<NetconfNodeStateListener> netconfNodeStateListenerList;
 
-    /** List of all registered listeners **/
+    /**
+     * List of all registered listeners
+     **/
     private final List<VesNotificationListener> vesNotificationListenerList;
 
-    /** Indicates if running in cluster configuration **/
+    /**
+     * Indicates if running in cluster configuration
+     **/
     private boolean isCluster;
 
-    /** Indicates the name of the cluster **/
+    /**
+     * Indicates the name of the cluster
+     **/
     private String clusterName;
 
-    /** nodeId to threadPool (size=1) for datatreechange handling) **/
+    /**
+     * nodeId to threadPool (size=1) for datatreechange handling)
+     **/
     //    private final Map<String, ExecutorService> handlingPool;
     private KeyBasedThreadpool<NodeId, NetconfChangeDataHolder> handlingPool;
 
@@ -157,7 +166,9 @@ public class NetconfNodeStateServiceImpl
     private NetconfCommunicatorManager netconfCommunicatorManager;
     private DomContext domContext;
 
-    /** Blueprint **/
+    /**
+     * Blueprint
+     **/
     public NetconfNodeStateServiceImpl() {
         LOG.info("Creating provider for {}", APPLICATION_NAME);
 
@@ -167,12 +178,10 @@ public class NetconfNodeStateServiceImpl
         this.domMountPointService = null;
         this.rpcProviderRegistry = null;
         this.notificationPublishService = null;
-        this.clusterSingletonServiceProvider = null;
         this.yangParserFactory = null;
         this.domContext = null;
 
         this.listenerL1 = null;
-        this.listenerL2 = null;
         this.initializationSuccessful = false;
         this.netconfNodeConnectListenerList = new CopyOnWriteArrayList<>();
         this.netconfNodeStateListenerList = new CopyOnWriteArrayList<>();
@@ -180,6 +189,7 @@ public class NetconfNodeStateServiceImpl
         this.accessorManager = null;
         this.handlingPool = null;
     }
+
     public void setDataBroker(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
@@ -202,10 +212,6 @@ public class NetconfNodeStateServiceImpl
 
     public void setDomMountPointService(DOMMountPointService domMountPointService) {
         this.domMountPointService = domMountPointService;
-    }
-
-    public void setClusterSingletonService(ClusterSingletonServiceProvider clusterSingletonService) {
-        this.clusterSingletonServiceProvider = clusterSingletonService;
     }
 
     public void setEntityDataProvider(IEntityDataProvider iEntityDataProvider) {
@@ -258,9 +264,10 @@ public class NetconfNodeStateServiceImpl
         //this.netconfChangeListener.register();
         //DataTreeIdentifier<Node> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, NETCONF_NODE_TOPO_IID);
 
-        listenerL1 = dataBroker.registerDataTreeChangeListener(NETCONF_NODE_TOPO_TREE_ID, new L1());
-        listenerL2 = dataBroker.registerDataTreeChangeListener(NETCONF_NODE_TOPO_TREE_ID, new L2());
-        this.handlingPool = new KeyBasedThreadpool<NodeId, NetconfChangeDataHolder>(this.config.getAsyncHandlingPoolsize(), 1,
+        listenerL1 = dataBroker.registerTreeChangeListener(NETCONF_NODE_TOPO_TREE_ID, new L1());
+
+        this.handlingPool = new KeyBasedThreadpool<NodeId, NetconfChangeDataHolder>(
+                this.config.getAsyncHandlingPoolsize(), 1,
                 new GenericRunnableFactory<>() {
                     public Runnable create(final NodeId key, final NetconfChangeDataHolder arg) {
                         return new Runnable() {
@@ -271,7 +278,9 @@ public class NetconfNodeStateServiceImpl
                                         arg.modificationTyp);
                             }
                         };
-                    };
+                    }
+
+                    ;
                 });
         this.initializationSuccessful = true;
 
@@ -279,7 +288,9 @@ public class NetconfNodeStateServiceImpl
 
     }
 
-    /** Blueprint destroy-method method */
+    /**
+     * Blueprint destroy-method method
+     */
     public void destroy() {
         close();
     }
@@ -306,13 +317,14 @@ public class NetconfNodeStateServiceImpl
     }
 
     @Override
-    public <L extends NetconfNodeConnectListener> @NonNull ListenerRegistration<L> registerNetconfNodeConnectListener(
+    public <L extends NetconfNodeConnectListener> @NonNull Registration registerNetconfNodeConnectListener(
             final @NonNull L netconfNodeConnectListener) {
         LOG.debug("Register connect listener {}", netconfNodeConnectListener.getClass().getName());
         netconfNodeConnectListenerList.add(netconfNodeConnectListener);
 
-        return new ListenerRegistration<L>() {
-            @Override
+        return new Registration() {
+
+            //@Override
             public @NonNull L getInstance() {
                 return netconfNodeConnectListener;
             }
@@ -326,13 +338,13 @@ public class NetconfNodeStateServiceImpl
     }
 
     @Override
-    public <L extends NetconfNodeStateListener> @NonNull ListenerRegistration<L> registerNetconfNodeStateListener(
+    public <L extends NetconfNodeStateListener> @NonNull Registration registerNetconfNodeStateListener(
             @NonNull L netconfNodeStateListener) {
         LOG.debug("Register state listener {}", netconfNodeStateListener.getClass().getName());
         netconfNodeStateListenerList.add(netconfNodeStateListener);
 
-        return new ListenerRegistration<L>() {
-            @Override
+        return new Registration() {
+            //@Override
             public @NonNull L getInstance() {
                 return netconfNodeStateListener;
             }
@@ -346,13 +358,13 @@ public class NetconfNodeStateServiceImpl
     }
 
     @Override
-    public <L extends VesNotificationListener> @NonNull ListenerRegistration<L> registerVesNotifications(
+    public <L extends VesNotificationListener> @NonNull Registration registerVesNotifications(
             @NonNull L vesNotificationListener) {
         LOG.debug("Register Ves notification listener {}", vesNotificationListener.getClass().getName());
         vesNotificationListenerList.add(vesNotificationListener);
 
-        return new ListenerRegistration<L>() {
-            @Override
+        return new Registration() {
+            //@Override
             public @NonNull L getInstance() {
                 return vesNotificationListener;
             }
@@ -369,7 +381,7 @@ public class NetconfNodeStateServiceImpl
     public void close() {
         LOG.info("Closing start ...");
         try {
-            close(rpcApiService, listenerL1, listenerL2);
+            close(rpcApiService, listenerL1);
         } catch (Exception e) {
             LOG.debug("Closing", e);
         }
@@ -379,7 +391,7 @@ public class NetconfNodeStateServiceImpl
     /**
      * Used to close all Services, that should support AutoCloseable Pattern
      *
-     * @param toClose
+     * @param toCloseList
      * @throws Exception
      */
     private void close(AutoCloseable... toCloseList) throws Exception {
@@ -408,7 +420,7 @@ public class NetconfNodeStateServiceImpl
      * For each mounted device a mountpoint is created and this listener is called. Mountpoint was created or existing.
      * Managed device is now fully connected to node/mountpoint.
      *
-     * @param nNodeId id of the mountpoint
+     * @param nNodeId     id of the mountpoint
      * @param netconfNode mountpoint contents
      */
     private void enterConnectedState(NodeId nNodeId, NetconfNode netconfNode) {
@@ -452,9 +464,8 @@ public class NetconfNodeStateServiceImpl
     /**
      * Leave the connected status to a non connected or removed status for master mountpoint
      *
-     * @param action that occurred
-     * @param nNodeId id of the mountpoint
-     * @param netconfNode mountpoint contents or not available on remove
+     * @param nNodeId             id of the mountpoint
+     * @param optionalNetconfNode mountpoint contents or not available on remove
      */
     private void leaveConnectedState(NodeId nNodeId, Optional<NetconfNode> optionalNetconfNode) {
         String mountPointNodeName = nNodeId.getValue();
@@ -485,11 +496,11 @@ public class NetconfNodeStateServiceImpl
             ModificationType modificationTyp) {
         // Move status into boolean flags for
         boolean connectedBefore, connectedAfter, created;
-        NetconfNode nNodeAfter = getNetconfNode(root.getDataAfter());
+        NetconfNode nNodeAfter = getNetconfNode(root.dataAfter());
         connectedAfter = isConnected(nNodeAfter);
         if (root.getDataBefore() != null) {
             // It is an update or delete
-            NetconfNode nodeBefore = getNetconfNode(root.getDataBefore());
+            NetconfNode nodeBefore = getNetconfNode(root.dataBefore());
             connectedBefore = isConnected(nodeBefore);
             created = false;
         } else {
@@ -580,7 +591,7 @@ public class NetconfNodeStateServiceImpl
                         if (modificationTyp == null) {
                             LOG.warn("L1 empty modification type");
                         } else {
-                            LOG.trace("handle data tree change with async={}",this.handleDataTreeAsync);
+                            LOG.trace("handle data tree change with async={}", this.handleDataTreeAsync);
                             if (this.handleDataTreeAsync) {
                                 this.handlingPool.execute(nodeId, new NetconfChangeDataHolder(root, modificationTyp));
 
@@ -602,9 +613,10 @@ public class NetconfNodeStateServiceImpl
     /**
      * Clustered listener function to select the right node from DataObjectModification. Called at all nodes.
      */
-    private class L1 implements ClusteredDataTreeChangeListener<Node> {
+    private class L1 implements DataTreeChangeListener<Node> {
+
         @Override
-        public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Node>> changes) {
+        public void onDataTreeChanged(@NonNull List<DataTreeModification<Node>> changes) {
             LOG.debug("L1 TreeChange enter changes:{}", changes.size());
             //Debug AkkTimeout NetconfNodeStateServiceImpl.this.pool.execute(new Thread( () -> onDataTreeChangedHandler(changes)));
             onDataTreeChangedHandler(changes);
@@ -612,22 +624,13 @@ public class NetconfNodeStateServiceImpl
         }
     }
 
-    /**
-     * Data change, called at leader/master
-     */
-    private class L2 implements DataTreeChangeListener<Node> {
-
-        @Override
-        public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Node>> changes) {
-            LOG.debug("L2 TreeChange enter changes:{}", changes.size());
-            // Do nothing
-            LOG.debug("L2 TreeChange leave");
-        }
-    }
-
     /* --- private helpers --- */
     private static @Nullable NetconfNode getNetconfNode(Node node) {
-        return node != null ? node.augmentation(NetconfNode.class) : null;
+        if (node == null) {
+            return null;
+        }
+        final var aug = node.augmentation(NetconfNodeAugment.class);
+        return aug != null ? aug.getNetconfNode() : null;
     }
 
     private static boolean isConnected(NetconfNode nNode) {
@@ -640,7 +643,9 @@ public class NetconfNodeStateServiceImpl
 
     /* -- LOG related functions -- */
 
-    /** Analyze configuration **/
+    /**
+     * Analyze configuration
+     **/
     private static @Nullable AkkaConfig getAkkaConfig() {
         AkkaConfig akkaConfig;
         try {
@@ -683,7 +688,6 @@ public class NetconfNodeStateServiceImpl
         }
         return true;
     }
-
 
 
     @Override

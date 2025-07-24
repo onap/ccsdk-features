@@ -285,7 +285,6 @@ public class ONFCoreNetworkElement12Equipment {
     /**
      * Read equipment information
      *
-     * @param interfacePacUuid uuid as key for Equipment.
      * @return Equipment or null
      */
     private @Nullable Equipment readEquipmentAll() {

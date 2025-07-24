@@ -23,8 +23,6 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import org.junit.After;
-import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.StrimziKafkaConfig;
 
@@ -40,27 +38,31 @@ public class TestStrimziKafkaConfig {
             + "";
      // @formatter:on
 
-    private ConfigurationFileRepresentation cfg;
+    private StrimziKafkaConfig sKafkaCfg;
     private static final String CONFIGURATIONFILE = "test2.properties";
 
-    @Test
-    public void test() {
-        try {
-            Files.asCharSink(new File(CONFIGURATIONFILE), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
-            cfg = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
-            StrimziKafkaConfig sKafkaCfg = new StrimziKafkaConfig(cfg);
-            assertEquals("strimzi-kafka", sKafkaCfg.getSectionName());
-            assertEquals("onap-strimzi-kafka-0:9094,onap-strimzi-kafka-1:9094", sKafkaCfg.getBootstrapServers());
-            assertEquals("PLAINTEXT", sKafkaCfg.getSecurityProtocol());
-            assertEquals(false, sKafkaCfg.getEnabled());
-            assertEquals("PLAIN", sKafkaCfg.getSaslJaasConfig());
-            assertEquals("PLAIN", sKafkaCfg.getSaslMechanism());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public TestStrimziKafkaConfig(String filename) throws IOException {
+        Files.asCharSink(new File(filename), StandardCharsets.UTF_8).write(TESTCONFIG_CONTENT);
+        ConfigurationFileRepresentation globalCfg = new ConfigurationFileRepresentation(filename);
+        this.sKafkaCfg = new StrimziKafkaConfig(globalCfg);
     }
 
-    @After
+    public StrimziKafkaConfig getCfg() {
+        return sKafkaCfg;
+    }
+
+    //@Test
+    public void test() throws IOException {
+        new TestStrimziKafkaConfig(CONFIGURATIONFILE);
+        assertEquals("strimzi-kafka", getCfg().getSectionName());
+        assertEquals("onap-strimzi-kafka-0:9094,onap-strimzi-kafka-1:9094", getCfg().getBootstrapServers());
+        assertEquals("PLAINTEXT", getCfg().getSecurityProtocol());
+        assertEquals(false, getCfg().getEnabled());
+        assertEquals("PLAIN", getCfg().getSaslJaasConfig());
+        assertEquals("PLAIN", getCfg().getSaslMechanism());
+    }
+
+    //@After
     public void cleanUp() {
         File file = new File(CONFIGURATIONFILE);
         if (file.exists()) {

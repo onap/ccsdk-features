@@ -32,8 +32,11 @@ public class ODLVersionLUT {
         if (onapCCSDKVersion == null) {
             return def;
         }
+        if (onapCCSDKVersion.startsWith("2.8.")) {
+            return "ONAP Oslo";
+        }
         if (onapCCSDKVersion.startsWith("2.7.")) {
-            return "ONAP New Dehli";
+            return "ONAP New Delhi";
         }
         if (onapCCSDKVersion.startsWith("2.6.")) {
             return "ONAP Montreal";
@@ -78,10 +81,16 @@ public class ODLVersionLUT {
         }
         if(odlMdsalVersionLUT==null) {
             odlMdsalVersionLUT = new HashMap<>();
+            odlMdsalVersionLUT.put("14.0.11","scandium-SR2 (0.21.2)");
+            odlMdsalVersionLUT.put("14.0.4","scandium-SR1 (0.21.1)");
+            odlMdsalVersionLUT.put("14.0.2","scandium-SR0 (0.21.0)");
+            odlMdsalVersionLUT.put("13.0.6","calcium-SR2 (0.20.2)");
+            odlMdsalVersionLUT.put("13.0.4","calcium-SR1 (0.20.1)");
+            odlMdsalVersionLUT.put("13.0.1","calcium-SR0 (0.20.0)");
+            odlMdsalVersionLUT.put("12.0.6","potassium-SR3 (0.19.3)");
             odlMdsalVersionLUT.put("12.0.4","potassium-SR2 (0.19.2)");
             odlMdsalVersionLUT.put("12.0.3","potassium-SR1 (0.19.1)");
             odlMdsalVersionLUT.put("12.0.2","potassium-SR0 (0.19.0)");
-            odlMdsalVersionLUT.put("11.0.15","argon-SR3 (0.18.3)");
             odlMdsalVersionLUT.put("11.0.12","argon-SR2 (0.18.2)");
             odlMdsalVersionLUT.put("11.0.9","argon-SR1 (0.18.1)");
             odlMdsalVersionLUT.put("11.0.7","argon-SR0 (0.18.0)");

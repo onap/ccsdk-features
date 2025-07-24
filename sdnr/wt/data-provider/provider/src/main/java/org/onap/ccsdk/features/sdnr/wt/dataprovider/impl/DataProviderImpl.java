@@ -22,17 +22,13 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.impl;
 
 import javax.servlet.ServletException;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClientException;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEsConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.StatusChangedHandler.StatusKey;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
@@ -49,12 +45,10 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
 
     private static final String APPLICATION_NAME = "data-provider";
     private RpcProviderService rpcProviderService = null;
-    private MsServlet mediatorServerServlet;
     private DataProviderServiceImpl rpcApiService;
     private AboutHttpServlet aboutServlet;
     private DataTreeHttpServlet treeServlet;
     private UserdataHttpServlet userdataServlet;
-    private HtDatabaseClient dbClient;
     private DataBroker dataBroker;
 
     // Blueprint 1
@@ -63,43 +57,44 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
         LOG.info("Creating provider for {}", APPLICATION_NAME);
     }
 
+    @SuppressWarnings("unused")
     public void setRpcProviderService(RpcProviderService rpcProviderService) {
         this.rpcProviderService = rpcProviderService;
     }
 
-    public void setMediatorServerServlet(MsServlet servlet) {
-        this.mediatorServerServlet = servlet;
-    }
-
+    @SuppressWarnings("unused")
     public void setAboutServlet(AboutHttpServlet aboutServlet) {
         this.aboutServlet = aboutServlet;
     }
 
+    @SuppressWarnings("unused")
     public void setTreeServlet(DataTreeHttpServlet treeServlet) {
         this.treeServlet = treeServlet;
     }
+
+    @SuppressWarnings("unused")
     public void setUserdataServlet(UserdataHttpServlet userdataServlet) {
         this.userdataServlet = userdataServlet;
     }
+
+    @SuppressWarnings("unused")
     public void setDataBroker(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
-    public void init() throws Exception {
+
+    @SuppressWarnings("unused")
+    public void init() {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
-        try {
-            // Start RPC Service
-            this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.mediatorServerServlet, this.dataBroker);
-            this.treeServlet.setInventoryTreeProvider(this.rpcApiService.getInventoryTreeProvider());
-            this.userdataServlet.setDatabaseClient(this.rpcApiService.getHtDatabaseUserManager());
-            LOG.info("Session Initiated end. Initialization done");
-        } catch (Exception e) {
-            if (e instanceof HtDatabaseClientException)
-                LOG.error("IOException: Could not connect to the Database. Please check Database connectivity");
-            throw e;
-        }
+        // Start RPC Service
+        this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.dataBroker);
+        this.treeServlet.setInventoryTreeProvider(this.rpcApiService.getInventoryTreeProvider());
+        this.userdataServlet.setDatabaseClient(this.rpcApiService.getHtDatabaseUserManager());
+        LOG.info("Session Initiated end. Initialization done");
+
     }
 
+    @SuppressWarnings("unused")
     public void onUnbindService(HttpService httpService) {
         httpService.unregister(AboutHttpServlet.URI_PRE);
         httpService.unregister(DataTreeHttpServlet.URI_PRE);
@@ -107,6 +102,7 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
         this.treeServlet = null;
     }
 
+    @SuppressWarnings("unused")
     public void onBindService(HttpService httpService)
             throws ServletException, NamespaceException {
         if (httpService == null) {
@@ -121,8 +117,6 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     @Override
     public void close() throws Exception {
         LOG.info("DeviceManagerImpl closing ...");
-
-        close(dbClient);
         close(rpcApiService);
         LOG.info("DeviceManagerImpl closing done");
     }
@@ -130,8 +124,8 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     /**
      * Used to close all Services, that should support AutoCloseable Pattern
      *
-     * @param toCloseList
-     * @throws Exception
+     * @param toCloseList list of elements to close
+     * @throws Exception if closing fails
      */
     private void close(AutoCloseable... toCloseList) throws Exception {
         for (AutoCloseable element : toCloseList) {
@@ -149,11 +143,6 @@ public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
     @Override
     public HtDatabaseMaintenance getHtDatabaseMaintenance() {
         return rpcApiService.getHtDatabaseMaintenance();
-    }
-
-    @Override
-    public IEsConfig getEsConfig() {
-        return rpcApiService.getEsConfig();
     }
 
     @Override

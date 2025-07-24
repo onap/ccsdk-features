@@ -25,12 +25,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm71.impl.PmDataBuilderOpenRoadm;
@@ -57,19 +57,17 @@ import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev200327.PmName
 import org.opendaylight.yang.gen.v1.http.org.openroadm.pm.types.rev200327.Validity;
 import org.opendaylight.yang.gen.v1.http.org.openroadm.resource.types.rev191129.ResourceTypeEnum;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Pmdata15mEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.units.rev200413.Celsius;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.units.rev200413.PerformanceMeasurementUnitId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObjectStep;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.common.Decimal64;
 import org.opendaylight.yangtools.yang.common.Uint16;
-import org.opendaylight.yangtools.yang.common.Uint64;
 
 
 public class TestOpenRoadmPMDataBuilder {
+
     // variables
     // end of variables
     private NetconfBindingAccessor acessor = mock(NetconfBindingAccessor.class);
@@ -80,7 +78,7 @@ public class TestOpenRoadmPMDataBuilder {
     private NodeId nodeId = new NodeId("RoadmA");
     private HistoricalPmList historicalPmDatalist = mock(HistoricalPmList.class);
     private HistoricalPm historicalPm = mock(HistoricalPm.class);
-    private PmDataType pmDataType = new PmDataType(Decimal64.valueOf(1,67508));
+    private PmDataType pmDataType = new PmDataType(Decimal64.valueOf(1, 67508));
     private MeasurementBuilder measurementBuilder = new MeasurementBuilder();
     private HistoricalPmBuilder historicalPmBuilder = new HistoricalPmBuilder();
     private HistoricalPmEntryBuilder historicalPmEntryBuiler = new HistoricalPmEntryBuilder();
@@ -92,13 +90,11 @@ public class TestOpenRoadmPMDataBuilder {
             new HashMap<HistoricalPmEntryKey, HistoricalPmEntry>();
 
 
-
     // public methods
     @Before
     public void init() {
         when(acessor.getDataBroker()).thenReturn(dataBroker);
         when(acessor.getTransactionUtils()).thenReturn(transactionUtils);
-
 
 
     }
@@ -110,10 +106,10 @@ public class TestOpenRoadmPMDataBuilder {
 
         final Class<HistoricalPmList> pmDataClass = HistoricalPmList.class;
         InstanceIdentifier<HistoricalPmList> pmDataListId = InstanceIdentifier.builder(pmDataClass).build();
-                when(acessor.getTransactionUtils().readData(acessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
-                        pmDataListId)).thenReturn(historicalPmDatalist);
+        when(acessor.getTransactionUtils().readData(acessor.getDataBroker(), LogicalDatastoreType.OPERATIONAL,
+                pmDataListId)).thenReturn(historicalPmDatalist);
 
-        assertEquals(historicalPmDatalist,pmDataBuilderORoadm.getPmData(acessor));
+        assertEquals(historicalPmDatalist, pmDataBuilderORoadm.getPmData(acessor));
 
     }
 
@@ -133,22 +129,11 @@ public class TestOpenRoadmPMDataBuilder {
         when(historicalPm.getMeasurement()).thenReturn(measurementData);
 
         historicalPMCollection.put(historicalPmBuilder.key(), historicalPmBuilder.build());
-        PathArgument pa =new PathArgument() {
 
-            @Override
-            public int compareTo(PathArgument o) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-
-            @Override
-            public @NonNull Class<? extends DataObject> getType() {
-                // TODO Auto-generated method stub
-                return Component.class;
-            }
-        };
-        historicalPmEntryBuiler.setPmResourceInstance(InstanceIdentifier.unsafeOf(Arrays.asList(pa)))
-        .setPmResourceTypeExtension("dshjdekjdewkk")
+        historicalPmEntryBuiler.setPmResourceInstance(
+                        InstanceIdentifier.unsafeOf(Arrays.asList(DataObjectStep.of(
+                                Component.class))).toIdentifier())
+                .setPmResourceTypeExtension("dshjdekjdewkk")
                 .setPmResourceType(ResourceTypeEnum.CircuitPack).setHistoricalPm(historicalPMCollection);
 
         historicalPmEntryCollection.put(historicalPmEntryBuiler.key(), historicalPmEntryBuiler.build());
@@ -156,6 +141,7 @@ public class TestOpenRoadmPMDataBuilder {
 
         assertNotNull(pmDataBuilderORoadm.buildPmDataEntity(historicalPmDatalist));
     }
+
     @Test
     public void testBuildPmDataEntity1() {
         when(acessor.getNodeId()).thenReturn(nodeId);
@@ -170,23 +156,12 @@ public class TestOpenRoadmPMDataBuilder {
         historicalPmBuilder.setType(PmNamesEnum.ErroredSeconds).setDirection(Direction.Rx)
                 .setExtension("sajhsiwiduwugdhegdeuz").setLocation(Location.FarEnd).setMeasurement(measurementData);
         when(historicalPm.getMeasurement()).thenReturn(measurementData);
-        PathArgument pa =new PathArgument() {
 
-            @Override
-            public int compareTo(PathArgument o) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-
-            @Override
-            public Class<? extends DataObject> getType() {
-                // TODO Auto-generated method stub
-                return Component.class;
-            }
-        };
         historicalPMCollection.put(historicalPmBuilder.key(), historicalPmBuilder.build());
-        historicalPmEntryBuiler.setPmResourceInstance(InstanceIdentifier.unsafeOf(Arrays.asList(pa)))
-            .setPmResourceTypeExtension("dshjdekjdewkk")
+        historicalPmEntryBuiler.setPmResourceInstance(
+                        InstanceIdentifier.unsafeOf(Arrays.asList(DataObjectStep.of(
+                                Component.class))).toIdentifier())
+                .setPmResourceTypeExtension("dshjdekjdewkk")
                 .setPmResourceType(ResourceTypeEnum.Device).setHistoricalPm(historicalPMCollection);
 
         historicalPmEntryCollection.put(historicalPmEntryBuiler.key(), historicalPmEntryBuiler.build());
@@ -195,7 +170,6 @@ public class TestOpenRoadmPMDataBuilder {
         assertNotNull(pmDataBuilderORoadm.buildPmDataEntity(historicalPmDatalist));
     }
     // end of public methods
-
 
     // constants
     // end of constants
@@ -211,7 +185,6 @@ public class TestOpenRoadmPMDataBuilder {
 
     // private methods
     // end of private methods
-
 
     // end of public methods
 

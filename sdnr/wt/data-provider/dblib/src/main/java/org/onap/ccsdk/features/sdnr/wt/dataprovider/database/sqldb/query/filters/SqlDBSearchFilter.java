@@ -21,10 +21,9 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters;
 
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.PropertyList;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.PropertyList;
 
 public class SqlDBSearchFilter implements SqlDBFilter {
     private final PropertyList propertyList;

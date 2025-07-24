@@ -14,7 +14,7 @@ public class NetconfDeviceNotification implements DOMNotification, DOMEvent {
     public NetconfDeviceNotification(final ContainerNode content, final Instant eventTime) {
         this.content = content;
         this.eventTime = eventTime;
-        this.schemaPath = Absolute.of(content.getIdentifier().getNodeType());
+        this.schemaPath = Absolute.of(content.name().getNodeType());
     }
 
     NetconfDeviceNotification(final ContainerNode content, final Absolute schemaPath, final Instant eventTime) {

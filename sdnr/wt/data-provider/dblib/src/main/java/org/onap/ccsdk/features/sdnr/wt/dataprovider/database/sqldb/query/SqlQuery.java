@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.Nullable;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.DbFilter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.DBFilterKeyValuePair;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters.RangeSqlDBFilter;
@@ -40,7 +39,6 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.filters
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
-
 
 public interface SqlQuery {
 
@@ -80,7 +78,6 @@ public interface SqlQuery {
         if (!filters2.isEmpty()) {
             sb.append(" WHERE ");
             sb.append(String.join(" AND ", filters2));
-
         }
         return sb.toString();
     }
@@ -105,9 +102,9 @@ public interface SqlQuery {
 
     private static String getFilterExpression(String property, String value) {
         String filter = null;
-        if (DbFilter.hasSearchParams(value)) {
+        if (hasSearchParams(value)) {
             if (TIMESTAMPPROPERTYNAMES.contains(property.toLowerCase())) {
-                if (DbFilter.isComparisonValid(value)) {
+                if (isComparisonValid(value)) {
                     filter = getComparisonFilter(property, value, true);
                 } else {
                     filter = fromTimestampSearchFilter(property, value);
@@ -117,7 +114,7 @@ public interface SqlQuery {
                 }
             }
             return new RegexSqlDBFilter(property, value).getFilterExpression();
-        } else if (DbFilter.isComparisonValid(value)) {
+        } else if (isComparisonValid(value)) {
             filter = getComparisonFilter(property, value, TIMESTAMPPROPERTYNAMES.contains(property.toLowerCase()));
             if (filter != null) {
                 return filter;
@@ -386,6 +383,14 @@ public interface SqlQuery {
         }
 
         return allValues.isEmpty() || allValues.contains("*");
+    }
+    static boolean hasSearchParams(String restFilterValue) {
+        return restFilterValue == null ? false : restFilterValue.contains("*") || restFilterValue.contains("?");
+    }
+
+
+    static boolean isComparisonValid(String restFilterValue) {
+        return restFilterValue == null ? false : restFilterValue.contains(">") || restFilterValue.contains("<");
     }
 
 

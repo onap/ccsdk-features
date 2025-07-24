@@ -50,8 +50,6 @@
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <databaseport>49402</databaseport>
         <initdb>${basedir}/../setup/target/sdnr-wt-data-provider-setup-${project.version}.jar</initdb>
-        <elasticsearch.maven.plugin.version>6.29</elasticsearch.maven.plugin.version>
-        <elasticsearch.version>7.17.28</elasticsearch.version>
     </properties>
 
     <dependencies>
@@ -118,7 +116,8 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
-            <artifactId>netconf-client-mdsal</artifactId>
+            <artifactId>netconf-topology</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
@@ -126,18 +125,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>yang-binding</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-singleton-common-api</artifactId>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>ietf-topology</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -152,11 +141,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.netconf</groupId>
-            <artifactId>netconf-topology</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
             <version>7.0.0</version>
@@ -165,87 +149,4 @@
         <!--  MariaDB end -->
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/gen/**</exclude>
-                        <exclude>**/generated-sources/**</exclude>
-                        <exclude>**/yang-gen-sal/**</exclude>
-                        <exclude>**/pax/**</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generateDTOs</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>${basedir}/java.sh</executable>
-                            <arguments>
-                                <argument>-jar</argument>
-                                <argument>${initdb}</argument>
-                                <argument>-c</argument>
-                                <argument>pluginfile</argument>
-                                <argument>-of</argument>
-                                <argument>${project.build.directory}/EsInit.script</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.github.alexcojocaru</groupId>
-                <artifactId>elasticsearch-maven-plugin</artifactId>
-                <version>${elasticsearch.maven.plugin.version}</version>
-                <configuration>
-                    <skip>${skipTests}</skip>
-                    <clusterName>testCluster</clusterName>
-                    <transportPort>9500</transportPort>
-                    <httpPort>${databaseport}</httpPort>
-                    <version>${elasticsearch.version}</version>
-                    <timeout>120</timeout>
-                    <pathInitScript>${project.build.directory}/EsInit.script</pathInitScript>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>start-elasticsearch</id>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>runforked</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop-elasticsearch</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemProperties>
-                        <property>
-                            <name>databaseport</name>
-                            <value>${databaseport}</value>
-                        </property>
-                    </systemProperties>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

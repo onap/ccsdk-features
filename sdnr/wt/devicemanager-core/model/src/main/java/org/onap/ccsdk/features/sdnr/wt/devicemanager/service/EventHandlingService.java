@@ -17,7 +17,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 
@@ -27,19 +27,19 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 public interface EventHandlingService {
 
     /**
-     * @param mountPointNodeName
+     * @param nodeId
      * @param deviceType
      */
     void connectIndication(NodeId nodeId, NetworkElementDeviceType deviceType);
 
     /**
-     * @param mountPointNodeName
+     * @param nodeId
      */
     void deRegistration(NodeId nodeId);
 
     /**
      *
-     * @param registrationName
+     * @param nodeId
      * @param attribute
      * @param attributeNewValue
      * @param nNode
@@ -47,7 +47,7 @@ public interface EventHandlingService {
     void updateRegistration(NodeId nodeId, String attribute, String attributeNewValue, NetconfNode nNode);
 
     /**
-     * @param nodeIdString
+     * @param nodeId
      * @param nNode
      */
     void registration(NodeId nodeId, NetconfNode nNode);

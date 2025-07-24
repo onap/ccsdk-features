@@ -37,10 +37,6 @@
     <bean id="aboutServlet" class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet">
     </bean>
 
-    <bean id="msServlet"
-          class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.MsServlet">
-    </bean>
-
     <bean id="treeServlet"
           class="org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet">
     </bean>
@@ -55,7 +51,6 @@
         <property name="rpcProviderService" ref="rpcProviderService"/>
         <property name="aboutServlet" ref="aboutServlet"/>
         <property name="treeServlet" ref="treeServlet"/>
-        <property name="mediatorServerServlet" ref="msServlet"/>
         <property name="userdataServlet" ref="userdataServlet"/>
         <property name="dataBroker" ref="dataBroker" />
     </bean>

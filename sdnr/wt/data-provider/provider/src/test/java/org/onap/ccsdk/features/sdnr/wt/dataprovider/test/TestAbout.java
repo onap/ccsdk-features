@@ -21,11 +21,13 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -60,7 +62,6 @@ public class TestAbout {
     private static void delete(File file) throws IOException {
 
         for (File childFile : file.listFiles()) {
-
             if (childFile.isDirectory()) {
                 delete(childFile);
             } else {
@@ -87,7 +88,7 @@ public class TestAbout {
         verify(response).setStatus(200);
         verify(response).setContentType("text/markdown");
         System.out.println(printOut.getStringWriter().getBuffer().toString());
-        assertTrue(printOut.getStringWriter().getBuffer().length() > 0);
+        assertFalse(printOut.getStringWriter().getBuffer().isEmpty());
     }
 
     @Test
@@ -111,7 +112,7 @@ public class TestAbout {
     }
 
 
-    private class AboutHelperServlet extends AboutHttpServlet {
+    private static class AboutHelperServlet extends AboutHttpServlet {
 
         /**
          *
@@ -128,7 +129,7 @@ public class TestAbout {
     	}
         @Override
         protected String getManifestValue(String key) {
-        	if(key == "Bundle-SymbolicName") {
+        	if("Bundle-SymbolicName".equals(key)) {
         		return "org.onap.ccsdk.features.sdnr.wt.sdnr-wt-data-provider-provider";
         	}
         	return super.getManifestValue(key);

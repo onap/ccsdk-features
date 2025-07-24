@@ -24,6 +24,8 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.UUID;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,7 +39,7 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfAccessor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.common.QNameModule;
@@ -59,7 +61,7 @@ public class TestORanRegistrationToVESpnfRegistration {
     VESCollectorCfgService vesCfgService;
 
     private static final QNameModule IETF_HARDWARE_MODULE =
-            QNameModule.create(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-hardware"), Revision.of("2018-03-13"));
+            QNameModule.of(XMLNamespace.of("urn:ietf:params:xml:ns:yang:ietf-hardware"), Revision.of("2018-03-13"));
     private static final QName HW_COMPONENT_LIST = QName.create(IETF_HARDWARE_MODULE, "component");
     private static final QName HW_COMPONENT_LIST_KEY = QName.create(IETF_HARDWARE_MODULE, "name");
     private static final QName HW_COMPONENT_LIST_CLASS = QName.create(IETF_HARDWARE_MODULE, "class");
@@ -79,6 +81,7 @@ public class TestORanRegistrationToVESpnfRegistration {
         when(netconfAccessor.getNodeId()).thenReturn(new NodeId("nSky"));
         when(netconfAccessor.getNetconfNode()).thenReturn(testNetconfNode);
         when(vesCollectorService.getConfig()).thenReturn(vesCfgService);
+        when(vesCfgService.getReportingEntityId()).thenReturn(UUID.randomUUID().toString());
         when(vesCfgService.getReportingEntityName()).thenReturn("SDN-R");
 
         ORanRegistrationToVESpnfRegistrationMapper mapper =

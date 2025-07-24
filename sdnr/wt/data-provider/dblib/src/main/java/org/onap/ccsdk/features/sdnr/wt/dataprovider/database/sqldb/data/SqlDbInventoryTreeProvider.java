@@ -26,16 +26,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.onap.ccsdk.features.sdnr.wt.common.database.queries.SortOrder;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBReaderWriter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.BaseInventoryTreeProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper2;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.YangHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Inventory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.InventoryEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.SortOrder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.entity.input.FilterKey;
@@ -68,7 +68,7 @@ public class SqlDbInventoryTreeProvider extends BaseInventoryTreeProvider {
             filters.add(new FilterBuilder().setProperty(INVENTORY_PROPERTY_NODEID).setFiltervalue(nodeId).build());
         }
         EntityInput input = new ReadInventoryListInputBuilder()
-                .setFilter(YangHelper2.getListOrMap(FilterKey.class, filters)).build();
+                .setFilter(YangHelper.getListOrMap(FilterKey.class, filters)).build();
         return new ArrayList<>(this.dbReader.searchAll(Inventory.class, input, filter));
     }
 
@@ -81,7 +81,7 @@ public class SqlDbInventoryTreeProvider extends BaseInventoryTreeProvider {
         nodeFilter.put(filter.key(), filter);
         Map<SortorderKey, Sortorder> so = new HashMap<>();
         Sortorder soItem = new SortorderBuilder().setProperty(sortOrderProperty)
-                .setSortorder(YangHelper2.getSortOrder(sortOrder)).build();
+                .setSortorder(sortOrder).build();
         so.put(soItem.key(), soItem);
         EntityInput input = new ReadInventoryListInputBuilder().setFilter(nodeFilter).setSortorder(so).build();
         return new ArrayList<>(this.dbReader.readAll(Inventory.class, input));

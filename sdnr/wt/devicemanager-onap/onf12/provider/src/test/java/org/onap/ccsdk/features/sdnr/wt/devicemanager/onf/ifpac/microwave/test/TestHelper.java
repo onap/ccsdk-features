@@ -17,7 +17,7 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.ifpac.microwave.Helper;

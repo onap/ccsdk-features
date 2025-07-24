@@ -51,7 +51,7 @@
         <!-- md-sal -->
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-dom-codec-api</artifactId>
+            <artifactId>mdsal-binding-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -61,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-runtime-spi</artifactId>
+            <artifactId>mdsal-binding-spi</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -71,7 +71,7 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-singleton-common-api</artifactId>
+            <artifactId>mdsal-singleton-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

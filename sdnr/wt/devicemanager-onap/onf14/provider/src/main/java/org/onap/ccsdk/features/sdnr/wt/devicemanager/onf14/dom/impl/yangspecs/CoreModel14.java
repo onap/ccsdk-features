@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.Onf14Interfaces;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.interfaces.TechnologySpecificPacKeys;
@@ -52,7 +53,7 @@ public class CoreModel14 extends YangModule {
 
     private static final String NAMESPACE = "urn:onf:yang:core-model-1-4";
     private static final List<QNameModule> MODULES =
-            Arrays.asList(QNameModule.create(XMLNamespace.of(NAMESPACE), Revision.of("2019-11-27")));
+            Arrays.asList(QNameModule.of(XMLNamespace.of(NAMESPACE), Revision.of("2019-11-27")));
 
     private final QName CONTROL_CONSTRUCT;
     private final QName TOP_LEVEL_EQUIPMENT;
@@ -65,7 +66,12 @@ public class CoreModel14 extends YangModule {
     }
 
     public String getRevision() {
-        return module.getRevision().get().toString();
+        return Objects.requireNonNull(module.revision()).toString();
+    }
+
+    @Override
+    public QName getQName(String localName) {
+        return QName.create(module, localName);
     }
 
     public QName getControlConstructQName() {
@@ -112,17 +118,19 @@ public class CoreModel14 extends YangModule {
             return Collections.emptyList();
         }
         // accessing the LP, which should be only 1
-        return lpList.body();
+        return lpList != null ? lpList.body() : List.of();
     }
 
     /**
      * Search through the LayerProtocol list for specific layerProtocolNamesValues
+     *
      * @param ltp
      * @param lp
      * @param layerProtocolNameValue
      * @return
      */
-    private List<TechnologySpecificPacKeys> getTechnologySpecificPackKeys(DataContainerNode ltp, Collection<MapEntryNode> lp,
+    private List<TechnologySpecificPacKeys> getTechnologySpecificPackKeys(DataContainerNode ltp,
+            Collection<MapEntryNode> lp,
             String layerProtocolNameValue) {
         List<TechnologySpecificPacKeys> interfaceList = new ArrayList<>();
         for (MapEntryNode lpEntry : lp) {
@@ -158,7 +166,8 @@ public class CoreModel14 extends YangModule {
                     interfaces.add(Onf14Interfaces.Key.AIRINTERFACE,
                             getTechnologySpecificPackKeys(ltp, lp, "LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER"));
                     interfaces.add(Onf14Interfaces.Key.ETHERNETCONTAINER,
-                            getTechnologySpecificPackKeys(ltp, lp, "LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER"));
+                            getTechnologySpecificPackKeys(ltp, lp,
+                                    "LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER"));
                     interfaces.add(Onf14Interfaces.Key.WIREINTERFACE,
                             getTechnologySpecificPackKeys(ltp, lp, "LAYER_PROTOCOL_NAME_TYPE_WIRE_LAYER"));
                 }

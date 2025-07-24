@@ -21,31 +21,26 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb;
 
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.zaxxer.hikari.HikariDataSource;
-import org.mariadb.jdbc.MariaDbPoolDataSource;
 import org.onap.ccsdk.features.sdnr.wt.common.database.Portstatus;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntry;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.AliasesEntryList;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.DatabaseVersion;
-import org.onap.ccsdk.features.sdnr.wt.common.database.data.IndicesEntryList;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBIndicesEntry;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlTable;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlView;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper.UnableToMapClassException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.sql.ConnectionPoolDataSource;
 
 public class SqlDBClient {
 
@@ -69,9 +64,9 @@ public class SqlDBClient {
     private final int dbPort;
 
     private final HikariDataSource connectionPool;
+
     /**
-     *
-     * @param dbUrl e.g. jdbc:mysql://sdnrdb:3306/sdnrdb
+     * @param dbUrl    e.g. jdbc:mysql://sdnrdb:3306/sdnrdb
      * @param username
      * @param password
      */
@@ -90,12 +85,12 @@ public class SqlDBClient {
         this.connectionPool.setPassword(password);
     }
 
-    public AliasesEntryList readViews() {
+    public List<SqlView> readViews() {
         return this.readViews(DBNAME_DEFAULT);
     }
 
-    public AliasesEntryList readViews(String dbName) {
-        AliasesEntryList list = new AliasesEntryList();
+    public List<SqlView> readViews(String dbName) {
+        List<SqlView> list = new ArrayList<>();
         final String query = "SELECT v.`TABLE_NAME` AS vn, t.`TABLE_NAME` AS tn\n"
                 + "FROM `information_schema`.`TABLES` AS v\n"
                 + "LEFT JOIN `information_schema`.`TABLES` AS t ON t.`TABLE_NAME` LIKE CONCAT(v.`TABLE_NAME`,'%')"
@@ -104,27 +99,33 @@ public class SqlDBClient {
         ResultSet data = this.read(query);
         try {
             while (data.next()) {
-                list.add(new AliasesEntry(data.getString(2), data.getString(1)));
+                list.add(new SqlView(data.getString(2), data.getString(1)));
             }
         } catch (SQLException e) {
             LOG.warn("problem reading views: ", e);
         }
-        try { data.close(); } catch (SQLException ignore) { }
+        try {
+            data.close();
+        } catch (SQLException ignore) {
+        }
         return list;
     }
 
-    public IndicesEntryList readTables() {
+    public List<SqlTable> readTables() {
         final String query = "SHOW FULL TABLES WHERE `Table_type` = 'BASE TABLE'";
-        IndicesEntryList list = new IndicesEntryList();
+        List<SqlTable> list = new ArrayList<>();
         ResultSet data = this.read(query);
         try {
             while (data.next()) {
-                list.add(new SqlDBIndicesEntry(data.getString(1)));
+                list.add(new SqlTable(data.getString(1)));
             }
         } catch (SQLException e) {
             LOG.warn("problem reading tables: ", e);
         }
-        try { data.close(); } catch (SQLException ignore) { }
+        try {
+            data.close();
+        } catch (SQLException ignore) {
+        }
         return list;
     }
 
@@ -168,7 +169,7 @@ public class SqlDBClient {
         PreparedStatement stmt = null;
         Connection connection = null;
         try {
-            connection =  this.getConnection();
+            connection = this.getConnection();
             stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.execute();
 
@@ -176,8 +177,18 @@ public class SqlDBClient {
         } catch (SQLException e) {
             LOG.warn("problem creating table:", e);
         } finally {
-            if (stmt != null) try { stmt.close(); } catch (SQLException logOrIgnore) {}
-            if (connection != null) try { connection.close(); } catch (SQLException logOrIgnore) {}
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException logOrIgnore) {
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException logOrIgnore) {
+                }
+            }
         }
         return result;
     }
@@ -208,15 +219,25 @@ public class SqlDBClient {
         Statement stmt = null;
         Connection connection = null;
         try {
-            connection= this.getConnection();
+            connection = this.getConnection();
             stmt = connection.createStatement();
             result = stmt.execute(query);
             result = stmt.getUpdateCount() > 0 ? stmt.getUpdateCount() > 0 : result;
         } catch (SQLException e) {
             innerE = e;
         } finally {
-                if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
-                if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignore) {
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ignore) {
+                }
+            }
         }
         if (innerE != null) {
             throw innerE;
@@ -230,15 +251,25 @@ public class SqlDBClient {
         PreparedStatement stmt = null;
         Connection connection = null;
         try {
-            connection =  this.getConnection();
+            connection = this.getConnection();
             stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             result = stmt.execute();
             result = stmt.getUpdateCount() > 0 ? stmt.getUpdateCount() > 0 : result;
         } catch (SQLException e) {
             innerE = e;
         } finally {
-            if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
-            if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignore) {
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ignore) {
+                }
+            }
         }
         if (innerE != null) {
             throw innerE;
@@ -263,9 +294,24 @@ public class SqlDBClient {
         } catch (SQLException e) {
             innerE = e;
         } finally {
-            if (generatedKeys != null) try { generatedKeys.close(); } catch (SQLException ignore) {}
-            if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
-            if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+            if (generatedKeys != null) {
+                try {
+                    generatedKeys.close();
+                } catch (SQLException ignore) {
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignore) {
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ignore) {
+                }
+            }
         }
         if (innerE != null) {
             throw innerE;
@@ -291,15 +337,25 @@ public class SqlDBClient {
         ResultSet data = null;
         Statement stmt = null;
         Connection connection = null;
-        try{
+        try {
             connection = this.getConnection();
             stmt = connection.createStatement();
             data = stmt.executeQuery(query);
         } catch (SQLException e) {
             LOG.warn("problem reading db for query '{}': ", query, e);
         } finally {
-            if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
-            if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignore) {
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ignore) {
+                }
+            }
         }
         return data;
     }

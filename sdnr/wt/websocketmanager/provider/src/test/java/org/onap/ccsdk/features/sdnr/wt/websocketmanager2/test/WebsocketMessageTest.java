@@ -20,6 +20,7 @@ package org.onap.ccsdk.features.sdnr.wt.websocketmanager2.test;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.net.InetSocketAddress;
 import org.eclipse.jetty.websocket.api.Session;
 import org.junit.Test;

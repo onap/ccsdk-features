@@ -23,7 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.devicemanager.service;
 
 import java.time.Instant;
 import java.util.HashMap;
-import org.opendaylight.yangtools.yang.binding.Notification;
+import org.opendaylight.yangtools.binding.Notification;
 
 public interface NotificationProxyParser {
 
