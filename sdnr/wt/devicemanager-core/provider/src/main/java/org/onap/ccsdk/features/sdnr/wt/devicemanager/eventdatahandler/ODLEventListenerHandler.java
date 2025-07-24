@@ -22,7 +22,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.NetconfTimeStamp;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
@@ -37,9 +36,10 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.ConnectionOper.ConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.network.topology.topology.topology.types.TopologyNetconf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.ConnectionOper.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.NetconfNodeAugment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Connectionlog;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogBuilder;
@@ -62,7 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
  * Responsible class for documenting changes in the ODL itself. The occurence of such an event is documented in the
  * database and to clients. Specific example here is the registration or deregistration of a netconf device. This
  * service has an own eventcounter to apply to the ONF Coremodel netconf behaviour.
- *
+ * <p>
  * Important: Websocket notification must be the last action.
  *
  * @author herbert
@@ -103,10 +103,10 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     /**
      * Create a Service to document events to clients and within a database
      *
-     * @param ownKeyName The name of this service, that is used in the database as identification key.
+     * @param ownKeyName       The name of this service, that is used in the database as identification key.
      * @param webSocketService service to direct messages to clients
-     * @param databaseService service to write to the database
-     * @param dcaeForwarder to deliver problems to external service
+     * @param databaseService  service to write to the database
+     * @param dcaeForwarder    to deliver problems to external service
      */
     public ODLEventListenerHandler(String ownKeyName, WebSocketServiceClientInternal webSocketService,
             DataProvider databaseService, DcaeForwarderInternal dcaeForwarder, DataBroker dataBroker) {
@@ -130,7 +130,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
      * (NonConnected) A registration after creation of a mountpoint occured
      *
      * @param nodeId of device (mountpoint name)
-     * @param nNode with mountpoint data
+     * @param nNode  with mountpoint data
      */
     @Override
     public void registration(NodeId nodeId, NetconfNode nNode) {
@@ -155,14 +155,13 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     private Optional<NetconfNode> getNnodeConfig(NodeId nodeId) {
         if (this.dataBroker != null) {
 
-            InstanceIdentifier<NetconfNode> iif = InstanceIdentifier.create(NetworkTopology.class)
+            DataObjectIdentifier<NetconfNode> iif = DataObjectIdentifier.builder(NetworkTopology.class)
                     .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
-                    .child(Node.class, new NodeKey(nodeId)).augmentation(NetconfNode.class);
+                    .child(Node.class, new NodeKey(nodeId))
+                    .augmentation(NetconfNodeAugment.class).child(NetconfNode.class).build();
 
             //Implicit close of try with resource is not handled correctly by underlying opendaylight NETCONF service
-            @NonNull
-            ReadTransaction readTransaction = this.dataBroker.newReadOnlyTransaction();
-            try {
+            try (ReadTransaction readTransaction = this.dataBroker.newReadOnlyTransaction()) {
                 return readTransaction.read(LogicalDatastoreType.CONFIGURATION, iif).get();
             } catch (InterruptedException e) {
                 LOG.warn("InterruptedException occurred - problem requesting netconfnode again:", e);
@@ -177,7 +176,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     /**
      * (Connected) mountpoint state moves to connected
      *
-     * @param nNodeId uuid that is nodeId or mountpointId
+     * @param nNodeId    uuid that is nodeId or mountpointId
      * @param deviceType according to assessement
      */
     @Override
@@ -202,7 +201,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     /**
      * (NonConnected) mountpoint state changed.
      *
-     * @param nodeId nodeid
+     * @param nodeId      nodeid
      * @param netconfNode node
      */
     public void onStateChangeIndication(NodeId nodeId, NetconfNode netconfNode) {
@@ -292,8 +291,8 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
      * At a mountpoint a problem situation is indicated
      *
      * @param registrationName indicating object within SDN controller, normally the mountpointName
-     * @param problemName that changed
-     * @param problemSeverity of the problem according to NETCONF/YANG
+     * @param problemName      that changed
+     * @param problemSeverity  of the problem according to NETCONF/YANG
      */
 
     public void onProblemNotification(String registrationName, String problemName, InternalSeverity problemSeverity) {
@@ -382,6 +381,7 @@ public class ODLEventListenerHandler implements EventHandlingService, AutoClosea
     }
 
     private class DelayedThread extends Thread {
+
         private final long delay;
 
         public DelayedThread(long delayms) {

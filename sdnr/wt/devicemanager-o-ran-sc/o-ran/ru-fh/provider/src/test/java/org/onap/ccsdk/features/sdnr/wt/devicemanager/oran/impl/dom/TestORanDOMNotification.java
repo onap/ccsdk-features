@@ -121,30 +121,46 @@ public class TestORanDOMNotification {
     }
      */
     private static ContainerNode createDOMNotificationBody() {
-        return Builders.containerBuilder().withNodeIdentifier(NodeIdentifier.create(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_CONFIG_CHANGE))
-                .withChild(
-                        Builders.containerBuilder().withNodeIdentifier(NodeIdentifier.create(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_CHANGEDBY))
-                                .withChild(Builders.choiceBuilder()
-                                        .withNodeIdentifier(NodeIdentifier.create(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_SERVERORUSER))
-                                        .withChild(ImmutableNodes.leafNode(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_USERNAME, "root"))
-                                        .withChild(ImmutableNodes.leafNode(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_SESSIONID, Uint32.valueOf(2))).build())
+        return Builders.containerBuilder()
+                .withNodeIdentifier(
+                        NodeIdentifier.create(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_NETCONF_CONFIG_CHANGE))
+                .withChild(Builders.containerBuilder()
+                        .withNodeIdentifier(
+                                NodeIdentifier.create(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_CHANGEDBY))
+                        .withChild(Builders.choiceBuilder()
+                                .withNodeIdentifier(NodeIdentifier
+                                        .create(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_SERVERORUSER))
+                                .withChild(ImmutableNodes
+                                        .leafNode(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_USERNAME, "root"))
+                                .withChild(ImmutableNodes.leafNode(
+                                        ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_SESSIONID,
+                                        Uint32.valueOf(2)))
                                 .build())
-                .withChild(Builders.unkeyedListBuilder().withNodeIdentifier(NodeIdentifier.create(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_EDITNODE))
+                        .build())
+                .withChild(Builders.unkeyedListBuilder()
+                        .withNodeIdentifier(
+                                NodeIdentifier.create(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_EDITNODE))
                         .withChild(Builders.unkeyedListEntryBuilder()
-                                .withNodeIdentifier(NodeIdentifier.create(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_EDITNODE))
-                                .withChild(ImmutableNodes.leafNode(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_OPERATION, "replace"))
-                                .withChild(ImmutableNodes.leafNode(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_TARGET,
+                                .withNodeIdentifier(NodeIdentifier
+                                        .create(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_EDITNODE))
+                                .withChild(ImmutableNodes.leafNode(
+                                        ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_OPERATION, "replace"))
+                                .withChild(ImmutableNodes.leafNode(
+                                        ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_TARGET,
                                         "/(urn:ietf:params:xml:ns:yang:ietf-hardware?revision=2018-03-13)hardware/component[{(urn:ietf:params:xml:ns:yang:ietf-hardware?revision=2018-03-13)name=chassis-fan3}]/alias"))
                                 .build())
                         .build())
-                .withChild(ImmutableNodes.leafNode(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_DATASTORE, "running")).build();
+                .withChild(ImmutableNodes.leafNode(ORanDeviceManagerQNames.IETF_NETCONF_NOTIFICATIONS_DATASTORE,
+                        "running"))
+                .build();
     }
 
     @Test
     public void test() {
         ContainerNode cn = createDOMNotificationBody();
         NetconfDeviceNotification ndn = new NetconfDeviceNotification(cn, Instant.now());
-        ORanDOMChangeNotificationListener changeListener = new ORanDOMChangeNotificationListener(domAccessor, vesCollectorService, databaseService);
+        ORanDOMChangeNotificationListener changeListener =
+                new ORanDOMChangeNotificationListener(domAccessor, vesCollectorService, databaseService);
         changeListener.onNotification(ndn);
         verify(databaseService).writeEventLog(any(EventlogEntity.class));
     }
@@ -157,7 +173,7 @@ public class TestORanDOMNotification {
         NetconfDeviceNotification(final ContainerNode content, final Instant eventTime) {
             this.content = content;
             this.eventTime = eventTime;
-            this.schemaPath = Absolute.of(content.getIdentifier().getNodeType());
+            this.schemaPath = Absolute.of(content.name().getNodeType());
         }
 
         NetconfDeviceNotification(final ContainerNode content, final Absolute schemaPath, final Instant eventTime) {

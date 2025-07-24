@@ -23,9 +23,7 @@ package org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nonnull;
-
 import org.onap.ccsdk.features.sdnr.wt.common.file.FileWatchdog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

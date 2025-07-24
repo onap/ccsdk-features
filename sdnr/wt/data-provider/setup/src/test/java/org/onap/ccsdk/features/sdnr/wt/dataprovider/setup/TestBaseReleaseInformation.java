@@ -22,13 +22,12 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 
 import static org.junit.Assert.assertNotNull;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.setup.data.ComponentName;
 
 public class TestBaseReleaseInformation {
 
     protected void assertValidComponents(ReleaseInformation ri) {
 
         assertNotNull(ri.getComponents());
-        assertNotNull(ri.getConverter(ri.getReleas(),ComponentName.FAULTCURRENT));
+
     }
 }

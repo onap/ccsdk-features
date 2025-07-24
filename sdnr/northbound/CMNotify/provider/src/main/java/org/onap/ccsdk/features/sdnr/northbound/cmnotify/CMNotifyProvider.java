@@ -24,23 +24,28 @@ package org.onap.ccsdk.features.sdnr.northbound.cmnotify;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.sli.core.sli.provider.MdsalHelper;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.CMNOTIFYAPIService;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationInput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationInputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationOutput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationOutputBuilder;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.binding.Rpc;
+import org.opendaylight.yangtools.binding.RpcInput;
+import org.opendaylight.yangtools.binding.RpcOutput;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * Defines a base implementation for your provider. This class extends from a
@@ -49,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * initialization / clean up methods.
  *
  */
-public class CMNotifyProvider implements AutoCloseable, CMNOTIFYAPIService {
+public class CMNotifyProvider implements AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CMNotifyProvider.class);
 
@@ -58,9 +63,9 @@ public class CMNotifyProvider implements AutoCloseable, CMNOTIFYAPIService {
 
 	private final ExecutorService executor;
 	protected DataBroker dataBroker;
-	protected RpcProviderService rpcProviderRegistry;
+	protected RpcProviderService rpcProviderService;
+    private Registration rpcRegistration;
 	protected NotificationPublishService notificationService;
-	private ObjectRegistration<CMNotifyProvider> rpcReg;
 	private CMNotifyClient CMNotifyClient;
 
 	public CMNotifyProvider() {
@@ -70,17 +75,16 @@ public class CMNotifyProvider implements AutoCloseable, CMNOTIFYAPIService {
 		
 		this.dataBroker = null; 
 		this.notificationService = null; 
-		this.rpcProviderRegistry = null;
+		this.rpcProviderService = null;
 		this.CMNotifyClient = null;
-		 
 	}
 
 	public void setDataBroker(DataBroker dataBroker) {
 		this.dataBroker = dataBroker;
 	}
 
-	public void setRpcProviderRegistry(RpcProviderService rpcProviderRegistry) {
-		this.rpcProviderRegistry = rpcProviderRegistry;
+	public void setRpcProviderService(RpcProviderService rpcProviderService) {
+		this.rpcProviderService = rpcProviderService;
 	}
 
 	public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
@@ -93,28 +97,30 @@ public class CMNotifyProvider implements AutoCloseable, CMNOTIFYAPIService {
 
 	public void init() {
 		LOG.info("Initializing provider for {}", APPLICATION_NAME);
-		rpcReg = rpcProviderRegistry.registerRpcImplementation(CMNOTIFYAPIService.class, this);
-		LOG.info("Initialization complete for {}", APPLICATION_NAME);
+        rpcRegistration = rpcProviderService.registerRpcImplementations(
+                List.of(new RpcHelper<>(
+                        null, //NbrlistChangeNotification.class,
+                        CMNotifyProvider.this::nbrlistChangeNotification)
+                ));
+        LOG.info("Initialization complete for {}", APPLICATION_NAME);
 	}
 
 	@Override
 	public void close() throws Exception {
 		LOG.info("Closing provider for {}", APPLICATION_NAME);
 		executor.shutdown();
-		if (rpcReg != null)
-			rpcReg.close();
+    	rpcRegistration.close();
 		LOG.info("Successfully closed provider for {}", APPLICATION_NAME);
 	}
 
 	// RPC nbrlist-change-notification
 
-	@Override
 	public ListenableFuture<RpcResult<NbrlistChangeNotificationOutput>> nbrlistChangeNotification(
 			NbrlistChangeNotificationInput input) {
 		final String svcOperation = "nbrlist-change-notification";
 
 		Properties parms = new Properties();
-		NbrlistChangeNotificationOutputBuilder serviceDataBuilder = (NbrlistChangeNotificationOutputBuilder) getServiceData(
+		NbrlistChangeNotificationOutputBuilder serviceDataBuilder = getServiceData(
 				NBRLIST_CHANGE_NOTIFICATION);
 
 		LOG.info("Reached RPC nbrlist-change-notification");
@@ -123,9 +129,9 @@ public class CMNotifyProvider implements AutoCloseable, CMNOTIFYAPIService {
 
 		if (input == null) {
 			LOG.debug("exiting " + svcOperation + " because of invalid input");
-			serviceDataBuilder.setResponseCode("Input is null");
+            NbrlistChangeNotificationOutput serviceData = serviceDataBuilder.setResponseCode("Input is null").build();
 			RpcResult<NbrlistChangeNotificationOutput> rpcResult = RpcResultBuilder
-					.<NbrlistChangeNotificationOutput>status(true).withResult(serviceDataBuilder.build()).build();
+					.<NbrlistChangeNotificationOutput>status(true).withResult(serviceData).build();
 			return Futures.immediateFuture(rpcResult);
 		}
 
@@ -185,4 +191,31 @@ public class CMNotifyProvider implements AutoCloseable, CMNOTIFYAPIService {
 		}
 		return null;
 	}
+
+    private interface RpcExecutionWrapper<I extends RpcInput, O extends RpcOutput> {
+
+        ListenableFuture<@NonNull RpcResult<@NonNull O>> execute(@NonNull I input);
+    }
+
+    private static class RpcHelper<I extends RpcInput, O extends RpcOutput> implements Rpc<I, O> {
+
+        private final RpcExecutionWrapper<I, O> executor;
+        private final Class<? extends Rpc<I, O>> implementedInterface;
+
+        RpcHelper(Class<? extends Rpc<I, O>> implementedInterface, RpcExecutionWrapper<I, O> executor) {
+            this.implementedInterface = implementedInterface;
+            this.executor = executor;
+        }
+
+        @Override
+        public @NonNull ListenableFuture<@NonNull RpcResult<@NonNull O>> invoke(@NonNull I input) {
+            return this.executor.execute(input);
+        }
+
+        @Override
+        public @NonNull Class<? extends Rpc<I, O>> implementedInterface() {
+            return this.implementedInterface;
+        }
+    }
+
 }

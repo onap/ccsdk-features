@@ -298,7 +298,7 @@ public class Program {
         for (Release r : Release.values()) {
 
             System.out.println(String.format(format, r.getValue(),
-                    r.getDBSuffix() != null && r.getDBSuffix().length() > 1 ? r.getDBSuffix().substring(1) : ""));
+                    r.getDbSuffix() != null && r.getDbSuffix().length() > 1 ? r.getDbSuffix().substring(1) : ""));
         }
 
     }

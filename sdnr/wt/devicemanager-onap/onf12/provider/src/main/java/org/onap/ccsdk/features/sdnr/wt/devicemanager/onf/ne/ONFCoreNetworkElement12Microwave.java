@@ -42,8 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170
 import org.opendaylight.yang.gen.v1.urn.onf.params.xml.ns.yang.core.model.rev170320.logical.termination.point.g.Lp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementDeviceType;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +69,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
     private final @NonNull OnfMicrowaveModel microwaveModel;
     private final NotificationWorker<EventlogEntity> notificationQueue;
 
-    private ListenerRegistration<NotificationListener> listenerRegistrationresult = null;
+    private Registration listenerRegistrationresult = null;
 
     /*-----------------------------------------------------------------------------
      * Construction
@@ -383,8 +382,7 @@ public class ONFCoreNetworkElement12Microwave extends ONFCoreNetworkElement12Bas
         if (optionalNotificationService.isPresent()) {
             final NotificationService notificationService = optionalNotificationService.get();
             // notificationService.registerNotificationListener(microwaveEventListener);
-            listenerRegistrationresult =
-                    notificationService.registerNotificationListener(microwaveModel.getNotificationListener());
+            listenerRegistrationresult =microwaveModel.registerListeners(notificationService);
             LOG.debug("End registration listener for Mountpoint Result: {}", listenerRegistrationresult);
         } else {
             LOG.error("Could not get NotificationService, hence microwave notification listener not registered");

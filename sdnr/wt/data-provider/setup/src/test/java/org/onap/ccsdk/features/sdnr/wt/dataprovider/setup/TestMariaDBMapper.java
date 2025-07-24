@@ -22,6 +22,8 @@
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 
 import static org.junit.Assert.fail;
+
+import ch.vorburger.exec.ManagedProcessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
@@ -57,9 +59,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Pmdata24hEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.network.element.connection.entity.NodeDetails;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.network.element.connection.entity.NodeDetailsBuilder;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.Uint32;
-import ch.vorburger.exec.ManagedProcessException;
 
 public class TestMariaDBMapper {
 

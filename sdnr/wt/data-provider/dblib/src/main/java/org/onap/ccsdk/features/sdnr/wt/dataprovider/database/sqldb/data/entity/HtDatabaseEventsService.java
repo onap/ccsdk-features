@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.mariadb.jdbc.Driver;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBConfig;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
@@ -295,10 +294,4 @@ public class HtDatabaseEventsService implements DataProvider {
         });
 
     }
-
-    @Override
-    public HtDatabaseClient getRawClient() {
-        return null;
-    }
-
 }

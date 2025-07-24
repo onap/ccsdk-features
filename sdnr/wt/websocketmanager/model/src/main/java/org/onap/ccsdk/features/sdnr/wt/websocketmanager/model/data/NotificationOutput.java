@@ -22,7 +22,7 @@
 package org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.data;
 
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yangtools.yang.binding.Notification;
+import org.opendaylight.yangtools.binding.Notification;
 import org.opendaylight.yangtools.yang.common.QName;
 
 public class NotificationOutput implements INotificationOutput{

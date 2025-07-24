@@ -22,7 +22,9 @@
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.rpc;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.config.ORanDMConfig;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.util.ORanDeviceManagerQNames;
@@ -32,8 +34,7 @@ import org.opendaylight.mdsal.dom.api.DOMRpcService;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
-import org.opendaylight.yangtools.yang.data.impl.schema.Builders;
-import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
+import org.opendaylight.yangtools.yang.data.spi.node.ImmutableNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,9 @@ public class ORanSupervisionRPCImpl {
         LOG.debug(
                 "Resetting suppervision-notification-interval and guard-timer-overhead watchdog timers with values {} and {} respectively",
                 oruSupervisionConfig.getNotificationInterval(), oruSupervisionConfig.getWatchdogTimer());
-        ContainerNode rpcInputNode = Builders.containerBuilder().withNodeIdentifier(inputNodeIdentifier)
+
+        ContainerNode rpcInputNode = ImmutableNodes.builderFactory().newContainerBuilder()
+                .withNodeIdentifier(inputNodeIdentifier)
                 .withChild(ImmutableNodes.leafNode(supervisionNotificationIntervalIdentifier,
                         oruSupervisionConfig.getNotificationInterval()))
                 .withChild(
@@ -69,14 +72,17 @@ public class ORanSupervisionRPCImpl {
                     rpcService.invokeRpc(supervisionWatchdogResetQN, rpcInputNode);
             DOMRpcResult rpcResult = result.get(60000, TimeUnit.MILLISECONDS);
             if (rpcResult.value() != null) {
-                ContainerNode rpcResultCn = (ContainerNode) rpcResult.value();
-                LOG.debug("Result of Supervision-Watchdog-Reset = {}", rpcResultCn.prettyTree());
+                ContainerNode rpcResultCn = rpcResult.value();
+                LOG.debug("Result of Supervision-Watchdog-Reset = {}",
+                        rpcResultCn != null ? rpcResultCn.prettyTree() : null);
             }
-        } catch (Exception e) {
-            LOG.error("{}", e);
+        } catch (InterruptedException e) {
+            LOG.error("Interrupted!", e);
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException | TimeoutException e) {
+            LOG.error("", e);
         }
-        return;
-
     }
 
 }

@@ -25,16 +25,11 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import org.onap.ccsdk.features.sdnr.wt.common.database.HtDatabaseClient;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMaintenanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CreateNetworkElementConnectionOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMaintenanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.DeleteNetworkElementConnectionOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EntityInput;
@@ -48,7 +43,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadInventoryListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMaintenanceListOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadMediatorServerListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadNetworkElementConnectionListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mDeviceListOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadPmdata15mListOutputBuilder;
@@ -59,15 +53,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ReadStatusOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMaintenanceOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateMediatorServerOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.UpdateNetworkElementConnectionOutputBuilder;
 
 
 public interface DatabaseDataProvider {
-
-    HtDatabaseClient getRawClient();
 
     ReadFaultcurrentListOutputBuilder readFaultCurrentList(EntityInput input);
 
@@ -76,8 +66,6 @@ public interface DatabaseDataProvider {
     ReadCmlogListOutputBuilder readCMLogList(EntityInput input);
 
     ReadMaintenanceListOutputBuilder readMaintenanceList(EntityInput input);
-
-    ReadMediatorServerListOutputBuilder readMediatorServerList(EntityInput input);
 
     ReadNetworkElementConnectionListOutputBuilder readNetworkElementConnectionList(EntityInput input);
 
@@ -112,25 +100,17 @@ public interface DatabaseDataProvider {
     DeleteNetworkElementConnectionOutputBuilder deleteNetworkElementConnection(
             DeleteNetworkElementConnectionInput input) throws IOException;
 
-    DeleteMediatorServerOutputBuilder deleteMediatorServer(DeleteMediatorServerInput input) throws IOException;
-
     DeleteMaintenanceOutputBuilder deleteMaintenance(DeleteMaintenanceInput input) throws IOException;
 
     UpdateMaintenanceOutputBuilder updateMaintenance(UpdateMaintenanceInput input) throws IOException;
 
-    UpdateMediatorServerOutputBuilder updateMediatorServer(UpdateMediatorServerInput input) throws IOException;
-
     CreateMaintenanceOutputBuilder createMaintenance(CreateMaintenanceInput input) throws IOException;
-
-    CreateMediatorServerOutputBuilder createMediatorServer(CreateMediatorServerInput input) throws IOException;
 
     ReadGuiCutThroughEntryOutputBuilder readGuiCutThroughEntry(EntityInput input);
 
     DataProvider getDataProvider();
 
     HtDatabaseMaintenance getHtDatabaseMaintenance();
-
-    HtDatabaseMediatorserver getHtDatabaseMediatorServer();
 
     HtUserdataManager getUserManager();
 

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Map;
+import org.apache.kafka.clients.admin.Admin;
 import org.eclipse.jdt.annotation.Nullable;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.GeneralConfig;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.StrimziKafkaVESMsgConsumerImpl;
@@ -38,8 +39,8 @@ public class StrimziKafkaPNFRegVESMsgConsumer extends StrimziKafkaVESMsgConsumer
     private static final String DEFAULT_PASSWORD = "netconf";
 
 
-    public StrimziKafkaPNFRegVESMsgConsumer(GeneralConfig generalConfig) {
-        super(generalConfig);
+    public StrimziKafkaPNFRegVESMsgConsumer(GeneralConfig generalConfig, Admin kafkaAdminClient) {
+        super(generalConfig, kafkaAdminClient);
     }
 
     @Override
@@ -143,11 +144,11 @@ public class StrimziKafkaPNFRegVESMsgConsumer extends StrimziKafkaVESMsgConsumer
 
     private String getPNFIPAddress(JsonNode sKafkaMessageRootNode) {
         String ipAddress = sKafkaMessageRootNode.at("/event/pnfRegistrationFields/oamV6IpAddress").textValue();
-        if (ipAddress != null && ipAddress != "")
+        if (ipAddress != null && !ipAddress.isBlank())
             return ipAddress;
 
         ipAddress = sKafkaMessageRootNode.at("/event/pnfRegistrationFields/oamV4IpAddress").textValue();
-        if (ipAddress != null && ipAddress != "")
+        if (ipAddress != null && !ipAddress.isBlank())
             return ipAddress;
 
         return null;

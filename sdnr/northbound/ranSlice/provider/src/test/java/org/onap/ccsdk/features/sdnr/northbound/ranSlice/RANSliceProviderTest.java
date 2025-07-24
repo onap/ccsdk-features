@@ -53,6 +53,7 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 */import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.*;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.common.header.CommonHeaderBuilder;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,8 +72,8 @@ public class RANSliceProviderTest {
           NotificationPublishService notifyService = mock(NotificationPublishService.class);
           //RpcProviderRegistry rpcRegistry = mock(RpcProviderRegistry.class);
           RpcProviderService rpcRegistry = mock(RpcProviderService.class);
-          ObjectRegistration<RanSliceApiService> rpcRegistration = mock(ObjectRegistration.class);
-          when(rpcRegistry.registerRpcImplementation(any(Class.class), any(RanSliceApiService.class))).thenReturn(rpcRegistration);
+          Registration rpcRegistration = mock(Registration.class);
+          //when(rpcRegistry.registerRpcImplementation(any(Class.class), any(RanSliceApiService.class))).thenReturn(rpcRegistration);
 
 
           // Load svclogic.properties and get a SvcLogicStore

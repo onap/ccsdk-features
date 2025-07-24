@@ -21,7 +21,6 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,11 +28,11 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.connection.oper.AvailableCapabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.connection.oper.UnavailableCapabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.connection.oper.available.capabilities.AvailableCapability;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.connection.oper.unavailable.capabilities.UnavailableCapability;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.connection.oper.AvailableCapabilities;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.connection.oper.UnavailableCapabilities;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.connection.oper.available.capabilities.AvailableCapability;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.connection.oper.unavailable.capabilities.UnavailableCapability;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.common.QNameModule;
 import org.opendaylight.yangtools.yang.common.Revision;
@@ -50,7 +49,7 @@ public class Capabilities {
     private static final Logger LOG = LoggerFactory.getLogger(Capabilities.class);
 
     private static final String UNSUPPORTED = "Unsupported";
-    private static final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    private static final String FORMATTER_PATTERN = "yyyy-MM-dd";
 
     private final List<String> capabilities = new ArrayList<>();
 
@@ -161,8 +160,8 @@ public class Capabilities {
      *         false if revision not available or both not found.
      */
     public boolean isSupportingNamespaceAndRevision(QNameModule module) {
-        String namespace = module.getNamespace().toString();
-        @NonNull Optional<Revision> revision = module.getRevision();
+        String namespace = module.namespace().toString();
+        @NonNull Optional<Revision> revision = Optional.ofNullable(module.revision());
         return revision.isEmpty() ? false : isSupportingNamespaceAndRevision(namespace, revision.get().toString());
     }
 
@@ -227,7 +226,7 @@ public class Capabilities {
         } else if (revisionObject instanceof String) {
             revision = (String) revisionObject;
         } else if (revisionObject instanceof Date) {
-            revision = formatter.format((Date) revisionObject);
+            revision = new SimpleDateFormat(FORMATTER_PATTERN).format((Date) revisionObject);
         } else {
             revision = revisionObject.toString();
             LOG.debug("Revision number type not supported. Use toString().String:{} Class:{} ", revisionObject,

@@ -21,11 +21,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.model;
 
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.DataTreeObject;
-
 import java.io.IOException;
 import java.util.List;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.DataTreeObject;
 
 public interface InventoryTreeProvider {
-    public DataTreeObject readInventoryTree(List<String> tree, String filter) throws IOException;
+    DataTreeObject readInventoryTree(List<String> tree, String filter) throws IOException;
 }

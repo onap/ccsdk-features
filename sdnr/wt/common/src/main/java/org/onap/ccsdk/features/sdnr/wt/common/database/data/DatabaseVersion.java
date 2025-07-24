@@ -22,7 +22,6 @@
 package org.onap.ccsdk.features.sdnr.wt.common.database.data;
 
 import java.text.ParseException;
-import org.eclipse.jdt.annotation.NonNull;
 
 
 /**
@@ -36,7 +35,7 @@ public class DatabaseVersion {
     private final int minor;
     private final int revision;
 
-    public DatabaseVersion(@NonNull String version) throws ParseException {
+    public DatabaseVersion(String version) throws ParseException {
         String[] hlp = version.split("\\.");
         if (hlp.length < 3) {
             throw new ParseException("unable to parse version string: " + version, 0);

@@ -33,10 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.onap.ccsdk.features.sdnr.northbound.addCMHandle.HttpRequester;
 import org.onap.ccsdk.features.sdnr.northbound.addCMHandle.models.CpsCmHandleRequestBody;
 import org.onap.ccsdk.sli.core.utils.common.EnvProperties;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -48,27 +46,30 @@ import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.dom.api.DOMMountPointService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.AddCMHandle;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.AddCMHandleInput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.AddCMHandleOutput;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.AddCMHandleOutputBuilder;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.CMHandleAPIService;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev210615.status.StatusBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.cps.ncmp.rev210520.DmiRegistryBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.cps.ncmp.rev210520.dmi.registry.CmHandle;
 import org.opendaylight.yang.gen.v1.org.onap.cps.ncmp.rev210520.dmi.registry.CmHandleBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.cps.ncmp.rev210520.dmi.registry.CmHandleKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.network.topology.topology.topology.types.TopologyNetconf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.binding.Rpc;
+import org.opendaylight.yangtools.binding.RpcInput;
+import org.opendaylight.yangtools.binding.RpcOutput;
+import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -76,7 +77,8 @@ import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AddCMHandleProvider implements CMHandleAPIService, AutoCloseable {
+@SuppressWarnings({"deprecation", "removal"})
+public class AddCMHandleProvider implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(AddCMHandleProvider.class);
     private final ObjectMapper objMapper = new ObjectMapper();
@@ -84,18 +86,19 @@ public class AddCMHandleProvider implements CMHandleAPIService, AutoCloseable {
     private static final String SDNC_CONFIG_DIR = "SDNC_CONFIG_DIR";
     private static final String PROPERTIES_FILE_NAME = "cm-handle.properties";
     private static HashMap<String, String> config;
-    private ListenerRegistration<AddCmHandleListener> listener;
+    private @NonNull Registration listener;
+    private Registration rpcRegistration;
     private static final @NonNull InstanceIdentifier<Node> NETCONF_NODE_TOPO_IID =
             InstanceIdentifier.create(NetworkTopology.class)
                     .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
                     .child(Node.class);
     private static final @NonNull DataTreeIdentifier<Node> NETCONF_NODE_TOPO_TREE_ID =
-            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, NETCONF_NODE_TOPO_IID);
+            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, NETCONF_NODE_TOPO_IID);
 
     private DataBroker dataBroker;
     private MountPointService mountPointService;
     private DOMMountPointService domMountPointService;
-    private RpcProviderService rpcProviderRegistry;
+    private RpcProviderService rpcProviderService;
     @SuppressWarnings("unused")
     private NotificationPublishService notificationPublishService;
     @SuppressWarnings("unused")
@@ -112,7 +115,7 @@ public class AddCMHandleProvider implements CMHandleAPIService, AutoCloseable {
         this.dataBroker = null;
         this.mountPointService = null;
         this.domMountPointService = null;
-        this.rpcProviderRegistry = null;
+        this.rpcProviderService = null;
         this.notificationPublishService = null;
         this.clusterSingletonServiceProvider = null;
         this.yangParserFactory = null;
@@ -124,8 +127,8 @@ public class AddCMHandleProvider implements CMHandleAPIService, AutoCloseable {
         this.dataBroker = dataBroker;
     }
 
-    public void setRpcProviderRegistry(RpcProviderService rpcProviderRegistry) {
-        this.rpcProviderRegistry = rpcProviderRegistry;
+    public void setRpcProviderService(RpcProviderService rpcProviderService) {
+        this.rpcProviderService = rpcProviderService;
     }
 
     public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
@@ -182,6 +185,11 @@ public class AddCMHandleProvider implements CMHandleAPIService, AutoCloseable {
             LOG.error("Error while reading properties file: ", e);
         }
 
+        rpcRegistration = rpcProviderService.registerRpcImplementations(
+                List.of(new RpcHelper<>(AddCMHandle.class, AddCMHandleProvider.this::addCMHandle)));
+
+
+
         listener = dataBroker.registerDataTreeChangeListener(NETCONF_NODE_TOPO_TREE_ID, new AddCmHandleListener());
         isInitializationSuccessful = true;
         LOG.info("Initialization complete for {}", APPLICATION_NAME);
@@ -194,7 +202,7 @@ public class AddCMHandleProvider implements CMHandleAPIService, AutoCloseable {
     private class AddCmHandleListener implements DataTreeChangeListener<Node> {
 
         @Override
-        public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Node>> changes) {
+        public void onDataTreeChanged(@NonNull List<DataTreeModification<Node>> changes) {
             LOG.info("AddCmHandleListener TreeChange enter changes: {}", changes.size());
             LOG.info("config: " + config);
             String nodeId = getNodeId(changes);
@@ -331,7 +339,6 @@ public class AddCMHandleProvider implements CMHandleAPIService, AutoCloseable {
         LOG.debug("AddCMHandleProvider Closed");
     }
 
-    @Override
     public ListenableFuture<RpcResult<AddCMHandleOutput>> addCMHandle(AddCMHandleInput input) {
         StatusBuilder statusBuilder = new StatusBuilder();
         statusBuilder.setMessage("SUCCESS");
@@ -339,4 +346,31 @@ public class AddCMHandleProvider implements CMHandleAPIService, AutoCloseable {
                 .buildFuture();
 
     }
+
+    private interface RpcExecutionWrapper<I extends RpcInput, O extends RpcOutput> {
+
+        ListenableFuture<@NonNull RpcResult<@NonNull O>> execute(@NonNull I input);
+    }
+
+    private static class RpcHelper<I extends RpcInput, O extends RpcOutput> implements Rpc<I, O> {
+
+        private final RpcExecutionWrapper<I, O> executor;
+        private final Class<? extends Rpc<I, O>> implementedInterface;
+
+        RpcHelper(Class<? extends Rpc<I, O>> implementedInterface, RpcExecutionWrapper<I, O> executor) {
+            this.implementedInterface = implementedInterface;
+            this.executor = executor;
+        }
+
+        @Override
+        public @NonNull ListenableFuture<@NonNull RpcResult<@NonNull O>> invoke(@NonNull I input) {
+            return this.executor.execute(input);
+        }
+
+        @Override
+        public @NonNull Class<? extends Rpc<I, O>> implementedInterface() {
+            return this.implementedInterface;
+        }
+    }
+
 }

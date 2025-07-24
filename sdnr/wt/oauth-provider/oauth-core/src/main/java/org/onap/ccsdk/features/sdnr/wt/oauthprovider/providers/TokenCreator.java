@@ -34,11 +34,11 @@ import java.util.Date;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.shiro.authc.BearerToken;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.UserTokenPayload;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.http.AuthHttpServlet;
-import org.apache.shiro.authc.BearerToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +59,9 @@ public class TokenCreator {
     static {
         Security.addProvider(
                 new BouncyCastleProvider()
-       );
+        );
     }
+
     public static TokenCreator getInstance(Config config) throws IllegalArgumentException, IOException {
         if (_instance == null) {
             _instance = new TokenCreator(config);
@@ -168,7 +169,7 @@ public class TokenCreator {
             }
             return ocookie.get().getValue();
         }
-        return authHeader.substring(7);
+        return authHeader == null ? null : authHeader.substring(7);
     }
 
     public UserTokenPayload decode(HttpServletRequest req) throws JWTDecodeException {

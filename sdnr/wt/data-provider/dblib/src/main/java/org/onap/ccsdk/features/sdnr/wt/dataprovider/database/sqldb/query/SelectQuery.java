@@ -59,11 +59,13 @@ public class SelectQuery implements SqlQuery {
     private SqlDBSearchFilter allPropertyFilter;
 
     public SelectQuery(String tableName) {
-        this(tableName, (String)null);
+        this(tableName, (String) null);
     }
+
     public SelectQuery(String tableName, String controllerId) {
         this(tableName, Arrays.asList("*"), controllerId);
     }
+
     public SelectQuery(String tableName, List<String> fields, String controllerId) {
         this.tableName = tableName;
         this.fields = fields;
@@ -126,16 +128,17 @@ public class SelectQuery implements SqlQuery {
         if (sFilter != null && (sFilters == null || sFilter.isEmpty())) {
             return "*".equals(filter.getFiltervalue()) ? null : filter;
         } else {
-            List<String> list = new ArrayList<>(filter.getFiltervalues());
-            if (sFilter != null && !sFilter.isEmpty()) {
+            List<String> list = new ArrayList<>(sFilters);
+            if (sFilter != null && !sFilter.isBlank()) {
                 list.add(sFilter);
             }
             if (list.size() == 1 && "*".equals(list.get(0))) {
                 return null;
-            } ;
+            }
             return new FilterBuilder().setProperty(filter.getProperty()).setFiltervalue(filter.getFiltervalue())
                     .setFiltervalues(
-                            filter.getFiltervalues().stream().filter(e -> !"*".equals(e)).collect(Collectors.toSet()))
+                            sFilters != null ? sFilters.stream().filter(e -> !"*".equals(e)).collect(Collectors.toSet())
+                                    : Set.of())
                     .build();
         }
     }
@@ -152,9 +155,11 @@ public class SelectQuery implements SqlQuery {
     public void addSortOrder(String col, String order) {
         this.sortExpressions.add(String.format("`%s` %s", col, order));
     }
+
     public void setAllPropertyFilter(String filter, PropertyList propertyList) {
         this.allPropertyFilter = new SqlDBSearchFilter(propertyList, filter);
     }
+
     public void setPagination(long page, long pageSize) {
         this.page = page;
         this.pageSize = pageSize;
@@ -206,6 +211,7 @@ public class SelectQuery implements SqlQuery {
         this.groups.add(group);
         return this;
     }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -226,7 +232,6 @@ public class SelectQuery implements SqlQuery {
         builder.append("]");
         return builder.toString();
     }
-
 
 
 }

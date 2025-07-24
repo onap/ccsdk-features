@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>3.2.0-SNAPSHOT</version>
+        <version>3.2.0</version>
         <relativePath/>
     </parent>
 
@@ -63,7 +63,7 @@
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
-        <dependency>
+       <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sdnr-wt-mountpoint-registrar-feature</artifactId>
             <version>${project.version}</version>

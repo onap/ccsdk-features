@@ -21,12 +21,17 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.credentials.Credentials;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.credentials.credentials.LoginPassword;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.credentials.credentials.LoginPasswordBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.credentials.Credentials;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.credentials.credentials.LoginPwUnencrypted;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.credentials.credentials.LoginPwUnencryptedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.credentials.credentials.login.pw.unencrypted.LoginPasswordUnencryptedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNodeBuilder;
+
 
 @SuppressWarnings("deprecation")
 public class TestNetconfNodeBuilder {
@@ -36,10 +41,9 @@ public class TestNetconfNodeBuilder {
 
         NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();
 
-        LoginPasswordBuilder loginPasswordBuilder = new LoginPasswordBuilder();
-        loginPasswordBuilder.setUsername("myTestUsername");
-        loginPasswordBuilder.setPassword("myTestPassword");
-        netconfNodeBuilder.setCredentials(loginPasswordBuilder.build());
+        netconfNodeBuilder.setCredentials(new LoginPwUnencryptedBuilder().setLoginPasswordUnencrypted(
+                new LoginPasswordUnencryptedBuilder().setUsername("myTestUsername").setPassword("myTestPassword")
+                        .build()).build());
 
         NetconfNode netconfNode = netconfNodeBuilder.build();
         System.out.println(netconfNode);
@@ -47,11 +51,11 @@ public class TestNetconfNodeBuilder {
         Credentials credentials = netconfNode.getCredentials();
         System.out.println("Class: " + credentials.getClass() + "\nContent: " + credentials);
 
-        if (credentials instanceof LoginPassword) {
-            LoginPassword loginPassword = (LoginPassword) credentials;
-            System.out.println("User: " + loginPassword.getUsername() + " Password" + loginPassword.getPassword());
+        if (credentials instanceof LoginPwUnencrypted loginPwUnencrypted) {
+            assertEquals("myTestUsername", loginPwUnencrypted.getLoginPasswordUnencrypted().getUsername());
+            assertEquals("myTestPassword", loginPwUnencrypted.getLoginPasswordUnencrypted().getPassword());
         } else {
-            System.out.println("Not expected class");
+            fail("Not expected class");
         }
     }
 

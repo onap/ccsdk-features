@@ -23,19 +23,29 @@ package org.onap.ccsdk.features.sdnr.wt.yang.mapper.mapperextensions;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.util.Map;
-
-import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.*;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.BaseIdentitySerializer;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.ContainerNodeSerializer;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.DateAndTimeSerializer;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.EnumSerializer;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.MapSerializer;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.TypeObjectSerializer;
+import org.onap.ccsdk.features.sdnr.wt.yang.mapper.serialize.XMLNamespaceSerializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yangtools.yang.binding.BaseIdentity;
-import org.opendaylight.yangtools.yang.binding.ScalarTypeObject;
-import org.opendaylight.yangtools.yang.binding.TypeObject;
+import org.opendaylight.yangtools.binding.BaseIdentity;
+import org.opendaylight.yangtools.binding.ScalarTypeObject;
+import org.opendaylight.yangtools.binding.TypeObject;
+import org.opendaylight.yangtools.yang.common.XMLNamespace;
+import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 
 public class YangToolsModule extends SimpleModule {
 
     private static final long serialVersionUID = 1L;
 
+    private final ContainerNodeSerializer containerNodeSerializer;
+
     public YangToolsModule() {
         super();
+        this.containerNodeSerializer = new ContainerNodeSerializer();
         setDeserializerModifier(new YangToolsDeserializerModifier());
 
         addSerializer(DateAndTime.class, new DateAndTimeSerializer());
@@ -44,6 +54,7 @@ public class YangToolsModule extends SimpleModule {
         addSerializer(Enum.class, new EnumSerializer());
         addSerializer(Map.class, new MapSerializer());
         addSerializer(BaseIdentity.class, new BaseIdentitySerializer());
+        addSerializer(ContainerNode.class, this.containerNodeSerializer);
+        addSerializer(XMLNamespace.class, new XMLNamespaceSerializer());
     }
-
 }

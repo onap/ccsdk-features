@@ -127,6 +127,7 @@ public class ORanDOMFaultToVESFaultMapper {
         vesCEH.setStartEpochMicrosec(eventTime.toEpochMilli() * 1000);
         vesCEH.setLastEpochMicrosec(eventTime.toEpochMilli() * 1000);
         vesCEH.setNfVendorName(mfgName);
+        vesCEH.setReportingEntityId(vesProvider.getConfig().getReportingEntityId());
         vesCEH.setReportingEntityName(vesProvider.getConfig().getReportingEntityName());
         vesCEH.setSequence(Integer.parseInt(ORanDMDOMUtility.getLeafValue(cn, oranfm.getFaultIdQName())));
         vesCEH.setSourceId(uuid);

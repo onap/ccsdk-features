@@ -24,12 +24,12 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InternalConnectionSta
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.credentials.Credentials;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.credentials.credentials.KeyAuth;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.credentials.credentials.LoginPw;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.credentials.credentials.LoginPwUnencrypted;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev240118.credentials.credentials.login.pw.LoginPassword;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.credentials.Credentials;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.credentials.credentials.KeyAuth;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.credentials.credentials.LoginPw;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.credentials.credentials.LoginPwUnencrypted;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.credentials.credentials.login.pw.LoginPassword;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionEntity;
@@ -95,19 +95,16 @@ public class NetworkElementConnectionEntitiyUtil {
 
         Credentials credentials =
                 configNetconfNode.isPresent() ? configNetconfNode.get().getCredentials() : nNode.getCredentials();
-        if (credentials instanceof LoginPassword) {
-            LoginPassword loginPassword = (LoginPassword) credentials;
-            eb.setUsername(loginPassword.getUsername()).setPassword(loginPassword.getPassword())
+        if (credentials instanceof LoginPassword loginPassword) {
+            eb.setUsername(loginPassword.getUsername()).setPassword(new String(loginPassword.getPassword()))
                     .setMountMethod(LoginPassword.class.getSimpleName());
-        } else if (credentials instanceof LoginPwUnencrypted) {
-            LoginPwUnencrypted loginPassword = (LoginPwUnencrypted) credentials;
+        } else if (credentials instanceof LoginPwUnencrypted loginPassword) {
             eb.setUsername(loginPassword.getLoginPasswordUnencrypted().getUsername())
                     .setPassword(loginPassword.getLoginPasswordUnencrypted().getPassword())
                     .setMountMethod(LoginPwUnencrypted.class.getSimpleName());
-        } else if (credentials instanceof LoginPw) {
-            LoginPw loginPassword = (LoginPw) credentials;
+        } else if (credentials instanceof LoginPw loginPassword) {
             eb.setUsername(loginPassword.getLoginPassword().getUsername())
-                    .setPassword(loginPassword.getLoginPassword().getPassword())
+                    .setPassword(new String(loginPassword.getLoginPassword().getPassword()))
                     .setMountMethod(LoginPw.class.getSimpleName());
         } else if (credentials instanceof KeyAuth) {
             KeyAuth keyAuth = (KeyAuth) credentials;

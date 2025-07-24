@@ -39,16 +39,17 @@ import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.mdsal.dom.api.DOMMountPointService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings({"deprecation", "removal"})
 public class AddCMHandleProviderTest extends Mockito {
 
     private static AddCMHandleProvider addCMHandleProvider;
@@ -76,12 +77,7 @@ public class AddCMHandleProviderTest extends Mockito {
                 System.out.println("Listener");
                 listener = (DataTreeChangeListener<Node>) pListener;
             }
-            return new ListenerRegistration<L>() {
-                @Override
-                public L getInstance() {
-                    return (L) pListener;
-                }
-
+            return new Registration() {
                 @Override
                 public void close() {
                 }
@@ -101,7 +97,7 @@ public class AddCMHandleProviderTest extends Mockito {
         addCMHandleProvider.setMountPointService(mountPointService);
         addCMHandleProvider.setDomMountPointService(domMountPointService);
         addCMHandleProvider.setNotificationPublishService(notificationPublishService);
-        addCMHandleProvider.setRpcProviderRegistry(rpcProviderRegistry);
+        addCMHandleProvider.setRpcProviderService(rpcProviderRegistry);
         addCMHandleProvider.setClusterSingletonService(clusterSingletonServiceProvider);
         addCMHandleProvider.setYangParserFactory(yangParserFactory);
         addCMHandleProvider.setBindingNormalizedNodeSerializer(bindingNormalizedNodeSerializer);

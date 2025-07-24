@@ -24,18 +24,76 @@ package org.onap.ccsdk.features.sdnr.northbound.ranSlice;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.eclipse.jdt.annotation.NonNull;
 import org.onap.ccsdk.sli.core.sli.provider.MdsalHelper;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.dom.api.DOMDataBroker;
-import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.*;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ActivateRANSliceInstance;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ActivateRANSliceInstanceInput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ActivateRANSliceInstanceInputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ActivateRANSliceInstanceOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ActivateRANSliceInstanceOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.CommonHeader;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigNotification;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigNotificationInput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigNotificationInputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigNotificationOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigNotificationOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureCU;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureCUInput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureCUInputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureCUOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureCUOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureDU;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureDUInput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureDUInputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureDUOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureDUOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureNearRTRIC;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureNearRTRICInput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureNearRTRICInputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureNearRTRICOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureNearRTRICOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureRANSliceInstance;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureRANSliceInstanceInput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureRANSliceInstanceInputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureRANSliceInstanceOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ConfigureRANSliceInstanceOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.DeactivateRANSliceInstance;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.DeactivateRANSliceInstanceInput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.DeactivateRANSliceInstanceInputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.DeactivateRANSliceInstanceOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.DeactivateRANSliceInstanceOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.DetermineRANSliceResources;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.DetermineRANSliceResourcesInput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.DetermineRANSliceResourcesInputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.DetermineRANSliceResourcesOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.DetermineRANSliceResourcesOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.InstantiateRANSlice;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.InstantiateRANSliceInput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.InstantiateRANSliceInputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.InstantiateRANSliceOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.InstantiateRANSliceOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.Payload;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.TerminateRANSliceInstance;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.TerminateRANSliceInstanceInput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.TerminateRANSliceInstanceInputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.TerminateRANSliceInstanceOutput;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.TerminateRANSliceInstanceOutputBuilder;
+import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.ZULU;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.common.header.CommonHeaderBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200806.status.StatusBuilder;
+import org.opendaylight.yangtools.binding.Rpc;
+import org.opendaylight.yangtools.binding.RpcInput;
+import org.opendaylight.yangtools.binding.RpcOutput;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
@@ -54,7 +112,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * initialization / clean up methods.
  *
  */
-public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
+public class RANSliceProvider implements AutoCloseable {
 
 	private class CommonRANSliceFields {
 		private StatusBuilder statusBuilder;
@@ -98,8 +156,7 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 	protected NotificationPublishService notificationService;
 	protected RpcProviderService rpcProviderRegistry;
 	private  RANSliceClient RANSliceClient;
-
-	private ObjectRegistration<RanSliceApiService> rpcRegistration;
+	private Registration rpcRegistration;
 
 	public RANSliceProvider() {
 
@@ -135,11 +192,22 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 	
 	public void init() {
 		LOG.info("Initializing {} for {}", this.getClass().getName(), APPLICATION_NAME);
-		
-		if (rpcRegistration == null) {
+
+        if (rpcRegistration == null) {
 			if (rpcProviderRegistry != null) {
-				rpcRegistration = rpcProviderRegistry.registerRpcImplementation(RanSliceApiService.class, this);
-				LOG.info("Initialization complete for {}", APPLICATION_NAME);
+                rpcRegistration = rpcProviderRegistry.registerRpcImplementations(
+                        List.of(new RpcHelper<>(ConfigureNearRTRIC.class, RANSliceProvider.this::configureNearRTRIC),
+                                new RpcHelper<>(InstantiateRANSlice.class, RANSliceProvider.this::instantiateRANSlice),
+                                new RpcHelper<>(ConfigureRANSliceInstance.class, RANSliceProvider.this::configureRANSliceInstance),
+                                new RpcHelper<>(ConfigureCU.class,RANSliceProvider.this::configureCU),
+                                new RpcHelper<>(ConfigureDU.class, RANSliceProvider.this::configureDU),
+                                new RpcHelper<>(ActivateRANSliceInstance.class, RANSliceProvider.this::activateRANSliceInstance),
+                                new RpcHelper<>(DeactivateRANSliceInstance.class, RANSliceProvider.this::deactivateRANSliceInstance),
+                                new RpcHelper<>(TerminateRANSliceInstance.class, RANSliceProvider.this::terminateRANSliceInstance),
+                                new RpcHelper<>(DetermineRANSliceResources.class, RANSliceProvider.this::determineRANSliceResources),
+                                new RpcHelper<>(ConfigNotification.class, RANSliceProvider.this::configNotification)
+                                ));
+                LOG.info("Initialization complete for {}", APPLICATION_NAME);
 			} else {
 				LOG.warn("Error initializing {} : rpcRegistry unset", APPLICATION_NAME);
 			}
@@ -157,7 +225,6 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 //RPC configureNearRTRIC
 
-	@Override
 	public ListenableFuture<RpcResult<ConfigureNearRTRICOutput>> configureNearRTRIC(ConfigureNearRTRICInput input) {
 		ConfigureNearRTRICInputBuilder iBuilder = new ConfigureNearRTRICInputBuilder(input);
 		ConfigureNearRTRICOutputBuilder oBuilder = new ConfigureNearRTRICOutputBuilder();
@@ -181,7 +248,6 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 	//RPC instantiateRANSlice
 
-	@Override
 	public ListenableFuture<RpcResult<InstantiateRANSliceOutput>> instantiateRANSlice(InstantiateRANSliceInput input) {
 		InstantiateRANSliceInputBuilder iBuilder = new InstantiateRANSliceInputBuilder(input);
 		InstantiateRANSliceOutputBuilder oBuilder = new InstantiateRANSliceOutputBuilder();
@@ -207,8 +273,8 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 	//RPC configureRANSliceInstance
 
-	@Override
-	public ListenableFuture<RpcResult<ConfigureRANSliceInstanceOutput>> configureRANSliceInstance(ConfigureRANSliceInstanceInput input) {
+	public ListenableFuture<RpcResult<ConfigureRANSliceInstanceOutput>> configureRANSliceInstance(
+            ConfigureRANSliceInstanceInput input) {
 		ConfigureRANSliceInstanceInputBuilder iBuilder = new ConfigureRANSliceInstanceInputBuilder(input);
 		ConfigureRANSliceInstanceOutputBuilder oBuilder = new ConfigureRANSliceInstanceOutputBuilder();
 
@@ -231,7 +297,6 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 	//RPC configureCU
 
-	@Override
 	public ListenableFuture<RpcResult<ConfigureCUOutput>> configureCU(ConfigureCUInput input) {
 		ConfigureCUInputBuilder iBuilder = new ConfigureCUInputBuilder(input);
 		ConfigureCUOutputBuilder oBuilder = new ConfigureCUOutputBuilder();
@@ -255,7 +320,6 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 	//RPC configureDU
 
-	@Override
 	public ListenableFuture<RpcResult<ConfigureDUOutput>> configureDU(ConfigureDUInput input) {
 		ConfigureDUInputBuilder iBuilder = new ConfigureDUInputBuilder(input);
 		ConfigureDUOutputBuilder oBuilder = new ConfigureDUOutputBuilder();
@@ -279,8 +343,8 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 	//RPC activateRANSliceInstance
 
-	@Override
-	public ListenableFuture<RpcResult<ActivateRANSliceInstanceOutput>> activateRANSliceInstance(ActivateRANSliceInstanceInput input) {
+	public ListenableFuture<RpcResult<ActivateRANSliceInstanceOutput>> activateRANSliceInstance(
+            ActivateRANSliceInstanceInput input) {
 		ActivateRANSliceInstanceInputBuilder iBuilder = new ActivateRANSliceInstanceInputBuilder(input);
 		ActivateRANSliceInstanceOutputBuilder oBuilder = new ActivateRANSliceInstanceOutputBuilder();
 
@@ -304,8 +368,8 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 	//RPC deactivateRANSliceInstance
 
-	@Override
-	public ListenableFuture<RpcResult<DeactivateRANSliceInstanceOutput>> deactivateRANSliceInstance(DeactivateRANSliceInstanceInput input) {
+	public ListenableFuture<RpcResult<DeactivateRANSliceInstanceOutput>> deactivateRANSliceInstance(
+            DeactivateRANSliceInstanceInput input) {
 		DeactivateRANSliceInstanceInputBuilder iBuilder = new DeactivateRANSliceInstanceInputBuilder(input);
 		DeactivateRANSliceInstanceOutputBuilder oBuilder = new DeactivateRANSliceInstanceOutputBuilder();
 
@@ -328,8 +392,8 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 	//RPC terminateRANSliceInstance
 
-	@Override
-	public ListenableFuture<RpcResult<TerminateRANSliceInstanceOutput>> terminateRANSliceInstance(TerminateRANSliceInstanceInput input) {
+	public ListenableFuture<RpcResult<TerminateRANSliceInstanceOutput>> terminateRANSliceInstance(
+            TerminateRANSliceInstanceInput input) {
 		TerminateRANSliceInstanceInputBuilder iBuilder = new TerminateRANSliceInstanceInputBuilder(input);
 		TerminateRANSliceInstanceOutputBuilder oBuilder = new TerminateRANSliceInstanceOutputBuilder();
 
@@ -352,8 +416,8 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 	//RPC determineRANSliceResources
 
-	@Override
-	public ListenableFuture<RpcResult<DetermineRANSliceResourcesOutput>> determineRANSliceResources(DetermineRANSliceResourcesInput input) {
+	public ListenableFuture<RpcResult<DetermineRANSliceResourcesOutput>> determineRANSliceResources(
+            DetermineRANSliceResourcesInput input) {
 		DetermineRANSliceResourcesInputBuilder iBuilder = new DetermineRANSliceResourcesInputBuilder(input);
 		DetermineRANSliceResourcesOutputBuilder oBuilder = new DetermineRANSliceResourcesOutputBuilder();
 
@@ -376,7 +440,6 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 
 	//RPC cm-notify
 
-	@Override
 	public ListenableFuture<RpcResult<ConfigNotificationOutput>> configNotification(ConfigNotificationInput input) {
 
 		ConfigNotificationInputBuilder iBuilder = new ConfigNotificationInputBuilder(input);
@@ -488,5 +551,31 @@ public class RANSliceProvider implements AutoCloseable, RanSliceApiService {
 		return new CommonRANSliceFields(sBuilder, hBuilder, payload);
 
 	}
+
+    private interface RpcExecutionWrapper<I extends RpcInput, O extends RpcOutput> {
+
+        ListenableFuture<@NonNull RpcResult<@NonNull O>> execute(@NonNull I input);
+    }
+
+    private static class RpcHelper<I extends RpcInput, O extends RpcOutput> implements Rpc<I, O> {
+
+        private final RpcExecutionWrapper<I, O> executor;
+        private final Class<? extends Rpc<I, O>> implementedInterface;
+
+        RpcHelper(Class<? extends Rpc<I, O>> implementedInterface, RpcExecutionWrapper<I, O> executor) {
+            this.implementedInterface = implementedInterface;
+            this.executor = executor;
+        }
+
+        @Override
+        public @NonNull ListenableFuture<@NonNull RpcResult<@NonNull O>> invoke(@NonNull I input) {
+            return this.executor.execute(input);
+        }
+
+        @Override
+        public @NonNull Class<? extends Rpc<I, O>> implementedInterface() {
+            return this.implementedInterface;
+        }
+    }
 
 }

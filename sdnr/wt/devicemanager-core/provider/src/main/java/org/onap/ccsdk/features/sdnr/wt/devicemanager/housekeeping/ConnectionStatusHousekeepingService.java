@@ -41,13 +41,13 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.types.InternalConnectionSta
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.NetconfNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev221225.network.topology.topology.topology.types.TopologyNetconf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.NetconfNodeAugment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.NetworkElementConnectionBuilder;
@@ -60,6 +60,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,8 +74,7 @@ public class ConnectionStatusHousekeepingService
     private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
             InstanceIdentifier.create(NetworkTopology.class).child(Topology.class,
                     new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
-    private static final ServiceGroupIdentifier IDENT =
-            ServiceGroupIdentifier.create("ConnectionStatusHousekeepingService");
+    private static final ServiceGroupIdentifier IDENT = new ServiceGroupIdentifier("ConnectionStatusHousekeepingService");
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
     private final DataBroker dataBroker;
@@ -83,7 +83,7 @@ public class ConnectionStatusHousekeepingService
     private final HouseKeepingConfig config;
     private final ConfigurationFileRepresentation cfg;
 
-    private final ClusterSingletonServiceRegistration cssRegistration2;
+    private final Registration cssRegistration2;
     private boolean isMaster;
     private Future<?> taskReference;
     private int eventNumber;
@@ -207,7 +207,8 @@ public class ConnectionStatusHousekeepingService
             }
             Node node = nodeOpt.get();
             LOG.debug("node is {}", node);
-            NetconfNode nNode = node.augmentation(NetconfNode.class);
+            final var aug = node.augmentation(NetconfNodeAugment.class);
+            NetconfNode nNode = aug!=null?aug.getNetconfNode():null;
             LOG.debug("nnode is {}", nNode);
             if (nNode != null) {
                 return InternalConnectionStatus.statusFromNodeStatus(nNode.getConnectionStatus());

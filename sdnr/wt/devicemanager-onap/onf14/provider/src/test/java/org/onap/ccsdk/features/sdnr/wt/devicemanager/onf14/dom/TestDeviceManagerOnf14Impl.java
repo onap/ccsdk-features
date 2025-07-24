@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl.DeviceManagerOnf14Impl;
-//import org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.impl.DeviceManagerOnf14Impl;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 
 public class TestDeviceManagerOnf14Impl extends Mockito {

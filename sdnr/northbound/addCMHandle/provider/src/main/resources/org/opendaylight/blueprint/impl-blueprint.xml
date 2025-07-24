@@ -38,13 +38,13 @@
                interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
 
     <reference id="clusterSingletonService"
-               interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+               interface="org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider"/>
 
     <reference id="yangParserFactory"
-               interface="org.opendaylight.yangtools.yang.model.parser.api.YangParserFactory"/>
+               interface="org.opendaylight.yangtools.yang.parser.api.YangParserFactory"/>
 
     <reference id="bindingNormalizedNodeSerializer"
-               interface="org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer"/>
+               interface="org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer"/>
 
     <bean id="addCMHandleProvider" class="org.onap.ccsdk.features.sdnr.northbound.addCMHandle.AddCMHandleProvider" init-method="init" destroy-method="close" scope="singleton">
         <property name="dataBroker" ref="dataBroker"/>
