@@ -79,37 +79,41 @@ class ConnectService {
     const mountXml = [
       '<node xmlns="urn:TBD:params:xml:ns:yang:network-topology">',
       `<node-id>${networkElement.nodeId}</node-id>`,
+      `<netconf-node xmlns="urn:opendaylight:netconf-node-topology">`,
       `<host xmlns="urn:opendaylight:netconf-node-topology">${networkElement.host}</host>`,
       `<port xmlns="urn:opendaylight:netconf-node-topology">${networkElement.port}</port>`,
+      `<login-password-unencrypted xmlns="urn:opendaylight:netconf-node-topology">`,
       `<username xmlns="urn:opendaylight:netconf-node-topology">${networkElement.username}</username>`,
       `<password xmlns="urn:opendaylight:netconf-node-topology">${networkElement.password}</password>`,
+      `</login-password-unencrypted>`,
       '  <tcp-only xmlns="urn:opendaylight:netconf-node-topology">false</tcp-only>',
-
       '  <!-- non-mandatory fields with default values, you can safely remove these if you do not wish to override any of these values-->',
       '  <reconnect-on-changed-schema xmlns="urn:opendaylight:netconf-node-topology">false</reconnect-on-changed-schema>',
       '  <connection-timeout-millis xmlns="urn:opendaylight:netconf-node-topology">20000</connection-timeout-millis>',
       '  <max-connection-attempts xmlns="urn:opendaylight:netconf-node-topology">100</max-connection-attempts>',
-      '  <between-attempts-timeout-millis xmlns="urn:opendaylight:netconf-node-topology">2000</between-attempts-timeout-millis>',
-      '  <sleep-factor xmlns="urn:opendaylight:netconf-node-topology">1.5</sleep-factor>',
-
+      '  <min-backoff-millis xmlns="urn:opendaylight:netconf-node-topology">2000</min-backoff-millis>',
+      '  <backoff-multiplier xmlns="urn:opendaylight:netconf-node-topology">1.5</backoff-multiplier>',
       '  <!-- keepalive-delay set to 0 turns off keepalives-->',
       '  <keepalive-delay xmlns="urn:opendaylight:netconf-node-topology">120</keepalive-delay>',
+      '</netconf-node>',
       '</node>'].join('');
 
     const tlsXml = [
       '<node xmlns="urn:TBD:params:xml:ns:yang:network-topology">',
       `<node-id>${networkElement.nodeId}</node-id>`,
-      '<key-based xmlns="urn:opendaylight:netconf-node-topology">',
+      `<netconf-node xmlns="urn:opendaylight:netconf-node-topology">`,
+      `<key-based xmlns="urn:opendaylight:netconf-node-topology">`,
       `<key-id xmlns="urn:opendaylight:netconf-node-topology">${networkElement.tlsKey}</key-id>`,
       `<username xmlns="urn:opendaylight:netconf-node-topology">${networkElement.username}</username>`,
-      '</key-based>',
+      `</key-based>`,
       `<host xmlns="urn:opendaylight:netconf-node-topology">${networkElement.host}</host>`,
       `<port xmlns="urn:opendaylight:netconf-node-topology">${networkElement.port}</port>`,
-      '<tcp-only xmlns="urn:opendaylight:netconf-node-topology">false</tcp-only>',
-      '<protocol xmlns="urn:opendaylight:netconf-node-topology">',
-      '<name xmlns="urn:opendaylight:netconf-node-topology">TLS</name>',
-      ' </protocol>',
-      '<max-connection-attempts xmlns="urn:opendaylight:netconf-node-topology">2</max-connection-attempts>',
+      `<tcp-only xmlns="urn:opendaylight:netconf-node-topology">false</tcp-only>`,
+      `<protocol xmlns="urn:opendaylight:netconf-node-topology">`,
+      `<name xmlns="urn:opendaylight:netconf-node-topology">TLS</name>`,
+      ` </protocol>`,
+      `<max-connection-attempts xmlns="urn:opendaylight:netconf-node-topology">2</max-connection-attempts>`,
+      `</netconf-node>`,
       '</node>'].join('');
     let bodyXml;
     if (networkElement.password) {

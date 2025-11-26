@@ -27,7 +27,9 @@ export interface NetconfNodeTopologyAvailableCapabilities {
 
 export interface TopologyNode {
   'node-id': string;
-  'netconf-node-topology:available-capabilities': NetconfNodeTopologyAvailableCapabilities;
+  'netconf-node-topology:netconf-node':{
+    'available-capabilities': NetconfNodeTopologyAvailableCapabilities;
+  };
 }
 
 export interface Topology {
