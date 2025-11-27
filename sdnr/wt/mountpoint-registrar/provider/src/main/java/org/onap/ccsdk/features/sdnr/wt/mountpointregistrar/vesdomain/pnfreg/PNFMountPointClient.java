@@ -21,7 +21,6 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.vesdomain.pnfreg;
 
 import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient.MessageType.xml;
 import static org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl.MessageClient.SendMethod.PUT;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -42,50 +41,54 @@ public class PNFMountPointClient extends MessageClient {
     public static final String DEVICE_NAME = "@device-name@", DEVICE_IP = "@device-ip@", DEVICE_PORT = "@device-port@",
             USERNAME = "@username@", PASSWORD = "@password@", KEY_ID = "@key-id@";
     private static final String PROTOCOL = "protocol_sec";
-    public static List<String> REQUIRED_FIELDS_SSH = List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME,
-            PASSWORD);
-    public static List<String> REQUIRED_FIELDS_TLS = List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME,
-            KEY_ID);
+    public static List<String> REQUIRED_FIELDS_SSH =
+            List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME, PASSWORD);
+    public static List<String> REQUIRED_FIELDS_TLS =
+            List.of(PROTOCOL, DEVICE_NAME, DEVICE_IP, DEVICE_PORT, USERNAME, KEY_ID);
 
-    private static final String SSH_PAYLOAD = "<node xmlns=\"urn:TBD:params:xml:ns:yang:network-topology\">\n"
-            + "  <node-id>" + DEVICE_NAME + "</node-id>\n"
-            + "  <host xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_IP + "</host>\n"
-            + "  <port xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_PORT + "</port>\n"
-            + "  <username xmlns=\"urn:opendaylight:netconf-node-topology\">" + USERNAME + "</username>\n"
-            + "  <password xmlns=\"urn:opendaylight:netconf-node-topology\">" + PASSWORD + "</password>\n"
-            + "  <tcp-only xmlns=\"urn:opendaylight:netconf-node-topology\">false</tcp-only>\n"
-            + "  <!-- non-mandatory fields with default values, you can safely remove these if you do not wish to override any of these values-->\n"
-            + "  <reconnect-on-changed-schema xmlns=\"urn:opendaylight:netconf-node-topology\">false</reconnect-on-changed-schema>\n"
-            + "  <connection-timeout-millis xmlns=\"urn:opendaylight:netconf-node-topology\">20000</connection-timeout-millis>\n"
-            + "  <max-connection-attempts xmlns=\"urn:opendaylight:netconf-node-topology\">0</max-connection-attempts>\n"
-            + "  <between-attempts-timeout-millis xmlns=\"urn:opendaylight:netconf-node-topology\">2000</between-attempts-timeout-millis>\n"
-            + "  <sleep-factor xmlns=\"urn:opendaylight:netconf-node-topology\">1.5</sleep-factor>\n"
-            + "  <!-- keepalive-delay set to 0 turns off keepalives-->\n"
-            + "  <keepalive-delay xmlns=\"urn:opendaylight:netconf-node-topology\">120</keepalive-delay>\n"
-            + "</node>";
+    private static final String SSH_PAYLOAD = " <node xmlns=\"urn:TBD:params:xml:ns:yang:network-topology\">\n"
+            + "    <node-id>" + DEVICE_NAME + "</node-id>\n"
+            + "    <netconf-node xmlns=\"urn:opendaylight:netconf-node-topology\">\n"
+            + "        <host xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_IP + "</host>\n"
+            + "        <port xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_PORT + "</port>\n"
+            + "        <login-password-unencrypted xmlns=\"urn:opendaylight:netconf-node-topology\">\n"
+            + "            <username xmlns=\"urn:opendaylight:netconf-node-topology\">" + USERNAME + "</username>\n"
+            + "            <password xmlns=\"urn:opendaylight:netconf-node-topology\">" + PASSWORD + "</password>\n"
+            + "         </login-password-unencrypted>\n"
+            + "         <tcp-only xmlns=\"urn:opendaylight:netconf-node-topology\">false</tcp-only>\n"
+            + "         <!-- non-mandatory fields with default values, you can safely remove these if you do not wish to override any of these values-->\n"
+            + "         <reconnect-on-changed-schema xmlns=\"urn:opendaylight:netconf-node-topology\">false</reconnect-on-changed-schema>\n"
+            + "         <connection-timeout-millis xmlns=\"urn:opendaylight:netconf-node-topology\">20000</connection-timeout-millis>\n"
+            + "         <max-connection-attempts xmlns=\"urn:opendaylight:netconf-node-topology\">0</max-connection-attempts>\n"
+            + "         <min-backoff-millis xmlns=\"urn:opendaylight:netconf-node-topology\">2000</min-backoff-millis>\n"
+            + "         <max-backoff-millis xmlns=\"urn:opendaylight:netconf-node-topology\">1800000</max-backoff-millis>\n"
+            + "         <backoff-multiplier xmlns=\"urn:opendaylight:netconf-node-topology\">1.5</backoff-multiplier>\n"
+            + "         <!-- keepalive-delay set to 0 turns off keepalives-->\n"
+            + "         <keepalive-delay xmlns=\"urn:opendaylight:netconf-node-topology\">120</keepalive-delay>\n"
+            + "    </netconf-node>\n"
+            + "    </node>";
 
     private static final String TLS_PAYLOAD = "<node xmlns=\"urn:TBD:params:xml:ns:yang:network-topology\">\n"
-            + "  <node-id>" + DEVICE_NAME + "</node-id>\n"
-            + "  <host xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_IP + "</host>\n"
-            + "  <port xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_PORT + "</port>\n"
-            + "  <key-based xmlns=\"urn:opendaylight:netconf-node-topology\">\n"
-            + "  <username xmlns=\"urn:opendaylight:netconf-node-topology\">" + USERNAME + "</username>\n"
-            + "  <key-id>" + KEY_ID + "</key-id>\n"
-            + "  </key-based>\n"
-            + "  <tcp-only xmlns=\"urn:opendaylight:netconf-node-topology\">false</tcp-only>\n"
-            + "  <protocol xmlns=\"urn:opendaylight:netconf-node-topology\">\n"
-            + "  <name>TLS</name>\n"
-            + "  </protocol>\n"
-            + "<!-- non-mandatory fields with default values, you can safely remove these if you do not wish to override any of these values-->\n"
-            + "<reconnect-on-changed-schema xmlns=\"urn:opendaylight:netconf-node-topology\">false</reconnect-on-changed-schema>\n"
-            + "<connection-timeout-millis xmlns=\"urn:opendaylight:netconf-node-topology\">20000</connection-timeout-millis>\n"
-            + "<max-connection-attempts xmlns=\"urn:opendaylight:netconf-node-topology\">0</max-connection-attempts>\n"
-            + "<between-attempts-timeout-millis xmlns=\"urn:opendaylight:netconf-node-topology\">2000</between-attempts-timeout-millis>\n"
-            + "<sleep-factor xmlns=\"urn:opendaylight:netconf-node-topology\">1.5</sleep-factor>\n"
-            + "<!-- keepalive-delay set to 0 turns off keepalives-->\n"
-            + "<keepalive-delay xmlns=\"urn:opendaylight:netconf-node-topology\">120</keepalive-delay>\n"
-            + "</node>";
-
+            + "    <node-id>" + DEVICE_NAME + "</node-id>\n"
+            + "    <netconf-node xmlns=\"urn:opendaylight:netconf-node-topology\">\n"
+            + "        <host xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_IP + "</host>\n"
+            + "        <port xmlns=\"urn:opendaylight:netconf-node-topology\">" + DEVICE_PORT + "</port>\n"
+            + "        <key-based xmlns=\"urn:opendaylight:netconf-node-topology\">\n"
+            + "            <username xmlns=\"urn:opendaylight:netconf-node-topology\">" + USERNAME + "</username>\n"
+            + "            <key-id xmlns=\"urn:opendaylight:netconf-node-topology\">" + KEY_ID + "</key-id>\n"
+            + "        </key-based>\n" + "        <protocol>\n" + "            <name>TLS</name>\n"
+            + "        </protocol>\n"
+            + "        <tcp-only xmlns=\"urn:opendaylight:netconf-node-topology\">false</tcp-only>\n"
+            + "        <!-- non-mandatory fields with default values, you can safely remove these if you do not wish to override any of these values-->\n"
+            + "        <reconnect-on-changed-schema xmlns=\"urn:opendaylight:netconf-node-topology\">false</reconnect-on-changed-schema>\n"
+            + "        <connection-timeout-millis xmlns=\"urn:opendaylight:netconf-node-topology\">20000</connection-timeout-millis>\n"
+            + "        <max-connection-attempts xmlns=\"urn:opendaylight:netconf-node-topology\">0</max-connection-attempts>\n"
+            + "        <min-backoff-millis xmlns=\"urn:opendaylight:netconf-node-topology\">2000</min-backoff-millis>\n"
+            + "        <max-backoff-millis xmlns=\"urn:opendaylight:netconf-node-topology\">1800000</max-backoff-millis>\n"
+            + "        <backoff-multiplier xmlns=\"urn:opendaylight:netconf-node-topology\">1.5</backoff-multiplier>\n"
+            + "        <!-- keepalive-delay set to 0 turns off keepalives-->\n"
+            + "        <keepalive-delay xmlns=\"urn:opendaylight:netconf-node-topology\">120</keepalive-delay>\n"
+            + "    </netconf-node>\n" + "</node>";
 
     public PNFMountPointClient(String baseUrl) {
         super(baseUrl, MOUNTPOINT_URI);
