@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "610d0a22_2c6d6193",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6215
+      },
+      "writtenOn": "2025-11-27T05:58:10Z",
+      "side": 1,
+      "message": "Please review and submit if all OK.\nRegards,\nRavi",
+      "revId": "6dba9f9b816dbc3b489fc82c53976cd1343d7dad",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
