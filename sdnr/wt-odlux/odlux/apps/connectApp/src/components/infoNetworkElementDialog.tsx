@@ -79,7 +79,7 @@ class InfoNetworkElementDialogComponent extends React.Component<InfoNetworkEleme
 
   render(): JSX.Element {
     const setting = settings[this.props.mode];
-    const availableCapabilities = this.props.state.connect.elementInfo.elementInfo['netconf-node-topology:available-capabilities']['available-capability'];
+    const availableCapabilities = this.props.state.connect.elementInfo.elementInfo['netconf-node-topology:netconf-node']['available-capabilities']['available-capability'];
     let yangFeatures = this.props.state.connect.elementFeatureInfo.elementFeatureInfo;
     let yangCapabilities: AvailableCapabilities[] = [];
 

@@ -36,17 +36,19 @@ type ImportOnlyResponse = {
 type CapabilityResponse = {
   'network-topology:node': {
     'node-id': string;
-    'netconf-node-topology:available-capabilities': {
-      'available-capability': {
-        'capability-origin': string;
-        'capability': string;
-      }[];
-    };
-    'netconf-node-topology:unavailable-capabilities': {
-      'unavailable-capability': {
-        'capability': string;
-        'failure-reason': string;
-      }[];
+    'netconf-node-topology:netconf-node':{
+      'available-capabilities': {
+        'available-capability': {
+          'capability-origin': string;
+          'capability': string;
+        }[];
+      };
+      'unavailable-capabilities': {
+        'unavailable-capability': {
+          'capability': string;
+          'failure-reason': string;
+        }[];
+      };
     };
   }[];
 };
@@ -86,9 +88,9 @@ class RestService {
     const path = this.getNetworkElementUri(nodeId);
     const capabilitiesResult = await requestRest<CapabilityResponse>(path, { method: 'GET' });
     const availableCapabilities = capabilitiesResult && capabilitiesResult['network-topology:node'] && capabilitiesResult['network-topology:node'].length > 0 &&
-      (capabilitiesResult['network-topology:node'][0]['netconf-node-topology:available-capabilities'] &&
-        capabilitiesResult['network-topology:node'][0]['netconf-node-topology:available-capabilities']['available-capability'] &&
-        capabilitiesResult['network-topology:node'][0]['netconf-node-topology:available-capabilities']['available-capability'].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || [])
+      (capabilitiesResult['network-topology:node'][0]['netconf-node-topology:netconf-node']['available-capabilities'] &&
+        capabilitiesResult['network-topology:node'][0]['netconf-node-topology:netconf-node']['available-capabilities']['available-capability'] &&
+        capabilitiesResult['network-topology:node'][0]['netconf-node-topology:netconf-node']['available-capabilities']['available-capability'].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || [])
         .map(cap => {
           const capMatch = cap && capParser.exec(cap.capability);
           return capMatch ? {
@@ -99,9 +101,9 @@ class RestService {
         }).filter((cap) => cap != null) || [] as any;
 
     const unavailableCapabilities = capabilitiesResult && capabilitiesResult['network-topology:node'] && capabilitiesResult['network-topology:node'].length > 0 &&
-      (capabilitiesResult['network-topology:node'][0]['netconf-node-topology:unavailable-capabilities'] &&
-      capabilitiesResult['network-topology:node'][0]['netconf-node-topology:unavailable-capabilities']['unavailable-capability'] &&
-      capabilitiesResult['network-topology:node'][0]['netconf-node-topology:unavailable-capabilities']['unavailable-capability'].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || [])
+      (capabilitiesResult['network-topology:node'][0]['netconf-node-topology:netconf-node']['unavailable-capabilities'] &&
+      capabilitiesResult['network-topology:node'][0]['netconf-node-topology:netconf-node']['unavailable-capabilities']['unavailable-capability'] &&
+      capabilitiesResult['network-topology:node'][0]['netconf-node-topology:netconf-node']['unavailable-capabilities']['unavailable-capability'].map<any>(obj => convertPropertyNames(obj, replaceHyphen)) || [])
         .map(cap => {
           const capMatch = cap && capParser.exec(cap.capability);
           return capMatch ? {

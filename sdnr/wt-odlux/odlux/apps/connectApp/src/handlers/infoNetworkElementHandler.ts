@@ -33,8 +33,10 @@ export interface IInfoNetworkElementFeaturesState {
 const infoNetworkElementsStateInit: IInfoNetworkElementsState = {
   elementInfo: {
     'node-id': '',
-    'netconf-node-topology:available-capabilities': {
+    'netconf-node-topology:netconf-node':{
+      'available-capabilities': {
       'available-capability': [],
+      },
     },
   },
   busy: false,
