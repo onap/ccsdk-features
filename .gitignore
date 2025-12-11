@@ -37,3 +37,6 @@ sdnr/northbound/ranSlice/provider/derby.log
 
 direct-dependencies.txt
 .factorypath
+
+# Ignore log files
+*.log
