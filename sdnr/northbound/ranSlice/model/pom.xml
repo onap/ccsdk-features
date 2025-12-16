@@ -32,7 +32,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
     <artifactId>ranSlice-model</artifactId>
-    <version>2.2.2-SNAPSHOT</version>
+    <version>2.2.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>

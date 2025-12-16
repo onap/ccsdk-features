@@ -1,0 +1,5 @@
+---
+distribution_type: 'maven'
+version: '2.2.2'
+project: 'ccsdk-features'
+log_dir: 'ccsdk-features-maven-stage-quebec/6/'
