@@ -148,17 +148,10 @@ public class MariaDbDataMigrationProvider implements DataMigrationProviderServic
         }
         LOG.info("detected database version {}", dbVersion);
         if (release == null) {
-            release = ReleaseGroup.CURRENT_RELEASE.getLatestCompatibleRelease(dbVersion);
-            if (release == null) {
-                LOG.warn("unable to autodetect release for this database version for release {}",
-                        ReleaseGroup.CURRENT_RELEASE.name());
-                return false;
-            }
-            LOG.info("autodetect release {}", release);
+            release = Release.CURRENT_RELEASE;
         }
         if (!release.isDbInRange(dbVersion)) {
             LOG.warn("db version {} maybe not compatible with release {}", dbVersion, release);
-            return false;
         }
         if (forceRecreate) {
             this.clearDatabase(release, dbPrefix, 0);
