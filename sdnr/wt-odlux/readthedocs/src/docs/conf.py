@@ -43,8 +43,7 @@ extensions = [
     'sphinxcontrib.seqdiag',
     'sphinx.ext.ifconfig',
     'sphinx.ext.todo',
-    'sphinxcontrib.plantuml',
-    'sphinxcontrib.swaggerdoc'
+    'sphinxcontrib.plantuml'
 ]
 
 # Font path for seqdiag
