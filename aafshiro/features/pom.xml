@@ -34,7 +34,7 @@
 
     <groupId>org.onap.ccsdk.features</groupId>
     <artifactId>aafshiro-features</artifactId>
-    <version>2.2.2-SNAPSHOT</version>
+    <version>2.2.2</version>
     <packaging>pom</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>

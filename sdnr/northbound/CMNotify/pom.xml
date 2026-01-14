@@ -32,7 +32,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.northbound</groupId>
     <artifactId>CMNotify</artifactId>
-    <version>2.2.2-SNAPSHOT</version>
+    <version>2.2.2</version>
     <packaging>pom</packaging>
 
     <name>ccsdk-features :: sdnr-northbound :: ${project.artifactId}</name>

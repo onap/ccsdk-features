@@ -35,7 +35,7 @@
 
     <groupId>org.onap.ccsdk.features.sdnr.wt</groupId>
     <artifactId>sdnr-wt-oauth-core</artifactId>
-    <version>2.2.2-SNAPSHOT</version>
+    <version>2.2.2</version>
     <packaging>jar</packaging>
 
     <name>ccsdk-features :: ${project.artifactId}</name>
