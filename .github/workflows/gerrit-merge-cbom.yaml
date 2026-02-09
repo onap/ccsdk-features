@@ -309,7 +309,7 @@ jobs:
       - name: 'Create CBOM'
         if: steps.check-pom-xml.outputs.exists == 'true' || steps.find-python.outputs.has-python == 'true'
         # yamllint disable-line rule:line-length
-        uses: PQCA/cbomkit-action@fe04ae510fe80fcfa7d145859fcba8e5dbd0b649 # v2.1.2
+        uses: PQCA/cbomkit-action@7a967459c9d63b56869ca03fae7a2056eceefb8d # v2.2.0
         id: cbom
         env:
           CBOMKIT_LANGUAGES: java, python # or java or python
