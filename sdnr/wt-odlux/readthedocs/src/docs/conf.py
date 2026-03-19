@@ -37,10 +37,8 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.imgmath',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.blockdiag',
+    'sphinxcontrib.mermaid',
     'sphinxcontrib.needs',
-    'sphinxcontrib.nwdiag',
-    'sphinxcontrib.seqdiag',
     'sphinx.ext.ifconfig',
     'sphinx.ext.todo',
     'sphinxcontrib.plantuml'
@@ -48,7 +46,6 @@ extensions = [
 
 # Font path for seqdiag
 seqdiag_fontpath = '/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf'
-nwdiag_fontpath =  '/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
