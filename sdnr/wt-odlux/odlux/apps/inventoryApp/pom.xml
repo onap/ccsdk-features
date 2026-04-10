@@ -100,6 +100,7 @@
                             <goal>yarn</goal>
                         </goals>
                         <configuration>
+                            <yarnInheritsProxyConfigFromMaven>false</yarnInheritsProxyConfigFromMaven>
                             <arguments>run build</arguments>
                         </configuration>
                     </execution>

@@ -52,7 +52,7 @@ import org.opendaylight.yangtools.yang.parser.api.YangParserException;
 import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
 import org.opendaylight.yangtools.yang.parser.api.YangSyntaxErrorException;
 
-public final class TestYangParserUtil {
+public final class YangParserTestUtil {
 
 	private static final FileFilter YANG_FILE_FILTER = file -> {
 		final String name = file.getName();
@@ -93,7 +93,7 @@ public final class TestYangParserUtil {
 			final YangParserConfiguration config) {
 		final URI directoryPath;
 		try {
-			directoryPath = TestYangParserUtil.class.getResource(resourcePath).toURI();
+			directoryPath = YangParserTestUtil.class.getResource(resourcePath).toURI();
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException("Failed to open resource " + resourcePath, e);
 		}

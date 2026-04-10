@@ -107,6 +107,7 @@
                         </goals>
                         <phase>initialize</phase>
                         <configuration>
+                            <yarnInheritsProxyConfigFromMaven>false</yarnInheritsProxyConfigFromMaven>
                             <arguments>cache clean</arguments>
                             <installDirectory>${project.basedir}</installDirectory>
                             <workingDirectory>${project.basedir}/../</workingDirectory>
@@ -119,6 +120,7 @@
                         </goals>
                         <phase>initialize</phase>
                         <configuration>
+                            <yarnInheritsProxyConfigFromMaven>false</yarnInheritsProxyConfigFromMaven>
                             <arguments>add lerna@3.22.1 -W --exact</arguments>
                             <installDirectory>${project.basedir}</installDirectory>
                             <workingDirectory>${project.basedir}/../</workingDirectory>
@@ -143,6 +145,7 @@
                             <goal>yarn</goal>
                         </goals>
                         <configuration>
+                            <yarnInheritsProxyConfigFromMaven>false</yarnInheritsProxyConfigFromMaven>
                             <arguments>run build</arguments>
                         </configuration>
                     </execution>

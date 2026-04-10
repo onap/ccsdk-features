@@ -18,7 +18,7 @@ public class DbUtil {
 
     public static synchronized DataSource getDataSource() {
         if (dataSource == null) {
-            String url = "jdbc:h2:mem:app;DB_CLOSE_DELAY=-1";
+            String url = "jdbc:h2:mem:app;DB_CLOSE_DELAY=-1;MODE=MYSQL";
 
             dataSource = new DataSource() {
 

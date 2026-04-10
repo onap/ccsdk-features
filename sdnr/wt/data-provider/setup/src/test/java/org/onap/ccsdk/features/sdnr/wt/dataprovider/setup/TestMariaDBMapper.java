@@ -23,8 +23,6 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 
 import static org.junit.Assert.fail;
 
-import ch.vorburger.exec.ManagedProcessException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,8 +41,8 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlD
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.InsertQuery;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.SelectQuery;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionLogStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
@@ -62,6 +61,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yangtools.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public class TestMariaDBMapper {
 
 
@@ -75,26 +76,21 @@ public class TestMariaDBMapper {
     //    private static DbLibService dbService;
 
     private static final String SUFFIX = "";
-    private static MariaDBTestBase testBase;
+    private static DerbyTestBase testBase;
     private static SqlDBDataProvider dbProvider;
 
     @BeforeClass
     public static void init() throws Exception {
 
-        testBase = new MariaDBTestBase();
+        testBase = new DerbyTestBase();
         dbProvider = testBase.getDbProvider();
         dbProvider.waitForDatabaseReady(30, TimeUnit.SECONDS);
-        //  dbProvider.setControllerId();
 
     }
 
     @AfterClass
     public static void close() {
-        try {
-            testBase.close();
-        } catch (ManagedProcessException e) {
-            e.printStackTrace();
-        }
+        testBase.close();
     }
 
     @Test
