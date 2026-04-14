@@ -81,7 +81,7 @@ public class Onf14DomTestUtils {
 
 
     public static NormalizedNode getNormalizedNodeFromJson() throws IOException, URISyntaxException {
-        schemaContext = TestYangParserUtil.parseYangResourceDirectory("/");
+        schemaContext = YangParserTestUtil.parseYangResourceDirectory("/");
         lhotkaCodecFactory = JSONCodecFactorySupplier.RFC7951.getShared(schemaContext);
         streamAsString =
                 loadTextFile(new File(Onf14DomTestUtils.class.getResource("/ControlConstruct-data-test.json").toURI()));
@@ -104,7 +104,7 @@ public class Onf14DomTestUtils {
 
     public static NormalizedNode getNormalizedNodeFromXML()
             throws XMLStreamException, URISyntaxException, IOException, SAXException {
-        schemaContext = TestYangParserUtil.parseYangResourceDirectory("/previousRevision");
+        schemaContext = YangParserTestUtil.parseYangResourceDirectory("/previousRevision");
         hwContainerSchema = Inference.ofDataTreePath(schemaContext, CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER);
         final InputStream resourceAsStream =
                 Onf14DomTestUtils.class.getResourceAsStream("/previousRevision/ControlConstruct-data-test.xml");
@@ -130,7 +130,7 @@ public class Onf14DomTestUtils {
     
     public static NormalizedNode getNormalizedNodeFromXML(String revision)
             throws XMLStreamException, URISyntaxException, IOException, SAXException {
-        schemaContext = TestYangParserUtil.parseYangResourceDirectory("/currentRevision");
+        schemaContext = YangParserTestUtil.parseYangResourceDirectory("/currentRevision");
         hwContainerSchema = Inference.ofDataTreePath(schemaContext, CORE_MODEL_CONTROL_CONSTRUCT_CONTAINER);
         final InputStream resourceAsStream =
                 Onf14DomTestUtils.class.getResourceAsStream("/currentRevision/Ceragon-Control-Construct.xml");

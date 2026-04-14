@@ -25,13 +25,10 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.test.util;
 
 import static org.junit.Assert.fail;
 
-import ch.vorburger.exec.ManagedProcessException;
-import ch.vorburger.mariadb4j.DB;
-import ch.vorburger.mariadb4j.DBConfigurationBuilder;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.subtypes.Section.EnvGetter;
@@ -41,8 +38,8 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDat
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBMapper.UnableToMapClassException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.CmlogEntity;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.ConnectionlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.EventlogEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultcurrentEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogEntity;
@@ -54,77 +51,48 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.pro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Pmdata15mEntity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Pmdata24hEntity;
 
-public class MariaDBTestBase {
+public class DerbyTestBase {
 
     private final SqlDBDataProvider dbProvider;
-    private final DB db;
     private static final Map<String, String> envDefaultValues = initEnvDefaultValues();
+    private static int dbCounter = 0;
 
-    public MariaDBTestBase() throws ManagedProcessException {
-        this(new Random().nextInt(1000) + 50000);
+    public DerbyTestBase() throws SQLException {
+        this("testdb" + (dbCounter++));
+    }
+
+    private static String dbUrl(String dbName) {
+        return String.format("jdbc:derby:memory:%s;create=true", dbName);
     }
 
     private static Map<String, String> initEnvDefaultValues() {
         Map<String, String> defaults = new HashMap<>();
         defaults.put("SDNRDBHOST", "localhost");
         defaults.put("SDNRDBDATABASE", "test");
-
         return defaults;
     }
 
-    public MariaDBTestBase(String host, int port) {
+    public DerbyTestBase(String dbName) throws SQLException {
         EnvGetter env = Section.getEnvGetter();
-        envDefaultValues.put("SDNRDBPORT", String.valueOf(port));
-        envDefaultValues.put("SDNRDBHOST", host);
-        envDefaultValues.put("SDNRDBDATABASE", "sdnrdb");
-        envDefaultValues.put("SDNRDBUSERNAME", "sdnrdb");
-        envDefaultValues.put("SDNRDBPASSWORD", "sdnrdb");
+        envDefaultValues.put("SDNRDBURL", dbUrl(dbName));
+        envDefaultValues.put("SDNRDBUSERNAME", "");
+        envDefaultValues.put("SDNRDBPASSWORD", "");
         Section.setEnvGetter((envname) -> {
             return envDefaultValues.getOrDefault(envname, env.getenv(envname));
         });
         SqlDBConfig config = new SqlDBConfig(new ConfigurationFileRepresentation("test.properties"));
-        this.db = null;
         this.dbProvider = new SqlDBDataProvider(config, "");
         testCreateTable(this.dbProvider.getDBService());
     }
 
-    public MariaDBTestBase(int port) throws ManagedProcessException {
-        EnvGetter env = Section.getEnvGetter();
-        envDefaultValues.put("SDNRDBPORT", String.valueOf(port));
-        Section.setEnvGetter((envname) -> {
-            return envDefaultValues.getOrDefault(envname, env.getenv(envname));
-        });
-        SqlDBConfig config = new SqlDBConfig(new ConfigurationFileRepresentation("test.properties"));
-        //start db server
-        this.db = startDatabase(port);
-        //create db with name sdnrdb
-        this.dbProvider = new SqlDBDataProvider(config, "");
-        testCreateTable(this.dbProvider.getDBService());
-    }
-
-    public void close() throws ManagedProcessException {
-        if (db != null) {
-            this.db.stop();
-        }
-
+    public void close() {
+        // Derby in-memory databases are cleaned up on JVM exit
     }
 
     public SqlDBDataProvider getDbProvider() {
         return dbProvider;
     }
 
-    public DB getDb() {
-        return db;
-    }
-
-    private static DB startDatabase(int port) throws ManagedProcessException {
-        // Start MariaDB4j database
-        DBConfigurationBuilder dbconfig = DBConfigurationBuilder.newBuilder();
-        dbconfig.setPort(port); // 0 => autom. detect free port
-        DB db = DB.newEmbeddedDB(dbconfig.build());
-        db.start();
-        return db;
-    }
     public static void testCreateTable(SqlDBClient dbService) {
         createTableOdl(dbService);
         createTable(dbService, ConnectionlogEntity.class, Entity.Connectionlog, true);
@@ -140,6 +108,7 @@ public class MariaDBTestBase {
         createTable(dbService, MediatorServerEntity.class, Entity.MediatorServer, true);
         createTable(dbService, NetworkElementConnectionEntity.class, Entity.NetworkelementConnection, false);
     }
+
     public static boolean createTableOdl(SqlDBClient dbService) {
         String createStatement = null;
         createStatement = SqlDBMapper.createTableOdl();
@@ -147,9 +116,7 @@ public class MariaDBTestBase {
         try {
             return dbService.write(createStatement);
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-
         }
         return false;
     }
@@ -157,11 +124,12 @@ public class MariaDBTestBase {
     public static boolean createTable(SqlDBClient dbService, Class<?> cls, Entity entity, boolean autoIndex) {
         return createTable(dbService, cls, entity, autoIndex, true);
     }
+
     public static boolean createTable(SqlDBClient dbService, Class<?> cls, Entity entity, boolean autoIndex,
             boolean withControllerId) {
         String createStatement = null;
         try {
-            createStatement = SqlDBMapper.createTable(cls, entity, "", autoIndex,withControllerId);
+            createStatement = SqlDBMapper.createTable(cls, entity, "", autoIndex, withControllerId);
         } catch (UnableToMapClassException e) {
             fail(e.getMessage());
         }

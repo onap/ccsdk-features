@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.onap.ccsdk.parent</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>3.3.0</version>
+        <version>3.3.1</version>
         <relativePath/>
     </parent>
 
@@ -49,6 +49,8 @@
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <checkstyle.skip>true</checkstyle.skip>
+        <bouncycastle.version>1.83</bouncycastle.version>
+        <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
     </properties>
     <dependencies>
         <dependency>
@@ -71,7 +73,8 @@
         </dependency>
         <dependency>
            <groupId>org.bouncycastle</groupId>
-           <artifactId>bcprov-jdk15on</artifactId>
+           <artifactId>bcprov-jdk18on</artifactId>
+           <version>${bouncycastle.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.aaa</groupId>
@@ -149,6 +152,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
+            <version>${osgi.cmpn.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

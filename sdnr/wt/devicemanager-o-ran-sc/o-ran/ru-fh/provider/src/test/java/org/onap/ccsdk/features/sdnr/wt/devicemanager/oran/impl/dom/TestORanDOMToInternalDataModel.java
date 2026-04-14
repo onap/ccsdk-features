@@ -39,7 +39,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.dataprovider.ORanDOMToInternalDataModel;
-import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom.util.TestYangParserUtil;
+import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom.util.YangParserTestUtil;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.yangspecs.ORANFM;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.yangspecs.OnapSystem;
 import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.Capabilities;
@@ -100,7 +100,7 @@ public class TestORanDOMToInternalDataModel {
 
     @BeforeClass
     public static void setup() throws IOException {
-        schemaContext = TestYangParserUtil.parseYangResourceDirectory("/");
+        schemaContext = YangParserTestUtil.parseYangResourceDirectory("/");
         hwContainerSchema = Inference.ofDataTreePath(schemaContext, HW_CONTAINER);
         systemSchema = Inference.ofDataTreePath(schemaContext, IETF_CONTAINER);
         activeAlarmSchema = Inference.ofDataTreePath(schemaContext, ORAN_ACTIVE_ALARM_CONTAINER);
