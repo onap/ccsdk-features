@@ -53,10 +53,7 @@ public class TestMountpointStateProviderImpl {
         when(vesCollectorService.getConfig()).thenReturn(vesCollectorCfgService);
         when(vesCollectorCfgService.isVESCollectorEnabled()).thenReturn(true);
 
-        mountpointStateProvider = new MountpointStateProviderImpl();
-        mountpointStateProvider.setNetconfNetworkElementService(netconfNetworkElementService);
-        mountpointStateProvider.setNetconfNodeStateService(netconfNodeStateService);
-        mountpointStateProvider.init();
+        mountpointStateProvider = new MountpointStateProviderImpl(netconfNodeStateService, netconfNetworkElementService);
       /*  final var NODEID1 = new NodeId("node1");
         final var netconfNode = new NetconfNodeBuilder()
                 .setHost(new Host(new IpAddress(new Ipv4Address("1.1.1.1"))))

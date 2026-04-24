@@ -31,6 +31,10 @@ import java.util.concurrent.Future;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.energysavings.rev150105.EnergysavingsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.energysavings.rev150105.PayloadInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.energysavings.rev150105.PayloadInputBuilder;
@@ -51,14 +55,15 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
+@Component(service = EnergysavingsService.class, immediate = true)
 public class EnergysavingsProvider implements EnergysavingsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EnergysavingsProvider.class);
 
     private final String appName = "EnergySavings";
 
-    private final DataBroker dataBroker;
-    private final RpcProviderRegistry rpcProviderRegistry;
+    private DataBroker dataBroker;
+    private RpcProviderRegistry rpcProviderRegistry;
     private RpcRegistration<EnergysavingsService> serviceRegistration;
 
     // Locations and names of the configuration files
@@ -81,9 +86,12 @@ public class EnergysavingsProvider implements EnergysavingsService {
     // to the Energy Savings server
     private WebResource energySavingsWebResource = null;
 
-    public EnergysavingsProvider(final DataBroker dataBroker, RpcProviderRegistry rpcProviderRegistry) {
+
+    @Activate
+    public EnergysavingsProvider(@Reference final DataBroker dataBroker, @Reference RpcProviderRegistry rpcProviderRegistry) {
         this.dataBroker = dataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
+        this.init();
     }
 
     /**
@@ -176,6 +184,7 @@ public class EnergysavingsProvider implements EnergysavingsService {
     /**
      * Method called when the blueprint container is destroyed.
      */
+    @Deactivate
     public void close() {
         LOG.debug("EnergysavingsProvider Closed");
     }

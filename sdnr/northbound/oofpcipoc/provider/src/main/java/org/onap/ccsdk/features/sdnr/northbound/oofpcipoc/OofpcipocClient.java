@@ -32,18 +32,21 @@ import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.AddNeighborOutputBu
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.DeleteNeighborOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.GenericNeighborConfigurationOutputBuilder;
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev190308.HandleNbrlistChangeNotifOutputBuilder;
-
-
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(service = OofpcipocClient.class, immediate = true)
 public class OofpcipocClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(OofpcipocClient.class);
 
 	private SvcLogicService svcLogicService = null;
 
-	public OofpcipocClient(final SvcLogicService svcLogicService) {
+	@Activate
+	public OofpcipocClient(@Reference final SvcLogicService svcLogicService) {
 		this.svcLogicService = svcLogicService;
 	}
 

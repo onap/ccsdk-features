@@ -74,10 +74,15 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"deprecation", "removal"})
+@Component(service = AddCMHandleProvider.class, immediate = true)
 public class AddCMHandleProvider implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(AddCMHandleProvider.class);
@@ -95,15 +100,23 @@ public class AddCMHandleProvider implements AutoCloseable {
     private static final @NonNull DataTreeIdentifier<Node> NETCONF_NODE_TOPO_TREE_ID =
             DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, NETCONF_NODE_TOPO_IID);
 
+    @Reference
     private DataBroker dataBroker;
+    @Reference
     private MountPointService mountPointService;
+    @Reference
     private DOMMountPointService domMountPointService;
+    @Reference
     private RpcProviderService rpcProviderService;
     @SuppressWarnings("unused")
+    @Reference
     private NotificationPublishService notificationPublishService;
     @SuppressWarnings("unused")
+    @Reference
     private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+    @Reference
     private YangParserFactory yangParserFactory;
+    @Reference
     private BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer;
     private Boolean isInitializationSuccessful = false;
     private Long lastNotificationSentOn = Long.valueOf(0);
@@ -160,6 +173,7 @@ public class AddCMHandleProvider implements AutoCloseable {
         return isInitializationSuccessful;
     }
 
+    @Activate
     public void init() {
         LOG.info("Initializing {} for {}", this.getClass().getName(), APPLICATION_NAME);
 
@@ -331,6 +345,7 @@ public class AddCMHandleProvider implements AutoCloseable {
     /**
      * Method called when the blueprint container is destroyed.
      */
+    @Deactivate
     @Override
     public void close() {
         if (Objects.nonNull(listener)) {

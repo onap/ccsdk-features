@@ -17,6 +17,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.impl.dom;
 
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.oran.config.ORanDMConfig;
@@ -24,30 +28,24 @@ import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkEleme
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(immediate = true)
 public class DeviceManagerORanImpl implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerORanImpl.class);
     private static final String APPLICATION_NAME = "DeviceManagerORan";
     private static final String CONFIGURATIONFILE = "etc/devicemanager-oran.properties";
 
-
-    private NetconfNetworkElementService netconfNetworkElementService;
+    private final NetconfNetworkElementService netconfNetworkElementService;
 
     private Boolean devicemanagerInitializationOk = false;
     private FactoryRegistration<ORanNetworkElementFactory> resORan;
     private ORanDMConfig oranSupervisionConfig;
 
-    // Blueprint begin
-    public DeviceManagerORanImpl() {
+    @Activate
+    public DeviceManagerORanImpl(@Reference final NetconfNetworkElementService netconfNetworkElementService) {
         LOG.info("Creating provider for {}", APPLICATION_NAME);
-        resORan = null;
-    }
-
-    public void setNetconfNetworkElementService(NetconfNetworkElementService netconfNetworkElementService) {
         this.netconfNetworkElementService = netconfNetworkElementService;
-    }
-
-    public void init() throws Exception {
+        this.resORan = null;
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
@@ -62,8 +60,8 @@ public class DeviceManagerORanImpl implements AutoCloseable {
 
         LOG.info("Session Initiated end. Initialization done {}", devicemanagerInitializationOk);
     }
-    // Blueprint end
 
+    @Deactivate
     @Override
     public void close() throws Exception {
         LOG.info("closing ...");
