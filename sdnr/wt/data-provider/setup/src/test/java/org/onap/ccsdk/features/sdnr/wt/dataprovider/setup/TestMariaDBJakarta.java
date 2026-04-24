@@ -24,9 +24,9 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import ch.vorburger.exec.ManagedProcessException;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,27 +46,21 @@ public class TestMariaDBJakarta {
 
     private static SqlDBClient dbService;
 
-    private static MariaDBTestBase testBase;
+    private static DerbyTestBase testBase;
     private static SqlDBDataProvider dbProvider;
 
     @BeforeClass
     public static void init() throws Exception {
 
-        //testBase = new MariaDBTestBase(MARIADB_HOST,MARIADB_PORT, MARIADB_DATABASENAME);
-        testBase = new MariaDBTestBase();
+        testBase = new DerbyTestBase();
         dbProvider = testBase.getDbProvider();
         dbProvider.waitForDatabaseReady(30, TimeUnit.SECONDS);
-    //    dbProvider.setControllerId();
 
     }
 
     @AfterClass
     public static void close() {
-        try {
-            testBase.close();
-        } catch (ManagedProcessException e) {
-            e.printStackTrace();
-        }
+        testBase.close();
     }
 
     @Test

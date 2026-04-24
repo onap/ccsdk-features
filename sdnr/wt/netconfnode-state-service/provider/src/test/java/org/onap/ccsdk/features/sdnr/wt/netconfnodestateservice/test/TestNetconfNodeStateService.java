@@ -63,6 +63,8 @@ import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.dom.api.DOMDataBroker;
+import org.opendaylight.mdsal.dom.api.DOMMountPointService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.device.rev241009.ConnectionOper.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.NetconfNodeAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev240911.netconf.node.augment.NetconfNode;
@@ -140,6 +142,7 @@ public class TestNetconfNodeStateService extends Mockito {
 
         });
         MountPointService mountPointService = mock(MountPointService.class);
+        DOMMountPointService domMountPointService = mock(DOMMountPointService.class);
         NotificationPublishService notificationPublishService = mock(NotificationPublishService.class);
         RpcProviderService rpcProviderRegistry = mock(RpcProviderService.class);
         IEntityDataProvider entityProviderMock = mock(IEntityDataProvider.class);
@@ -147,17 +150,12 @@ public class TestNetconfNodeStateService extends Mockito {
         YangParserFactory yangParserFactory = new DefaultYangParserFactory();
         BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer =mock(BindingNormalizedNodeSerializer.class);
         when(bindingNormalizedNodeSerializer.fromNormalizedNode(any(),any())).thenReturn(new SimpleEntry<>(null,null));
+        DOMDataBroker domDataBroker = mock(DOMDataBroker.class);
         // start using blueprint interface
-        netconfStateService = new NetconfNodeStateServiceImpl();
+        netconfStateService = new NetconfNodeStateServiceImpl(dataBrokerNetconf, domDataBroker, mountPointService,
+                domMountPointService, rpcProviderRegistry, entityProviderMock, notificationPublishService,
+                yangParserFactory, bindingNormalizedNodeSerializer);
 
-        netconfStateService.setDataBroker(dataBrokerNetconf);
-        netconfStateService.setMountPointService(mountPointService);
-        netconfStateService.setNotificationPublishService(notificationPublishService);
-        netconfStateService.setRpcProviderRegistry(rpcProviderRegistry);
-        netconfStateService.setEntityDataProvider(entityProviderMock);
-        netconfStateService.setYangParserFactory(yangParserFactory);
-        netconfStateService.setBindingNormalizedNodeSerializer(bindingNormalizedNodeSerializer);
-        netconfStateService.init();
         System.out.println("Initialization done");
     }
 

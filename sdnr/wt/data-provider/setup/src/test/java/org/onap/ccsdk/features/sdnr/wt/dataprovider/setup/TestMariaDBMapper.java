@@ -23,7 +23,6 @@ package org.onap.ccsdk.features.sdnr.wt.dataprovider.setup;
 
 import static org.junit.Assert.fail;
 
-import ch.vorburger.exec.ManagedProcessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
@@ -32,6 +31,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -75,26 +75,21 @@ public class TestMariaDBMapper {
     //    private static DbLibService dbService;
 
     private static final String SUFFIX = "";
-    private static MariaDBTestBase testBase;
+    private static DerbyTestBase testBase;
     private static SqlDBDataProvider dbProvider;
 
     @BeforeClass
     public static void init() throws Exception {
 
-        testBase = new MariaDBTestBase();
+        testBase = new DerbyTestBase();
         dbProvider = testBase.getDbProvider();
         dbProvider.waitForDatabaseReady(30, TimeUnit.SECONDS);
-        //  dbProvider.setControllerId();
 
     }
 
     @AfterClass
     public static void close() {
-        try {
-            testBase.close();
-        } catch (ManagedProcessException e) {
-            e.printStackTrace();
-        }
+        testBase.close();
     }
 
     @Test

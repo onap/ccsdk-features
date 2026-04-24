@@ -24,6 +24,9 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.server.NativeWebSocketServletContainerInitializer;
 import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.config.WebSocketManagerConfig;
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
@@ -41,6 +44,7 @@ import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(service = WebsocketManagerService.class, immediate = true)
 public class WebSocketManagerProvider implements WebsocketManagerService, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebSocketManagerProvider.class);
@@ -57,6 +61,7 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
         LOG.info("Creating provider for {}", APPLICATION_NAME);
     }
 
+    @Activate
     public void init() {
         LOG.info("Init provider for {}", APPLICATION_NAME);
         ConfigurationFileRepresentation configFileRepresentation =
@@ -106,6 +111,7 @@ public class WebSocketManagerProvider implements WebsocketManagerService, AutoCl
             server.stop();
     }
 
+    @Deactivate
     @Override
     public void close() throws Exception {
         LOG.info("Close provider for {}", APPLICATION_NAME);

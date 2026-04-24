@@ -102,12 +102,7 @@ public class RANSliceProviderTest {
 
           // Finally ready to create sliapiProvider
           RANSliceClient client = new RANSliceClient(svc);
-			provider = new RANSliceProvider();
-			provider.setDataBroker(dataBroker);
-			provider.setDomDataBroker(domDataBroker);
-			provider.setNotificationPublishService(notifyService);
-			provider.setClient(client);
-			provider.init();
+			provider = new RANSliceProvider(dataBroker, domDataBroker, notifyService, rpcRegistry, client);
 			
 
       }
