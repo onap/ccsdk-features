@@ -17,33 +17,32 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf.impl;
 
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(immediate = true)
 public class DeviceManagerOnfImpl implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerOnfImpl.class);
     private static final String APPLICATIONNAME = "DeviceManagerOnf";
 
-    private NetconfNetworkElementService netconfNetworkElementService;
+    private final NetconfNetworkElementService netconfNetworkElementService;
 
     private Boolean devicemanagerInitializationOk = false;
     private FactoryRegistration<ONFCoreNetworkElementFactory> resOnf;
     private DeviceManagerOnfConfiguration configuration;
 
-    // Blueprint begin
-    public DeviceManagerOnfImpl() {
+    @Activate
+    public DeviceManagerOnfImpl(@Reference final NetconfNetworkElementService netconfNetworkElementService) {
         LOG.info("Creating provider for {}", APPLICATIONNAME);
-        resOnf = null;
-    }
-
-    public void setNetconfNetworkElementService(NetconfNetworkElementService netconfNetworkElementService) {
         this.netconfNetworkElementService = netconfNetworkElementService;
-    }
-
-    public void init() throws Exception {
+        this.resOnf = null;
 
         LOG.info("Session Initiated start {}", APPLICATIONNAME);
 
@@ -52,14 +51,13 @@ public class DeviceManagerOnfImpl implements AutoCloseable {
         resOnf = netconfNetworkElementService
                 .registerBindingNetworkElementFactory(new ONFCoreNetworkElementFactory(configuration));
 
-
         netconfNetworkElementService.writeToEventLog(APPLICATIONNAME, "startup", "done");
         this.devicemanagerInitializationOk = true;
 
         LOG.info("Session Initiated end. Initialization done {}", devicemanagerInitializationOk);
     }
-    // Blueprint end
 
+    @Deactivate
     @Override
     public void close() throws Exception {
         LOG.info("closing ...");

@@ -99,6 +99,11 @@ import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
 
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.onap.ccsdk.sli.core.sli.provider.SvcLogicService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,6 +117,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * initialization / clean up methods.
  *
  */
+@Component(service = RANSliceProvider.class, immediate = true)
 public class RANSliceProvider implements AutoCloseable {
 
 	private class CommonRANSliceFields {
@@ -155,19 +161,40 @@ public class RANSliceProvider implements AutoCloseable {
 	protected DOMDataBroker domDataBroker;
 	protected NotificationPublishService notificationService;
 	protected RpcProviderService rpcProviderRegistry;
-	private  RANSliceClient RANSliceClient;
+	private  RANSliceClient client;
 	private Registration rpcRegistration;
 
-	public RANSliceProvider() {
+	@Activate
+	public RANSliceProvider(@Reference final DataBroker dataBroker,
+			@Reference final DOMDataBroker domDataBroker,
+			@Reference final NotificationPublishService notificationService,
+			@Reference final RpcProviderService rpcProviderRegistry,
+			@Reference final RANSliceClient client) {
 
 		LOG.info("Creating provider for {}", APPLICATION_NAME);
 		executor = Executors.newFixedThreadPool(1);
-		this.dataBroker = null;
-		this.domDataBroker = null;
-		this.notificationService = null;
-		this.rpcProviderRegistry = null;
-		this.rpcRegistration = null;
-		this.RANSliceClient = null;
+		this.dataBroker = dataBroker;
+		this.domDataBroker = domDataBroker;
+		this.notificationService = notificationService;
+		this.rpcProviderRegistry = rpcProviderRegistry;
+		this.client = client;
+		rpcRegistration = rpcProviderRegistry.registerRpcImplementations(
+				List.of(new RpcHelper<>(ConfigureNearRTRIC.class, RANSliceProvider.this::configureNearRTRIC),
+						new RpcHelper<>(InstantiateRANSlice.class, RANSliceProvider.this::instantiateRANSlice),
+						new RpcHelper<>(ConfigureRANSliceInstance.class,
+								RANSliceProvider.this::configureRANSliceInstance),
+						new RpcHelper<>(ConfigureCU.class, RANSliceProvider.this::configureCU),
+						new RpcHelper<>(ConfigureDU.class, RANSliceProvider.this::configureDU),
+						new RpcHelper<>(ActivateRANSliceInstance.class,
+								RANSliceProvider.this::activateRANSliceInstance),
+						new RpcHelper<>(DeactivateRANSliceInstance.class,
+								RANSliceProvider.this::deactivateRANSliceInstance),
+						new RpcHelper<>(TerminateRANSliceInstance.class,
+								RANSliceProvider.this::terminateRANSliceInstance),
+						new RpcHelper<>(DetermineRANSliceResources.class,
+								RANSliceProvider.this::determineRANSliceResources),
+						new RpcHelper<>(ConfigNotification.class, RANSliceProvider.this::configNotification)));
+
 	}
 
 	public void setDataBroker(DataBroker dataBroker) {
@@ -187,33 +214,10 @@ public class RANSliceProvider implements AutoCloseable {
 	}
 
 	public void setClient(RANSliceClient client) {
-		this.RANSliceClient = client;
+		this.client = client;
 	}
 	
-	public void init() {
-		LOG.info("Initializing {} for {}", this.getClass().getName(), APPLICATION_NAME);
-
-        if (rpcRegistration == null) {
-			if (rpcProviderRegistry != null) {
-                rpcRegistration = rpcProviderRegistry.registerRpcImplementations(
-                        List.of(new RpcHelper<>(ConfigureNearRTRIC.class, RANSliceProvider.this::configureNearRTRIC),
-                                new RpcHelper<>(InstantiateRANSlice.class, RANSliceProvider.this::instantiateRANSlice),
-                                new RpcHelper<>(ConfigureRANSliceInstance.class, RANSliceProvider.this::configureRANSliceInstance),
-                                new RpcHelper<>(ConfigureCU.class,RANSliceProvider.this::configureCU),
-                                new RpcHelper<>(ConfigureDU.class, RANSliceProvider.this::configureDU),
-                                new RpcHelper<>(ActivateRANSliceInstance.class, RANSliceProvider.this::activateRANSliceInstance),
-                                new RpcHelper<>(DeactivateRANSliceInstance.class, RANSliceProvider.this::deactivateRANSliceInstance),
-                                new RpcHelper<>(TerminateRANSliceInstance.class, RANSliceProvider.this::terminateRANSliceInstance),
-                                new RpcHelper<>(DetermineRANSliceResources.class, RANSliceProvider.this::determineRANSliceResources),
-                                new RpcHelper<>(ConfigNotification.class, RANSliceProvider.this::configNotification)
-                                ));
-                LOG.info("Initialization complete for {}", APPLICATION_NAME);
-			} else {
-				LOG.warn("Error initializing {} : rpcRegistry unset", APPLICATION_NAME);
-			}
-		}
-	}
-	
+	@Deactivate
 	@Override
 	public void close() throws Exception {
 		LOG.info("Closing provider for " + APPLICATION_NAME);
@@ -499,11 +503,11 @@ public class RANSliceProvider implements AutoCloseable {
 		// Call SLI sync method
 		try
 		{
-			if (RANSliceClient.hasGraph("ran-slice-api", rpcName , null, "sync"))
+			if (client.hasGraph("ran-slice-api", rpcName , null, "sync"))
 			{
 				try
 				{
-					respProps = RANSliceClient.execute("ran-slice-api", rpcName, null, "sync", inputProps, domDataBroker);
+					respProps = client.execute("ran-slice-api", rpcName, null, "sync", inputProps, domDataBroker);
 				}
 				catch (Exception e)
 				{

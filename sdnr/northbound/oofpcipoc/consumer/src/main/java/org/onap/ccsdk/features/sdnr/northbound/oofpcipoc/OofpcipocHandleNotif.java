@@ -54,6 +54,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.opendaylight.yangtools.concepts.Registration;
+import org.onap.ccsdk.sli.core.sli.provider.SvcLogicService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.JSONArray;
@@ -67,6 +72,7 @@ import org.json.JSONObject;
  * initialization / clean up methods.
  *
  */
+@Component(service = OofpcipocHandleNotif.class, immediate = true)
 public class OofpcipocHandleNotif implements AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(OofpcipocHandleNotif.class);
@@ -82,20 +88,30 @@ public class OofpcipocHandleNotif implements AutoCloseable {
 
 	private final ExecutorService executor;
 
+
 	protected DataBroker dataBroker;
 
 	private OofpcipocClient OofpcipocClient;
 
+
     private NotificationService notificationService;
+
+
 
     private Registration registration;
 
-	public OofpcipocHandleNotif() {
+	@Activate
+	public OofpcipocHandleNotif(@Reference final DataBroker dataBroker,
+		                       @Reference final NotificationService notificationService, 
+							   @Reference final OofpcipocClient OofpcipocClient) {
 
 		this.LOG.info("Creating listener for {}", APPLICATION_NAME);
 		executor = Executors.newFixedThreadPool(1);
-		this.dataBroker = null;
-		this.OofpcipocClient = null;
+		this.dataBroker = dataBroker;
+		this.OofpcipocClient = OofpcipocClient;
+		this.notificationService = notificationService;
+		this.registration = notificationService.registerListener(NbrlistChangeNotification.class,
+				OofpcipocHandleNotif.this::onNbrlistChangeNotification);
 	}
 	
 	public void setDataBroker(DataBroker dataBroker) {
@@ -110,12 +126,7 @@ public class OofpcipocHandleNotif implements AutoCloseable {
         this.notificationService = notificationService;
     }
 
-	public void init() {
-		LOG.info("Placeholder: Initializing listener  for {}", APPLICATION_NAME);
-        this.registration = notificationService.registerListener(NbrlistChangeNotification.class,
-                OofpcipocHandleNotif.this::onNbrlistChangeNotification);
-	}
-
+	@Deactivate
 	@Override
 	public void close() throws Exception {
 		LOG.info("Closing listener for {}", APPLICATION_NAME);

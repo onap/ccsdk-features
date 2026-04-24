@@ -72,6 +72,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.aaa.rev161214.http.authorization.Policies;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.osgi.service.http.HttpService;
 
 
 public class TestAuthHttpServlet {
@@ -85,6 +86,7 @@ public class TestAuthHttpServlet {
     private static IdMService odlIdentityService = mock(IdMService.class);
     private static PasswordCredentialAuth passwordCredentialAuth;
     private static TokenCreator tokenCreator;
+    private static HttpService httpService = mock(HttpService.class);
 //    private static final HttpServletRequest authreq = new HeadersOnlyHttpServletRequest(
 //            Map.of("Authorization", BaseHTTPClient.getAuthorizationHeaderValue("admin@sdn", "admin")));
 
@@ -94,14 +96,11 @@ public class TestAuthHttpServlet {
         try {
             Config config = createConfigFile();
             tokenCreator = TokenCreator.getInstance(config);
-            servlet = new TestServlet();
+            passwordCredentialAuth = mock(PasswordCredentialAuth.class);
+            servlet = new TestServlet(passwordCredentialAuth, dataBroker, httpService);
         } catch (IOException | InvalidConfigurationException e) {
             fail(e.getMessage());
         }
-        servlet.setDataBroker(dataBroker);
-        passwordCredentialAuth = mock(PasswordCredentialAuth.class);
-
-        servlet.setPasswordCredentialAuth(passwordCredentialAuth);
     }
 
     private static DataBroker loadDynamicMdsalAuthDataBroker() {
@@ -384,8 +383,9 @@ public class TestAuthHttpServlet {
 
         private static final long serialVersionUID = 1L;
 
-        public TestServlet() throws IllegalArgumentException, Exception {
-            super(TESTSHIROCONFIGFILE);
+        public TestServlet(PasswordCredentialAuth passwordCredentialAuth, DataBroker dataBroker,
+                           HttpService httpService) throws IllegalArgumentException, Exception {
+            super(TESTSHIROCONFIGFILE, passwordCredentialAuth, dataBroker, httpService);
         }
 
         @Override

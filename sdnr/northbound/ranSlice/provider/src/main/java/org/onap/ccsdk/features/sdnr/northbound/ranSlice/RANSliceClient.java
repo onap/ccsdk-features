@@ -30,7 +30,11 @@ import org.onap.ccsdk.sli.core.sli.provider.SvcLogicService;
 import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
+@Component(service = RANSliceClient.class, immediate = true)
 public class RANSliceClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RANSliceClient.class);
@@ -39,7 +43,8 @@ public class RANSliceClient {
 
 	private String ErrorCode = "error-code";
 
-	public RANSliceClient(final SvcLogicService svcLogicService) {
+	@Activate
+	public RANSliceClient(@Reference final SvcLogicService svcLogicService) {
 		this.svcLogicService = svcLogicService;
 	}
 

@@ -33,15 +33,8 @@ public class TestDeviceManagerORanImpl {
 
     @Test
     public void test() throws Exception {
-        devMgrOran = new DeviceManagerORanImpl();
         NetconfNetworkElementService netconfNetworkElementService = mock(NetconfNetworkElementService.class);
-
-        try {
-            devMgrOran.setNetconfNetworkElementService(netconfNetworkElementService);
-            devMgrOran.init();
-        } catch (Exception e) {
-            throw e;
-        }
+        devMgrOran = new DeviceManagerORanImpl(netconfNetworkElementService);
     }
 
     @After

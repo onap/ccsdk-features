@@ -43,6 +43,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
@@ -91,6 +95,7 @@ import org.slf4j.LoggerFactory;
  * Devicemanager - Handles startup and closedown of network element handlers for netconf session - Provide common
  * services for network element specific components
  */
+@Component(service = NetconfNetworkElementService.class, immediate = true)
 public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceManagerServiceProvider, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
@@ -139,19 +144,27 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
     private Boolean devicemanagerInitializationOk;
 
     // Blueprint 1
-    public DeviceManagerImpl() {
+    @Activate
+    public DeviceManagerImpl(@Reference final DataBroker dataBroker,
+                             @Reference final MountPointService mountPointService,
+                             @Reference final RpcProviderService rpcProviderRegistry,
+                             @Reference final ClusterSingletonServiceProvider clusterSingletonServiceProvider,
+                             @Reference final WebsocketManagerService websocketmanagerService,
+                             @Reference final IEntityDataProvider iEntityDataProvider,
+                             @Reference final NetconfNodeStateService netconfNodeStateService) {
         LOG.info("Creating provider for {}", APPLICATION_NAME);
         this.devicemanagerInitializationOk = false;
         this.factoryList = new CopyOnWriteArrayList<>();
 
-        this.dataBroker = null;
-        this.mountPointService = null;
-        this.rpcProviderRegistry = null;
-        this.clusterSingletonServiceProvider = null;
-        this.websocketmanagerService = null;
-        this.iEntityDataProvider = null;
+        this.dataBroker = dataBroker;
+        this.mountPointService = mountPointService;
+        this.rpcProviderRegistry = rpcProviderRegistry;
+        this.clusterSingletonServiceProvider = clusterSingletonServiceProvider;
+        this.websocketmanagerService = websocketmanagerService;
+        this.iEntityDataProvider = iEntityDataProvider;
+        this.netconfNodeStateService = netconfNodeStateService;
 
-        this.webSocketService = null;
+        init();
     }
 
     public void setDataBroker(DataBroker dataBroker) {
@@ -170,10 +183,6 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
 
     public void setClusterSingletonService(ClusterSingletonServiceProvider clusterSingletonService) {
         this.clusterSingletonServiceProvider = clusterSingletonService;
-    }
-
-    public void setNetconfNodeStateService(NetconfNodeStateService netconfNodeStateService) {
-        this.netconfNodeStateService = netconfNodeStateService;
     }
 
     public void setWebsocketmanagerService(WebsocketManagerService websocketmanagerService) {
@@ -252,6 +261,7 @@ public class DeviceManagerImpl implements NetconfNetworkElementService, DeviceMa
         LOG.info("Session Initiated end. Initialization done {}", devicemanagerInitializationOk);
     }
 
+    @Deactivate
     @Override
     public void close() {
         LOG.info("DeviceManagerImpl closing ...");

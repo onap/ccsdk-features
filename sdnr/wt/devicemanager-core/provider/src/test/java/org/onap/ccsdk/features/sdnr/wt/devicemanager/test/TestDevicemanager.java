@@ -44,7 +44,6 @@ import org.onap.ccsdk.features.sdnr.wt.netconfnodestateservice.NetconfNodeStateS
 import org.onap.ccsdk.features.sdnr.wt.websocketmanager.model.WebsocketManagerService;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPointService;
-import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.FaultlogBuilder;
@@ -65,7 +64,7 @@ public class TestDevicemanager extends Mockito {
 
     private static final Logger log = LoggerFactory.getLogger(TestDevicemanager.class);
 
-    private static DeviceManagerImpl deviceManager = new DeviceManagerImpl();
+    private static DeviceManagerImpl deviceManager;
     private static DeviceManagerApiServiceImpl apiService;
     private static HtDatabaseMaintenance htDataBaseMaintenance = mock(HtDatabaseMaintenance.class);
 
@@ -74,7 +73,6 @@ public class TestDevicemanager extends Mockito {
 
         DataBroker dataBroker = mock(DataBroker.class);
         RpcProviderServiceMock rpcProviderRegistry = new RpcProviderServiceMock();
-        NotificationPublishService notificationPublishService = mock(NotificationPublishService.class);
         MountPointService mountPointService = mock(MountPointService.class);
         ClusterSingletonServiceProvider clusterSingletonService = mock(ClusterSingletonServiceProvider.class);
         NetconfNodeStateService netconfNodeStateService = mock(NetconfNodeStateService.class);
@@ -100,16 +98,8 @@ public class TestDevicemanager extends Mockito {
 
         when(iEntityDataProvider.getHtDatabaseMaintenance()).thenReturn(htDataBaseMaintenance);
 
-        deviceManager.setDataBroker(dataBroker);
-        deviceManager.setRpcProviderRegistry(rpcProviderRegistry);
-        deviceManager.setNotificationPublishService(notificationPublishService);
-        deviceManager.setMountPointService(mountPointService);
-        deviceManager.setClusterSingletonService(clusterSingletonService);
-        deviceManager.setNetconfNodeStateService(netconfNodeStateService);
-        deviceManager.setWebsocketmanagerService(websocketmanagerService);
-        deviceManager.setEntityDataProvider(iEntityDataProvider);
-
-        deviceManager.init();
+        deviceManager = new DeviceManagerImpl(dataBroker, mountPointService, rpcProviderRegistry,
+                clusterSingletonService, websocketmanagerService, iEntityDataProvider, netconfNodeStateService);
 
         apiService = rpcProviderRegistry.getDeviceManagerApiService();
 

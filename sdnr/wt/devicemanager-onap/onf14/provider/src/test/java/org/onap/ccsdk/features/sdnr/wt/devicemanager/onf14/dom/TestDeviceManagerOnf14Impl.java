@@ -37,11 +37,9 @@ public class TestDeviceManagerOnf14Impl extends Mockito {
 
     @Test
     public void test() throws Exception {
-        devMgrOnf14 = new DeviceManagerOnf14Impl();
+        devMgrOnf14 = new DeviceManagerOnf14Impl(netconfElemService);
 
         try {
-            devMgrOnf14.setNetconfNetworkElementService(netconfElemService);
-            devMgrOnf14.init();
         } catch (Exception e) {
             e.printStackTrace();
         }

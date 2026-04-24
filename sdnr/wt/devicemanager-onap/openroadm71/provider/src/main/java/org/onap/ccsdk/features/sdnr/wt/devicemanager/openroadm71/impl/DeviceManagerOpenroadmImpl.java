@@ -21,6 +21,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.openroadm71.impl;
 
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.slf4j.Logger;
@@ -31,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  *         Class to initialize the OpenRoadm Device Manager
  **/
+@Component(immediate = true)
 public class DeviceManagerOpenroadmImpl implements AutoCloseable {
 
     // variables
@@ -38,38 +43,29 @@ public class DeviceManagerOpenroadmImpl implements AutoCloseable {
     private static final String APPLICATION_NAME = "DeviceManagerOpenRoadm71";
     @SuppressWarnings("unused")
     private static final String CONFIGURATIONFILE = "etc/devicemanager-opeenroadm.properties";
-    private NetconfNetworkElementService netconfNetworkElementService;
+
+    private final NetconfNetworkElementService netconfNetworkElementService;
     private Boolean devicemanagerInitializationOk = false;
     private FactoryRegistration<OpenroadmNetworkElementFactory> resOpenRoadm;
     // end of variables
 
-    // Blueprint begin
-    // constructors
-    public DeviceManagerOpenroadmImpl() {
+    @Activate
+    public DeviceManagerOpenroadmImpl(@Reference final NetconfNetworkElementService netconfNetworkElementService) {
         LOG.info("Creating provider for {}", APPLICATION_NAME);
-        resOpenRoadm = null;
-    }
-    // end of constructors
-
-    // public methods
-    public void setNetconfNetworkElementService(NetconfNetworkElementService netconfNetworkElementService) {
         this.netconfNetworkElementService = netconfNetworkElementService;
-    }
-
-    public void init() throws Exception {
+        this.resOpenRoadm = null;
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
         resOpenRoadm = netconfNetworkElementService.registerBindingNetworkElementFactory(new OpenroadmNetworkElementFactory());
-
 
         netconfNetworkElementService.writeToEventLog(APPLICATION_NAME, "startup", "done");
         this.devicemanagerInitializationOk = true;
 
         LOG.info("Session Initiated end. Initialization done {}", devicemanagerInitializationOk);
     }
-    // Blueprint end
 
+    @Deactivate
     @Override
     public void close() throws Exception {
         LOG.info("closing ...");
