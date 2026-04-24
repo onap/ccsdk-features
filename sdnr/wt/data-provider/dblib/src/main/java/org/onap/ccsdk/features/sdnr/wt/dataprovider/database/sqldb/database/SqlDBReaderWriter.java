@@ -99,7 +99,7 @@ public class SqlDBReaderWriter<T extends DataContainer> extends SqlDBReader<T> {
         Connection connection = null;
         try {
             connection = this.dbService.getConnection();
-            stmt = connection.prepareStatement(query.toSql());
+            stmt = connection.prepareStatement(this.dbService.translateSql(query.toSql()));
             stmt.execute();
 
             int affectedRows = stmt.getUpdateCount();
@@ -132,7 +132,26 @@ public class SqlDBReaderWriter<T extends DataContainer> extends SqlDBReader<T> {
         return insertedId;
     }
 
+    @SuppressWarnings("unchecked")
     public <S extends DataContainer> String updateOrInsert(S object, String id) {
+        if (this.dbService.isDerby()) {
+            // Derby doesn't support ON DUPLICATE KEY UPDATE; try update then insert
+            if (object instanceof DataObject) {
+                String updated = this.update((DataObject) object, id);
+                if (updated != null) {
+                    return updated;
+                }
+            }
+            InsertQuery<S> insertQuery =
+                    new InsertQuery<S>(this.entity, object, this.controllerId, this.ignoreControllerId, true);
+            insertQuery.setId(id);
+            try {
+                return this.dbService.write(insertQuery.toSql()) ? id : null;
+            } catch (SQLException e) {
+                LOG.warn("problem writing data into db: ", e);
+                return null;
+            }
+        }
         UpsertQuery<S> query = new UpsertQuery<S>(this.entity, object, this.controllerId, this.ignoreControllerId, true);
         query.setId(id);
         String insertedId = null;
@@ -143,7 +162,7 @@ public class SqlDBReaderWriter<T extends DataContainer> extends SqlDBReader<T> {
         Connection connection = null;
         try {
             connection = this.dbService.getConnection();
-            stmt = connection.prepareStatement(query.toSql());
+            stmt = connection.prepareStatement(this.dbService.translateSql(query.toSql()));
             stmt.execute();
 
             int affectedRows = stmt.getUpdateCount();
@@ -192,7 +211,7 @@ public class SqlDBReaderWriter<T extends DataContainer> extends SqlDBReader<T> {
         Connection connection = null;
         try {
             connection = this.dbService.getConnection();
-            stmt = connection.prepareStatement(query.toSql());
+            stmt = connection.prepareStatement(this.dbService.translateSql(query.toSql()));
             stmt.execute();
             affectedRows = stmt.getUpdateCount();
             connection.close();

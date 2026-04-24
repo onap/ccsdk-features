@@ -24,6 +24,10 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.annotation.NonNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.common.threading.GenericRunnableFactory;
@@ -78,6 +82,7 @@ import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(service = NetconfNodeStateService.class, immediate = true)
 public class NetconfNodeStateServiceImpl
         implements NetconfNodeStateService, RpcApigetStateCallback, AutoCloseable, IConfigChangedListener {
 
@@ -102,16 +107,16 @@ public class NetconfNodeStateServiceImpl
     private static final int ASYNC_EXECUTION_POOLSIZE = 20;
 
     // -- OSGi services, provided
-    private DataBroker dataBroker;
-    private DOMDataBroker domDataBroker;
-    private MountPointService mountPointService;
-    private DOMMountPointService domMountPointService;
-    private RpcProviderService rpcProviderRegistry;
-    private IEntityDataProvider iEntityDataProvider;
+    private final DataBroker dataBroker;
+    private final DOMDataBroker domDataBroker;
+    private final MountPointService mountPointService;
+    private final DOMMountPointService domMountPointService;
+    private final RpcProviderService rpcProviderRegistry;
+    private final IEntityDataProvider iEntityDataProvider;
     @SuppressWarnings("unused")
-    private NotificationPublishService notificationPublishService;
-    private YangParserFactory yangParserFactory;
-    private BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer;
+    private final NotificationPublishService notificationPublishService;
+    private final YangParserFactory yangParserFactory;
+    private final BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer;
 
     // -- Parameter
     private Registration listenerL1;
@@ -169,17 +174,27 @@ public class NetconfNodeStateServiceImpl
     /**
      * Blueprint
      **/
-    public NetconfNodeStateServiceImpl() {
+    @Activate
+    public NetconfNodeStateServiceImpl(@Reference final DataBroker dataBroker,
+                                       @Reference final DOMDataBroker domDataBroker,
+                                       @Reference final MountPointService mountPointService,
+                                       @Reference final DOMMountPointService domMountPointService,
+                                       @Reference final RpcProviderService rpcProviderRegistry,
+                                       @Reference final IEntityDataProvider iEntityDataProvider,
+                                       @Reference final NotificationPublishService notificationPublishService,
+                                       @Reference final YangParserFactory yangParserFactory,
+                                       @Reference final BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer) {
         LOG.info("Creating provider for {}", APPLICATION_NAME);
 
-        this.dataBroker = null;
-        this.domDataBroker = null;
-        this.mountPointService = null;
-        this.domMountPointService = null;
-        this.rpcProviderRegistry = null;
-        this.notificationPublishService = null;
-        this.yangParserFactory = null;
-        this.domContext = null;
+        this.dataBroker = dataBroker;
+        this.domDataBroker = domDataBroker;
+        this.mountPointService = mountPointService;
+        this.domMountPointService = domMountPointService;
+        this.rpcProviderRegistry = rpcProviderRegistry;
+        this.iEntityDataProvider = iEntityDataProvider;
+        this.notificationPublishService = notificationPublishService;
+        this.yangParserFactory = yangParserFactory;
+        this.bindingNormalizedNodeSerializer = bindingNormalizedNodeSerializer;
 
         this.listenerL1 = null;
         this.initializationSuccessful = false;
@@ -188,42 +203,8 @@ public class NetconfNodeStateServiceImpl
         this.vesNotificationListenerList = new CopyOnWriteArrayList<>();
         this.accessorManager = null;
         this.handlingPool = null;
-    }
 
-    public void setDataBroker(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
-    public void setDomDataBroker(DOMDataBroker domDataBroker) {
-        this.domDataBroker = domDataBroker;
-    }
-
-    public void setRpcProviderRegistry(RpcProviderService rpcProviderRegistry) {
-        this.rpcProviderRegistry = rpcProviderRegistry;
-    }
-
-    public void setNotificationPublishService(NotificationPublishService notificationPublishService) {
-        this.notificationPublishService = notificationPublishService;
-    }
-
-    public void setMountPointService(MountPointService mountPointService) {
-        this.mountPointService = mountPointService;
-    }
-
-    public void setDomMountPointService(DOMMountPointService domMountPointService) {
-        this.domMountPointService = domMountPointService;
-    }
-
-    public void setEntityDataProvider(IEntityDataProvider iEntityDataProvider) {
-        this.iEntityDataProvider = iEntityDataProvider;
-    }
-
-    public void setYangParserFactory(YangParserFactory yangParserFactory) {
-        this.yangParserFactory = yangParserFactory;
-    }
-
-    public void setBindingNormalizedNodeSerializer(BindingNormalizedNodeSerializer bindingNormalizedNodeSerializer) {
-        this.bindingNormalizedNodeSerializer = bindingNormalizedNodeSerializer;
+        init();
     }
 
     /**
@@ -291,6 +272,7 @@ public class NetconfNodeStateServiceImpl
     /**
      * Blueprint destroy-method method
      */
+    @Deactivate
     public void destroy() {
         close();
     }

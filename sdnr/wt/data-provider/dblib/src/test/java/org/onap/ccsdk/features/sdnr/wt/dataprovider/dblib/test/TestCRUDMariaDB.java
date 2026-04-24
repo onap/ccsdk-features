@@ -25,18 +25,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import ch.vorburger.exec.ManagedProcessException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.ccsdk.features.sdnr.wt.common.database.data.DatabaseVersion;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test.util.MariaDBTestBase;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test.util.DerbyTestBase;
 
 public class TestCRUDMariaDB {
 
@@ -46,9 +46,9 @@ public class TestCRUDMariaDB {
     private static final String TABLE3_NAME = "table3-v6";
     private static final String VIEW2_NAME = "table2";
     private static final String VIEW3_NAME = "table3";
-    private static final String TABLE1_MAPPING = "col1 INT PRIMARY KEY, col2 NVARCHAR(30), col3 BOOLEAN";
-    private static final String TABLE2_MAPPING = "col1 INT PRIMARY KEY, col2 NVARCHAR(30), col3 BOOLEAN";
-    private static final String TABLE3_MAPPING = "col1 INT PRIMARY KEY, col2 NVARCHAR(30), col3 BOOLEAN";
+    private static final String TABLE1_MAPPING = "col1 INT PRIMARY KEY, col2 VARCHAR(30), col3 BOOLEAN";
+    private static final String TABLE2_MAPPING = "col1 INT PRIMARY KEY, col2 VARCHAR(30), col3 BOOLEAN";
+    private static final String TABLE3_MAPPING = "col1 INT PRIMARY KEY, col2 VARCHAR(30), col3 BOOLEAN";
     private static final String DELETE_ALL_FORMAT = "DELETE FROM `%s`";
     private static final String READ_ALL_FORMAT = "SELECT * FROM `%s`";
     private static final String TABLE1_INSERT_ENTRY_FORMAT =
@@ -58,14 +58,14 @@ public class TestCRUDMariaDB {
     private static final String TABLE1_DELETE_ENTRY_FORMAT = "DELETE FROM `" + TABLE1_NAME + "` WHERE col1=%d;";
     private static String DBNAME = null;
 
-    private static MariaDBTestBase testBase;
+    private static DerbyTestBase testBase;
     private static SqlDBDataProvider dbProvider;
     private static SqlDBClient dbClient;
 
     @BeforeClass
     public static void init() throws Exception {
 
-        testBase = new MariaDBTestBase();
+        testBase = new DerbyTestBase();
         dbProvider = testBase.getDbProvider();
         dbProvider.waitForDatabaseReady(30, TimeUnit.SECONDS);
         dbClient = testBase.createRawClient();
@@ -74,11 +74,7 @@ public class TestCRUDMariaDB {
 
     @AfterClass
     public static void close() {
-        try {
-            testBase.close();
-        } catch (ManagedProcessException e) {
-            e.printStackTrace();
-        }
+        testBase.close();
     }
 
     @Test

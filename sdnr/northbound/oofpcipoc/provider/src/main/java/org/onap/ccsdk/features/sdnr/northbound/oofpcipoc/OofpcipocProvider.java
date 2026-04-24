@@ -68,6 +68,10 @@ import org.opendaylight.yangtools.binding.RpcOutput;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +81,7 @@ import org.slf4j.LoggerFactory;
  * initialization / clean up methods.
  *
  */
+@Component(service = OofpcipocProvider.class, immediate = true)
 public class OofpcipocProvider implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(OofpcipocProvider.class);
@@ -85,20 +90,39 @@ public class OofpcipocProvider implements AutoCloseable {
 
     private final ExecutorService executor;
 
+  
     private DataBroker dataBroker;
+  
     private NotificationPublishService notificationService;
+  
     private RpcProviderService rpcProviderService;
     private Registration rpcRegistration;
-    private OofpcipocClient OofpcipocClient;
+    private OofpcipocClient client;
 
-    public OofpcipocProvider() {
+    @Activate
+    public OofpcipocProvider(@Reference final DataBroker dataBroker,
+                             @Reference final NotificationPublishService notificationService,
+                             @Reference final RpcProviderService rpcProviderRegistry, 
+                             @Reference final OofpcipocClient client) {
 
         LOG.info("Creating provider for {}", APPLICATION_NAME);
         executor = Executors.newFixedThreadPool(1);
-        this.dataBroker = null;
-        this.notificationService = null;
-        this.rpcProviderService = null;
-        this.OofpcipocClient = null;
+        this.dataBroker = dataBroker;
+        this.notificationService = notificationService;
+        this.rpcProviderService = rpcProviderRegistry;
+        this.client = client;
+
+        LOG.info("Initializing provider for {}", APPLICATION_NAME);
+        rpcRegistration = rpcProviderService.registerRpcImplementations(
+                List.of(new RpcHelper<>(Greeting.class, OofpcipocProvider.this::greeting),
+                        new RpcHelper<>(ConfigurationPhyCellId.class, OofpcipocProvider.this::configurationPhyCellId),
+                        new RpcHelper<>(AddNeighbor.class, OofpcipocProvider.this::addNeighbor),
+                        new RpcHelper<>(DeleteNeighbor.class, OofpcipocProvider.this::deleteNeighbor),
+                        new RpcHelper<>(GenericNeighborConfiguration.class,
+                                OofpcipocProvider.this::genericNeighborConfiguration),
+                        new RpcHelper<>(HandleNbrlistChangeNotif.class,
+                                OofpcipocProvider.this::handleNbrlistChangeNotif)));
+        LOG.info("Initialization complete for {}", APPLICATION_NAME);
     }
 
     public void setDataBroker(DataBroker dataBroker) {
@@ -114,24 +138,11 @@ public class OofpcipocProvider implements AutoCloseable {
     }
 
     public void setClient(OofpcipocClient client) {
-        this.OofpcipocClient = client;
+        this.client = client;
     }
 
-    public void init() {
-        LOG.info("Initializing provider for {}", APPLICATION_NAME);
-        //rpcRegistration = rpcProviderService.registerRpcImplementation(OofpcipocApiService.class, this);
-        rpcRegistration = rpcProviderService.registerRpcImplementations(
-                List.of(new RpcHelper<>(Greeting.class, OofpcipocProvider.this::greeting),
-                        new RpcHelper<>(ConfigurationPhyCellId.class, OofpcipocProvider.this::configurationPhyCellId),
-                        new RpcHelper<>(AddNeighbor.class, OofpcipocProvider.this::addNeighbor),
-                        new RpcHelper<>(DeleteNeighbor.class, OofpcipocProvider.this::deleteNeighbor),
-                        new RpcHelper<>(GenericNeighborConfiguration.class,
-                                OofpcipocProvider.this::genericNeighborConfiguration),
-                        new RpcHelper<>(HandleNbrlistChangeNotif.class,
-                                OofpcipocProvider.this::handleNbrlistChangeNotif)));
-        LOG.info("Initialization complete for {}", APPLICATION_NAME);
-    }
 
+    @Deactivate
     @Override
     public void close() throws Exception {
         LOG.info("Closing provider for {}", APPLICATION_NAME);
@@ -167,10 +178,10 @@ public class OofpcipocProvider implements AutoCloseable {
 
         // Call SLI sync method
         try {
-            if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
+            if (client.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
                 LOG.info("OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
                 try {
-                    OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
+                    client.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
                 } catch (Exception e) {
                     LOG.error("Caught exception executing service logic for " + svcOperation, e);
                     serviceDataBuilder.setResponse("500");
@@ -229,11 +240,11 @@ public class OofpcipocProvider implements AutoCloseable {
         // Call SLI sync method
         try {
 
-            if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
+            if (client.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
                 LOG.info("OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
 
                 try {
-                    OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
+                    client.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
                 } catch (Exception e) {
                     LOG.error("Caught exception executing service logic for " + svcOperation, e);
                     serviceDataBuilder.setResponseCode("500");
@@ -290,11 +301,11 @@ public class OofpcipocProvider implements AutoCloseable {
         // Call SLI sync method
         try {
 
-            if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
+            if (client.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
                 LOG.info("OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
 
                 try {
-                    OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
+                    client.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
                 } catch (Exception e) {
                     LOG.error("Caught exception executing service logic for " + svcOperation, e);
                     serviceDataBuilder.setResponseCode("500");
@@ -351,11 +362,11 @@ public class OofpcipocProvider implements AutoCloseable {
         // Call SLI sync method
         try {
 
-            if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
+            if (client.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
                 LOG.info("OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
 
                 try {
-                    OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
+                    client.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
                 } catch (Exception e) {
                     LOG.error("Caught exception executing service logic for " + svcOperation, e);
                     serviceDataBuilder.setResponseCode("500");
@@ -413,11 +424,11 @@ public class OofpcipocProvider implements AutoCloseable {
         // Call SLI sync method
         try {
 
-            if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
+            if (client.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
                 LOG.info("OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
 
                 try {
-                    OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
+                    client.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
                 } catch (Exception e) {
                     LOG.error("Caught exception executing service logic for " + svcOperation, e);
                     serviceDataBuilder.setResponseCode("500");
@@ -474,10 +485,10 @@ public class OofpcipocProvider implements AutoCloseable {
 
         // Call SLI sync method
         try {
-            if (OofpcipocClient.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
+            if (client.hasGraph("oofpcipoc-api", svcOperation, null, "sync")) {
                 LOG.info("OofpcipocClient has a Directed Graph for '" + svcOperation + "'");
                 try {
-                    OofpcipocClient.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
+                    client.execute("oofpcipoc-api", svcOperation, null, "sync", serviceDataBuilder, parms);
                 } catch (Exception e) {
                     LOG.error("Caught exception executing service logic for " + svcOperation, e);
                     serviceDataBuilder.setResponseCode("500");

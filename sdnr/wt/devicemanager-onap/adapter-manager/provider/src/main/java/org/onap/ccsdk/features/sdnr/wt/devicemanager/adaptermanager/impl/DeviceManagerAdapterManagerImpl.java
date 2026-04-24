@@ -17,45 +17,43 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.adaptermanager.impl;
 
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(immediate = true)
 public class DeviceManagerAdapterManagerImpl implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerAdapterManagerImpl.class);
     private static final String APPLICATION_NAME = "DeviceManagerAdapterManager";
 
-    private NetconfNetworkElementService netconfNetworkElementService;
+    private final NetconfNetworkElementService netconfNetworkElementService;
 
     private Boolean devicemanagerInitializationOk = false;
     private FactoryRegistration<AdapterManagerNetworkElementFactory> resAdapterManager;
 
-    // Blueprint begin
-    public DeviceManagerAdapterManagerImpl() {
+    @Activate
+    public DeviceManagerAdapterManagerImpl(@Reference final NetconfNetworkElementService netconfNetworkElementService) {
         LOG.debug("Creating provider for {}", APPLICATION_NAME);
-        resAdapterManager = null;
-    }
-
-    public void setNetconfNetworkElementService(NetconfNetworkElementService netconfNetworkElementService) {
         this.netconfNetworkElementService = netconfNetworkElementService;
-    }
-
-    public void init() throws Exception {
+        this.resAdapterManager = null;
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
         resAdapterManager = netconfNetworkElementService.registerBindingNetworkElementFactory(new AdapterManagerNetworkElementFactory());
-
 
         netconfNetworkElementService.writeToEventLog(APPLICATION_NAME, "startup", "done");
         this.devicemanagerInitializationOk = true;
 
         LOG.info("Session Initiated end. Initialization done {}", devicemanagerInitializationOk);
     }
-    // Blueprint end
 
+    @Deactivate
     @Override
     public void close() throws Exception {
         LOG.info("closing ...");

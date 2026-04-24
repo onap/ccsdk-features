@@ -29,11 +29,8 @@ public class TestDeviceManagerAdapterManagerImpl {
 
     @Test
     public void test() throws Exception {
-        devMgrAdapterManager = new DeviceManagerAdapterManagerImpl();
         NetconfNetworkElementService netConfNetworkElementService = mock(NetconfNetworkElementService.class);
-
-        devMgrAdapterManager.setNetconfNetworkElementService(netConfNetworkElementService);
-        devMgrAdapterManager.init();
+        devMgrAdapterManager = new DeviceManagerAdapterManagerImpl(netConfNetworkElementService);
     }
 
     @After

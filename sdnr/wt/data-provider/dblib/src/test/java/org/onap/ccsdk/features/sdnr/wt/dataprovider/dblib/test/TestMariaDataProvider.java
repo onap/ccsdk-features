@@ -28,7 +28,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import ch.vorburger.exec.ManagedProcessException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,7 +52,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.SqlDBClient;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.data.SqlDBDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.database.SqlDBReaderWriter;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.database.sqldb.query.DeleteQuery;
-import org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test.util.MariaDBTestBase;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.dblib.test.util.DerbyTestBase;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapper;
@@ -139,7 +139,7 @@ public class TestMariaDataProvider {
     private static final String URI3 = "http://localhost:8181";
     private static final String PATH = "https://samsung.com/3GPP/simulation/network-function/ves";
     private static final String USERNAME = "admin";
-    private static MariaDBTestBase testBase;
+    private static DerbyTestBase testBase;
     private static SqlDBDataProvider dbProvider;
     private static SqlDBDataProvider dbProviderOverall;
     private static SqlDBClient dbClient;
@@ -148,11 +148,11 @@ public class TestMariaDataProvider {
     @BeforeClass
     public static void init() throws Exception {
 
-        testBase = new MariaDBTestBase();
+        testBase = new DerbyTestBase();
         dbProvider = testBase.getDbProvider();
         dbProvider.waitForDatabaseReady(30, TimeUnit.SECONDS);
         dbClient = testBase.createRawClient();
-        MariaDBTestBase.testCreateTableStructure(dbClient);
+        DerbyTestBase.testCreateTableStructure(dbClient);
         dbProvider.setControllerId();
         CONTROLLERID = dbProvider.getControllerId();
         dbProviderOverall = testBase.getOverallDbProvider();
@@ -161,11 +161,7 @@ public class TestMariaDataProvider {
 
     @AfterClass
     public static void close() {
-        try {
-            testBase.close();
-        } catch (ManagedProcessException e) {
-            e.printStackTrace();
-        }
+        testBase.close();
     }
 
     @Test
@@ -224,7 +220,7 @@ public class TestMariaDataProvider {
             assertEquals(1, netestList.size());
             assertTrue(netestList.get(0).getIsRequired());
             SqlDBReaderWriter<Data> dbrw = new SqlDBReaderWriter<>(dbClient, Entity.NetworkelementConnection,
-                    MariaDBTestBase.SUFFIX,
+                    DerbyTestBase.SUFFIX,
                     Data.class,
                     CONTROLLERID);
             Data e = dbrw.read(NODEID1);
