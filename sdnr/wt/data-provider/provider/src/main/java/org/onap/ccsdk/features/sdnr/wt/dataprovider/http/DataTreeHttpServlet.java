@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,10 +43,17 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.DataTreeObject;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.data.provider.rev201110.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 
 /**
  * @author Michael Dürre
  */
+@HttpWhiteboardServletPattern("/tree/*")
+@HttpWhiteboardServletName("DataTreeHttpServlet")
+@Component(service = Servlet.class, immediate = true)
 public class DataTreeHttpServlet extends HttpServlet {
 
     @Serial
@@ -54,12 +62,13 @@ public class DataTreeHttpServlet extends HttpServlet {
     private static InventoryTreeProvider dataTreeProvider;
     private static final Logger LOG = LoggerFactory.getLogger(DataTreeHttpServlet.class);
 
+    @Activate
     public DataTreeHttpServlet() {
         super();
     }
 
-    public void setInventoryTreeProvider(InventoryTreeProvider provider) {
-        this.dataTreeProvider = provider;
+    public static void setInventoryTreeProvider(InventoryTreeProvider provider) {
+        dataTreeProvider = provider;
 
     }
 

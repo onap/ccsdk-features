@@ -54,11 +54,7 @@ public class TestCMNotify {
             NotificationPublishService mockNotification = mock(NotificationPublishService.class);
             RpcProviderService mockRpcRegistry = mock(RpcProviderService.class);
             CMNotifyClient mockSliClient = mock(CMNotifyClient.class);
-            cMNotifyProvider = new CMNotifyProvider();
-            cMNotifyProvider.setDataBroker(dataBroker);
-            cMNotifyProvider.setNotificationPublishService(mockNotification);
-            cMNotifyProvider.setRpcProviderService(mockRpcRegistry);
-            cMNotifyProvider.setClient(mockSliClient);
+            cMNotifyProvider = new CMNotifyProvider(dataBroker, mockRpcRegistry, mockNotification, mockSliClient);
         }
     }
 

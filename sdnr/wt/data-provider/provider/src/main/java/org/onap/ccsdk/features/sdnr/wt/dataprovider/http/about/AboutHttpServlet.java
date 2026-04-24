@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -41,9 +42,16 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStamp
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@HttpWhiteboardServletPattern("/about/*")
+@HttpWhiteboardServletName("AboutHttpServlet")
+@Component(service = {Servlet.class, AboutHttpServlet.class}, immediate = true)
 public class AboutHttpServlet extends HttpServlet {
 
     /**
@@ -85,6 +93,7 @@ public class AboutHttpServlet extends HttpServlet {
     private final String jsonContent;
 
 
+    @Activate
     public AboutHttpServlet() {
 
         this.data = new HashMap<>();

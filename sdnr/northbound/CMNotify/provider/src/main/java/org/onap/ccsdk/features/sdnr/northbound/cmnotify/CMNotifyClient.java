@@ -28,17 +28,21 @@ import org.onap.ccsdk.sli.core.sli.provider.MdsalHelper;
 import org.onap.ccsdk.sli.core.sli.provider.SvcLogicService;
 
 import org.opendaylight.yang.gen.v1.org.onap.ccsdk.rev200224.NbrlistChangeNotificationOutputBuilder;
-
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(service = CMNotifyClient.class, immediate = true)
 public class CMNotifyClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(CMNotifyClient.class);
 
     private SvcLogicService svcLogicService = null;
 
-    public CMNotifyClient(final SvcLogicService svcLogicService) {
+    @Activate
+    public CMNotifyClient(@Reference final SvcLogicService svcLogicService) {
         this.svcLogicService = svcLogicService;
     }
 

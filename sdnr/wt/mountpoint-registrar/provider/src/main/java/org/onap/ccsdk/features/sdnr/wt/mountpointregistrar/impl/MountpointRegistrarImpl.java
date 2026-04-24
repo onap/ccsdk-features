@@ -22,6 +22,9 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.ConfigurationFileRepresentation;
 import org.onap.ccsdk.features.sdnr.wt.common.configuration.filechange.IConfigChangedListener;
 import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.FaultConfig;
@@ -34,6 +37,7 @@ import org.onap.ccsdk.features.sdnr.wt.mountpointregistrar.config.StrimziKafkaCo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(immediate = true)
 public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(MountpointRegistrarImpl.class);
@@ -53,6 +57,7 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
         LOG.info("Creating provider class for {}", APPLICATION_NAME);
     }
 
+    @Activate
     public void init() {
         LOG.info("Init call for {}", APPLICATION_NAME);
 
@@ -120,6 +125,7 @@ public class MountpointRegistrarImpl implements AutoCloseable, IConfigChangedLis
         strimziEnabled = strimziEnabledNewVal;
     }
 
+    @Deactivate
     @Override
     public void close() throws Exception {
         LOG.info("{} closing ...", this.getClass().getName());

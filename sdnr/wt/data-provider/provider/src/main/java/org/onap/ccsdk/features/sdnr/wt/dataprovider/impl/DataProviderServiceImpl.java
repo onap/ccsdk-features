@@ -42,6 +42,7 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.DatabaseDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtDatabaseMaintenance;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.HtUserdataManager;
+import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.IEntityDataProvider;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.InventoryTreeProvider;
 import org.onap.ccsdk.features.sdnr.wt.yang.mapper.YangToolsMapperHelper;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -149,9 +150,14 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(service = {DataProviderService.class}, immediate = true)
 public class DataProviderServiceImpl implements DataProviderService, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataProviderServiceImpl.class);
@@ -168,7 +174,9 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     private final DatabaseDataProvider dataProvider;
     private final DataBroker dataBroker;
 
-    public DataProviderServiceImpl(final RpcProviderService rpcProviderService, DataBroker dataBroker) {
+    @Activate
+    public DataProviderServiceImpl(@Reference final RpcProviderService rpcProviderService, 
+                                   @Reference DataBroker dataBroker) {
         var configuration = new ConfigurationFileRepresentation(CONFIGURATIONFILE);
         var dbConfig = new DataProviderConfig(configuration);
         this.dataBroker = dataBroker;
@@ -241,6 +249,7 @@ public class DataProviderServiceImpl implements DataProviderService, AutoCloseab
     }
 
 
+    @Deactivate
     @Override
     public void close() {
         LOG.info("Close RPC Service");

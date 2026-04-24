@@ -43,6 +43,11 @@ import org.opendaylight.yangtools.binding.RpcOutput;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.onap.ccsdk.sli.core.sli.provider.SvcLogicService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * initialization / clean up methods.
  *
  */
+@Component(immediate = true)
 public class CMNotifyProvider implements AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CMNotifyProvider.class);
@@ -66,17 +72,29 @@ public class CMNotifyProvider implements AutoCloseable {
 	protected RpcProviderService rpcProviderService;
     private Registration rpcRegistration;
 	protected NotificationPublishService notificationService;
-	private CMNotifyClient CMNotifyClient;
+	private CMNotifyClient notifyClient;
 
-	public CMNotifyProvider() {
+	@Activate
+	public CMNotifyProvider(@Reference final DataBroker dataBroker,
+			@Reference final RpcProviderService rpcProviderService,
+			@Reference final NotificationPublishService notificationPublishService,
+		    @Reference final CMNotifyClient client) {
 
 		LOG.info("Creating provider for {}", APPLICATION_NAME);
 		executor = Executors.newFixedThreadPool(1);
 		
-		this.dataBroker = null; 
-		this.notificationService = null; 
-		this.rpcProviderService = null;
-		this.CMNotifyClient = null;
+		this.dataBroker = dataBroker; 
+		this.notificationService = notificationPublishService; 
+		this.rpcProviderService = rpcProviderService;
+		this.notifyClient = client;
+
+
+        rpcRegistration = rpcProviderService.registerRpcImplementations(
+                List.of(new RpcHelper<>(
+                        null, //NbrlistChangeNotification.class,
+                        CMNotifyProvider.this::nbrlistChangeNotification)
+                ));
+        LOG.info("Initialization complete for {}", APPLICATION_NAME);
 	}
 
 	public void setDataBroker(DataBroker dataBroker) {
@@ -92,19 +110,11 @@ public class CMNotifyProvider implements AutoCloseable {
 	}
 
 	public void setClient(CMNotifyClient client) {
-		this.CMNotifyClient = client;
+		this.notifyClient = client;
 	}
 
-	public void init() {
-		LOG.info("Initializing provider for {}", APPLICATION_NAME);
-        rpcRegistration = rpcProviderService.registerRpcImplementations(
-                List.of(new RpcHelper<>(
-                        null, //NbrlistChangeNotification.class,
-                        CMNotifyProvider.this::nbrlistChangeNotification)
-                ));
-        LOG.info("Initialization complete for {}", APPLICATION_NAME);
-	}
 
+	@Deactivate
 	@Override
 	public void close() throws Exception {
 		LOG.info("Closing provider for {}", APPLICATION_NAME);
@@ -150,10 +160,10 @@ public class CMNotifyProvider implements AutoCloseable {
 
 		// Call SLI sync method
 		try {
-			if (CMNotifyClient.hasGraph("CM-NOTIFY-API", svcOperation, null, "sync")) {
+			if (notifyClient.hasGraph("CM-NOTIFY-API", svcOperation, null, "sync")) {
 				LOG.info("CMNotifyClient has a Directed Graph for '" + svcOperation + "'");
 				try {
-					CMNotifyClient.execute("CM-NOTIFY-API", svcOperation, null, "sync", serviceDataBuilder, parms);
+					notifyClient.execute("CM-NOTIFY-API", svcOperation, null, "sync", serviceDataBuilder, parms);
 				} catch (Exception e) {
 					LOG.error("Caught exception executing service logic for " + svcOperation, e);
 					serviceDataBuilder.setResponseCode("500");
