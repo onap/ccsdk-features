@@ -26,6 +26,10 @@ package org.onap.ccsdk.features.sdnr.wt.mountpointstateprovider.impl;
 
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorCfgService;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.VESCollectorConfigChangeListener;
@@ -41,32 +45,26 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(immediate = true)
 public class MountpointStateProviderImpl implements VESCollectorConfigChangeListener, NetconfNodeConnectListener,
         NetconfNodeStateListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MountpointStateProviderImpl.class);
     private static final String APPLICATION_NAME = "mountpoint-state-provider";
 
-    private NetconfNodeStateService netconfNodeStateService;
-    private NetconfNetworkElementService netconfNetworkElementService;
+    private final NetconfNodeStateService netconfNodeStateService;
+    private final NetconfNetworkElementService netconfNetworkElementService;
     private VESCollectorService vesCollectorService;
     private boolean vesCollectorEnabled = false; //Current value
     private MountpointStateVESMessageFormatter vesMessageFormatter;
 
-    public MountpointStateProviderImpl() {
+    @Activate
+    public MountpointStateProviderImpl(@Reference final NetconfNodeStateService netconfNodeStateService,
+                                       @Reference final NetconfNetworkElementService netconfNetworkElementService) {
         LOG.info("Creating provider class for {}", APPLICATION_NAME);
-
-    }
-
-    public void setNetconfNodeStateService(NetconfNodeStateService netconfNodeStateService) {
         this.netconfNodeStateService = netconfNodeStateService;
-    }
-
-    public void setNetconfNetworkElementService(NetconfNetworkElementService netconfNetworkElementService) {
         this.netconfNetworkElementService = netconfNetworkElementService;
-    }
 
-    public void init() {
         LOG.info("Init call for {}", APPLICATION_NAME);
         this.vesCollectorService = netconfNetworkElementService.getServiceProvider().getVESCollectorService();
         this.vesCollectorEnabled = vesCollectorService.getConfig().isVESCollectorEnabled();
@@ -76,7 +74,6 @@ public class MountpointStateProviderImpl implements VESCollectorConfigChangeList
         // register for node changes
         netconfNodeStateService.registerNetconfNodeConnectListener(this);
         netconfNodeStateService.registerNetconfNodeStateListener(this);
-
     }
 
     /**
@@ -88,6 +85,7 @@ public class MountpointStateProviderImpl implements VESCollectorConfigChangeList
         return "No implemented";
     }
 
+    @Deactivate
     @Override
     public void close() throws Exception {
         LOG.info("{} closing ...", this.getClass().getName());

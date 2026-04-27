@@ -37,12 +37,11 @@ public class TestDeviceManagerOpenRoadmImpl {
     @Before
     public void init() {
         netcnfNtwrkElmntSrvc = mock(NetconfNetworkElementService.class);
-        devMgrOpenRdmImpl = new DeviceManagerOpenroadmImpl();
+        devMgrOpenRdmImpl = new DeviceManagerOpenroadmImpl(netcnfNtwrkElmntSrvc);
     }
 
     @Test
     public void test() throws Exception {
-        devMgrOpenRdmImpl.setNetconfNetworkElementService(netcnfNtwrkElmntSrvc);
         assertNotNull(devMgrOpenRdmImpl);
 
     }

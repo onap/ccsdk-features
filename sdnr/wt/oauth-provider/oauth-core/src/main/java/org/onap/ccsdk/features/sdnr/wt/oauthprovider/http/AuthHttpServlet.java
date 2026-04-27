@@ -40,6 +40,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.shiro.authc.BearerToken;
 import org.apache.shiro.codec.Base64;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.Config;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.InvalidConfigurationException;
 import org.onap.ccsdk.features.sdnr.wt.oauthprovider.data.NoDefinitionFoundException;
@@ -69,6 +73,7 @@ import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(immediate = true)
 public class AuthHttpServlet extends HttpServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthHttpServlet.class.getName());
@@ -105,15 +110,24 @@ public class AuthHttpServlet extends HttpServlet {
     private final TokenCreator tokenCreator;
     private final Config config;
     private static MdSalAuthorizationStore mdsalAuthStore;
-    private static PasswordCredentialAuth passwordCredentialAuth;
+    private final PasswordCredentialAuth passwordCredentialAuth;
     private static OdlShiroConfiguration shiroConfiguration;
+    private final DataBroker dataBroker;
+    private final HttpService httpService;
 
-    public AuthHttpServlet() throws IllegalArgumentException, IOException, InvalidConfigurationException,
+    @Activate
+    public AuthHttpServlet(@Reference final PasswordCredentialAuth passwordCredentialAuth,
+                           @Reference final DataBroker dataBroker,
+                           @Reference final HttpService httpService) throws IllegalArgumentException, IOException, InvalidConfigurationException,
             UnableToConfigureOAuthService {
-        this(CONFIGFILE);
+        this(CONFIGFILE, passwordCredentialAuth, dataBroker, httpService);
     }
-    public AuthHttpServlet(String shiroconfigfile) throws IllegalArgumentException, IOException, InvalidConfigurationException,
+    public AuthHttpServlet(String shiroconfigfile, PasswordCredentialAuth passwordCredentialAuth,
+                           DataBroker dataBroker, HttpService httpService) throws IllegalArgumentException, IOException, InvalidConfigurationException,
             UnableToConfigureOAuthService {
+        this.passwordCredentialAuth = passwordCredentialAuth;
+        this.dataBroker = dataBroker;
+        this.httpService = httpService;
         this.config = Config.getInstance();
         this.shiroConfiguration = loadShiroConfig(shiroconfigfile);
         this.tokenCreator = TokenCreator.getInstance(this.config);
@@ -123,6 +137,12 @@ public class AuthHttpServlet extends HttpServlet {
             this.providerStore.put(pc.getId(), OAuthProviderFactory.create(pc.getType(), pc,
                     this.config.getRedirectUri(), TokenCreator.getInstance(this.config)));
         }
+        setDataBroker(this.dataBroker);
+        try {
+            onBindService(this.httpService);
+        } catch (ServletException | NamespaceException e) {
+            LOG.error("Failed to register oauth servlet", e);
+        }
     }
 
     public void setDataBroker(DataBroker dataBroker) {
@@ -130,8 +150,11 @@ public class AuthHttpServlet extends HttpServlet {
         mdsalAuthStore = new MdSalAuthorizationStore(dataBroker);
     }
 
-    public void setPasswordCredentialAuth(PasswordCredentialAuth passwordCredentialAuth) {
-        this.passwordCredentialAuth = passwordCredentialAuth;
+    @Deactivate
+    public void deactivate() {
+        if (this.httpService != null) {
+            onUnbindService(this.httpService);
+        }
     }
 
 

@@ -57,11 +57,7 @@ public class TestOofpcipoc {
             NotificationPublishService mockNotification = mock(NotificationPublishService.class);
             RpcProviderService mockRpcRegistry = mock(RpcProviderService.class);
             OofpcipocClient mockSliClient = mock(OofpcipocClient.class);
-            oofpcipocProvider = new OofpcipocProvider();
-            oofpcipocProvider.setDataBroker(dataBroker);
-            oofpcipocProvider.setNotificationPublishService(mockNotification);
-            oofpcipocProvider.setRpcProviderService(mockRpcRegistry);
-            oofpcipocProvider.setClient(mockSliClient);
+            oofpcipocProvider = new OofpcipocProvider(dataBroker, mockNotification, mockRpcRegistry, mockSliClient);
         }
     }
 

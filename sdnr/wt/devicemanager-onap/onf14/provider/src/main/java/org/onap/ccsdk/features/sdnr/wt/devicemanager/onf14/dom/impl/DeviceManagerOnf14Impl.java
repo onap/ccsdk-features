@@ -17,11 +17,16 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.devicemanager.onf14.dom.impl;
 
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.ne.factory.FactoryRegistration;
 import org.onap.ccsdk.features.sdnr.wt.devicemanager.service.NetconfNetworkElementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(immediate = true)
 public class DeviceManagerOnf14Impl implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerOnf14Impl.class);
@@ -29,23 +34,16 @@ public class DeviceManagerOnf14Impl implements AutoCloseable {
     @SuppressWarnings("unused")
     private static final String CONFIGURATIONFILE = "etc/devicemanager-onf14.properties";
 
-
-    private NetconfNetworkElementService netconfNetworkElementService;
+    private final NetconfNetworkElementService netconfNetworkElementService;
 
     private Boolean devicemanagerInitializationOk = false;
     private FactoryRegistration<Onf14DomNetworkElementFactory> resOnf;
 
-    // Blueprint begin
-    public DeviceManagerOnf14Impl() {
+    @Activate
+    public DeviceManagerOnf14Impl(@Reference final NetconfNetworkElementService netconfNetworkElementService) {
         LOG.info("Creating provider for {}", APPLICATION_NAME);
-        resOnf = null;
-    }
-
-    public void setNetconfNetworkElementService(NetconfNetworkElementService netconfNetworkElementService) {
         this.netconfNetworkElementService = netconfNetworkElementService;
-    }
-
-    public void init() throws Exception {
+        this.resOnf = null;
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
 
@@ -56,8 +54,8 @@ public class DeviceManagerOnf14Impl implements AutoCloseable {
 
         LOG.info("Session Initiated end. Initialization done {}", devicemanagerInitializationOk);
     }
-    // Blueprint end
 
+    @Deactivate
     @Override
     public void close() throws Exception {
         LOG.info("closing ...");

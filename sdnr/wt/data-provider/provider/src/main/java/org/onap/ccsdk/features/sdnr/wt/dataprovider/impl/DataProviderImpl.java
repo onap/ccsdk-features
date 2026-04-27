@@ -21,7 +21,10 @@
  */
 package org.onap.ccsdk.features.sdnr.wt.dataprovider.impl;
 
-import javax.servlet.ServletException;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.DataTreeHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.UserdataHttpServlet;
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.http.about.AboutHttpServlet;
@@ -34,86 +37,41 @@ import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.StatusChangedHandler.S
 import org.onap.ccsdk.features.sdnr.wt.dataprovider.model.types.NetconfTimeStampImpl;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(service = IEntityDataProvider.class, immediate = true)
 public class DataProviderImpl implements IEntityDataProvider, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataProviderImpl.class);
 
     private static final String APPLICATION_NAME = "data-provider";
-    private RpcProviderService rpcProviderService = null;
-    private DataProviderServiceImpl rpcApiService;
-    private AboutHttpServlet aboutServlet;
-    private DataTreeHttpServlet treeServlet;
-    private UserdataHttpServlet userdataServlet;
-    private DataBroker dataBroker;
 
-    // Blueprint 1
-    public DataProviderImpl() {
+    private final RpcProviderService rpcProviderService;
+    private DataProviderServiceImpl rpcApiService;
+    private final AboutHttpServlet aboutServlet;
+    private final DataBroker dataBroker;
+
+    @Activate
+    public DataProviderImpl(@Reference final RpcProviderService rpcProviderService,
+                            @Reference final AboutHttpServlet aboutServlet,
+                            @Reference final DataBroker dataBroker) {
         super();
         LOG.info("Creating provider for {}", APPLICATION_NAME);
-    }
-
-    @SuppressWarnings("unused")
-    public void setRpcProviderService(RpcProviderService rpcProviderService) {
         this.rpcProviderService = rpcProviderService;
-    }
-
-    @SuppressWarnings("unused")
-    public void setAboutServlet(AboutHttpServlet aboutServlet) {
         this.aboutServlet = aboutServlet;
-    }
-
-    @SuppressWarnings("unused")
-    public void setTreeServlet(DataTreeHttpServlet treeServlet) {
-        this.treeServlet = treeServlet;
-    }
-
-    @SuppressWarnings("unused")
-    public void setUserdataServlet(UserdataHttpServlet userdataServlet) {
-        this.userdataServlet = userdataServlet;
-    }
-
-    @SuppressWarnings("unused")
-    public void setDataBroker(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
-    }
-
-    @SuppressWarnings("unused")
-    public void init() {
 
         LOG.info("Session Initiated start {}", APPLICATION_NAME);
         // Start RPC Service
         this.rpcApiService = new DataProviderServiceImpl(rpcProviderService, this.dataBroker);
-        this.treeServlet.setInventoryTreeProvider(this.rpcApiService.getInventoryTreeProvider());
-        this.userdataServlet.setDatabaseClient(this.rpcApiService.getHtDatabaseUserManager());
+        // Wire data sources into Whiteboard-managed servlets
+        DataTreeHttpServlet.setInventoryTreeProvider(this.rpcApiService.getInventoryTreeProvider());
+        UserdataHttpServlet.setDatabaseClient(this.rpcApiService.getHtDatabaseUserManager());
         LOG.info("Session Initiated end. Initialization done");
-
     }
 
-    @SuppressWarnings("unused")
-    public void onUnbindService(HttpService httpService) {
-        httpService.unregister(AboutHttpServlet.URI_PRE);
-        httpService.unregister(DataTreeHttpServlet.URI_PRE);
-        this.aboutServlet = null;
-        this.treeServlet = null;
-    }
-
-    @SuppressWarnings("unused")
-    public void onBindService(HttpService httpService)
-            throws ServletException, NamespaceException {
-        if (httpService == null) {
-            LOG.warn("Unable to inject HttpService into loader.");
-        } else {
-            httpService.registerServlet(AboutHttpServlet.URI_PRE, aboutServlet, null, null);
-            httpService.registerServlet(DataTreeHttpServlet.URI_PRE, treeServlet, null, null);
-            LOG.info("about servlet and tree servlet registered.");
-        }
-    }
-
+    @Deactivate
     @Override
     public void close() throws Exception {
         LOG.info("DeviceManagerImpl closing ...");

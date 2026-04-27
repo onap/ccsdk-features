@@ -29,6 +29,9 @@ import org.onap.ccsdk.features.lib.npm.models.NpmStatusEnum;
 import org.onap.ccsdk.features.lib.npm.models.NpmTransaction;
 import org.onap.ccsdk.features.lib.npm.utils.NpmUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,13 +46,16 @@ import java.util.UUID;
  *
  * @author Kapil Singal
  */
+@Component(service = NpmTransactionService.class, immediate = true)
 public class NpmTransactionServiceImpl implements NpmTransactionService {
     private static final Logger logger = LoggerFactory.getLogger(NpmTransactionServiceImpl.class);
-    private final NpmServiceManager npmServiceManager;
+    private NpmServiceManager npmServiceManager;
 
-    public NpmTransactionServiceImpl(NpmServiceManager npmServiceManager) {
+    @Activate
+    public NpmTransactionServiceImpl(@Reference final NpmServiceManager npmServiceManager) {
         this.npmServiceManager = npmServiceManager;
     }
+
 
     @Override
     public List<NpmAck> addTransactionsToQueue(List<NpmTransaction> npmTransactionList) {

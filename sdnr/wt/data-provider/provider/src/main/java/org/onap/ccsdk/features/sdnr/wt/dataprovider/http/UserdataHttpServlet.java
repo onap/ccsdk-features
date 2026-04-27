@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 @HttpWhiteboardServletPattern({"/userdata","/userdata/*"})
 @HttpWhiteboardServletName("UserdataHttpServlet")
-@Component(service = Servlet.class)
+@Component(service = Servlet.class, immediate = true)
 public class UserdataHttpServlet extends HttpServlet {
 
     @Serial
@@ -176,7 +176,7 @@ public class UserdataHttpServlet extends HttpServlet {
 
     }
 
-    public void setDatabaseClient(HtUserdataManager dbMgr) {
+    public static void setDatabaseClient(HtUserdataManager dbMgr) {
         dbUserManager = dbMgr;
     }
 

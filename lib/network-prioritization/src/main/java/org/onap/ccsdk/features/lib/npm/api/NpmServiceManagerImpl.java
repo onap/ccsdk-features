@@ -32,6 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +59,7 @@ import static org.onap.ccsdk.features.lib.npm.NpmConstants.MDC_REQUEST_ID;
  *
  * @author Kapil Singal
  */
+@Component(service = NpmServiceManager.class, immediate = true)
 public class NpmServiceManagerImpl implements NpmServiceManager {
     private static final Logger logger = LoggerFactory.getLogger(NpmServiceManagerImpl.class);
     /**
@@ -99,6 +102,7 @@ public class NpmServiceManagerImpl implements NpmServiceManager {
 
     private boolean isProcessIngNpmPriorityQueues = false;
 
+    @Activate
     public NpmServiceManagerImpl() throws NpmException {
         loadProperties();
         Runnable processNpmPriorityQueuesTask = () -> {
