@@ -679,8 +679,8 @@ Abbreviations
 |                                    | router (an example of a VNF)    |
 +------------------------------------+---------------------------------+
 | VPP                                | `Vector Packet                  |
-|                                    | Processing <https://wiki.fd.io/ |
-|                                    | view/VPP/What_is_VPP%3F>`__     |
+|                                    | Processing <https://s3-docs.fd. |
+|                                    | io/vpp/26.06/>`__               |
 +------------------------------------+---------------------------------+
 | VSP                                | Vendor Software Product (from   |
 |                                    | SDC Demo Guide)                 |
