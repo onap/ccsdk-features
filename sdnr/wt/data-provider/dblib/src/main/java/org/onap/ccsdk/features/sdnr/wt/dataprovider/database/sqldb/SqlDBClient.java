@@ -4,6 +4,7 @@
  * ================================================================================
  * Copyright (C) 2020 highstreet technologies GmbH Intellectual Property.
  * All rights reserved.
+ * Modifications Copyright (C) 2026 Deutsche Telekom AG.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -513,12 +514,10 @@ public class SqlDBClient {
             connection = this.getConnection();
             stmt = connection.createStatement();
             data = stmt.executeQuery(query);
-            if (isDerby()) {
-                CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
-                crs.populate(data);
-                data.close();
-                data = crs;
-            }
+            CachedRowSet crs = RowSetProvider.newFactory().createCachedRowSet();
+            crs.populate(data);
+            data.close();
+            data = crs;
         } catch (SQLException e) {
             LOG.warn("problem reading db for query '{}': ", query, e);
         } finally {
