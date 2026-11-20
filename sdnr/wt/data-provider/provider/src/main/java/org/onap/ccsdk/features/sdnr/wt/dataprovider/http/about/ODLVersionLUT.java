@@ -81,6 +81,7 @@ public class ODLVersionLUT {
         }
         if(odlMdsalVersionLUT==null) {
             odlMdsalVersionLUT = new HashMap<>();
+            odlMdsalVersionLUT.put("14.0.18","titanium-SR1 (0.22.1)");
             odlMdsalVersionLUT.put("14.0.11","scandium-SR2 (0.21.2)");
             odlMdsalVersionLUT.put("14.0.4","scandium-SR1 (0.21.1)");
             odlMdsalVersionLUT.put("14.0.2","scandium-SR0 (0.21.0)");
