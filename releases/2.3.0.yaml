@@ -1,0 +1,6 @@
+---
+distribution_type: 'maven'
+version: '2.3.0'
+project: 'ccsdk-features'
+log_dir: 'ccsdk-features-maven-stage-master/326/'
+ref: 'e6bf6af9e9e65677fd85fdfad7aad21014135cad'
